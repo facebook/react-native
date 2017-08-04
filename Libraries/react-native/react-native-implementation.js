@@ -24,10 +24,12 @@ const ReactNative = {
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get FlatList() { return require('FlatList'); },
   get Image() { return require('Image'); },
+  get ImageBackground() { return require('ImageBackground'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
+  get MaskedViewIOS() { return require('MaskedViewIOS'); },
   get Modal() { return require('Modal'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
@@ -60,7 +62,6 @@ const ReactNative = {
 
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
-  get AdSupportIOS() { return require('AdSupportIOS'); },
   get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },
@@ -75,6 +76,7 @@ const ReactNative = {
   get DeviceInfo() { return require('DeviceInfo'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
+  get findNodeHandle() { return require('ReactNative').findNodeHandle; },
   get I18nManager() { return require('I18nManager'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get InteractionManager() { return require('InteractionManager'); },
@@ -95,6 +97,7 @@ const ReactNative = {
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get TVEventHandler() { return require('TVEventHandler'); },
   get UIManager() { return require('UIManager'); },
+  get unstable_batchedUpdates() { return require('ReactNative').unstable_batchedUpdates; },
   get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },
 

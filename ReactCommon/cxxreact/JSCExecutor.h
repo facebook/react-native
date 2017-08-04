@@ -7,13 +7,17 @@
 #include <mutex>
 #include <unordered_map>
 
-#include <cxxreact/Executor.h>
 #include <cxxreact/JSCNativeModules.h>
+#include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/json.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -75,13 +79,9 @@ public:
 
   virtual void* getJavaScriptContext() override;
 
-  virtual bool supportsProfiling() override;
-  virtual void startProfiler(const std::string &titleString) override;
-  virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
-
-  virtual void handleMemoryPressureUiHidden() override;
-  virtual void handleMemoryPressureModerate() override;
-  virtual void handleMemoryPressureCritical() override;
+#ifdef WITH_JSC_MEMORY_PRESSURE
+  virtual void handleMemoryPressure(int pressureLevel) override;
+#endif
 
   virtual void destroy() override;
 
@@ -112,6 +112,8 @@ private:
   void flush();
   void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
+
+  String adoptString(std::unique_ptr<const JSBigString>);
 
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);

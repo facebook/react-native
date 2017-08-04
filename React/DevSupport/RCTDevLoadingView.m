@@ -161,7 +161,9 @@ RCT_EXPORT_METHOD(hide)
 
 + (NSString *)moduleName { return nil; }
 + (void)setEnabled:(BOOL)enabled { }
-- (void)updateProgress:(RCTLoadingProgress *)progress {}
+- (void)showWithURL:(NSURL *)URL { }
+- (void)updateProgress:(RCTLoadingProgress *)progress { }
+- (void)hide { }
 
 @end
 

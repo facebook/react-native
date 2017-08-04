@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -28,12 +28,6 @@ public class YogaNode {
    * Get native instance count. Useful for testing only.
    */
   static native int jni_YGNodeGetInstanceCount();
-  static native void jni_YGLog(int level, String message);
-
-  private static native void jni_YGSetLogger(Object logger);
-  public static void setLogger(YogaLogger logger) {
-    jni_YGSetLogger(logger);
-  }
 
   private YogaNode mParent;
   private List<YogaNode> mChildren;
@@ -666,5 +660,15 @@ public class YogaNode {
 
   public Object getData() {
     return mData;
+  }
+
+  private native void jni_YGNodePrint(long nativePointer);
+
+  /**
+   * Use the set logger (defaults to adb log) to print out the styles, children, and computed
+   * layout of the tree rooted at this node.
+   */
+  public void print() {
+    jni_YGNodePrint(mNativePointer);
   }
 }

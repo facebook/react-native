@@ -87,7 +87,7 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 
 ### Testing the release build of your app
 
-Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
+Before uploading the release build to the Play Store, make sure you test it thoroughly. First uninstall any previous version of the app you already have installed. Install it on the device using:
 
 ```sh
 $ react-native run-android --variant=release
@@ -95,7 +95,7 @@ $ react-native run-android --variant=release
 
 Note that `--variant=release` is only available if you've set up signing as described above.
 
-You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
+You can kill any running packager instances, all your framework and JavaScript code is bundled in the APK's assets.
 
 ### Enabling Proguard to reduce the size of the APK (optional)
 

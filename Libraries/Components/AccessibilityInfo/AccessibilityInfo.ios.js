@@ -18,9 +18,11 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var AccessibilityManager = NativeModules.AccessibilityManager;
 
 var VOICE_OVER_EVENT = 'voiceOverDidChange';
+var ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
 
 type ChangeEventName = $Enum<{
   change: string,
+  announcementFinished: string
 }>;
 
 var _subscriptions = new Map();
@@ -97,19 +99,52 @@ var AccessibilityInfo = {
    * - `change`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
+   * - `announcementFinished`: iOS-only event. Fires when the screen reader has
+   *   finished making an announcement. The argument to the event handler is a dictionary
+   *   with these keys:
+   *     - `announcement`: The string announced by the screen reader.
+   *     - `success`: A boolean indicating whether the announcement was successfully made.
    */
   addEventListener: function (
     eventName: ChangeEventName,
     handler: Function
   ): Object {
-    var listener = RCTDeviceEventEmitter.addListener(
-      VOICE_OVER_EVENT,
-      handler
-    );
+    var listener;
+
+    if (eventName === 'change') {
+      listener = RCTDeviceEventEmitter.addListener(
+        VOICE_OVER_EVENT,
+        handler
+      );
+    } else if (eventName === 'announcementFinished') {
+      listener = RCTDeviceEventEmitter.addListener(
+        ANNOUNCEMENT_DID_FINISH_EVENT,
+        handler
+      );
+    }
+
     _subscriptions.set(handler, listener);
     return {
       remove: AccessibilityInfo.removeEventListener.bind(null, eventName, handler),
     };
+  },
+
+  /**
+   * iOS-Only. Set accessibility focus to a react component.
+   */
+  setAccessibilityFocus: function(
+    reactTag: number
+  ): void {
+    AccessibilityManager.setAccessibilityFocus(reactTag);
+  },
+
+  /**
+   * iOS-Only. Post a string to be announced by the screen reader.
+   */
+  announceForAccessibility: function(
+    announcement: string
+  ): void {
+    AccessibilityManager.announceForAccessibility(announcement);
   },
 
   /**

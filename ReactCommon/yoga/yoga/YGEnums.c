@@ -91,8 +91,6 @@ const char *YGExperimentalFeatureToString(const YGExperimentalFeature value){
   switch(value){
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
-    case YGExperimentalFeatureMinFlexFix:
-      return "min-flex-fix";
   }
   return "unknown";
 }
@@ -139,6 +137,8 @@ const char *YGLogLevelToString(const YGLogLevel value){
       return "debug";
     case YGLogLevelVerbose:
       return "verbose";
+    case YGLogLevelFatal:
+      return "fatal";
   }
   return "unknown";
 }
@@ -151,6 +151,16 @@ const char *YGMeasureModeToString(const YGMeasureMode value){
       return "exactly";
     case YGMeasureModeAtMost:
       return "at-most";
+  }
+  return "unknown";
+}
+
+const char *YGNodeTypeToString(const YGNodeType value){
+  switch(value){
+    case YGNodeTypeDefault:
+      return "default";
+    case YGNodeTypeText:
+      return "text";
   }
   return "unknown";
 }

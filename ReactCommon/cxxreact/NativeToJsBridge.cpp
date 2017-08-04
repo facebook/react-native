@@ -2,19 +2,21 @@
 
 #include "NativeToJsBridge.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceAsyncFlow;
-#endif
-
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 
 #include "Instance.h"
-#include "ModuleRegistry.h"
-#include "Platform.h"
+#include "JSBigString.h"
 #include "SystraceSection.h"
+#include "MethodCall.h"
+#include "JSModulesUnbundle.h"
+#include "MessageQueueThread.h"
+
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+using fbsystrace::FbSystraceAsyncFlow;
+#endif
 
 namespace facebook {
 namespace react {
@@ -124,27 +126,21 @@ void NativeToJsBridge::callFunction(
   int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
-  std::string tracingName = fbsystrace_is_tracing(TRACE_TAG_REACT_CXX_BRIDGE) ?
-    folly::to<std::string>("JSCall__", module, '_', method) : std::string();
-  SystraceSection s(tracingName.c_str());
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
-      tracingName.c_str(),
+      "JSCall",
       systraceCookie);
-  #else
-  std::string tracingName;
   #endif
 
-  runOnExecutorQueue([module = std::move(module), method = std::move(method), arguments = std::move(arguments), tracingName = std::move(tracingName), systraceCookie]
+  runOnExecutorQueue([module = std::move(module), method = std::move(method), arguments = std::move(arguments), systraceCookie]
     (JSExecutor* executor) {
       #ifdef WITH_FBSYSTRACE
       FbSystraceAsyncFlow::end(
           TRACE_TAG_REACT_CXX_BRIDGE,
-          tracingName.c_str(),
+          "JSCall",
           systraceCookie);
-      SystraceSection s(tracingName.c_str());
+      SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       #endif
-
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
       // that will happen on this thread
@@ -169,9 +165,8 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           TRACE_TAG_REACT_CXX_BRIDGE,
           "<callback>",
           systraceCookie);
-      SystraceSection s("NativeToJsBridge.invokeCallback");
+      SystraceSection s("NativeToJsBridge::invokeCallback");
       #endif
-
       executor->invokeCallback(callbackId, arguments);
     });
 }
@@ -189,40 +184,13 @@ void* NativeToJsBridge::getJavaScriptContext() {
   return m_executor->getJavaScriptContext();
 }
 
-bool NativeToJsBridge::supportsProfiling() {
-  // Intentionally doesn't post to jsqueue. supportsProfiling() can be called from any thread.
-  return m_executor->supportsProfiling();
-}
-
-void NativeToJsBridge::startProfiler(const std::string& title) {
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->startProfiler(title);
+    executor->handleMemoryPressure(pressureLevel);
   });
 }
-
-void NativeToJsBridge::stopProfiler(const std::string& title, const std::string& filename) {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->stopProfiler(title, filename);
-  });
-}
-
-void NativeToJsBridge::handleMemoryPressureUiHidden() {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureUiHidden();
-  });
-}
-
-void NativeToJsBridge::handleMemoryPressureModerate() {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureModerate();
-  });
-}
-
-void NativeToJsBridge::handleMemoryPressureCritical() {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureCritical();
-  });
-}
+#endif
 
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if

@@ -11,7 +11,6 @@
 'use strict';
 
 jest
-  .disableAutomock()
   .mock('ErrorUtils')
   .mock('BatchedBridge');
 
@@ -164,6 +163,7 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModules();
+    jest.useFakeTimers();
     InteractionManager = require('InteractionManager');
     BatchedBridge = require('BatchedBridge');
     sequenceId = 0;
@@ -256,7 +256,9 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  const bigAsyncTest = () => {
+  const bigAsyncTest = (resolve) => {
+    jest.useRealTimers();
+
     const task1 = createSequenceTask(1);
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
@@ -282,27 +284,25 @@ describe('promise tasks', () => {
     InteractionManager.runAfterInteractions({gen: task2, name: 'gen2'});
     InteractionManager.runAfterInteractions(task6);
 
-    jest.runAllTimers();
-    // runAllTimers doesn't actually run all timers with nested timer functions
-    // inside Promises, so we have to call it extra times.
-    jest.runAllTimers();
-    jest.runAllTimers();
+    setTimeout(() => {
+      expectToBeCalledOnce(task1);
+      expectToBeCalledOnce(task2);
+      expectToBeCalledOnce(task3);
+      expectToBeCalledOnce(task4);
+      expectToBeCalledOnce(task5);
+      expectToBeCalledOnce(task6);
 
-    expectToBeCalledOnce(task1);
-    expectToBeCalledOnce(task2);
-    expectToBeCalledOnce(task3);
-    expectToBeCalledOnce(task4);
-    expectToBeCalledOnce(task5);
-    expectToBeCalledOnce(task6);
+      resolve();
+    }, 100);
   };
 
   it('resolves async tasks recusively before other queued tasks', () => {
-    bigAsyncTest();
+    return new Promise(bigAsyncTest);
   });
 
   it('should also work with a deadline', () => {
     InteractionManager.setDeadline(100);
     BatchedBridge.getEventLoopRunningTime.mockReturnValue(200);
-    bigAsyncTest();
+    return new Promise(bigAsyncTest);
   });
 });

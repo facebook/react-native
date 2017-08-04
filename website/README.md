@@ -28,7 +28,4 @@ Anytime you change the contents, just refresh the page and it's going to be upda
 
 # Publish the website
 
-```sh
-cd website
-npm run publish-website
-```
+The website at https://facebook.github.io/react-native is automatically deployed by our continuous integration infrastructure, specifically CircleCI. This is configured in `circle.yml` in the root of the repository.

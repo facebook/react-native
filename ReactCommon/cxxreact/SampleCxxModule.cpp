@@ -133,9 +133,8 @@ void SampleCxxModule::load(folly::dynamic args, Callback cb) {
 
 }}}
 
-// By convention, the function name should be the same as the class
-// name.
-extern "C" facebook::xplat::module::CxxModule *SampleCxxModule() {
+// By convention, the function name should be the same as the class name.
+facebook::xplat::module::CxxModule *SampleCxxModule() {
   return new facebook::xplat::samples::SampleCxxModule(
     folly::make_unique<facebook::xplat::samples::Sample>());
 }

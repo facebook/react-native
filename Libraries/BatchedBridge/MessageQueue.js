@@ -8,6 +8,7 @@
  *
  * @providesModule MessageQueue
  * @flow
+ * @format
  */
 
 /*eslint no-bitwise: 0*/
@@ -15,7 +16,6 @@
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -25,9 +25,13 @@ const stringifySafe = require('stringifySafe');
 export type SpyData = {
   type: number,
   module: ?string,
-  method: string|number,
-  args: any
-}
+  method: string | number,
+  isSync: boolean,
+  successCbId: number,
+  failCbId: number,
+  args: Array<any>,
+  returnValue?: any,
+};
 
 const TO_JS = 0;
 const TO_NATIVE = 1;
@@ -39,13 +43,16 @@ const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
-const DEBUG_INFO_LIMIT = 32;
+const DEBUG_INFO_LIMIT = 64;
+
+// Work around an initialization order issue
+let JSTimers = null;
 
 class MessageQueue {
-  _callableModules: {[key: string]: Object};
+  _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
-  _callbacks: [];
-  _callbackID: number;
+  _successCallbacks: Array<?Function>;
+  _failureCallbacks: Array<?Function>;
   _callID: number;
   _inCall: number;
   _lastFlush: number;
@@ -58,10 +65,10 @@ class MessageQueue {
   __spy: ?(data: SpyData) => void;
 
   constructor() {
-    this._callableModules = {};
+    this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
-    this._callbacks = [];
-    this._callbackID = 0;
+    this._successCallbacks = [];
+    this._failureCallbacks = [];
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
@@ -71,23 +78,19 @@ class MessageQueue {
       this._remoteModuleTable = {};
       this._remoteMethodTable = {};
     }
-
-    (this:any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(this);
-    (this:any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(this);
-    (this:any).flushedQueue = this.flushedQueue.bind(this);
-    (this:any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(this);
   }
 
   /**
    * Public APIs
    */
-
-  static spy(spyOrToggle: boolean|(data: SpyData) => void){
-    if (spyOrToggle === true){
+  static spy(spyOrToggle: boolean | ((data: SpyData) => void)) {
+    if (spyOrToggle === true) {
       MessageQueue.prototype.__spy = info => {
-        console.log(`${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
-                    `${info.module ? (info.module + '.') : ''}${info.method}` +
-                    `(${JSON.stringify(info.args)})`);
+        console.log(
+          `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
+            `${info.module ? info.module + '.' : ''}${info.method}` +
+            `(${JSON.stringify(info.args)})`,
+        );
       };
     } else if (spyOrToggle === false) {
       MessageQueue.prototype.__spy = null;
@@ -96,74 +99,103 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnFlushedQueue = (
+    module: string,
+    method: string,
+    args: Array<any>,
+  ) => {
     this.__guard(() => {
       this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
-  }
+  };
 
-  callFunctionReturnResultAndFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnResultAndFlushedQueue = (
+    module: string,
+    method: string,
+    args: Array<any>,
+  ) => {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return [result, this.flushedQueue()];
-  }
+  };
 
-  invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
+  invokeCallbackAndReturnFlushedQueue = (cbID: number, args: Array<any>) => {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
-  }
+  };
 
-  flushedQueue() {
-    this.__callImmediates();
+  flushedQueue = () => {
+    this.__guard(() => {
+      this.__callImmediates();
+    });
 
     const queue = this._queue;
     this._queue = [[], [], [], this._callID];
     return queue[0].length ? queue : null;
-  }
+  };
 
   getEventLoopRunningTime() {
     return new Date().getTime() - this._eventLoopStartTime;
   }
 
   registerCallableModule(name: string, module: Object) {
-    this._callableModules[name] = module;
+    this._lazyCallableModules[name] = () => module;
   }
 
-  enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
+  registerLazyCallableModule(name: string, factory: void => Object) {
+    let module: Object;
+    let getValue: ?(void) => Object = factory;
+    this._lazyCallableModules[name] = () => {
+      if (getValue) {
+        module = getValue();
+        getValue = null;
+      }
+      return module;
+    };
+  }
+
+  getCallableModule(name: string) {
+    const getValue = this._lazyCallableModules[name];
+    return getValue ? getValue() : null;
+  }
+
+  enqueueNativeCall(
+    moduleID: number,
+    methodID: number,
+    params: Array<any>,
+    onFail: ?Function,
+    onSucc: ?Function,
+  ) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        const callId = this._callbackID >> 1;
-        this._debugInfo[callId] = [moduleID, methodID];
-        if (callId > DEBUG_INFO_LIMIT) {
-          delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
+        this._debugInfo[this._callID] = [moduleID, methodID];
+        if (this._callID > DEBUG_INFO_LIMIT) {
+          delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
       }
-      onFail && params.push(this._callbackID);
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-       * detected during the deployment of v0.38.0. To see the error, remove
-       * this comment and run flow */
-      this._callbacks[this._callbackID++] = onFail;
-      onSucc && params.push(this._callbackID);
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-       * detected during the deployment of v0.38.0. To see the error, remove
-       * this comment and run flow */
-      this._callbacks[this._callbackID++] = onSucc;
+      // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
+      // to indicate fail (0) or success (1)
+      onFail && params.push(this._callID << 1);
+      onSucc && params.push((this._callID << 1) | 1);
+      this._successCallbacks[this._callID] = onSucc;
+      this._failureCallbacks[this._callID] = onFail;
     }
 
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
-        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+        global.nativeTraceBeginAsyncFlow(
+          TRACE_TAG_REACT_APPS,
+          'native',
+          this._callID,
+        );
     }
     this._callID++;
 
@@ -175,30 +207,49 @@ class MessageQueue {
       JSON.stringify(params);
 
       // The params object should not be mutated after being queued
-      deepFreezeAndThrowOnMutationInDev((params:any));
+      deepFreezeAndThrowOnMutationInDev((params: any));
     }
     this._queue[PARAMS].push(params);
 
     const now = new Date().getTime();
-    if (global.nativeFlushQueueImmediate &&
-        (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-         this._inCall === 0)) {
+    if (
+      global.nativeFlushQueueImmediate &&
+      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
+        this._inCall === 0)
+    ) {
       var queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
       global.nativeFlushQueueImmediate(queue);
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
-    if (__DEV__ && this.__spy && isFinite(moduleID)) {
-      this.__spy(
-        { type: TO_NATIVE,
-          module: this._remoteModuleTable[moduleID],
-          method: this._remoteMethodTable[moduleID][methodID],
-          args: params }
-      );
-    } else if (this.__spy) {
-      this.__spy({type: TO_NATIVE, module: moduleID + '', method: methodID, args: params});
+
+    if (this.__spy) {
+      this.__spyNativeCall(moduleID, methodID, params, {
+        failCbId: onFail ? params[params.length - 2] : -1,
+        successCbId: onSucc ? params[params.length - 1] : -1,
+      });
     }
+  }
+
+  callSyncHook(moduleID: number, methodID: number, args: Array<any>) {
+    if (__DEV__) {
+      invariant(
+        global.nativeCallSyncHook,
+        'Calling synchronous methods on native ' +
+          'modules is not supported in Chrome.\n\n Consider providing alternative ' +
+          'methods to expose this method in debug mode, e.g. by exposing constants ' +
+          'ahead-of-time.',
+      );
+    }
+    const returnValue = global.nativeCallSyncHook(moduleID, methodID, args);
+    if (this.__spy) {
+      this.__spyNativeCall(moduleID, methodID, args, {
+        isSync: true,
+        returnValue,
+      });
+    }
+    return returnValue;
   }
 
   createDebugLookup(moduleID: number, name: string, methods: Array<string>) {
@@ -224,8 +275,11 @@ class MessageQueue {
   }
 
   __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    this.__guard(() => JSTimersExecution.callImmediates());
+    Systrace.beginEvent('JSTimers.callImmediates()');
+    if (!JSTimers) {
+      JSTimers = require('JSTimers');
+    }
+    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 
@@ -234,18 +288,20 @@ class MessageQueue {
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
     if (this.__spy) {
-      this.__spy({ type: TO_JS, module, method, args});
+      this.__spyJSCall(module, method, args);
     }
-    const moduleMethods = this._callableModules[module];
+    const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',
-      module, method
+      module,
+      method,
     );
     invariant(
       !!moduleMethods[method],
       'Method %s does not exist on module %s',
-      method, module
+      method,
+      module,
     );
     const result = moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
@@ -255,49 +311,102 @@ class MessageQueue {
   __invokeCallback(cbID: number, args: Array<any>) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    const callback = this._callbacks[cbID];
+
+    // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
+    const callID = cbID >>> 1;
+    const isSuccess = cbID & 1;
+    const callback = isSuccess
+      ? this._successCallbacks[callID]
+      : this._failureCallbacks[callID];
 
     if (__DEV__) {
-      const debug = this._debugInfo[cbID >> 1];
+      const debug = this._debugInfo[callID];
       const module = debug && this._remoteModuleTable[debug[0]];
       const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-      if (callback == null) {
+      if (!callback) {
         let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
-          errorMessage = `The callback ${method}() exists in module ${module}, `
-          + 'but only one callback may be registered to a function in a native module.';
+          errorMessage =
+            `The callback ${method}() exists in module ${module}, ` +
+            'but only one callback may be registered to a function in a native module.';
         }
-        invariant(
-          callback,
-          errorMessage
-        );
+        invariant(callback, errorMessage);
       }
-      const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
-      if (callback && this.__spy) {
-        this.__spy({ type: TO_JS, module:null, method:profileName, args });
+      const profileName = debug
+        ? '<callback for ' + module + '.' + method + '>'
+        : cbID + '';
+      if (this.__spy) {
+        this.__spyJSCall(null, profileName, args, {
+          failCbId: isSuccess ? -1 : cbID,
+          successCbId: isSuccess ? cbID : -1,
+        });
       }
       Systrace.beginEvent(
-        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
-    } else {
-      if (!callback) {
-        return;
-      }
+        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`,
+      );
     }
 
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
-    this._callbacks[cbID & ~1] = null;
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
-    this._callbacks[cbID |  1] = null;
-    // $FlowIssue(>=0.35.0) #14551610
+    if (!callback) {
+      return;
+    }
+
+    this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
     callback.apply(null, args);
 
     if (__DEV__) {
       Systrace.endEvent();
     }
+  }
+
+  __spyJSCall(
+    module: ?string,
+    method: string,
+    methodArgs: Array<any>,
+    params: any,
+  ) {
+    if (!this.__spy) {
+      return;
+    }
+    this.__spy({
+      type: TO_JS,
+      isSync: false,
+      module,
+      method,
+      failCbId: -1,
+      successCbId: -1,
+      args: methodArgs,
+      ...params,
+    });
+  }
+
+  __spyNativeCall(
+    moduleID: number,
+    methodID: number,
+    methodArgs: Array<any>,
+    params: any,
+  ) {
+    const spy = this.__spy;
+    if (!spy) {
+      return;
+    }
+
+    let moduleName = moduleID + '';
+    let methodName = methodID;
+    if (__DEV__ && isFinite(moduleID)) {
+      moduleName = this._remoteModuleTable[moduleID];
+      methodName = this._remoteMethodTable[moduleID][methodID];
+    }
+
+    spy({
+      type: TO_NATIVE,
+      isSync: false,
+      module: moduleName,
+      method: methodName,
+      failCbId: -1,
+      successCbId: -1,
+      args: methodArgs,
+      ...params,
+    });
   }
 }
 

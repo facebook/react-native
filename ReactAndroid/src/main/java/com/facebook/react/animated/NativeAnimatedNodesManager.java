@@ -29,7 +29,6 @@ import com.facebook.react.uimanager.events.EventDispatcherListener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,7 +92,7 @@ import javax.annotation.Nullable;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this);
+      node = new PropsAnimatedNode(config, this, mUIImplementation);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
@@ -145,6 +144,7 @@ import javax.annotation.Nullable;
       throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
         " does not exists or is not a 'value' node");
     }
+    stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).mValue = value;
     mUpdatedNodes.put(tag, node);
   }
@@ -206,6 +206,24 @@ import javax.annotation.Nullable;
     animation.mEndCallback = endCallback;
     animation.mAnimatedValue = (ValueAnimatedNode) node;
     mActiveAnimations.put(animationId, animation);
+  }
+
+  private void stopAnimationsForNode(AnimatedNode animatedNode) {
+    // in most of the cases there should never be more than a few active animations running at the
+    // same time. Therefore it does not make much sense to create an animationId -> animation
+    // object map that would require additional memory just to support the use-case of stopping
+    // an animation
+    for (int i = 0; i < mActiveAnimations.size(); i++) {
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
+      if (animatedNode.equals(animation.mAnimatedValue)) {
+        // Invoke animation end callback with {finished: false}
+        WritableMap endCallbackResponse = Arguments.createMap();
+        endCallbackResponse.putBoolean("finished", false);
+        animation.mEndCallback.invoke(endCallbackResponse);
+        mActiveAnimations.removeAt(i);
+        i--;
+      }
+    }
   }
 
   public void stopAnimation(int animationId) {
@@ -271,11 +289,7 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != -1) {
-      throw new JSApplicationIllegalArgumentException("Animated node " + animatedNodeTag + " is " +
-        "already attached to a view");
-    }
-    propsAnimatedNode.mConnectedViewTag = viewTag;
+    propsAnimatedNode.connectToView(viewTag);
     mUpdatedNodes.put(animatedNodeTag, node);
   }
 
@@ -290,11 +304,24 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != viewTag) {
-      throw new JSApplicationIllegalArgumentException("Attempting to disconnect view that has " +
-        "not been connected with the given animated node");
+    propsAnimatedNode.disconnectFromView(viewTag);
+  }
+
+  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
+    AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
+    // Restoring default values needs to happen before UIManager operations so it is
+    // possible the node hasn't been created yet if it is being connected and
+    // disconnected in the same batch. In that case we don't need to restore
+    // default values since it will never actually update the view.
+    if (node == null) {
+      return;
     }
-    propsAnimatedNode.mConnectedViewTag = -1;
+    if (!(node instanceof PropsAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
+        "of type " + PropsAnimatedNode.class.getName());
+    }
+    PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
+    propsAnimatedNode.restoreDefaultValues();
   }
 
   public void addAnimatedEventToView(int viewTag, String eventName, ReadableMap eventMapping) {
@@ -362,6 +389,7 @@ import javax.annotation.Nullable;
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {
+          stopAnimationsForNode(driver.mValueNode);
           event.dispatch(driver);
           mRunUpdateNodeList.add(driver.mValueNode);
         }
@@ -494,7 +522,7 @@ import javax.annotation.Nullable;
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
         try {
-          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+          ((PropsAnimatedNode) nextNode).updateView();
         } catch (IllegalViewOperationException e) {
             // An exception is thrown if the view hasn't been created yet. This can happen because views are
             // created in batches. If this particular view didn't make it into a batch yet, the view won't

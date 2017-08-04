@@ -466,6 +466,16 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  scrollResponderFlashScrollIndicators: function() {
+    invariant(ScrollViewManager && ScrollViewManager.flashScrollIndicators, 'flashScrollIndicators is not implemented');
+    ScrollViewManager.flashScrollIndicators(this.scrollResponderGetScrollableNode());
+  },
+
+  /**
    * This method should be used as the callback to onFocus in a TextInputs'
    * parent view. Note that any module using this mixin needs to return
    * the parent view's ref in getScrollViewRef() in order to use this method.

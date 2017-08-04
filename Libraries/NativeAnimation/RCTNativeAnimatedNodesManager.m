@@ -135,6 +135,22 @@
   }
 }
 
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  // Restoring default values needs to happen before UIManager operations so it is
+  // possible the node hasn't been created yet if it is being connected and
+  // disconnected in the same batch. In that case we don't need to restore
+  // default values since it will never actually update the view.
+  if (node == nil) {
+    return;
+  }
+  if (![node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+    RCTLogError(@"Not a props node.");
+  }
+  [(RCTPropsAnimatedNode *)node restoreDefaultValues];
+}
+
 - (void)dropAnimatedNode:(nonnull NSNumber *)tag
 {
   RCTAnimatedNode *node = _animationNodes[tag];
@@ -154,6 +170,7 @@
     RCTLogError(@"Not a value node.");
     return;
   }
+  [self stopAnimationsForNode:node];
 
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   valueNode.value = value.floatValue;
@@ -248,6 +265,20 @@
   }
 }
 
+- (void)stopAnimationsForNode:(nonnull RCTAnimatedNode *)node
+{
+    NSMutableArray<id<RCTAnimationDriver>> *discarded = [NSMutableArray new];
+    for (id<RCTAnimationDriver> driver in _activeAnimations) {
+        if ([driver.valueNode isEqual:node]) {
+            [discarded addObject:driver];
+        }
+    }
+    for (id<RCTAnimationDriver> driver in discarded) {
+        [driver stopAnimation];
+        [_activeAnimations removeObject:driver];
+    }
+}
+
 #pragma mark -- Events
 
 - (void)addAnimatedEventToView:(nonnull NSNumber *)viewTag
@@ -312,6 +343,7 @@
   NSMutableArray<RCTEventAnimation *> *driversForKey = _eventDrivers[key];
   if (driversForKey) {
     for (RCTEventAnimation *driver in driversForKey) {
+      [self stopAnimationsForNode:driver.valueNode];
       [driver updateWithEvent:event];
     }
 
