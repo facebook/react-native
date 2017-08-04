@@ -103,23 +103,23 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
   }]);
 }
 
-RCT_EXPORT_METHOD(getStatusBarOrientation:(RCTPromiseResolveBlock)resolve
-                                   reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getOrientation:(RCTPromiseResolveBlock)resolve
+                          reject:(RCTPromiseRejectBlock)reject)
 {
   NSDictionary *orientations = @{
-                   @(UIInterfaceOrientationPortrait): @"orientationPortrait",
-                   @(UIInterfaceOrientationPortraitUpsideDown): @"orientationPortraitUpsideDown",
-                   @(UIInterfaceOrientationLandscapeLeft): @"orientationLandscapeLeft",
-                   @(UIInterfaceOrientationLandscapeRight): @"orientationLandscapeRight"
-                   };
+                                 @(UIInterfaceOrientationPortrait): @"portrait",
+                                 @(UIInterfaceOrientationPortraitUpsideDown): @"portraitUpsideDown",
+                                 @(UIInterfaceOrientationLandscapeLeft): @"landscapeLeft",
+                                 @(UIInterfaceOrientationLandscapeRight): @"landscapeRight"
+                                 };
 
-  UIInterfaceOrientation statusBarOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
 
-  if (orientations[@(statusBarOrientation)]) {
-    resolve(orientations[@(statusBarOrientation)]);
+  if (orientations[@(currentOrientation)]) {
+    resolve(orientations[@(currentOrientation)]);
   }
   else {
-    reject(RCTErrorUnspecified, @"orientationUnknown: Unable to get a valid orientation of StatusBar", nil);
+    reject(RCTErrorUnspecified, @"unknown: Unable to get a valid orientation of StatusBar", nil);
   }
 }
 
