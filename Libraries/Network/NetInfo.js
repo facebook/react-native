@@ -70,7 +70,7 @@ if (Platform.OS === 'ios') {
   _isConnectedDeprecated = function(
       connectionType: ConnectivityStateAndroid,
     ): bool {
-    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
+    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN' && connectionType !== '';
   };
 }
 
