@@ -16,7 +16,7 @@
 
 #if RCT_DEV
 
-static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
+NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
 
@@ -239,7 +239,7 @@ RCT_EXPORT_MODULE()
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return (devSettings.isElementInspectorShown) ? @"Hide Inspector" : @"Show Inspector";
+    return @"Toggle Inspector";
   } handler:^{
     [devSettings toggleElementInspector];
   }]];

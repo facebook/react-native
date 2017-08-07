@@ -32,6 +32,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void hideRedboxDialog();
   void showDevOptionsDialog();
   void setDevSupportEnabled(boolean isDevSupportEnabled);
+  void startInspector();
+  void stopInspector();
   boolean getDevSupportEnabled();
   DeveloperSettings getDevSettings();
   void onNewReactContextCreated(ReactContext reactContext);

@@ -12,8 +12,8 @@
 
 var React = require('React');
 
-var RedirectLayout = React.createClass({
-  render: function() {
+class RedirectLayout extends React.Component {
+  render() {
     var destinationUrl = this.props.metadata.destinationUrl;
 
     return (
@@ -32,6 +32,6 @@ var RedirectLayout = React.createClass({
       </html>
     );
   }
-});
+}
 
 module.exports = RedirectLayout;

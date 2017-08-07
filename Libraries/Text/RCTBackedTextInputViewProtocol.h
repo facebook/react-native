@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol RCTBackedTextInputDelegate;
+
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 
 @property (nonatomic, copy, nullable) NSString *text;
@@ -19,5 +21,15 @@
 @property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
+@property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
+@property (nonatomic, readonly) CGSize contentSize;
+
+// This protocol disallows direct access to `selectedTextRange` property because
+// unwise usage of it can break the `delegate` behavior. So, we always have to
+// explicitly specify should `delegate` be notified about the change or not.
+// If the change was initiated programmatically, we must NOT notify the delegate.
+// If the change was a result of user actions (like typing or touches), we MUST notify the delegate.
+- (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange NS_UNAVAILABLE;
+- (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
 
 @end

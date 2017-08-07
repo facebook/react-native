@@ -20,7 +20,8 @@
 #import "UIView+React.h"
 
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
-NSString *const RCTJSPostMessageHost = @"postMessage";
+
+static NSString *const kPostMessageHost = @"postMessage";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
 
@@ -240,7 +241,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
-  if (isJSNavigation && [request.URL.host isEqualToString:RCTJSPostMessageHost]) {
+  if (isJSNavigation && [request.URL.host isEqualToString:kPostMessageHost]) {
     NSString *data = request.URL.query;
     data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -249,6 +250,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [event addEntriesFromDictionary: @{
       @"data": data,
     }];
+
+    NSString *source = @"document.dispatchEvent(new MessageEvent('message:received'));";
+
+    [_webView stringByEvaluatingJavaScriptFromString:source];
+
     _onMessage(event);
   }
 
@@ -300,10 +306,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
     #endif
     NSString *source = [NSString stringWithFormat:
-      @"window.originalPostMessage = window.postMessage;"
-      "window.postMessage = function(data) {"
-        "window.location = '%@://%@?' + encodeURIComponent(String(data));"
-      "};", RCTJSNavigationScheme, RCTJSPostMessageHost
+      @"(function() {"
+        "window.originalPostMessage = window.postMessage;"
+
+        "var messageQueue = [];"
+        "var messagePending = false;"
+
+        "function processQueue() {"
+          "if (!messageQueue.length || messagePending) return;"
+          "messagePending = true;"
+          "window.location = '%@://%@?' + encodeURIComponent(messageQueue.shift());"
+        "}"
+
+        "window.postMessage = function(data) {"
+          "messageQueue.push(String(data));"
+          "processQueue();"
+        "};"
+
+        "document.addEventListener('message:received', function(e) {"
+          "messagePending = false;"
+          "processQueue();"
+        "});"
+      "})();", RCTJSNavigationScheme, kPostMessageHost
     ];
     [webView stringByEvaluatingJavaScriptFromString:source];
   }

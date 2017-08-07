@@ -79,10 +79,6 @@ public:
 
   virtual void* getJavaScriptContext() override;
 
-  virtual bool supportsProfiling() override;
-  virtual void startProfiler(const std::string &titleString) override;
-  virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
-
 #ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
 #endif

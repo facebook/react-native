@@ -62,7 +62,6 @@ const ReactNative = {
 
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
-  get AdSupportIOS() { return require('AdSupportIOS'); },
   get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },

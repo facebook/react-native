@@ -197,7 +197,7 @@ public class DevSupportManagerImpl implements
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -885,6 +885,18 @@ public class DevSupportManagerImpl implements
         bundleURL);
   }
 
+  @Override
+  public void startInspector() {
+    if (mIsDevSupportEnabled) {
+      mDevServerHelper.openInspectorConnection();
+    }
+  }
+
+  @Override
+  public void stopInspector() {
+    mDevServerHelper.closeInspectorConnection();
+  }
+
   private void reload() {
     // reload settings, show/hide debug overlay if required & start/stop shake detector
     if (mIsDevSupportEnabled) {
@@ -914,7 +926,6 @@ public class DevSupportManagerImpl implements
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
-      mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -956,9 +967,7 @@ public class DevSupportManagerImpl implements
 
       // hide loading view
       mDevLoadingViewController.hide();
-
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

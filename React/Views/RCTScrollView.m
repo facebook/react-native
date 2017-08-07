@@ -214,9 +214,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)scrollRectToVisible:(__unused CGRect)rect animated:(__unused BOOL)animated
+- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
 {
-  // noop
+  // Limiting scroll area to an area where we actually have content.
+  CGSize contentSize = self.contentSize;
+  UIEdgeInsets contentInset = self.contentInset;
+  CGSize fullSize = CGSizeMake(
+    contentSize.width + contentInset.left + contentInset.right,
+    contentSize.height + contentInset.top + contentInset.bottom);
+
+  rect = CGRectIntersection((CGRect){CGPointZero, fullSize}, rect);
+  if (CGRectIsNull(rect)) {
+    return;
+  }
+
+  [super scrollRectToVisible:rect animated:animated];
 }
 
 /**
@@ -289,31 +301,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   super.contentOffset = contentOffset;
 }
 
-static inline BOOL isRectInvalid(CGRect rect) {
-  return isnan(rect.origin.x) || isinf(rect.origin.x) ||
-    isnan(rect.origin.y) || isinf(rect.origin.y) ||
-    isnan(rect.size.width) || isinf(rect.size.width) ||
-    isnan(rect.size.height) || isinf(rect.size.height);
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-  if (isRectInvalid(bounds)) {
-    RCTLogError(@"Attempted to set an invalid bounds to inner scrollview: %@", NSStringFromCGRect(bounds));
-    return;
-  }
-
-  [super setBounds:bounds];
-}
-
 - (void)setFrame:(CGRect)frame
 {
-  if (isRectInvalid(frame)) {
-    RCTLogError(@"Attempted to set an invalid frame to inner scrollview: %@", NSStringFromCGRect(frame));
-    return;
-  }
+  // Preserving and revalidating `contentOffset`.
+  CGPoint originalOffset = self.contentOffset;
 
   [super setFrame:frame];
+
+  UIEdgeInsets contentInset = self.contentInset;
+  CGSize contentSize = self.contentSize;
+  CGSize fullContentSize = CGSizeMake(
+    contentSize.width + contentInset.left + contentInset.right,
+    contentSize.height + contentInset.top + contentInset.bottom);
+
+  CGSize boundsSize = self.bounds.size;
+
+  self.contentOffset = CGPointMake(
+    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
+    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
 }
 
 #if !TARGET_OS_TV
@@ -349,9 +354,22 @@ static inline BOOL isRectInvalid(CGRect rect) {
 
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
+
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
+    // We set the default behavior to "never" so that iOS
+    // doesn't do weird things to UIScrollView insets automatically
+    // and keeps it as an opt-in behavior.
+    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+#endif
+
     _automaticallyAdjustContentInsets = YES;
     _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
@@ -453,10 +471,6 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   [super layoutSubviews];
   RCTAssert(self.subviews.count == 1, @"we should only have exactly one subview");
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
-
-  CGPoint originalOffset = _scrollView.contentOffset;
-  _scrollView.frame = self.bounds;
-  _scrollView.contentOffset = originalOffset;
 
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
@@ -760,7 +774,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   [self scrollViewDidScroll:scrollView];
 
   // Fire the end deceleration event
-  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd?
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndScrollingAnimation:scrollView);
 }
 
@@ -898,6 +912,18 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
+{
+  // `contentInsetAdjustmentBehavior` is available since iOS 11.
+  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+    CGPoint contentOffset = _scrollView.contentOffset;
+    _scrollView.contentInsetAdjustmentBehavior = behavior;
+    _scrollView.contentOffset = contentOffset;
+  }
+}
+#endif
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView
