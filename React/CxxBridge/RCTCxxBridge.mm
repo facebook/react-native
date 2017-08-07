@@ -1164,8 +1164,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
   __block JSValue *ret = nil;
   NSError *errorObj = tryAndReturnError(^{
-    Value result = self->_reactInstance->callFunctionSync(
-      [module UTF8String], [method UTF8String], arguments);
+    Value result = self->_reactInstance->callFunctionSync([module UTF8String], [method UTF8String], (id)arguments);
     JSContext *context = contextForGlobalContextRef(JSC_JSContextGetGlobalContext(result.context()));
     ret = [JSC_JSValue(result.context()) valueWithJSValueRef:result inContext:context];
   });
