@@ -317,8 +317,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGSize boundsSize = self.bounds.size;
 
   self.contentOffset = CGPointMake(
-    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
-    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
+    MAX(-contentInset.left, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
+    MAX(-contentInset.top, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
 }
 
 #if !TARGET_OS_TV
