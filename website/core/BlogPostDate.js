@@ -13,8 +13,8 @@
 
 var React = require('React');
 
-var BlogPostDate = React.createClass({
-  render: function() {
+class BlogPostDate extends React.Component {
+  render() {
     var post = this.props.post;
 
     var match = post.publishedAt.match(/([0-9]+)-([0-9]+)-([0-9]+)/);
@@ -32,6 +32,6 @@ var BlogPostDate = React.createClass({
       <time className="date" datetime={post.publishedAt}>{postedOnDate}</time>
     );
   }
-});
+}
 
 module.exports = BlogPostDate;

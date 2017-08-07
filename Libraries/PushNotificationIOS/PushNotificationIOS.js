@@ -128,7 +128,7 @@ class PushNotificationIOS {
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
-  _remoteNotificationCompleteCalllbackCalled: boolean;
+  _remoteNotificationCompleteCallbackCalled: boolean;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
@@ -159,6 +159,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertTitle` : The text displayed as the title of the notification alert.
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
@@ -406,7 +407,7 @@ class PushNotificationIOS {
    */
   constructor(nativeNotif: Object) {
     this._data = {};
-    this._remoteNotificationCompleteCalllbackCalled = false;
+    this._remoteNotificationCompleteCallbackCalled = false;
     this._isRemote = nativeNotif.remote;
     if (this._isRemote) {
       this._notificationId = nativeNotif.notificationId;
@@ -451,10 +452,10 @@ class PushNotificationIOS {
    * be throttled, to read more about it see the above documentation link.
    */
   finish(fetchResult: FetchResult) {
-    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
+    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
       return;
     }
-    this._remoteNotificationCompleteCalllbackCalled = true;
+    this._remoteNotificationCompleteCallbackCalled = true;
 
     RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
   }

@@ -29,9 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(onNavigationProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onNavigationComplete, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(interactivePopGestureEnabled, BOOL)
 
-// TODO: remove error callbacks
 RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag
-                  errorCallback:(__unused RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:

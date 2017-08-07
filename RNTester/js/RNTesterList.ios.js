@@ -74,6 +74,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'MaskedViewExample',
+    module: require('./MaskedViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ModalExample',
     module: require('./ModalExample'),
     supportsTVOS: true,
@@ -195,11 +200,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'ActionSheetIOSExample',
     module: require('./ActionSheetIOSExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'AdSupportIOSExample',
-    module: require('./AdSupportIOSExample'),
-    supportsTVOS: false,
   },
   {
     key: 'AlertExample',
@@ -334,6 +334,11 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'TransformExample',
     module: require('./TransformExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'TVEventHandlerExample',
+    module: require('./TVEventHandlerExample'),
     supportsTVOS: true,
   },
   {

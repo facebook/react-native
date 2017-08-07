@@ -13,6 +13,7 @@
 const blacklist = require('metro-bundler/src/blacklist');
 const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
+const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
@@ -24,7 +25,6 @@ import type {
   GetTransformOptions,
   PostMinifyProcess,
   PostProcessModules,
-  // $FlowFixMe: Exported by metro bundler
   PostProcessBundleSourcemap
 } from 'metro-bundler/src/Bundler';
 import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
@@ -50,10 +50,17 @@ export type ConfigT = {
   getBlacklistRE(): RegExp,
 
   /**
+   * Specify whether or not to enable Babel's behavior for looking up .babelrc
+   * files. If false, only the .babelrc file (if one exists) in the main project
+   * root is used.
+   */
+  getEnableBabelRCLookup(): boolean,
+
+  /**
    * Specify any additional polyfill modules that should be processed
    * before regular module loading.
    */
- getPolyfillModuleNames: () => Array<string>,
+  getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
@@ -89,6 +96,12 @@ export type ConfigT = {
    * Returns the path to the worker that is used for transformation.
    */
   getWorkerPath: () => ?string,
+
+  /**
+   * An optional list of polyfills to include in the bundle. The list defaults
+   * to a set of common polyfills for Number, String, Array, Object...
+   */
+  getPolyfills: ({platform: ?string}) => $ReadOnlyArray<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -158,6 +171,7 @@ const Config = {
     extraNodeModules: Object.create(null),
     getAssetExts: () => [],
     getBlacklistRE: () => blacklist(),
+    getEnableBabelRCLookup: () => true,
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
     getProjectRoots: () => {
@@ -171,6 +185,7 @@ const Config = {
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
+    getPolyfills,
     postMinifyProcess: x => x,
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
@@ -222,7 +237,7 @@ const Config = {
   },
 
   loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
-    //$FlowFixMe: necessary dynamic require
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
     return {...defaults, ...config};
   },
