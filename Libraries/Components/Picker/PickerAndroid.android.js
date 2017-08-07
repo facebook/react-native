@@ -38,7 +38,7 @@ type Event = Object;
  */
 class PickerAndroid extends React.Component {
   props: {
-    style?: $FlowFixMe,
+    style?: pickerStyleType,
     selectedValue?: any,
     enabled?: boolean,
     mode?: 'dialog' | 'dropdown',

@@ -26,6 +26,8 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 
+const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
 var pickerStyleType = StyleSheetPropType({
   ...ViewStylePropTypes,
   color: ColorPropType,
@@ -84,12 +86,12 @@ class PickerItem extends React.Component {
  */
 class Picker extends React.Component {
  props: {
-  style?: $FlowFixMe,
+  style?: pickerStyleType,
   selectedValue?: any,
   onValueChange?: Function,
   enabled?: boolean,
   mode?: 'dialog' | 'dropdown',
-  itemStyle?: $FlowFixMe,
+  itemStyle?: stylePropType,
   prompt?: string,
   testID?: string,
  };
