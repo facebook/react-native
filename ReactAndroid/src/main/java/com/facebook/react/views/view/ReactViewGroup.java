@@ -147,13 +147,13 @@ public class ReactViewGroup extends ViewGroup implements
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
-    super.setBackground(null);
+    super.setBackgroundDrawable(null);
     if (mReactBackgroundDrawable != null && background != null) {
       LayerDrawable layerDrawable =
           new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, background});
-      super.setBackground(layerDrawable);
+      super.setBackgroundDrawable(layerDrawable);
     } else if (background != null) {
-      super.setBackground(background);
+      super.setBackgroundDrawable(background);
     }
   }
 
@@ -555,14 +555,14 @@ public class ReactViewGroup extends ViewGroup implements
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      super.setBackgroundDrawable(null);  // required so that drawable callback is cleared before we add the
                                   // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        super.setBackgroundDrawable(mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        super.setBackgroundDrawable(layerDrawable);
       }
     }
     return mReactBackgroundDrawable;

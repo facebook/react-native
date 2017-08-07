@@ -17,7 +17,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.util.LayoutDirection;
+import android.os.Build;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -67,7 +67,9 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @ReactProp(name = "rtl")
   public void setRtl(ReactToolbar view, boolean rtl) {
-    view.setLayoutDirection(rtl ? LayoutDirection.RTL : LayoutDirection.LTR);
+    if (Build.VERSION.SDK_INT >= 17) {
+      view.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+    }
   }
 
   @ReactProp(name = "subtitle")

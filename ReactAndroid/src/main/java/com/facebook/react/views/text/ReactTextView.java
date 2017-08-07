@@ -268,14 +268,14 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      super.setBackgroundDrawable(null);  // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        super.setBackgroundDrawable(mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
                 new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        super.setBackgroundDrawable(layerDrawable);
       }
     }
     return mReactBackgroundDrawable;
