@@ -60,7 +60,7 @@ export type ConfigT = {
    * Specify any additional polyfill modules that should be processed
    * before regular module loading.
    */
- getPolyfillModuleNames: () => Array<string>,
+  getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
