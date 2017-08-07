@@ -83,7 +83,7 @@ next: tutorial
   }
 </style>
 
-This page will help you install and build your first React Native app. If you already have React Native installed, you can skip ahead to the [Tutorial](docs/tutorial.html).
+이 페이지는 여러분이 첫 React Native 앱을 설치하고 빌드하는 데 도움을 드리기 위한 페이지입니다. React Native가 이미 설치되어 있으시다면, 바로 [Tutorial](docs/tutorial.html)로 넘어가셔도 좋습니다.
 
 <div class="toggler">
   <ul role="tablist" >
@@ -91,22 +91,23 @@ This page will help you install and build your first React Native app. If you al
       Quick Start
     </li>
     <li id="native" class="button-native" aria-selected="false" role="tab" tabindex="-1" aria-controls="nativetab" onclick="displayTab('guide', 'native')">
-      Building Projects with Native Code
+      네이티브 환경에서 프로젝트 빌드하기
     </li>
   </ul>
 </div>
 
 <block class="quickstart mac windows linux ios android" />
 
-[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code - no Xcode or Android Studio installation required (see [Caveats](docs/getting-started.html#caveats)).
+새로운 React Native 애플리케이션을 만드는 가장 쉬운 방법은 React Community에 소개된 
+[Create React Native App](https://github.com/react-community/create-react-native-app) 페이지를 참고하여 진행하는 것입니다. 어떠한 프로그램의 설치나 환경설정 없이도 새 프로젝트를 시작할 수 있습니다 - Xcode 혹은 Android Studio를 설치할 필요가 없습니다. (하지만 반드시 [주의사항](docs/getting-started.html#주의사항)을 숙지하세요)
 
-Assuming that you have [Node](https://nodejs.org/en/download/) installed, you can use npm to install the `create-react-native-app` command line utility:
+컴퓨터에 [Node](https://nodejs.org/en/download/)가 설치되어 있다면, command line 유틸리티(터미널 등)에 다음과 같이 입력하세요:
 
 ```
 npm install -g create-react-native-app
 ```
 
-Then run the following commands to create a new React Native project called "AwesomeProject":
+그런 다음 "AwesomeProject"라는 새로운 React Native 프로젝트 생성을 위해 다음과 같이 입력하세요:
 
 ```
 create-react-native-app AwesomeProject
@@ -115,178 +116,177 @@ cd AwesomeProject
 npm start
 ```
 
-This will start a development server for you, and print a QR code in your terminal.
+개발 서버가 시작되고, 터미널에 QR코드가 출력될 것입니다.
 
-## Running your React Native application
+## React Native 어플리케이션 실행하기
 
-Install the [Expo](https://expo.io) client app on your iOS or Android phone and connect to the same wireless network as your computer. Using the Expo app, scan the QR code from your terminal to open your project.
+iOS 또는 Android 스마트폰에 [Expo](https://expo.io) 클라이언트 앱을 설치하고 컴퓨터와 동일한 무선 네트워크에 연결합니다. [Expo](https://expo.io) 앱을 통해 터미널에서 QR코드를 스캔하여 프로젝트를 엽니다.
 
-### Modifying your app
+### 앱 수정하기
 
-Now that you have successfully run the app, let's modify it. Open `App.js` in your text editor of choice and edit some lines. The application should reload automatically once you save your changes.
+앱을 성공적으로 실행했으므로, 이제 원하는 대로 수정해봅시다. 텍스트 에디터를 통해 `App.js`를 열고 코드를 수정합니다. 변경 사항을 저장하면 앱이 자동으로 다시 로드됩니다.
 
-### That's it!
+### 끝났습니다!
 
-Congratulations! You've successfully run and modified your first React Native app.
+축하합니다! 당신은 방금 첫 번째 React Native 앱을 성공적으로 실행하고 수정까지 하셨습니다!
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-## Now what?
+## 이제는 무엇을 해야할까요?
 
-- Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
+- Create React Native App은 특정 도구들에 대해 궁금한 점이 있을 때 참고할 수 있는 [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md)가 있습니다.
 
-- If you can't get this to work, see the [Troubleshooting](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting) section in the README for Create React Native App.
+- [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md)에서도 해결되지 않는 문제라면, [Troubleshooting](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting) 페이지에서 Create React Native App에 대한 README를 읽어보세요.
 
-If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
+React Native에 대해 더 많이 배우고 싶다면, [Tutorial](docs/tutorial.html)에서 계속 진행하세요.
 
-### Running your app on a simulator or virtual device
+### 만든 앱을 시뮬레이터나 가상 장치에서 실행하기
 
-Create React Native App makes it really easy to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for building projects with native code to learn how to install Xcode and set up your Android development environment.
+Create React Native App은 별도의 개발 환경 없이 실제 장치에서 React Native 앱을 쉽게 실행해볼 수 있도록 도와줍니다. 앱을 iOS 시뮬레이터나 Android 가상 장치에서 실행하고 싶다면, 네이티브 코드로 프로젝트를 빌드하는 방법을 설명한 지침서를 참조하세요. Xcode를 설치하고 Android 개발 환경을 설정하는 과정이 필요하기 때문입니다.
 
-Once you've set these up, you can launch your app on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
+위와 같은 과정을 한 번만 거치면 `npm run android`라는 명령어를 통해서 Android 가상 장치 위에 자신이 만든 앱을 실제로 올려볼 수 있습니다. iOS 시뮬레이터의 경우에는 `npm run ios` 명령어를 통해 실행 가능합니다. (단, iOS 시뮬레이터는 macOS에서만 실행이 가능합니다.)
 
-### Caveats
+### 주의사항
 
-Because you don't build any native code when using Create React Native App to create a project, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
+Create React Native App을 사용하면 네이티브 코드를 전혀 사용하지 않기 때문에 React Native API 및 Expo 클라이언트에서 사용하는 컴포넌트 이외에, 사용자들이 별도로 만든 custom 모듈은 사용할 수 없습니다.
 
-If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the "Building Projects with Native Code" instructions will be required to continue working on your project.
+Create React Native App을 통해 프로젝트를 시작하는 방법은 추후 네이티브 코드 작성이 필요하더라도 큰 문제가 없습니다. 대신 그런 경우에는 네이티브 코드 작성을 위해 "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" 과정을 거쳐야합니다. Eject 과정 숙지를 위해서는 "네이티브 환경에서 프로젝트 빌드하기" 지침서를 참고하는 것이 좋습니다.
 
-Create React Native App configures your project to use the most recent React Native version that is supported by the Expo client app. The Expo client app usually gains support for a given React Native version about a week after the React Native version is released as stable. You can check [this document](https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md) to find out what versions are supported.
+Create React Native App은 Expo 클라이언트 앱에서 지원되는 가장 최근 버전의 React Native를 사용하기 위해 프로젝트를 설정을 변경합니다. Expo 클라이언트 앱은 일반적으로 React Native 안정화 버전이 나오고 약 1주일 후부터 해당 버전에 대한 지원을 받습니다. [버전](https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md)문서에서 어떤 버전이 지원되는지 확인할 수 있습니다.
 
-If you're integrating React Native into an existing project, you'll want to skip Create React Native App and go directly to setting up the native build environment. Select "Building Projects with Native Code" above for instructions on configuring a native build environment for React Native.
+기존 프로젝트에 React Native를 통합하고 싶은 경우에, Create React Native App을 생략하고 바로 네이티브 빌드 환경을 구축하는 것이 가능합니다. React Native의 네이티브 빌드 환경 구성방법에 대한 자세한 내용은 "네이티브 환경에서 프로젝트 빌드하기" 지침서를 참고하세요.
 
 <block class="native mac windows linux ios android" />
 
-<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
+<p>프로젝트 내에서 네이티브 코드 작성이 필요하다면 이 지침서를 따르세요. 예를 들어 기존 어플리케이션에 React Native를 포함시키는 경우, 또는 Create React Native App에서 "eject"된 상태인 경우에 이 지침서가 필요합니다.</p>
 
-The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
-one to start with, since the setup is a bit different.
+개발 환경 및 운영체제에 따라서, iOS용 혹은 Android용으로 개발을 시작할 것인지에 따라서 과정에 약간의 차이가 있습니다. iOS와 Android를 동시에 개발하는 경우에는 먼저 어떤 것부터 시작할 것인지만 선택하세요.
 
 <div class="toggler">
-  <span>Development OS:</span>
+  <span>개발환경:</span>
   <a href="javascript:void(0);" class="button-mac" onclick="displayTab('os', 'mac')">macOS</a>
   <a href="javascript:void(0);" class="button-windows" onclick="displayTab('os', 'windows')">Windows</a>
   <a href="javascript:void(0);" class="button-linux" onclick="displayTab('os', 'linux')">Linux</a>
-  <span>Target OS:</span>
+  <span>앱 OS:</span>
   <a href="javascript:void(0);" class="button-ios" onclick="displayTab('platform', 'ios')">iOS</a>
   <a href="javascript:void(0);" class="button-android" onclick="displayTab('platform', 'android')">Android</a>
 </div>
 
 <block class="native linux windows ios" />
 
-## Unsupported
+## 미지원
 
-<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
+<blockquote><p>네이티브 코드를 통하여 iOS용으로 작성된 프로젝트를 빌드하기 위해서는 반드시 Mac이 필요합니다. 네이티브 코드가 필요하지 않다면 <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Quick Start</a>에서 Create React Native App을 통해 어떻게 앱을 빌드할 수 있는지 배울 수 있습니다.</p></blockquote>
+
 
 <block class="native mac ios" />
 
-## Installing dependencies
+## 사전 설치
 
-You will need Node, Watchman, the React Native command line interface, and Xcode.
+Node, Watchman, React Native command line interface, 그리고 Xcode가 필요합니다.
 
-While you can use any editor of your choice to develop your app, you will need to install Xcode in order to set up the necessary tooling to build your React Native app for iOS.
+자신이 원하는 에디터를 사용해 앱을 개발할 수도 있지만, iOS용 React Native 앱을 빌드할 때 꼭 필요한 도구들 사용하려면 결국 Xcode가 필요하게 됩니다.
 
 <block class="native mac android" />
 
-## Installing dependencies
+## 사전 설치
 
-You will need Node, Watchman, the React Native command line interface, a JDK, and Android Studio.
+Node, Watchman, React Native command line interface, JDK, 그리고 Android Studio가 필요합니다.
 
 <block class="native linux android" />
 
-## Installing dependencies
+## 사전 설치
 
-You will need Node, the React Native command line interface, a JDK, and Android Studio.
+Node, React Native command line interface, JDK, 그리고 Android Studio가 필요합니다.
 
 <block class="native windows android" />
 
-## Installing dependencies
+## 사전 설치
 
-You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
+Node, React Native command line interface, Python2, JDK 그리고 Android Studio가 필요합니다.
 
 <block class="native mac windows linux android" />
 
-While you can use any editor of your choice to develop your app, you will need to install Android Studio in order to set up the necessary tooling to build your React Native app for Android.
+자신이 원하는 에디터를 사용해 앱을 개발할 수도 있지만, Android용 React Native 앱을 빌드할 때 꼭 필요한 도구들 사용하려면 결국 Android Studio가 필요하게 됩니다.
 
 <block class="native mac ios android" />
 
 ### Node, Watchman
 
-We recommend installing Node and Watchman using [Homebrew](http://brew.sh/). Run the following commands in a Terminal after installing Homebrew:
+Node와 Watchman은 [Homebrew](http://brew.sh/)를 통해 설치하는 방법을 권장합니다. Homebrew가 설치되었다면 Node와 Watchman을 설치하기 위해 다음과 같이 입력하세요:
 
 ```
 brew install node
 brew install watchman
 ```
 
-If you have already installed Node on your system, make sure it is version 4 or newer.
+이미 Node가 설치되어 있는 경우, Node의 버전이 4 이상인지 꼭 확인해보세요.
 
-[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.
+Facebook이 만든 [Watchman](https://facebook.github.io/watchman)은 파일 시스템의 변화를 모니터링하는 도구입니다. 더 나은 퍼포먼스를 위해 설치할 것을 강력히 권장합니다.
 
 <block class="native linux android" />
 
 ### Node
 
-Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node 6 or newer.
+Node 버전 6(혹은 더 최신버전)을 설치하기 위해 [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/)를 참고하세요.
 
 <block class='native windows android' />
 
 ### Node, Python2, JDK
 
-We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows.
+Node와 Python은 Windows의 package manager인 [Chocolatey](https://chocolatey.org)를 통해 설치하는 방법을 권장합니다.
 
-React Native also requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), as well as Python 2. Both can be installed using Chocolatey.
+최신 버전의 [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)와 Python 2 설치 또한 필요합니다. 마찬가지로 Chocolatey를 통해 설치할 수 있습니다.
 
-Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following command:
+관리자 권한을 통해 명령 프롬프트를 열고(명령 프롬프트에 오른쪽 마우스 버튼을 눌러 "관리자 권한으로 실행"을 선택), 다음과 같이 입력하세요: 
 
 ```powershell
 choco install -y nodejs.install python2 jdk8
 ```
 
-If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
+이미 Node가 설치되어 있는 경우, Node의 버전이 4 이상인지 꼭 확인해보세요. JDK의 경우에는 8 이상의 버전이 필요합니다.
 
-> You can find additional installation options on [Node's Downloads page](https://nodejs.org/en/download/).
+> Node의 추가적인 설치 옵션을 확인하려면 [Node's Downloads page](https://nodejs.org/en/download/)페이지를 참고하세요.
 
 <block class="native mac ios android" />
 
 ### The React Native CLI
 
-Node comes with npm, which lets you install the React Native command line interface.
+Node는 npm과 함께 제공되며, React Native command line interface(CLI) 설치가 가능해집니다.
 
-Run the following command in a Terminal:
+React Native CLI 설치를 위해 터미널에서 다음과 같이 입력하세요:
 
 ```
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
+> `Cannot find module 'npmlog'`라는 에러가 발생한다면, 다음 명령어를 통해 npm을 바로 설치하세요: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="native windows linux android" />
 
 ### The React Native CLI
 
-Node comes with npm, which lets you install the React Native command line interface.
+Node는 npm과 함께 제공되며, React Native command line interface(CLI) 설치가 가능해집니다.
 
-Run the following command in a Command Prompt or shell:
+React Native CLI 설치를 위해 명령 프롬프트 또는 쉘에서 다음과 같이 입력하세요:
 
 ```powershell
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
+> `Cannot find module 'npmlog'`라는 에러가 발생한다면, 다음 명령어를 통해 npm을 바로 설치하세요: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="native mac ios" />
 
 ### Xcode
 
-The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.
+Xcode는 [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12)를 통해 설치하는 방법이 가장 쉽고 간단합니다. Xcode를 설치함으로써 iOS 시뮬레이터와 iOS용 앱을 빌드하기 위한 모든 필수 도구들을 설치할 수 있습니다.
 
-If you have already installed Xcode on your system, make sure it is version 8 or higher.
+이미 Xcode가 설치되어 있는 경우, Xcode의 버전이 8 이상인지 꼭 확인해보세요.
 
 #### Command Line Tools
 
-You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+Xcode를 설치하고 나면, 추가적으로 Xcode Command Line Tools에 대한 설정이 필요합니다. Xcode를 열고, 메뉴의 "Preferences..."를 선택하세요. Locations 탭의 Command Line Tools 드롭다운에서 가장 최신 버전의 도구를 선택(필요한 경우 설치)하면 됩니다.
 
 ![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
 
@@ -294,19 +294,19 @@ You will also need to install the Xcode Command Line Tools. Open Xcode, then cho
 
 ### Java Development Kit
 
-React Native requires a recent version of the Java SE Development Kit (JDK). [Download and install JDK 8 or newer](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) if needed.
+React Native는 최신 버전의 Java SE Development Kit (JDK)가 필요합니다. 설치되어 있지 않은 경우 [여기](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)에서 버전 8 혹은 더 최신 버전을 다운로드 받으세요.
 
 <block class="native mac linux windows android" />
 
-### Android development environment
+### Android 개발 환경
 
-Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
+Android 개발 환경을 새로 구축해봅시다. 이미 Android 개발에 익숙하더라도, React Native 프로젝트를 위해 몇 가지 설정해야 할 것들이 있습니다. 초보자든 숙련자든, 다음의 몇 가지 과정을 차근차근 주의 깊게 따라오셔야 합니다.
 
 <block class="native mac windows linux android" />
 
-#### 1. Install Android Studio
+#### 1. Android Studio 설치하기
 
-[Download and install Android Studio](https://developer.android.com/studio/index.html). Choose a "Custom" setup when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
+[Android Studio](https://developer.android.com/studio/index.html)를 다운로드 및 설치하시기 바랍니다. 설치 유형을 선택하라는 메시지가 표시되면, "custom"를 선택하세요. 그리고 체크박스에서 다음 항목들이 체크되어 있는지 확인하세요:
 
 <block class="native mac windows android" />
 
@@ -323,17 +323,17 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="native mac windows linux android" />
 
-Then, click "Next" to install all of these components.
+그 다음, "Next"을 클릭하여 위 컴포넌트들을 모두 설치하세요.
 
-> If the checkboxes are grayed out, you will have a chance to install these components later on.
+> 현재 선택 불가능한 상태여도 괜찮습니다. 나중에 다시 설치할 수 있습니다.
 
-Once setup has finalized and you're presented with the Welcome screen, proceed to the next step.
+일단 설치가 완료되고 Welcome 페이지가 등장하면, 다음 단계로 넘어가세요.
 
-#### 2. Install the Android SDK
+#### 2. Android SDK 설치하기
 
-Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the `Android 6.0 (Marshmallow)` SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio.
+Android Studio는 기본적으로 가장 최신 버전의 Android SDK를 설치하게 되어 있습니다. 하지만 네이티브 코드로 React Native 앱을 빌드하는 경우, `Android 6.0 (Marshmallow)` SDK가 부분적으로 필요하게 됩니다. 추가적인 Android SDK 설치는 Android Studio의 SDK Manager를 통해 설치할 수 있습니다.
 
-The SDK Manager can be accessed from the "Welcome to Android Studio" screen. Click on "Configure", then select "SDK Manager".
+SDK Manager는 "Welcome to Android Studio" 스크린에서 접근이 가능합니다. "Configure"을 클릭하고 "SDK Manager"를 선택하세요.
 
 <block class="native mac android" />
 
@@ -345,9 +345,9 @@ The SDK Manager can be accessed from the "Welcome to Android Studio" screen. Cli
 
 <block class="native mac windows linux android" />
 
-> The SDK Manager can also be found within the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> SDK Manager는 Android Studio "Preferences" 메뉴 안의 **Appearance & Behavior** → **System Settings** → **Android SDK** 에서도 설정이 가능합니다.
 
-Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
+SDK Manager에서 "SDK Platforms" 탭을 선택하면 오른쪽 하단에 "Show Package Details"가 보입니다. 체크하면 `Android 6.0 (Marshmallow)`의 세부 항목들이 나타나게 되는데, 이 때 다음 항목들이 제대로 체크되어 있는지 확인하세요:
 
 - `Google APIs`
 - `Android SDK Platform 23`
@@ -364,7 +364,7 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 
 <block class="native windows mac linux android" />
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build-Tools" entry, then make sure that `23.0.1` is selected.
+다음으로, "SDK Tools" 탭을 선택하고 마찬가지로 "Show Package Details"를 체크해줍니다. 이 때 "Android SDK Build-Tools"의 세부 항목들 중에서 `23.0.1`이 체크되어 있는지 확인하세요.
 
 <block class="native mac android" />
 
@@ -376,7 +376,7 @@ Next, select the "SDK Tools" tab and check the box next to "Show Package Details
 
 <block class="native windows mac linux android" />
 
-Finally, click "Apply" to download and install the Android SDK and related build tools.
+마지막으로, "Apply"를 클릭하면 Android SDK와 그와 관련된 빌드 도구들을 다운로드하고 설치하게 됩니다.
 
 <block class="native mac android" />
 
@@ -388,13 +388,13 @@ Finally, click "Apply" to download and install the Android SDK and related build
 
 <block class="native mac windows linux android" />
 
-#### 3. Configure the ANDROID_HOME environment variable
+#### 3. ANDROID_HOME 환경변수 설정하기
 
-The React Native tools require some environment variables to be set up in order to build apps with native code.
+React Native 도구들은 네이티브 코드로 앱을 빌드하기 위한 환경변수 설정이 필요합니다.
 
 <block class="native mac linux android" />
 
-Add the following lines to your `$HOME/.bash_profile` config file:
+`$HOME/.bash_profile`에 다음 행을 추가하세요:
 
 <block class="native mac android" />
 
@@ -414,80 +414,80 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 <block class="native mac linux android" />
 
-> `.bash_profile` is specific to `bash`. If you're using another shell, you will need to edit the appropriate shell-specific config file.
+> `.bash_profile` 파일 수정은 `bash` shell을 사용하는 경우로 한정됩니다. 다른 종류의 shell을 사용하신다면, 그 shell에 맞는 설정 파일을 수정하셔야 합니다.
 
-Type `source $HOME/.bash_profile` to load the config into your current shell. Verify that ANDROID_HOME has been added to your path by running `echo $PATH`.
+`source $HOME/.bash_profile`를 입력하여 설정 파일을 현재 shell에 로드하세요. `echo $PATH` 명령어를 실행하여 ANDROID_HOME이 정상적으로 출력이 되는지 확인하세요.
 
-> Please make sure you use the correct Android SDK path. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> 반드시 적절한 Android SDK 경로를 지정했는지 확인해야합니다. 실제 SDK의 설치 경로는 Android Studio "Preferences" 메뉴에서 **Appearance & Behavior** → **System Settings** → **Android SDK**를 차례로 따라가면 확인할 수 있습니다.
 
 <block class="native windows android" />
 
-Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK:
+제어판에서 시스템 및 보안 탭의 **시스템**을 열고, 왼쪽 메뉴에서 **고급 시스템 설정**을 클릭하세요. **고급** 탭을 선택하고 맨 아래에 **환경변수...**를 클릭합니다. 그런 다음 사용자 변수에 있는 **새로 만들기**를 눌러 변수 이름에는 `ANDROID_HOME` 을 입력하고, 변수 값에는 Android SDK의 경로를 입력해줍니다. 
 
 ![ANDROID_HOME Environment Variable](img/AndroidEnvironmentVariableANDROID_HOME.png)
 
-The SDK is installed, by default, at the following location:
+SDK는 기본 설치 경로는 다음과 같습니다:
 
 ```powershell
 c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
 ```
 
-You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+실제 SDK의 설치 경로는 Android Studio "Preferences" 메뉴에서 **Appearance & Behavior** → **System Settings** → **Android SDK**를 차례로 따라가면 확인할 수 있습니다.
 
-Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.
+다음 단계로 넘어가기 전에, 새 명령 프롬프트 창을 열고 새 환경 변수가 로드되었는지 확인해주시기 바랍니다.
+
 
 <block class="native linux android" />
 
-### Watchman (optional)
+### Watchman (선택사항)
 
-Follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#build-install) to compile and install Watchman from source.
+[Watchman 설치 가이드](https://facebook.github.io/watchman/docs/install.html#build-install)를 참고하여 Watchman을 컴파일하고 설치하세요.
 
-> [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
-changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
+> [Watchman](https://facebook.github.io/watchman/docs/install.html)은 파일시스템의 변화를 체크하기 위해 페이스북에서 만든 도구입니다. 더 나은 퍼포먼스를 위해 Watchman 설치를 강력히 추천합니다.
 
 <block class="native mac ios" />
 
-## Creating a new application
+## 새로운 어플리케이션 만들기
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
-
-```
-react-native init AwesomeProject
-```
-
-This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding iOS support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
-
-<block class="native mac windows linux android" />
-
-## Creating a new application
-
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+React Native CLI에 다음과 같이 입력하여 "AwesomeProject"라는 새 프로젝트를 만들어 보세요:
 
 ```
 react-native init AwesomeProject
 ```
 
-This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding Android support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
+기존 어플리케이션에 React Native를 통합하려는 경우, Create React Native App에서 "eject"된 경우, React Native 프로젝트에 iOS 네이티브 기능을 추가하려는 경우([Platform Specific Code](docs/platform-specific-code.html)를 참고)에는 생략해도 됩니다.
 
 <block class="native mac windows linux android" />
 
-## Preparing the Android device
+## 새로운 어플리케이션 만들기
 
-You will need an Android device to run your React Native Android app. This can be either a physical Android device, or more commonly, you can use an Android Virtual Device which allows you to emulate an Android device on your computer.
+React Native command line interface에 다음과 같이 입력하여 "AwesomeProject"라는 새 프로젝트를 만들어 보세요:
 
-Either way, you will need to prepare the device to run Android apps for development.
+```
+react-native init AwesomeProject
+```
 
-### Using a physical device
+기존 어플리케이션에 React Native를 통합하려는 경우, Create React Native App에서 "eject"된 경우, React Native 프로젝트에 Android 네이티브 기능을 추가하려는 경우([Platform Specific Code](docs/platform-specific-code.html)를 참고)에는 생략해도 됩니다.
 
-If you have a physical Android device, you can use it for development in place of an AVD by plugging it in to your computer using a USB cable and following the instructions [here](docs/running-on-device.html).
+<block class="native mac windows linux android" />
 
-### Using a virtual device
+## Android 장치 준비하기
 
-You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio. Look for an icon that looks like this:
+React Native Android 앱을 실행하기 위해서는 Android 장치가 필요합니다. 실제 Android 장치를 사용할 수도 있지만, 컴퓨터에서 Android 가상 장치를 에뮬레이트하여 테스트 하기도 합니다.
+
+어쨌거나, Android 앱 개발을 위해서는 어떠한 형태로든 Android 장치가 필요하다는 사실!
+
+### 실제 Android 장치 사용하기
+
+실제 Android 장치가 있으시다면, 장치를 USB 케이블을 통해 컴퓨터에 연결하고 [이 지침서](docs/running-on-device.html)를 참고하여 Android 앱 개발에 사용할 수 있습니다.
+
+### 가상 Android 장치 사용하기
+
+Android Studio에서 "AVD Manager"를 열면 사용 가능한 Android 가상 장치(AVD)의 목록을 확인할 수 있습니다. 아래와 같은 모양의 아이콘을 찾으세요:
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-If you have just installed Android Studio, you will likely need to [create a new AVD](https://developer.android.com/studio/run/managing-avds.html). Select "Create Virtual Device...", then pick any Phone from the list and click "Next".
+방금 Android Studio를 설치하셨다면, [새 Android 가상 장치 만들기](https://developer.android.com/studio/run/managing-avds.html) 페이지를 참고하세요. "Create Virtual Device..."를 선택하고 원하시는 장치를 선택한 후 "Next"를 클릭하세요.
 
 <block class="native windows android" />
 
@@ -499,17 +499,17 @@ If you have just installed Android Studio, you will likely need to [create a new
 
 <block class="native mac windows linux android" />
 
-Select the "x86 Images" tab, then look for the **Marshmallow** API Level 23, x86_64 ABI image with a Android 6.0 (Google APIs) target.
+"x86 Images" 탭에서, **Marshmallow** API Level 23, x86_64, Android 6.0 (Google APIs)인 항목을 선택하면 됩니다. 필요한 경우에는 Release Name에서 Download를 클릭하여 다운로드 받아야합니다(창이 하나 뜨면, 간단한 동의 후 설치하시면 됩니다).
 
 <block class="native linux android" />
 
-> We recommend configuring [VM acceleration](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) on your system to improve performance. Once you've followed those instructions, go back to the AVD Manager.
+> 퍼포먼스 향상을 위해 [VM acceleration](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) 설정을 하시길 권장합니다. 위 과정을 따라하신 후, AVD Manager 설정 과정으로 다시 돌아오세요.
 
 <block class="native windows android" />
 
 ![Install HAXM](img/CreateAVDx86Windows.png)
 
-> If you don't have HAXM installed, click on "Install HAXM" or follow [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows) to set it up, then go back to the AVD Manager.
+> HAXM이 설치되어 있지 않다면, "Install HAXM"을 눌러 설치하세요. [이 지침서](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows)을 참고하면 설치 과정에서 도움을 받을 수 있습니다. 설정이 완료되면, AVD Manager 설정 과정으로 다시 돌아오세요.
 
 ![AVD List](img/AVDManagerWindows.png)
 
@@ -517,49 +517,49 @@ Select the "x86 Images" tab, then look for the **Marshmallow** API Level 23, x86
 
 ![Install HAXM](img/CreateAVDx86MacOS.png)
 
-> If you don't have HAXM installed, follow [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x) to set it up, then go back to the AVD Manager.
+> HAXM이 설치되어 있지 않다면, "Install HAXM"을 눌러 설치하세요. [이 지침서](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows)을 참고하면 설치 과정에서 도움을 받을 수 있습니다. 설정이 완료되면, AVD Manager 설정 과정으로 다시 돌아오세요.
 
 ![AVD List](img/AVDManagerMacOS.png)
 
 <block class="native mac windows linux android" />
 
-Click "Next" then "Finish" to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it, then proceed to the next step.
+"Next"를 클릭하고, "Finish"를 누르면 새 AVD 설정 과정이 마무리됩니다. 이제 녹색 삼각형(재생 모양) 버튼을 클릭하면 AVD를 실행할 수 있습니다.
 
 <block class="native mac ios" />
 
-## Running your React Native application
+## React Native 어플리케이션 실행하기
 
-Run `react-native run-ios` inside your React Native project folder:
+React Native 프로젝트 폴더로 이동 후 어플리케이션을 실행해보세요:
 
 ```
 cd AwesomeProject
 react-native run-ios
 ```
 
-You should see your new app running in the iOS Simulator shortly.
+앱이 iOS 시뮬레이터에서 실행되는 것을 볼 수 있습니다.
 
 ![AwesomeProject on iOS](img/iOSSuccess.png)
 
-`react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
+`react-native run-ios` 명령어는 만든 앱을 실행하는 가장 일반적인 방법입니다. Xcode나 [Nuclide](https://nuclide.io/)에서도 직접 실행할 수 있습니다.
 
-> If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+> 앱이 제대로 실행되지 않거나 문제가 발생한다면, [Troubleshooting](docs/troubleshooting.html#content) 페이지를 참고하세요.
 
-### Running on a device
+### 실제 장치에서 구동하기
 
-The above command will automatically run your app on the iOS Simulator by default. If you want to run the app on an actual physical iOS device, please follow the instructions [here](docs/running-on-device.html).
+위 명령어를 이용하면 앱은 기본적으로 iOS 시뮬레이터에서 실행됩니다. 실제 장치에서 앱을 구동하고 싶다면 [이 문서](docs/running-on-device.html)의 과정을 따라하세요.
 
 <block class="native mac windows linux android" />
 
-## Running your React Native application
+## React Native 어플리케이션 실행하기
 
-Run `react-native run-android` inside your React Native project folder:
+React Native 프로젝트 폴더로 이동 후 어플리케이션을 실행해보세요:
 
 ```
 cd AwesomeProject
 react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in your Android emulator shortly.
+앱이 Android 에뮬레이터에서 실행되는 것을 볼 수 있습니다.
 
 <block class="native mac android" />
 
@@ -571,73 +571,70 @@ If everything is set up correctly, you should see your new app running in your A
 
 <block class="native mac windows linux android" />
 
-`react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
+`react-native run-android` 명령어는 만든 앱을 실행하는 가장 일반적인 방법입니다. Android Studio나 [Nuclide](https://nuclide.io/)에서도 직접 실행할 수 있습니다.
 
-> If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+> 앱이 제대로 실행되지 않거나 문제가 발생한다면, [Troubleshooting](docs/troubleshooting.html#content) 페이지를 참고하세요.
 
 <block class="native mac ios android" />
 
-### Modifying your app
+### 앱 수정하기
 
-Now that you have successfully run the app, let's modify it.
+앱을 성공적으로 실행했으므로, 이제 원하는 대로 수정해봅시다.
 
 <block class="native mac ios" />
 
-- Open `index.ios.js` in your text editor of choice and edit some lines.
-- Hit `⌘R` in your iOS Simulator to reload the app and see your changes!
+- 텍스트 에디터에서 `index.ios.js`를 열고 코드를 수정합니다.
+- `⌘R` 명령어를 통해 iOS 시뮬레이터가 새로고침 되면서 변경사항을 확인할 수 있습니다.
 
 <block class="native mac android" />
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
+- 텍스트 에디터에서 `index.android.js`를 열고 코드를 수정합니다.
+- `R` 키를 두 번 누르거나 개발자 메뉴(`⌘M`)에서 `Reload`를 선택하면 변경사항을 확인할 수 있습니다.
 
 <block class="native windows linux android" />
 
-### Modifying your app
+### 앱 수정하기
 
-Now that you have successfully run the app, let's modify it.
+앱을 성공적으로 실행했으므로, 이제 원하는 대로 수정해봅시다.
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
+- 텍스트 에디터에서 `index.android.js` 를 열고 코드를 수정합니다.
+- `R` 키를 두 번 누르거나 개발자 메뉴(`⌘M`)에서 `Reload`를 선택하면 변경사항을 확인할 수 있습니다.
 
 <block class="native mac ios android" />
 
-### That's it!
+### 끝났습니다!
 
-Congratulations! You've successfully run and modified your first React Native app.
+축하합니다! 당신은 방금 첫 번째 React Native 앱을 성공적으로 실행하고 수정까지 하셨습니다!
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native windows linux android" />
 
-### That's it!
+### 끝났습니다!
 
-Congratulations! You've successfully run and modified your first React Native app.
+축하합니다! 당신은 방금 첫 번째 React Native 앱을 성공적으로 실행하고 수정까지 하셨습니다!
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native mac ios" />
 
-## Now what?
+## 이제는 무엇을 해야할까요?
 
-- Turn on [Live Reload](docs/debugging.html#reloading-javascript) in the Developer Menu. Your app will now reload automatically whenever you save any changes!
+- 개발자 메뉴의 [Live Reload](docs/debugging.html#reloading-javascript) 옵션을 활성화하면 프로젝트 저장과 동시에 앱이 새로고침 되면서 변경사항을 바로 확인할 수 있습니다!
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+- 기존 어플리케이션에 React Native 코드를 추가하고 싶다면 [Integration guide](docs/integration-with-existing-apps.html)를 참고하세요.
 
-If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
+React Native에 대해 좀 더 배우고 싶다면 [Tutorial](docs/tutorial.html)로 가서 진행하시면 됩니다.
 
 <block class="native windows linux mac android" />
 
-## Now what?
+## 이제는 무엇을 해야할까요?
 
-- Turn on [Live Reload](docs/debugging.html#reloading-javascript) in the Developer Menu. Your app will now reload automatically whenever you save any changes!
+- 개발자 메뉴의 [Live Reload](docs/debugging.html#reloading-javascript) 옵션을 활성화하면 프로젝트 저장과 동시에 앱이 새로고침 되면서 변경사항을 바로 확인할 수 있습니다!
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+- 기존 어플리케이션에 React Native 코드를 추가하고 싶다면 [Integration guide](docs/integration-with-existing-apps.html)를 참고하세요.
 
-If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
-
+React Native에 대해 좀 더 배우고 싶다면, [Tutorial](docs/tutorial.html)에서 계속 진행하세요.
 
 <script>
 function displayTab(type, value) {
