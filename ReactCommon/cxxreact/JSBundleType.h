@@ -55,7 +55,7 @@ RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader& header);
  * Convert an `ScriptTag` enum into a string, useful for emitting in errors
  * and diagnostic messages.
  */
-const char* stringForScriptTag(const ScriptTag& tag);
+RN_EXPORT const char* stringForScriptTag(const ScriptTag& tag);
 
 }  // namespace react
 }  // namespace facebook

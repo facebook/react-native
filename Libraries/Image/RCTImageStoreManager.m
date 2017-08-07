@@ -9,7 +9,7 @@
 
 #import "RCTImageStoreManager.h"
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
@@ -76,7 +76,7 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertParam(block);
   dispatch_async(_methodQueue, ^{
-    NSString *imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, 0.75)];
+    NSString *imageTag = [self _storeImageData:RCTGetImageData(image, 0.75)];
     dispatch_async(dispatch_get_main_queue(), ^{
       block(imageTag);
     });
@@ -137,14 +137,14 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block volatile uint32_t cancelled = 0;
+  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   void (^cancellationBlock)(void) = ^{
-    OSAtomicOr32Barrier(1, &cancelled);
+    atomic_store(&cancelled, YES);
   };
 
   // Dispatch async to give caller time to cancel the request
   dispatch_async(_methodQueue, ^{
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
 
@@ -197,7 +197,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   RCTLogWarn(@"RCTImageStoreManager.storeImage() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSString *imageTag;
   dispatch_sync(_methodQueue, ^{
-    imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, 0.75)];
+    imageTag = [self _storeImageData:RCTGetImageData(image, 0.75)];
   });
   return imageTag;
 }

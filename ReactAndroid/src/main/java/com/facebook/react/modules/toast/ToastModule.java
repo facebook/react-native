@@ -11,15 +11,13 @@ package com.facebook.react.modules.toast;
 
 import android.view.Gravity;
 import android.widget.Toast;
-
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
-
 import java.util.Map;
 
 /**
@@ -75,5 +73,23 @@ public class ToastModule extends ReactContextBaseJavaModule {
         toast.show();
       }
     });
+  }
+
+  @ReactMethod
+  public void showWithGravityAndOffset(
+      final String message,
+      final int duration,
+      final int gravity,
+      final int xOffset,
+      final int yOffset) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Toast toast = Toast.makeText(getReactApplicationContext(), message, duration);
+            toast.setGravity(gravity, xOffset, yOffset);
+            toast.show();
+          }
+        });
   }
 }

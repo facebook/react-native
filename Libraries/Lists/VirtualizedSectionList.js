@@ -65,7 +65,7 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Default renderer for every item in every section.
    */
-  renderItem: (info: {
+  renderItem?: (info: {
     item: Item,
     index: number,
     section: SectionT,

@@ -31,10 +31,12 @@
 
 // Use for methods were access to a JSContextRef is impractical. The first bool param
 // will be dropped before the JSC method is invoked.
-#define __jsc_bool_wrapper(method, useCustomJSC, ...) \
-  (useCustomJSC ?                                     \
-    facebook::react::customJSCWrapper() :             \
-    facebook::react::systemJSCWrapper()               \
+#define __jsc_ensure_bool(field) \
+  static_assert(std::is_same<typename std::decay<decltype(field)>::type, bool>::value, "useCustomJSC must be bool");
+#define __jsc_bool_wrapper(method, useCustomJSC, ...)    \
+  ([]{ __jsc_ensure_bool(useCustomJSC) }, useCustomJSC ? \
+    facebook::react::customJSCWrapper() :                \
+    facebook::react::systemJSCWrapper()                  \
   )->method(__VA_ARGS__)
 
 // Used for wrapping properties

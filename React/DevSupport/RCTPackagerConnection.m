@@ -19,7 +19,7 @@
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
-#import <React/RCTWebSocketObserverProtocol.h>
+#import <React/RCTWebSocketObserver.h>
 
 #import "RCTPackagerConnectionBridgeConfig.h"
 #import "RCTReloadPackagerMethod.h"

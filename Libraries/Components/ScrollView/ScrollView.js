@@ -27,6 +27,7 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
@@ -72,7 +73,8 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  * supports out of the box.
  */
 // $FlowFixMe(>=0.41.0)
-const ScrollView = React.createClass({
+const ScrollView = createReactClass({
+  displayName: 'ScrollView',
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -199,16 +201,21 @@ const ScrollView = React.createClass({
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *
+     * *Cross platform*
+     *
      *   - `'none'` (the default), drags do not dismiss the keyboard.
      *   - `'on-drag'`, the keyboard is dismissed when a drag begins.
+     *
+     * *iOS Only*
+     *
      *   - `'interactive'`, the keyboard is dismissed interactively with the drag and moves in
      *     synchrony with the touch; dragging upwards cancels the dismissal.
      *     On android this is not supported and it will have the same behavior as 'none'.
      */
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
-      'interactive',
-      'on-drag',
+      'on-drag', // Cross-platform
+      'interactive', // iOS-only
     ]),
     /**
      * Determines when the keyboard should stay visible after a tap.
@@ -234,15 +241,18 @@ const ScrollView = React.createClass({
      */
     minimumZoomScale: PropTypes.number,
     /**
+     * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollBegin: PropTypes.func,
+    /**
+     * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollEnd: PropTypes.func,
+    /**
      * Fires at most once per frame during scrolling. The frequency of the
      * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
-    /**
-     * Called when a scrolling animation ends.
-     * @platform ios
-     */
-    onScrollAnimationEnd: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes.
      *
@@ -257,6 +267,8 @@ const ScrollView = React.createClass({
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
+     *
+     * Note: Vertical pagination is not supported on Android.
      */
     pagingEnabled: PropTypes.bool,
     /**
@@ -348,7 +360,18 @@ const ScrollView = React.createClass({
      * @platform ios
      */
     zoomScale: PropTypes.number,
-
+    /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     * @platform ios
+     */
+    contentInsetAdjustmentBehavior: PropTypes.oneOf([
+      'automatic',
+      'scrollableAxes',
+      'never', // default
+      'always',
+    ]),
     /**
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView. Only works for vertical ScrollViews

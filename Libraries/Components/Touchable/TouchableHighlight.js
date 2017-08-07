@@ -7,37 +7,36 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableHighlight
- * @noflow
+ * @flow
  */
 'use strict';
 
-// Note (avik): add @flow when Flow supports spread properties in propTypes
-
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const React = require('React');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
-var ensureComponentIsNative = require('ensureComponentIsNative');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var keyOf = require('fbjs/lib/keyOf');
-var merge = require('merge');
+const createReactClass = require('create-react-class');
+const ensureComponentIsNative = require('ensureComponentIsNative');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const keyOf = require('fbjs/lib/keyOf');
+const merge = require('merge');
 
-type Event = Object;
+import type {Event} from 'TouchableWithoutFeedback';
 
-var DEFAULT_PROPS = {
+const DEFAULT_PROPS = {
   activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -68,7 +67,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-var TouchableHighlight = React.createClass({
+var TouchableHighlight = createReactClass({
+  displayName: 'TouchableHighlight',
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
     /**
@@ -108,7 +108,6 @@ var TouchableHighlight = React.createClass({
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
-
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],

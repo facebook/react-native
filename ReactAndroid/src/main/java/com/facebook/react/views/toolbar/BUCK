@@ -3,6 +3,10 @@ include_defs("//ReactAndroid/DEFS")
 android_library(
     name = "toolbar",
     srcs = glob(["**/*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+    ],
     visibility = [
         "PUBLIC",
     ],
@@ -13,8 +17,6 @@ android_library(
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),

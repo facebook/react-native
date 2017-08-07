@@ -129,7 +129,8 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
-   * falls back to using the index, like react does.
+   * falls back to using the index, like react does. Note that this sets keys for each item, but 
+   * each overall section still needs its own key.
    */
   keyExtractor: (item: Item, index: number) => string,
   /**
@@ -216,8 +217,8 @@ type DefaultProps = typeof defaultProps;
  * Simple Examples:
  *
  *     <SectionList
- *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.title} />}
+ *       renderItem={({item}) => <ListItem title={item} />}
+ *       renderSectionHeader={({section}) => <Header title={section.title} />}
  *       sections={[ // homogenous rendering between sections
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
@@ -227,9 +228,9 @@ type DefaultProps = typeof defaultProps;
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
  *       ]}
  *     />
  *
@@ -313,6 +314,13 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollableNode();
+    }
+  }
+
+  setNativeProps(props: Object) {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      listRef.setNativeProps(props);
     }
   }
 

@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const isString = require('lodash/isString');
 const path = require('path');
 const Promise = require('promise');
@@ -27,7 +28,16 @@ function checkAndroid(root) {
  */
 function runAndroid(argv, config, args) {
   if (!checkAndroid(args.root)) {
-    console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['android'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+    } else {
+      console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    }
     return;
   }
 

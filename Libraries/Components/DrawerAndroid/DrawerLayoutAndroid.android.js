@@ -24,6 +24,7 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
+var createReactClass = require('create-react-class');
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -67,7 +68,8 @@ var DRAWER_STATES = [
  * },
  * ```
  */
-var DrawerLayoutAndroid = React.createClass({
+var DrawerLayoutAndroid = createReactClass({
+  displayName: 'DrawerLayoutAndroid',
   statics: {
     positions: DrawerConsts.DrawerPosition,
   },
@@ -268,7 +270,22 @@ var DrawerLayoutAndroid = React.createClass({
       null
     );
   },
-
+  /**
+  * Closing and opening example
+  * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
+  * render () {
+  *   this.openDrawer = () => {
+  *     this.refs.DRAWER.openDrawer()
+  *   }
+  *   this.closeDrawer = () => {
+  *     this.refs.DRAWER.closeDrawer()
+  *   }
+  *   return (
+  *     <DrawerLayoutAndroid ref={'DRAWER'}>
+  *     </DrawerLayoutAndroid>
+  *   )
+  * }
+  */
   _getDrawerLayoutHandle: function() {
     return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },
