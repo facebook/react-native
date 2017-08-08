@@ -56,10 +56,10 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(args, device) {
+function tryRunAdbReverse(packagerPort, device) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', `tcp:${args.port}`, `tcp:${args.port}`];
+    const adbArgs = ['reverse', `tcp:${packagerPort}`, `tcp:${packagerPort}`];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -167,7 +167,7 @@ function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPat
 }
 
 function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
-  tryRunAdbReverse(args, selectedDevice);
+  tryRunAdbReverse(args.port, selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
   tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
@@ -216,7 +216,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     const devices = adb.getDevices();
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-        tryRunAdbReverse(args, device);
+        tryRunAdbReverse(args.port, device);
         tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
