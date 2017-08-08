@@ -66,7 +66,7 @@ using namespace facebook::react;
   CxxModule::Callback second;
 
   if (arguments.count < _method->callbacks) {
-    RCTLogError(@"Method %@.%s expects at least %lu arguments, but got %tu",
+    RCTLogError(@"Method %@.%s expects at least %zu arguments, but got %tu",
                 RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
                 _method->callbacks, arguments.count);
     return nil;
