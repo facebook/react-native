@@ -46,12 +46,8 @@ const styles = StyleSheet.create({
 AppRegistry.registerComponent('AwesomeProject', () => LotsOfStyles);
 ```
 
-One common pattern is to make your component accept a `style` prop which in
-turn is used to style subcomponents. You can use this to make styles "cascade" the way they do in CSS.
-
-공통된 패턴은.......?????
-이것을 사용하여 CSS 에서 하는 것처럼 styles를 "cascade" 할 수 있습니다.
+공통적으로 `style` 속성을 가지는 컴포넌트를 생성하여 자식 컴포넌트에 스타일하는 패턴을 많이 쓰입니다. 이것을 사용하여 CSS에서 하는 것처럼 styles를 "cascade" 할 수 있습니다.
 
 text style을 개별화 하는 방법은 더 많이 있습니다. [Text component](docs/text.html)를 참조하시면 됩니다.
 
-이제 text를 멋있게 만들 수 있습니다. 다음 단계는 [learn how to control component size](docs/height-and-width.html)를 참조하여 style에 대해 완벽하게 습득 하실 수 있습니다.
+이제 text를 멋있게 만들 수 있습니다. 다음 단계는 [컴포넌트 크기를 조절하는 방법 배우기](docs/height-and-width.html)를 참조하여 스타일에 대해 완벽하게 습득 하실 수 있습니다.
