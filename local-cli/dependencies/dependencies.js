@@ -19,7 +19,7 @@ const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 function dependencies(argv, config, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
-    return Promise.reject(`File ${rootModuleAbsolutePath} does not exist`);
+    return Promise.reject(new Error(`File ${rootModuleAbsolutePath} does not exist`));
   }
 
   const transformModulePath =
