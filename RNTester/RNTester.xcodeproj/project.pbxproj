@@ -15,6 +15,7 @@
 		1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
 		134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 134A8A251AACED6A00945AAE /* libRCTGeolocation.a */; };
 		134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */; };
+		13526A4A1F362F0E0008EF00 /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13526A251F362EE70008EF00 /* libfishhook.a */; };
 		138D6A181B53CD440074A87E /* RCTShadowViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 138D6A161B53CD440074A87E /* RCTShadowViewTests.m */; };
 		138DEE241B9EDFB6007F4EA5 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 138DEE091B9EDDDB007F4EA5 /* libRCTCameraRoll.a */; };
 		1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.mm */; };
@@ -153,6 +154,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTGeolocation;
+		};
+		13526A241F362EE70008EF00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13526A1E1F362EE70008EF00 /* fishhook.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = fishhook;
 		};
 		138DEE081B9EDDDB007F4EA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -432,6 +440,7 @@
 		134180261AA91779003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 		134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = ../Libraries/Geolocation/RCTGeolocation.xcodeproj; sourceTree = "<group>"; };
 		134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitTests.m; sourceTree = "<group>"; };
+		13526A1E1F362EE70008EF00 /* fishhook.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fishhook.xcodeproj; path = ../Libraries/fishhook/fishhook.xcodeproj; sourceTree = "<group>"; };
 		138D6A161B53CD440074A87E /* RCTShadowViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowViewTests.m; sourceTree = "<group>"; };
 		138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = ../Libraries/CameraRoll/RCTCameraRoll.xcodeproj; sourceTree = "<group>"; };
 		1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTModuleMethodTests.mm; sourceTree = "<group>"; };
@@ -532,6 +541,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13526A4A1F362F0E0008EF00 /* libfishhook.a in Frameworks */,
 				3D0E379D1F1CC77200DCAC9F /* libReact.a in Frameworks */,
 				52C11BBB1EEACA7100C1A058 /* libRCTBlob.a in Frameworks */,
 				2D66FF8F1ECA406D00F0A767 /* libART.a in Frameworks */,
@@ -605,6 +615,7 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				13526A1E1F362EE70008EF00 /* fishhook.xcodeproj */,
 				5281CA4B1EEAC9A700AC40CD /* RCTBlob.xcodeproj */,
 				2D66FF5F1ECA405900F0A767 /* ART.xcodeproj */,
 				14AADEFF1AC3DB95002390C9 /* React.xcodeproj */,
@@ -665,6 +676,14 @@
 			isa = PBXGroup;
 			children = (
 				134A8A251AACED6A00945AAE /* libRCTGeolocation.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		13526A1F1F362EE70008EF00 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13526A251F362EE70008EF00 /* libfishhook.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1115,6 +1134,10 @@
 					ProjectRef = 2D66FF5F1ECA405900F0A767 /* ART.xcodeproj */;
 				},
 				{
+					ProductGroup = 13526A1F1F362EE70008EF00 /* Products */;
+					ProjectRef = 13526A1E1F362EE70008EF00 /* fishhook.xcodeproj */;
+				},
+				{
 					ProductGroup = 147CED471AB34F8C00DA3E4C /* Products */;
 					ProjectRef = 14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */;
 				},
@@ -1215,6 +1238,13 @@
 			fileType = archive.ar;
 			path = libRCTGeolocation.a;
 			remoteRef = 134A8A241AACED6A00945AAE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		13526A251F362EE70008EF00 /* libfishhook.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfishhook.a;
+			remoteRef = 13526A241F362EE70008EF00 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		138DEE091B9EDDDB007F4EA5 /* libRCTCameraRoll.a */ = {

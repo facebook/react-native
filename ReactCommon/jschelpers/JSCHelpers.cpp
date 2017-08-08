@@ -8,8 +8,23 @@
 
 #include <glog/logging.h>
 
+#if WITH_FBJSCEXTENSIONS
+#include <pthread.h>
+#endif
+
 #include "JavaScriptCore.h"
 #include "Value.h"
+
+#if WITH_FBJSCEXTENSIONS
+#undef ASSERT
+#undef WTF_EXPORT_PRIVATE
+
+#include <JavaScriptCore/config.h>
+#include <wtf/WTFThreadData.h>
+
+#undef TRUE
+#undef FALSE
+#endif
 
 namespace facebook {
 namespace react {
@@ -202,6 +217,42 @@ JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSSt
   return result;
 }
 #endif
+
+JSContextLock::JSContextLock(JSGlobalContextRef ctx) noexcept
+#if WITH_FBJSCEXTENSIONS
+  : ctx_(ctx),
+   globalLock_(PTHREAD_MUTEX_INITIALIZER)
+   {
+  WTFThreadData& threadData = wtfThreadData();
+
+  // Code below is responsible for acquiring locks. It should execute
+  // atomically, thus none of the functions invoked from now on are allowed to
+  // throw an exception
+  try {
+    if (!threadData.isDebuggerThread()) {
+      CHECK(0 == pthread_mutex_lock(&globalLock_));
+    }
+    JSLock(ctx_);
+  } catch (...) {
+    abort();
+  }
+}
+#else
+{}
+#endif
+
+
+JSContextLock::~JSContextLock() noexcept {
+  #if WITH_FBJSCEXTENSIONS
+  WTFThreadData& threadData = wtfThreadData();
+
+  JSUnlock(ctx_);
+  if (!threadData.isDebuggerThread()) {
+    CHECK(0 == pthread_mutex_unlock(&globalLock_));
+  }
+  #endif
+}
+
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
   try {

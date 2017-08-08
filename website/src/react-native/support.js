@@ -19,7 +19,7 @@ class support extends React.Component {
 
   render() {
     return (
-      <Site section="support" title="Help">
+      <Site section="support" title="Community">
 
         <section
           className="content wrap documentationContent helpSection nosidebar"
@@ -64,7 +64,7 @@ class support extends React.Component {
                     <a
                       href="/react-native/docs/integration-with-existing-apps.html"
                     >
-                      Integration With Existing Apps
+                      Integrating with Existing Apps
                     </a>
                   </li>
                 </ul>

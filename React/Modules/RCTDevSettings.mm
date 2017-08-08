@@ -132,6 +132,11 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
+
 - (instancetype)init
 {
   // default behavior is to use NSUserDefaults
