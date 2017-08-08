@@ -2734,6 +2734,10 @@ module.exports = {
    * See also [`AnimatedInterpolation`](docs/animated.html#animatedinterpolation).
    */
   Interpolation: AnimatedInterpolation,
+  /**
+   * Exported for ease of type checking. All animated values derive from this class.
+   */
+  Node: Animated,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
