@@ -27,6 +27,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		13B6C1A31C34225900D3FAF5 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
 		13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
+		13BF5DE51F39F33200813C6E /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13BF5DC61F39F31400813C6E /* libfishhook.a */; };
 		13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DB03471B5D2ED500C27245 /* RCTJSONTests.m */; };
 		13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */; };
 		13E501F11D07A84A005F35D8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
@@ -230,6 +231,13 @@
 			remoteGlobalIDString = 3C86DF461ADF2C930047B81A;
 			remoteInfo = RCTWebSocket;
 		};
+		13BF5DC51F39F31400813C6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13BF5DBF1F39F31300813C6E /* fishhook.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = fishhook;
+		};
 		13E501A21D07A502005F35D8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */;
@@ -411,6 +419,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
 		13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTURLUtilsTests.m; sourceTree = "<group>"; };
 		13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTComponentPropsTests.m; sourceTree = "<group>"; };
+		13BF5DBF1F39F31300813C6E /* fishhook.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fishhook.xcodeproj; path = ../Libraries/fishhook/fishhook.xcodeproj; sourceTree = "<group>"; };
 		13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
 		13DB03471B5D2ED500C27245 /* RCTJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSONTests.m; sourceTree = "<group>"; };
 		13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMethodArgumentTests.m; sourceTree = "<group>"; };
@@ -495,6 +504,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13BF5DE51F39F33200813C6E /* libfishhook.a in Frameworks */,
 				3D4153631F27700D005B8EFE /* libART.a in Frameworks */,
 				1380DCD41E70C44800E7C47D /* libReact.a in Frameworks */,
 				147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */,
@@ -566,6 +576,7 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				13BF5DBF1F39F31300813C6E /* fishhook.xcodeproj */,
 				1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */,
 				3D41535A1F276FF9005B8EFE /* ART.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
@@ -682,6 +693,14 @@
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
 			);
 			name = RNTester;
+			sourceTree = "<group>";
+		};
+		13BF5DC01F39F31300813C6E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13BF5DC61F39F31400813C6E /* libfishhook.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		13E5019D1D07A502005F35D8 /* Products */ = {
@@ -1070,6 +1089,10 @@
 					ProjectRef = 3D41535A1F276FF9005B8EFE /* ART.xcodeproj */;
 				},
 				{
+					ProductGroup = 13BF5DC01F39F31300813C6E /* Products */;
+					ProjectRef = 13BF5DBF1F39F31300813C6E /* fishhook.xcodeproj */;
+				},
+				{
 					ProductGroup = 147CED471AB34F8C00DA3E4C /* Products */;
 					ProjectRef = 14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */;
 				},
@@ -1247,6 +1270,13 @@
 			fileType = archive.ar;
 			path = libRCTWebSocket.a;
 			remoteRef = 139FDED81B0651EA00C62182 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		13BF5DC61F39F31400813C6E /* libfishhook.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfishhook.a;
+			remoteRef = 13BF5DC51F39F31400813C6E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		13E501A31D07A502005F35D8 /* libRCTAnimation.a */ = {
