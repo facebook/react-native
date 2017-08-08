@@ -14,6 +14,7 @@
 		2D3B5F3E1D9B165B00451313 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
 		2D3B5F3F1D9B165B00451313 /* RCTWebSocketObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */; };
 		2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
+		2DC5E5281F3A6CFD000EE84B /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */; };
 		3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		3DB9106F1C74B1ED00838BBE /* RCTWebSocketObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */; };
 		A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
@@ -25,8 +26,9 @@
 		1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSRWebSocket.m; sourceTree = "<group>"; };
 		1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketExecutor.h; sourceTree = "<group>"; };
 		1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
-		13526A511F362F7F0008EF00 /* libfishhook.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfishhook.a; path = "libfishhook.a"; sourceTree = "<group>"; };
+		13526A511F362F7F0008EF00 /* libfishhook.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfishhook.a; sourceTree = "<group>"; };
 		2D2A28881D9B049200D4039D /* libRCTWebSocket-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTWebSocket-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfishhook-tvOS.a"; path = "../fishhook/build/Debug-appletvos/libfishhook-tvOS.a"; sourceTree = "<group>"; };
 		3C86DF461ADF2C930047B81A /* libRCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketModule.h; sourceTree = "<group>"; };
 		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; tabWidth = 2; };
@@ -45,12 +47,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2DC5E5151F3A6C39000EE84B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DC5E5281F3A6CFD000EE84B /* libfishhook-tvOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		13526A501F362F7F0008EF00 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */,
 				13526A511F362F7F0008EF00 /* libfishhook.a */,
 			);
 			name = Frameworks;
@@ -94,6 +105,7 @@
 			buildConfigurationList = 2D2A28901D9B049200D4039D /* Build configuration list for PBXNativeTarget "RCTWebSocket-tvOS" */;
 			buildPhases = (
 				2D2A28841D9B049200D4039D /* Sources */,
+				2DC5E5151F3A6C39000EE84B /* Frameworks */,
 			);
 			buildRules = (
 			);

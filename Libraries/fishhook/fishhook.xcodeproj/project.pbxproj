@@ -10,6 +10,9 @@
 		13526A4C1F362F4E0008EF00 /* fishhook.h in Headers */ = {isa = PBXBuildFile; fileRef = 13170F8E1F362E530070B900 /* fishhook.h */; };
 		13526A4E1F362F5B0008EF00 /* fishhook.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13170F8E1F362E530070B900 /* fishhook.h */; };
 		13C5161D1F362E9C00322EB8 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 13170F8D1F362E530070B900 /* fishhook.c */; };
+		2DC5E5231F3A6C9A000EE84B /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 13170F8D1F362E530070B900 /* fishhook.c */; };
+		2DC5E5251F3A6CC9000EE84B /* fishhook.h in Headers */ = {isa = PBXBuildFile; fileRef = 13170F8E1F362E530070B900 /* fishhook.h */; };
+		2DC5E5261F3A6CEA000EE84B /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13170F8E1F362E530070B900 /* fishhook.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,13 +27,34 @@
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2DC5E5181F3A6C7F000EE84B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/fishhook;
+			dstSubfolderSpec = 16;
+			files = (
+				2DC5E5261F3A6CEA000EE84B /* fishhook.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		13170F8D1F362E530070B900 /* fishhook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fishhook.c; sourceTree = "<group>"; };
 		13170F8E1F362E530070B900 /* fishhook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fishhook.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libfishhook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfishhook.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DC5E51A1F3A6C7F000EE84B /* libfishhook-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfishhook-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2DC5E5171F3A6C7F000EE84B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		134814211AA4EA7D00B7C361 /* Products */ = {
@@ -47,6 +71,7 @@
 				13170F8D1F362E530070B900 /* fishhook.c */,
 				13170F8E1F362E530070B900 /* fishhook.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				2DC5E51A1F3A6C7F000EE84B /* libfishhook-tvOS.a */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -64,9 +89,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2DC5E5241F3A6CBF000EE84B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DC5E5251F3A6CC9000EE84B /* fishhook.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2DC5E5191F3A6C7F000EE84B /* fishhook-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2DC5E5221F3A6C7F000EE84B /* Build configuration list for PBXNativeTarget "fishhook-tvOS" */;
+			buildPhases = (
+				2DC5E5161F3A6C7F000EE84B /* Sources */,
+				2DC5E5171F3A6C7F000EE84B /* Frameworks */,
+				2DC5E5241F3A6CBF000EE84B /* Headers */,
+				2DC5E5181F3A6C7F000EE84B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "fishhook-tvOS";
+			productName = "fishhook-tvOS";
+			productReference = 2DC5E51A1F3A6C7F000EE84B /* libfishhook-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		58B511DA1A9E6C8500147676 /* fishhook */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "fishhook" */;
@@ -93,6 +144,10 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
+					2DC5E5191F3A6C7F000EE84B = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+					};
 					58B511DA1A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -111,11 +166,20 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* fishhook */,
+				2DC5E5191F3A6C7F000EE84B /* fishhook-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2DC5E5161F3A6C7F000EE84B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DC5E5231F3A6C9A000EE84B /* fishhook.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		58B511D71A9E6C8500147676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,6 +191,44 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2DC5E5201F3A6C7F000EE84B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
+			};
+			name = Debug;
+		};
+		2DC5E5211F3A6C7F000EE84B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
+			};
+			name = Release;
+		};
 		58B511ED1A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -241,6 +343,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2DC5E5221F3A6C7F000EE84B /* Build configuration list for PBXNativeTarget "fishhook-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2DC5E5201F3A6C7F000EE84B /* Debug */,
+				2DC5E5211F3A6C7F000EE84B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "fishhook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
