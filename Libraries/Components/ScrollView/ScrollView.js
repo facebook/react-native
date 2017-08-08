@@ -272,6 +272,12 @@ const ScrollView = createReactClass({
      */
     pagingEnabled: PropTypes.bool,
     /**
+    * When true, ScrollView allows use of pinch gestures to zoom in and out.
+    * The default value is true.
+    * @platform ios
+    */
+    pinchGestureEnabled: PropTypes.bool,
+    /**
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
@@ -360,7 +366,18 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     zoomScale: PropTypes.number,
-
+    /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     * @platform ios
+     */
+    contentInsetAdjustmentBehavior: PropTypes.oneOf([
+      'automatic',
+      'scrollableAxes',
+      'never', // default
+      'always',
+    ]),
     /**
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView. Only works for vertical ScrollViews

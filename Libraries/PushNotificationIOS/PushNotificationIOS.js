@@ -159,6 +159,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertTitle` : The text displayed as the title of the notification alert.
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).

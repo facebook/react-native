@@ -2523,6 +2523,7 @@
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			usesTabs = 0;
 		};
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
@@ -3490,7 +3491,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SRCROOT/..\nexec ./scripts/ios-install-third-party.sh";
+			shellScript = "cd \"$SRCROOT/..\"\nexec ./scripts/ios-install-third-party.sh";
 		};
 		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;

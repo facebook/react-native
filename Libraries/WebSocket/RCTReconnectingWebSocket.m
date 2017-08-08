@@ -80,6 +80,7 @@
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
+  [self.delegate webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
   [self reconnect];
 }
 

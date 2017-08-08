@@ -11,7 +11,6 @@
 
 #include <atomic>
 #include <future>
-#include <libkern/OSAtomic.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
@@ -135,8 +134,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   BOOL _wasBatchActive;
 
   NSMutableArray<dispatch_block_t> *_pendingCalls;
-  // This is accessed using OSAtomic... calls.
-  volatile int32_t _pendingCount;
+  std::atomic<NSInteger> _pendingCount;
 
   // Native modules
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
@@ -952,7 +950,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     // Phase 1: jsQueueBlocks are added to the queue; _pendingCount is
     // incremented for each.  If the first block is created after self.loading is
     // true, phase 1 will be nothing.
-    OSAtomicIncrement32Barrier(&_pendingCount);
+    _pendingCount++;
     dispatch_block_t jsQueueBlock = ^{
       // From the perspective of the JS queue:
       if (self.loading) {
@@ -964,7 +962,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         // each block is executed, adding work to the queue, and _pendingCount is
         // decremented.
         block();
-        OSAtomicDecrement32Barrier(&self->_pendingCount);
+        self->_pendingCount--;
       }
     };
     [self ensureOnJavaScriptThread:jsQueueBlock];
@@ -992,7 +990,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   _pendingCalls = nil;
   for (dispatch_block_t call in pendingCalls) {
     call();
-    OSAtomicDecrement32Barrier(&_pendingCount);
+    _pendingCount--;
   }
   _loading = NO;
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -1166,8 +1164,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
   __block JSValue *ret = nil;
   NSError *errorObj = tryAndReturnError(^{
-    Value result = self->_reactInstance->callFunctionSync(
-      [module UTF8String], [method UTF8String], arguments);
+    Value result = self->_reactInstance->callFunctionSync([module UTF8String], [method UTF8String], (id)arguments);
     JSContext *context = contextForGlobalContextRef(JSC_JSContextGetGlobalContext(result.context()));
     ret = [JSC_JSValue(result.context()) valueWithJSValueRef:result inContext:context];
   });
