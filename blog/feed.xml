@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-07-28T00:00:00Z</updated>
+    <updated>2017-08-07T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[React Native Performance in Marketplace]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">
+        </link>
+        <updated>2017-08-07T00:00:00Z</updated>
+        <summary type="html"><![CDATA[React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, Marketplace. It is available in a dozen or so countries and enables users to discover products and services provided by other users.]]></summary>
+        <author>
+            <name>Aaron Chiu</name>
+            <uri>https://www.facebook.com/aaronechiu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #2]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html</id>
