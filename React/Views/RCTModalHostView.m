@@ -68,6 +68,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
         _onRequestClose(nil);
     }
 }
+
+- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
+{
+  _onRequestClose = onRequestClose;
+  if([self.subviews count] > 0) {
+    if(_onRequestClose && _tapGestureRecognizer) {
+      [self.subviews[0] addGestureRecognizer:_tapGestureRecognizer];
+    } else {
+      [self.subviews[0] removeGestureRecognizer:_tapGestureRecognizer];
+    }
+  }
+}
 #endif
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
