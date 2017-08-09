@@ -156,7 +156,7 @@
     "envinfo": "^3.0.0",
     "event-target-shim": "^1.0.5",
     "fbjs": "0.8.12",
-    "fbjs-scripts": "^0.7.0",
+    "fbjs-scripts": "^0.8.1",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
