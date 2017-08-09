@@ -46,6 +46,8 @@ notifications:
     on_pull_requests: false
     on_failure: change
     on_success: change
-  webhooks: https://code.facebook.com/travis/webhook/
+  webhooks: 
+    urls: 
+      - https://code.facebook.com/travis/webhook/
     on_failure: always
     on_success: always
