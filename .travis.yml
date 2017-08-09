@@ -47,3 +47,5 @@ notifications:
     on_failure: change
     on_success: change
   webhooks: https://code.facebook.com/travis/webhook/
+    on_failure: always
+    on_success: always
