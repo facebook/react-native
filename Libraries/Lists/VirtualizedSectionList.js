@@ -373,22 +373,24 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   };
 }
 
+type ItemWithSeparatorProps = {
+  LeadingSeparatorComponent: ?ReactClass<*>,
+  SeparatorComponent: ?ReactClass<*>,
+  cellKey: string,
+  index: number,
+  item: Item,
+  onUpdateSeparator: (cellKey: string, newProps: Object) => void,
+  prevCellKey?: ?string,
+  renderItem: Function,
+  section: Object,
+  leadingItem: ?Item,
+  leadingSection: ?Object,
+  trailingItem: ?Item,
+  trailingSection: ?Object,
+};
+
 class ItemWithSeparator extends React.Component {
-  props: {
-    LeadingSeparatorComponent: ?ReactClass<*>,
-    SeparatorComponent: ?ReactClass<*>,
-    cellKey: string,
-    index: number,
-    item: Item,
-    onUpdateSeparator: (cellKey: string, newProps: Object) => void,
-    prevCellKey?: ?string,
-    renderItem: Function,
-    section: Object,
-    leadingItem: ?Item,
-    leadingSection: ?Object,
-    trailingItem: ?Item,
-    trailingSection: ?Object,
-  };
+  props: ItemWithSeparatorProps;
 
   state = {
     separatorProps: {
@@ -434,6 +436,27 @@ class ItemWithSeparator extends React.Component {
       }
     },
   };
+
+  componentWillReceiveProps(props: ItemWithSeparatorProps) {
+    this.setState(state => ({
+      separatorProps: {
+        ...this.state.separatorProps,
+        leadingItem: props.item,
+        leadingSection: props.leadingSection,
+        section: props.section,
+        trailingItem: props.trailingItem,
+        trailingSection: props.trailingSection,
+      },
+      leadingSeparatorProps: {
+        ...this.state.leadingSeparatorProps,
+        leadingItem: props.leadingItem,
+        leadingSection: props.leadingSection,
+        section: props.section,
+        trailingItem: props.item,
+        trailingSection: props.trailingSection,
+      },
+    }));
+  }
 
   updateSeparatorProps(newProps: Object) {
     this.setState(state => ({

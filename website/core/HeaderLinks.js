@@ -15,7 +15,7 @@ var React = require('React');
 
 var linksInternal = [
   {section: 'docs', href: 'docs/getting-started.html', text: 'Docs', target: '.nav-docs'},
-  {section: 'support', href: '/react-native/support.html', text: 'Help'},
+  {section: 'support', href: '/react-native/support.html', text: 'Community'},
   {section: 'blog', href: '/react-native/blog/', text: 'Blog'},
 ];
 

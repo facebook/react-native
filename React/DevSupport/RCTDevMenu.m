@@ -99,6 +99,11 @@ RCT_EXPORT_MODULE()
   RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 - (instancetype)init
 {
   if ((self = [super init])) {

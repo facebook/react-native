@@ -95,6 +95,11 @@ type OptionalProps = {
   inverted?: ?boolean,
   keyExtractor: (item: Item, index: number) => string,
   /**
+   * Each cell is rendered using this element. Can be a React Component Class,
+   * or a render function. Defaults to using View.
+   */
+  CellRendererComponent?: ?ReactClass<any>,
+  /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
    */
@@ -442,6 +447,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     inversionStyle: ?StyleObj,
   ) {
     const {
+      CellRendererComponent,
       ItemSeparatorComponent,
       data,
       getItem,
@@ -461,6 +467,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
       cells.push(
         <CellRenderer
+          CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
@@ -1155,6 +1162,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
 class CellRenderer extends React.Component {
   props: {
+    CellRendererComponent?: ?ReactClass<any>,
     ItemSeparatorComponent: ?ReactClass<*>,
     cellKey: string,
     fillRateHelper: FillRateHelper,
@@ -1214,6 +1222,7 @@ class CellRenderer extends React.Component {
 
   render() {
     const {
+      CellRendererComponent,
       ItemSeparatorComponent,
       fillRateHelper,
       item,
@@ -1234,12 +1243,25 @@ class CellRenderer extends React.Component {
         : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
+    const itemSeparator =
+      ItemSeparatorComponent &&
+      <ItemSeparatorComponent {...this.state.separatorProps} />;
+    if (!CellRendererComponent) {
+      return (
+        <View style={inversionStyle} onLayout={onLayout}>
+          {element}
+          {itemSeparator}
+        </View>
+      );
+    }
     return (
-      <View onLayout={onLayout} style={inversionStyle}>
+      <CellRendererComponent
+        {...this.props}
+        style={inversionStyle}
+        onLayout={onLayout}>
         {element}
-        {ItemSeparatorComponent &&
-          <ItemSeparatorComponent {...this.state.separatorProps} />}
-      </View>
+        {itemSeparator}
+      </CellRendererComponent>
     );
   }
 }

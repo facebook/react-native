@@ -272,6 +272,12 @@ const ScrollView = createReactClass({
      */
     pagingEnabled: PropTypes.bool,
     /**
+    * When true, ScrollView allows use of pinch gestures to zoom in and out.
+    * The default value is true.
+    * @platform ios
+    */
+    pinchGestureEnabled: PropTypes.bool,
+    /**
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
