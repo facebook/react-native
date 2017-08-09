@@ -720,7 +720,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostPause(this);
+        mReactInstanceManager.onHostPause();
     }
 }
 
