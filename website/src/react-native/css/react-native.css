@@ -1013,7 +1013,6 @@ h2 {
   text-rendering: optimizelegibility; }
 
 .docs-prevnext {
-  min-width: 320px;
   max-width: 640px;
   margin: 40px auto;
   padding-bottom: 20px; }
@@ -2029,6 +2028,17 @@ article li {
 
 .btn:hover {
   text-decoration: none !important; }
+
+@media screen and (max-width: 373px) {
+  .hero .buttons-unit .button:first-child {
+    margin-bottom: 4px; }
+
+  .documentationContent .docs-prevnext .btn {
+    margin-bottom: 4px;
+    display: block; }
+
+  .documentationContent .docs-prev, .documentationContent .docs-next {
+    float: none; } }
 
 .video-container {
   border-radius: 4px;
