@@ -133,7 +133,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.0.0-alpha.12"
+    "react": "16.0.0-beta.5"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -155,7 +155,7 @@
     "denodeify": "^1.2.1",
     "envinfo": "^3.0.0",
     "event-target-shim": "^1.0.5",
-    "fbjs": "0.8.12",
+    "fbjs": "0.8.14",
     "fbjs-scripts": "^0.8.1",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
@@ -202,8 +202,8 @@
     "jest": "20.1.0-delta.4",
     "mock-fs": "^4.4.1",
     "prettier": "1.5.2",
-    "react": "16.0.0-alpha.12",
-    "react-test-renderer": "16.0.0-alpha.12",
+    "react": "16.0.0-beta.5",
+    "react-test-renderer": "16.0.0-beta.5",
     "shelljs": "0.6.0",
     "sinon": "^2.2.0"
   }
