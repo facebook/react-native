@@ -46,4 +46,4 @@ notifications:
     on_pull_requests: false
     on_failure: change
     on_success: change
-  webhooks: https://requestb.in/1jf1d2u1
+  webhooks: http://webhook.site/ff92cc27-9e05-4cb8-83ae-3bf123a6d482 
