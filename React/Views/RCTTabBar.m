@@ -157,7 +157,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #endif
 }
 
-- (UITabBarItemPositioning)itemPositoning
+- (UITabBarItemPositioning)itemPositioning
 {
 #if TARGET_OS_TV
   return 0;
