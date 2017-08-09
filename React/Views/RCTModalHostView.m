@@ -27,7 +27,7 @@
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
 #if TARGET_OS_TV
-  UITapGestureRecognizer *_tapGestureRecognizer;
+  UITapGestureRecognizer *_menuButtonGestureRecognizer;
 #else
   UIInterfaceOrientation _lastKnownOrientation;
 #endif
@@ -47,8 +47,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
 #if TARGET_OS_TV
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
-    _tapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+    _menuButtonGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
+    _menuButtonGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
 #endif
     _isPresented = NO;
 
@@ -62,9 +62,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 }
 
 #if TARGET_OS_TV
-- (void)menuButtonPressed:(__unused UIGestureRecognizer *)r
+- (void)menuButtonPressed:(__unused UIGestureRecognizer *)recognizer
 {
-    if(_onRequestClose) {
+    if (_onRequestClose) {
         _onRequestClose(nil);
     }
 }
@@ -72,11 +72,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
 {
   _onRequestClose = onRequestClose;
-  if([self.subviews count] > 0) {
-    if(_onRequestClose && _tapGestureRecognizer) {
-      [self.subviews[0] addGestureRecognizer:_tapGestureRecognizer];
+  if (_reactSubview) {
+    if (_onRequestClose && _menuButtonGestureRecognizer) {
+      [_reactSubview addGestureRecognizer:_menuButtonGestureRecognizer];
     } else {
-      [self.subviews[0] removeGestureRecognizer:_tapGestureRecognizer];
+      [_reactSubview removeGestureRecognizer:_menuButtonGestureRecognizer];
     }
   }
 }
@@ -119,7 +119,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   [_touchHandler attachToView:subview];
 #if TARGET_OS_TV
   if (_onRequestClose) {
-    [subview addGestureRecognizer:_tapGestureRecognizer];
+    [subview addGestureRecognizer:_menuButtonGestureRecognizer];
   }
 #endif
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
@@ -132,11 +132,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
+  // Superclass actually removes the subview from this view
   [super removeReactSubview:subview];
   [_touchHandler detachFromView:subview];
 #if TARGET_OS_TV
-  if(_tapGestureRecognizer) {
-    [subview removeGestureRecognizer:_tapGestureRecognizer];
+  if (_menuButtonGestureRecognizer) {
+    [subview removeGestureRecognizer:_menuButtonGestureRecognizer];
   }
 #endif
   _reactSubview = nil;
