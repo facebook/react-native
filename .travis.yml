@@ -49,5 +49,6 @@ notifications:
   webhooks: 
     urls: 
       - https://code.facebook.com/travis/webhook/
+      - https://requestb.in/1h2qczh1
     on_failure: always
     on_success: always
