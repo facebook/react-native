@@ -183,7 +183,7 @@ Create React Native App은 Expo 클라이언트 앱에서 지원되는 가장 �
 
 ## 사전 설치
 
-Node, Watchman, React Native command line interface, 그리고 Xcode가 필요합니다.
+Node, Watchman, React Native command line interface, Xcode가 필요합니다.
 
 자신이 원하는 에디터를 사용해 앱을 개발할 수도 있지만, iOS용 React Native 앱을 빌드할 때 꼭 필요한 도구들 사용하려면 결국 Xcode가 필요하게 됩니다.
 
@@ -191,19 +191,19 @@ Node, Watchman, React Native command line interface, 그리고 Xcode가 필요�
 
 ## 사전 설치
 
-Node, Watchman, React Native command line interface, JDK, 그리고 Android Studio가 필요합니다.
+Node, Watchman, React Native command line interface, JDK, Android Studio가 필요합니다.
 
 <block class="native linux android" />
 
 ## 사전 설치
 
-Node, React Native command line interface, JDK, 그리고 Android Studio가 필요합니다.
+Node, React Native command line interface, JDK, Android Studio가 필요합니다.
 
 <block class="native windows android" />
 
 ## 사전 설치
 
-Node, React Native command line interface, Python2, JDK, 그리고 Android Studio가 필요합니다.
+Node, React Native command line interface, Python2, JDK, Android Studio가 필요합니다.
 
 <block class="native mac windows linux android" />
 
