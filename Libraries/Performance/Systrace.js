@@ -33,6 +33,8 @@ let _enabled = false;
 let _asyncCookie = 0;
 const _markStack = [];
 let _markStackIndex = -1;
+let _canInstallReactHook = false;
+let _useFiber = false;
 
 // Implements a subset of User Timing API necessary for React measurements.
 // https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
@@ -102,9 +104,53 @@ const userTimingPolyfill = {
   },
 };
 
+// A hook to get React Stack markers in Systrace.
+const reactDebugToolHook = {
+  onBeforeMountComponent(debugID) {
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
+  },
+  onMountComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUpdateComponent(debugID) {
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
+  },
+  onUpdateComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUnmountComponent(debugID) {
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
+  },
+  onUnmountComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeginLifeCycleTimer(debugID, timerType) {
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
+    Systrace.beginEvent(`${displayName}.${timerType}()`);
+  },
+  onEndLifeCycleTimer(debugID, timerType) {
+    Systrace.endEvent();
+  },
+};
+
 const Systrace = {
-  getUserTimingPolyfill() {
-    return userTimingPolyfill;
+  installReactHook(useFiber: boolean) {
+    if (_enabled) {
+      if (useFiber) {
+        global.performance = userTimingPolyfill;
+      } else {
+        require('ReactDebugTool').addHook(reactDebugToolHook);
+      }
+    }
+    _useFiber = useFiber;
+    _canInstallReactHook = true;
   },
 
   setEnabled(enabled: boolean) {
@@ -114,6 +160,18 @@ const Systrace = {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+        }
+        if (_canInstallReactHook) {
+          if (_useFiber) {
+            global.performance = enabled ? userTimingPolyfill : undefined;
+          } else {
+            const ReactDebugTool = require('ReactDebugTool');
+            if (enabled) {
+              ReactDebugTool.addHook(reactDebugToolHook);
+            } else {
+              ReactDebugTool.removeHook(reactDebugToolHook);
+            }
+          }
         }
       }
       _enabled = enabled;

@@ -212,7 +212,6 @@
 		3D302F4D1DF828F800D6DDAE /* RCTURLRequestDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */; };
 		3D302F4E1DF828F800D6DDAE /* RCTURLRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */; };
 		3D302F4F1DF828F800D6DDAE /* RCTUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */; };
-		3D302F501DF828F800D6DDAE /* RCTWebSocketObserverProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */; };
 		3D302F531DF828F800D6DDAE /* RCTJSCExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 134FCB391A6E7F0800051CC8 /* RCTJSCExecutor.h */; };
 		3D302F541DF828F800D6DDAE /* RCTJSCSamplingProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 369123DF1DDC75850095B341 /* RCTJSCSamplingProfiler.h */; };
 		3D302F551DF828F800D6DDAE /* RCTAccessibilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */; };
@@ -320,7 +319,6 @@
 		3D302FC91DF8290600D6DDAE /* RCTURLRequestDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */; };
 		3D302FCA1DF8290600D6DDAE /* RCTURLRequestHandler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */; };
 		3D302FCB1DF8290600D6DDAE /* RCTUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */; };
-		3D302FCC1DF8290600D6DDAE /* RCTWebSocketObserverProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */; };
 		3D302FCF1DF8290600D6DDAE /* RCTJSCExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134FCB391A6E7F0800051CC8 /* RCTJSCExecutor.h */; };
 		3D302FD01DF8290600D6DDAE /* RCTJSCSamplingProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 369123DF1DDC75850095B341 /* RCTJSCSamplingProfiler.h */; };
 		3D302FD11DF8290600D6DDAE /* RCTAccessibilityManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */; };
@@ -489,7 +487,6 @@
 		3D80D9481DF6FA890028D040 /* RCTURLRequestDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */; };
 		3D80D9491DF6FA890028D040 /* RCTURLRequestHandler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */; };
 		3D80D94A1DF6FA890028D040 /* RCTUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */; };
-		3D80D94B1DF6FA890028D040 /* RCTWebSocketObserverProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */; };
 		3D80D94E1DF6FA890028D040 /* RCTJSCExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134FCB391A6E7F0800051CC8 /* RCTJSCExecutor.h */; };
 		3D80D94F1DF6FA890028D040 /* RCTJSCSamplingProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 369123DF1DDC75850095B341 /* RCTJSCSamplingProfiler.h */; };
 		3D80D9501DF6FA890028D040 /* RCTAccessibilityManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */; };
@@ -605,7 +602,6 @@
 		3D80DA421DF820620028D040 /* RCTURLRequestDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */; };
 		3D80DA431DF820620028D040 /* RCTURLRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */; };
 		3D80DA441DF820620028D040 /* RCTUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */; };
-		3D80DA451DF820620028D040 /* RCTWebSocketObserverProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */; };
 		3D80DA481DF820620028D040 /* RCTJSCExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 134FCB391A6E7F0800051CC8 /* RCTJSCExecutor.h */; };
 		3D80DA491DF820620028D040 /* RCTJSCSamplingProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 369123DF1DDC75850095B341 /* RCTJSCSamplingProfiler.h */; };
 		3D80DA4A1DF820620028D040 /* RCTAccessibilityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */; };
@@ -893,7 +889,6 @@
 				3D302FC91DF8290600D6DDAE /* RCTURLRequestDelegate.h in Copy Headers */,
 				3D302FCA1DF8290600D6DDAE /* RCTURLRequestHandler.h in Copy Headers */,
 				3D302FCB1DF8290600D6DDAE /* RCTUtils.h in Copy Headers */,
-				3D302FCC1DF8290600D6DDAE /* RCTWebSocketObserverProtocol.h in Copy Headers */,
 				3D302FCF1DF8290600D6DDAE /* RCTJSCExecutor.h in Copy Headers */,
 				3D302FD01DF8290600D6DDAE /* RCTJSCSamplingProfiler.h in Copy Headers */,
 				3D302FD11DF8290600D6DDAE /* RCTAccessibilityManager.h in Copy Headers */,
@@ -1052,7 +1047,6 @@
 				3D80D9481DF6FA890028D040 /* RCTURLRequestDelegate.h in Copy Headers */,
 				3D80D9491DF6FA890028D040 /* RCTURLRequestHandler.h in Copy Headers */,
 				3D80D94A1DF6FA890028D040 /* RCTUtils.h in Copy Headers */,
-				3D80D94B1DF6FA890028D040 /* RCTWebSocketObserverProtocol.h in Copy Headers */,
 				3D80D94E1DF6FA890028D040 /* RCTJSCExecutor.h in Copy Headers */,
 				3D80D94F1DF6FA890028D040 /* RCTJSCSamplingProfiler.h in Copy Headers */,
 				3D80D9501DF6FA890028D040 /* RCTAccessibilityManager.h in Copy Headers */,
@@ -1361,7 +1355,6 @@
 		3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCWrapper.h; sourceTree = "<group>"; };
 		3D7BFCE51EA8E1F4008DFB7A /* RCTPackagerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerConnection.h; sourceTree = "<group>"; };
 		3D7BFCE61EA8E1F4008DFB7A /* RCTPackagerConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPackagerConnection.m; sourceTree = "<group>"; };
-		3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketObserverProtocol.h; sourceTree = "<group>"; };
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
@@ -1861,7 +1854,6 @@
 				1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */,
 				83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */,
 				83CBBA501A601E3B00E9B192 /* RCTUtils.m */,
-				3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -1973,7 +1965,6 @@
 				3D302F4D1DF828F800D6DDAE /* RCTURLRequestDelegate.h in Headers */,
 				3D302F4E1DF828F800D6DDAE /* RCTURLRequestHandler.h in Headers */,
 				3D302F4F1DF828F800D6DDAE /* RCTUtils.h in Headers */,
-				3D302F501DF828F800D6DDAE /* RCTWebSocketObserverProtocol.h in Headers */,
 				3D302F531DF828F800D6DDAE /* RCTJSCExecutor.h in Headers */,
 				3D302F541DF828F800D6DDAE /* RCTJSCSamplingProfiler.h in Headers */,
 				3D302F551DF828F800D6DDAE /* RCTAccessibilityManager.h in Headers */,
@@ -2169,7 +2160,6 @@
 				3D80DA421DF820620028D040 /* RCTURLRequestDelegate.h in Headers */,
 				3D80DA431DF820620028D040 /* RCTURLRequestHandler.h in Headers */,
 				3D80DA441DF820620028D040 /* RCTUtils.h in Headers */,
-				3D80DA451DF820620028D040 /* RCTWebSocketObserverProtocol.h in Headers */,
 				3D80DA481DF820620028D040 /* RCTJSCExecutor.h in Headers */,
 				3D80DA491DF820620028D040 /* RCTJSCSamplingProfiler.h in Headers */,
 				3D80DA4A1DF820620028D040 /* RCTAccessibilityManager.h in Headers */,

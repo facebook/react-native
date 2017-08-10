@@ -27,7 +27,7 @@ public class ReactInstanceManagerBuilder {
 
   private @Nullable String mJSBundleAssetUrl;
   private @Nullable JSBundleLoader mJSBundleLoader;
-  private @Nullable String mJSMainModuleName;
+  private @Nullable String mJSMainModulePath;
   private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private @Nullable Application mApplication;
   private boolean mUseDeveloperSupport;
@@ -103,8 +103,8 @@ public class ReactInstanceManagerBuilder {
    * {@code "index.android"} or
    * {@code "subdirectory/index.android"}
    */
-  public ReactInstanceManagerBuilder setJSMainModuleName(String jsMainModuleName) {
-    mJSMainModuleName = jsMainModuleName;
+  public ReactInstanceManagerBuilder setJSMainModulePath(String jsMainModulePath) {
+    mJSMainModulePath = jsMainModulePath;
     return this;
   }
 
@@ -236,8 +236,8 @@ public class ReactInstanceManagerBuilder {
       "JS Bundle File or Asset URL has to be provided when dev support is disabled");
 
     Assertions.assertCondition(
-      mJSMainModuleName != null || mJSBundleAssetUrl != null || mJSBundleLoader != null,
-      "Either MainModuleName or JS Bundle File needs to be provided");
+      mJSMainModulePath != null || mJSBundleAssetUrl != null || mJSBundleLoader != null,
+      "Either MainModulePath or JS Bundle File needs to be provided");
 
     if (mUIImplementationProvider == null) {
       // create default UIImplementationProvider if the provided one is null.
@@ -251,7 +251,7 @@ public class ReactInstanceManagerBuilder {
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
         JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
         mJSBundleLoader,
-      mJSMainModuleName,
+      mJSMainModulePath,
       mPackages,
       mUseDeveloperSupport,
       mBridgeIdleDebugListener,

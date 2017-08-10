@@ -83,7 +83,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   public void connect(
     final String url,
     @Nullable final ReadableArray protocols,
-    @Nullable final ReadableMap headers,
+    @Nullable final ReadableMap options,
     final int id) {
     OkHttpClient client = new OkHttpClient.Builder()
       .connectTimeout(10, TimeUnit.SECONDS)
@@ -98,7 +98,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       builder.addHeader("Cookie", cookie);
     }
 
-    if (headers != null) {
+    if (options != null && options.hasKey("headers") && options.getType("headers").equals(ReadableType.Map)) {
+
+      ReadableMap headers = options.getMap("headers");
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
 
       if (!headers.hasKey("origin")) {

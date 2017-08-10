@@ -9,13 +9,13 @@
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 
-import HomeScreenTabNavigator from './HomeScreenTabNavigator';
-import ChatScreen from './chat/ChatScreen';
+import HomeScreenTabNavigator from './views/HomeScreenTabNavigator';
+import ChatScreen from './views/chat/ChatScreen';
 
 /**
  * Top-level navigator. Renders the application UI.
  */
-const MainNavigator = StackNavigator({
+const App = StackNavigator({
   Home: {
     screen: HomeScreenTabNavigator,
   },
@@ -24,4 +24,4 @@ const MainNavigator = StackNavigator({
   },
 });
 
-export default MainNavigator;
+export default App;

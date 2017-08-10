@@ -77,6 +77,11 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (void)invalidate
 {
   /**
@@ -1416,7 +1421,7 @@ RCT_EXPORT_METHOD(setJSResponder:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
     if (!_jsResponder) {
-      RCTLogError(@"Invalid view set to be the JS responder - tag %zd", reactTag);
+      RCTLogError(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
 }

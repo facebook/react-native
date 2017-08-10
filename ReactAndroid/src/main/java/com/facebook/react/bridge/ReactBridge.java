@@ -12,8 +12,13 @@ package com.facebook.react.bridge;
 import com.facebook.soloader.SoLoader;
 
 public class ReactBridge {
+  private static boolean sDidInit = false;
   public static void staticInit() {
-    // Ideally we'd put this in static and only run it once, but that causes this method to get stripped
-    SoLoader.loadLibrary("reactnativejni");
+    // No locking required here, worst case we'll call into SoLoader twice
+    // which will do its own locking internally
+    if (!sDidInit) {
+      SoLoader.loadLibrary("reactnativejni");
+      sDidInit = true;
+    }
   }
 }

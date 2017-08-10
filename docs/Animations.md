@@ -360,6 +360,23 @@ things like `transform` and `opacity` will work, but flexbox and position proper
 When using `Animated.event`, it will only work with direct events and not bubbling events.
 This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
 
+### Bear in mind
+
+While using transform styles such as `rotateY`, `rotateX`, and others ensure the transform style `perspective` is in place.
+At this time some animations may not render on Android without it. Example below.
+
+```javascript
+<Animated.View
+  style={{
+    transform: [
+      { scale: this.state.scale },
+      { rotateY: this.state.rotateY },
+      { perspective: 1000 } // without this line this Animation will not render on Android while working fine on iOS
+    ]
+  }}
+/>
+```
+
 ### Additional examples
 
 The RNTester app has various examples of `Animated` in use:

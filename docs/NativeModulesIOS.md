@@ -438,6 +438,10 @@ class CalendarManager: NSObject {
   func addEvent(name: String, location: String, date: NSNumber) -> Void {
     // Date is ready to use!
   }
+  
+  override func constantsToExport() -> [String: Any]! {
+    return ["someKey": "someValue"]
+  }
 
 }
 ```
