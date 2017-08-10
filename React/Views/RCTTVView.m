@@ -61,21 +61,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)handleSelect:(__unused UIGestureRecognizer *)r
 {
-    float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
-    float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
-    float pressDelay = [self.tvParallaxProperties[@"pressDelay"] floatValue];
-    
-    [UIView animateWithDuration:pressDuration
-            delay:pressDelay
-			options: UIViewAnimationOptionBeginFromCurrentState
-			animations: ^{
-				self.transform = CGAffineTransformMakeScale(1.0, 1.0);
-			}
-			completion:^(BOOL finished __unused) {
-				self.transform = CGAffineTransformMakeScale(magnification, magnification);
-				[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-																	object:@{@"eventType":@"select",@"tag":self.reactTag}];
-			}];
+	
+	if([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
+		float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
+		
+		// Duration of press animation
+		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
+		
+		// Delay of press animation
+		float pressDelay = [self.tvParallaxProperties[@"pressDelay"] floatValue];
+		
+		[UIView animateWithDuration:pressDuration
+				delay:pressDelay
+				options: UIViewAnimationOptionBeginFromCurrentState
+				animations: ^{
+	
+					// Transform the view to the initial magnification
+					self.transform = CGAffineTransformMakeScale(1.0, 1.0);
+	
+				}
+				completion:^(__unused BOOL finished) {
+					
+					// Transform the view the focus magnification
+					self.transform = CGAffineTransformMakeScale(magnification, magnification);
+				
+					[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+																		object:@{@"eventType":@"select",@"tag":self.reactTag}];
+				}];
+	} else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+															object:@{@"eventType":@"select",@"tag":self.reactTag}];
+	}
+	
+
 }
 
 - (BOOL)isUserInteractionEnabled
