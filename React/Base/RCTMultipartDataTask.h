@@ -17,7 +17,7 @@ typedef void (^RCTMultipartDataTaskCallback)(NSInteger statusCode, NSDictionary 
 
 - (instancetype)initWithURL:(NSURL *)url
                 partHandler:(RCTMultipartDataTaskCallback)partHandler
-            progressHandler:(__nullable RCTMultipartProgressCallback)progressHandler;
+            progressHandler:(RCTMultipartProgressCallback)progressHandler;
 
 - (void)startTask;
 
