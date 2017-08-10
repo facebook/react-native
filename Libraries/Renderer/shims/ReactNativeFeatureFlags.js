@@ -16,4 +16,8 @@ var ReactNativeFeatureFlags = {
   useFiber: false,
 };
 
+if (__DEV__) {
+  require('Systrace').installReactHook(false);
+}
+
 module.exports = ReactNativeFeatureFlags;
