@@ -9,6 +9,7 @@
  * @providesModule console
  * @polyfill
  * @nolint
+ * @format
  */
 
 /* eslint-disable */
@@ -44,7 +45,7 @@ const inspect = (function() {
   function inspect(obj, opts) {
     var ctx = {
       seen: [],
-      stylize: stylizeNoColor
+      stylize: stylizeNoColor,
     };
     return formatValue(ctx, obj, opts.depth);
   }
@@ -63,7 +64,6 @@ const inspect = (function() {
     return hash;
   }
 
-
   function formatValue(ctx, value, recurseTimes) {
     // Primitive types cannot have properties
     var primitive = formatPrimitive(ctx, value);
@@ -77,8 +77,10 @@ const inspect = (function() {
 
     // IE doesn't make error fields non-enumerable
     // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-    if (isError(value)
-        && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    if (
+      isError(value) &&
+      (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)
+    ) {
       return formatError(value);
     }
 
@@ -99,7 +101,9 @@ const inspect = (function() {
       }
     }
 
-    var base = '', array = false, braces = ['{', '}'];
+    var base = '',
+      array = false,
+      braces = ['{', '}'];
 
     // Make Array say that they are Array
     if (isArray(value)) {
@@ -147,7 +151,14 @@ const inspect = (function() {
       output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
     } else {
       output = keys.map(function(key) {
-        return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+        return formatProperty(
+          ctx,
+          value,
+          recurseTimes,
+          visibleKeys,
+          key,
+          array,
+        );
       });
     }
 
@@ -156,54 +167,59 @@ const inspect = (function() {
     return reduceToSingleString(output, base, braces);
   }
 
-
   function formatPrimitive(ctx, value) {
-    if (isUndefined(value))
-      return ctx.stylize('undefined', 'undefined');
+    if (isUndefined(value)) return ctx.stylize('undefined', 'undefined');
     if (isString(value)) {
-      var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                               .replace(/'/g, "\\'")
-                                               .replace(/\\"/g, '"') + '\'';
+      var simple =
+        "'" +
+        JSON.stringify(value)
+          .replace(/^"|"$/g, '')
+          .replace(/'/g, "\\'")
+          .replace(/\\"/g, '"') +
+        "'";
       return ctx.stylize(simple, 'string');
     }
-    if (isNumber(value))
-      return ctx.stylize('' + value, 'number');
-    if (isBoolean(value))
-      return ctx.stylize('' + value, 'boolean');
+    if (isNumber(value)) return ctx.stylize('' + value, 'number');
+    if (isBoolean(value)) return ctx.stylize('' + value, 'boolean');
     // For some reason typeof null is "object", so special case here.
-    if (isNull(value))
-      return ctx.stylize('null', 'null');
+    if (isNull(value)) return ctx.stylize('null', 'null');
   }
-
 
   function formatError(value) {
     return '[' + Error.prototype.toString.call(value) + ']';
   }
 
-
   function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
     var output = [];
     for (var i = 0, l = value.length; i < l; ++i) {
       if (hasOwnProperty(value, String(i))) {
-        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-            String(i), true));
+        output.push(
+          formatProperty(
+            ctx,
+            value,
+            recurseTimes,
+            visibleKeys,
+            String(i),
+            true,
+          ),
+        );
       } else {
         output.push('');
       }
     }
     keys.forEach(function(key) {
       if (!key.match(/^\d+$/)) {
-        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-            key, true));
+        output.push(
+          formatProperty(ctx, value, recurseTimes, visibleKeys, key, true),
+        );
       }
     });
     return output;
   }
 
-
   function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
     var name, str, desc;
-    desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+    desc = Object.getOwnPropertyDescriptor(value, key) || {value: value[key]};
     if (desc.get) {
       if (desc.set) {
         str = ctx.stylize('[Getter/Setter]', 'special');
@@ -227,13 +243,22 @@ const inspect = (function() {
         }
         if (str.indexOf('\n') > -1) {
           if (array) {
-            str = str.split('\n').map(function(line) {
-              return '  ' + line;
-            }).join('\n').substr(2);
+            str = str
+              .split('\n')
+              .map(function(line) {
+                return '  ' + line;
+              })
+              .join('\n')
+              .substr(2);
           } else {
-            str = '\n' + str.split('\n').map(function(line) {
-              return '   ' + line;
-            }).join('\n');
+            str =
+              '\n' +
+              str
+                .split('\n')
+                .map(function(line) {
+                  return '   ' + line;
+                })
+                .join('\n');
           }
         }
       } else {
@@ -249,16 +274,16 @@ const inspect = (function() {
         name = name.substr(1, name.length - 2);
         name = ctx.stylize(name, 'name');
       } else {
-        name = name.replace(/'/g, "\\'")
-                   .replace(/\\"/g, '"')
-                   .replace(/(^"|"$)/g, "'");
+        name = name
+          .replace(/'/g, "\\'")
+          .replace(/\\"/g, '"')
+          .replace(/(^"|"$)/g, "'");
         name = ctx.stylize(name, 'string');
       }
     }
 
     return name + ': ' + str;
   }
-
 
   function reduceToSingleString(output, base, braces) {
     var numLinesEst = 0;
@@ -269,17 +294,18 @@ const inspect = (function() {
     }, 0);
 
     if (length > 60) {
-      return braces[0] +
-             (base === '' ? '' : base + '\n ') +
-             ' ' +
-             output.join(',\n  ') +
-             ' ' +
-             braces[1];
+      return (
+        braces[0] +
+        (base === '' ? '' : base + '\n ') +
+        ' ' +
+        output.join(',\n  ') +
+        ' ' +
+        braces[1]
+      );
     }
 
     return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
   }
-
 
   // NOTE: These type checking functions intentionally don't use `instanceof`
   // because it is fragile and can be easily faked with `Object.create()`.
@@ -328,8 +354,10 @@ const inspect = (function() {
   }
 
   function isError(e) {
-    return isObject(e) &&
-        (objectToString(e) === '[object Error]' || e instanceof Error);
+    return (
+      isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error)
+    );
   }
 
   function isFunction(arg) {
@@ -337,12 +365,14 @@ const inspect = (function() {
   }
 
   function isPrimitive(arg) {
-    return arg === null ||
-           typeof arg === 'boolean' ||
-           typeof arg === 'number' ||
-           typeof arg === 'string' ||
-           typeof arg === 'symbol' ||  // ES6 symbol
-           typeof arg === 'undefined';
+    return (
+      arg === null ||
+      typeof arg === 'boolean' ||
+      typeof arg === 'number' ||
+      typeof arg === 'string' ||
+      typeof arg === 'symbol' || // ES6 symbol
+      typeof arg === 'undefined'
+    );
   }
 
   function objectToString(o) {
@@ -356,13 +386,12 @@ const inspect = (function() {
   return inspect;
 })();
 
-
 const OBJECT_COLUMN_NAME = '(index)';
 const LOG_LEVELS = {
   trace: 0,
   info: 1,
   warn: 2,
-  error: 3
+  error: 3,
 };
 const INSPECTOR_LEVELS = [];
 INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
@@ -381,9 +410,11 @@ if (global.nativeLoggingHook) {
       if (arguments.length === 1 && typeof arguments[0] === 'string') {
         str = arguments[0];
       } else {
-        str = Array.prototype.map.call(arguments, function(arg) {
-          return inspect(arg, {depth: 10});
-        }).join(', ');
+        str = Array.prototype.map
+          .call(arguments, function(arg) {
+            return inspect(arg, {depth: 10});
+          })
+          .join(', ');
       }
 
       let logLevel = level;
@@ -398,15 +429,18 @@ if (global.nativeLoggingHook) {
           INSPECTOR_LEVELS[logLevel],
           str,
           [].slice.call(arguments),
-          INSPECTOR_FRAMES_TO_SKIP);
+          INSPECTOR_FRAMES_TO_SKIP,
+        );
       }
       global.nativeLoggingHook(str, logLevel);
     };
   }
 
   function repeat(element, n) {
-    return Array.apply(null, Array(n)).map(function() { return element; });
-  };
+    return Array.apply(null, Array(n)).map(function() {
+      return element;
+    });
+  }
 
   function consoleTablePolyfill(rows) {
     // convert object -> array
@@ -451,7 +485,7 @@ if (global.nativeLoggingHook) {
       });
       space = space || ' ';
       return cells.join(space + '|' + space);
-    };
+    }
 
     var separators = columnWidths.map(function(columnWidth) {
       return repeat('-', columnWidth).join('');
@@ -479,7 +513,7 @@ if (global.nativeLoggingHook) {
     warn: getNativeLogFunction(LOG_LEVELS.warn),
     trace: getNativeLogFunction(LOG_LEVELS.trace),
     debug: getNativeLogFunction(LOG_LEVELS.trace),
-    table: consoleTablePolyfill
+    table: consoleTablePolyfill,
   };
 
   // If available, also call the original `console` method since that is
@@ -503,14 +537,14 @@ if (global.nativeLoggingHook) {
     });
   }
 } else if (!global.console) {
-  function consoleLoggingStub() {};
+  const log = global.print || function consoleLoggingStub() {};
   global.console = {
-    error: consoleLoggingStub,
-    info: consoleLoggingStub,
-    log: consoleLoggingStub,
-    warn: consoleLoggingStub,
-    trace: consoleLoggingStub,
-    debug: consoleLoggingStub,
-    table: consoleLoggingStub
+    error: log,
+    info: log,
+    log: log,
+    warn: log,
+    trace: log,
+    debug: log,
+    table: log,
   };
 }
