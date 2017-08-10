@@ -93,10 +93,25 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
   static isAvailable: boolean = !!WebSocketModule;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{headers?: {origin?: string}}) {
     super();
     if (typeof protocols === 'string') {
       protocols = [protocols];
+    }
+
+    const {headers = {}, ...unrecognized} = options || {};
+
+    // Preserve deprecated backwards compatibility for the 'origin' option
+    if (unrecognized && typeof unrecognized.origin === 'string') {
+      console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
+      headers.origin = unrecognized.origin;
+      delete unrecognized.origin;
+    }
+
+    // Warn about and discard anything else
+    if (Object.keys(unrecognized).length > 0) {
+      console.warn('Unrecognized WebSocket connection option(s) `' + Object.keys(unrecognized).join('`, `') + '`. '
+        + 'Did you mean to put these under `headers`?');
     }
 
     if (!Array.isArray(protocols)) {
@@ -111,7 +126,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(url, protocols, options, this._socketId);
+    WebSocketModule.connect(url, protocols, { headers }, this._socketId);
   }
 
   get binaryType(): ?BinaryType {
