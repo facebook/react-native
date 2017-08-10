@@ -11,7 +11,7 @@ module.exports = function registerNativeAndroidModule(
   params,
   projectConfig
 ) {
-  const buildPatch = makeBuildPatch(name);
+  const buildPatch = makeBuildPatch(name, androidConfig.buildPatch);
 
   applyPatch(
     projectConfig.settingsGradlePath,
