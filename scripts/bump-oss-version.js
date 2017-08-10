@@ -50,6 +50,19 @@ if (!version || version.indexOf(versionMajor) !== 0) {
   exit(1);
 }
 
+// Generate version files to detect mismatches between JS and native.
+cat('scripts/versiontemplates/ReactNativeVersion.java')
+  .replace('${version}', version)
+  .to('ReactAndroid/src/main/java/com/facebook/react/ReactNativeVersion.java');
+
+cat('scripts/versiontemplates/RCTVersion.h')
+  .replace('${version}', version)
+  .to('React/Base/RCTVersion.h');
+
+cat('scripts/versiontemplates/ReactNativeVersion.js')
+  .replace('${version}', version)
+  .to('Libraries/Core/ReactNativeVersion.js');
+
 let packageJson = JSON.parse(cat(`package.json`));
 packageJson.version = version;
 JSON.stringify(packageJson, null, 2).to(`package.json`);

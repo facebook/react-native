@@ -116,6 +116,18 @@ if (!global.__fbDisableExceptionsManager) {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
+const NativeModules = require('NativeModules');
+const ReactNativeVersion = require('./ReactNativeVersion');
+if (ReactNativeVersion.version !== NativeModules.PlatformConstants.reactNativeVersion) {
+  throw new Error(
+    `React Native version mismatch.\n\nJavaScript version: ${ReactNativeVersion.version}\n` +
+    `Native version: ${NativeModules.PlatformConstants.reactNativeVersion}\n\n` +
+    'Make sure that you have rebuilt the native code. If the problem persists ' +
+    'try clearing the watchman and packager caches with `watchman watch-del-all ' +
+    '&& react-native start --reset-cache`.'
+  );
+}
+
 // Set up collections
 const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
 if (_shouldPolyfillCollection('Map')) {
