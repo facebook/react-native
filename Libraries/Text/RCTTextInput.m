@@ -316,7 +316,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)handleInputAccessoryDoneButton
 {
-  [self.backedTextInputView endEditing:YES];
+  if ([self textInputShouldReturn]) {
+    [self.backedTextInputView endEditing:YES];
+  }
 }
 
 @end
