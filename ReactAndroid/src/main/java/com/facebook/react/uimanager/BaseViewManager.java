@@ -5,6 +5,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewParent;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
@@ -80,6 +81,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setZIndex(T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
+    ViewParent parent = view.getParent();
+    if (parent != null && parent instanceof ReactZIndexedViewGroup) {
+      ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
+    }
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
