@@ -203,7 +203,7 @@ Node, React Native command line interface, JDK, 그리고 Android Studio가 필�
 
 ## 사전 설치
 
-Node, React Native command line interface, Python2, JDK 그리고 Android Studio가 필요합니다.
+Node, React Native command line interface, Python2, JDK, 그리고 Android Studio가 필요합니다.
 
 <block class="native mac windows linux android" />
 
