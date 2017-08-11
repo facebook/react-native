@@ -141,26 +141,6 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     return this._binaryType;
   }
 
-  set binaryType(binaryType: BinaryType): void {
-    if (binaryType !== 'blob' && binaryType !== 'arraybuffer') {
-      throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
-    }
-    this._binaryType = binaryType;
-    RCTWebSocketModule.setBinaryType(binaryType, this._socketId);
-  }
-
-  get binaryType(): ?BinaryType {
-    return this._binaryType;
-  }
-
-  set binaryType(binaryType: BinaryType): void {
-    if (binaryType !== 'blob' && binaryType !== 'arraybuffer') {
-      throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
-    }
-    this._binaryType = binaryType;
-    RCTWebSocketModule.setBinaryType(binaryType, this._socketId);
-  }
-
   close(code?: number, reason?: string): void {
     if (this.readyState === this.CLOSING ||
         this.readyState === this.CLOSED) {
@@ -179,7 +159,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     if (data instanceof Blob) {
       const BlobModule = NativeModules.BlobModule;
       invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      BlobModule.sendBlob(data, this._socketId);
+      BlobModule.sendBlob(data.data, this._socketId);
       return;
     }
 

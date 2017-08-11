@@ -64,7 +64,7 @@ class Blob {
    * Currently we only support creating Blobs from other Blobs.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
    */
-  constructor(parts: Array<Blob>, options: any) {
+  constructor(parts: Array<Blob> = [], options: any) {
     const BlobManager = require('BlobManager');
     this.data = BlobManager.createFromParts(parts).data;
   }

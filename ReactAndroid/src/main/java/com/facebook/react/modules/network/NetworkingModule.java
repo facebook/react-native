@@ -64,6 +64,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_URI = "uri";
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String REQUEST_BODY_KEY_BASE64 = "base64";
+  private static final String REQUEST_BODY_KEY_BLOB = "blob";
   private static final String REQUEST_BODY_KEY_BLOB_ID = "blobId";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
@@ -316,7 +317,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(
           method,
           RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
-    } else if (data.hasKey(REQUEST_BODY_KEY_BLOB_ID)) {
+    } else if (data.hasKey(REQUEST_BODY_KEY_BLOB)) {
       if (data.hasKey("type")) {
         String type = data.getString("type");
         if (!type.isEmpty()) {
@@ -326,11 +327,12 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (contentType == null) {
         contentType = "application/octet-stream";
       }
-      String blobId = data.getString(REQUEST_BODY_KEY_BLOB_ID);
+      ReadableMap blob = data.getMap(REQUEST_BODY_KEY_BLOB);
+      String blobId = blob.getString(REQUEST_BODY_KEY_BLOB_ID);
       byte[] bytes = BlobModule.resolve(
         blobId,
-        data.getInt("offset"),
-        data.getInt("size"));;
+        blob.getInt("offset"),
+        blob.getInt("size"));;
       requestBuilder.method(
               method,
               RequestBody.create(MediaType.parse(contentType), bytes));
@@ -406,7 +408,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               }
 
               // Otherwise send the data in one big chunk, in the format that JS requested.
-              String responseString = "";
               if (responseType.equals("blob")) {
                 byte[] data = responseBody.bytes();
                 WritableMap blob = Arguments.createMap();
@@ -414,22 +415,26 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
                 blob.putInt("offset", 0);
                 blob.putInt("size", data.length);
                 ResponseUtil.onDataReceived(eventEmitter, requestId, blob);
-              } else if (responseType.equals("text")) {
-                try {
-                  responseString = responseBody.string();
-                } catch (IOException e) {
-                  if (response.request().method().equalsIgnoreCase("HEAD")) {
-                    // The request is an `HEAD` and the body is empty,
-                    // the OkHttp will produce an exception.
-                    // Ignore the exception to not invalidate the request in the
-                    // Javascript layer.
-                    // Introduced to fix issue #7463.
-                  } else {
-                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+              } else {
+                String responseString = "";
+                if (responseType.equals("text")) {
+                  try {
+                    responseString = responseBody.string();
+                  } catch (IOException e) {
+                    if (response.request().method().equalsIgnoreCase("HEAD")) {
+                      // The request is an `HEAD` and the body is empty,
+                      // the OkHttp will produce an exception.
+                      // Ignore the exception to not invalidate the request in the
+                      // Javascript layer.
+                      // Introduced to fix issue #7463.
+                    } else {
+                      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                    }
                   }
+                } else if (responseType.equals("base64")) {
+                  responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
                 }
-              } else if (responseType.equals("base64")) {
-                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+                ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
               }
               ResponseUtil.onRequestSuccess(eventEmitter, requestId);
             } catch (IOException e) {
