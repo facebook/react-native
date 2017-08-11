@@ -18,6 +18,7 @@ const url = require('url');
 import type {ResolutionResponse} from './getInverseDependencies';
 import type {Server as HTTPServer} from 'http';
 import type {Server as HTTPSServer} from 'https';
+import type {Client as WebSocketClient} from 'ws';
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -77,11 +78,25 @@ type Moduleish = {
 function attachHMRServer<TModule: Moduleish>(
   {httpServer, path, packagerServer}: HMROptions<TModule>,
 ) {
-  let client = null;
+  type Client = {|
+    ws: WebSocketClient,
+    platform: string,
+    bundleEntry: string,
+    dependenciesCache: Array<string>,
+    dependenciesModulesCache: {[mixed]: TModule},
+    shallowDependencies: {[string]: Array<TModule>},
+    inverseDependenciesCache: mixed,
+  |};
 
-  function disconnect() {
-    client = null;
-    packagerServer.setHMRFileChangeListener(null);
+  const clients: Set<Client> = new Set();
+
+  function disconnect(client: Client) {
+    clients.delete(client);
+
+    // If there are no clients connected, stop listenig for file changes
+    if (clients.size === 0) {
+      packagerServer.setHMRFileChangeListener(null);
+    }
   }
 
   // For the give platform and entry file, returns a promise with:
@@ -175,11 +190,14 @@ function attachHMRServer<TModule: Moduleish>(
     };
   }
 
-  async function prepareResponse(filename): Object {
+  async function prepareResponse(
+    client: Client,
+    filename: string,
+  ): Promise<?Object> {
     try {
-      const bundle = await generateBundle(filename);
+      const bundle = await generateBundle(client, filename);
 
-      if (!client || !bundle || bundle.isEmpty()) {
+      if (!bundle || bundle.isEmpty()) {
         return;
       }
 
@@ -217,11 +235,10 @@ function attachHMRServer<TModule: Moduleish>(
     }
   }
 
-  async function generateBundle(filename) {
-    if (client === null) {
-      return;
-    }
-
+  async function generateBundle(
+    client: Client,
+    filename: string,
+  ): Promise<?HMRBundle> {
     const deps = await packagerServer.getShallowDependencies({
       dev: true,
       minify: false,
@@ -230,10 +247,6 @@ function attachHMRServer<TModule: Moduleish>(
       platform: client.platform,
       recursive: true,
     });
-
-    if (client === null) {
-      return;
-    }
 
     // if the file dependencies have change we need to invalidate the
     // dependencies caches because the list of files we need to send
@@ -270,20 +283,12 @@ function attachHMRServer<TModule: Moduleish>(
         resolutionResponse: myResolutionReponse,
       } = await getDependencies(client.platform, client.bundleEntry);
 
-      if (client === null) {
-        return;
-      }
-
       const moduleToUpdate = await packagerServer.getModuleForPath(filename);
-
-      if (client === null) {
-        return;
-      }
 
       // build list of modules for which we'll send HMR updates
       const modulesToUpdate = [moduleToUpdate];
       Object.keys(depsModulesCache).forEach(module => {
-        if (!client || !client.dependenciesModulesCache[module]) {
+        if (!client.dependenciesModulesCache[module]) {
           modulesToUpdate.push(depsModulesCache[module]);
         }
       });
@@ -310,7 +315,7 @@ function attachHMRServer<TModule: Moduleish>(
     }
 
     // make sure the file was modified is part of the bundle
-    if (!client || !client.shallowDependencies[filename]) {
+    if (!client.shallowDependencies[filename]) {
       return;
     }
 
@@ -337,6 +342,44 @@ function attachHMRServer<TModule: Moduleish>(
     return bundle;
   }
 
+  function handleFileChange(
+    type: string,
+    filename: string,
+  ): void {
+    clients.forEach(
+      client => sendFileChangeToClient(client, type, filename),
+    );
+  }
+
+  async function sendFileChangeToClient(
+    client: Client,
+    type: string,
+    filename: string,
+  ): Promise<mixed> {
+    const blacklisted = blacklist.find(
+      blacklistedPath => filename.indexOf(blacklistedPath) !== -1,
+    );
+    if (blacklisted) {
+      return;
+    }
+
+    if (clients.has(client)) {
+      client.ws.send(JSON.stringify({type: 'update-start'}));
+    }
+
+    if (type !== 'delete') {
+      const response = await prepareResponse(client, filename);
+
+      if (response && clients.has(client)) {
+        client.ws.send(JSON.stringify(response));
+      }
+    }
+
+    if (clients.has(client)) {
+      client.ws.send(JSON.stringify({type: 'update-done'}));
+    }
+  }
+
   const WebSocketServer = require('ws').Server;
   const wss = new WebSocketServer({
     server: httpServer,
@@ -347,58 +390,35 @@ function attachHMRServer<TModule: Moduleish>(
     /* $FlowFixMe: url might be null */
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
-    try {
-      const {
-        dependenciesCache,
-        dependenciesModulesCache,
-        shallowDependencies,
-        inverseDependenciesCache,
-      } = await getDependencies(params.platform, params.bundleEntry);
+    const {
+      dependenciesCache,
+      dependenciesModulesCache,
+      shallowDependencies,
+      inverseDependenciesCache,
+    } = await getDependencies(params.platform, params.bundleEntry);
 
-      client = {
-        ws,
-        platform: params.platform,
-        bundleEntry: params.bundleEntry,
-        dependenciesCache,
-        dependenciesModulesCache,
-        shallowDependencies,
-        inverseDependenciesCache,
-      };
+    const client = {
+      ws,
+      platform: params.platform,
+      bundleEntry: params.bundleEntry,
+      dependenciesCache,
+      dependenciesModulesCache,
+      shallowDependencies,
+      inverseDependenciesCache,
+    };
+    clients.add(client);
 
-      packagerServer.setHMRFileChangeListener(async (type, filename) => {
-        if (client === null) {
-          return;
-        }
-
-        const blacklisted = blacklist.find(
-          blacklistedPath => filename.indexOf(blacklistedPath) !== -1,
-        );
-        if (blacklisted) {
-          return;
-        }
-
-        client.ws.send(JSON.stringify({type: 'update-start'}));
-
-        if (type !== 'delete') {
-          const response = await prepareResponse(filename);
-
-          if (client && response) {
-            client.ws.send(JSON.stringify(response));
-          }
-        }
-
-        client.ws.send(JSON.stringify({type: 'update-done'}));
-      });
-
-      client.ws.on('error', e => {
-        console.error('[Hot Module Replacement] Unexpected error', e);
-        disconnect();
-      });
-
-      client.ws.on('close', () => disconnect());
-    } catch (err) {
-      throw err;
+    // If this is the first client connecting, start listening to file changes
+    if (clients.size === 1) {
+      packagerServer.setHMRFileChangeListener(handleFileChange);
     }
+
+    client.ws.on('error', e => {
+      console.error('[Hot Module Replacement] Unexpected error', e);
+      disconnect(client);
+    });
+
+    client.ws.on('close', () => disconnect(client));
   });
 }
 
