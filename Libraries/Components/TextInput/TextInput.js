@@ -168,6 +168,7 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
+
 // $FlowFixMe(>=0.41.0)
 const TextInput = createReactClass({
   displayName: 'TextInput',
@@ -207,6 +208,12 @@ const TextInput = createReactClass({
      * The default value is `false`.
      */
     autoFocus: PropTypes.bool,
+    /**
+     * If true, will increase the height of the textbox if need be. If false,
+     * the textbox will become scrollable once the height is reached. The
+     * default value is false.
+     */
+    autoGrow: PropTypes.bool,
     /**
      * If `false`, text is not editable. The default value is `true`.
      */
@@ -306,6 +313,11 @@ const TextInput = createReactClass({
      * instead of implementing the logic in JS to avoid flicker.
      */
     maxLength: PropTypes.number,
+    /**
+     * If autogrow is `true`, limits the height that the TextInput box can grow
+     * to. Once it reaches this height, the TextInput becomes scrollable.
+     */
+    maxHeight: PropTypes.number,
     /**
      * Sets the number of lines for a `TextInput`. Use it with multiline set to
      * `true` to be able to fill the lines.
@@ -541,6 +553,10 @@ const TextInput = createReactClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
+  getInitialState: function() {
+    return {nativeHeight: this._originalNativeHeight};
+  },
+
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
@@ -558,6 +574,7 @@ const TextInput = createReactClass({
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
+  _originalNativeHeight: (-1: number),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -673,6 +690,7 @@ const TextInput = createReactClass({
         children = [children, props.inputView];
       }
       props.style.unshift(styles.multilineInput);
+      props.style.push({height: this.state.nativeHeight});
       textContainer =
         <RCTTextView
           ref={this._setNativeRef}
@@ -681,7 +699,7 @@ const TextInput = createReactClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onContentSizeChange={this.props.onContentSizeChange}
+          onContentSizeChange={this._onContentSizeChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -690,7 +708,6 @@ const TextInput = createReactClass({
           onScroll={this._onScroll}
         />;
     }
-
     return (
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
@@ -708,7 +725,7 @@ const TextInput = createReactClass({
 
   _renderAndroid: function() {
     const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
+    props.style = [{height: this.state.nativeHeight}, this.props.style];
     props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
@@ -721,11 +738,9 @@ const TextInput = createReactClass({
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
-
     if (props.selection && props.selection.end == null) {
       props.selection = {start: props.selection.start, end: props.selection.start};
     }
-
     const textContainer =
       <AndroidTextInput
         ref={this._setNativeRef}
@@ -734,6 +749,7 @@ const TextInput = createReactClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onContentSizeChange={this._onContentSizeChange}
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
         text={this._getText()}
@@ -794,6 +810,24 @@ const TextInput = createReactClass({
 
     this._lastNativeText = text;
     this.forceUpdate();
+  },
+
+  _onContentSizeChange: function(event: Event) {
+    const height = event.nativeEvent.contentSize.height;
+    if (this._originalNativeHeight < 0) {
+      this._originalNativeHeight = height;
+    }
+    if (this.props.autoGrow) {
+      if (this.props.maxHeight) {
+        this.setState({nativeHeight:
+          Math.min(this.props.maxHeight, height)});
+      } else if (Platform.OS === 'android') {
+        this.setState({nativeHeight: height});
+      }
+    } else {
+      this.setState({nativeHeight: this._originalNativeHeight});
+    }
+    this.props.onContentSizeChange && this.props.onContentSizeChange(event);
   },
 
   _onSelectionChange: function(event: Event) {
