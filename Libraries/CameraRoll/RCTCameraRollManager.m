@@ -80,8 +80,8 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-NSString *const RCTErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
-NSString *const RCTErrorUnableToSave = @"E_UNABLE_TO_SAVE";
+static NSString *const kErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
+static NSString *const kErrorUnableToSave = @"E_UNABLE_TO_SAVE";
 
 RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
                   type:(NSString *)type
@@ -93,7 +93,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
     dispatch_async(dispatch_get_main_queue(), ^{
       [self->_bridge.assetsLibrary writeVideoAtPathToSavedPhotosAlbum:request.URL completionBlock:^(NSURL *assetURL, NSError *saveError) {
         if (saveError) {
-          reject(RCTErrorUnableToSave, nil, saveError);
+          reject(kErrorUnableToSave, nil, saveError);
         } else {
           resolve(assetURL.absoluteString);
         }
@@ -103,7 +103,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
     [_bridge.imageLoader loadImageWithURLRequest:request
                                         callback:^(NSError *loadError, UIImage *loadedImage) {
       if (loadError) {
-        reject(RCTErrorUnableToLoad, nil, loadError);
+        reject(kErrorUnableToLoad, nil, loadError);
         return;
       }
       // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
@@ -111,7 +111,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
         [self->_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
           if (saveError) {
             RCTLogWarn(@"Error saving cropped image: %@", saveError);
-            reject(RCTErrorUnableToSave, nil, saveError);
+            reject(kErrorUnableToSave, nil, saveError);
           } else {
             resolve(assetURL.absoluteString);
           }
@@ -187,6 +187,11 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           CLLocation *loc = [result valueForProperty:ALAssetPropertyLocation];
           NSDate *date = [result valueForProperty:ALAssetPropertyDate];
           NSString *filename = [result defaultRepresentation].filename;
+          int64_t duration = 0;
+          if ([[result valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypeVideo]) {
+            duration = [[result valueForProperty:ALAssetPropertyDuration] intValue];
+          }
+
           [assets addObject:@{
             @"node": @{
               @"type": [result valueForProperty:ALAssetPropertyType],
@@ -197,6 +202,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                 @"height": @(dimensions.height),
                 @"width": @(dimensions.width),
                 @"isStored": @YES,
+                @"playableDuration": @(duration),
               },
               @"timestamp": @(date.timeIntervalSince1970),
               @"location": loc ? @{
@@ -224,7 +230,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     if (error.code != ALAssetsLibraryAccessUserDeniedError) {
       RCTLogError(@"Failure while iterating through asset groups %@", error);
     }
-    reject(RCTErrorUnableToLoad, nil, error);
+    reject(kErrorUnableToLoad, nil, error);
   }];
 }
 

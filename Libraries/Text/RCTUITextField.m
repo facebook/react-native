@@ -12,7 +12,11 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-@implementation RCTUITextField
+#import "RCTBackedTextInputDelegateAdapter.h"
+
+@implementation RCTUITextField {
+  RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -21,6 +25,8 @@
                                              selector:@selector(_textDidChange)
                                                  name:UITextFieldTextDidChangeNotification
                                                object:self];
+
+    _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
   }
 
   return self;
@@ -106,6 +112,23 @@
 
 #pragma mark - Overrides
 
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
+{
+  [super setSelectedTextRange:selectedTextRange];
+  [_textInputDelegateAdapter selectedTextRangeWasSet];
+}
+
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
+{
+  if (!notifyDelegate) {
+    // We have to notify an adapter that following selection change was initiated programmatically,
+    // so the adapter must not generate a notification for it.
+    [_textInputDelegateAdapter skipNextTextInputDidChangeSelectionEventWithTextRange:selectedTextRange];
+  }
+
+  [super setSelectedTextRange:selectedTextRange];
+}
+
 - (void)paste:(id)sender
 {
   [super paste:sender];
@@ -113,6 +136,12 @@
 }
 
 #pragma mark - Layout
+
+- (CGSize)contentSize
+{
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return self.intrinsicContentSize;
+}
 
 - (CGSize)intrinsicContentSize
 {
@@ -122,11 +151,13 @@
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
   return size;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+  // All size values here contain `textContainerInset` (aka `padding`).
   CGSize intrinsicSize = self.intrinsicContentSize;
   return CGSizeMake(MIN(size.width, intrinsicSize.width), MIN(size.height, intrinsicSize.height));
 }

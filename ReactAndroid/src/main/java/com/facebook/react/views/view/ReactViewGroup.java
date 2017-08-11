@@ -420,6 +420,13 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  public void updateDrawingOrder() {
+    mDrawingOrderHelper.update();
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    invalidate();
+  }
+
+  @Override
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
   }

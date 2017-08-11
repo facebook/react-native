@@ -61,6 +61,10 @@
   }
 }
 
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
+}
+
 @end
 
 #endif

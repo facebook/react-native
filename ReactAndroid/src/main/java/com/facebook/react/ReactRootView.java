@@ -9,25 +9,27 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -44,8 +46,7 @@ import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
-
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import javax.annotation.Nullable;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -80,6 +81,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
   private boolean mIsAttachedToInstance;
+  private boolean mContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -187,6 +189,24 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
       }
     }
+  }
+
+  @Override
+  public void onViewAdded(View child) {
+    super.onViewAdded(child);
+
+    if (!mContentAppeared) {
+      mContentAppeared = true;
+      ReactMarker.logMarker(
+          ReactMarkerConstants.CONTENT_APPEARED, getJSModuleName(), getRootViewTag());
+    }
+  }
+
+  @Override
+  public void removeAllViewsInLayout() {
+    super.removeAllViewsInLayout();
+
+    mContentAppeared = false;
   }
 
   /**
@@ -357,6 +377,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
+    private DisplayMetrics mWindowMetrics = new DisplayMetrics();
+    private DisplayMetrics mScreenMetrics = new DisplayMetrics();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -372,6 +394,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       }
       checkForKeyboardEvents();
       checkForDeviceOrientationChanges();
+      checkForDeviceDimensionsChanges();
     }
 
     private void checkForKeyboardEvents() {
@@ -404,11 +427,35 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
       }
       mDeviceRotation = rotation;
-      // It's important to repopulate DisplayMetrics and export them before emitting the
-      // orientation change event, so that the Dimensions object returns the correct new values.
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
-      emitUpdateDimensionsEvent();
       emitOrientationChanged(rotation);
+    }
+
+    private void checkForDeviceDimensionsChanges() {
+      // Get current display metrics.
+      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      // Check changes to both window and screen display metrics since they may not update at the same time.
+      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics()) ||
+        !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
+        mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
+        mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
+        emitUpdateDimensionsEvent();
+      }
+    }
+
+    private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
+      if (Build.VERSION.SDK_INT >= 17) {
+        return displayMetrics.equals(otherMetrics);
+      } else {
+        // DisplayMetrics didn't have an equals method before API 17.
+        // Check all public fields manually.
+        return displayMetrics.widthPixels == otherMetrics.widthPixels &&
+          displayMetrics.heightPixels == otherMetrics.heightPixels &&
+          displayMetrics.density == otherMetrics.density &&
+          displayMetrics.densityDpi == otherMetrics.densityDpi &&
+          displayMetrics.scaledDensity == otherMetrics.scaledDensity &&
+          displayMetrics.xdpi == otherMetrics.xdpi &&
+          displayMetrics.ydpi == otherMetrics.ydpi;
+      }
     }
 
     private void emitOrientationChanged(final int newRotation) {
