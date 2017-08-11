@@ -35,6 +35,7 @@
       @"shiftDistanceY": @2.0f,
       @"tiltAngle": @0.05f,
       @"magnification": @1.0f,
+	  @"pressMagnification": @1.0f,
       @"pressDuration": @0.3f,
       @"pressDelay": @0.0f
     };
@@ -63,7 +64,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
 	
 	if([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
-		float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
+		float magnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
 		
 		// Duration of press animation
 		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
