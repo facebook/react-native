@@ -9,17 +9,8 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.content.res.AssetManager;
 import android.util.Log;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
@@ -33,6 +24,12 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * This provides an implementation of the public CatalystInstance instance.  It is public because
@@ -396,11 +393,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native void jniHandleMemoryPressure(int level);
 
   @Override
-  public void handleMemoryPressure(MemoryPressure level) {
+  public void handleMemoryPressure(int level) {
     if (mDestroyed) {
       return;
     }
-    jniHandleMemoryPressure(level.ordinal());
+    jniHandleMemoryPressure(level);
   }
 
   /**
