@@ -133,11 +133,17 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   if (message) {
     [items addObject:message];
   }
-  NSURL *URL = [RCTConvert NSURL:options[@"url"]];
-  if (URL) {
-    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
+  NSArray<NSURL *> *URLS = [RCTConvert NSURLArray:options[@"url"]];
+
+  if (URLS.count == 0) {
+    RCTLogError(@"No `url` or `message` to share");
+    return;
+  }
+
+  for (NSURL *url in URLS) {
+    if ([url.scheme.lowercaseString isEqualToString:@"data"]) {
       NSError *error;
-      NSData *data = [NSData dataWithContentsOfURL:URL
+      NSData *data = [NSData dataWithContentsOfURL:url
                                            options:(NSDataReadingOptions)0
                                              error:&error];
       if (!data) {
@@ -146,12 +152,8 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
       }
       [items addObject:data];
     } else {
-      [items addObject:URL];
+      [items addObject:url];
     }
-  }
-  if (items.count == 0) {
-    RCTLogError(@"No `url` or `message` to share");
-    return;
   }
 
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
