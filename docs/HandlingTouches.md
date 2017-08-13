@@ -2,41 +2,97 @@
 id: handling-touches
 title: Handling Touches
 layout: docs
-category: Guides
+category: The Basics
 permalink: docs/handling-touches.html
-next: animations
-previous: more-resources
+next: using-a-scrollview
+previous: handling-text-input
 ---
 
-Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map.
+Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map. React Native provides components to handle all sorts of common gestures, as well as a comprehensive [gesture responder system](docs/gesture-responder-system.html) to allow for more advanced gesture recognition, but the one component you will most likely be interested in is the basic Button.
 
-React Native provides components to handle common gestures, such as taps and swipes, as well as a comprehensive [gesture responder system](docs/gesture-responder-system.html) to allow for more advanced gesture recognition.
+## Displaying a basic button
 
-## Tappable Components
-
-You can use "Touchable" components when you want to capture a tapping gesture. They take a function through the `onPress` props which will be called when the touch begins and ends within the bounds of the component.
-
-Example:
+[Button](docs/button.html) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
 
 ```javascript
-class MyButton extends Component {
+<Button
+  onPress={() => { Alert.alert('You tapped the button!')}}
+  title="Press Me"
+/>
+```
+
+This will render a blue label on iOS, and a blue rounded rectangle with white text on Android. Pressing the button will call the "onPress" function, which in this case displays an alert popup. If you like, you can specify a "color" prop to change the color of your button.
+
+![](img/Button.png)
+
+Go ahead and play around with the `Button` component using the example below. You can select which platform your app is previewed in by clicking on the toggle in the bottom right, then click on "Tap to Play" to preview the app.
+
+```SnackPlayer?name=Button%20Basics
+import React, { Component } from 'react';
+import { Alert, AppRegistry, Button, StyleSheet, View } from 'react-native';
+
+export default class ButtonBasics extends Component {
   _onPressButton() {
-    console.log("You tapped the button!");
+    Alert.alert('You tapped the button!')
   }
 
   render() {
     return (
-      <TouchableHighlight onPress={this._onPressButton}>
-        <Text>Button</Text>
-      </TouchableHighlight>
+      <View style={styles.container}>
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="Press Me"
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="Press Me"
+            color="#841584"
+          />
+        </View>
+        <View style={styles.alternativeLayoutButtonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="This looks great!"
+          />
+          <Button
+            onPress={this._onPressButton}
+            title="OK!"
+            color="#841584"
+          />
+        </View>
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   justifyContent: 'center',
+  },
+  buttonContainer: {
+    margin: 20
+  },
+  alternativeLayoutButtonContainer: {
+    margin: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  }
+})
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => ButtonBasics);
 ```
 
-Tappable components should provide feedback that show the user what is handling their touch, and what will happen when they lift their finger. The user should also be able to cancel a tap by dragging their finger away.
 
-Which component you use will depend on what kind of feedback you want to provide:
+## Touchables
+
+If the basic button doesn't look right for your app, you can build your own button using any of the "Touchable" components provided by React Native. The "Touchable" components provide the capability to capture tapping gestures, and can display feedback when a gesture is recognized. These components do not provide any default styling, however, so you will need to do a bit of work to get them looking nicely in your app.
+
+Which "Touchable" component you use will depend on what kind of feedback you want to provide:
 
 - Generally, you can use [**TouchableHighlight**](docs/touchablehighlight.html) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
 
@@ -46,22 +102,82 @@ Which component you use will depend on what kind of feedback you want to provide
 
 - If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](docs/touchablewithoutfeedback.html).
 
-### Long presses
+In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the `onLongPress` props of any of the "Touchable" components.
 
-In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the `onLongPress` props of any of the touchable components listed above.
+Let's see all of these in action:
 
-## Scrolling lists and swiping views
+```SnackPlayer?platform=android&name=Touchables
+import React, { Component } from 'react';
+import { Alert, AppRegistry, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } from 'react-native';
 
-A common pattern to many mobile apps is the scrollable list of items. Users interact with these using panning or swiping gestures. The [ScrollView](docs/using-a-scrollview.html) component displays a list of items that can be scrolled using these gestures.
+export default class Touchables extends Component {
+  _onPressButton() {
+    Alert.alert('You tapped the button!')
+  }
 
-ScrollViews can scroll vertically or horizontally, and can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](docs/viewpagerandroid.html) component.
+  _onLongPressButton() {
+    Alert.alert('You long-pressed the button!')
+  }
 
-A [ListView](docs/using-a-listview.html) is a special kind of ScrollView that is best suited for displaying long vertical lists of items. It can also display section headers and footers, similar to `UITableView`s on iOS.
 
-### Pinch-to-zoom
+  render() {
+    return (
+      <View style={styles.container}>
+        <TouchableHighlight onPress={this._onPressButton} underlayColor="white">
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>TouchableHighlight</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableOpacity onPress={this._onPressButton}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>TouchableOpacity</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableNativeFeedback
+            onPress={this._onPressButton}
+            background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>TouchableNativeFeedback</Text>
+          </View>
+        </TouchableNativeFeedback>
+        <TouchableWithoutFeedback
+            onPress={this._onPressButton}
+            >
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>TouchableWithoutFeedback</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableHighlight onPress={this._onPressButton} onLongPress={this._onLongPressButton} underlayColor="white">
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Touchable with Long Press</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    );
+  }
+}
 
-A ScrollView with a single item can be used to allow the user to zoom content. Set up the `maximumZoomScale` and `minimumZoomScale` props and your user will be able to use pinch and expand gestures to zoom in and out.
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 60,
+    alignItems: 'center'
+  },
+  button: {
+    marginBottom: 30,
+    width: 260,
+    alignItems: 'center',
+    backgroundColor: '#2196F3'
+  },
+  buttonText: {
+    padding: 20,
+    color: 'white'
+  }
+})
 
-## Handling additional gestures
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => Touchables);
+```
 
-If you want to allow a user to drag a view around the screen, or you want to implement your own custom pan/drag gesture, take a look at the [PanResponder](docs/panresponder.html) API or the [gesture responder system docs](docs/gesture-responder-system.html).
+## Scrolling lists, swiping pages, and pinch-to-zoom
+
+Another gesture commonly used in mobile apps is the swipe or pan. This gesture allows the user to scroll through a list of items, or swipe through pages of content. In order to handle these and other gestures, we'll learn [how to use a ScrollView](docs/using-a-scrollview.html) next.

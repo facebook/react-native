@@ -5,15 +5,20 @@
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/NativeModule.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 
 class Instance;
+class MessageQueueThread;
 
 std::function<void(folly::dynamic)> makeCallback(
   std::weak_ptr<Instance> instance, const folly::dynamic& callbackId);
 
-class CxxNativeModule : public NativeModule {
+class RN_EXPORT CxxNativeModule : public NativeModule {
 public:
   CxxNativeModule(std::weak_ptr<Instance> instance,
                   std::string name,
@@ -27,7 +32,7 @@ public:
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
   MethodCallResult callSerializableNativeHook(unsigned int hookId, folly::dynamic&& args) override;
 
 private:

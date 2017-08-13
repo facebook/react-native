@@ -20,7 +20,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -82,7 +81,7 @@ public abstract class LazyReactPackage implements ReactPackage {
         nativeModule = holder.getProvider().get();
       } finally {
         ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
       }
       modules.add(nativeModule);
     }

@@ -26,4 +26,5 @@ public interface ReactQueueConfiguration {
   MessageQueueThread getUIBackgroundQueueThread();
   MessageQueueThread getNativeModulesQueueThread();
   MessageQueueThread getJSQueueThread();
+  void destroy();
 }

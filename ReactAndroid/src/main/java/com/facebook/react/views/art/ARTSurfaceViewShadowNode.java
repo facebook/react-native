@@ -24,6 +24,8 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Shadow node for ART virtual tree root - ARTSurfaceView
@@ -32,6 +34,15 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   implements TextureView.SurfaceTextureListener {
 
   private @Nullable Surface mSurface;
+  private @Nullable boolean mHasPendingUpdates;
+
+  private @Nullable Integer mBackgroundColor;
+
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
+  public void setBackgroundColor(Integer color) {
+    mBackgroundColor = color;
+    markUpdated();
+  }
 
   @Override
   public boolean isVirtual() {
@@ -52,19 +63,21 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
 
   private void drawOutput() {
     if (mSurface == null || !mSurface.isValid()) {
-      markChildrenUpdatesSeen(this);
+      mHasPendingUpdates = true;
       return;
     }
 
     try {
       Canvas canvas = mSurface.lockCanvas(null);
       canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+      if (mBackgroundColor != null) {
+        canvas.drawColor(mBackgroundColor);
+      }
 
       Paint paint = new Paint();
       for (int i = 0; i < getChildCount(); i++) {
         ARTVirtualNode child = (ARTVirtualNode) getChildAt(i);
         child.draw(canvas, paint, 1f);
-        child.markUpdateSeen();
       }
 
       if (mSurface == null) {
@@ -72,23 +85,20 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
       }
 
       mSurface.unlockCanvasAndPost(canvas);
+      mHasPendingUpdates = false;
     } catch (IllegalArgumentException | IllegalStateException e) {
-      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in Surface.unlockCanvasAndPost");
-    }
-  }
-
-  private void markChildrenUpdatesSeen(ReactShadowNode shadowNode) {
-    for (int i = 0; i < shadowNode.getChildCount(); i++) {
-      ReactShadowNode child = shadowNode.getChildAt(i);
-      child.markUpdateSeen();
-      markChildrenUpdatesSeen(child);
+      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in SurfaceView.drawOutput");
+    } catch (RuntimeException e) {
+      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in SurfaceView.drawOutput");
     }
   }
 
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     mSurface = new Surface(surface);
-    drawOutput();
+    if (mHasPendingUpdates) {
+      drawOutput();
+    }
   }
 
   @Override
@@ -99,7 +109,9 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
+  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+    drawOutput();
+  }
 
   @Override
   public void onSurfaceTextureUpdated(SurfaceTexture surface) {}

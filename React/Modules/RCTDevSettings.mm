@@ -15,32 +15,37 @@
 
 #import <jschelpers/JavaScriptCore.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
 #import "RCTJSCSamplingProfiler.h"
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
-NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
-NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
-NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
-NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
-NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingIsJSCProfilingEnabled = @"RCTJSCProfilerEnabled";
-NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
+static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
+static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
+static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
+static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
+static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
 
 #if ENABLE_PACKAGER_CONNECTION
 #import "RCTPackagerConnection.h"
+#endif
+
+#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper.h")
+
+#if ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
 #endif
 
 #if RCT_DEV
@@ -127,6 +132,11 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
+
 - (instancetype)init
 {
   // default behavior is to use NSUserDefaults
@@ -141,6 +151,7 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _dataSource = dataSource;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
@@ -149,10 +160,30 @@ RCT_EXPORT_MODULE()
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _synchronizeAllSettings];
-      [self _configurePackagerConnection];
     });
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
+  _bridge = bridge;
+  [self _configurePackagerConnection];
+
+#if ENABLE_INSPECTOR
+  // we need this dispatch back to the main thread because even though this
+  // is executed on the main thread, at this point the bridge is not yet
+  // finished with its initialisation. But it does finish by the time it
+  // relinquishes control of the main thread, so only queue on the JS thread
+  // after the current main thread operation is done.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [bridge dispatchBlock:^{
+      [RCTInspectorDevServerHelper connectForContext:bridge.jsContextRef
+                                       withBundleURL:bridge.bundleURL];
+    } queue:RCTJSThread];
+  });
+#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -346,16 +377,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
 }
 
-- (void)setIsJSCProfilingEnabled:(BOOL)isJSCProfilingEnabled
-{
-  [self _updateSettingWithValue:@(isJSCProfilingEnabled) forKey:kRCTDevSettingIsJSCProfilingEnabled];
-}
-
-- (BOOL)isJSCProfilingEnabled
-{
-  return [[self settingForKey:kRCTDevSettingIsJSCProfilingEnabled] boolValue];
-}
-
 - (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
 {
   [self _updateSettingWithValue:@(startSamplingProfilerOnLaunch) forKey:kRCTDevSettingStartSamplingProfilerOnLaunch];
@@ -385,6 +406,20 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
+#if ENABLE_PACKAGER_CONNECTION
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
+{
+  RCTAssert(_packagerConnection, @"Expected packager connection");
+  [_packagerConnection addHandler:handler forMethod:name];
+}
+
+#elif RCT_DEV
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name {}
+
+#endif
+
 #pragma mark - Internal
 
 - (void)_configurePackagerConnection
@@ -394,8 +429,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     return;
   }
 
-  _packagerConnection = [[RCTPackagerConnection alloc] initWithBridge:_bridge];
-  [_packagerConnection connect];
+  _packagerConnection = [RCTPackagerConnection connectionForBridge:_bridge];
 #endif
 }
 
