@@ -15,7 +15,9 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
+#import "RCTCxxConvert.h"
 #import "RCTLog.h"
+#import "RCTManagedPointer.h"
 #import "RCTParserUtils.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -60,12 +62,14 @@ static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+RCT_EXTERN_C_BEGIN
+
 // returns YES if the selector ends in a colon (indicating that there is at
 // least one argument, and maybe more selector parts) or NO if it doesn't.
 static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
 {
   NSString *selectorPart;
-  if (RCTParseIdentifier(input, &selectorPart)) {
+  if (RCTParseSelectorIdentifier(input, &selectorPart)) {
     [selector appendString:selectorPart];
   }
   RCTSkipWhitespace(input);
@@ -157,13 +161,15 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
     }
 
     // Argument name
-    RCTParseIdentifier(&input, NULL);
+    RCTParseArgumentIdentifier(&input, NULL);
     RCTSkipWhitespace(&input);
   }
 
   *arguments = [args copy];
   return NSSelectorFromString(selector);
 }
+
+RCT_EXTERN_C_END
 
 - (instancetype)initWithExportedMethod:(const RCTMethodInfo *)exportedMethod
                            moduleClass:(Class)moduleClass
@@ -211,7 +217,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
 
 #define __PRIMITIVE_CASE(_type, _nullable) {                                           \
   isNullableType = _nullable;                                                          \
-  _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;                       \
+  _type (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;                   \
   [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
     _type value = convert([RCTConvert class], selector, json);                         \
     [invocation setArgument:&value atIndex:(index) + 2];                               \
@@ -274,7 +280,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
 
         case _C_ID: {
           isNullableType = YES;
-          id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
+          id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           RCT_RETAINED_ARG_BLOCK(
             id value = convert([RCTConvert class], selector, json);
           );
@@ -300,7 +306,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
         }
 
         default: {
-          static const char *blockType = @encode(typeof(^{}));
+          static const char *blockType = @encode(__typeof__(^{}));
           if (!strcmp(objcType, blockType)) {
             BLOCK_CASE((NSArray *args), {
               [bridge enqueueCallback:json args:args];
@@ -334,6 +340,22 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
         NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
         [bridge enqueueCallback:json args:@[errorJSON]];
       });
+    } else if ([typeName hasPrefix:@"JS::"]) {
+      NSString *selectorNameForCxxType =
+      [[typeName stringByReplacingOccurrencesOfString:@"::" withString:@"_"]
+       stringByAppendingString:@":"];
+      selector = NSSelectorFromString(selectorNameForCxxType);
+
+      [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
+        RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+        RCTManagedPointer *box = convert([RCTCxxConvert class], selector, json);
+
+        void *pointer = box.voidPointer;
+        [invocation setArgument:&pointer atIndex:index + 2];
+        [retainedObjects addObject:box];
+
+        return YES;
+      }];
     } else {
       // Unknown argument type
       RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert to support this type.",
