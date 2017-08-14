@@ -47,6 +47,7 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
   SEL _selector;
   NSInvocation *_invocation;
   NSArray<RCTArgumentBlock> *_argumentBlocks;
+  NSMutableArray *_retainedObjects;
 }
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
@@ -186,6 +187,8 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
   invocation.selector = _selector;
   _invocation = invocation;
+  NSMutableArray *retainedObjects = [NSMutableArray array];
+  _retainedObjects = retainedObjects;
 
   // Process arguments
   NSUInteger numberOfArguments = methodSignature.numberOfArguments;
@@ -196,30 +199,39 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
   __weak RCTModuleMethod *weakSelf = self;
 #endif
 
-#define RCT_ARG_BLOCK(_logic) \
+#define RCT_RETAINED_ARG_BLOCK(_logic) \
 [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
   _logic                                                                             \
   [invocation setArgument:&value atIndex:(index) + 2];                               \
+  if (value) {                                                                       \
+    [retainedObjects addObject:value];                                               \
+  }                                                                                  \
   return YES;                                                                        \
 }]
 
-#define __PRIMITIVE_CASE(_type, _nullable) {                                   \
-  isNullableType = _nullable;                                                  \
-  _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;               \
-  RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ); \
-  break;                                                                       \
+#define __PRIMITIVE_CASE(_type, _nullable) {                                           \
+  isNullableType = _nullable;                                                          \
+  _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;                       \
+  [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+    _type value = convert([RCTConvert class], selector, json);                         \
+    [invocation setArgument:&value atIndex:(index) + 2];                               \
+    return YES;                                                                        \
+  }];                                                                                  \
+  break;                                                                               \
 }
 
 #define PRIMITIVE_CASE(_type) __PRIMITIVE_CASE(_type, NO)
 #define NULLABLE_PRIMITIVE_CASE(_type) __PRIMITIVE_CASE(_type, YES)
 
-// Explicitly copy the block and retain it, since NSInvocation doesn't retain them
-#define __COPY_BLOCK(block...) \
-  id value = [block copy]; \
-  CFBridgingRetain(value)
+// Explicitly copy the block
+#define __COPY_BLOCK(block...)         \
+  id value = [block copy];             \
+  if (value) {                         \
+    [retainedObjects addObject:value]; \
+  }                                    \
 
 #if RCT_DEBUG
-#define BLOCK_CASE(_block_args, _block) RCT_ARG_BLOCK(                  \
+#define BLOCK_CASE(_block_args, _block) RCT_RETAINED_ARG_BLOCK(         \
   if (json && ![json isKindOfClass:[NSNumber class]]) {                 \
     RCTLogArgumentError(weakSelf, index, json, "should be a function"); \
     return NO;                                                          \
@@ -231,7 +243,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
 )
 #else
 #define BLOCK_CASE(_block_args, _block) \
-  RCT_ARG_BLOCK( __COPY_BLOCK(^_block_args { _block }); )
+  RCT_RETAINED_ARG_BLOCK( __COPY_BLOCK(^_block_args { _block }); )
 #endif
 
   for (NSUInteger i = 2; i < numberOfArguments; i++) {
@@ -263,9 +275,8 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
         case _C_ID: {
           isNullableType = YES;
           id (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;
-          RCT_ARG_BLOCK(
+          RCT_RETAINED_ARG_BLOCK(
             id value = convert([RCTConvert class], selector, json);
-            CFBridgingRetain(value);
           );
           break;
         }
@@ -485,24 +496,8 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
   // Invoke method
   [_invocation invokeWithTarget:module];
 
-  RCTAssert(
-    @encode(RCTArgumentBlock)[0] == _C_ID,
-    @"Block type encoding has changed, it won't be released. A check for the block"
-     "type encoding (%s) has to be added below.",
-    @encode(RCTArgumentBlock)
-  );
-
   index = 2;
-  for (NSUInteger length = _invocation.methodSignature.numberOfArguments; index < length; index++) {
-    if ([_invocation.methodSignature getArgumentTypeAtIndex:index][0] == _C_ID) {
-      __unsafe_unretained id value;
-      [_invocation getArgument:&value atIndex:index];
-
-      if (value) {
-        CFRelease((__bridge CFTypeRef)value);
-      }
-    }
-  }
+  [_retainedObjects removeAllObjects];
 
   if (_methodInfo->isSync) {
     void *returnValue;
