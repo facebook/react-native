@@ -679,6 +679,8 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void onPackagerReloadCommand() {
+    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+    mDevServerHelper.disableDebugger();
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
