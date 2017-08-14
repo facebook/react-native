@@ -18,6 +18,7 @@ typedef void (^RCTMultipartProgressCallback)(NSDictionary *headers, NSNumber *lo
 @interface RCTMultipartStreamReader : NSObject
 
 - (instancetype)initWithInputStream:(NSInputStream *)stream boundary:(NSString *)boundary;
-- (BOOL)readAllParts:(RCTMultipartCallback)callback progressCallback:(RCTMultipartProgressCallback)progressCallback;
+- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
+                          progressCallback:(RCTMultipartProgressCallback)progressCallback;
 
 @end

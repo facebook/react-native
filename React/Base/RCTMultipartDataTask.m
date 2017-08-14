@@ -121,7 +121,7 @@ didBecomeInputStream:(NSInputStream *)inputStream
   _partHandler = nil;
   NSInteger statusCode = _statusCode;
 
-  BOOL completed = [reader readAllParts:^(NSDictionary *headers, NSData *content, BOOL done) {
+  BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
     partHandler(statusCode, headers, content, nil, done);
   } progressCallback:_progressHandler];
   if (!completed) {
