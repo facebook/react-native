@@ -267,10 +267,10 @@ public class ReactInstanceManager {
       mPackages.add(coreModulesPackage);
     } else {
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
+      if (mUseDeveloperSupport) {
+        mPackages.add(new DebugCorePackage());
+      }
       if (!useOnlyDefaultPackages) {
-        if (mUseDeveloperSupport) {
-          mPackages.add(new DebugCorePackage());
-        }
         mPackages.add(
           new ReactNativeCorePackage(
             this,
