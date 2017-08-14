@@ -12,12 +12,30 @@
 
 'use strict';
 
-var ReactNativeFeatureFlags = {
-  useFiber: false,
-};
+var useFiber;
 
-if (__DEV__) {
-  require('Systrace').installReactHook(false);
-}
+var ReactNativeFeatureFlags = {
+  get useFiber(): boolean {
+    if (useFiber == null) {
+      useFiber = true;
+      if (__DEV__) {
+        require('Systrace').installReactHook(useFiber);
+      }
+    }
+    return useFiber;
+  },
+  set useFiber(enabled: boolean): void {
+    if (useFiber != null) {
+      throw new Error(
+        'Cannot set useFiber feature flag after it has been accessed. ' +
+        'Please override it before requiring React.',
+      );
+    }
+    useFiber = enabled;
+    if (__DEV__) {
+      require('Systrace').installReactHook(useFiber);
+    }
+  },
+};
 
 module.exports = ReactNativeFeatureFlags;
