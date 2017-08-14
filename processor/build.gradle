@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.squareup:javapoet:1.9.0'
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
+}
+
+// code to generate processor.jar in libs
+//sourceSets {
+//    main {
+//        java {
+//            srcDirs = ['../ReactAndroid/src/main/java']
+//            includes = [
+//                'com/facebook/react/processing/ReactNativeModuleProcessor.java',
+//                'com/facebook/react/processing/ReactPropertyProcessor.java',
+//                'com/facebook/react/bridge/Callback.java',
+//                'com/facebook/react/bridge/Promise.java',
+//                'com/facebook/react/bridge/ReadableArray.java',
+//                'com/facebook/react/bridge/ReadableType.java',
+//                'com/facebook/react/bridge/ReadableMap.java',
+//                'com/facebook/react/bridge/WritableMap.java',
+//                'com/facebook/react/bridge/WritableArray.java',
+//                'com/facebook/react/bridge/Dynamic.java',
+//                'com/facebook/react/bridge/ReactMethod.java',
+//                'com/facebook/react/bridge/ReadableMapKeySetIterator.java',
+//                'com/facebook/proguard/annotations/DoNotStrip.java',
+//                'com/facebook/react/uimanager/annotations/*.java',
+//            ]
+//        }
+//    }
+//}
