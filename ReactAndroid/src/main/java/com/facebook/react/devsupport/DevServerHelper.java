@@ -90,6 +90,8 @@ public class DevServerHelper {
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
+  private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
+
   public interface OnServerContentChangeListener {
     void onServerContentChanged();
   }
@@ -208,6 +210,18 @@ public class DevServerHelper {
   public void openInspector(String id) {
     if (mInspectorPackagerConnection != null) {
       mInspectorPackagerConnection.sendOpenEvent(id);
+    }
+  }
+
+  public void sendEventToAllConnections(String event) {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendEventToAllConnections(event);
+    }
+  }
+
+  public void disableDebugger() {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendEventToAllConnections(DEBUGGER_MSG_DISABLE);
     }
   }
 
