@@ -8,11 +8,6 @@
  */
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
@@ -30,6 +25,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaDirection;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * An class that is used to receive React commands from JS and translate them into a
@@ -92,7 +90,7 @@ public class UIImplementation {
 
   protected ReactShadowNode createShadowNode(String className) {
     ViewManager viewManager = mViewManagers.get(className);
-    return viewManager.createShadowNodeInstance();
+    return viewManager.createShadowNodeInstance(mReactContext);
   }
 
   protected final ReactShadowNode resolveShadowNode(int reactTag) {

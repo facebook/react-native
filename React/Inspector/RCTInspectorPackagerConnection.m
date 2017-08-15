@@ -74,6 +74,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)sendEventToAllConnections:(NSString *)event
+{
+  for (NSString *pageId in _inspectorConnections) {
+    [_inspectorConnections[pageId] sendMessage:event];
+  }
+}
+
 - (void)closeAllConnections
 {
   for (NSString *pageId in _inspectorConnections){

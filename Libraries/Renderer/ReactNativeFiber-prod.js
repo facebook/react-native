@@ -3384,7 +3384,7 @@ function resetTouchRecord(touchRecord, touch) {
 
 function getTouchIdentifier(_ref) {
     var identifier = _ref.identifier;
-    return invariant(null != identifier, "Touch object is missing identifier."), warning$15(identifier <= MAX_TOUCH_BANK, "Touch identifier %s is greater than maximum supported %s which causes " + "performance issues backfilling array locations for all of the indices.", identifier, MAX_TOUCH_BANK), 
+    return invariant(null != identifier, "Touch object is missing identifier."), 
     identifier;
 }
 

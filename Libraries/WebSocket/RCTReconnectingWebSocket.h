@@ -25,6 +25,8 @@
 
 - (instancetype)initWithURL:(NSURL *)url;
 @property (nonatomic, weak) id<RCTWebSocketProtocolDelegate> delegate;
+/** @brief Must be set before -start to have effect */
+@property (nonatomic, strong) dispatch_queue_t delegateDispatchQueue;
 - (void)send:(id)data;
 - (void)start;
 - (void)stop;
