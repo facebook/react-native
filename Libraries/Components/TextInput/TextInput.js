@@ -212,6 +212,7 @@ const TextInput = createReactClass({
      * If true, will increase the height of the textbox if need be. If false,
      * the textbox will become scrollable once the height is reached. The
      * default value is false.
+     * @platform android
      */
     autoGrow: PropTypes.bool,
     /**
@@ -554,7 +555,7 @@ const TextInput = createReactClass({
   mixins: [NativeMethodsMixin, TimerMixin],
 
   getInitialState: function() {
-    return {nativeHeight: this._originalNativeHeight};
+    return {layoutHeight: this._layoutHeight};
   },
 
   /**
@@ -574,7 +575,7 @@ const TextInput = createReactClass({
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
-  _originalNativeHeight: (-1: number),
+  _layoutHeight: (-1: number),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -690,7 +691,6 @@ const TextInput = createReactClass({
         children = [children, props.inputView];
       }
       props.style.unshift(styles.multilineInput);
-      props.style.push({height: this.state.nativeHeight});
       textContainer =
         <RCTTextView
           ref={this._setNativeRef}
@@ -699,7 +699,7 @@ const TextInput = createReactClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onContentSizeChange={this._onContentSizeChange}
+          onContentSizeChange={this.props.onContentSizeChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -725,7 +725,10 @@ const TextInput = createReactClass({
 
   _renderAndroid: function() {
     const props = Object.assign({}, this.props);
-    props.style = [{height: this.state.nativeHeight}, this.props.style];
+    props.style = this.props.style;
+    if (this.state.layoutHeight >= 0) {
+      props.style = [props.style, {height: this.state.layoutHeight}];
+    }
     props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
@@ -761,7 +764,7 @@ const TextInput = createReactClass({
 
     return (
       <TouchableWithoutFeedback
-        onLayout={this.props.onLayout}
+        onLayout={this._onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
@@ -813,21 +816,23 @@ const TextInput = createReactClass({
   },
 
   _onContentSizeChange: function(event: Event) {
-    const height = event.nativeEvent.contentSize.height;
-    if (this._originalNativeHeight < 0) {
-      this._originalNativeHeight = height;
-    }
+    let contentHeight = event.nativeEvent.contentSize.height;
     if (this.props.autoGrow) {
       if (this.props.maxHeight) {
-        this.setState({nativeHeight:
-          Math.min(this.props.maxHeight, height)});
-      } else if (Platform.OS === 'android') {
-        this.setState({nativeHeight: height});
+        contentHeight = Math.min(this.props.maxHeight, contentHeight);
       }
-    } else {
-      this.setState({nativeHeight: this._originalNativeHeight});
+      this.setState({layoutHeight: Math.max(this._layoutHeight, contentHeight)});
     }
+
     this.props.onContentSizeChange && this.props.onContentSizeChange(event);
+  },
+
+  _onLayout: function(event: Event) {
+    const height = event.nativeEvent.layout.height;
+    if (height) {
+      this._layoutHeight = event.nativeEvent.layout.height;
+    }
+    this.props.onLayout && this.props.onLayout(event);
   },
 
   _onSelectionChange: function(event: Event) {
