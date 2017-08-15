@@ -21,6 +21,7 @@ const getPreset = (src, options) => {
 
   plugins.push(
     'syntax-class-properties',
+    'syntax-dynamic-import',
     'syntax-trailing-function-commas',
     'transform-class-properties',
     'transform-es2015-block-scoping',
