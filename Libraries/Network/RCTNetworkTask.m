@@ -75,7 +75,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     id token = [_handler sendRequest:_request withDelegate:self];
     if ([self validateRequestToken:token]) {
       _selfReference = self;
-      _status = RCTNetworkTaskInProgress;
+      if (_status == RCTNetworkTaskPending) {
+        _status = RCTNetworkTaskInProgress;
+      }
     }
   }
 }
