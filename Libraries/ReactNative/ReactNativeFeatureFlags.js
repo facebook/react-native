@@ -12,6 +12,11 @@
 
 'use strict';
 
+// =============================================================================
+// IMPORTANT:
+// When syncing React Renderer, make sure the feature flags are still compatible
+// =============================================================================
+
 var useFiber;
 
 var ReactNativeFeatureFlags = {
