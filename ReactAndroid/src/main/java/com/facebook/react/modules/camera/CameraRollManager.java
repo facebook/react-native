@@ -411,30 +411,46 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       width = photos.getInt(widthIndex);
       height = photos.getInt(heightIndex);
     }
-    if (width <= 0 || height <= 0) {
+
+    if (assetType != null
+        && assetType.equals("Videos")
+        && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
-        if (assetType != null
-            && assetType.equals("Videos")
-            && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-          MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-          retriever.setDataSource(photoDescriptor.getFileDescriptor());
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+
+        if (width <= 0 || height <= 0) {
           width =
               Integer.parseInt(
                   retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
           height =
               Integer.parseInt(
                   retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-          retriever.release();
-        } else {
-          BitmapFactory.Options options = new BitmapFactory.Options();
-          // Set inJustDecodeBounds to true so we don't actually load the Bitmap, but only get its
-          // dimensions instead.
-          options.inJustDecodeBounds = true;
-          BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
-          width = options.outWidth;
-          height = options.outHeight;
         }
+        int timeInMillisec =
+            Integer.parseInt(
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        int playableDuration = timeInMillisec / 1000;
+        image.putInt("playableDuration", playableDuration);
+        retriever.release();
+        photoDescriptor.close();
+      } catch (IOException e) {
+        FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
+        return false;
+      }
+    }
+
+    if (width <= 0 || height <= 0) {
+      try {
+        AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        // Set inJustDecodeBounds to true so we don't actually load the Bitmap, but only get its
+        // dimensions instead.
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
+        width = options.outWidth;
+        height = options.outHeight;
         photoDescriptor.close();
       } catch (IOException e) {
         FLog.e(ReactConstants.TAG, "Could not get width/height for " + photoUri.toString(), e);
