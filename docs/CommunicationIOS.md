@@ -128,7 +128,7 @@ When integrating native and React Native, we also need a way to consolidate two 
 
 ### Layout of a native component embedded in React Native
 
-This case is covered in [this article](docs/native-components-ios.html#styles). Basically, as all our native react views are subclasses of `UIView`, most style and size attributes will work like you would expect out of the box.
+This case is covered in [this article](docs/native-components-ios.html#events). Basically, as all our native react views are subclasses of `UIView`, most style and size attributes will work like you would expect out of the box.
 
 ### Layout of a React Native component embedded in native
 
