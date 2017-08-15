@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -413,15 +414,28 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     if (width <= 0 || height <= 0) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        // Set inJustDecodeBounds to true so we don't actually load the Bitmap, but only get its
-        // dimensions instead.
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
+        if (assetType != null
+            && assetType.equals("Videos")
+            && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+          MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+          retriever.setDataSource(photoDescriptor.getFileDescriptor());
+          width =
+              Integer.parseInt(
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+          height =
+              Integer.parseInt(
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+          retriever.release();
+        } else {
+          BitmapFactory.Options options = new BitmapFactory.Options();
+          // Set inJustDecodeBounds to true so we don't actually load the Bitmap, but only get its
+          // dimensions instead.
+          options.inJustDecodeBounds = true;
+          BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
+          width = options.outWidth;
+          height = options.outHeight;
+        }
         photoDescriptor.close();
-
-        width = options.outWidth;
-        height = options.outHeight;
       } catch (IOException e) {
         FLog.e(ReactConstants.TAG, "Could not get width/height for " + photoUri.toString(), e);
         return false;
