@@ -728,7 +728,7 @@ public class UIViewOperationQueue {
   /* package */ void dispatchViewUpdates(final int batchId) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-      "UIImplementation.dispatchViewUpdates")
+      "UIViewOperationQueue.dispatchViewUpdates")
       .arg("batchId", batchId)
       .flush();
     try {
