@@ -29,6 +29,7 @@ const colors = [
   '#ff0000',
   '#00ff00',
   '#0000ff',
+  'rgba(0, 0, 0, 0.4)',
 ];
 
 const barStyles = [
@@ -405,7 +406,7 @@ const examples = [{
   },
   platform: 'android',
 }, {
-  title: 'StatusBar background color',
+  title: 'StatusBar translucent',
   render() {
     return <StatusBarTranslucentExample />;
   },

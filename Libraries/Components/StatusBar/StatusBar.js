@@ -145,7 +145,7 @@ function createStackEntry(props: any): any {
  * set by the static API will get overriden by the one set by the component in
  * the next render.
  *
- * ### Constants
+ * ### Constants
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
