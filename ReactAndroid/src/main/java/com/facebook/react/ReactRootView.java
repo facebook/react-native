@@ -81,7 +81,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
   private boolean mIsAttachedToInstance;
-  private boolean mContentAppeared;
+  private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -195,18 +195,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void onViewAdded(View child) {
     super.onViewAdded(child);
 
-    if (!mContentAppeared) {
-      mContentAppeared = true;
-      ReactMarker.logMarker(
-          ReactMarkerConstants.CONTENT_APPEARED, getJSModuleName(), getRootViewTag());
+    if (mShouldLogContentAppeared) {
+      mShouldLogContentAppeared = false;
+
+      if (mJSModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
+      }
     }
-  }
-
-  @Override
-  public void removeAllViewsInLayout() {
-    super.removeAllViewsInLayout();
-
-    mContentAppeared = false;
   }
 
   /**
@@ -240,6 +235,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
+      mShouldLogContentAppeared = true;
 
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
@@ -263,6 +259,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mIsAttachedToInstance = false;
       mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
     }
+    mShouldLogContentAppeared = true;
   }
 
   public void onAttachedToReactInstance() {
