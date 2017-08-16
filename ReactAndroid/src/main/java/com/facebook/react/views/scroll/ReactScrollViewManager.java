@@ -11,12 +11,14 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.graphics.Color;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
@@ -170,6 +172,25 @@ public class ReactScrollViewManager
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactScrollView view, @Nullable String borderStyle) {
     view.setBorderStyle(borderStyle);
+  }
+
+  /**
+   * When set, the scrollview will scroll to the given position on initial layout
+   * @param view
+   * @param contentOffset
+   */
+  @ReactProp(name = "contentOffset")
+  public void setContentOffset(ReactScrollView view, ReadableMap contentOffset) {
+    if (!contentOffset.hasKey("x") || !contentOffset.hasKey("y")) {
+      return;
+    }
+
+    int destX = Math.round(PixelUtil.toPixelFromDIP(contentOffset.getDouble("x")));
+    int destY = Math.round(PixelUtil.toPixelFromDIP(contentOffset.getDouble("y")));
+    HashMap<String, Integer> initialOffset = new HashMap<String, Integer>();
+    initialOffset.put("x", destX);
+    initialOffset.put("y", destY);
+    view.setContentOffset(initialOffset);
   }
 
   @ReactPropGroup(names = {
