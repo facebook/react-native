@@ -53,11 +53,6 @@ class WebView extends React.Component {
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
     onError: PropTypes.func,
-    /**
-     * Function that is invoked when the `WebView` load fails due to an SSL error.
-     * @platform android
-     */
-    onSslError: PropTypes.func,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
@@ -372,19 +367,6 @@ class WebView extends React.Component {
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
-
-    this.setState({
-      lastErrorEvent: event.nativeEvent,
-      viewState: WebViewState.ERROR
-    });
-  };
-
-  onLoadingSslError = (event) => {
-    event.persist(); // persist this event because we need to store it
-    var {onSslError, onLoadEnd} = this.props;
-    onSslError && onSslError(event);
-    onLoadEnd && onLoadEnd(event);
-    console.warn('Encountered an SSL error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,

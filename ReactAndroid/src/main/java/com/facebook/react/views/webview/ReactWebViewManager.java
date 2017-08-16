@@ -57,7 +57,6 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.react.views.webview.events.TopLoadingSslErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
 
@@ -184,10 +183,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       ReactWebView reactWebView = (ReactWebView) webView;
       WritableMap eventData = reactWebView.createWebViewEvent(error.getUrl());
       eventData.putDouble("code", error.getPrimaryError());
+      eventData.putBoolean("isSslError", true);
 
       dispatchEvent(
         webView,
-        new TopLoadingSslErrorEvent(webView.getId(), eventData));
+        new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
     @Override
