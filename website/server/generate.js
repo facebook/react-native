@@ -76,11 +76,11 @@ glob('src/**/*.*', function(er, files) {
       queue = queue.then(function() {
         return new Promise(function(resolve, reject) {
           phin('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response) {
-            var body = response.body;
             if (error) {
               reject(error);
               return;
             }
+            var body = response.body;
             if (response.statusCode != 200) {
               reject(new Error('Status ' + response.statusCode + ':\n' + body));
               return;
