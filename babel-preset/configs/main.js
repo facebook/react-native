@@ -13,13 +13,7 @@
 var resolvePlugins = require('../lib/resolvePlugins');
 
 const getPreset = (src, options) => {
-  const plugins = [];
-  const isNull = src === null || src === undefined;
-  const hasClass = isNull || src.indexOf('class') !== -1;
-  const hasForOf =
-    isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
-
-  plugins.push(
+  const plugins = [
     'syntax-class-properties',
     'syntax-trailing-function-commas',
     'transform-class-properties',
@@ -38,7 +32,11 @@ const getPreset = (src, options) => {
       'transform-es2015-modules-commonjs',
       {strict: false, allowTopLevelThis: true},
     ],
-  );
+  ];
+  const isNull = src === null || src === undefined;
+  const hasClass = isNull || src.indexOf('class') !== -1;
+  const hasForOf =
+    isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
 
   if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
     plugins.push('syntax-async-functions');
