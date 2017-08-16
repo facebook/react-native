@@ -9,7 +9,7 @@
 'use strict';
 
 var Promise = require('bluebird');
-var request = require('request');
+var phin = require('phin');
 var glob = require('glob');
 var fs = require('fs.extra');
 var mkdirp = require('mkdirp');
@@ -75,7 +75,8 @@ glob('src/**/*.*', function(er, files) {
       targetFile = targetFile.replace(/\.js$/, '.html');
       queue = queue.then(function() {
         return new Promise(function(resolve, reject) {
-          request('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response, body) {
+          phin('http://localhost:8079/' + targetFile.replace(/^build\//, ''), function(error, response) {
+            var body = response.body;
             if (error) {
               reject(error);
               return;
