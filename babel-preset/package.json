@@ -44,6 +44,7 @@
     "babel-plugin-transform-react-jsx-source": "^6.5.0",
     "babel-plugin-transform-react-jsx": "^6.5.0",
     "babel-plugin-transform-regenerator": "^6.5.0",
+    "babel-template": "^6.24.1",
     "react-transform-hmr": "^1.0.4"
   }
 }
