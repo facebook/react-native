@@ -23,6 +23,7 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
+#import <React/RCTDevSettings.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 
@@ -538,13 +539,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
        object:self->_parentBridge userInfo:@{@"bridge": self}];
+
+#if RCT_DEV
+      RCTLogWarn(@"RCTBatchedBridge is deprecated and will be removed in a future React Native release. "
+        "See https://fb.me/react-cxx-bridge for upgrade instructions.");
+#endif
     });
 
     [self _flushPendingCalls];
   }];
 
 #if RCT_DEV
-  if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
+  if (_parentBridge.devSettings.isHotLoadingEnabled) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
@@ -1067,7 +1073,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
 
     NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
+                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@",
                          exception, method.JSMethodName, moduleData.name, params];
     RCTFatal(RCTErrorWithMessage(message));
     return nil;

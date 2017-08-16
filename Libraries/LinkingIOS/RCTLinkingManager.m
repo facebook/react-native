@@ -13,15 +13,14 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 
-NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
-
+static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 
 static void postNotificationWithURL(NSURL *URL, id sender)
 {
   NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                        object:sender
-                                                      userInfo:payload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
+                                                      object:sender
+                                                    userInfo:payload];
 }
 
 @implementation RCTLinkingManager
@@ -37,7 +36,7 @@ RCT_EXPORT_MODULE()
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleOpenURLNotification:)
-                                               name:RCTOpenURLNotification
+                                               name:kOpenURLNotification
                                              object:nil];
 }
 
@@ -74,7 +73,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
                                                         object:self
                                                       userInfo:payload];
   }

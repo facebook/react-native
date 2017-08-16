@@ -426,7 +426,7 @@ var LayoutPropTypes = {
     'space-around'
   ]),
 
-  /** `overflow` controls how a children are measured and displayed.
+  /** `overflow` controls how children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
    *  causes views to be measured independently of their parents main axis.
    *  It works like `overflow` in CSS (default: visible).

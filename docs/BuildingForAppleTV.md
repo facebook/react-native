@@ -5,7 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/building-for-apple-tv.html
 banner: ejected
-next: native-modules-android
+next: app-extensions
 previous: communication-ios
 ---
 
@@ -83,10 +83,13 @@ class Game2048 extends React.Component {
   }
 
 ```
+- *Dev Menu support*: On the simulator, cmd-D will bring up the developer menu, just like on iOS.  To bring it up on a real Apple TV device, make a long press on the play/pause button on the remote.  (Please do not shake the Apple TV device, that will not work :) )
 
 - *TV remote animations*: `RCTTVView` native code implements Apple-recommended parallax animations to help guide the eye as the user navigates through views.  The animations can be disabled or adjusted with new optional view properties.
 
 - *Back navigation with the TV remote menu button*: The `BackHandler` component, originally written to support the Android back button, now also supports back navigation on the Apple TV using the menu button on the TV remote.
+
+- *TabBarIOS behavior*: The `TabBarIOS` component wraps the native `UITabBar` API, which works differently on Apple TV.  To avoid jittery rerendering of the tab bar in tvOS (see [this issue](https://github.com/facebook/react-native/issues/15081)), the selected tab bar item can only be set from Javascript on initial render, and is controlled after that by the user through native code.
 
 - *Known issues*:
 

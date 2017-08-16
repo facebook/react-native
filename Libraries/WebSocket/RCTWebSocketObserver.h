@@ -8,11 +8,25 @@
  */
 
 #import <React/RCTDefines.h>
-#import <React/RCTWebSocketObserverProtocol.h>
 
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTWebSocketObserver : NSObject <RCTWebSocketObserver>
+@protocol RCTWebSocketObserverDelegate
+
+- (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message;
+
+@end
+
+@interface RCTWebSocketObserver : NSObject
+
+- (instancetype)initWithURL:(NSURL *)url;
+- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue;
+
+@property (nonatomic, weak) id<RCTWebSocketObserverDelegate> delegate;
+
+- (void)start;
+- (void)stop;
+
 @end
 
 #endif

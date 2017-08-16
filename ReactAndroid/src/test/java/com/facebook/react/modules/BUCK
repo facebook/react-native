@@ -11,6 +11,7 @@ rn_robolectric_test(
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),

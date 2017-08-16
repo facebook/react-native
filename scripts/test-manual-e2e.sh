@@ -98,7 +98,7 @@ info "   - Disable Hot Reloading. It might be enabled from last time (the settin
 info "   - Verify 'Reload JS' works"
 info "   - Test Chrome debugger by adding breakpoints and reloading JS. We don't have tests for Chrome debugging."
 info "   - Disable Chrome debugging."
-info "   - Enable Hot Reloading, change a file (index.ios.js, index.android.js) and save. The UI should refresh."
+info "   - Enable Hot Reloading, change a file (index.js) and save. The UI should refresh."
 info "   - Disable Hot Reloading."
 info ""
 info "Press any key to open the project in Xcode"

@@ -9,15 +9,11 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
@@ -37,9 +33,10 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -76,9 +73,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   protected static final String NAME = "UIManager";
 
-  // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
-  // increment here is 10
-  private static final int ROOT_VIEW_TAG_INCREMENT = 10;
   private static final boolean DEBUG = false;
 
   private final EventDispatcher mEventDispatcher;
@@ -86,7 +80,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
-  private int mNextRootViewTag = 1;
   private int mBatchId = 0;
 
   public UIManagerModule(
@@ -188,8 +181,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
       "UIManagerModule.addRootView");
-    final int tag = mNextRootViewTag;
-    mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
+    final int tag = ((TaggedRootView) rootView).getRootViewTag();
 
     final int width;
     final int height;

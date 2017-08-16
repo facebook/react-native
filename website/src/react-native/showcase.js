@@ -35,17 +35,26 @@ const featuredApps = showcaseApps.filter(app => {
 
 const apps = pinnedApps.concat(featuredApps);
 
-const AppList = React.createClass({
+class AppList extends React.Component {
+  constructor(props, context) {
+    super(props, context);
 
-  render: function() {
+    this._renderApp = this._renderApp.bind(this);
+    this._renderAppIcon = this._renderAppIcon.bind(this);
+    this._renderAppName = this._renderAppName.bind(this);
+    this._renderInfo = this._renderInfo.bind(this);
+    this._renderLinks = this._renderLinks.bind(this);
+  }
+
+  render() {
     return (
       <div>
         {this.props.apps.map(this._renderApp)}
       </div>
     );
-  },
+  }
 
-  _renderApp: function(app, i) {
+  _renderApp(app, i) {
     return (
       <div className="showcase" key={i}>
         <div>
@@ -59,17 +68,17 @@ const AppList = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  _renderAppIcon: function(app) {
+  _renderAppIcon(app) {
     return <img src={app.icon} alt={app.name} />;
-  },
+  }
 
-  _renderAppName: function(name) {
+  _renderAppName(name) {
     return <h3>{name}</h3>;
-  },
+  }
 
-  _renderInfo: function(title, uri) {
+  _renderInfo(title, uri) {
     let info = null;
     if (uri) {
       info = <p><a href={uri} target="_blank">{title}</a></p>;
@@ -78,9 +87,9 @@ const AppList = React.createClass({
     return (
       {info}
     );
-  },
+  }
 
-  _renderLinks: function(app) {
+  _renderLinks(app) {
     if (!app.linkAppStore && !app.linkPlayStore) {
       return;
     }
@@ -95,11 +104,11 @@ const AppList = React.createClass({
         {linkPlayStore}
       </p>
     );
-  },
-});
+  }
+}
 
-const showcase = React.createClass({
-  render: function() {
+class showcase extends React.Component {
+  render() {
     return (
       <Site section="showcase" title="Showcase">
         <section className="content wrap documentationContent nosidebar showcaseSection">
@@ -130,6 +139,6 @@ const showcase = React.createClass({
       </Site>
     );
   }
-});
+}
 
 module.exports = showcase;

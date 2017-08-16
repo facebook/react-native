@@ -12,6 +12,7 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
 const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
@@ -19,6 +20,19 @@ const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
 };
 
 function runIOS(argv, config, args) {
+  if (!fs.existsSync(args.projectPath)) {
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['ios'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+      return;
+    } else {
+      throw new Error('iOS project folder not found. Are you sure this is a React Native project?');
+    }
+  }
   process.chdir(args.projectPath);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
   if (!xcodeProject) {
@@ -161,7 +175,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
-      return buildProcess.error? reject(error) : resolve();
+      return buildProcess.error? reject(buildProcess.error) : resolve();
     });
   });
 }
