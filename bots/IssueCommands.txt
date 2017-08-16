@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, vjeux
+React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, facebook-open-source-bot, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, vjeux
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered.
@@ -32,6 +32,11 @@ close
 
 @facebook-github-bot close
 comment {author} has closed this issue. If you think it should remain open, let us know why. See ["What to Expect from Maintainers"](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues).
+close
+
+@facebook-github-bot large-pr
+comment Thank you for your contribution. As it happens, the pull request size seems relatively large. In order to reduce the load on maintainers, it would be valuable if you could split this into smaller PRs that were very targeted that changed one thing at a time. It could be valuable specifying the goal and steps your PRs will take, in a new issue if one does not already exist, in order to ensure maintainers have context across the stack of PRs. We have added the tag large-pr and closed this task. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review. If this is a codemod or other formatting change that is simple but inheritly touches many files, please comment on this and let us know and we will reopen.
+add-label Large PR
 close
 
 @facebook-github-bot bugfix
