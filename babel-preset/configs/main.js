@@ -21,7 +21,6 @@ const getPreset = (src, options) => {
 
   plugins.push(
     'syntax-class-properties',
-    'syntax-dynamic-import',
     'syntax-trailing-function-commas',
     'transform-class-properties',
     'transform-es2015-block-scoping',
@@ -75,6 +74,9 @@ const getPreset = (src, options) => {
     src.indexOf('createReactClass') !== -1
   ) {
     plugins.push('transform-react-display-name');
+  }
+  if (isNull || src.indexOf('import(')) {
+    plugins.push(require('../transforms/transform-dynamic-import'));
   }
 
   if (options && options.dev) {
