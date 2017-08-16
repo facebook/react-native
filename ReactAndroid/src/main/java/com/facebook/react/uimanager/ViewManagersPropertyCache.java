@@ -28,6 +28,11 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
   private static final Map<Class, Map<String, PropSetter>> CLASS_PROPS_CACHE = new HashMap<>();
   private static final Map<String, PropSetter> EMPTY_PROPS_MAP = new HashMap<>();
 
+  public static void clear() {
+    CLASS_PROPS_CACHE.clear();
+    EMPTY_PROPS_MAP.clear();
+  }
+
   /*package*/ static abstract class PropSetter {
 
     protected final String mPropName;

@@ -16,6 +16,7 @@ var PropTypes = require('prop-types');
 var ViewPropTypes = require('ViewPropTypes');
 var ColorPropType = require('ColorPropType');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
@@ -28,7 +29,7 @@ var STYLE_ATTRIBUTES = [
   'LargeInverse',
 ];
 
-var indeterminateType = function(props, propName, componentName) {
+var indeterminateType = function(props, propName, componentName, ...rest) {
   var checker = function() {
     var indeterminate = props[propName];
     var styleAttr = props.styleAttr;
@@ -37,7 +38,7 @@ var indeterminateType = function(props, propName, componentName) {
     }
   };
 
-  return PropTypes.bool(props, propName, componentName) || checker();
+  return PropTypes.bool(props, propName, componentName, ...rest) || checker();
 };
 
 /**
@@ -63,7 +64,8 @@ var indeterminateType = function(props, propName, componentName) {
  * },
  * ```
  */
-var ProgressBarAndroid = React.createClass({
+var ProgressBarAndroid = createReactClass({
+  displayName: 'ProgressBarAndroid',
   propTypes: {
     ...ViewPropTypes,
     /**

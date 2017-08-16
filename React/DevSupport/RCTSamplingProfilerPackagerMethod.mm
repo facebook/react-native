@@ -11,28 +11,28 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <React/RCTBridge+JavaScriptCore.h>
 #import <jschelpers/JavaScriptCore.h>
 
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 
 #if RCT_DEV // Only supported in dev mode
 
 @implementation RCTSamplingProfilerPackagerMethod {
-  __weak RCTBridge *_bridge;
+  __weak id<RCTJSEnvironment> _jsEnvironment;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithJSEnvironment:(id<RCTJSEnvironment>)jsEnvironment
 {
   if (self = [super init]) {
-    _bridge = bridge;
+    _jsEnvironment = jsEnvironment;
   }
   return self;
 }
 
 - (void)handleRequest:(__unused id)params withResponder:(RCTPackagerClientResponder *)responder
 {
-  JSGlobalContextRef globalContext = [_bridge jsContextRef];
+  JSGlobalContextRef globalContext = _jsEnvironment.jsContextRef;
   if (!JSC_JSSamplingProfilerEnabled(globalContext)) {
     [responder respondWithError:@"The JSSamplingProfiler is disabled. See 'iOS specific setup' section here https://fburl.com/u4lw7xeq for some help"];
     return;
@@ -43,7 +43,7 @@
   if (JSC_JSValueGetType(globalContext, jsResult) == kJSTypeNull) {
     [responder respondWithResult:@"started"];
   } else {
-    JSContext *context = [_bridge jsContext];
+    JSContext *context = _jsEnvironment.jsContext;
     NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
     [responder respondWithResult:results];
   }

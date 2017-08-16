@@ -41,7 +41,7 @@ extern NSString *const FBReferenceImageFilePathKey;
 @property(readwrite, nonatomic, assign) BOOL recordMode;
 
 /**
- @param testClass The subclass of FBSnapshotTestCase that is using this controller.d.
+ @param testClass The subclass of FBSnapshotTestCase that is using this controller.
  @returns An instance of FBSnapshotTestController.
  */
 - (id)initWithTestClass:(Class)testClass;
@@ -52,19 +52,6 @@ extern NSString *const FBReferenceImageFilePathKey;
  @returns An instance of FBSnapshotTestController.
  */
 - (id)initWithTestName:(NSString *)testName;
-
-
-/**
- Performs the comparison of the layer.
- @param layer The Layer to snapshot.
- @param identifier An optional identifier, used is there are muliptle snapshot tests in a given -test method.
- @param errorPtr An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ, etc).
- @returns YES if the comparison (or saving of the reference image) succeeded.
- */
-- (BOOL)compareSnapshotOfLayer:(CALayer *)layer
-                      selector:(SEL)selector
-                    identifier:(NSString *)identifier
-                         error:(NSError **)errorPtr;
 
 /**
  Performs the comparison of the view.
@@ -78,20 +65,6 @@ extern NSString *const FBReferenceImageFilePathKey;
                      selector:(SEL)selector
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr;
-
-/**
- Performs the comparison of a view or layer.
- @param viewOrLayer The view or layer to snapshot.
- @param selector selector
- @param identifier An optional identifier, used is there are muliptle snapshot tests in a given -test method.
- @param errorPtr An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ, etc).
- @returns YES if the comparison (or saving of the reference image) succeeded.
- */
-- (BOOL)compareSnapshotOfViewOrLayer:(id)viewOrLayer
-                            selector:(SEL)selector
-                          identifier:(NSString *)identifier
-                               error:(NSError **)errorPtr;
-
 
 /**
  The directory in which reference images are stored.

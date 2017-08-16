@@ -14,8 +14,12 @@
 using namespace facebook::jni;
 using namespace std;
 
-static inline weak_ref<jobject> *YGNodeJobject(YGNodeRef node) {
-  return reinterpret_cast<weak_ref<jobject> *>(YGNodeGetContext(node));
+struct JYogaNode : public JavaClass<JYogaNode> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNode;";
+};
+
+static inline weak_ref<JYogaNode> *YGNodeJobject(YGNodeRef node) {
+  return reinterpret_cast<weak_ref<JYogaNode> *>(YGNodeGetContext(node));
 }
 
 static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNode) {
@@ -24,7 +28,7 @@ static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNod
 }
 
 static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
-  if(YGNodeGetHasNewLayout(root)){
+  if (YGNodeGetHasNewLayout(root)) {
     if (auto obj = YGNodeJobject(root)->lockLocal()) {
       static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
       static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
@@ -54,28 +58,28 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
       const int PADDING = 2;
       const int BORDER = 4;
 
-      int hasEdgeSetFlag = (int)obj->getFieldValue(edgeSetFlagField);
+      int hasEdgeSetFlag = (int) obj->getFieldValue(edgeSetFlagField);
 
       obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
       obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
       obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
       obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
 
-      if((hasEdgeSetFlag & MARGIN) == MARGIN){
+      if ((hasEdgeSetFlag & MARGIN) == MARGIN) {
         obj->setFieldValue(marginLeftField, YGNodeLayoutGetMargin(root, YGEdgeLeft));
         obj->setFieldValue(marginTopField, YGNodeLayoutGetMargin(root, YGEdgeTop));
         obj->setFieldValue(marginRightField, YGNodeLayoutGetMargin(root, YGEdgeRight));
         obj->setFieldValue(marginBottomField, YGNodeLayoutGetMargin(root, YGEdgeBottom));
       }
 
-      if((hasEdgeSetFlag & PADDING) == PADDING){
+      if ((hasEdgeSetFlag & PADDING) == PADDING) {
         obj->setFieldValue(paddingLeftField, YGNodeLayoutGetPadding(root, YGEdgeLeft));
         obj->setFieldValue(paddingTopField, YGNodeLayoutGetPadding(root, YGEdgeTop));
         obj->setFieldValue(paddingRightField, YGNodeLayoutGetPadding(root, YGEdgeRight));
         obj->setFieldValue(paddingBottomField, YGNodeLayoutGetPadding(root, YGEdgeBottom));
       }
 
-      if((hasEdgeSetFlag & BORDER) == BORDER){
+      if ((hasEdgeSetFlag & BORDER) == BORDER) {
         obj->setFieldValue(borderLeftField, YGNodeLayoutGetBorder(root, YGEdgeLeft));
         obj->setFieldValue(borderTopField, YGNodeLayoutGetBorder(root, YGEdgeTop));
         obj->setFieldValue(borderRightField, YGNodeLayoutGetBorder(root, YGEdgeRight));
@@ -90,7 +94,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
         YGTransferLayoutOutputsRecursive(YGNodeGetChild(root, i));
       }
     } else {
-      YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
+      YGLog(root, YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
     }
   }
 }
@@ -99,7 +103,7 @@ static void YGPrint(YGNodeRef node) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     cout << obj->toString() << endl;
   } else {
-    YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
+    YGLog(node, YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
   }
 }
 
@@ -136,7 +140,7 @@ static YGSize YGJNIMeasureFunc(YGNodeRef node,
 
     return YGSize{*measuredWidth, *measuredHeight};
   } else {
-    YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
+    YGLog(node, YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
     return YGSize{
         widthMode == YGMeasureModeUndefined ? 0 : width,
         heightMode == YGMeasureModeUndefined ? 0 : height,
@@ -148,20 +152,28 @@ struct JYogaLogLevel : public JavaClass<JYogaLogLevel> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaLogLevel;";
 };
 
-static global_ref<jobject> *jLogger;
-static int YGLog(YGLogLevel level, const char *format, va_list args) {
+static int YGJNILogFunc(const YGConfigRef config,
+                        const YGNodeRef node,
+                        YGLogLevel level,
+                        const char *format,
+                        va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
-  static auto logFunc = findClassStatic("com/facebook/yoga/YogaLogger")
-                            ->getMethod<void(local_ref<JYogaLogLevel>, jstring)>("log");
+  static auto logFunc =
+      findClassStatic("com/facebook/yoga/YogaLogger")
+          ->getMethod<void(local_ref<JYogaNode>, local_ref<JYogaLogLevel>, jstring)>("log");
 
   static auto logLevelFromInt =
       JYogaLogLevel::javaClassStatic()->getStaticMethod<JYogaLogLevel::javaobject(jint)>("fromInt");
 
-  logFunc(jLogger->get(),
-          logLevelFromInt(JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
-          Environment::current()->NewStringUTF(buffer));
+  if (auto obj = YGNodeJobject(node)->lockLocal()) {
+    auto jlogger = reinterpret_cast<global_ref<jobject> *>(YGConfigGetContext(config));
+    logFunc(jlogger->get(),
+            obj,
+            logLevelFromInt(JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
+            Environment::current()->NewStringUTF(buffer));
+  }
 
   return result;
 }
@@ -172,27 +184,6 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
 
 static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
   return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
-}
-
-void jni_YGSetLogger(alias_ref<jclass> clazz, alias_ref<jobject> logger) {
-  if (jLogger) {
-    jLogger->releaseAlias();
-    delete jLogger;
-  }
-
-  if (logger) {
-    jLogger = new global_ref<jobject>(make_global(logger));
-    YGSetLogger(YGLog);
-  } else {
-    jLogger = NULL;
-    YGSetLogger(NULL);
-  }
-}
-
-void jni_YGLog(alias_ref<jclass> clazz, jint level, jstring message) {
-  const char *nMessage = Environment::current()->GetStringUTFChars(message, 0);
-  YGLog(static_cast<YGLogLevel>(level), "%s", nMessage);
-  Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
 jlong jni_YGNodeNew(alias_ref<jobject> thiz) {
@@ -221,6 +212,13 @@ void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   YGNodeReset(node);
   YGNodeSetContext(node, context);
   YGNodeSetPrintFunc(node, YGPrint);
+}
+
+void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  YGNodePrint(node,
+              (YGPrintOptions)(YGPrintOptionsStyle | YGPrintOptionsLayout |
+                               YGPrintOptionsChildren));
 }
 
 void jni_YGNodeInsertChild(alias_ref<jobject>, jlong nativePointer, jlong childPointer, jint index) {
@@ -388,14 +386,54 @@ void jni_YGConfigFree(alias_ref<jobject>, jlong nativePointer) {
   YGConfigFree(config);
 }
 
-void jni_YGConfigSetExperimentalFeatureEnabled(alias_ref<jobject>, jlong nativePointer, jint feature, jboolean enabled) {
+void jni_YGConfigSetExperimentalFeatureEnabled(alias_ref<jobject>,
+                                               jlong nativePointer,
+                                               jint feature,
+                                               jboolean enabled) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  YGConfigSetExperimentalFeatureEnabled(config, static_cast<YGExperimentalFeature>(feature), enabled);
+  YGConfigSetExperimentalFeatureEnabled(config,
+                                        static_cast<YGExperimentalFeature>(feature),
+                                        enabled);
 }
 
-void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>, jlong nativePointer, jboolean useWebDefaults) {
+void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>,
+                                   jlong nativePointer,
+                                   jboolean useWebDefaults) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
   YGConfigSetUseWebDefaults(config, useWebDefaults);
+}
+
+void jni_YGConfigSetPointScaleFactor(alias_ref<jobject>,
+                                     jlong nativePointer,
+                                     jfloat pixelsInPoint) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPointScaleFactor(config, pixelsInPoint);
+}
+
+void jni_YGConfigSetUseLegacyStretchBehaviour(alias_ref<jobject>,
+                                              jlong nativePointer,
+                                              jboolean useLegacyStretchBehaviour) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+}
+
+void jni_YGConfigSetLogger(alias_ref<jobject>, jlong nativePointer, alias_ref<jobject> logger) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+
+  auto context = YGConfigGetContext(config);
+  if (context) {
+    auto jlogger = reinterpret_cast<global_ref<jobject> *>(context);
+    jlogger->releaseAlias();
+    delete jlogger;
+  }
+
+  if (logger) {
+    YGConfigSetContext(config, new global_ref<jobject>(make_global(logger)));
+    YGConfigSetLogger(config, YGJNILogFunc);
+  } else {
+    YGConfigSetContext(config, NULL);
+    YGConfigSetLogger(config, NULL);
+  }
 }
 
 jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
@@ -483,8 +521,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeStyleGetAspectRatio),
                         YGMakeNativeMethod(jni_YGNodeStyleSetAspectRatio),
                         YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
-                        YGMakeNativeMethod(jni_YGSetLogger),
-                        YGMakeNativeMethod(jni_YGLog),
+                        YGMakeNativeMethod(jni_YGNodePrint),
                     });
     registerNatives("com/facebook/yoga/YogaConfig",
                     {
@@ -492,6 +529,9 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigFree),
                         YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
                         YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+                        YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
+                        YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
+                        YGMakeNativeMethod(jni_YGConfigSetLogger),
                     });
   });
 }

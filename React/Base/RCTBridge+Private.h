@@ -115,6 +115,11 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
 
 /**
+* Registers additional classes with the ModuleRegistry.
+*/
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules;
+
+/**
  * Systrace profiler toggling methods exposed for the RCTDevMenu
  */
 - (void)startProfiling;

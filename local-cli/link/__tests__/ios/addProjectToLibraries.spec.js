@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const path = require('path');
 const PbxFile = require('xcode/lib/pbxFile');

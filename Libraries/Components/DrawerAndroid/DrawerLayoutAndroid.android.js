@@ -24,6 +24,7 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
+var createReactClass = require('create-react-class');
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -67,7 +68,8 @@ var DRAWER_STATES = [
  * },
  * ```
  */
-var DrawerLayoutAndroid = React.createClass({
+var DrawerLayoutAndroid = createReactClass({
+  displayName: 'DrawerLayoutAndroid',
   statics: {
     positions: DrawerConsts.DrawerPosition,
   },
@@ -168,14 +170,6 @@ var DrawerLayoutAndroid = React.createClass({
     return this.refs[INNERVIEW_REF].getInnerViewNode();
   },
 
-  componentDidMount: function() {
-    this._updateStatusBarBackground();
-  },
-
-  componentDidReceiveProps: function() {
-    this._updateStatusBarBackground();
-  },
-
   render: function() {
     var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
@@ -193,7 +187,7 @@ var DrawerLayoutAndroid = React.createClass({
         {drawStatusBar &&
         <StatusBar
           translucent
-          backgroundColor={this.state.statusBarBackgroundColor}
+          backgroundColor={this.props.statusBarBackgroundColor}
         />}
         {drawStatusBar &&
         <View style={[
@@ -268,27 +262,26 @@ var DrawerLayoutAndroid = React.createClass({
       null
     );
   },
-
+  /**
+  * Closing and opening example
+  * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
+  * render () {
+  *   this.openDrawer = () => {
+  *     this.refs.DRAWER.openDrawer()
+  *   }
+  *   this.closeDrawer = () => {
+  *     this.refs.DRAWER.closeDrawer()
+  *   }
+  *   return (
+  *     <DrawerLayoutAndroid ref={'DRAWER'}>
+  *     </DrawerLayoutAndroid>
+  *   )
+  * }
+  */
   _getDrawerLayoutHandle: function() {
     return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },
 
-  // Update the StatusBar component background color one frame after creating the
-  // status bar background View to avoid a white flicker that happens because
-  // the StatusBar background becomes transparent before the status bar View
-  // from this component has rendered.
-  _updateStatusBarBackground: function() {
-    if (Platform.Version >= 21 && this.props.statusBarBackgroundColor) {
-      // Check if the value is not already transparent to avoid an extra render.
-      if (this.state.statusBarBackgroundColor !== 'transparent') {
-        requestAnimationFrame(() => {
-          this.setState({statusBarBackgroundColor: 'transparent'});
-        });
-      }
-    } else {
-      this.setState({statusBarBackgroundColor: undefined});
-    }
-  },
 });
 
 var styles = StyleSheet.create({

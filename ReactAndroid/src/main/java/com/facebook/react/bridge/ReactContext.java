@@ -47,6 +47,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
+  private @Nullable MessageQueueThread mUiBackgroundMessageQueueThread;
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -71,6 +72,7 @@ public class ReactContext extends ContextWrapper {
 
     ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
+    mUiBackgroundMessageQueueThread = queueConfig.getUIBackgroundQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
   }
@@ -103,15 +105,6 @@ public class ReactContext extends ContextWrapper {
       throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
-  }
-
-  public <T extends JavaScriptModule> T getJSModule(
-    ExecutorToken executorToken,
-    Class<T> jsInterface) {
-    if (mCatalystInstance == null) {
-      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
-    }
-    return mCatalystInstance.getJSModule(executorToken, jsInterface);
   }
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
@@ -186,7 +179,6 @@ public class ReactContext extends ContextWrapper {
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
   public void onHostResume(@Nullable Activity activity) {
-    UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
@@ -216,7 +208,6 @@ public class ReactContext extends ContextWrapper {
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
   public void onHostPause() {
-    UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -281,6 +272,14 @@ public class ReactContext extends ContextWrapper {
     Assertions.assertNotNull(mUiMessageQueueThread).runOnQueue(runnable);
   }
 
+  public void assertOnUiBackgroundQueueThread() {
+    Assertions.assertNotNull(mUiBackgroundMessageQueueThread).assertIsOnThread();
+  }
+
+  public void runOnUiBackgroundQueueThread(Runnable runnable) {
+    Assertions.assertNotNull(mUiBackgroundMessageQueueThread).runOnQueue(runnable);
+  }
+
   public void assertOnNativeModulesQueueThread() {
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
   }
@@ -307,6 +306,26 @@ public class ReactContext extends ContextWrapper {
 
   public void runOnJSQueueThread(Runnable runnable) {
     Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  }
+
+  public boolean hasUIBackgroundRunnableThread() {
+    return mUiBackgroundMessageQueueThread != null;
+  }
+
+  public void assertOnUIBackgroundOrNativeModulesThread() {
+    if (mUiBackgroundMessageQueueThread == null) {
+      assertOnNativeModulesQueueThread();
+    } else {
+      assertOnUiBackgroundQueueThread();
+    }
+  }
+
+  public void runUIBackgroundRunnable(Runnable runnable) {
+    if (mUiBackgroundMessageQueueThread == null) {
+      runOnNativeModulesQueueThread(runnable);
+    } else {
+      runOnUiBackgroundQueueThread(runnable);
+    }
   }
 
   /**

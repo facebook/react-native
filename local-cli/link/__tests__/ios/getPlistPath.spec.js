@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const getPlistPath = require('../../ios/getPlistPath');
 const path = require('path');

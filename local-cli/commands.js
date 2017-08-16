@@ -12,18 +12,18 @@
 
 const { getProjectCommands } = require('./core');
 
-import type { ConfigT } from './core';
+import type { RNConfig } from './core';
 
 export type CommandT = {
   name: string,
   description?: string,
   usage?: string,
-  func: (argv: Array<string>, config: ConfigT, args: Object) => ?Promise<void>,
+  func: (argv: Array<string>, config: RNConfig, args: Object) => ?Promise<void>,
   options?: Array<{
     command: string,
     description?: string,
     parse?: (val: string) => any,
-    default?: (config: ConfigT) => any | any,
+    default?: ((config: RNConfig) => mixed) | mixed,
   }>,
   examples?: Array<{
     desc: string,
@@ -51,6 +51,7 @@ const documentedCommands = [
   require('./logAndroid/logAndroid'),
   require('./logIOS/logIOS'),
   require('./dependencies/dependencies'),
+  require('./info/info'),
 ];
 
 // The user should never get here because projects are inited by

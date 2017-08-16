@@ -66,11 +66,6 @@ public abstract class BaseJavaModule implements NativeModule {
     // do nothing
   }
 
-  @Override
-  public boolean supportsWebWorkers() {
-    return false;
-  }
-
   public boolean hasConstants() {
     return false;
   }

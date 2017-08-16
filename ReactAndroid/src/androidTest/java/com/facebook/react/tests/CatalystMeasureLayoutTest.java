@@ -74,9 +74,8 @@ public class CatalystMeasureLayoutTest extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     mAssertModule = new AssertModule();
-    return new ReactInstanceSpecForTest()
-        .addNativeModule(mAssertModule)
-        .addJSModule(MeasureLayoutTestModule.class);
+    return super.createReactInstanceSpecForTest()
+        .addNativeModule(mAssertModule);
   }
 
   private void waitForBridgeIdleAndVerifyAsserts() {

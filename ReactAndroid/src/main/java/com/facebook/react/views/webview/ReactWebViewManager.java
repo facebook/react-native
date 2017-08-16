@@ -32,6 +32,7 @@ import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
+import android.webkit.CookieManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -86,11 +87,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   protected static final String REACT_CLASS = "RCTWebView";
 
-  private static final String HTML_ENCODING = "UTF-8";
-  private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
-  private static final String BRIDGE_NAME = "__REACT_WEB_VIEW_BRIDGE";
+  protected static final String HTML_ENCODING = "UTF-8";
+  protected static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+  protected static final String BRIDGE_NAME = "__REACT_WEB_VIEW_BRIDGE";
 
-  private static final String HTTP_METHOD_POST = "POST";
+  protected static final String HTTP_METHOD_POST = "POST";
 
   public static final int COMMAND_GO_BACK = 1;
   public static final int COMMAND_GO_FORWARD = 2;
@@ -101,10 +102,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
-  private static final String BLANK_URL = "about:blank";
+  protected static final String BLANK_URL = "about:blank";
 
-  private WebViewConfig mWebViewConfig;
-  private @Nullable WebView.PictureListener mPictureListener;
+  protected WebViewConfig mWebViewConfig;
+  protected @Nullable WebView.PictureListener mPictureListener;
 
   protected static class ReactWebViewClient extends WebViewClient {
 
@@ -136,7 +137,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://")) {
+            url.startsWith("file://") || url.equals("about:blank")) {
           return false;
         } else {
           try {
@@ -186,7 +187,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               reactWebView.createWebViewEvent(url)));
     }
 
-    private void emitFinishEvent(WebView webView, String url) {
+    protected void emitFinishEvent(WebView webView, String url) {
       ReactWebView reactWebView = (ReactWebView) webView;
       dispatchEvent(
           webView,
@@ -201,11 +202,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    * to call {@link WebView#destroy} on activty destroy event and also to clear the client
    */
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
-    private @Nullable String injectedJS;
-    private boolean messagingEnabled = false;
+    protected @Nullable String injectedJS;
+    protected boolean messagingEnabled = false;
     public boolean mLastLoadFailed = false;
-
-    private class ReactWebViewBridge {
+      
+    protected class ReactWebViewBridge {
       ReactWebView mContext;
 
       ReactWebViewBridge(ReactWebView c) {
@@ -248,6 +249,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       injectedJS = js;
     }
 
+    protected ReactWebViewBridge createReactWebViewBridge(ReactWebView webView) {
+      return new ReactWebViewBridge(webView);
+    }
+
     public void setMessagingEnabled(boolean enabled) {
       if (messagingEnabled == enabled) {
         return;
@@ -255,7 +260,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       messagingEnabled = enabled;
       if (enabled) {
-        addJavascriptInterface(new ReactWebViewBridge(this), BRIDGE_NAME);
+        addJavascriptInterface(createReactWebViewBridge(this), BRIDGE_NAME);
         linkBridge();
       } else {
         removeJavascriptInterface(BRIDGE_NAME);
@@ -298,12 +303,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(this, new TopMessageEvent(this.getId(), message));
     }
 
-    private void cleanupCallbacksAndDestroy() {
+    protected void cleanupCallbacksAndDestroy() {
       setWebViewClient(null);
       destroy();
     }
 
-    public WritableMap createWebViewEvent(String url) {
+    protected WritableMap createWebViewEvent(WebView webView, String url) {
       WritableMap event = Arguments.createMap();
       event.putDouble("target", this.getId());
       // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
@@ -313,7 +318,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       event.putString("title", this.getTitle());
       event.putBoolean("canGoBack", this.canGoBack());
       event.putBoolean("canGoForward", this.canGoForward());
-      return event;
+       return event;
     }
 
   }
@@ -334,9 +339,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     return REACT_CLASS;
   }
 
+  protected ReactWebView createReactWebViewInstance(ThemedReactContext reactContext) {
+    return new ReactWebView(reactContext);
+  }
+
   @Override
   protected WebView createViewInstance(final ThemedReactContext reactContext) {
-    final ReactWebView webView = new ReactWebView(reactContext);
+    final ReactWebView webView = createReactWebViewInstance(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
       @Override
       public boolean onConsoleMessage(ConsoleMessage message) {
@@ -389,6 +398,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
+  }
+
+  @ReactProp(name = "thirdPartyCookiesEnabled")
+  public void setThirdPartyCookiesEnabled(WebView view, boolean enabled) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      CookieManager.getInstance().setAcceptThirdPartyCookies(view, enabled);
+    }
   }
 
   @ReactProp(name = "scalesPageToFit")
@@ -581,7 +597,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }
 
-  private WebView.PictureListener getPictureListener() {
+  protected WebView.PictureListener getPictureListener() {
     if (mPictureListener == null) {
       mPictureListener = new WebView.PictureListener() {
         @Override
@@ -598,7 +614,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     return mPictureListener;
   }
 
-  private static void dispatchEvent(WebView webView, Event event) {
+  protected static void dispatchEvent(WebView webView, Event event) {
     ReactContext reactContext = (ReactContext) webView.getContext();
     EventDispatcher eventDispatcher =
       reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
