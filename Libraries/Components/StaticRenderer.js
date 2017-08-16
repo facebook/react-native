@@ -13,6 +13,8 @@
 
 var React = require('React');
 
+var PropTypes = require('prop-types');
+
 class StaticRenderer extends React.Component {
   props: {
     shouldUpdate: boolean,
@@ -20,8 +22,8 @@ class StaticRenderer extends React.Component {
   };
 
   static propTypes = {
-    shouldUpdate: React.PropTypes.bool.isRequired,
-    render: React.PropTypes.func.isRequired,
+    shouldUpdate: PropTypes.bool.isRequired,
+    render: PropTypes.func.isRequired,
   };
 
   shouldComponentUpdate(nextProps: { shouldUpdate: boolean }): boolean {

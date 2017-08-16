@@ -18,7 +18,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.bridge.SupportsWebWorkers;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
@@ -26,10 +25,9 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
-@ReactModule(name = "DeviceEventManager", hasConstants = false)
+@ReactModule(name = "DeviceEventManager")
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
-  @SupportsWebWorkers
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(String eventName, @Nullable Object data);
   }

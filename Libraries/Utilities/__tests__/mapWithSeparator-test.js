@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.unmock('mapWithSeparator');
-
 describe('mapWithSeparator', () => {
   const mapWithSeparator = require('mapWithSeparator');
 

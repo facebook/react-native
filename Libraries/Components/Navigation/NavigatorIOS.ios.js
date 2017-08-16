@@ -15,23 +15,21 @@ var EventEmitter = require('EventEmitter');
 var Image = require('Image');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var TVEventHandler = require('TVEventHandler');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 
-const ViewPropTypes = require('ViewPropTypes');
-
+var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
 const keyMirror = require('fbjs/lib/keyMirror');
 
 var TRANSITIONER_REF = 'transitionerRef';
-
-var PropTypes = React.PropTypes;
 
 var __uid = 0;
 function getuid() {
@@ -42,7 +40,6 @@ class NavigatorTransitionerIOS extends React.Component {
   requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
-      logError,
       cb
     );
   }
@@ -131,10 +128,10 @@ type Event = Object;
  * [`UINavigationController`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/),
  * enabling you to implement a navigation stack. It works exactly the same as it
  * would on a native app using `UINavigationController`, providing the same
- * animations and behavior from UIKIt.
+ * animations and behavior from UIKit.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`React Navigation`](https://reactnavigation.org/) for a cross-platform 
+ * [`React Navigation`](https://reactnavigation.org/) for a cross-platform
  * solution in JavaScript, or check out either of these components for native
  * solutions: [native-navigation](http://airbnb.io/native-navigation/),
  * [react-native-navigation](https://github.com/wix/react-native-navigation).
@@ -144,7 +141,8 @@ type Event = Object;
  * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * import React, { Component, PropTypes } from 'react';
+ * import PropTypes from 'prop-types';
+ * import React, { Component } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
  * export default class NavigatorIOSApp extends Component {
@@ -306,7 +304,8 @@ type Event = Object;
  * is pushed.
  *
  */
-var NavigatorIOS = React.createClass({
+var NavigatorIOS = createReactClass({
+  displayName: 'NavigatorIOS',
 
   propTypes: {
 
@@ -436,7 +435,7 @@ var NavigatorIOS = React.createClass({
       titleTextColor: PropTypes.string,
 
        /**
-       * Bboolean value that indicates whether the navigation bar is
+       * Boolean value that indicates whether the navigation bar is
        * translucent.
        */
       translucent: PropTypes.bool,
@@ -589,8 +588,8 @@ var NavigatorIOS = React.createClass({
   },
 
   childContextTypes: {
-    onFocusRequested: React.PropTypes.func,
-    focusEmitter: React.PropTypes.instanceOf(EventEmitter),
+    onFocusRequested: PropTypes.func,
+    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   _tryLockNavigator: function(cb: () => void) {

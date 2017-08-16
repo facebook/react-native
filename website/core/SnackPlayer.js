@@ -13,8 +13,12 @@
 var Prism = require('Prism');
 var React = require('React');
 
-const LatestSDKVersion = '15.0.0';
+const PropTypes = require('prop-types');
+
+const LatestSDKVersion = '16.0.0';
 var ReactNativeToExpoSDKVersionMap = {
+  '0.44': '17.0.0',
+  '0.43': '16.0.0',
   '0.42': '15.0.0',
   '0.41': '14.0.0',
 };
@@ -37,20 +41,26 @@ var ReactNativeToExpoSDKVersionMap = {
  * }
  * ```
  */
-var SnackPlayer = React.createClass({
-  contextTypes: {
-    version: React.PropTypes.number.isRequired,
-  },
+class SnackPlayer extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.parseParams = this.parseParams.bind(this);
+  }
 
   componentDidMount() {
     window.ExpoSnack && window.ExpoSnack.initialize();
-  },
+  }
 
   render() {
     var code = encodeURIComponent(this.props.children);
     var params = this.parseParams(this.props.params);
-    var platform = params.platform ? params.platform : 'ios';
-    var name = params.name ? decodeURIComponent(params.name) : 'Example';
+    var platform = params.platform
+      ? params.platform
+      : 'ios';
+    var name = params.name
+      ? decodeURIComponent(params.name)
+      : 'Example';
     var description = params.description
       ? decodeURIComponent(params.description)
       : 'Example usage';
@@ -58,16 +68,22 @@ var SnackPlayer = React.createClass({
     var optionalProps = {};
     var { version } = this.context;
     if (version === 'next') {
-      optionalProps['data-snack-sdk-version'] = LatestSDKVersion;
+      optionalProps[
+        'data-snack-sdk-version'
+      ] = LatestSDKVersion;
     } else {
-      optionalProps['data-snack-sdk-version'] = ReactNativeToExpoSDKVersionMap[
-        version
-      ] || LatestSDKVersion;
+      optionalProps[
+        'data-snack-sdk-version'
+      ] = ReactNativeToExpoSDKVersionMap[version] ||
+        LatestSDKVersion;
     }
 
     return (
       <div className="snack-player">
-        <div className="mobile-friendly-snack" style={{ display: 'none' }}>
+        <div
+          className="mobile-friendly-snack"
+          style={{ display: 'none' }}
+        >
           <Prism>
             {this.props.children}
           </Prism>
@@ -75,7 +91,8 @@ var SnackPlayer = React.createClass({
 
         <div
           className="desktop-friendly-snack"
-          style={{ marginTop: 15, marginBottom: 15 }}>
+          style={{ marginTop: 15, marginBottom: 15 }}
+        >
           <div
             data-snack-name={name}
             data-snack-description={description}
@@ -95,9 +112,9 @@ var SnackPlayer = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  parseParams: function(paramString) {
+  parseParams(paramString) {
     var params = {};
 
     if (paramString) {
@@ -109,7 +126,11 @@ var SnackPlayer = React.createClass({
     }
 
     return params;
-  },
-});
+  }
+}
+
+SnackPlayer.contextTypes = {
+  version: PropTypes.number.isRequired,
+};
 
 module.exports = SnackPlayer;

@@ -17,10 +17,12 @@ var Animated = require('Animated');
 var Easing = require('Easing');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
+var createReactClass = require('create-react-class');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
 
@@ -50,7 +52,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * },
  * ```
  */
-var TouchableOpacity = React.createClass({
+var TouchableOpacity = createReactClass({
+  displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
@@ -59,18 +62,16 @@ var TouchableOpacity = React.createClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active. Defaults to 0.2.
      */
-    activeOpacity: React.PropTypes.number,
-    focusedOpacity: React.PropTypes.number,
+    activeOpacity: PropTypes.number,
     /**
      * Apple TV parallax effects
      */
-    tvParallaxProperties: React.PropTypes.object,
+    tvParallaxProperties: PropTypes.object,
   },
 
   getDefaultProps: function() {
     return {
       activeOpacity: 0.2,
-      focusedOpacity: 0.7,
     };
   },
 
@@ -160,10 +161,6 @@ var TouchableOpacity = React.createClass({
       this._getChildStyleOpacityWithDefault(),
       duration
     );
-  },
-
-  _opacityFocused: function() {
-    this.setOpacityTo(this.props.focusedOpacity);
   },
 
   _getChildStyleOpacityWithDefault: function() {

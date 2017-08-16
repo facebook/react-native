@@ -13,6 +13,10 @@
 
 @interface RCTLinkingManager : RCTEventEmitter
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
+
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication

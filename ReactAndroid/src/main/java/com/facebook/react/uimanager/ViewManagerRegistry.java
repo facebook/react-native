@@ -19,12 +19,17 @@ import java.util.Map;
  */
 public class ViewManagerRegistry {
 
-  private final Map<String, ViewManager> mViewManagers = new HashMap<>();
+  private final Map<String, ViewManager> mViewManagers;
 
   public ViewManagerRegistry(List<ViewManager> viewManagerList) {
+    mViewManagers = new HashMap<>();
     for (ViewManager viewManager : viewManagerList) {
       mViewManagers.put(viewManager.getName(), viewManager);
     }
+  }
+
+  public ViewManagerRegistry(Map<String, ViewManager> viewManagerMap) {
+    mViewManagers = viewManagerMap;
   }
 
   public ViewManager get(String className) {

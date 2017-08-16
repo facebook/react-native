@@ -30,17 +30,21 @@ static BOOL isStreamTaskSupported() {
 @implementation RCTMultipartDataTask {
   NSURL *_url;
   RCTMultipartDataTaskCallback _partHandler;
+  RCTMultipartProgressCallback _progressHandler;
   NSInteger _statusCode;
   NSDictionary *_headers;
   NSString *_boundary;
   NSMutableData *_data;
 }
 
-- (instancetype)initWithURL:(NSURL *)url partHandler:(RCTMultipartDataTaskCallback)partHandler
+- (instancetype)initWithURL:(NSURL *)url
+                partHandler:(RCTMultipartDataTaskCallback)partHandler
+            progressHandler:(RCTMultipartProgressCallback)progressHandler
 {
   if (self = [super init]) {
     _url = url;
     _partHandler = [partHandler copy];
+    _progressHandler = [progressHandler copy];
   }
   return self;
 }
@@ -55,6 +59,7 @@ static BOOL isStreamTaskSupported() {
   }
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
   [dataTask resume];
+  [session finishTasksAndInvalidate];
 }
 
 - (void)URLSession:(__unused NSURLSession *)session
@@ -91,7 +96,9 @@ didReceiveResponse:(NSURLResponse *)response
 
 - (void)URLSession:(__unused NSURLSession *)session task:(__unused NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  _partHandler(_statusCode, _headers, _data, error, YES);
+  if (_partHandler) {
+    _partHandler(_statusCode, _headers, _data, error, YES);
+  }
 }
 
 - (void)URLSession:(__unused NSURLSession *)session dataTask:(__unused NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
@@ -111,11 +118,12 @@ didBecomeInputStream:(NSInputStream *)inputStream
 {
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:_boundary];
   RCTMultipartDataTaskCallback partHandler = _partHandler;
+  _partHandler = nil;
   NSInteger statusCode = _statusCode;
 
-  BOOL completed = [reader readAllParts:^(NSDictionary *headers, NSData *content, BOOL done) {
+  BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
     partHandler(statusCode, headers, content, nil, done);
-  }];
+  } progressCallback:_progressHandler];
   if (!completed) {
     partHandler(statusCode, nil, nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil], YES);
   }
