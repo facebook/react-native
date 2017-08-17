@@ -26,16 +26,10 @@ std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModule
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef);
 
-/*
- * The ValueEncoder<NSArray *>::toValue is used by JSCExecutor callFunctionSync.
- * Note: Because the NSArray * is really a NSArray * __strong the toValue is
- * accepting NSArray *const __strong instead of NSArray *&&.
- */
-template <>
-struct ValueEncoder<NSArray *> {
-  static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
-  {
-    JSValue *value = [JSC_JSValue(ctx) valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
+template<>
+struct JSCValueEncoder<id> {
+  static Value toJSCValue(JSGlobalContextRef ctx, id obj) {
+    JSValue *value = [JSC_JSValue(ctx) valueWithObject:obj inContext:contextForGlobalContextRef(ctx)];
     return {ctx, [value JSValueRef]};
   }
 };

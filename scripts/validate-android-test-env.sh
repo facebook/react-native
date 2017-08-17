@@ -10,7 +10,7 @@
 # Check that Buck is working.
 if [ -z "$(which buck)" ]; then
   echo "You need to install Buck."
-  echo "See https://buckbuild.com/setup/install.htm for instructions."
+  echo "See https://buckbuild.com/setup/install.html for instructions."
   exit 1
 fi
 

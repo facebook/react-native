@@ -107,6 +107,7 @@ type OptionalProps<ItemT> = {
    *       {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
    *     )}
    *
+   * Adding `getItemLayout` can be a great performance boost for lists of several hundred items.
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `ItemSeparatorComponent`.
    */

@@ -71,7 +71,6 @@ RCT_EXPORT_MODULE()
 
 @end
 
-
 @interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate>
 {
   RCTBridge *_bridge;
@@ -98,6 +97,10 @@ RCT_EXPORT_MODULE()
 
   _notificationObserver = [RCTNotificationObserverModule new];
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[self->_bridge uiManager] constantsToExport];
+  });
 }
 
 - (void)tearDown

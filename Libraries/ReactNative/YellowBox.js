@@ -16,10 +16,12 @@ const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const RCTLog = require('RCTLog');
 
 const infoLog = require('infoLog');
 const openFileInEditor = require('openFileInEditor');
 const parseErrorStack = require('parseErrorStack');
+const stringifySafe = require('stringifySafe');
 const symbolicateStackTrace = require('symbolicateStackTrace');
 
 import type EmitterSubscription from 'EmitterSubscription';
@@ -74,18 +76,16 @@ if (__DEV__) {
 
   (console: any).warn = function() {
     warn.apply(console, arguments);
-
-    if (typeof arguments[0] === 'string' &&
-        arguments[0].startsWith('(ADVICE)')) {
-      return;
-    }
-
     updateWarningMap.apply(null, arguments);
   };
 
   if (Platform.isTesting) {
     (console: any).disableYellowBox = true;
   }
+
+  RCTLog.setWarningHandler((...args) => {
+    updateWarningMap.apply(null, args);
+  });
 }
 
 /**
@@ -106,7 +106,6 @@ function updateWarningMap(format, ...args): void {
   if (console.disableYellowBox) {
     return;
   }
-  const stringifySafe = require('stringifySafe');
 
   format = String(format);
   const argCount = (format.match(/%s/g) || []).length;
@@ -114,6 +113,10 @@ function updateWarningMap(format, ...args): void {
     sprintf(format, ...args.slice(0, argCount)),
     ...args.slice(argCount).map(stringifySafe),
   ].join(' ');
+
+  if (warning.startsWith('(ADVICE)')) {
+    return;
+  }
 
   const warningInfo = _warningMap.get(warning);
   if (warningInfo) {

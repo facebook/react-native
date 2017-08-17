@@ -44,6 +44,8 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       // This also includes __tests__/index.*.js
       if (fileName === 'index.ios.js') { return; }
       if (fileName === 'index.android.js') { return; }
+      if (fileName === 'index.js') { return; }
+      if (fileName === 'App.js') { return; }
     }
 
     const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);

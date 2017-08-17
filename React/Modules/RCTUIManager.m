@@ -77,6 +77,11 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (void)invalidate
 {
   /**
@@ -206,7 +211,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       degrees = @90;
       isLandscape = YES;
       break;
-    default:
+    case UIDeviceOrientationFaceDown:
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationUnknown:
+      // Unsupported
       return nil;
   }
   return @{
@@ -218,11 +226,15 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 - (void)namedOrientationDidChange
 {
-  UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+  NSDictionary *orientationEvent = deviceOrientationEventBody([UIDevice currentDevice].orientation);
+  if (!orientationEvent) {
+    return;
+  }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange"
-                                              body:deviceOrientationEventBody(deviceOrientation)];
+                                              body:orientationEvent];
 #pragma clang diagnostic pop
 }
 #endif
@@ -1409,7 +1421,7 @@ RCT_EXPORT_METHOD(setJSResponder:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
     if (!_jsResponder) {
-      RCTLogError(@"Invalid view set to be the JS responder - tag %zd", reactTag);
+      RCTLogError(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
 }

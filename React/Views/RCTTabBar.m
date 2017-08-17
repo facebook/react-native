@@ -115,9 +115,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
 
     controller.tabBarItem = tab.barItem;
+#if TARGET_OS_TV
+// On Apple TV, disable JS control of selection after initial render
+    if (tab.selected && !tab.wasSelectedInJS) {
+      self->_tabController.selectedViewController = controller;
+    }
+    tab.wasSelectedInJS = YES;
+#else
     if (tab.selected) {
       self->_tabController.selectedViewController = controller;
     }
+#endif
   }];
 }
 
@@ -157,7 +165,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #endif
 }
 
-- (UITabBarItemPositioning)itemPositoning
+- (UITabBarItemPositioning)itemPositioning
 {
 #if TARGET_OS_TV
   return 0;
@@ -175,6 +183,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - UITabBarControllerDelegate
 
+#if TARGET_OS_TV
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(nonnull UIViewController *)viewController
+{
+  NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
+  if (tab.onPress) tab.onPress(nil);
+  return;
+}
+
+#else
+
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
@@ -182,6 +202,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#endif
 
 #if TARGET_OS_TV
 

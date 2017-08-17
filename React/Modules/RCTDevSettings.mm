@@ -42,7 +42,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTPackagerConnection.h"
 #endif
 
-#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper")
+#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper.h")
 
 #if ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
@@ -131,6 +131,11 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
 
 - (instancetype)init
 {
@@ -311,23 +316,15 @@ RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
-  [self _hotLoadingSettingDidChange];
+  if (self.isHotLoadingEnabled != enabled) {
+    [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
+    [_bridge reload];
+  }
 }
 
 - (BOOL)isHotLoadingEnabled
 {
   return [[self settingForKey:kRCTDevSettingHotLoadingEnabled] boolValue];
-}
-
-- (void)_hotLoadingSettingDidChange
-{
-  BOOL hotLoadingEnabled = self.isHotLoadingAvailable && self.isHotLoadingEnabled;
-  if (RCTGetURLQueryParam(_bridge.bundleURL, @"hot").boolValue != hotLoadingEnabled) {
-    _bridge.bundleURL = RCTURLByReplacingQueryParam(_bridge.bundleURL, @"hot",
-                                                    hotLoadingEnabled ? @"true" : nil);
-    [_bridge reload];
-  }
 }
 
 RCT_EXPORT_METHOD(toggleElementInspector)
@@ -434,7 +431,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
  */
 - (void)_synchronizeAllSettings
 {
-  [self _hotLoadingSettingDidChange];
   [self _liveReloadSettingDidChange];
   [self _remoteDebugSettingDidChange];
   [self _profilingSettingDidChange];

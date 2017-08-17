@@ -583,12 +583,12 @@ Now that you have successfully run the app, let's modify it.
 
 <block class="native mac ios" />
 
-- Open `index.ios.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Hit `⌘R` in your iOS Simulator to reload the app and see your changes!
 
 <block class="native mac android" />
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native windows linux android" />
@@ -597,7 +597,7 @@ Now that you have successfully run the app, let's modify it.
 
 Now that you have successfully run the app, let's modify it.
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native mac ios android" />

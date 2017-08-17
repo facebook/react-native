@@ -1760,6 +1760,8 @@ function createAnimatedComponent(Component: any): any {
     _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
 
+    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
+
     constructor(props: Object) {
       super(props);
       this._setComponentRef = this._setComponentRef.bind(this);
@@ -1814,7 +1816,8 @@ function createAnimatedComponent(Component: any): any {
       // need to re-render it. In this case, we have a fallback that uses
       // forceUpdate.
       var callback = () => {
-        if (this._component.setNativeProps) {
+        if (!AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY &&
+          this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
             this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
@@ -2734,6 +2737,10 @@ module.exports = {
    * See also [`AnimatedInterpolation`](docs/animated.html#animatedinterpolation).
    */
   Interpolation: AnimatedInterpolation,
+  /**
+   * Exported for ease of type checking. All animated values derive from this class.
+   */
+  Node: Animated,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
