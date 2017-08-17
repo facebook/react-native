@@ -9,15 +9,11 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
@@ -37,9 +33,10 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -76,9 +73,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   protected static final String NAME = "UIManager";
 
-  // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
-  // increment here is 10
-  private static final int ROOT_VIEW_TAG_INCREMENT = 10;
   private static final boolean DEBUG = false;
 
   private final EventDispatcher mEventDispatcher;
@@ -86,7 +80,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
-  private int mNextRootViewTag = 1;
   private int mBatchId = 0;
 
   public UIManagerModule(
@@ -149,6 +142,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
   private static Map<String, Object> createConstants(
@@ -180,19 +174,21 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addMeasuredRootView thread safe
+   * TODO(6242243): Make addRootView thread safe
    * NB: this method is horribly not-thread-safe.
    */
-  public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
-    final int tag = mNextRootViewTag;
-    mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
+  public int addRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addRootView");
+    final int tag = ((TaggedRootView) rootView).getRootViewTag();
 
     final int width;
     final int height;
     // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
     if (rootView.getLayoutParams() != null &&
-        rootView.getLayoutParams().width > 0 &&
-        rootView.getLayoutParams().height > 0) {
+      rootView.getLayoutParams().width > 0 &&
+      rootView.getLayoutParams().height > 0) {
       width = rootView.getLayoutParams().width;
       height = rootView.getLayoutParams().height;
     } else {
@@ -202,7 +198,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+      new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -220,6 +216,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -229,7 +226,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -406,6 +403,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
       callback);
+  }
+
+  /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 
   /**

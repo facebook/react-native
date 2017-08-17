@@ -17,7 +17,7 @@ create an image, you can use a prop named `source` to control what image it show
 import React, { Component } from 'react';
 import { AppRegistry, Image } from 'react-native';
 
-class Bananas extends Component {
+export default class Bananas extends Component {
   render() {
     let pic = {
       uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
@@ -28,6 +28,7 @@ class Bananas extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => Bananas);
 ```
 
@@ -49,7 +50,7 @@ class Greeting extends Component {
   }
 }
 
-class LotsOfGreetings extends Component {
+export default class LotsOfGreetings extends Component {
   render() {
     return (
       <View style={{alignItems: 'center'}}>
@@ -61,6 +62,7 @@ class LotsOfGreetings extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => LotsOfGreetings);
 ```
 

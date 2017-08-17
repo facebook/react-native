@@ -9,6 +9,19 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -34,30 +47,19 @@ import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Nullable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -132,6 +134,7 @@ public class DevSupportManagerImpl implements
   private @Nullable StackFrame[] mLastErrorStack;
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
+  private @Nullable DevBundleDownloadListener mBundleDownloadListener;
 
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
@@ -170,13 +173,16 @@ public class DevSupportManagerImpl implements
     Context applicationContext,
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
-    boolean enableOnCreate) {
+    boolean enableOnCreate,
+    int minNumShakes) {
 
     this(applicationContext,
       reactInstanceCommandsHandler,
       packagerPathForJSBundleName,
       enableOnCreate,
-      null);
+      null,
+      null,
+      minNumShakes);
   }
 
   public DevSupportManagerImpl(
@@ -184,13 +190,15 @@ public class DevSupportManagerImpl implements
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler) {
-
+      @Nullable RedBoxHandler redBoxHandler,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      int minNumShakes) {
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
+    mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -198,7 +206,7 @@ public class DevSupportManagerImpl implements
       public void onShake() {
         showDevOptionsDialog();
       }
-    });
+    }, minNumShakes);
 
     // Prepare reload APP broadcast receiver (will be registered/unregistered from #reload)
     mReloadAppBroadcastReceiver = new BroadcastReceiver() {
@@ -433,7 +441,7 @@ public class DevSupportManagerImpl implements
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            handlePokeSamplingProfiler(null);
+            handlePokeSamplingProfiler();
           }
         });
     options.put(
@@ -671,10 +679,22 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void onPackagerReloadCommand() {
+    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+    mDevServerHelper.disableDebugger();
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
         handleReloadJS();
+      }
+    });
+  }
+
+  @Override
+  public void onPackagerDevMenuCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        showDevOptionsDialog();
       }
     });
   }
@@ -690,11 +710,22 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(@Nullable final Responder responder) {
+  public void onPokeSamplingProfilerCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler(responder);
+        if (mCurrentContext == null) {
+          responder.error("JSCContext is missing, unable to profile");
+          return;
+        }
+        try {
+          long jsContext = mCurrentContext.getJavaScriptContext();
+          Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+          RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext);
+          handler.onRequest(null, responder);
+        } catch (Exception e) {
+          // Module not present
+        }
       }
     });
   }
@@ -719,7 +750,7 @@ public class DevSupportManagerImpl implements
       });
   }
 
-  private void handlePokeSamplingProfiler(@Nullable final Responder responder) {
+  private void handlePokeSamplingProfiler() {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -729,16 +760,9 @@ public class DevSupportManagerImpl implements
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (responder != null) {
-          // Responder is provided, so there is a client waiting our response
-          responder.respond(result == null ? "started" : result);
-        } else if (result != null) {
-          // The profile was not initiated by external client, so process the
-          // profile if there is one in the result
-          new JscProfileTask(getSourceUrl()).executeOnExecutor(
-              AsyncTask.THREAD_POOL_EXECUTOR,
-              result);
-        }
+        new JscProfileTask(getSourceUrl()).executeOnExecutor(
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            result);
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
       showNewJavaError(e.getMessage(), e);
@@ -809,12 +833,15 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
-    mDevServerHelper.downloadBundleFromURL(
-        new DevServerHelper.BundleDownloadCallback() {
+    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+        new DevBundleDownloadListener() {
           @Override
           public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onSuccess();
+            }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
@@ -827,12 +854,18 @@ public class DevSupportManagerImpl implements
           @Override
           public void onProgress(@Nullable final String status, @Nullable final Integer done, @Nullable final Integer total) {
             mDevLoadingViewController.updateProgress(status, done, total);
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onProgress(status, done, total);
+            }
           }
 
           @Override
           public void onFailure(final Exception cause) {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onFailure(cause);
+            }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -852,6 +885,18 @@ public class DevSupportManagerImpl implements
         },
         mJSBundleTempFile,
         bundleURL);
+  }
+
+  @Override
+  public void startInspector() {
+    if (mIsDevSupportEnabled) {
+      mDevServerHelper.openInspectorConnection();
+    }
+  }
+
+  @Override
+  public void stopInspector() {
+    mDevServerHelper.closeInspectorConnection();
   }
 
   private void reload() {
@@ -882,8 +927,7 @@ public class DevSupportManagerImpl implements
         mDevLoadingViewController.show();
       }
 
-      mDevServerHelper.openPackagerConnection(this);
-      mDevServerHelper.openInspectorConnection();
+      mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -925,9 +969,7 @@ public class DevSupportManagerImpl implements
 
       // hide loading view
       mDevLoadingViewController.hide();
-
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

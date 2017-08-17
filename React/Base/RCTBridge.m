@@ -12,9 +12,10 @@
 
 #import <objc/runtime.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTInspectorDevServerHelper.h"
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -252,6 +253,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
+  #if ENABLE_INSPECTOR
+  // Disable debugger to resume the JsVM & avoid thread locks while reloading
+  [RCTInspectorDevServerHelper disableDebugger];
+  #endif
+
   /**
    * Any thread
    */
@@ -284,10 +290,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     } else {
       implClass = batchedBridgeClass;
     }
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
   } else if (cxxBridgeClass != nil) {
     implClass = cxxBridgeClass;
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
@@ -351,6 +357,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     });
   }
+}
+
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
+{
+  [self.batchedBridge registerAdditionalModuleClasses:modules];
 }
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args

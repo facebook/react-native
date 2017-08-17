@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
-const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
@@ -21,12 +20,6 @@ const SceneTracker = require('SceneTracker');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
-
-if (__DEV__) {
-  // In order to use Cmd+P to record/dump perf data, we need to make sure
-  // this module is available in the bundle
-  require('RCTRenderingPerf');
-}
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -50,6 +43,7 @@ export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
+export type WrapperComponentProvider = any => ReactClass<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -57,8 +51,8 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
-let _frameRateLoggerSceneListener = null;
 
+let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
  * <div class="banner-crna-ejected">
@@ -87,6 +81,10 @@ let _frameRateLoggerSceneListener = null;
  * `require`d.
  */
 const AppRegistry = {
+  setWrapperComponentProvider(provider: WrapperComponentProvider) {
+    wrapperComponentProvider = provider;
+  },
+
   registerConfig(config: Array<AppConfig>): void {
     config.forEach((appConfig) => {
       if (appConfig.run) {
@@ -109,16 +107,17 @@ const AppRegistry = {
 
   registerComponent(
     appKey: string,
-    component: ComponentProvider,
+    componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
     runnables[appKey] = {
-      component,
+      componentProvider,
       run: (appParameters) =>
         renderApplication(
-          componentProviderInstrumentationHook(component),
+          componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
-          appParameters.rootTag
+          appParameters.rootTag,
+          wrapperComponentProvider && wrapperComponentProvider(appParameters),
         )
     };
     if (section) {
@@ -187,11 +186,7 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
-    if (!_frameRateLoggerSceneListener) {
-      _frameRateLoggerSceneListener = SceneTracker.addActiveSceneChangedListener(
-        (scene) => FrameRateLogger.setContext(scene.name)
-      );
-    }
+
     SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters);
   },

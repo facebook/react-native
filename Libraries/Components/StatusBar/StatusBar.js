@@ -63,7 +63,10 @@ type DefaultProps = {
 /**
  * Merges the prop stack with the default values.
  */
-function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Object {
+function mergePropsStack(
+  propsStack: Array<Object>,
+  defaultValues: Object
+): Object {
   return propsStack.reduce((prev, cur) => {
     for (const prop in cur) {
       if (cur[prop] != null) {
@@ -80,20 +83,29 @@ function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Obje
  */
 function createStackEntry(props: any): any {
   return {
-    backgroundColor: props.backgroundColor != null ? {
-      value: props.backgroundColor,
-      animated: props.animated,
-    } : null,
-    barStyle: props.barStyle != null ? {
-      value: props.barStyle,
-      animated: props.animated,
-    } : null,
+    backgroundColor:
+      props.backgroundColor != null
+        ? {
+            value: props.backgroundColor,
+            animated: props.animated,
+          }
+        : null,
+    barStyle:
+      props.barStyle != null
+        ? {
+            value: props.barStyle,
+            animated: props.animated,
+          }
+        : null,
     translucent: props.translucent,
-    hidden: props.hidden != null ? {
-      value: props.hidden,
-      animated: props.animated,
-      transition: props.showHideTransition,
-    } : null,
+    hidden:
+      props.hidden != null
+        ? {
+            value: props.hidden,
+            animated: props.animated,
+            transition: props.showHideTransition,
+          }
+        : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
   };
 }
@@ -133,7 +145,7 @@ function createStackEntry(props: any): any {
  * set by the static API will get overriden by the one set by the component in
  * the next render.
  *
- * ### Constants
+ * ### Constants
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
@@ -141,7 +153,7 @@ class StatusBar extends React.Component {
   props: {
     hidden?: boolean,
     animated?: boolean,
-    backgroundColor?: $FlowFixMe,
+    backgroundColor?: string,
     translucent?: boolean,
     barStyle?: 'default' | 'light-content' | 'dark-content',
     networkActivityIndicatorVisible?: boolean,
@@ -215,7 +227,9 @@ class StatusBar extends React.Component {
    */
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
-      console.warn('`setNetworkActivityIndicatorVisible` is only available on iOS');
+      console.warn(
+        '`setNetworkActivityIndicatorVisible` is only available on iOS'
+      );
       return;
     }
     StatusBar._defaultProps.networkActivityIndicatorVisible = visible;
@@ -276,11 +290,7 @@ class StatusBar extends React.Component {
     /**
      * Sets the color of the status bar text.
      */
-    barStyle: PropTypes.oneOf([
-      'default',
-      'light-content',
-      'dark-content',
-    ]),
+    barStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
     /**
      * If the network activity indicator should be visible.
      *
@@ -293,10 +303,7 @@ class StatusBar extends React.Component {
      *
      * @platform ios
      */
-    showHideTransition: PropTypes.oneOf([
-      'fade',
-      'slide',
-    ]),
+    showHideTransition: PropTypes.oneOf(['fade', 'slide']),
   };
 
   static defaultProps = {
@@ -343,38 +350,52 @@ class StatusBar extends React.Component {
     clearImmediate(StatusBar._updateImmediate);
     StatusBar._updateImmediate = setImmediate(() => {
       const oldProps = StatusBar._currentValues;
-      const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
+      const mergedProps = mergePropsStack(
+        StatusBar._propsStack,
+        StatusBar._defaultProps
+      );
 
       // Update the props that have changed using the merged values from the props stack.
       if (Platform.OS === 'ios') {
-        if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
+        if (
+          !oldProps ||
+          oldProps.barStyle.value !== mergedProps.barStyle.value
+        ) {
           StatusBarManager.setStyle(
             mergedProps.barStyle.value,
-            mergedProps.barStyle.animated,
+            mergedProps.barStyle.animated
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           StatusBarManager.setHidden(
             mergedProps.hidden.value,
-            mergedProps.hidden.animated ?
-              mergedProps.hidden.transition :
-              'none',
+            mergedProps.hidden.animated ? mergedProps.hidden.transition : 'none'
           );
         }
 
-        if (!oldProps || oldProps.networkActivityIndicatorVisible !== mergedProps.networkActivityIndicatorVisible) {
+        if (
+          !oldProps ||
+          oldProps.networkActivityIndicatorVisible !==
+            mergedProps.networkActivityIndicatorVisible
+        ) {
           StatusBarManager.setNetworkActivityIndicatorVisible(
             mergedProps.networkActivityIndicatorVisible
           );
         }
       } else if (Platform.OS === 'android') {
-        if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
+        if (
+          !oldProps ||
+          oldProps.barStyle.value !== mergedProps.barStyle.value
+        ) {
           StatusBarManager.setStyle(mergedProps.barStyle.value);
         }
-        if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
+        if (
+          !oldProps ||
+          oldProps.backgroundColor.value !== mergedProps.backgroundColor.value
+        ) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
-            mergedProps.backgroundColor.animated,
+            mergedProps.backgroundColor.animated
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {

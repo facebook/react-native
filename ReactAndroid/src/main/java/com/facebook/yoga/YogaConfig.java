@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -20,6 +20,7 @@ public class YogaConfig {
   }
 
   long mNativePointer;
+  private YogaLogger mLogger;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {
@@ -66,5 +67,15 @@ public class YogaConfig {
    */
   public void setUseLegacyStretchBehaviour(boolean useLegacyStretchBehaviour) {
     jni_YGConfigSetUseLegacyStretchBehaviour(mNativePointer, useLegacyStretchBehaviour);
+  }
+
+  private native void jni_YGConfigSetLogger(long nativePointer, Object logger);
+  public void setLogger(YogaLogger logger) {
+    mLogger = logger;
+    jni_YGConfigSetLogger(mNativePointer, logger);
+  }
+
+  public YogaLogger getLogger() {
+    return mLogger;
   }
 }

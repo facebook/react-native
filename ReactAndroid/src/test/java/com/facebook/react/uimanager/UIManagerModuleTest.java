@@ -151,7 +151,7 @@ public class UIManagerModuleTest {
 
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int viewTag = rootTag + 1;
     int subViewTag = viewTag + 1;
 
@@ -609,7 +609,7 @@ public class UIManagerModuleTest {
     UIManagerModule uiManager = getUIManagerModule();
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
 
     final int containerTag = rootTag + 1;
     final int containerSiblingTag = containerTag + 1;
@@ -662,7 +662,7 @@ public class UIManagerModuleTest {
   private ViewGroup createSimpleTextHierarchy(UIManagerModule uiManager, String text) {
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;
 
@@ -701,7 +701,7 @@ public class UIManagerModuleTest {
 
   private TestMoveDeleteHierarchy createMoveDeleteHierarchy(UIManagerModule uiManager) {
     ReactRootView rootView = new ReactRootView(mReactContext);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
 
     TestMoveDeleteHierarchy hierarchy = new TestMoveDeleteHierarchy(rootView, rootTag);
 

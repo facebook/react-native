@@ -340,14 +340,6 @@ class FBEXPORT JString : public JavaClass<JString, JObject, jstring> {
 FBEXPORT local_ref<JString> make_jstring(const char* modifiedUtf8);
 FBEXPORT local_ref<JString> make_jstring(const std::string& modifiedUtf8);
 
-/// Wrapper to provide functionality to jthrowable references
-class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
- public:
-  static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
-
-  local_ref<JThrowable> initCause(alias_ref<JThrowable> cause);
-};
-
 namespace detail {
 template<typename Target>
 class ElementProxy {
@@ -563,6 +555,29 @@ class PinnedPrimitiveArray {
    PinnedPrimitiveArray(alias_ref<ArrayType>, jint start, jint length);
 
    friend class JPrimitiveArray<typename jtype_traits<T>::array_type>;
+};
+
+struct FBEXPORT JStackTraceElement : JavaClass<JStackTraceElement> {
+  static auto constexpr kJavaDescriptor = "Ljava/lang/StackTraceElement;";
+
+  static local_ref<javaobject> create(const std::string& declaringClass, const std::string& methodName, const std::string& file, int line);
+
+  std::string getClassName() const;
+  std::string getMethodName() const;
+  std::string getFileName() const;
+  int getLineNumber() const;
+};
+
+/// Wrapper to provide functionality to jthrowable references
+class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
+ public:
+  static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
+
+  using JStackTrace = JArrayClass<JStackTraceElement::javaobject>;
+
+  local_ref<JThrowable> initCause(alias_ref<JThrowable> cause);
+  local_ref<JStackTrace> getStackTrace();
+  void setStackTrace(alias_ref<JArrayClass<JStackTraceElement::javaobject>>);
 };
 
 #pragma push_macro("PlainJniRefMap")
