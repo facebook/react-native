@@ -313,6 +313,9 @@ class WebView extends React.Component {
   };
 
   reload = () => {
+    this.setState({
+      viewState: WebViewState.LOADING
+    });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
