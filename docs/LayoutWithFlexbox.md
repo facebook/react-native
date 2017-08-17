@@ -36,7 +36,7 @@ export default class FlexDirectionBasics extends Component {
 };
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
+AppRegistry.registerComponent('FlexDirectionBasics', () => FlexDirectionBasics);
 ```
 
 #### Justify Content
@@ -66,7 +66,7 @@ export default class JustifyContentBasics extends Component {
 };
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
+AppRegistry.registerComponent('JustifyContentBasics', () => JustifyContentBasics);
 ```
 
 #### Align Items
@@ -100,7 +100,7 @@ export default class AlignItemsBasics extends Component {
 };
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
+AppRegistry.registerComponent('AlignItemsBasics', () => AlignItemsBasics);
 ```
 
 #### Going Deeper

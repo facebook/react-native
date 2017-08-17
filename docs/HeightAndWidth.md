@@ -31,7 +31,7 @@ export default class FixedDimensionsBasics extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => FixedDimensionsBasics);
+AppRegistry.registerComponent('FixedDimensionsBasics', () => FixedDimensionsBasics);
 ```
 
 Setting dimensions this way is common for components that should always render at exactly the same size, regardless of screen dimensions.
@@ -62,7 +62,7 @@ export default class FlexDimensionsBasics extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => FlexDimensionsBasics);
+AppRegistry.registerComponent('FlexDimensionsBasics', () => FlexDimensionsBasics);
 ```
 
 After you can control a component's size, the next step is to [learn how to lay it out on the screen](docs/flexbox.html).
