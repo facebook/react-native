@@ -30,6 +30,7 @@ const getDependencyConfig = require('./getDependencyConfig');
 const pollParams = require('./pollParams');
 const commandStub = require('./commandStub');
 const promisify = require('./promisify');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 
 import type {RNConfig} from '../core';
 
@@ -145,6 +146,16 @@ function link(args: Array<string>, config: RNConfig) {
       'No package found. Are you sure this is a React Native project?'
     );
     return Promise.reject(err);
+  }
+
+  if (!project.android && !project.ios && !project.windows && findReactNativeScripts()) {
+    throw new Error(
+      '`react-native link` can not be used in Create React Native App projects. ' +
+      'If you need to include a library that relies on custom native code, ' +
+      'you might have to eject first. ' +
+      'See https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md ' +
+      'for more information.'
+    );
   }
 
   let packageName = args[0];

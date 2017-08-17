@@ -25,6 +25,7 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var cloneReferencedElement = require('react-clone-referenced-element');
+var createReactClass = require('create-react-class');
 var isEmpty = require('isEmpty');
 var merge = require('merge');
 
@@ -91,7 +92,8 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-var ListView = React.createClass({
+var ListView = createReactClass({
+  displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: any),
@@ -171,6 +173,8 @@ var ListView = React.createClass({
      * on every render pass. If they are expensive to re-render, wrap them
      * in StaticContainer or other mechanism as appropriate. Footer is always
      * at the bottom of the list, and header at the top, on every render pass.
+     * In a horizontal ListView, the header is rendered on the left and the
+     * footer on the right.
      */
     renderFooter: PropTypes.func,
     renderHeader: PropTypes.func,

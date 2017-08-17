@@ -10,13 +10,22 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
 
+if [[ "$SKIP_BUNDLING" ]]; then
+  echo "SKIP_BUNDLING enabled; skipping."
+  exit 0;
+fi
+
 case "$CONFIGURATION" in
   *Debug*)
-    # Speed up build times by skipping the creation of the offline package for debug
-    # builds on the simulator since the packager is supposed to be running anyways.
     if [[ "$PLATFORM_NAME" == *simulator ]]; then
-      echo "Skipping bundling for Simulator platform"
-      exit 0;
+      if [[ "$FORCE_BUNDLING" ]]; then
+        echo "FORCE_BUNDLING enabled; continuing to bundle."
+      else
+        echo "Skipping bundling in Debug for the Simulator (since the packager bundles for you). Use the FORCE_BUNDLING flag to change this behavior."
+        exit 0;
+      fi
+    else
+      echo "Bundling for physical device. Use the SKIP_BUNDLING flag to change this behavior."
     fi
 
     DEV=true
@@ -40,7 +49,11 @@ cd "${REACT_NATIVE_DIR}"/../..
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
 # Define entry file
-ENTRY_FILE=${1:-index.ios.js}
+if [[ -s "index.ios.js" ]]; then
+  ENTRY_FILE=${1:-index.ios.js}
+else
+  ENTRY_FILE=${1:-index.js}
+fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   . "$HOME/.nvm/nvm.sh"

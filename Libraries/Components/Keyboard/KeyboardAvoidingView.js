@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const createReactClass = require('create-react-class');
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
@@ -21,13 +22,8 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
+import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
-type Rect = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
 type ScreenRect = {
   screenX: number,
   screenY: number,
@@ -40,11 +36,6 @@ type KeyboardChangeEvent = {
   duration?: number,
   easing?: string,
 };
-type LayoutEvent = {
-  nativeEvent: {
-    layout: Rect,
-  }
-};
 
 const viewRef = 'VIEW';
 
@@ -53,7 +44,8 @@ const viewRef = 'VIEW';
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
 // $FlowFixMe(>=0.41.0)
-const KeyboardAvoidingView = React.createClass({
+const KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
   propTypes: {
@@ -85,7 +77,7 @@ const KeyboardAvoidingView = React.createClass({
   },
 
   subscriptions: ([]: Array<EmitterSubscription>),
-  frame: (null: ?Rect),
+  frame: (null: ?ViewLayout),
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
@@ -121,7 +113,7 @@ const KeyboardAvoidingView = React.createClass({
     this.setState({bottom: height});
   },
 
-  onLayout(event: LayoutEvent) {
+  onLayout(event: ViewLayoutEvent) {
     this.frame = event.nativeEvent.layout;
   },
 

@@ -51,7 +51,32 @@ static BOOL RCTIsIdentifierTail(const char c)
   return isalnum(c) || c == '_';
 }
 
-BOOL RCTParseIdentifier(const char **input, NSString **string)
+BOOL RCTParseArgumentIdentifier(const char **input, NSString **string)
+{
+  const char *start = *input;
+
+  do {
+    if (!RCTIsIdentifierHead(**input)) {
+      return NO;
+    }
+    (*input)++;
+
+    while (RCTIsIdentifierTail(**input)) {
+      (*input)++;
+    }
+
+  // allow namespace resolution operator
+  } while (RCTReadString(input, "::"));
+
+  if (string) {
+    *string = [[NSString alloc] initWithBytes:start
+                                       length:(NSInteger)(*input - start)
+                                     encoding:NSASCIIStringEncoding];
+  }
+  return YES;
+}
+
+BOOL RCTParseSelectorIdentifier(const char **input, NSString **string)
 {
   const char *start = *input;
   if (!RCTIsIdentifierHead(**input)) {
@@ -83,7 +108,7 @@ static BOOL RCTIsCollectionType(NSString *type)
 NSString *RCTParseType(const char **input)
 {
   NSString *type;
-  RCTParseIdentifier(input, &type);
+  RCTParseArgumentIdentifier(input, &type);
   RCTSkipWhitespace(input);
   if (RCTReadChar(input, '<')) {
     RCTSkipWhitespace(input);

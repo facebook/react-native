@@ -21,7 +21,6 @@ import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
@@ -30,7 +29,6 @@ import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
  */
 @ReactModuleList(
   nativeModules = {
-    DebugComponentOwnershipModule.class,
     JSCHeapCapture.class,
     JSCSamplingProfiler.class,
   }
@@ -43,14 +41,6 @@ import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
     List<ModuleSpec> moduleSpecList = new ArrayList<>();
-
-    moduleSpecList.add(
-      new ModuleSpec(DebugComponentOwnershipModule.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new DebugComponentOwnershipModule(reactContext);
-          }
-        }));
     moduleSpecList.add(
       new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
           @Override

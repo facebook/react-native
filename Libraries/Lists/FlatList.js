@@ -107,6 +107,7 @@ type OptionalProps<ItemT> = {
    *       {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
    *     )}
    *
+   * Adding `getItemLayout` can be a great performance boost for lists of several hundred items.
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `ItemSeparatorComponent`.
    */
@@ -303,6 +304,7 @@ type DefaultProps = typeof defaultProps;
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
+ * Also inherets [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
 class FlatList<ItemT> extends React.PureComponent<
   DefaultProps,
@@ -319,7 +321,7 @@ class FlatList<ItemT> extends React.PureComponent<
   }
 
   /**
-   * Scrolls to the item at a the specified index such that it is positioned in the viewable area
+   * Scrolls to the item at the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
    * middle. `viewOffset` is a fixed number of pixels to offset the final target position.
    *

@@ -18,6 +18,7 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
     private ReadableNativeMap mJSCConfig;
 
     public Factory(WritableNativeMap jscConfig) {
+      jscConfig.putString("OwnerIdentity", "ReactNative");
       mJSCConfig = jscConfig;
     }
 
