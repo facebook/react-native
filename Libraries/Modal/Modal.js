@@ -118,10 +118,9 @@ class Modal extends React.Component {
      */
     visible: PropTypes.bool,
     /**
-     * The `onRequestClose` callback is called when the user taps the hardware back button.
-     * @platform android
+     * The `onRequestClose` callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
      */
-    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    onRequestClose: (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func,
     /**
      * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
