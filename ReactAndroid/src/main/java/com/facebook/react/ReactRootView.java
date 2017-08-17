@@ -259,7 +259,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mIsAttachedToInstance = false;
       mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
     }
-    mShouldLogContentAppeared = true;
+    mShouldLogContentAppeared = false;
   }
 
   public void onAttachedToReactInstance() {

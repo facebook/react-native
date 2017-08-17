@@ -115,6 +115,9 @@ class SwipeableListView extends React.Component<DefaultProps, Props, State> {
 
   render(): React.Element<any> {
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       <ListView
         {...this.props}
         ref={(ref) => {
