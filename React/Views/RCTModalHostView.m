@@ -62,7 +62,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 }
 
 #if TARGET_OS_TV
-- (void)menuButtonPressed:(__unused UIGestureRecognizer *)recognizer
+- (void)menuButtonPressed:(__unused UIGestureRecognizer *)gestureRecognizer
 {
     if (_onRequestClose) {
         _onRequestClose(nil);
@@ -132,7 +132,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
-  // Superclass actually removes the subview from this view
+  // Superclass (category) removes the `subview` from actual `superview`.
   [super removeReactSubview:subview];
   [_touchHandler detachFromView:subview];
 #if TARGET_OS_TV
