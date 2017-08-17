@@ -14,7 +14,9 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#if ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
+#endif
 #import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
