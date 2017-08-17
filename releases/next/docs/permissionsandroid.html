@@ -18,7 +18,9 @@ if they appear in the manifest, so <code>check</code> and <code>request</code>
 should always be true.</p><p>If a user has previously turned off a permission that you prompt for, the OS
 will advise your app to show a rationale for needing the permission. The
 optional <code>rationale</code> argument will show a dialog prompt only if
-necessary - otherwise the normal permission prompt will appear.</p><h3><a class="anchor" name="example"></a>Example <a class="hash-link" href="docs/permissionsandroid.html#example">#</a></h3><div class="prism language-javascript"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">requestCameraPermission</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+necessary - otherwise the normal permission prompt will appear.</p><h3><a class="anchor" name="example"></a>Example <a class="hash-link" href="docs/permissionsandroid.html#example">#</a></h3><div class="prism language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span> PermissionsAndroid <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">requestCameraPermission</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
     <span class="token keyword">const</span> granted <span class="token operator">=</span> <span class="token keyword">await</span> PermissionsAndroid<span class="token punctuation">.</span><span class="token function">request</span><span class="token punctuation">(</span>
       PermissionsAndroid<span class="token punctuation">.</span>PERMISSIONS<span class="token punctuation">.</span>CAMERA<span class="token punctuation">,</span>
