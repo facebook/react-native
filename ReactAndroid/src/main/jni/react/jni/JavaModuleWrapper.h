@@ -16,7 +16,7 @@ class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
+    "Lcom/facebook/react/bridge/MethodDescriptor;";
 
   jni::local_ref<JReflectMethod::javaobject> getMethod() const;
   std::string getSignature() const;
