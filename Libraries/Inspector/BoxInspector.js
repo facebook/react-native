@@ -53,6 +53,9 @@ class BoxContainer extends React.Component {
     return (
       <View style={styles.box}>
         <View style={styles.row}>
+          {/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+            * an error found when Flow v0.53 was deployed. To see the error
+            * delete this comment and run Flow. */}
           <Text style={[this.props.titleStyle, styles.label]}>{this.props.title}</Text>
           <Text style={styles.boxText}>{box.top}</Text>
         </View>

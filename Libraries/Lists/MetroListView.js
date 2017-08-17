@@ -24,6 +24,9 @@ type Item = any;
 type NormalProps = {
   FooterComponent?: ReactClass<*>,
   renderItem: (info: Object) => ?React.Element<*>,
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.53 was deployed. To see the error delete this comment
+   * and run Flow. */
   renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
   SeparatorComponent?: ?ReactClass<*>, // not supported yet
 
@@ -105,9 +108,15 @@ class MetroListView extends React.Component {
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.53 was deployed. To see the error
+           * delete this comment and run Flow. */
           <ScrollView
             {...props}
             refreshControl={
+              /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+               * suppresses an error found when Flow v0.53 was deployed. To see
+               * the error delete this comment and run Flow. */
               <RefreshControl
                 refreshing={props.refreshing}
                 onRefresh={props.onRefresh}
@@ -116,6 +125,9 @@ class MetroListView extends React.Component {
           />
         );
       } else {
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.53 was deployed. To see the error delete
+         * this comment and run Flow. */
         return <ScrollView {...props} />;
       }
     },
@@ -134,6 +146,9 @@ class MetroListView extends React.Component {
   }
   render() {
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       <ListView
         {...this.props}
         dataSource={this.state.ds}
