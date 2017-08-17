@@ -36,7 +36,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults
 {
-  if ((self = [self init])) {
+  if ((self = [super init])) {
     _defaults = defaults;
 
 

@@ -679,7 +679,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
         mReactInstanceManager = ReactInstanceManager.builder()
                 .setApplication(getApplication())
                 .setBundleAssetName("index.android.bundle")
-                .setJSMainModuleName("index")
+                .setJSMainModulePath("index")
                 .addPackage(new MainReactPackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
@@ -809,7 +809,7 @@ Now just create a release build of your native app from within Android Studio as
 
 ### Now what?
 
-At this point you can continue developing your app as usual. Refer to our [debugging](/docs/debugging.html) and [deployment](docs/running-on-device.html) docs to learn more about working with React Native.
+At this point you can continue developing your app as usual. Refer to our [debugging](docs/debugging.html) and [deployment](docs/running-on-device.html) docs to learn more about working with React Native.
 
 <script>
 function displayTab(type, value) {

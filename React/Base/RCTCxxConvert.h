@@ -9,10 +9,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
+/**
+ * This class provides a collection of conversion functions for mapping
+ * JSON objects to cxx types. Extensible via categories.
+ * Convert methods are expected to return cxx objects wraped in RCTManagedPointer.
+ */
 
-@interface RCTSettingsManager : NSObject <RCTBridgeModule>
-
-- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults NS_DESIGNATED_INITIALIZER;
+@interface RCTCxxConvert : NSObject
 
 @end

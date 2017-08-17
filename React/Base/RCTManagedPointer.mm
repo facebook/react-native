@@ -7,12 +7,21 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import "RCTManagedPointer.h"
 
-#import <React/RCTBridgeModule.h>
+@implementation RCTManagedPointer {
+  std::shared_ptr<void> _pointer;
+}
 
-@interface RCTSettingsManager : NSObject <RCTBridgeModule>
+- (instancetype)initWithPointer:(std::shared_ptr<void>)pointer {
+  if (self = [super init]) {
+    _pointer = std::move(pointer);
+  }
+  return self;
+}
 
-- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults NS_DESIGNATED_INITIALIZER;
+- (void *)voidPointer {
+  return _pointer.get();
+}
 
 @end

@@ -28,7 +28,7 @@ jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
    // The handle will remain valid until java closes it.  There's no
    // way to do this on Android, but that's no reason to be sloppy
    // here.
-  auto guard = folly::makeGuard([&] { FBASSERT(dlclose(handle) == 0); });
+  auto guard = folly::makeGuard([&] { CHECK(dlclose(handle) == 0); });
 
   void* sym = dlsym(handle, fname.c_str());
   if (!sym) {
