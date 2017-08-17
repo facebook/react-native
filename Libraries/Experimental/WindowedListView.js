@@ -125,7 +125,7 @@ type Props = {
    */
   renderScrollComponent: (props: ?Object) => React.Element<any>,
   /**
-   * Use to disable incremental rendering when not wanted, e.g. to speed up initial render.
+   * Use to disable incremental rendering when not wanted.
    */
   disableIncrementalRendering: boolean,
   /**
@@ -166,7 +166,6 @@ class WindowedListView extends React.Component {
   _rowFrames: {[key: string]: Object} = {};
   _rowRenderMode: {[key: string]: null | 'async' | 'sync'} = {};
   _rowFramesDirty: boolean = false;
-  _hasCalledOnEndReached: boolean = false;
   _willComputeRowsToRender: boolean = false;
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<string> = new Set();
@@ -322,107 +321,47 @@ class WindowedListView extends React.Component {
     this._computeRowsToRenderBatcher.dispose();
   }
   _computeRowsToRender(props: Object): void {
-    const totalRows = props.data.length;
-    if (totalRows === 0) {
-      this._updateVisibleRows(-1, -1);
+    // 1.  Check if there is any data to render
+    if (props.data.length === 0) {
+      this._updateVisibleRowsState(-1, -1);
       this.setState({
         firstRow: 0,
         lastRow: -1,
       });
       return;
     }
-    const rowFrames = this._rowFrames;
-    let firstVisible = -1;
-    let lastVisible = 0;
-    let lastRow = clamp(0, this.state.lastRow, totalRows - 1);
-    const top = this._scrollOffsetY;
-    const bottom = top + this._frameHeight;
-    for (let idx = 0; idx < lastRow; idx++) {
-      const frame = rowFrames[props.data[idx].rowKey];
-      if (!frame) {
-        // No frame - sometimes happens when they come out of order, so just wait for the rest.
-        return;
-      }
-      if (((frame.y + frame.height) > top) && (firstVisible < 0)) {
-        firstVisible = idx;
-      }
-      if (frame.y < bottom) {
-        lastVisible = idx;
-      } else {
-        break;
-      }
-    }
-    if (firstVisible === -1) {
-      firstVisible = 0;
-    }
-    this._updateVisibleRows(firstVisible, lastVisible);
 
-    // Unfortuantely, we can't use <Incremental> to simplify our increment logic in this function
-    // because we need to make sure that cells are rendered in the right order one at a time when
-    // scrolling back up.
+    // 2.  Compute and update the visible interval to decide if rendering needed
+    let visibleInterval = this._visibleInterval();
+    if (visibleInterval === null) {
+      // Something went wrong with frame calculation - may happen when rows come out of order, so do nothing & just wait for the rest.
+      return;
+    }
+    this._updateVisibleRowsState(visibleInterval.firstVisible, visibleInterval.lastVisible);
 
-    const numRendered = lastRow - this.state.firstRow + 1;
-    // Our last row target that we will approach incrementally
-    const targetLastRow = clamp(
-      numRendered - 1, // Don't reduce numRendered when scrolling back up
-      lastVisible + props.numToRenderAhead, // Primary goal
-      totalRows - 1, // Don't render past the end
-    );
-    // Increment the last row one at a time per JS event loop
-    if (targetLastRow > this.state.lastRow) {
-      lastRow++;
-    } else if (targetLastRow < this.state.lastRow) {
-      lastRow--;
+    // 3.  Compute the 'window' to render (the user-visible region sits within this 'window')
+    let targetWindow = this.props.disableIncrementalRendering ? this._targetWindow() : this._targetIncrementalWindow();
+
+    // 4.  Render changes if needed
+    const shouldRedrawForTargetWindow = this._shouldRedrawForTargetWindow(targetWindow);
+    if (shouldRedrawForTargetWindow) {
+      const firstRow = targetWindow.firstRow;
+      const lastRow = targetWindow.lastRow;
+      props.onMountedRowsWillChange && props.onMountedRowsWillChange(firstRow, lastRow - firstRow + 1);
+      infoLog(
+        'WLV: row render range will change:',
+        {firstRow, firstVis: this._firstVisible, lastVis: this._lastVisible, lastRow}
+      );
     }
-    // Once last row is set, figure out the first row
-    const firstRow = Math.max(
-      0, // Don't render past the top
-      lastRow - props.maxNumToRender + 1, // Don't exceed max to render
-      lastRow - numRendered, // Don't render more than 1 additional row
-    );
-    if (lastRow >= totalRows) {
-      // It's possible that the number of rows decreased by more than one
-      // increment could compensate for.  Need to make sure we don't render more
-      // than one new row at a time, but don't want to render past the end of
-      // the data.
-      lastRow = totalRows - 1;
-    }
-    if (props.onEndReached) {
-      // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
-      const willBeAtTheEnd = lastRow === (totalRows - 1);
-      if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
-        props.onEndReached();
-        this._hasCalledOnEndReached = true;
-      } else {
-        // If lastRow is changing, reset so we can call onEndReached again
-        this._hasCalledOnEndReached = this.state.lastRow === lastRow;
-      }
-    }
-    const rowsShouldChange = firstRow !== this.state.firstRow || lastRow !== this.state.lastRow;
-    if (this._rowFramesDirty || rowsShouldChange) {
-      if (rowsShouldChange) {
-        props.onMountedRowsWillChange &&
-          props.onMountedRowsWillChange(firstRow, lastRow - firstRow + 1);
-        infoLog(
-          'WLV: row render range will change:',
-          {firstRow, firstVis: this._firstVisible, lastVis: this._lastVisible, lastRow},
-        );
-      }
+    if (this._rowFramesDirty || shouldRedrawForTargetWindow) {
       this._rowFramesDirty = false;
-      this.setState({firstRow, lastRow});
+      this.setState({
+        firstRow: targetWindow.firstRow,
+        lastRow: targetWindow.lastRow,
+      });
     }
   }
-  _updateVisibleRows(newFirstVisible: number, newLastVisible: number) {
-    if (this.props.onVisibleRowsChanged) {
-      if (this._firstVisible !== newFirstVisible ||
-          this._lastVisible !== newLastVisible) {
-        this.props.onVisibleRowsChanged(newFirstVisible, newLastVisible - newFirstVisible + 1);
-      }
-    }
-    this._firstVisible = newFirstVisible;
-    this._lastVisible = newLastVisible;
-  }
+
   render(): React.Element<any> {
     const {firstRow} = this.state;
     const lastRow = clamp(0, this.state.lastRow, this.props.data.length - 1);
@@ -480,25 +419,31 @@ class WindowedListView extends React.Component {
       showIndicator = true;
       spacerHeight -= this.state.boundaryIndicatorHeight || 0;
     }
-    DEBUG && infoLog('render top spacer with height ', spacerHeight);
+
+    DEBUG && infoLog('render top spacer with height ', spacerHeight, 'showIndicator', showIndicator);
     rows.push(<View key="sp-top" style={{height: spacerHeight}} />);
     if (this.props.renderWindowBoundaryIndicator) {
-      // Always render it, even if removed, so that we can get the height right away and don't waste
-      // time creating/ destroying it. Should see if there is a better spinner option that is not as
-      // expensive.
-      rows.push(
-        <View
-          style={!showIndicator && styles.remove}
-          key="ind-top"
-          onLayout={(e) => {
-            const layout = e.nativeEvent.layout;
-            if (layout.height !== this.state.boundaryIndicatorHeight) {
-              this.setState({boundaryIndicatorHeight: layout.height});
-            }
-          }}>
-          {this.props.renderWindowBoundaryIndicator(showIndicator)}
-        </View>
-      );
+      // Only show indicator when required because otherwise the transparent view stops clicking on the first cell.
+      // Does not noticeably impact performance.
+      // Old comment:
+      //    Always render it, even if removed, so that we can get the height right away and don't waste
+      //    time creating/ destroying it. Should see if there is a better spinner option that is not as
+      //    expensive.
+      if (showIndicator) {
+        rows.push(
+          <View
+            style={!showIndicator && styles.remove}
+            key="ind-top"
+            onLayout={(e) => {
+              const layout = e.nativeEvent.layout;
+              if (layout.height !== this.state.boundaryIndicatorHeight) {
+                this.setState({boundaryIndicatorHeight: layout.height});
+              }
+            }}>
+            {this.props.renderWindowBoundaryIndicator(showIndicator)}
+          </View>
+        );
+      }
     }
     for (let idx = firstRow; idx <= lastRow; idx++) {
       const rowKey = this.props.data[idx].rowKey;
@@ -533,19 +478,21 @@ class WindowedListView extends React.Component {
       );
     }
     if (this.props.renderWindowBoundaryIndicator) {
-      rows.push(
-        <View
-          key="ind-bot"
-          style={showFooter ? styles.remove : styles.include}
-          onLayout={(e) => {
-            const layout = e.nativeEvent.layout;
-            if (layout.height !== this.state.boundaryIndicatorHeight) {
-              this.setState({boundaryIndicatorHeight: layout.height});
-            }
-          }}>
-          {this.props.renderWindowBoundaryIndicator(!showFooter)}
-        </View>
-      );
+      if (showIndicator) {
+        rows.push(
+          <View
+            key="ind-bot"
+            style={showFooter ? styles.remove : styles.include}
+            onLayout={(e) => {
+              const layout = e.nativeEvent.layout;
+              if (layout.height !== this.state.boundaryIndicatorHeight) {
+                this.setState({boundaryIndicatorHeight: layout.height});
+              }
+            }}>
+            {this.props.renderWindowBoundaryIndicator(!showFooter)}
+          </View>
+        );
+      }
     }
     // Prevent user from scrolling into empty space of unmounted rows.
     const contentInset = {top: firstRow === 0 ? 0 : -spacerHeight};
@@ -562,6 +509,114 @@ class WindowedListView extends React.Component {
       })
     );
   }
+
+    // ---------- Row computation/rendering helper functions ----------
+
+  _visibleInterval(): {firstVisible: number, lastVisible: number} {
+    const rowFrames = this._rowFrames;
+    const top = this._scrollOffsetY;
+    const bottom = top + this._frameHeight;
+    const data = this.props.data;
+    const lastRow = this.state.lastRow;
+    let firstVisible = -1;
+    let lastVisible = 0;
+
+    for (let idx = 0; idx < lastRow; idx++) {
+      const frame = rowFrames[data[idx].rowKey];
+      if (!frame) {
+        return null;
+      }
+      if (((frame.y + frame.height) > top) && (firstVisible < 0)) {
+        firstVisible = idx;
+      }
+      if (frame.y < bottom) {
+        lastVisible = idx;
+      } else {
+        break;
+      }
+    }
+    if (firstVisible === -1) {
+      firstVisible = 0;
+    }
+
+    return {
+        firstVisible: firstVisible,
+        lastVisible: lastVisible
+    };
+  }
+
+  _updateVisibleRowsState(newFirstVisible: number, newLastVisible: number) {
+    if (this.props.onVisibleRowsChanged) {
+      if (this._firstVisible !== newFirstVisible ||
+          this._lastVisible !== newLastVisible) {
+        this.props.onVisibleRowsChanged(newFirstVisible, newLastVisible - newFirstVisible + 1);
+      }
+    }
+    this._firstVisible = newFirstVisible;
+    this._lastVisible = newLastVisible;
+  }
+
+  _shouldRedrawForTargetWindow(targetWindow: {firstRow: number, lastRow: number}): boolean {
+    return targetWindow.firstRow !== this.state.firstRow
+      || targetWindow.lastRow !== this.state.lastRow;
+  }
+
+  _targetWindow(): {firstRow: number, lastRow: number} {
+    const lastDataIndex = this.props.data.length - 1;
+    const currentLastVisible = this._lastVisible;
+    const windowBottomBuffer = this.props.numToRenderAhead;
+    const specifiedWindowHeight = this.props.maxNumToRender;
+
+    let lastRow = clamp(
+      0,
+      currentLastVisible + windowBottomBuffer,
+      lastDataIndex,
+    );
+    let firstRow = Math.max(
+      0,
+      lastRow - specifiedWindowHeight,
+    );
+
+    return {
+        firstRow: firstRow,
+        lastRow: lastRow
+    };
+  }
+
+  _targetIncrementalWindow(): {firstRow: number, lastRow: number} {
+    const lastDataIndex = this.props.data.length - 1;
+    const currentLastVisible = this._lastVisible;
+    const currentWindowHeight = this.state.lastRow - this.state.firstRow;
+    const windowBottomBuffer = this.props.numToRenderAhead;
+    const specifiedWindowHeight = this.props.maxNumToRender;
+
+    let lastRow = clamp(
+      0,
+      this.state.lastRow,
+      lastDataIndex
+    );
+    const targetLastRow = clamp(
+      currentWindowHeight, // Don't reduce numRendered when scrolling back up
+      currentLastVisible + windowBottomBuffer,
+      lastDataIndex,
+    );
+    // Increment the last row one at a time per JS event loop
+    if (targetLastRow > lastRow) {
+      lastRow++;
+    } else if (targetLastRow < lastRow) {
+      lastRow--;
+    }
+    const firstRow = Math.max(
+      0,
+      lastRow - specifiedWindowHeight,
+    );
+
+    return {
+      firstRow: firstRow,
+      lastRow: lastRow
+    };
+  }
+
 }
 
 // performance testing id, unique for each component mount cycle
@@ -613,6 +668,7 @@ type CellProps = {
    */
   onWillUnmount: (rowKey: string) => void,
 };
+
 class CellRenderer extends React.Component {
   props: CellProps;
   _containerRef: NativeMethodsMixinType;
