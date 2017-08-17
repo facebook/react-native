@@ -96,6 +96,9 @@ const DataDetectorTypes = [
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
+ * Two methods exposed via the native element are .focus() and .blur() that
+ * will focus or blur the TextInput programmatically.
+ *
  * Note that some props are only available with `multiline={true/false}`.
  * Additionally, border styles that apply to only one side of the element
  * (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if
