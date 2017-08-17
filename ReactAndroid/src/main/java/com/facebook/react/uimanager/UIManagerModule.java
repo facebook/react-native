@@ -33,7 +33,6 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -160,11 +159,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
   }
 
-  public Map<String,Double> getPerformanceCounters() {
-    Map<String,Double> perfMap = new HashMap<>();
-    perfMap.put("LayoutCount", mUIImplementation.getLayoutCount());
-    perfMap.put("LayoutTimer", mUIImplementation.getLayoutTimer());
-    return perfMap;
+  @Override
+  public Map<String, Long> getPerformanceCounters() {
+    return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
   /**

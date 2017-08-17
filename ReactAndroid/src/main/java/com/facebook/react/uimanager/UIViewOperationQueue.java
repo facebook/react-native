@@ -9,12 +9,7 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-
+import android.os.SystemClock;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
@@ -31,6 +26,12 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager} or on
@@ -542,6 +543,14 @@ public class UIViewOperationQueue {
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
   private boolean mIsDispatchUIFrameCallbackEnqueued = false;
   private boolean mIsInIllegalUIState = false;
+  private boolean mIsProfilingNextBatch = false;
+  private long mNonBatchedExecutionTotalTime;
+  private long mProfiledBatchCommitStartTime;
+  private long mProfiledBatchLayoutTime;
+  private long mProfiledBatchDispatchViewUpdatesTime;
+  private long mProfiledBatchRunStartTime;
+  private long mProfiledBatchBatchedExecutionTime;
+  private long mProfiledBatchNonBatchedExecutionTime;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -559,6 +568,22 @@ public class UIViewOperationQueue {
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mViewHierarchyUpdateDebugListener = listener;
+  }
+
+  public void profileNextBatch() {
+    mIsProfilingNextBatch = true;
+    mProfiledBatchCommitStartTime = 0;
+  }
+
+  public Map<String, Long> getProfiledBatchPerfCounters() {
+    Map<String, Long> perfMap = new HashMap<>();
+    perfMap.put("CommitStartTime", mProfiledBatchCommitStartTime);
+    perfMap.put("LayoutTime", mProfiledBatchLayoutTime);
+    perfMap.put("DispatchViewUpdatesTime", mProfiledBatchDispatchViewUpdatesTime);
+    perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
+    perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
+    perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
+    return perfMap;
   }
 
   public boolean isEmpty() {
@@ -725,13 +750,16 @@ public class UIViewOperationQueue {
     mOperations.add(new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(final int batchId) {
+  /* package */ void dispatchViewUpdates(
+      final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
       "UIViewOperationQueue.dispatchViewUpdates")
       .arg("batchId", batchId)
       .flush();
     try {
+      final long dispatchViewUpdatesTime = SystemClock.uptimeMillis();
+
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
       final ArrayList<UIOperation> batchedOperations;
@@ -756,41 +784,72 @@ public class UIViewOperationQueue {
         mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
       }
 
-      Runnable runOperations = new Runnable() {
-        @Override
-        public void run() {
-          SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
-            .arg("BatchId", batchId)
-            .flush();
-          try {
-            // All nonBatchedOperations should be executed before regular operations as
-            // regular operations may depend on them
-            if (nonBatchedOperations != null) {
-              for (UIOperation op : nonBatchedOperations) {
-                op.execute();
+      Runnable runOperations =
+          new Runnable() {
+            @Override
+            public void run() {
+              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+                  .arg("BatchId", batchId)
+                  .flush();
+              try {
+                long runStartTime = SystemClock.uptimeMillis();
+
+                // All nonBatchedOperations should be executed before regular operations as
+                // regular operations may depend on them
+                if (nonBatchedOperations != null) {
+                  for (UIOperation op : nonBatchedOperations) {
+                    op.execute();
+                  }
+                }
+
+                if (batchedOperations != null) {
+                  for (UIOperation op : batchedOperations) {
+                    op.execute();
+                  }
+                }
+
+                if (mIsProfilingNextBatch && mProfiledBatchCommitStartTime == 0) {
+                  mProfiledBatchCommitStartTime = commitStartTime;
+                  mProfiledBatchLayoutTime = layoutTime;
+                  mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
+                  mProfiledBatchRunStartTime = runStartTime;
+
+                  Systrace.beginAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeDispatchViewUpdates",
+                      0,
+                      mProfiledBatchCommitStartTime * 1000000);
+                  Systrace.endAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeDispatchViewUpdates",
+                      0,
+                      mProfiledBatchDispatchViewUpdatesTime * 1000000);
+                  Systrace.beginAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeBatchRunStart",
+                      0,
+                      mProfiledBatchDispatchViewUpdatesTime * 1000000);
+                  Systrace.endAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeBatchRunStart",
+                      0,
+                      mProfiledBatchRunStartTime * 1000000);
+                }
+
+                // Clear layout animation, as animation only apply to current UI operations batch.
+                mNativeViewHierarchyManager.clearLayoutAnimation();
+
+                if (mViewHierarchyUpdateDebugListener != null) {
+                  mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+                }
+              } catch (Exception e) {
+                mIsInIllegalUIState = true;
+                throw e;
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
             }
-
-            if (batchedOperations != null) {
-              for (UIOperation op : batchedOperations) {
-                op.execute();
-              }
-            }
-
-            // Clear layout animation, as animation only apply to current UI operations batch.
-            mNativeViewHierarchyManager.clearLayoutAnimation();
-
-            if (mViewHierarchyUpdateDebugListener != null) {
-              mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
-            }
-          } catch (Exception e) {
-            mIsInIllegalUIState = true;
-            throw e;
-          } finally {
-            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-          }
-        }
-      };
+          };
 
       SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -832,12 +891,12 @@ public class UIViewOperationQueue {
     flushPendingBatches();
   }
 
-  private void flushPendingBatches() {
+  private boolean flushPendingBatches() {
     if (mIsInIllegalUIState) {
       FLog.w(
         ReactConstants.TAG,
         "Not flushing pending UI operations because of previously thrown Exception");
-      return;
+      return false;
     }
 
     final ArrayList<Runnable> runnables;
@@ -850,11 +909,14 @@ public class UIViewOperationQueue {
       }
     }
 
-    if (runnables != null) {
-      for (Runnable runnable : runnables) {
-        runnable.run();
-      }
+    if (runnables == null) {
+      return false;
     }
+
+    for (Runnable runnable : runnables) {
+      runnable.run();
+    }
+    return true;
   }
 
   /**
@@ -897,7 +959,23 @@ public class UIViewOperationQueue {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
 
-      flushPendingBatches();
+      final long flushPendingBatchesStartTime = SystemClock.uptimeMillis();
+      if (flushPendingBatches()) {
+        if (mIsProfilingNextBatch) {
+          mProfiledBatchBatchedExecutionTime =
+              SystemClock.uptimeMillis() - flushPendingBatchesStartTime;
+          mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
+          mIsProfilingNextBatch = false;
+
+          Systrace.beginAsyncSection(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+              "batchedExecutionTime",
+              0,
+              flushPendingBatchesStartTime * 1000000);
+          Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+        }
+        mNonBatchedExecutionTotalTime = 0;
+      }
 
       ReactChoreographer.getInstance().postFrameCallback(
         ReactChoreographer.CallbackType.DISPATCH_UI, this);
@@ -920,7 +998,10 @@ public class UIViewOperationQueue {
         }
 
         try {
+          long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
           nextOperation.execute();
+          mNonBatchedExecutionTotalTime +=
+              SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
         } catch (Exception e) {
           mIsInIllegalUIState = true;
           throw e;
