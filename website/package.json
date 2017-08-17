@@ -19,12 +19,12 @@
     "memory-cache": "^0.1.6",
     "mkdirp": "^0.5.1",
     "optimist": "0.6.0",
+    "phin": "^2.2.81",
     "prop-types": "^15.5.8",
     "react": "~0.13.0",
     "react-docgen": "3.0.0-beta5",
     "react-page-middleware": "0.4.1",
     "remove-markdown": "^0.1.0",
-    "request": "^2.69.0",
     "semver-compare": "^1.0.0"
   },
   "devDependencies": {
