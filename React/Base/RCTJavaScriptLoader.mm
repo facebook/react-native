@@ -81,8 +81,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                    code:RCTJavaScriptLoaderErrorNoScriptURL
                                userInfo:@{NSLocalizedDescriptionKey:
                                             [NSString stringWithFormat:@"No script URL provided. Make sure the packager is "
-                                             @"running or you have embedded a JS bundle in your application bundle."
-                                             @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString]}];
+                                             @"running or you have embedded a JS bundle in your application bundle.\n\n"
+                                             @"unsanitizedScriptURLString = %@", unsanitizedScriptURLString]}];
     }
     return nil;
   }
@@ -198,7 +198,6 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
     return;
   }
 
-
   RCTMultipartDataTask *task = [[RCTMultipartDataTask alloc] initWithURL:scriptURL partHandler:^(NSInteger statusCode, NSDictionary *headers, NSData *data, NSError *error, BOOL done) {
     if (!done) {
       if (onProgress) {
@@ -243,7 +242,29 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       onComplete(error, nil, 0);
       return;
     }
+
+    // Validate that the packager actually returned javascript.
+    NSString *contentType = headers[@"Content-Type"];
+    if (![contentType isEqualToString:@"application/javascript"] &&
+        ![contentType isEqualToString:@"text/javascript"]) {
+      NSString *description = [NSString stringWithFormat:@"Expected Content-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", contentType];
+      error = [NSError errorWithDomain:@"JSServer"
+                                  code:NSURLErrorCannotParseResponse
+                              userInfo:@{
+                                         NSLocalizedDescriptionKey: description,
+                                         @"headers": headers,
+                                         @"data": data
+                                         }];
+      onComplete(error, nil, 0);
+      return;
+    }
+
     onComplete(nil, data, data.length);
+  } progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
+    // Only care about download progress events for the javascript bundle part.
+    if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {
+      onProgress(progressEventFromDownloadProgress(loaded, total));
+    }
   }];
 
   [task startTask];
@@ -267,6 +288,16 @@ static RCTLoadingProgress *progressEventFromData(NSData *rawData)
   progress.status = info[@"status"];
   progress.done = info[@"done"];
   progress.total = info[@"total"];
+  return progress;
+}
+
+static RCTLoadingProgress *progressEventFromDownloadProgress(NSNumber *total, NSNumber *done)
+{
+  RCTLoadingProgress *progress = [RCTLoadingProgress new];
+  progress.status = @"Downloading JavaScript bundle";
+  // Progress values are in bytes transform them to kilobytes for smaller numbers.
+  progress.done = done != nil ? @([done integerValue] / 1024) : nil;
+  progress.total = total != nil ? @([total integerValue] / 1024) : nil;
   return progress;
 }
 

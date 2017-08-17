@@ -33,8 +33,10 @@ var TESTS = [
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./WebViewTest'),
   require('./SyncMethodTest'),
   require('./WebSocketTest'),
+  require('./AccessibilityManagerTest'),
 ];
 
 TESTS.forEach(

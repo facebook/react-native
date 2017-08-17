@@ -1,49 +1,64 @@
-jest.autoMockOff();
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
+ */
+
+'use strict';
 
 const getDependencyConfig = require('../../android').dependencyConfig;
-const mockFs = require('mock-fs');
+const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
+
 const userConfig = {};
 
 describe('android::getDependencyConfig', () => {
-
-  beforeAll(() => mockFs({
-    empty: {},
-    nested: {
-      android: {
-        app: mocks.valid,
+  beforeAll(() => {
+    mockFS({
+      empty: {},
+      nested: {
+        android: {
+          app: mocks.valid,
+        },
       },
-    },
-    corrupted: {
-      android: {
-        app: mocks.corrupted,
+      corrupted: {
+        android: {
+          app: mocks.corrupted,
+        },
       },
-    },
-    noPackage: {
-      android: {},
-    },
-  }));
+      noPackage: {
+        android: {},
+      },
+    });
+  });
 
-  it('should return an object with android project configuration', () => {
-    expect(getDependencyConfig('nested', userConfig)).not.toBe(null);
+  it('returns an object with android project configuration', () => {
+    expect(getDependencyConfig('nested', userConfig)).not.toBeNull();
     expect(typeof getDependencyConfig('nested', userConfig)).toBe('object');
   });
 
-  it('should return `null` if manifest file hasn\'t been found', () => {
-    expect(getDependencyConfig('empty', userConfig)).toBe(null);
+  it('returns `null` if manifest file has not been found', () => {
+    expect(getDependencyConfig('empty', userConfig)).toBeNull();
   });
 
-  it('should return `null` if android project was not found', () => {
-    expect(getDependencyConfig('empty', userConfig)).toBe(null);
+  it('returns `null` if android project was not found', () => {
+    expect(getDependencyConfig('empty', userConfig)).toBeNull();
   });
 
-  it('should return `null` if android project does not contain ReactPackage', () => {
-    expect(getDependencyConfig('noPackage', userConfig)).toBe(null);
+  it('returns `null` if android project does not contain ReactPackage', () => {
+    expect(getDependencyConfig('noPackage', userConfig)).toBeNull();
   });
 
-  it('should return `null` if it can\'t find a packageClassName', () => {
-    expect(getDependencyConfig('corrupted', userConfig)).toBe(null);
+  it('returns `null` if it cannot find a packageClassName', () => {
+    expect(getDependencyConfig('corrupted', userConfig)).toBeNull();
   });
 
-  afterAll(mockFs.restore);
+  afterAll(() => {
+    mockFS.restore();
+  });
 });

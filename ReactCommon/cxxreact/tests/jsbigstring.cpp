@@ -4,8 +4,7 @@
 
 #include <folly/File.h>
 #include <gtest/gtest.h>
-#include <cxxreact/Executor.h>
-#include <cxxreact/MethodCall.h>
+#include <cxxreact/JSBigString.h>
 
 using namespace facebook;
 using namespace facebook::react;

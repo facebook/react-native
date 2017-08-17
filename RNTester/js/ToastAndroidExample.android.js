@@ -82,6 +82,34 @@ class ToastExample extends React.Component {
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
+        <RNTesterBlock title="Toast with x offset">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravityAndOffset(
+                'This is a toast with x offset',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+                50,
+                0,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+        <RNTesterBlock title="Toast with y offset">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravityAndOffset(
+                'This is a toast with y offset',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+                0,
+                50,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }

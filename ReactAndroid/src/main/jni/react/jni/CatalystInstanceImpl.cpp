@@ -5,21 +5,19 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <folly/dynamic.h>
-#include <folly/Memory.h>
-
-#include <fb/log.h>
-
-#include <jni/Countable.h>
-#include <jni/LocalReference.h>
-
+#include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
-#include <cxxreact/CxxNativeModule.h>
+#include <fb/log.h>
+#include <folly/dynamic.h>
+#include <folly/Memory.h>
+#include <jni/Countable.h>
+#include <jni/LocalReference.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
@@ -97,6 +95,7 @@ void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+    makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
@@ -104,12 +103,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
-    makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
-    makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
-    makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
-    makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
-    makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
-    makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
+    makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
   });
 
   JNativeRunnable::registerNatives();
@@ -147,18 +141,32 @@ void CatalystInstanceImpl::initializeBridge(
   // don't need jsModuleDescriptions any more, all the way up and down the
   // stack.
 
+  moduleRegistry_ = std::make_shared<ModuleRegistry>(
+    buildNativeModuleList(
+       std::weak_ptr<Instance>(instance_),
+       javaModules,
+       cxxModules,
+       moduleMessageQueue_,
+       uiBackgroundMessageQueue_));
+
   instance_->initializeBridge(
     folly::make_unique<JInstanceCallback>(
     callback,
     uiBackgroundMessageQueue_ != NULL ? uiBackgroundMessageQueue_ : moduleMessageQueue_),
     jseh->getExecutorFactory(),
     folly::make_unique<JMessageQueueThread>(jsQueue),
-    buildModuleRegistry(
-      std::weak_ptr<Instance>(instance_),
-      javaModules,
-      cxxModules,
-      moduleMessageQueue_,
-      uiBackgroundMessageQueue_));
+    moduleRegistry_);
+}
+
+void CatalystInstanceImpl::extendNativeModules(
+    jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
+  moduleRegistry_->registerModules(buildNativeModuleList(
+    std::weak_ptr<Instance>(instance_),
+    javaModules,
+    cxxModules,
+    moduleMessageQueue_,
+    uiBackgroundMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
@@ -249,37 +257,10 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
   return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
-void CatalystInstanceImpl::handleMemoryPressureUiHidden() {
-  instance_->handleMemoryPressureUiHidden();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureModerate() {
-  instance_->handleMemoryPressureModerate();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureCritical() {
-  instance_->handleMemoryPressureCritical();
-}
-
-jboolean CatalystInstanceImpl::supportsProfiling() {
-  if (!instance_) {
-    return false;
-  }
-  return instance_->supportsProfiling();
-}
-
-void CatalystInstanceImpl::startProfiler(const std::string& title) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->startProfiler(title);
-}
-
-void CatalystInstanceImpl::stopProfiler(const std::string& title, const std::string& filename) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->stopProfiler(title, filename);
+void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  instance_->handleMemoryPressure(pressureLevel);
+  #endif
 }
 
 }}

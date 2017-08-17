@@ -3,7 +3,6 @@ FROM containership/android-base:latest
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-ENV REACT_NATIVE_MAX_WORKERS=1
 
 # add ReactAndroid directory
 ADD .buckconfig /app/.buckconfig

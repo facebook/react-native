@@ -8,6 +8,7 @@
  *
  * @providesModule MetroListView
  * @flow
+ * @format
  */
 'use strict';
 
@@ -62,10 +63,18 @@ class MetroListView extends React.Component {
   scrollToEnd(params?: ?{animated?: ?boolean}) {
     throw new Error('scrollToEnd not supported in legacy ListView.');
   }
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean,
+    index: number,
+    viewPosition?: number,
+  }) {
     throw new Error('scrollToIndex not supported in legacy ListView.');
   }
-  scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
+  scrollToItem(params: {
+    animated?: ?boolean,
+    item: Item,
+    viewPosition?: number,
+  }) {
     throw new Error('scrollToItem not supported in legacy ListView.');
   }
   scrollToLocation(params: {
@@ -80,11 +89,16 @@ class MetroListView extends React.Component {
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._listRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
+      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
   getListRef() {
     return this._listRef;
+  }
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
   }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || String(index),
@@ -106,19 +120,17 @@ class MetroListView extends React.Component {
       }
     },
   };
-  state = this._computeState(
-    this.props,
-    {
-      ds: new ListView.DataSource({
-        rowHasChanged: (itemA, itemB) => true,
-        sectionHeaderHasChanged: () => true,
-        getSectionHeaderData: (dataBlob, sectionID) => this.state.sectionHeaderData[sectionID],
-      }),
-      sectionHeaderData: {},
-    },
-  );
+  state = this._computeState(this.props, {
+    ds: new ListView.DataSource({
+      rowHasChanged: (itemA, itemB) => true,
+      sectionHeaderHasChanged: () => true,
+      getSectionHeaderData: (dataBlob, sectionID) =>
+        this.state.sectionHeaderData[sectionID],
+    }),
+    sectionHeaderData: {},
+  });
   componentWillReceiveProps(newProps: Props) {
-    this.setState((state) => this._computeState(newProps, state));
+    this.setState(state => this._computeState(newProps, state));
   }
   render() {
     return (
@@ -134,7 +146,9 @@ class MetroListView extends React.Component {
     );
   }
   _listRef: ListView;
-  _captureRef = (ref) => { this._listRef = ref; };
+  _captureRef = ref => {
+    this._listRef = ref;
+  };
   _computeState(props: Props, state) {
     const sectionHeaderData = {};
     if (props.sections) {
@@ -163,10 +177,14 @@ class MetroListView extends React.Component {
   };
   _renderSectionHeader = (section, sectionID) => {
     const {renderSectionHeader} = this.props;
-    invariant(renderSectionHeader, 'Must provide renderSectionHeader with sections prop');
+    invariant(
+      renderSectionHeader,
+      'Must provide renderSectionHeader with sections prop',
+    );
     return renderSectionHeader({section});
-  }
-  _renderSeparator = (sID, rID) => <this.props.SeparatorComponent key={sID + rID} />;
+  };
+  _renderSeparator = (sID, rID) =>
+    <this.props.SeparatorComponent key={sID + rID} />;
 }
 
 module.exports = MetroListView;

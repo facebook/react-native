@@ -8,20 +8,24 @@
  *
  * @flow
  */
+
+/* eslint-env node */
+
 'use strict';
 
 const babel = require('babel-core');
-const babelRegisterOnly = require('metro-bundler/build/babelRegisterOnly');
+const babelRegisterOnly = require('metro-bundler/src/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
-const transformer = require('metro-bundler/build/transformer.js');
 
 const nodeFiles = RegExp([
   '/local-cli/',
+  '/metro-bundler/',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
+const transformer = require('metro-bundler/src/transformer.js');
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
     if (nodeFiles.test(file)) { // node specific transforms only
@@ -39,6 +43,7 @@ module.exports = {
         inlineRequires: true,
         platform: '',
         projectRoot: '',
+        retainLines: true,
       },
       src,
     }).code;
@@ -46,7 +51,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro-bundler/build/transformer.js'),
+    require.resolve('metro-bundler/src/transformer.js'),
     require.resolve('babel-core/package.json'),
   ]),
 };

@@ -3,11 +3,14 @@
 #if RCT_DEV
 
 #import <jschelpers/JSCWrapper.h>
+#import <UIKit/UIKit.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
 
 using namespace facebook::react;
+
+static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
 static NSString *getDebugServerHost(NSURL *bundleURL)
 {
@@ -16,10 +19,8 @@ static NSString *getDebugServerHost(NSURL *bundleURL)
     host = @"localhost";
   }
 
-  NSNumber *port = [bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
-  }
+  // Inspector Proxy is run on a separate port (from packager).
+  NSNumber *port = @8082;
 
   // this is consistent with the Android implementation, where http:// is the
   // hardcoded implicit scheme for the debug server. Note, packagerURL
@@ -31,17 +32,32 @@ static NSString *getDebugServerHost(NSURL *bundleURL)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-  // TODO: t19163919: figure out if there's a good way to get a friendly device
-  // name for the end user
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@",
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
                                                         getDebugServerHost(bundleURL),
-                                                        @""]];
+                                                        escapedDeviceName,
+                                                        escapedAppName]];
 }
 
 
 @implementation RCTInspectorDevServerHelper
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
+
+static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
+
+static void sendEventToAllConnections(NSString *event)
+{
+  for (NSString *socketId in socketConnections) {
+    [socketConnections[socketId] sendEventToAllConnections:event];
+  }
+}
+
++ (void)disableDebugger
+{
+  sendEventToAllConnections(kDebuggerMsgDisable);
+}
 
 + (void)connectForContext:(JSGlobalContextRef)context
             withBundleURL:(NSURL *)bundleURL
@@ -55,7 +71,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Note, using a static dictionary isn't really the greatest design, but
   // the packager connection does the same thing, so it's at least consistent.
   // This is a static map that holds different inspector clients per the inspectorURL
-  static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
   if (socketConnections == nil) {
     socketConnections = [NSMutableDictionary new];
   }

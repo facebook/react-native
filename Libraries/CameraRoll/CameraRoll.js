@@ -12,7 +12,8 @@
  */
 'use strict';
 
-const {PropTypes, checkPropTypes} = require('React');
+const PropTypes = require('prop-types');
+const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -87,6 +88,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
           isStored: PropTypes.bool,
+          playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
         location: createStrictShapeTypeChecker({

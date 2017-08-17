@@ -9,9 +9,6 @@
  */
 'use strict';
 
-// const MessageQueueTestConfig = require('MessageQueueTestConfig');
-jest.disableAutomock();
-
 let MessageQueue;
 let MessageQueueTestModule;
 let queue;
@@ -94,7 +91,8 @@ describe('MessageQueue', function() {
   it('should return lazily registered module', () => {
     const dummyModule = {}, name = 'modulesName';
     queue.registerLazyCallableModule(name, () => dummyModule);
-    expect(queue._getCallableModule(name)).toEqual(dummyModule);
+
+    expect(queue.getCallableModule(name)).toEqual(dummyModule);
   });
 
   it('should not initialize lazily registered module before it was used for the first time', () => {
@@ -108,8 +106,8 @@ describe('MessageQueue', function() {
     const dummyModule = {}, name = 'modulesName';
     const factory = jest.fn(() => dummyModule);
     queue.registerLazyCallableModule(name, factory);
-    queue._getCallableModule(name);
-    queue._getCallableModule(name);
+    queue.getCallableModule(name);
+    queue.getCallableModule(name);
     expect(factory).toHaveBeenCalledTimes(1);
   });
 });

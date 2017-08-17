@@ -1,10 +1,15 @@
 #!/bin/bash
 set -e
 
-# Only set when not running in an Xcode context
-if [ -z "$ACTION" ] || [ -z "$BUILD_DIR" ]; then
-  export CC="$(xcrun -find -sdk iphoneos cc) -arch armv7 -isysroot $(xcrun -sdk iphoneos --show-sdk-path)"
-  export CXX="$CC"
+PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
+CURRENT_ARCH="${CURRENT_ARCH:-armv7}"
+
+export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+export CXX="$CC"
+
+# Remove automake symlink if it exists
+if [ -h "test-driver" ]; then
+    rm test-driver
 fi
 
 ./configure --host arm-apple-darwin

@@ -144,7 +144,7 @@ to the [Tutorial](docs/tutorial.html).
 
 Create React Native App makes it really easy to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for building projects with native code to learn how to install Xcode and set up your Android development environment.
 
-Once you've set these up, you can launch your app on on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
+Once you've set these up, you can launch your app on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
 
 ### Caveats
 
@@ -238,12 +238,10 @@ We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org
 
 React Native also requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), as well as Python 2. Both can be installed using Chocolatey.
 
-Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following commands:
+Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following command:
 
 ```powershell
-choco install nodejs.install
-choco install python2
-choco install jdk8
+choco install -y nodejs.install python2 jdk8
 ```
 
 If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
@@ -585,12 +583,12 @@ Now that you have successfully run the app, let's modify it.
 
 <block class="native mac ios" />
 
-- Open `index.ios.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Hit `⌘R` in your iOS Simulator to reload the app and see your changes!
 
 <block class="native mac android" />
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native windows linux android" />
@@ -599,7 +597,7 @@ Now that you have successfully run the app, let's modify it.
 
 Now that you have successfully run the app, let's modify it.
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native mac ios android" />
