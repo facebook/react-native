@@ -516,7 +516,19 @@ RCT_EXTERN_C_END
   }
 
   // Invoke method
-  [_invocation invokeWithTarget:module];
+  if (NSThread.isMainThread) {
+    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+    [_invocation invokeWithTarget:module];
+    NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
+    if (duration > 0.020) {
+      RCTLogWarn(@"mainThreadWatchdog: invocation of [%@ %@] took %dms",
+                 [(NSObject *)module class],
+                 NSStringFromSelector(_invocation.selector),
+                 (int)(duration * 1000));
+    }
+  } else {
+    [_invocation invokeWithTarget:module];
+  }
 
   index = 2;
   [_retainedObjects removeAllObjects];
