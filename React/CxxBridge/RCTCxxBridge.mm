@@ -377,6 +377,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
 {
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+  [center postNotificationName:RCTBridgeWillDownloadScriptNotification object:_parentBridge];
   [_performanceLogger markStartForTag:RCTPLScriptDownload];
   NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
 
@@ -388,6 +390,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async");
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:sourceLength forTag:RCTPLBundleSize];
+    [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge];
+
     _onSourceLoad(error, source, sourceLength);
   };
 
@@ -775,7 +779,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
 #if RCT_DEV
-  if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
+  if (self.devSettings.isHotLoadingEnabled) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;

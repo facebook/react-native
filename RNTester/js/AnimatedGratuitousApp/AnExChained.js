@@ -20,9 +20,7 @@ var {
   View,
 } = ReactNative;
 
-class AnExChained extends React.Component {
-  state: any;
-
+class AnExChained extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     this.state = {

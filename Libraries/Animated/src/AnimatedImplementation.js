@@ -1753,7 +1753,7 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  class AnimatedComponent extends React.Component {
+  class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
@@ -2501,6 +2501,9 @@ class AnimatedEvent {
           recMapping.setValue(recEvt);
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.53 was deployed. To see
+             * the error delete this comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }

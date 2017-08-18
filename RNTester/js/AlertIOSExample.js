@@ -81,8 +81,7 @@ exports.examples = [{
   }
 }];
 
-class PromptOptions extends React.Component {
-  state: any;
+class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   customButtons: Array<Object>;
 
   constructor(props) {

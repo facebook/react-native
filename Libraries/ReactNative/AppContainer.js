@@ -25,22 +25,25 @@ type Context = {
   rootTag: number,
 };
 type Props = {|
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+   * when upgrading Flow's support for React. Common errors found when
+   * upgrading Flow's React support are documented at
+   * https://fburl.com/eq7bs81w */
   children?: React.Children,
   rootTag: number,
-  WrapperComponent?: ?ReactClass<*>,
+  WrapperComponent?: ?React.ComponentType<*>,
 |};
 type State = {
-  inspector: ?React.Element<*>,
+  inspector: ?React.Element<any>,
   mainKey: number,
 };
 
-class AppContainer extends React.Component {
-  props: Props;
+class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
   };
-  _mainRef: ?React.Element<*>;
+  _mainRef: ?React.Element<any>;
   _subscription: ?EmitterSubscription = null;
 
   static childContextTypes = {
@@ -87,7 +90,7 @@ class AppContainer extends React.Component {
     }
   }
 
-  render(): React.Element<*> {
+  render(): React.Node {
     let yellowBox = null;
     if (__DEV__) {
       if (!global.__RCTProfileIsProfiling) {
@@ -103,6 +106,10 @@ class AppContainer extends React.Component {
         pointerEvents="box-none"
         style={styles.appContainer}
         ref={ref => {
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           this._mainRef = ref;
         }}>
         {this.props.children}

@@ -32,7 +32,7 @@ type State = {
   elapsed?: string,
 };
 
-class AppEventsTest extends React.Component {
+class AppEventsTest extends React.Component<{}, State> {
   state: State = {sent: 'none', received: 'none'};
 
   componentDidMount() {

@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @format
  */
 'use strict';
 
@@ -37,7 +36,7 @@ const getPreset = (src, options) => {
     [
       'transform-es2015-modules-commonjs',
       {strict: false, allowTopLevelThis: true},
-    ],
+    ]
   );
 
   if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
@@ -74,6 +73,9 @@ const getPreset = (src, options) => {
     src.indexOf('createReactClass') !== -1
   ) {
     plugins.push('transform-react-display-name');
+  }
+  if (isNull || src.indexOf('import(')) {
+    plugins.push(require('../transforms/transform-dynamic-import'));
   }
 
   if (options && options.dev) {

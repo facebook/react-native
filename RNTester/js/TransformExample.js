@@ -20,7 +20,7 @@ var {
   View,
 } = ReactNative;
 
-class Flip extends React.Component {
+class Flip extends React.Component<{}, $FlowFixMeState> {
   state = {
     theta: new Animated.Value(45),
   };

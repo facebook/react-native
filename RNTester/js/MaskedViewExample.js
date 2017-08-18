@@ -23,7 +23,7 @@ const {
   View,
 } = require('react-native');
 
-class MaskedViewExample extends React.Component {
+class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<MaskedViewIOS>';
   static description = 'Renders the child view with a mask specified in the `renderMask` prop.';
 

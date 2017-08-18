@@ -28,15 +28,15 @@ function buildRegExps(basePath, dirPaths) {
       folderPath instanceof RegExp
         ? new RegExp(
             `^${escapeRegExp(
-              path.resolve(basePath, '.').replace(/\\/g, '/'),
+              path.resolve(basePath, '.').replace(/\\/g, '/')
             )}/${folderPath.source}`,
-            folderPath.flags,
+            folderPath.flags
           )
         : new RegExp(
             `^${escapeRegExp(
-              path.resolve(basePath, folderPath).replace(/\\/g, '/'),
-            )}`,
-          ),
+              path.resolve(basePath, folderPath).replace(/\\/g, '/')
+            )}`
+          )
   );
 }
 

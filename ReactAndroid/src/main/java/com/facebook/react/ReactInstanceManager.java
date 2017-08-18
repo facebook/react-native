@@ -930,7 +930,6 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
-    rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -1022,8 +1021,8 @@ public class ReactInstanceManager {
     if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
+    ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
     catalystInstance.runJSBundle();
-
     // Transitions functions in the minitFunctions list to catalystInstance, to run after the bundle
     // TODO T20546472
     if (!mInitFunctions.isEmpty()) {
@@ -1031,10 +1030,7 @@ public class ReactInstanceManager {
         ((CatalystInstanceImpl) catalystInstance).callFunction(function);
       }
     }
-    ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
-
     reactContext.initializeWithInstance(catalystInstance);
-
 
     return reactContext;
   }

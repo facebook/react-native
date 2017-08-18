@@ -24,7 +24,7 @@ var {
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
 
-class ToastExample extends React.Component {
+class ToastExample extends React.Component<{}, $FlowFixMeState> {
   static title = 'Toast Example';
   static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
   state = {};

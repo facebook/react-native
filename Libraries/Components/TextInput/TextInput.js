@@ -96,6 +96,9 @@ const DataDetectorTypes = [
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
+ * Two methods exposed via the native element are .focus() and .blur() that
+ * will focus or blur the TextInput programmatically.
+ *
  * Note that some props are only available with `multiline={true/false}`.
  * Additionally, border styles that apply to only one side of the element
  * (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if
@@ -731,6 +734,9 @@ const TextInput = createReactClass({
     }
     props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
@@ -891,6 +897,9 @@ const TextInput = createReactClass({
   },
 
   _onTextInput: function(event: Event) {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     this.props.onTextInput && this.props.onTextInput(event);
   },
 
