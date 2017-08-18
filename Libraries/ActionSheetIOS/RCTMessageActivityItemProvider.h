@@ -12,5 +12,6 @@
 @interface RCTMessageActivityItemProvider : UIActivityItemProvider
 
 @property (nonatomic, strong) NSString *message;
+@property (nonatomic, strong) NSArray *messages;
 
 @end
