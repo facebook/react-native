@@ -2110,7 +2110,7 @@ __DEV__ && function() {
     };
     Object.assign(ReactNativeTextComponent.prototype, {
         mountComponent: function(transaction, hostParent, hostContainerInfo, context) {
-            invariant(context.isInAParentText, 'RawText "%s" must be wrapped in an explicit <Text> component.', this._stringText), 
+            invariant(context.isInAParentText, 'RawText "%s" must be wrapped in an explicit <Text> component.%s', this._stringText, ReactComponentTreeHook$1.getStackAddendumByID(hostParent._debugID)), 
             this._hostParent = hostParent;
             var tag = ReactNativeTagHandles_1.allocateTag();
             this._rootNodeID = tag;
