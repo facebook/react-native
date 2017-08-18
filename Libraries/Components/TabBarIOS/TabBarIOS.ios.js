@@ -15,18 +15,22 @@ var ColorPropType = require('ColorPropType');
 var React = require('React');
 const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
 var TabBarItemIOS = require('TabBarItemIOS');
 const ViewPropTypes = require('ViewPropTypes');
+var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
+const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
 class TabBarIOS extends React.Component {
   props: {
-    style?: $FlowFixMe,
-    unselectedTintColor?: $FlowFixMe,
-    tintColor?: $FlowFixMe,
-    unselectedItemTintColor?: $FlowFixMe,
-    barTintColor?: $FlowFixMe,
+    style?: stylePropType,
+    unselectedTintColor?: ?string,
+    tintColor?: ?string,
+    unselectedItemTintColor?: ?string,
+    barTintColor?: ?string,
     translucent?: boolean,
     itemPositioning?: 'fill' | 'center' | 'auto',
   };
