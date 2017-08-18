@@ -8,6 +8,7 @@
  *
  * @providesModule SectionList
  * @flow
+ * @format
  */
 'use strict';
 
@@ -22,21 +23,28 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 type Item = any;
 
 type SectionBase<SectionItemT> = {
-  // Must be provided directly on each section.
-  data: Array<SectionItemT>,
-  key: string,
+  /**
+   * The data for rendering items in this section.
+   */
+  data: $ReadOnlyArray<SectionItemT>,
+  /**
+   * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
+   * the array index will be used by default.
+   */
+  key?: string,
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
+    section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
@@ -49,14 +57,13 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *
    * General shape:
    *
-   *     sections: Array<{
-   *       data: Array<SectionItem>,
-   *       key: string,
+   *     sections: $ReadOnlyArray<{
+   *       data: $ReadOnlyArray<SectionItem>,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase<any>> = {
@@ -66,6 +73,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   renderItem: (info: {
     item: Item,
     index: number,
+    section: SectionT,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -73,25 +81,35 @@ type OptionalProps<SectionT: SectionBase<any>> = {
     },
   }) => ?React.Element<any>,
   /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
+   * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
+   * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
+   * add custom props with `separators.updateProps`.
    */
-  ItemSeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Rendered at the very beginning of the list.
+   * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
+  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Rendered at the very end of the list.
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
-   * Rendered in between each section. Also receives `highlighted`, `leadingItem`, and any custom
-   * props from `separators.updateProps`.
+   * Rendered at the very end of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  SectionSeparatorComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  /**
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
+   */
+  SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -105,11 +123,15 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   initialNumToRender: number,
   /**
+   * Reverses the direction of scroll. Uses scale transforms of -1.
+   */
+  inverted?: ?boolean,
+  /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
-   * falls back to using the index, like react does.
+   * falls back to using the index, like react does. Note that this sets keys for each item, but
+   * each overall section still needs its own key.
    */
-
   keyExtractor: (item: Item, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
@@ -152,6 +174,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
   /**
+   * Rendered at the bottom of each section.
+   */
+  renderSectionFooter?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
    */
@@ -160,9 +186,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT>
-  & OptionalProps<SectionT>
-  & VirtualizedSectionListProps<SectionT>;
+type Props<SectionT> = RequiredProps<SectionT> &
+  OptionalProps<SectionT> &
+  VirtualizedSectionListProps<SectionT>;
 
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
@@ -191,25 +217,25 @@ type DefaultProps = typeof defaultProps;
  * Simple Examples:
  *
  *     <SectionList
- *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.key} />}
+ *       renderItem={({item}) => <ListItem title={item} />}
+ *       renderSectionHeader={({section}) => <Header title={section.title} />}
  *       sections={[ // homogenous rendering between sections
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
  *       ]}
  *     />
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
  *       ]}
  *     />
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
@@ -219,16 +245,14 @@ type DefaultProps = typeof defaultProps;
  *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
  *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
- *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   offscreen. This means it's possible to scroll faster than the fill rate and momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, void>
-{
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<SectionT>, void> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
@@ -263,6 +287,16 @@ class SectionList<SectionT: SectionBase<any>>
   }
 
   /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators() {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    listRef && listRef.flashScrollIndicators();
+  }
+
+  /**
    * Provides a handle to the underlying scroll responder.
    */
   getScrollResponder() {
@@ -279,13 +313,28 @@ class SectionList<SectionT: SectionBase<any>>
     }
   }
 
+  setNativeProps(props: Object) {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      listRef.setNativeProps(props);
+    }
+  }
+
   render() {
-    const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
+    const List = this.props.legacyImplementation
+      ? MetroListView
+      : VirtualizedSectionList;
     return <List {...this.props} ref={this._captureRef} />;
   }
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
-  _captureRef = (ref) => { this._wrapperListRef = ref; };
+  _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error when upgrading Flow's support for React. Common errors found when
+     * upgrading Flow's React support are documented at
+     * https://fburl.com/eq7bs81w */
+    this._wrapperListRef = ref;
+  };
 }
 
 module.exports = SectionList;

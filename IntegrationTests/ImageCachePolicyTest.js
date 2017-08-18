@@ -41,7 +41,7 @@ type State = {
   'force-cache'?: boolean,
 }
 
-class ImageCachePolicyTest extends React.Component {
+class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
   state = {}
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {

@@ -20,17 +20,15 @@ const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-class TabBarIOS extends React.Component {
-  props: {
-    style?: $FlowFixMe,
-    unselectedTintColor?: $FlowFixMe,
-    tintColor?: $FlowFixMe,
-    unselectedItemTintColor?: $FlowFixMe,
-    barTintColor?: $FlowFixMe,
-    translucent?: boolean,
-    itemPositioning?: 'fill' | 'center' | 'auto',
-  };
-
+class TabBarIOS extends React.Component<{
+  style?: $FlowFixMe,
+  unselectedTintColor?: $FlowFixMe,
+  tintColor?: $FlowFixMe,
+  unselectedItemTintColor?: $FlowFixMe,
+  barTintColor?: $FlowFixMe,
+  translucent?: boolean,
+  itemPositioning?: 'fill' | 'center' | 'auto',
+}> {
   static Item = TabBarItemIOS;
 
   // $FlowFixMe(>=0.41.0)

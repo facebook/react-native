@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
-const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
@@ -22,17 +21,11 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
-if (__DEV__) {
-  // In order to use Cmd+P to record/dump perf data, we need to make sure
-  // this module is available in the bundle
-  require('RCTRenderingPerf');
-}
-
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
-export type ComponentProvider = () => ReactClass<any>;
+export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook =
-  (component: ComponentProvider) => ReactClass<any>;
+  (component: ComponentProvider) => React$ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -50,6 +43,7 @@ export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
+export type WrapperComponentProvider = any => React$ComponentType<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -57,10 +51,21 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
-let _frameRateLoggerSceneListener = null;
 
+let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Project with Native Code Required</h3>
+ *   <p>
+ *     This API only works in projects made with <code>react-native init</code>
+ *     or in those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
  * root components should register themselves with
  * `AppRegistry.registerComponent`, then the native system can load the bundle
@@ -76,6 +81,10 @@ let _frameRateLoggerSceneListener = null;
  * `require`d.
  */
 const AppRegistry = {
+  setWrapperComponentProvider(provider: WrapperComponentProvider) {
+    wrapperComponentProvider = provider;
+  },
+
   registerConfig(config: Array<AppConfig>): void {
     config.forEach((appConfig) => {
       if (appConfig.run) {
@@ -98,16 +107,17 @@ const AppRegistry = {
 
   registerComponent(
     appKey: string,
-    component: ComponentProvider,
+    componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
     runnables[appKey] = {
-      component,
+      componentProvider,
       run: (appParameters) =>
         renderApplication(
-          componentProviderInstrumentationHook(component),
+          componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
-          appParameters.rootTag
+          appParameters.rootTag,
+          wrapperComponentProvider && wrapperComponentProvider(appParameters),
         )
     };
     if (section) {
@@ -176,11 +186,7 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
-    if (!_frameRateLoggerSceneListener) {
-      _frameRateLoggerSceneListener = SceneTracker.addActiveSceneChangedListener(
-        (scene) => FrameRateLogger.setContext(scene.name)
-      );
-    }
+
     SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters);
   },

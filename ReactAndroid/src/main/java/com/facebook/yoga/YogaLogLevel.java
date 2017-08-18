@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -17,7 +17,8 @@ public enum YogaLogLevel {
   WARN(1),
   INFO(2),
   DEBUG(3),
-  VERBOSE(4);
+  VERBOSE(4),
+  FATAL(5);
 
   private int mIntValue;
 
@@ -36,6 +37,7 @@ public enum YogaLogLevel {
       case 2: return INFO;
       case 3: return DEBUG;
       case 4: return VERBOSE;
+      case 5: return FATAL;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

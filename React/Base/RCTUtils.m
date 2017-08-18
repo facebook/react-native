@@ -264,14 +264,29 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 }
 
+static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
+{
+  // The solution was borrowed from a post by Ben Alpert:
+  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
+  if (RCTIsMainQueue()) {
+    dispatch_once(onceToken, block);
+  } else {
+    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_once(onceToken, block);
+      });
+    }
+  }
+}
+
 CGFloat RCTScreenScale()
 {
-  static CGFloat scale;
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      scale = [UIScreen mainScreen].scale;
-    });
+  static CGFloat scale;
+
+  RCTUnsafeExecuteOnMainQueueOnceSync(&onceToken, ^{
+    scale = [UIScreen mainScreen].scale;
   });
 
   return scale;
@@ -481,9 +496,10 @@ UIViewController *__nullable RCTPresentedViewController(void)
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
-
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
+  UIViewController *presentedController = controller.presentedViewController;
+  while (presentedController && ![presentedController isBeingDismissed]) {
+    controller = presentedController;
+    presentedController = controller.presentedViewController;
   }
 
   return controller;
@@ -642,10 +658,6 @@ static NSBundle *bundleForPath(NSString *key)
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
-  if (!RCTIsLocalAssetURL(imageURL)) {
-    return nil;
-  }
-
   NSString *imageName = RCTBundlePathForURL(imageURL);
 
   NSBundle *bundle = nil;
@@ -664,6 +676,15 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     image = [UIImage imageNamed:imageName];
   }
 
+  if (!image) {
+    // Attempt to load from the file system
+    NSString *filePath = imageURL.path;
+    if (filePath.pathExtension.length == 0) {
+      filePath = [filePath stringByAppendingPathExtension:@"png"];
+    }
+    image = [UIImage imageWithContentsOfFile:filePath];
+  }
+
   if (!image && !bundle) {
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
@@ -679,7 +700,6 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       }
     }
   }
-
   return image;
 }
 

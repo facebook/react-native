@@ -166,7 +166,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   // should we expose a `normalTouchForce` constant somewhere (which would
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
-    reactTouch[@"force"] = @(RCTSanitizeNaNValue(nativeTouch.force / nativeTouch.maximumPossibleForce, @"touchEvent.force"));
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
   }
 }
 

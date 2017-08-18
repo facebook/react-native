@@ -27,14 +27,12 @@ const ViewPropTypes = require('ViewPropTypes');
  *   <SwipeableQuickActionButton {..props} />
  * </SwipeableQuickActions>
  */
-class SwipeableQuickActions extends React.Component {
-  props: {style?: $FlowFixMe};
-
+class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
   static propTypes = {
     style: ViewPropTypes.style,
   };
 
-  render(): React.Element<any> {
+  render(): React.Node {
     // $FlowFixMe found when converting React.createClass to ES6
     const children = this.props.children;
     let buttons = [];

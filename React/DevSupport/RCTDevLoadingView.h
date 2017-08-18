@@ -14,6 +14,8 @@
 @interface RCTDevLoadingView : NSObject <RCTBridgeModule>
 
 + (void)setEnabled:(BOOL)enabled;
+- (void)showWithURL:(NSURL *)URL;
 - (void)updateProgress:(RCTLoadingProgress *)progress;
+- (void)hide;
 
 @end

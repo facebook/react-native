@@ -88,6 +88,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
 
       TypeElement typeElement = (TypeElement) reactModuleListElement;
       ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+
       if (reactModuleList == null) {
         continue;
       }
@@ -175,7 +176,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
-          .append(reactModule.supportsWebWorkers()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
           .append(hasConstants)
           .append(")")

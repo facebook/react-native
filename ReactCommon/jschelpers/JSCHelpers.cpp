@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-  
+
 #include "JSCHelpers.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -8,8 +8,23 @@
 
 #include <glog/logging.h>
 
+#if WITH_FBJSCEXTENSIONS
+#include <pthread.h>
+#endif
+
 #include "JavaScriptCore.h"
 #include "Value.h"
+
+#if WITH_FBJSCEXTENSIONS
+#undef ASSERT
+#undef WTF_EXPORT_PRIVATE
+
+#include <JavaScriptCore/config.h>
+#include <wtf/WTFThreadData.h>
+
+#undef TRUE
+#undef FALSE
+#endif
 
 namespace facebook {
 namespace react {
@@ -31,9 +46,11 @@ JSValueRef functionCaller(
 JSClassRef createFuncClass(JSContextRef ctx) {
   JSClassDefinition definition = kJSClassDefinitionEmpty;
   definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+
   // Need to duplicate the two different finalizer blocks, since there's no way
   // for it to capture this static information.
-  if (isCustomJSCPtr(ctx)) {
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  if (isCustomJSC) {
     definition.finalize = [](JSObjectRef object) {
       auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(true, object));
       delete function;
@@ -46,7 +63,7 @@ JSClassRef createFuncClass(JSContextRef ctx) {
   }
   definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
 
-  return JSC_JSClassCreate(ctx, &definition);
+  return JSC_JSClassCreate(isCustomJSC, &definition);
 }
 
 JSObjectRef makeFunction(
@@ -65,6 +82,65 @@ JSObjectRef makeFunction(
   functionObject.setProperty("name", Value(ctx, name));
   return functionObject;
 }
+
+}
+
+void JSException::buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg) {
+  std::ostringstream msgBuilder;
+  if (errorMsg && strlen(errorMsg) > 0) {
+    msgBuilder << errorMsg << ": ";
+  }
+
+  Object exnObject = Value(ctx, exn).asObject();
+  Value exnMessage = exnObject.getProperty("message");
+  msgBuilder << (exnMessage.isString() ? exnMessage : (Value)exnObject).toString().str();
+
+  // The null/empty-ness of source tells us if the JS came from a
+  // file/resource, or was a constructed statement.  The location
+  // info will include that source, if any.
+  std::string locationInfo = sourceURL != nullptr ? String::ref(ctx, sourceURL).str() : "";
+  auto line = exnObject.getProperty("line");
+  if (line != nullptr && line.isNumber()) {
+    if (locationInfo.empty() && line.asInteger() != 1) {
+      // If there is a non-trivial line number, but there was no
+      // location info, we include a placeholder, and the line
+      // number.
+      locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
+    } else if (!locationInfo.empty()) {
+      // If there is location info, we always include the line
+      // number, regardless of its value.
+      locationInfo += folly::to<std::string>(":", line.asInteger());
+    }
+  }
+
+  if (!locationInfo.empty()) {
+    msgBuilder << " (" << locationInfo << ")";
+  }
+
+  auto exceptionText = msgBuilder.str();
+  LOG(ERROR) << "Got JS Exception: " << exceptionText;
+  msg_ = std::move(exceptionText);
+
+  Value jsStack = exnObject.getProperty("stack");
+  if (jsStack.isString()) {
+    auto stackText = jsStack.toString().str();
+    LOG(ERROR) << "Got JS Stack: " << stackText;
+    stack_ = std::move(stackText);
+  }
+}
+
+namespace ExceptionHandling {
+
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
+
+PlatformErrorExtractor platformErrorExtractor;
+
+#if __clang__
+#pragma clang diagnostic pop
+#endif
 
 }
 
@@ -122,14 +198,11 @@ void removeGlobal(JSGlobalContextRef ctx, const char* name) {
   Object::getGlobalObject(ctx).setProperty(name, Value::makeUndefined(ctx));
 }
 
-JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
-  #ifdef WITH_FBSYSTRACE
-  fbsystrace::FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "evaluateScript");
-  #endif
+JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef sourceURL) {
   JSValueRef exn, result;
-  result = JSC_JSEvaluateScript(context, script, NULL, source, 0, &exn);
+  result = JSC_JSEvaluateScript(context, script, NULL, sourceURL, 0, &exn);
   if (result == nullptr) {
-    formatAndThrowJSException(context, exn, source);
+    throw JSException(context, exn, sourceURL);
   }
   return result;
 }
@@ -139,66 +212,68 @@ JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSSt
   JSValueRef exn, result;
   result = JSEvaluateSourceCode(context, source, NULL, &exn);
   if (result == nullptr) {
-    formatAndThrowJSException(context, exn, sourceURL);
+    throw JSException(context, exn, sourceURL);
   }
   return result;
 }
 #endif
 
-void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef source) {
-  Value exception = Value(context, exn);
-  std::string exceptionText = exception.toString().str();
+JSContextLock::JSContextLock(JSGlobalContextRef ctx) noexcept
+#if WITH_FBJSCEXTENSIONS
+  : ctx_(ctx),
+   globalLock_(PTHREAD_MUTEX_INITIALIZER)
+   {
+  WTFThreadData& threadData = wtfThreadData();
 
-  // The null/empty-ness of source tells us if the JS came from a
-  // file/resource, or was a constructed statement.  The location
-  // info will include that source, if any.
-  std::string locationInfo = source != nullptr ? String::ref(context, source).str() : "";
-  Object exObject = exception.asObject();
-  auto line = exObject.getProperty("line");
-  if (line != nullptr && line.isNumber()) {
-    if (locationInfo.empty() && line.asInteger() != 1) {
-      // If there is a non-trivial line number, but there was no
-      // location info, we include a placeholder, and the line
-      // number.
-      locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
-    } else if (!locationInfo.empty()) {
-      // If there is location info, we always include the line
-      // number, regardless of its value.
-      locationInfo += folly::to<std::string>(":", line.asInteger());
+  // Code below is responsible for acquiring locks. It should execute
+  // atomically, thus none of the functions invoked from now on are allowed to
+  // throw an exception
+  try {
+    if (!threadData.isDebuggerThread()) {
+      CHECK(0 == pthread_mutex_lock(&globalLock_));
     }
-  }
-
-  if (!locationInfo.empty()) {
-    exceptionText += " (" + locationInfo + ")";
-  }
-
-  LOG(ERROR) << "Got JS Exception: " << exceptionText;
-
-  Value jsStack = exObject.getProperty("stack");
-  if (jsStack.isNull() || !jsStack.isString()) {
-    throwJSExecutionException("%s", exceptionText.c_str());
-  } else {
-    LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
-    throwJSExecutionExceptionWithStack(
-        exceptionText.c_str(), jsStack.toString().str().c_str());
+    JSLock(ctx_);
+  } catch (...) {
+    abort();
   }
 }
+#else
+{}
+#endif
+
+
+JSContextLock::~JSContextLock() noexcept {
+  #if WITH_FBJSCEXTENSIONS
+  WTFThreadData& threadData = wtfThreadData();
+
+  JSUnlock(ctx_);
+  if (!threadData.isDebuggerThread()) {
+    CHECK(0 == pthread_mutex_unlock(&globalLock_));
+  }
+  #endif
+}
+
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
-  std::ostringstream msg;
   try {
     throw;
   } catch (const std::bad_alloc& ex) {
     throw; // We probably shouldn't try to handle this in JS
   } catch (const std::exception& ex) {
-    msg << "C++ Exception in '" << exceptionLocation << "': " << ex.what();
-    return Value::makeError(ctx, msg.str().c_str());
+    if (ExceptionHandling::platformErrorExtractor) {
+      auto extractedEror = ExceptionHandling::platformErrorExtractor(ex, exceptionLocation);
+      if (extractedEror.message.length() > 0) {
+        return Value::makeError(ctx, extractedEror.message.c_str(), extractedEror.stack.c_str());
+      }
+    }
+    auto msg = folly::to<std::string>("C++ exception in '", exceptionLocation, "'\n\n", ex.what());
+    return Value::makeError(ctx, msg.c_str());
   } catch (const char* ex) {
-    msg << "C++ Exception (thrown as a char*) in '" << exceptionLocation << "': " << ex;
-    return Value::makeError(ctx, msg.str().c_str());
+    auto msg = folly::to<std::string>("C++ exception (thrown as a char*) in '", exceptionLocation, "'\n\n", ex);
+    return Value::makeError(ctx, msg.c_str());
   } catch (...) {
-    msg << "Unknown C++ Exception in '" << exceptionLocation << "'";
-    return Value::makeError(ctx, msg.str().c_str());
+    auto msg = folly::to<std::string>("Unknown C++ exception in '", exceptionLocation, "'");
+    return Value::makeError(ctx, msg.c_str());
   }
 }
 
@@ -207,7 +282,7 @@ JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef j
     auto functionName = Object(ctx, jsFunctionCause).getProperty("name").toString().str();
     return translatePendingCppExceptionToJSError(ctx, functionName.c_str());
   } catch (...) {
-    return Value::makeError(ctx, "Failed to get function name while handling exception");
+    return Value::makeError(ctx, "Failed to translate native exception");
   }
 }
 

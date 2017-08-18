@@ -9,14 +9,15 @@
 
 package com.facebook.react.flat;
 
-import java.util.List;
-
 import android.view.View;
-
 import com.facebook.react.views.viewpager.ReactViewPager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 
+import java.util.List;
+
 public class RCTViewPagerManager extends ReactViewPagerManager {
+
+  /* package */ static final String REACT_CLASS = ReactViewPagerManager.REACT_CLASS;
 
   @Override
   public void addViews(ReactViewPager parent, List<View> views) {

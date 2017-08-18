@@ -4,7 +4,7 @@ title: Handling Text Input
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
-next: using-a-scrollview
+next: handling-touches
 previous: flexbox
 ---
 
@@ -18,7 +18,7 @@ as "🍕🍕🍕".
 import React, { Component } from 'react';
 import { AppRegistry, Text, TextInput, View } from 'react-native';
 
-class PizzaTranslator extends Component {
+export default class PizzaTranslator extends Component {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -40,11 +40,12 @@ class PizzaTranslator extends Component {
   }
 }
 
-AppRegistry.registerComponent('PizzaTranslator', () => PizzaTranslator);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
 ```
 
 In this example, we store `text` in the state, because it changes over time.
 
 There are a lot more things you might want to do with a text input. For example, you could validate the text inside while the user types. For more detailed examples, see the [React docs on controlled components](https://facebook.github.io/react/docs/forms.html), or the [reference docs for TextInput](docs/textinput.html).
 
-Text input is probably the simplest example of a component whose state naturally changes over time. Next, let's look at another type of component like this one that controls layout, and [learn about the ScrollView](docs/using-a-scrollview.html).
+Text input is one of the ways the user interacts with the app. Next, let's look at another type of input and [learn how to handle touches](docs/handling-touches.html).

@@ -14,6 +14,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
 #import <React/RCTLog.h>
+#import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
@@ -21,14 +22,14 @@
 #import "RCTText.h"
 #import "RCTTextView.h"
 
-NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
 NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 
-CGFloat const RCTTextAutoSizeDefaultMinimumFontScale       = 0.5f;
-CGFloat const RCTTextAutoSizeWidthErrorMargin              = 0.05f;
-CGFloat const RCTTextAutoSizeHeightErrorMargin             = 0.025f;
-CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
+static NSString *const kShadowViewAttributeName = @"RCTShadowViewAttributeName";
+
+static CGFloat const kAutoSizeWidthErrorMargin  = 0.05f;
+static CGFloat const kAutoSizeHeightErrorMargin = 0.025f;
+static CGFloat const kAutoSizeGranularity       = 0.001f;
 
 @implementation RCTShadowText
 {
@@ -164,7 +165,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-  [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
+  [layoutManager.textStorage enumerateAttribute:kShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
       YGNodeRef childNode = child.yogaNode;
       float width = YGNodeStyleGetWidth(childNode).value;
@@ -333,7 +334,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       attachment.bounds = (CGRect){CGPointZero, {width, height}};
       NSMutableAttributedString *attachmentString = [NSMutableAttributedString new];
       [attachmentString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
-      [attachmentString addAttribute:RCTShadowViewAttributeName value:child range:(NSRange){0, attachmentString.length}];
+      [attachmentString addAttribute:kShadowViewAttributeName value:child range:(NSRange){0, attachmentString.length}];
       [attributedString appendAttributedString:attachmentString];
       if (height > heightOfTallestSubview) {
         heightOfTallestSubview = height;
@@ -515,7 +516,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
                                prevMid:(CGFloat)prevMid
 {
   CGFloat midScale = (minScale + maxScale) / 2.0f;
-  if (round((prevMid / RCTTextAutoSizeGranularity)) == round((midScale / RCTTextAutoSizeGranularity))) {
+  if (round((prevMid / kAutoSizeGranularity)) == round((midScale / kAutoSizeGranularity))) {
     //Bail because we can't meet error margin.
     return [self calculateSize:textStorage];
   } else {
@@ -528,12 +529,12 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       return [self calculateOptimumScaleInFrame:frame
                                      forStorage:textStorage
                                        minScale:minScale
-                                       maxScale:midScale - RCTTextAutoSizeGranularity
+                                       maxScale:midScale - kAutoSizeGranularity
                                         prevMid:midScale];
     } else {
       return [self calculateOptimumScaleInFrame:frame
                                      forStorage:textStorage
-                                       minScale:midScale + RCTTextAutoSizeGranularity
+                                       minScale:midScale + kAutoSizeGranularity
                                        maxScale:maxScale
                                         prevMid:midScale];
     }
@@ -576,8 +577,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   textContainer.maximumNumberOfLines == 0;
 
   if (fitLines && fitSize) {
-    if ((requiredSize.width + (CGRectGetWidth(frame) * RCTTextAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame) &&
-        (requiredSize.height + (CGRectGetHeight(frame) * RCTTextAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame))
+    if ((requiredSize.width + (CGRectGetWidth(frame) * kAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame) &&
+        (requiredSize.height + (CGRectGetHeight(frame) * kAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame))
     {
       return RCTSizeWithinRange;
     } else {

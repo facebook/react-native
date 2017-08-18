@@ -41,11 +41,9 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (instancetype)init
++ (BOOL)requiresMainQueueSetup
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+  return YES;
 }
 
 - (void)setBridge:(RCTBridge *)bridge
@@ -161,7 +159,9 @@ RCT_EXPORT_METHOD(hide)
 
 + (NSString *)moduleName { return nil; }
 + (void)setEnabled:(BOOL)enabled { }
-- (void)updateProgress:(RCTLoadingProgress *)progress {}
+- (void)showWithURL:(NSURL *)URL { }
+- (void)updateProgress:(RCTLoadingProgress *)progress { }
+- (void)hide { }
 
 @end
 
