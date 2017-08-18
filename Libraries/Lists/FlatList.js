@@ -338,6 +338,26 @@ class FlatList<ItemT> extends React.PureComponent<
   }
 
   /**
+   * Scrolls to the item at the specified cell key such that it is positioned at the 
+   * top of the viewable area.
+   * 
+   * NOTE: Work without specifying the `getItemLayout` prop as well.
+   */
+
+  scrollToOffsetByCellKey(params: {
+    animated?: ?boolean,
+    cellKey: string,
+  }) {
+    this._listRef._scrollRef.props.children.map((item,index) => {
+      if(params.cellKey == item.key){
+        const frameMetrics = this._listRef._getFrameMetrics(index)
+        params.offset = frameMetrics.offset
+        this._listRef.scrollToOffset(params);
+      }
+    })
+  }
+
+  /**
    * Requires linear scan through data - use `scrollToIndex` instead if possible.
    *
    * Note: cannot scroll to locations outside the render window without specifying the
