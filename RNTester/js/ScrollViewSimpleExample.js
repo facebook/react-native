@@ -17,45 +17,59 @@ var {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity
+  View
 } = ReactNative;
-
-var NUM_ITEMS = 20;
 
 class ScrollViewSimpleExample extends React.Component {
   static title = '<ScrollView>';
   static description = 'Component that enables scrolling through child components.';
 
-  makeItems = (nItems: number, styles): Array<any> => {
+  makeItems = (nItems: number, extraStyle): Array<any> => {
     var items = [];
     for (var i = 0; i < nItems; i++) {
        items[i] = (
-         <TouchableOpacity key={i} style={styles}>
+         <View key={i} style={[styles.itemWrapper, extraStyle]}>
            <Text>{'Item ' + i}</Text>
-         </TouchableOpacity>
+         </View>
        );
     }
     return items;
   };
 
+  getListItem = (item: any, index: number) => {
+    if (index === 4) {
+      return (
+        <ScrollView key="scrollView" horizontal>
+          {this.makeItems(10, styles.horizontalItemWrapper)}
+        </ScrollView>
+      );
+    }
+    else if (index === 5) {
+      return (
+        <ScrollView
+          key="scrollViewSnap"
+          horizontal
+          snapToInterval={horizontalItemWidth + 2 * itemMargin}
+        >
+          {this.makeItems(10, styles.horizontalItemWrapper)}
+        </ScrollView>
+      );
+    }
+
+    return item;
+  }
+
   render() {
-    // One of the items is a horizontal scroll view
-    var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
-    items[4] = (
-      <ScrollView key={'scrollView'} horizontal={true}>
-        {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
-      </ScrollView>
-    );
-
-    var verticalScrollView = (
+    return (
       <ScrollView style={styles.verticalScrollView}>
-        {items}
+        {this.makeItems(20).map(this.getListItem)}
       </ScrollView>
     );
-
-    return verticalScrollView;
   }
 }
+
+const horizontalItemWidth = 140;
+const itemMargin = 5;
 
 var styles = StyleSheet.create({
   verticalScrollView: {
@@ -68,10 +82,10 @@ var styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: '#a52a2a',
     padding: 30,
-    margin: 5,
+    margin: itemMargin,
   },
   horizontalItemWrapper: {
-    padding: 50
+    width: horizontalItemWidth,
   }
 });
 
