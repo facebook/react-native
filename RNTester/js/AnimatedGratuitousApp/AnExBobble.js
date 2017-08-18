@@ -30,9 +30,7 @@ var BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {  // static positions
   };
 });
 
-class AnExBobble extends React.Component {
-  state: any;
-
+class AnExBobble extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     this.state = {};
@@ -83,7 +81,7 @@ class AnExBobble extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {

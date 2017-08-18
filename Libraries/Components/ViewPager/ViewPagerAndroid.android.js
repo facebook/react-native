@@ -68,18 +68,16 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    peekEnabled?: boolean,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**

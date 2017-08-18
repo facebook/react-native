@@ -30,7 +30,7 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-class Button extends React.Component {
+class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     active: false,
   };
@@ -52,9 +52,6 @@ class Button extends React.Component {
         onHideUnderlay={this._onUnhighlight}
         onPress={this.props.onPress}
         onShowUnderlay={this._onHighlight}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.53 was deployed. To see the error delete
-         * this comment and run Flow. */
         style={[styles.button, this.props.style]}
         underlayColor="#a9d9d4">
           <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
@@ -72,7 +69,7 @@ const supportedOrientationsPickerValues = [
   [],
 ];
 
-class ModalExample extends React.Component {
+class ModalExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animationType: 'none',
     modalVisible: false,

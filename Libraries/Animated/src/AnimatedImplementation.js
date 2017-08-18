@@ -1753,7 +1753,7 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  class AnimatedComponent extends React.Component {
+  class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;

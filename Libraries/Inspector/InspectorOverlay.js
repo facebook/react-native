@@ -23,16 +23,14 @@ type EventLike = {
   nativeEvent: Object,
 };
 
-class InspectorOverlay extends React.Component {
-  props: {
-    inspected?: {
-      frame?: Object,
-      style?: any,
-    },
-    inspectedViewTag?: number,
-    onTouchViewTag: (tag: number, frame: Object, pointerY: number) => void,
-  };
-
+class InspectorOverlay extends React.Component<{
+  inspected?: {
+    frame?: Object,
+    style?: any,
+  },
+  inspectedViewTag?: number,
+  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => void,
+}> {
   static propTypes = {
     inspected: PropTypes.shape({
       frame: PropTypes.object,

@@ -742,6 +742,10 @@ const ScrollView = createReactClass({
     const contentContainer =
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
@@ -814,6 +818,10 @@ const ScrollView = createReactClass({
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
@@ -829,6 +837,10 @@ const ScrollView = createReactClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
@@ -836,6 +848,10 @@ const ScrollView = createReactClass({
       }
     }
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error when upgrading Flow's support for React. Common errors found
+       * when upgrading Flow's React support are documented at
+       * https://fburl.com/eq7bs81w */
       <ScrollViewClass {...props} ref={this._setScrollViewRef}>
         {contentContainer}
       </ScrollViewClass>
@@ -874,12 +890,12 @@ if (Platform.OS === 'android') {
   };
   AndroidScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
@@ -893,7 +909,7 @@ if (Platform.OS === 'android') {
   };
   RCTScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
   // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.

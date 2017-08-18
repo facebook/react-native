@@ -79,7 +79,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * ```
  */
 
-class Modal extends React.Component {
+class Modal extends React.Component<Object> {
   static propTypes = {
     /**
      * The `animationType` prop controls how the modal animates.
@@ -168,7 +168,7 @@ class Modal extends React.Component {
     }
   }
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (this.props.visible === false) {
       return null;
     }

@@ -22,7 +22,7 @@ var {
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
 
-class Entity extends React.Component {
+class Entity extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -32,7 +32,7 @@ class Entity extends React.Component {
   }
 }
 
-class AttributeToggler extends React.Component {
+class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -69,7 +69,7 @@ class AttributeToggler extends React.Component {
   }
 }
 
-class TextExample extends React.Component {
+class TextExample extends React.Component<{}> {
   static title = '<Text>';
   static description = 'Base component for rendering styled text.';
 

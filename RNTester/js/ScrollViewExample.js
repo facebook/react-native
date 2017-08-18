@@ -35,6 +35,10 @@ exports.examples = [
     return (
       <View>
         <ScrollView
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           ref={(scrollView) => { _scrollView = scrollView; }}
           automaticallyAdjustContentInsets={false}
           onScroll={() => { console.log('onScroll!'); }}
@@ -73,6 +77,10 @@ exports.examples = [
         <View style={addtionalStyles}>
           <Text style={styles.text}>{title}</Text>
           <ScrollView
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+             * suppresses an error when upgrading Flow's support for React.
+             * Common errors found when upgrading Flow's React support are
+             * documented at https://fburl.com/eq7bs81w */
             ref={(scrollView) => { _scrollView = scrollView; }}
             automaticallyAdjustContentInsets={false}
             horizontal={true}
@@ -109,7 +117,7 @@ exports.examples = [
   }
 }];
 
-class Thumb extends React.Component {
+class Thumb extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   shouldComponentUpdate(nextProps, nextState) {
     return false;
   }

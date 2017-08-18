@@ -48,7 +48,6 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
       type: 'initialize_packager_done',
     });
   };
-  // $FlowFixMe: Remove me to see the error.
   const runServerArgs: RunServerArgs = args;
   /* $FlowFixMe: ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
