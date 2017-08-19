@@ -55,8 +55,16 @@ class NetworkOverlay extends React.Component<Object, {
   requests: Array<NetworkRequestInfo>
 }> {
   _requestsListView: ?FlatList<NetworkRequestInfo>;
+  _requestsListViewScrollMetrics: {
+    offset: number,
+    visibleLength: number,
+    contentLength: number
+  };
   _detailScrollView: ?ScrollView;
   _captureRequestsListView: (listRef: ?FlatList<NetworkRequestInfo>) => void;
+  _captureDetailScrollView: (scrollRef: ?ScrollView) => void;
+  _requestsListViewOnScroll: (Object) => void;
+  _renderItem: ({ item: NetworkRequestInfo, index: number }) => React.Element<any>;
   _renderItemDetail: (
     index: number
   ) => React.Element<any>;
@@ -74,6 +82,12 @@ class NetworkOverlay extends React.Component<Object, {
     };
     this._captureRequestsListView = this._captureRequestsListView.bind(this);
     this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
+    this._requestsListViewOnScroll = this._requestsListViewOnScroll.bind(this);
+    this._requestsListViewScrollMetrics = {
+      offset: 0,
+      visibleLength: 0,
+      contentLength: 0
+    };
     this._renderItem = this._renderItem.bind(this);
     this._renderItemDetail = this._renderItemDetail.bind(this);
     this._closeButtonClicked = this._closeButtonClicked.bind(this);
@@ -102,7 +116,7 @@ class NetworkOverlay extends React.Component<Object, {
       };
       this.setState({
         requests: this.state.requests.concat(_xhr)
-      }, this._scrollRequestsToBottom);
+      }, this._indicateAdditionalRequests);
     });
 
     XHRInterceptor.setRequestHeaderCallback((header, value, xhr) => {
@@ -154,13 +168,13 @@ class NetworkOverlay extends React.Component<Object, {
     );
 
     XHRInterceptor.setResponseCallback((
-        status,
-        timeout,
-        response,
-        responseURL,
-        responseType,
-        xhr,
-      ) => {
+      status,
+      timeout,
+      response,
+      responseURL,
+      responseType,
+      xhr,
+    ) => {
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -200,7 +214,7 @@ class NetworkOverlay extends React.Component<Object, {
 
         this.setState({
           requests: this.state.requests.concat(_webSocket)
-        }, this._scrollRequestsToBottom);
+        }, this._indicateAdditionalRequests);
       }
     );
 
@@ -313,20 +327,20 @@ class NetworkOverlay extends React.Component<Object, {
 
     return (
       <TouchableHighlight onPress={() => {
-          this._pressRow(index);
-        }}>
-          <View style={tableRowViewStyle}>
-            <View style={urlCellViewStyle}>
-              <Text style={styles.cellText} numberOfLines={1}>
-                {item.url}
-              </Text>
-            </View>
-            <View style={methodCellViewStyle}>
-              <Text style={styles.cellText} numberOfLines={1}>
-                {this._getTypeShortName(item.type)}
-              </Text>
-            </View>
+        this._pressRow(index);
+      }}>
+        <View style={tableRowViewStyle}>
+          <View style={urlCellViewStyle}>
+            <Text style={styles.cellText} numberOfLines={1}>
+              {item.url}
+            </Text>
           </View>
+          <View style={methodCellViewStyle}>
+            <Text style={styles.cellText} numberOfLines={1}>
+              {this._getTypeShortName(item.type)}
+            </Text>
+          </View>
+        </View>
       </TouchableHighlight>
     );
   }
@@ -369,14 +383,30 @@ class NetworkOverlay extends React.Component<Object, {
     );
   }
 
-  _scrollRequestsToBottom(): void {
+  _indicateAdditionalRequests(): void {
     if (this._requestsListView) {
-      this._requestsListView.scrollToEnd();
+      const distanceFromEndThreshold = LISTVIEW_CELL_HEIGHT * 2;
+
+      const { offset, visibleLength, contentLength } = this._requestsListViewScrollMetrics;
+      const distanceFromEnd = contentLength - visibleLength - offset;
+      const isCloseToEnd = distanceFromEnd <= distanceFromEndThreshold;
+
+      if (isCloseToEnd) {
+        this._requestsListView.scrollToEnd();
+      } else {
+        this._requestsListView.flashScrollIndicators();
+      }
     }
   }
 
   _captureRequestsListView(listRef: ?FlatList<NetworkRequestInfo>): void {
     this._requestsListView = listRef;
+  }
+
+  _requestsListViewOnScroll(e: Object): void {
+    this._requestsListViewScrollMetrics.offset = e.nativeEvent.contentOffset.y;
+    this._requestsListViewScrollMetrics.visibleLength = e.nativeEvent.layoutMeasurement.height;
+    this._requestsListViewScrollMetrics.contentLength = e.nativeEvent.contentSize.height;
   }
 
   /**
@@ -469,6 +499,7 @@ class NetworkOverlay extends React.Component<Object, {
         </View>
         <FlatList
           ref={this._captureRequestsListView}
+          onScroll={this._requestsListViewOnScroll}
           style={styles.listView}
           data={requests}
           keyExtractor={this._keyExtractor}
