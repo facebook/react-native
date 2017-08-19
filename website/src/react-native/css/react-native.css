@@ -2048,14 +2048,12 @@ article li {
   text-decoration: none !important; }
 
 @media screen and (max-width: 373px) {
-  .hero .buttons-unit .button:first-child {
+  .hero .buttons-unit .button {
     margin-bottom: 4px; }
 
-  .documentationContent .docs-prevnext .btn {
+  .docs-prevnext .btn {
     margin-bottom: 4px;
-    display: block; }
-
-  .documentationContent .docs-prev, .documentationContent .docs-next {
+    display: block;
     float: none; } }
 
 .video-container {
