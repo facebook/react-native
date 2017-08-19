@@ -55,6 +55,13 @@ public class ResourceDrawableIdHelper {
     }
     name = name.toLowerCase().replace("-", "_");
 
+    // name could be a resource id.
+    try {
+      return Integer.parseInt(name);
+    } catch (NumberFormatException e) {
+      // Do nothing.
+    }
+
     synchronized (this) {
       if (mResourceDrawableIdMap.containsKey(name)) {
         return mResourceDrawableIdMap.get(name);

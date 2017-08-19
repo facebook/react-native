@@ -31,7 +31,7 @@ var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
 
-class WebViewExample extends React.Component {
+class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     url: DEFAULT_URL,
     status: 'No Page Loaded',
@@ -154,7 +154,7 @@ class WebViewExample extends React.Component {
   };
 }
 
-class Button extends React.Component {
+class Button extends React.Component<$FlowFixMeProps> {
   _handlePress = () => {
     if (this.props.enabled !== false && this.props.onPress) {
       this.props.onPress();
@@ -172,7 +172,7 @@ class Button extends React.Component {
   }
 }
 
-class ScaledWebView extends React.Component {
+class ScaledWebView extends React.Component<{}, $FlowFixMeState> {
   state = {
     scalingEnabled: true,
   };
@@ -206,7 +206,7 @@ class ScaledWebView extends React.Component {
   }
 }
 
-class MessagingTest extends React.Component {
+class MessagingTest extends React.Component<{}, $FlowFixMeState> {
   webview = null
 
   state = {
@@ -225,7 +225,7 @@ class MessagingTest extends React.Component {
     }
   }
 
-  render(): ReactElement<any> {
+  render(): React.Node {
     const {messagesReceivedFromWebView, message} = this.state;
 
     return (
@@ -253,7 +253,7 @@ class MessagingTest extends React.Component {
   }
 }
 
-class InjectJS extends React.Component {
+class InjectJS extends React.Component<{}> {
   webview = null;
   injectJS = () => {
     const script = 'document.write("Injected JS ")';  // eslint-disable-line quotes
@@ -459,7 +459,7 @@ exports.examples = [
   },
   {
     title: 'Messaging Test',
-    render(): ReactElement<any> { return <MessagingTest />; }
+    render(): React.Element<any> { return <MessagingTest />; }
   },
   {
     title: 'Inject JavaScript',

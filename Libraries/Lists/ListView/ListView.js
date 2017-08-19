@@ -92,6 +92,9 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
+/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.53 was deployed. To see the error delete this comment and
+ * run Flow. */
 var ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
@@ -516,6 +519,9 @@ var ListView = createReactClass({
     }
     Object.assign(props, {
       onScroll: this._onScroll,
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       stickyHeaderIndices: this.props.stickyHeaderIndices.concat(
         stickySectionHeaderIndices,
       ),

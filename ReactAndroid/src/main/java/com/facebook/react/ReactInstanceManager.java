@@ -55,6 +55,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
@@ -105,6 +106,8 @@ import javax.annotation.Nullable;
 @ThreadSafe
 public class ReactInstanceManager {
 
+  private static final String TAG = ReactInstanceManager.class.getSimpleName();
+
   /**
    * Listener interface for react instance events.
    */
@@ -125,8 +128,9 @@ public class ReactInstanceManager {
 
   /* accessed from any thread */
   private final @Nullable JSBundleLoader mBundleLoader; /* path to JS bundle on file system */
-  private final @Nullable String mJSMainModuleName; /* path to JS bundle root on packager server */
+  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on packager server */
   private final List<ReactPackage> mPackages;
+  private final List<CatalystInstanceImpl.PendingJSCall> mInitFunctions;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
@@ -205,7 +209,7 @@ public class ReactInstanceManager {
     @Nullable Activity currentActivity,
     @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
     @Nullable JSBundleLoader bundleLoader,
-    @Nullable String jsMainModuleName,
+    @Nullable String jsMainModulePath,
     List<ReactPackage> packages,
     boolean useDeveloperSupport,
     @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
@@ -230,13 +234,14 @@ public class ReactInstanceManager {
     mCurrentActivity = currentActivity;
     mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
     mBundleLoader = bundleLoader;
-    mJSMainModuleName = jsMainModuleName;
+    mJSMainModulePath = jsMainModulePath;
     mPackages = new ArrayList<>();
+    mInitFunctions = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
     mDevSupportManager = DevSupportManagerFactory.create(
         applicationContext,
         mDevInterface,
-        mJSMainModuleName,
+        mJSMainModulePath,
         useDeveloperSupport,
         redBoxHandler,
         devBundleDownloadListener,
@@ -262,10 +267,10 @@ public class ReactInstanceManager {
       mPackages.add(coreModulesPackage);
     } else {
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
+      if (mUseDeveloperSupport) {
+        mPackages.add(new DebugCorePackage());
+      }
       if (!useOnlyDefaultPackages) {
-        if (mUseDeveloperSupport) {
-          mPackages.add(new DebugCorePackage());
-        }
         mPackages.add(
           new ReactNativeCorePackage(
             this,
@@ -351,11 +356,33 @@ public class ReactInstanceManager {
   }
 
   /**
-   * Recreate the react application and context. This should be called if configuration has
-   * changed or the developer has requested the app to be reloaded. It should only be called after
-   * an initial call to createReactContextInBackground.
+   * If the JavaScript bundle for this app requires initialization as part of bridge start up,
+   * register a function using its @param module and @param method and optional arguments.
+   */
+  public void registerInitFunction(String module, String method, @Nullable NativeArray arguments) {
+    CatalystInstanceImpl.PendingJSCall init =
+        new CatalystInstanceImpl.PendingJSCall(module, method, arguments);
+    synchronized (this) {
+      mInitFunctions.add(init);
+    }
+    ReactContext context = getCurrentReactContext();
+    CatalystInstance catalystInstance = context == null ? null : context.getCatalystInstance();
+    if (catalystInstance == null) {
+      return;
+    } else {
+      // CatalystInstance is only visible after running jsBundle, so these will be put on the native
+      // JS queue
+      // TODO T20546472 remove cast when catalystInstance and InstanceImpl are renamed/merged
+      ((CatalystInstanceImpl) catalystInstance).callFunction(init);
+    }
+  }
+
+  /**
+   * Recreate the react application and context. This should be called if configuration has changed
+   * or the developer has requested the app to be reloaded. It should only be called after an
+   * initial call to createReactContextInBackground.
    *
-   * Called from UI thread.
+   * <p>Called from UI thread.
    */
   @ThreadConfined(UI)
   public void recreateReactContextInBackground() {
@@ -371,7 +398,7 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.recreateReactContextInBackgroundInner()");
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport && mJSMainModuleName != null &&
+    if (mUseDeveloperSupport && mJSMainModulePath != null &&
       !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
@@ -903,7 +930,6 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
-    rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -995,10 +1021,16 @@ public class ReactInstanceManager {
     if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
-
-    reactContext.initializeWithInstance(catalystInstance);
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
     catalystInstance.runJSBundle();
+    // Transitions functions in the minitFunctions list to catalystInstance, to run after the bundle
+    // TODO T20546472
+    if (!mInitFunctions.isEmpty()) {
+      for (CatalystInstanceImpl.PendingJSCall function : mInitFunctions) {
+        ((CatalystInstanceImpl) catalystInstance).callFunction(function);
+      }
+    }
+    reactContext.initializeWithInstance(catalystInstance);
 
     return reactContext;
   }
