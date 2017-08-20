@@ -2857,7 +2857,7 @@ module.exports = {
    *```javascript
    *  onScroll={Animated.event(
    *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
-   *    {listener},          // Optional async listener
+   *    {listener: (event, gestureState) => console.log(gestureState)}, // Optional async listener
    *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
