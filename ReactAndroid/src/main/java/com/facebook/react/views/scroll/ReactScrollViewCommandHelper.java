@@ -26,10 +26,12 @@ public class ReactScrollViewCommandHelper {
 
   public static final int COMMAND_SCROLL_TO = 1;
   public static final int COMMAND_SCROLL_TO_END = 2;
+  public static final int COMMAND_FLASH_SCROLL_INDICATORS = 3;
 
   public interface ScrollCommandHandler<T> {
     void scrollTo(T scrollView, ScrollToCommandData data);
     void scrollToEnd(T scrollView, ScrollToEndCommandData data);
+    void flashScrollIndicators(T scrollView);
   }
 
   public static class ScrollToCommandData {
@@ -58,7 +60,9 @@ public class ReactScrollViewCommandHelper {
         "scrollTo",
         COMMAND_SCROLL_TO,
         "scrollToEnd",
-        COMMAND_SCROLL_TO_END);
+        COMMAND_SCROLL_TO_END,
+        "flashScrollIndicators",
+        COMMAND_FLASH_SCROLL_INDICATORS);
   }
 
   public static <T> void receiveCommand(
@@ -82,6 +86,10 @@ public class ReactScrollViewCommandHelper {
         viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
         return;
       }
+      case COMMAND_FLASH_SCROLL_INDICATORS:
+        viewManager.flashScrollIndicators(scrollView);
+        return;
+
       default:
         throw new IllegalArgumentException(String.format(
             "Unsupported command %d received by %s.",
