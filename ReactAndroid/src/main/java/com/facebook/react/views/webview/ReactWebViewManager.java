@@ -54,6 +54,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.scroll.OnScrollDispatchHelper;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
@@ -223,6 +226,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     protected @Nullable String injectedJS;
     protected boolean messagingEnabled = false;
     protected @Nullable ReactWebViewClient mReactWebViewClient;
+    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
     protected class ReactWebViewBridge {
       ReactWebView mContext;
@@ -324,6 +328,24 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             BRIDGE_NAME + ".postMessage(String(data));" +
           "}" +
         ")");
+      }
+    }
+
+    @Override
+    protected void onScrollChanged(int x, int y, int oldX, int oldY) {
+      super.onScrollChanged(x, y, oldX, oldY);
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+        ReactContext reactContext = (ReactContext) this.getContext();
+        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
+                ScrollEvent.obtain(
+                        this.getId(),
+                        ScrollEventType.SCROLL,
+                        this.getScrollX(),
+                        this.getScrollY(),
+                        this.computeHorizontalScrollRange(),
+                        this.computeVerticalScrollRange(),
+                        this.getWidth(),
+                        this.getHeight()));
       }
     }
 
