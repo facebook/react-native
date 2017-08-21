@@ -48,20 +48,29 @@ public class UIImplementation {
   private long mLastCalculateLayoutTime = 0;
 
   public UIImplementation(
-    ReactApplicationContext reactContext,
-    List<ViewManager> viewManagers,
-    EventDispatcher eventDispatcher) {
-    this(reactContext, new ViewManagerRegistry(viewManagers), eventDispatcher);
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagers,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        new ViewManagerRegistry(viewManagers),
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
   private UIImplementation(
-    ReactApplicationContext reactContext,
-    ViewManagerRegistry viewManagers,
-    EventDispatcher eventDispatcher) {
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagers,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
         reactContext,
         viewManagers,
-        new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)),
+        new UIViewOperationQueue(
+            reactContext,
+            new NativeViewHierarchyManager(viewManagers),
+            minTimeLeftInFrameForNonBatchedOperationMs),
         eventDispatcher);
   }
 

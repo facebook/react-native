@@ -45,6 +45,7 @@ public class ReactInstanceManagerBuilder {
   private int mMinNumShakes = 1;
   private boolean mEnableSplitPackage;
   private boolean mUseOnlyDefaultPackages;
+  private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -216,6 +217,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setMinTimeLeftInFrameForNonBatchedOperationMs(
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -245,27 +252,29 @@ public class ReactInstanceManagerBuilder {
     }
 
     return new ReactInstanceManager(
-      mApplication,
-      mCurrentActivity,
-      mDefaultHardwareBackBtnHandler,
-      (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
-        mJSBundleLoader,
-      mJSMainModulePath,
-      mPackages,
-      mUseDeveloperSupport,
-      mBridgeIdleDebugListener,
-      Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-      mUIImplementationProvider,
-      mNativeModuleCallExceptionHandler,
-      mJSCConfig,
-      mRedBoxHandler,
-      mLazyNativeModulesEnabled,
-      mLazyViewManagersEnabled,
-      mDevBundleDownloadListener,
-      mUseSeparateUIBackgroundThread,
-      mMinNumShakes,
-      mEnableSplitPackage,
-      mUseOnlyDefaultPackages);
+        mApplication,
+        mCurrentActivity,
+        mDefaultHardwareBackBtnHandler,
+        (mJSBundleLoader == null && mJSBundleAssetUrl != null)
+            ? JSBundleLoader.createAssetLoader(
+                mApplication, mJSBundleAssetUrl, false /*Asynchronous*/)
+            : mJSBundleLoader,
+        mJSMainModulePath,
+        mPackages,
+        mUseDeveloperSupport,
+        mBridgeIdleDebugListener,
+        Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+        mUIImplementationProvider,
+        mNativeModuleCallExceptionHandler,
+        mJSCConfig,
+        mRedBoxHandler,
+        mLazyNativeModulesEnabled,
+        mLazyViewManagersEnabled,
+        mDevBundleDownloadListener,
+        mUseSeparateUIBackgroundThread,
+        mMinNumShakes,
+        mEnableSplitPackage,
+        mUseOnlyDefaultPackages,
+        mMinTimeLeftInFrameForNonBatchedOperationMs);
   }
 }
