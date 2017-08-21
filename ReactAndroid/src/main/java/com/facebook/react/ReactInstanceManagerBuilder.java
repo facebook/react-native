@@ -34,7 +34,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private JSCConfig mJSCConfig = JSCConfig.EMPTY;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
@@ -170,11 +169,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setJSCConfig(JSCConfig jscConfig) {
-    mJSCConfig = jscConfig;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
     mRedBoxHandler = redBoxHandler;
     return this;
@@ -266,7 +260,6 @@ public class ReactInstanceManagerBuilder {
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
         mNativeModuleCallExceptionHandler,
-        mJSCConfig,
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,

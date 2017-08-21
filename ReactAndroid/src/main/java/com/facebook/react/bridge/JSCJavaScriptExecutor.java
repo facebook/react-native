@@ -17,7 +17,8 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
   public static class Factory implements JavaScriptExecutor.Factory {
     private ReadableNativeMap mJSCConfig;
 
-    public Factory(WritableNativeMap jscConfig) {
+    public Factory() {
+      WritableNativeMap jscConfig = new WritableNativeMap();
       jscConfig.putString("OwnerIdentity", "ReactNative");
       mJSCConfig = jscConfig;
     }
@@ -32,7 +33,7 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
     ReactBridge.staticInit();
   }
 
-  public JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
+  private JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
     super(initHybrid(jscConfig));
   }
 
