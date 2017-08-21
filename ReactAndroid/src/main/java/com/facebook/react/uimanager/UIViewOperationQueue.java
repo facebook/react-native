@@ -46,6 +46,8 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class UIViewOperationQueue {
 
+  public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
+
   private final int[] mMeasureBuffer = new int[4];
 
   /**
@@ -554,10 +556,16 @@ public class UIViewOperationQueue {
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
-      NativeViewHierarchyManager nativeViewHierarchyManager) {
+      NativeViewHierarchyManager nativeViewHierarchyManager,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
     mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
-    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+    mDispatchUIFrameCallback =
+        new DispatchUIFrameCallback(
+            reactContext,
+            minTimeLeftInFrameForNonBatchedOperationMs == -1
+                ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
+                : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
   }
 
@@ -936,11 +944,13 @@ public class UIViewOperationQueue {
    */
   private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
-    private static final int MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS = 8;
     private static final int FRAME_TIME_MS = 16;
+    private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
-    private DispatchUIFrameCallback(ReactContext reactContext) {
+    private DispatchUIFrameCallback(
+        ReactContext reactContext, int minTimeLeftInFrameForNonBatchedOperationMs) {
       super(reactContext);
+      mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
     }
 
     @Override
@@ -984,7 +994,7 @@ public class UIViewOperationQueue {
     private void dispatchPendingNonBatchedOperations(long frameTimeNanos) {
       while (true) {
         long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
-        if (timeLeftInFrame < MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS) {
+        if (timeLeftInFrame < mMinTimeLeftInFrameForNonBatchedOperationMs) {
           break;
         }
 

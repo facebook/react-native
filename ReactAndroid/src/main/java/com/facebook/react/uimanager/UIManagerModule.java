@@ -85,13 +85,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
       UIImplementationProvider uiImplementationProvider,
-      boolean lazyViewManagersEnabled) {
+      boolean lazyViewManagersEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
-    mUIImplementation = uiImplementationProvider
-      .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
+    mUIImplementation =
+        uiImplementationProvider.createUIImplementation(
+            reactContext,
+            viewManagerList,
+            mEventDispatcher,
+            minTimeLeftInFrameForNonBatchedOperationMs);
 
     reactContext.addLifecycleEventListener(this);
   }

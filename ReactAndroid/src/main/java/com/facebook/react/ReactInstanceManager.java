@@ -46,6 +46,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
+import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -55,7 +56,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
@@ -149,6 +149,7 @@ public class ReactInstanceManager {
   private final boolean mLazyViewManagersEnabled;
   private final boolean mUseSeparateUIBackgroundThread;
   private final int mMinNumShakes;
+  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -205,26 +206,27 @@ public class ReactInstanceManager {
   }
 
   /* package */ ReactInstanceManager(
-    Context applicationContext,
-    @Nullable Activity currentActivity,
-    @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
-    @Nullable JSBundleLoader bundleLoader,
-    @Nullable String jsMainModulePath,
-    List<ReactPackage> packages,
-    boolean useDeveloperSupport,
-    @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-    LifecycleState initialLifecycleState,
-    UIImplementationProvider uiImplementationProvider,
-    NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-    JSCConfig jscConfig,
-    @Nullable RedBoxHandler redBoxHandler,
-    boolean lazyNativeModulesEnabled,
-    boolean lazyViewManagersEnabled,
-    @Nullable DevBundleDownloadListener devBundleDownloadListener,
-    boolean useSeparateUIBackgroundThread,
-    int minNumShakes,
-    boolean splitPackagesEnabled,
-    boolean useOnlyDefaultPackages) {
+      Context applicationContext,
+      @Nullable Activity currentActivity,
+      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
+      @Nullable JSBundleLoader bundleLoader,
+      @Nullable String jsMainModulePath,
+      List<ReactPackage> packages,
+      boolean useDeveloperSupport,
+      @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
+      LifecycleState initialLifecycleState,
+      UIImplementationProvider uiImplementationProvider,
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+      JSCConfig jscConfig,
+      @Nullable RedBoxHandler redBoxHandler,
+      boolean lazyNativeModulesEnabled,
+      boolean lazyViewManagersEnabled,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      boolean useSeparateUIBackgroundThread,
+      int minNumShakes,
+      boolean splitPackagesEnabled,
+      boolean useOnlyDefaultPackages,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -254,16 +256,18 @@ public class ReactInstanceManager {
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
+    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
 
     if (!splitPackagesEnabled) {
       CoreModulesPackage coreModulesPackage =
-        new CoreModulesPackage(
-          this,
-          mBackBtnHandler,
-          mUIImplementationProvider,
-          mLazyViewManagersEnabled);
+          new CoreModulesPackage(
+              this,
+              mBackBtnHandler,
+              mUIImplementationProvider,
+              mLazyViewManagersEnabled,
+              mMinTimeLeftInFrameForNonBatchedOperationMs);
       mPackages.add(coreModulesPackage);
     } else {
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
@@ -272,10 +276,11 @@ public class ReactInstanceManager {
       }
       if (!useOnlyDefaultPackages) {
         mPackages.add(
-          new ReactNativeCorePackage(
-            this,
-            mUIImplementationProvider,
-            mLazyViewManagersEnabled));
+            new ReactNativeCorePackage(
+                this,
+                mUIImplementationProvider,
+                mLazyViewManagersEnabled,
+                mMinTimeLeftInFrameForNonBatchedOperationMs));
       }
     }
     mPackages.addAll(packages);
