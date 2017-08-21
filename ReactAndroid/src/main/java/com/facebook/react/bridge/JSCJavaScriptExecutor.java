@@ -13,27 +13,12 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public class JSCJavaScriptExecutor extends JavaScriptExecutor {
-  public static class Factory implements JavaScriptExecutor.Factory {
-    private ReadableNativeMap mJSCConfig;
-
-    public Factory() {
-      WritableNativeMap jscConfig = new WritableNativeMap();
-      jscConfig.putString("OwnerIdentity", "ReactNative");
-      mJSCConfig = jscConfig;
-    }
-
-    @Override
-    public JavaScriptExecutor create() throws Exception {
-      return new JSCJavaScriptExecutor(mJSCConfig);
-    }
-  }
-
+/* package */ class JSCJavaScriptExecutor extends JavaScriptExecutor {
   static {
     ReactBridge.staticInit();
   }
 
-  private JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
+  /* package */ JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
     super(initHybrid(jscConfig));
   }
 

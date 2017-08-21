@@ -5,7 +5,9 @@ package com.facebook.react;
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
@@ -40,6 +42,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
+  private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
   private int mMinNumShakes = 1;
   private boolean mEnableSplitPackage;
@@ -56,6 +59,15 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setUIImplementationProvider(
     @Nullable UIImplementationProvider uiImplementationProvider) {
     mUIImplementationProvider = uiImplementationProvider;
+    return this;
+  }
+
+  /**
+   * Factory for desired implementation of JavaScriptExecutor.
+   */
+  public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
+    @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
+    mJavaScriptExecutorFactory = javaScriptExecutorFactory;
     return this;
   }
 
@@ -249,6 +261,9 @@ public class ReactInstanceManagerBuilder {
         mApplication,
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
+        mJavaScriptExecutorFactory == null
+            ? new JSCJavaScriptExecutorFactory()
+            : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
                 mApplication, mJSBundleAssetUrl, false /*Asynchronous*/)
