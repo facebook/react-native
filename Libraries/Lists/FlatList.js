@@ -340,14 +340,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * NOTE: Work without specifying the `getItemLayout` prop as well.
    */
 
-  scrollToOffsetByCellKey(params: {animated?:?boolean,cellKey:string}) {
-    this._listRef._scrollRef.props.children.map((item,index) => {
-      if(params.cellKey == item.key){
+  scrollToOffsetByCellKey(params: {animated?: ?boolean, cellKey: string}) {
+    this._listRef._scrollRef.props.children.map((item, index) => {
+      if (params.cellKey == item.key) {
         const frameMetrics = this._listRef._getFrameMetrics(index);
         params.offset = frameMetrics.offset;
         this._listRef.scrollToOffset(params);
       }
-    })
+    });
   }
 
   /**
