@@ -189,17 +189,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
-    @Override
-    public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
-      super.doUpdateVisitedHistory(webView, url, isReload);
-
-      dispatchEvent(
-          webView,
-          new TopLoadingStartEvent(
-              webView.getId(),
-              createWebViewEvent(webView, url)));
-    }
-
     protected void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
           webView,
