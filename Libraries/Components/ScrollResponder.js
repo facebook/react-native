@@ -440,7 +440,7 @@ var ScrollResponderMixin = {
 
   /**
    * A helper function to scroll by a specific offset in the ScrollView.
-   * This is useful when you want to change the size of the content view and scroll 
+   * This is useful when you want to change the size of the content view and scroll
    * position at the same time. Syntax:
    *
    * scrollResponderScrollBy(options: {deltaX: number = 0; deltaY: number = 0; animated: boolean = true})
