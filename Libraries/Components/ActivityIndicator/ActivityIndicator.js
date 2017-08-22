@@ -37,6 +37,9 @@ type DefaultProps = {
 /**
  * Displays a circular loading indicator.
  */
+/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.53 was deployed. To see the error delete this comment and
+ * run Flow. */
 const ActivityIndicator = createReactClass({
   displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],

@@ -62,7 +62,7 @@ rn_xplat_cxx_library(
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
-    soname = "libxplat_react_module_samplemodule.so",
+    soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],

@@ -95,11 +95,6 @@ if (global.__RCTProfileIsProfiling) {
   Systrace.setEnabled(true);
 }
 
-if (__DEV__ && global.performance === undefined) {
-  const Systrace = require('Systrace');
-  global.performance = Systrace.getUserTimingPolyfill();
-}
-
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();

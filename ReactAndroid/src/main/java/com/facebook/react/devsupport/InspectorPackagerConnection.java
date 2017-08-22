@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import android.os.AsyncTask;
@@ -45,6 +46,14 @@ public class InspectorPackagerConnection {
 
   public void closeQuietly() {
     mConnection.close();
+  }
+
+  public void sendEventToAllConnections(String event) {
+    for (Map.Entry<String, Inspector.LocalConnection> inspectorConnectionEntry :
+        mInspectorConnections.entrySet()) {
+      Inspector.LocalConnection inspectorConnection = inspectorConnectionEntry.getValue();
+      inspectorConnection.sendMessage(event);
+    }
   }
 
   public void sendOpenEvent(String pageId) {

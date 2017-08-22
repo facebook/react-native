@@ -1753,12 +1753,14 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  class AnimatedComponent extends React.Component {
+  class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
+
+    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
 
     constructor(props: Object) {
       super(props);
@@ -1814,7 +1816,8 @@ function createAnimatedComponent(Component: any): any {
       // need to re-render it. In this case, we have a fallback that uses
       // forceUpdate.
       var callback = () => {
-        if (this._component.setNativeProps) {
+        if (!AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY &&
+          this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
             this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
@@ -2498,6 +2501,9 @@ class AnimatedEvent {
           recMapping.setValue(recEvt);
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.53 was deployed. To see
+             * the error delete this comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }
@@ -2734,6 +2740,10 @@ module.exports = {
    * See also [`AnimatedInterpolation`](docs/animated.html#animatedinterpolation).
    */
   Interpolation: AnimatedInterpolation,
+  /**
+   * Exported for ease of type checking. All animated values derive from this class.
+   */
+  Node: Animated,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay

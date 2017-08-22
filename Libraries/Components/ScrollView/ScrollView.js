@@ -272,6 +272,12 @@ const ScrollView = createReactClass({
      */
     pagingEnabled: PropTypes.bool,
     /**
+    * When true, ScrollView allows use of pinch gestures to zoom in and out.
+    * The default value is true.
+    * @platform ios
+    */
+    pinchGestureEnabled: PropTypes.bool,
+    /**
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
@@ -542,6 +548,9 @@ const ScrollView = createReactClass({
   },
 
   _getKeyForIndex: function(index, childArray) {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     const child = childArray[index];
     return child && child.key;
   },
@@ -571,6 +580,9 @@ const ScrollView = createReactClass({
     if (!this.props.stickyHeaderIndices) {
       return;
     }
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     const childArray = React.Children.toArray(this.props.children);
     if (key !== this._getKeyForIndex(index, childArray)) {
       // ignore stale layout update
@@ -580,7 +592,13 @@ const ScrollView = createReactClass({
     const layoutY = event.nativeEvent.layout.y;
     this._headerLayoutYs.set(key, layoutY);
 
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     const previousHeaderIndex = this.props.stickyHeaderIndices[indexOfIndex - 1];
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(
@@ -679,18 +697,33 @@ const ScrollView = createReactClass({
 
     const {stickyHeaderIndices} = this.props;
     const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.53 was deployed. To see the error delete this
+     * comment and run Flow. */
     const childArray = hasStickyHeaders && React.Children.toArray(this.props.children);
     const children = hasStickyHeaders ?
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       childArray.map((child, index) => {
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.53 was deployed. To see the error delete
+         * this comment and run Flow. */
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
         if (indexOfIndex > -1) {
           const key = child.key;
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.53 was deployed. To see the error
+           * delete this comment and run Flow. */
           const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
           return (
             <ScrollViewStickyHeader
               key={key}
               ref={(ref) => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={
+                /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+                 * suppresses an error found when Flow v0.53 was deployed. To
+                 * see the error delete this comment and run Flow. */
                 this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
               }
               onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
@@ -702,10 +735,17 @@ const ScrollView = createReactClass({
           return child;
         }
       }) :
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       this.props.children;
     const contentContainer =
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
@@ -746,6 +786,9 @@ const ScrollView = createReactClass({
       onResponderGrant: this.scrollResponderHandleResponderGrant,
       onResponderReject: this.scrollResponderHandleResponderReject,
       onResponderRelease: this.scrollResponderHandleResponderRelease,
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       onResponderTerminate: this.scrollResponderHandleTerminate,
       onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
       onScroll: this._handleScroll,
@@ -775,6 +818,10 @@ const ScrollView = createReactClass({
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
@@ -790,6 +837,10 @@ const ScrollView = createReactClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
@@ -797,6 +848,10 @@ const ScrollView = createReactClass({
       }
     }
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error when upgrading Flow's support for React. Common errors found
+       * when upgrading Flow's React support are documented at
+       * https://fburl.com/eq7bs81w */
       <ScrollViewClass {...props} ref={this._setScrollViewRef}>
         {contentContainer}
       </ScrollViewClass>
@@ -835,12 +890,12 @@ if (Platform.OS === 'android') {
   };
   AndroidScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
@@ -854,7 +909,7 @@ if (Platform.OS === 'android') {
   };
   RCTScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
   // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.

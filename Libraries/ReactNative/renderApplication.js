@@ -23,10 +23,10 @@ const invariant = require('fbjs/lib/invariant');
 require('BackHandler');
 
 function renderApplication<Props: Object>(
-  RootComponent: ReactClass<Props>,
+  RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
-  WrapperComponent?: ?ReactClass<*>,
+  WrapperComponent?: ?React.ComponentType<*>,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 

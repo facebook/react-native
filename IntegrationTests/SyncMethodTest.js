@@ -21,7 +21,7 @@ const {
 } = ReactNative.NativeModules;
 
 
-class SyncMethodTest extends React.Component {
+class SyncMethodTest extends React.Component<{}> {
   componentDidMount() {
     if (RNTesterTestModule.echoString('test string value') !== 'test string value') {
       throw new Error('Something wrong with sync method export');
@@ -32,7 +32,7 @@ class SyncMethodTest extends React.Component {
     TestModule.markTestCompleted();
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return <View />;
   }
 }

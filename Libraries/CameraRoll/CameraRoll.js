@@ -88,9 +88,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
           isStored: PropTypes.bool,
-          // TODO (nivethavadivelu) Need to add changes to Android before
-          // setting it as required
-          playableDuration: PropTypes.number,
+          playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
         location: createStrictShapeTypeChecker({
