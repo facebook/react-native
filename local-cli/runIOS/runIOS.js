@@ -178,7 +178,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       }
     }
     const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
-    let buildOutput = "";
+    let buildOutput = '';
     buildProcess.stdout.on('data', function(data) {
       buildOutput += data.toString();
       if (xcpretty && !verbose) {
@@ -207,7 +207,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
 function matchingDevice(devices, deviceName) {
   if (deviceName === true && devices.length === 1)
   {
-    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`)
+    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`);
     return devices[0];
   }
   for (let i = devices.length - 1; i >= 0; i--) {
