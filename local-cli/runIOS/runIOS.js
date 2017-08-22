@@ -114,7 +114,7 @@ function runOnSimulator(xcodeProject, args, scheme){
       // instruments always fail with 255 because it expects more arguments,
       // but we want it to only launch the simulator
     }
-    resolve(selectedSimulator.udid)
+    resolve(selectedSimulator.udid);
   })
   .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager, args.verbose))
   .then((appName) => {
@@ -133,7 +133,7 @@ function runOnSimulator(xcodeProject, args, scheme){
 
     console.log(`Launching ${bundleID}`);
     child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
-  })
+  });
 }
 
 function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager, verbose) {
@@ -199,7 +199,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
-      return buildProcess.error? reject(buildProcess.error) : resolve();
+      return buildProcess.error ? reject(buildProcess.error) : resolve();
     });
   });
 }
