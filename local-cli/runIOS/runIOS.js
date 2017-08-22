@@ -24,7 +24,7 @@ const xcprettyAvailable = function() {
       stdio: [ 0, 'pipe', 'ignore', ]
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return false;
   }
   return true;
