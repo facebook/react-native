@@ -12,14 +12,12 @@
 'use strict';
 
 const Image = require('Image');
+const PropTypes = require('prop-types');
 const React = require('React');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
-
-const {PropTypes} = React;
 
 import type {ImageSource} from 'ImageSource';
 
@@ -28,18 +26,16 @@ import type {ImageSource} from 'ImageSource';
  * with SwipeableListView. Each button takes an image and text with optional
  * formatting.
  */
-class SwipeableQuickActionButton extends React.Component {
-  props: {
-    accessibilityLabel?: string,
-    imageSource: ImageSource | number,
-    imageStyle?: ?View.propTypes.style,
-    onPress?: Function,
-    style?: ?View.propTypes.style,
-    testID?: string,
-    text?: ?(string | Object | Array<string | Object>),
-    textStyle?: ?View.propTypes.style,
-  };
-
+class SwipeableQuickActionButton extends React.Component<{
+  accessibilityLabel?: string,
+  imageSource: ImageSource | number,
+  imageStyle?: ?ViewPropTypes.style,
+  onPress?: Function,
+  style?: ?ViewPropTypes.style,
+  testID?: string,
+  text?: ?(string | Object | Array<string | Object>),
+  textStyle?: ?ViewPropTypes.style,
+}> {
   static propTypes = {
     accessibilityLabel: PropTypes.string,
     imageSource: Image.propTypes.source.isRequired,
@@ -51,7 +47,7 @@ class SwipeableQuickActionButton extends React.Component {
     textStyle: Text.propTypes.style,
   };
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (!this.props.imageSource && !this.props.text) {
       return null;
     }

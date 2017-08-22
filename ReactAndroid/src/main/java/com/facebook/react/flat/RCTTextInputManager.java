@@ -13,6 +13,8 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 
 public class RCTTextInputManager extends ReactTextInputManager {
 
+  /* package */ static final String REACT_CLASS = ReactTextInputManager.REACT_CLASS;
+
   @Override
   public RCTTextInput createShadowNodeInstance() {
     return new RCTTextInput();

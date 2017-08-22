@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 
 namespace facebook {
@@ -22,9 +23,13 @@ public:
     : moduleData_(moduleData) {}
 
   void runOnQueue(std::function<void()>&& func) override {
-    dispatch_async(moduleData_.methodQueue, [func=std::move(func)] {
-      func();
-    });
+    dispatch_queue_t queue = moduleData_.methodQueue;
+    RCTAssert(queue != nullptr, @"Module %@ provided invalid queue", moduleData_);
+    dispatch_block_t block = [func=std::move(func)] { func(); };
+    RCTAssert(block != nullptr, @"Invalid block generated in call to %@", moduleData_);
+    if (queue && block) {
+      dispatch_async(queue, block);
+    }
   }
   void runOnQueueSync(std::function<void()>&& func) override {
     LOG(FATAL) << "Unsupported operation";

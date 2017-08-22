@@ -36,10 +36,14 @@
 
 @implementation RCTWebSocketModule
 {
-    NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
+  NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
+  NSMutableDictionary<NSNumber *, id> *_contentHandlers;
 }
 
 RCT_EXPORT_MODULE()
+
+// Used by RCTBlobModule
+@synthesize methodQueue = _methodQueue;
 
 - (NSArray *)supportedEvents
 {
@@ -57,10 +61,24 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(NSDictionary *)options socketID:(nonnull NSNumber *)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+
+  // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+  // fetch). To get secure cookies for wss URLs, replace wss with https
+  // in the URL.
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+  if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
+    components.scheme = @"https";
+  }
+
+  // Load and set the cookie header.
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+
+  // Load supplied headers
+  [options[@"headers"] enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
     [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
   }];
 
@@ -74,15 +92,19 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(N
   [webSocket open];
 }
 
-RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(send:(NSString *)message forSocketID:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] send:message];
 }
 
-RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String forSocketID:(nonnull NSNumber *)socketID)
 {
-  NSData *message = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
-  [_sockets[socketID] send:message];
+  [self sendData:[[NSData alloc] initWithBase64EncodedString:base64String options:0] forSocketID:socketID];
+}
+
+- (void)sendData:(NSData *)data forSocketID:(nonnull NSNumber *)socketID
+{
+  [_sockets[socketID] send:data];
 }
 
 RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
@@ -96,14 +118,36 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
   [_sockets removeObjectForKey:socketID];
 }
 
+- (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
+{
+  if (!_contentHandlers) {
+    _contentHandlers = [NSMutableDictionary new];
+  }
+  _contentHandlers[socketID] = handler;
+}
+
 #pragma mark - RCTSRWebSocketDelegate methods
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  BOOL binary = [message isKindOfClass:[NSData class]];
+  NSString *type;
+
+  NSNumber *socketID = [webSocket reactTag];
+  id contentHandler = _contentHandlers[socketID];
+  if (contentHandler) {
+    message = [contentHandler processMessage:message forSocketID:socketID withType:&type];
+  } else {
+    if ([message isKindOfClass:[NSData class]]) {
+      type = @"binary";
+      message = [message base64EncodedStringWithOptions:0];
+    } else {
+      type = @"text";
+    }
+  }
+
   [self sendEventWithName:@"websocketMessage" body:@{
-    @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
-    @"type": binary ? @"binary" : @"text",
+    @"data": message,
+    @"type": type,
     @"id": webSocket.reactTag
   }];
 }
@@ -117,21 +161,36 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
+  NSNumber *socketID = [webSocket reactTag];
+  _contentHandlers[socketID] = nil;
   [self sendEventWithName:@"websocketFailed" body:@{
-    @"message":error.localizedDescription,
-    @"id": webSocket.reactTag
+    @"message": error.localizedDescription,
+    @"id": socketID
   }];
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code
-           reason:(NSString *)reason wasClean:(BOOL)wasClean
+- (void)webSocket:(RCTSRWebSocket *)webSocket
+ didCloseWithCode:(NSInteger)code
+           reason:(NSString *)reason
+         wasClean:(BOOL)wasClean
 {
+  NSNumber *socketID = [webSocket reactTag];
+  _contentHandlers[socketID] = nil;
   [self sendEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
     @"reason": RCTNullIfNil(reason),
     @"clean": @(wasClean),
-    @"id": webSocket.reactTag
+    @"id": socketID
   }];
+}
+
+@end
+
+@implementation RCTBridge (RCTWebSocketModule)
+
+- (RCTWebSocketModule *)webSocketModule
+{
+  return [self moduleForClass:[RCTWebSocketModule class]];
 }
 
 @end

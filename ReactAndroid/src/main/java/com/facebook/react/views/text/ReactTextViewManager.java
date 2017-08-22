@@ -152,9 +152,14 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
-  @ReactProp(name = "includeFontPadding", defaultBoolean = true)
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
   public void setIncludeFontPadding(ReactTextView view, boolean includepad) {
     view.setIncludeFontPadding(includepad);
+  }
+
+  @ReactProp(name = "disabled", defaultBoolean = false)
+  public void setDisabled(ReactTextView view, boolean disabled) {
+    view.setEnabled(!disabled);
   }
 
   @Override

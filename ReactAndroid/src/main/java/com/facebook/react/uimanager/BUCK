@@ -8,6 +8,9 @@ android_library(
         "events/*.java",
         "layoutanimation/*.java",
     ]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
     visibility = [
         "PUBLIC",
     ],
@@ -15,7 +18,6 @@ android_library(
         YOGA_TARGET,
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/animation:animation"),
@@ -26,6 +28,7 @@ android_library(
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/uimanager/util:util"),
         react_native_target("res:uimanager"),
     ],
 )

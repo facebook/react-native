@@ -151,6 +151,11 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
+  public ArrayList<Object> toArrayList() {
+    return new ArrayList<Object>(mBackingList);
+  }
+
+  @Override
   public String toString() {
     return mBackingList.toString();
   }

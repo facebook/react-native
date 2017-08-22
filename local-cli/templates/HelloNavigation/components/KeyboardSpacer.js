@@ -2,7 +2,8 @@
 
 /* @flow */
 
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Platform,
   View,
@@ -45,7 +46,7 @@ const KeyboardSpacer = () => (
   Platform.OS === 'ios' ? <KeyboardSpacerIOS /> : null
 );
 
-class KeyboardSpacerIOS extends Component<Props, Props, State> {
+class KeyboardSpacerIOS extends Component<Props, State> {
   static propTypes = {
     offset: PropTypes.number,
   };

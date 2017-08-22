@@ -306,7 +306,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       if (getChildCount() > 0) {
         final int viewTag = getChildAt(0).getId();
         ReactContext reactContext = (ReactContext) getContext();
-        reactContext.runOnNativeModulesQueueThread(
+        reactContext.runUIBackgroundRunnable(
           new GuardedRunnable(reactContext) {
             @Override
             public void runGuarded() {

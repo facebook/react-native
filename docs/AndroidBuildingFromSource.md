@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
 banner: ejected
-next: activityindicator
+next: contributing
 previous: android-ui-performance
 ---
 
@@ -55,7 +55,7 @@ ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10e
 3. Windows (64-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86_64.zip
 4. Windows (32-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86.zip
 
-You can find further instructions on the [official page](http://developer.android.com/ndk/downloads/index.html).
+You can find further instructions on the [official page](https://developer.android.com/ndk/index.html).
 
 ## Building the source
 
@@ -153,11 +153,11 @@ Start by following the `Point Gradle to your Android SDK` section of this page. 
 ./gradlew ReactAndroid:installArchives
 ```
 
-This will package everything that would typically be included in the `android` directory of your `node_modules/react-native/` installation in the root directory of your React Native checkout. 
+This will package everything that would typically be included in the `android` directory of your `node_modules/react-native/` installation in the root directory of your React Native checkout.
 
 ## Testing
 
-If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](docs/testing.html).
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Running Tests](docs/testing.html).
 
 ## Troubleshooting
 

@@ -28,12 +28,6 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Flaky tests ignored on Circle CI. They still run internally at fb.
-const ignoredTests = [
-  'ReactScrollViewTestCase',
-  'ReactHorizontalScrollViewTestCase'
-];
-
 const colors = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
@@ -42,6 +36,7 @@ const colors = {
 
 const test_opts = {
     FILTER: new RegExp(argv.filter || '.*', 'i'),
+    IGNORE: argv.ignore || null,
     PACKAGE: argv.package || 'com.facebook.react.tests',
     PATH: argv.path || './ReactAndroid/src/androidTest/java/com/facebook/react/tests',
     RETRIES: parseInt(argv.retries || 2, 10),
@@ -59,13 +54,20 @@ let testClasses = fs.readdirSync(path.resolve(process.cwd(), test_opts.PATH))
         return file.endsWith('.java');
     }).map((clazz) => {
         return path.basename(clazz, '.java');
-    }).filter(className => {
-        return ignoredTests.indexOf(className) === -1;
-    }).map((clazz) => {
-        return test_opts.PACKAGE + '.' + clazz;
-    }).filter((clazz) => {
-        return test_opts.FILTER.test(clazz);
     });
+
+if (test_opts.IGNORE) {
+    test_opts.IGNORE = new RegExp(test_opts.IGNORE, 'i');
+    testClasses = testClasses.filter(className => {
+        return !test_opts.IGNORE.test(className);
+    });
+}
+
+testClasses = testClasses.map((clazz) => {
+    return test_opts.PACKAGE + '.' + clazz;
+}).filter((clazz) => {
+    return test_opts.FILTER.test(clazz);
+});
 
 // only process subset of the tests at corresponding offset and count if args provided
 if (test_opts.COUNT != null && test_opts.OFFSET != null) {

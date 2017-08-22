@@ -13,6 +13,7 @@
 
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   Text,
@@ -20,15 +21,13 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-class IntegrationTestHarnessTest extends React.Component {
-  props: {
-    shouldThrow?: boolean,
-    waitOneFrame?: boolean,
-  };
-
+class IntegrationTestHarnessTest extends React.Component<{
+  shouldThrow?: boolean,
+  waitOneFrame?: boolean,
+}, $FlowFixMeState> {
   static propTypes = {
-    shouldThrow: React.PropTypes.bool,
-    waitOneFrame: React.PropTypes.bool,
+    shouldThrow: PropTypes.bool,
+    waitOneFrame: PropTypes.bool,
   };
 
   state = {

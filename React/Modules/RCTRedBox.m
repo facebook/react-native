@@ -185,8 +185,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
 {
+  NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
   NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
-                        [stackFrame.file lastPathComponent],
+                        fileName,
                         stackFrame.lineNumber];
 
   if (stackFrame.column != 0) {
@@ -367,7 +368,9 @@ RCT_EXPORT_MODULE()
 
 - (void)showError:(NSError *)error
 {
-  [self showErrorMessage:error.localizedDescription withDetails:error.localizedFailureReason];
+  [self showErrorMessage:error.localizedDescription
+             withDetails:error.localizedFailureReason
+                   stack:error.userInfo[RCTJSStackTraceKey]];
 }
 
 - (void)showErrorMessage:(NSString *)message
@@ -377,11 +380,15 @@ RCT_EXPORT_MODULE()
 
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details
 {
+  [self showErrorMessage:message withDetails:details stack:nil];
+}
+
+- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details stack:(NSArray<id> *)stack {
   NSString *combinedMessage = message;
   if (details) {
     combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
   }
-  [self showErrorMessage:combinedMessage withStack:nil isUpdate:NO];
+  [self showErrorMessage:combinedMessage withStack:stack isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack

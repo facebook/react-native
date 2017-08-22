@@ -12,14 +12,14 @@
 
 var React = require('React');
 
-var AlgoliaDocSearch = React.createClass({
-  render: function() {
+class AlgoliaDocSearch extends React.Component {
+  render() {
     return (
       <div className="algolia-search-wrapper">
         <input id="algolia-doc-search" tabIndex="0" type="text" placeholder="Search docs..." />
       </div>
     );
   }
-});
+}
 
 module.exports = AlgoliaDocSearch;

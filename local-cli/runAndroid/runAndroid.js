@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const isString = require('lodash/isString');
 const path = require('path');
 const Promise = require('promise');
@@ -27,7 +28,16 @@ function checkAndroid(root) {
  */
 function runAndroid(argv, config, args) {
   if (!checkAndroid(args.root)) {
-    console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['android'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+    } else {
+      console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    }
     return;
   }
 
@@ -56,10 +66,10 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+function tryRunAdbReverse(packagerPort, device) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+    const adbArgs = ['reverse', `tcp:${packagerPort}`, `tcp:${packagerPort}`];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -86,7 +96,7 @@ function buildAndRun(args) {
     : './gradlew';
 
   const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+      `${args.appFolder}/src/main/AndroidManifest.xml`,
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
@@ -135,7 +145,7 @@ function buildApk(gradlew) {
 
 function tryInstallAppOnDevice(args, device) {
   try {
-    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const pathToApk = `${args.appFolder}/build/outputs/apk/${args.appFolder}-debug.apk`;
     const adbPath = getAdbPath();
     const adbArgs = ['-s', device, 'install', pathToApk];
     console.log(chalk.bold(
@@ -167,7 +177,7 @@ function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPat
 }
 
 function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
-  tryRunAdbReverse(selectedDevice);
+  tryRunAdbReverse(args.port, selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
   tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
@@ -216,7 +226,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     const devices = adb.getDevices();
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-        tryRunAdbReverse(device);
+        tryRunAdbReverse(args.port, device);
         tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
@@ -247,9 +257,9 @@ function startServerInNewWindow() {
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
-  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
-  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
-  const procConfig = {cwd: packagerDir};
+  const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
+  const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
+  const procConfig = {cwd: scriptsDir};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
@@ -289,6 +299,10 @@ module.exports = {
   }, {
     command: '--variant [string]',
   }, {
+    command: '--appFolder [string]',
+    description: 'Specify a different application folder name for the android source.',
+    default: 'app',
+  }, {
     command: '--appIdSuffix [string]',
     description: 'Specify an applicationIdSuffix to launch after build.',
     default: '',
@@ -303,5 +317,9 @@ module.exports = {
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
+  }, {
+    command: '--port [number]',
+    default: 8081,
+    parse: (val: string) => Number(val),
   }],
 };

@@ -19,7 +19,7 @@ import android.view.Gravity;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.glyphwarmer.GlyphWarmerImpl;
@@ -57,6 +57,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private float mSpacingAdd = 0.0f;
   private int mNumberOfLines = Integer.MAX_VALUE;
   private int mAlignment = Gravity.NO_GRAVITY;
+  private boolean mIncludeFontPadding = true;
 
   public RCTText() {
     setMeasureFunction(this);
@@ -75,7 +76,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   @Override
   public long measure(
-      YogaNodeAPI node,
+      YogaNode node,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -94,7 +95,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         (int) Math.ceil(width),
         widthMode,
         TextUtils.TruncateAt.END,
-        true,
+        mIncludeFontPadding,
         mNumberOfLines,
         mNumberOfLines == 1,
         text,
@@ -158,7 +159,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
           (int) Math.ceil(right - left),
           YogaMeasureMode.EXACTLY,
           TextUtils.TruncateAt.END,
-          true,
+          mIncludeFontPadding,
           mNumberOfLines,
           mNumberOfLines == 1,
           mText,
@@ -221,6 +222,11 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines;
     notifyChanged(true);
+  }
+
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
+  public void setIncludeFontPadding(boolean includepad) {
+    mIncludeFontPadding = includepad;
   }
 
   @Override

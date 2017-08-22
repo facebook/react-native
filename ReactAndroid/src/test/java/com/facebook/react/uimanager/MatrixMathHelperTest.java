@@ -36,6 +36,20 @@ public class MatrixMathHelperTest {
     assertThat(ctx.rotationDegrees).containsSequence(rotX, rotY, rotZ);
   }
 
+  private void verifyRotatedMatrix(double degreesX, double degreesY, double degreesZ, double rotX, double rotY, double rotZ) {
+    MatrixMathHelper.MatrixDecompositionContext ctx =
+      new MatrixMathHelper.MatrixDecompositionContext();
+    double[] matrixX = createRotateX(degreesToRadians(degreesX));
+    double[] matrixY = createRotateY(degreesToRadians(degreesY));
+    double[] matrixZ = createRotateZ(degreesToRadians(degreesZ));
+    double[] matrix = MatrixMathHelper.createIdentityMatrix();
+    MatrixMathHelper.multiplyInto(matrix, matrix, matrixX);
+    MatrixMathHelper.multiplyInto(matrix, matrix, matrixY);
+    MatrixMathHelper.multiplyInto(matrix, matrix, matrixZ);
+    MatrixMathHelper.decomposeMatrix(matrix, ctx);
+    assertThat(ctx.rotationDegrees).containsSequence(rotX, rotY, rotZ);
+  }
+
   @Test
   public void testDecomposing4x4MatrixToProduceAccurateZaxisAngles() {
 
@@ -82,17 +96,17 @@ public class MatrixMathHelperTest {
 
   @Test
   public void testDecomposing4x4MatrixToProduceAccurateYaxisAngles() {
-    double[] angles = new double[]{30, 45, 60, 75, 90, 100, 110, 120, 133, 167};
+    double[] angles = new double[]{30, 45, 60, 75, 90};
     for (double angle : angles) {
       verifyYRotatedMatrix(angle, 0d, angle, 0d);
       verifyYRotatedMatrix(-angle, 0d, -angle, 0d);
     }
 
-    // all values are between 0 and 180;
+    // all values are between -90 and 90;
     // change of sign and direction in the third and fourth quadrant
-    verifyYRotatedMatrix(222, 0d, -138d, 0d);
+    verifyYRotatedMatrix(222, -180d, -42d, -180d);
 
-    verifyYRotatedMatrix(270, 0d, -90d, 0d);
+    verifyYRotatedMatrix(270, -180d, -90d, -180d);
 
     verifyYRotatedMatrix(360, 0d, 0d, 0d);
   }
@@ -112,6 +126,13 @@ public class MatrixMathHelperTest {
     verifyXRotatedMatrix(270, -90d, 0d, 0d);
 
     verifyXRotatedMatrix(360, 0d, 0d, 0d);
+  }
+
+  @Test
+  public void testDecomposingComplex4x4MatrixToProduceAccurateAngles() {
+    verifyRotatedMatrix(10, -80, 0, 10, -80, 0);
+    // x and y will filp
+    verifyRotatedMatrix(10, -95, 0, -170, -85, -180);
   }
 
   private static double degreesToRadians(double degrees) {

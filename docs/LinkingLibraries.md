@@ -24,7 +24,7 @@ to `require` it. Other libraries also rely on some native code, in that case
 you'll have to add these files to your app, otherwise the app will throw an
 error as soon as you try to use the library._
 
-## Here the few steps to link your libraries that contain native code
+## Here are the few steps to link your libraries that contain native code
 
 ### Automatic linking
 
@@ -45,7 +45,7 @@ Link your native dependencies:
 $ react-native link
 ```
 
-Done! All libraries with a native dependencies should be successfully linked to your iOS/Android project.
+Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
 
 ### Manual linking
 

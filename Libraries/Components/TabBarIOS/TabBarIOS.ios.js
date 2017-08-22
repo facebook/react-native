@@ -13,23 +13,22 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var TabBarItemIOS = require('TabBarItemIOS');
 const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-class TabBarIOS extends React.Component {
-  props: {
-    style?: $FlowFixMe,
-    unselectedTintColor?: $FlowFixMe,
-    tintColor?: $FlowFixMe,
-    unselectedItemTintColor?: $FlowFixMe,
-    barTintColor?: $FlowFixMe,
-    translucent?: boolean,
-    itemPositioning?: 'fill' | 'center' | 'auto',
-  };
-
+class TabBarIOS extends React.Component<{
+  style?: $FlowFixMe,
+  unselectedTintColor?: $FlowFixMe,
+  tintColor?: $FlowFixMe,
+  unselectedItemTintColor?: $FlowFixMe,
+  barTintColor?: $FlowFixMe,
+  translucent?: boolean,
+  itemPositioning?: 'fill' | 'center' | 'auto',
+}> {
   static Item = TabBarItemIOS;
 
   // $FlowFixMe(>=0.41.0)
@@ -55,7 +54,7 @@ class TabBarIOS extends React.Component {
     /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
-    translucent: React.PropTypes.bool,
+    translucent: PropTypes.bool,
     /**
      * Specifies tab bar item positioning. Available values are:
      * - fill - distributes items across the entire width of the tab bar
@@ -65,7 +64,7 @@ class TabBarIOS extends React.Component {
      * this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
      * it defaults to center.
      */
-    itemPositioning: React.PropTypes.oneOf(['fill', 'center', 'auto']),
+    itemPositioning: PropTypes.oneOf(['fill', 'center', 'auto']),
   };
 
   render() {
