@@ -156,7 +156,7 @@ static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
-static YGNode gYGNodeDefaults = {
+static const YGNode gYGNodeDefaults = {
     .parent = NULL,
     .children = NULL,
     .hasNewLayout = true,
