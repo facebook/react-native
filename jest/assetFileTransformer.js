@@ -8,12 +8,18 @@
  */
 'use strict';
 
+/* eslint-env node */
+
 const path = require('path');
+const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 
 module.exports = {
   // Mocks asset requires to return the filename. Makes it possible to test that
-  // the correct images are loaded for components. So require('img1.png')
-  // becomes 'img1.png' in the Jest snapshot.
+  // the correct images are loaded for components. Essentially
+  // require('img1.png') becomes `Object { "uri": 'path/to/img1.png' }` in the
+  // Jest snapshot.
   process: (_, filename) =>
-    `module.exports = ${JSON.stringify(path.basename(filename))};`
+    `module.exports = {uri: ${JSON.stringify(path.relative('.', filename))}};`,
+
+  getCacheKey: createCacheKeyFunction([__filename]),
 };
