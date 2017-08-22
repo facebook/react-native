@@ -50,7 +50,7 @@ function runIOS(argv, config, args) {
     if (selectedDevice){
       return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
     } else {
-      if (devices){
+      if (devices && devices.length > 0){
         console.log('Could not find device with the name: "' + args.device + '".');
         console.log('Choose one of the following:');
         printFoundDevices(devices);
@@ -70,7 +70,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   if (selectedDevice){
     return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
   } else {
-    if (devices){
+    if (devices && devices.length > 0){
       console.log('Could not find device with the udid: "' + args.udid + '".');
       console.log('Choose one of the following:');
       printFoundDevices(devices);
