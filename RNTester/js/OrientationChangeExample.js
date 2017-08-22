@@ -21,7 +21,7 @@ const {
 
 import type EmitterSubscription from 'EmitterSubscription';
 
-class OrientationChangeExample extends React.Component {
+class OrientationChangeExample extends React.Component<{}, $FlowFixMeState> {
   _orientationSubscription: EmitterSubscription;
 
   state = {

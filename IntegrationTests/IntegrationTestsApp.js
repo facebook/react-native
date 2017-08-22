@@ -33,8 +33,10 @@ var TESTS = [
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./WebViewTest'),
   require('./SyncMethodTest'),
   require('./WebSocketTest'),
+  require('./AccessibilityManagerTest'),
 ];
 
 TESTS.forEach(
@@ -46,7 +48,7 @@ require('LoggingTestModule');
 
 type Test = any;
 
-class IntegrationTestsApp extends React.Component {
+class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
   state = {
     test: (null: ?Test),
   };
@@ -55,6 +57,10 @@ class IntegrationTestsApp extends React.Component {
     if (this.state.test) {
       return (
         <ScrollView>
+          {/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+            * an error when upgrading Flow's support for React. Common errors
+            * found when upgrading Flow's React support are documented at
+            * https://fburl.com/eq7bs81w */}
           <this.state.test />
         </ScrollView>
       );

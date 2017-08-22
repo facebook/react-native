@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const path = require('path');
 const makeSettingsPatch = require('../../android/patches/makeSettingsPatch');
 

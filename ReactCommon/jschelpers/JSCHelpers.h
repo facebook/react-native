@@ -6,21 +6,20 @@
 #include <functional>
 #include <stdexcept>
 
-#include <folly/String.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
-class JSException : public std::exception {
+class RN_EXPORT JSException : public std::exception {
 public:
   explicit JSException(const char* msg)
     : msg_(msg) {}
-
-  template <typename... Args>
-  explicit JSException(const char* fmt, Args... args)
-    : msg_(folly::stringPrintf(fmt, args...)) {}
 
   explicit JSException(JSContextRef ctx, JSValueRef exn, const char* msg) {
     buildMessage(ctx, exn, nullptr, msg);
@@ -28,11 +27,6 @@ public:
 
   explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL) {
     buildMessage(ctx, exn, sourceURL, nullptr);
-  }
-
-  template <typename... Args>
-  explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* fmt, Args... args) {
-    buildMessage(ctx, exn, sourceURL, folly::stringPrintf(fmt, args...).c_str());
   }
 
   const std::string& getStack() const {
@@ -50,6 +44,17 @@ private:
   void buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg);
 };
 
+namespace ExceptionHandling {
+  struct ExtractedEror {
+    std::string message;
+    // Stacktrace formatted like JS stack
+    // method@filename[:line[:column]]
+    std::string stack;
+  };
+  using PlatformErrorExtractor = std::function<ExtractedEror(const std::exception &ex, const char *context)>;
+  extern PlatformErrorExtractor platformErrorExtractor;
+}
+
 using JSFunction = std::function<JSValueRef(JSContextRef, JSObjectRef, size_t, const JSValueRef[])>;
 
 JSObjectRef makeFunction(
@@ -57,7 +62,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSFunction function);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSFunction function);
@@ -67,7 +72,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback);
@@ -90,6 +95,23 @@ JSValueRef evaluateSourceCode(
     JSSourceCodeRef source,
     JSStringRef sourceURL);
 #endif
+
+/**
+ * A lock for protecting accesses to the JSGlobalContext
+ * This will be a no-op for most compilations, where #if WITH_FBJSCEXTENSIONS is false,
+ * but avoids deadlocks in execution environments with advanced locking requirements,
+ * particularly with uses of the pthread mutex lock
+**/
+class JSContextLock {
+public:
+  JSContextLock(JSGlobalContextRef ctx) noexcept;
+  ~JSContextLock() noexcept;
+private:
+#if WITH_FBJSCEXTENSIONS
+  JSGlobalContextRef ctx_;
+  pthread_mutex_t globalLock_;
+#endif
+};
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);

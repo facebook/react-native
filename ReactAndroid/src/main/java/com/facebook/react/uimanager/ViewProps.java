@@ -92,6 +92,7 @@ public class ViewProps {
   public static final String TEXT_BREAK_STRATEGY = "textBreakStrategy";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+  public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";

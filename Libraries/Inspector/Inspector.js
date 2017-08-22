@@ -26,7 +26,7 @@ const UIManager = require('UIManager');
 const View = require('View');
 
 const emptyObject = require('fbjs/lib/emptyObject');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
@@ -44,24 +44,20 @@ function findRenderer(): ReactRenderer {
   return renderers[keys[0]];
 }
 
-class Inspector extends React.Component {
-  props: {
-    inspectedViewTag: ?number,
-    onRequestRerenderApp: (callback: (tag: ?number) => void) => void
-  };
-
-  state: {
-    devtoolsAgent: ?Object,
-    hierarchy: any,
-    panelPos: string,
-    inspecting: bool,
-    selection: ?number,
-    perfing: bool,
-    inspected: any,
-    inspectedViewTag: any,
-    networking: bool,
-  };
-
+class Inspector extends React.Component<{
+  inspectedViewTag: ?number,
+  onRequestRerenderApp: (callback: (tag: ?number) => void) => void
+}, {
+  devtoolsAgent: ?Object,
+  hierarchy: any,
+  panelPos: string,
+  inspecting: bool,
+  selection: ?number,
+  perfing: bool,
+  inspected: any,
+  inspectedViewTag: any,
+  networking: bool,
+}> {
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {
@@ -169,14 +165,15 @@ class Inspector extends React.Component {
     // instance that contains it (like View)
     const {
       hierarchy,
-      instance,
       props,
       selection,
       source,
     } = renderer.getInspectorDataForViewTag(touchedViewTag);
 
     if (this.state.devtoolsAgent) {
-      this.state.devtoolsAgent.selectFromReactInstance(instance, true);
+      // Skip host leafs
+      const offsetFromLeaf = hierarchy.length - 1 - selection;
+      this.state.devtoolsAgent.selectFromDOMNode(touchedViewTag, true, offsetFromLeaf);
     }
 
     this.setState({

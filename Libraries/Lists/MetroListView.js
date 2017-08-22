@@ -8,6 +8,7 @@
  *
  * @providesModule MetroListView
  * @flow
+ * @format
  */
 'use strict';
 
@@ -21,10 +22,13 @@ const invariant = require('fbjs/lib/invariant');
 type Item = any;
 
 type NormalProps = {
-  FooterComponent?: ReactClass<*>,
-  renderItem: (info: Object) => ?React.Element<*>,
-  renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
-  SeparatorComponent?: ?ReactClass<*>, // not supported yet
+  FooterComponent?: React.ComponentType<*>,
+  renderItem: (info: Object) => ?React.Element<any>,
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.53 was deployed. To see the error delete this comment
+   * and run Flow. */
+  renderSectionHeader?: ({section: Object}) => ?React.Element<any>,
+  SeparatorComponent?: ?React.ComponentType<*>, // not supported yet
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
@@ -57,15 +61,22 @@ type Props = NormalProps & DefaultProps;
  * some section support tacked on. It is recommended to just use FlatList directly, this component
  * is mostly for debugging and performance comparison.
  */
-class MetroListView extends React.Component {
-  props: Props;
+class MetroListView extends React.Component<Props, $FlowFixMeState> {
   scrollToEnd(params?: ?{animated?: ?boolean}) {
     throw new Error('scrollToEnd not supported in legacy ListView.');
   }
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean,
+    index: number,
+    viewPosition?: number,
+  }) {
     throw new Error('scrollToIndex not supported in legacy ListView.');
   }
-  scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
+  scrollToItem(params: {
+    animated?: ?boolean,
+    item: Item,
+    viewPosition?: number,
+  }) {
     throw new Error('scrollToItem not supported in legacy ListView.');
   }
   scrollToLocation(params: {
@@ -80,20 +91,31 @@ class MetroListView extends React.Component {
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._listRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
+      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
   getListRef() {
     return this._listRef;
+  }
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
   }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || String(index),
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.53 was deployed. To see the error
+           * delete this comment and run Flow. */
           <ScrollView
             {...props}
             refreshControl={
+              /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+               * suppresses an error found when Flow v0.53 was deployed. To see
+               * the error delete this comment and run Flow. */
               <RefreshControl
                 refreshing={props.refreshing}
                 onRefresh={props.onRefresh}
@@ -102,26 +124,30 @@ class MetroListView extends React.Component {
           />
         );
       } else {
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.53 was deployed. To see the error delete
+         * this comment and run Flow. */
         return <ScrollView {...props} />;
       }
     },
   };
-  state = this._computeState(
-    this.props,
-    {
-      ds: new ListView.DataSource({
-        rowHasChanged: (itemA, itemB) => true,
-        sectionHeaderHasChanged: () => true,
-        getSectionHeaderData: (dataBlob, sectionID) => this.state.sectionHeaderData[sectionID],
-      }),
-      sectionHeaderData: {},
-    },
-  );
+  state = this._computeState(this.props, {
+    ds: new ListView.DataSource({
+      rowHasChanged: (itemA, itemB) => true,
+      sectionHeaderHasChanged: () => true,
+      getSectionHeaderData: (dataBlob, sectionID) =>
+        this.state.sectionHeaderData[sectionID],
+    }),
+    sectionHeaderData: {},
+  });
   componentWillReceiveProps(newProps: Props) {
-    this.setState((state) => this._computeState(newProps, state));
+    this.setState(state => this._computeState(newProps, state));
   }
   render() {
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       <ListView
         {...this.props}
         dataSource={this.state.ds}
@@ -134,7 +160,13 @@ class MetroListView extends React.Component {
     );
   }
   _listRef: ListView;
-  _captureRef = (ref) => { this._listRef = ref; };
+  _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error when upgrading Flow's support for React. Common errors found when
+     * upgrading Flow's React support are documented at
+     * https://fburl.com/eq7bs81w */
+    this._listRef = ref;
+  };
   _computeState(props: Props, state) {
     const sectionHeaderData = {};
     if (props.sections) {
@@ -157,16 +189,28 @@ class MetroListView extends React.Component {
       };
     }
   }
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+   * when upgrading Flow's support for React. Common errors found when
+   * upgrading Flow's React support are documented at
+   * https://fburl.com/eq7bs81w */
   _renderFooter = () => <this.props.FooterComponent key="$footer" />;
   _renderRow = (item, sectionID, rowID, highlightRow) => {
     return this.props.renderItem({item, index: rowID});
   };
   _renderSectionHeader = (section, sectionID) => {
     const {renderSectionHeader} = this.props;
-    invariant(renderSectionHeader, 'Must provide renderSectionHeader with sections prop');
+    invariant(
+      renderSectionHeader,
+      'Must provide renderSectionHeader with sections prop',
+    );
     return renderSectionHeader({section});
-  }
-  _renderSeparator = (sID, rID) => <this.props.SeparatorComponent key={sID + rID} />;
+  };
+  _renderSeparator = (sID, rID) =>
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error when upgrading Flow's support for React. Common errors found when
+     * upgrading Flow's React support are documented at
+     * https://fburl.com/eq7bs81w */
+    <this.props.SeparatorComponent key={sID + rID} />;
 }
 
 module.exports = MetroListView;

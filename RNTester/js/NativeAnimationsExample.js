@@ -24,7 +24,7 @@ const {
 
 var AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
-class Tester extends React.Component {
+class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     native: new Animated.Value(0),
     js: new Animated.Value(0),
@@ -74,7 +74,7 @@ class Tester extends React.Component {
   }
 }
 
-class ValueListenerExample extends React.Component {
+class ValueListenerExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     anim: new Animated.Value(0),
     progress: 0,
@@ -123,7 +123,7 @@ class ValueListenerExample extends React.Component {
   }
 }
 
-class LoopExample extends React.Component {
+class LoopExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     value: new Animated.Value(0),
   };
@@ -158,9 +158,8 @@ class LoopExample extends React.Component {
 }
 
 const RNTesterSettingSwitchRow = require('RNTesterSettingSwitchRow');
-class InternalSettings extends React.Component {
+class InternalSettings extends React.Component<{}, {busyTime: number | string, filteredStall: number}> {
   _stallInterval: ?number;
-  state: {busyTime: number | string, filteredStall: number};
   render() {
     return (
       <View>
@@ -208,7 +207,7 @@ class InternalSettings extends React.Component {
   }
 }
 
-class EventExample extends React.Component {
+class EventExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     scrollX: new Animated.Value(0),
   };

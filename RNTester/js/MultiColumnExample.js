@@ -36,7 +36,7 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-class MultiColumnExample extends React.PureComponent {
+class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMeState> {
   static title = '<FlatList> - MultiColumn';
   static description = 'Performant, scrollable grid of data.';
 

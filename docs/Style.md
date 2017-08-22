@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 });
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('LotsOfStyles', () => LotsOfStyles);
+AppRegistry.registerComponent('AwesomeProject', () => LotsOfStyles);
 ```
 
 One common pattern is to make your component accept a `style` prop which in

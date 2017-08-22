@@ -9,6 +9,9 @@
 
 package com.facebook.react.uimanager;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
+
 import android.content.res.Resources;
 import android.util.Log;
 import android.util.SparseArray;
@@ -36,9 +39,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -487,7 +487,7 @@ public class NativeViewHierarchyManager {
   }
 
   /**
-   * See {@link UIManagerModule#addMeasuredRootView}.
+   * See {@link UIManagerModule#addRootView}.
    */
   public synchronized void addRootView(
       int tag,
@@ -504,7 +504,7 @@ public class NativeViewHierarchyManager {
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses " +
           "the id field to track react tags and will overwrite this field. If that is fine, " +
-          "explicitly overwrite the id field to View.NO_ID before calling addMeasuredRootView.");
+          "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
     }
 
     mTagsToViews.put(tag, view);

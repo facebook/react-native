@@ -9,15 +9,19 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationPropertyUpdater;
@@ -35,7 +39,9 @@ import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,15 +54,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link UIManagerModule}.
@@ -151,7 +148,7 @@ public class UIManagerModuleTest {
 
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int viewTag = rootTag + 1;
     int subViewTag = viewTag + 1;
 
@@ -609,7 +606,7 @@ public class UIManagerModuleTest {
     UIManagerModule uiManager = getUIManagerModule();
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
 
     final int containerTag = rootTag + 1;
     final int containerSiblingTag = containerTag + 1;
@@ -662,7 +659,7 @@ public class UIManagerModuleTest {
   private ViewGroup createSimpleTextHierarchy(UIManagerModule uiManager, String text) {
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;
 
@@ -701,7 +698,7 @@ public class UIManagerModuleTest {
 
   private TestMoveDeleteHierarchy createMoveDeleteHierarchy(UIManagerModule uiManager) {
     ReactRootView rootView = new ReactRootView(mReactContext);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
 
     TestMoveDeleteHierarchy hierarchy = new TestMoveDeleteHierarchy(rootView, rootTag);
 
@@ -818,11 +815,8 @@ public class UIManagerModuleTest {
         new ReactViewManager(),
         new ReactTextViewManager(),
         new ReactRawTextManager());
-    UIManagerModule uiManagerModule =  new UIManagerModule(
-        mReactContext,
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    UIManagerModule uiManagerModule =
+        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), false, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

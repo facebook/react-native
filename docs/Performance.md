@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: gesture-responder-system
-previous: direct-manipulation
+previous: debugging
 ---
 
 A compelling reason for using React Native instead of WebView-based tools is to achieve 60 frames per second and a native look and feel to your apps.
@@ -91,6 +91,10 @@ Use the new [`FlatList`](docs/flatlist.html) or [`SectionList`](docs/sectionlist
 Besides simplifying the API, the new list components also have significant performance enhancements,
 the main one being nearly constant memory usage for any number of rows.
 
+If your [`FlatList`](docs/flatlist.html) is rendering slow, be sure that you've implemented
+[`getItemLayout`](https://facebook.github.io/react-native/docs/flatlist.html#getitemlayout) to
+optimize rendering speed by skipping measurement of the rendered items.
+
 ### JS FPS plunges when re-rendering a view that hardly changes
 
 If you are using a ListView, you must provide a `rowHasChanged` function that can reduce a lot of work by quickly determining whether or not a row needs to be re-rendered. If you are using immutable data structures, this would be as simple as a reference equality check.
@@ -101,7 +105,7 @@ Similarly, you can implement `shouldComponentUpdate` and indicate the exact cond
 
 "Slow Navigator transitions" is the most common manifestation of this, but there are other times this can happen. Using InteractionManager can be a good approach, but if the user experience cost is too high to delay work during an animation, then you might want to consider LayoutAnimation.
 
-The Animated api currently calculates each keyframe on-demand on the JavaScript thread, while LayoutAnimation leverages Core Animation and is unaffected by JS thread and main thread frame drops.
+The Animated API currently calculates each keyframe on-demand on the JavaScript thread unless you [set `useNativeDriver: true`](https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html#how-do-i-use-this-in-my-app), while LayoutAnimation leverages Core Animation and is unaffected by JS thread and main thread frame drops.
 
 One case where I have used this is for animating in a modal (sliding down from top and fading in a translucent overlay) while initializing and perhaps receiving responses for several network requests, rendering the contents of the modal, and updating the view where the modal was opened from. See the Animations guide for more information about how to use LayoutAnimation.
 

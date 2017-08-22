@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var React = require('react');
 var PropTypes = require('prop-types');
+var React = require('react');
 var ReactNative = require('react-native');
 var {
   ScrollView,
@@ -22,12 +22,10 @@ var {
 
 var RNTesterTitle = require('./RNTesterTitle');
 
-class RNTesterPage extends React.Component {
-  props: {
-    noScroll?: boolean,
-    noSpacer?: boolean,
-  };
-
+class RNTesterPage extends React.Component<{
+  noScroll?: boolean,
+  noSpacer?: boolean,
+}> {
   static propTypes = {
     noScroll: PropTypes.bool,
     noSpacer: PropTypes.bool,
@@ -37,9 +35,9 @@ class RNTesterPage extends React.Component {
     var ContentWrapper;
     var wrapperProps = {};
     if (this.props.noScroll) {
-      ContentWrapper = (View: ReactClass<any>);
+      ContentWrapper = ((View: any): React.ComponentType<any>);
     } else {
-      ContentWrapper = (ScrollView: ReactClass<any>);
+      ContentWrapper = (ScrollView: React.ComponentType<any>);
       // $FlowFixMe found when converting React.createClass to ES6
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
       wrapperProps.keyboardShouldPersistTaps = 'handled';

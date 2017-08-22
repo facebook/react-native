@@ -46,7 +46,7 @@ function requireNativeComponent(
   viewName: string,
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
-): ReactClass<any> | string {
+): React$ComponentType<any> | string {
   const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
@@ -70,13 +70,19 @@ function requireNativeComponent(
     viewConfig.propTypes = null;
   }
 
-  // The ViewConfig doesn't contain any props inherited from the view manager's
-  // superclass, so we manually merge in the RCTView ones. Other inheritance
-  // patterns are currenty not supported.
-  const nativeProps = {
-    ...UIManager.RCTView.NativeProps,
-    ...viewConfig.NativeProps,
-  };
+  let baseModuleName = viewConfig.baseModuleName;
+  let nativeProps = { ...viewConfig.NativeProps };
+  while (baseModuleName) {
+    const baseModule = UIManager[baseModuleName];
+    if (!baseModule) {
+      warning(false, 'Base module "%s" does not exist', baseModuleName);
+      baseModuleName = null;
+    } else {
+      nativeProps = { ...nativeProps, ...baseModule.NativeProps };
+      baseModuleName = baseModule.baseModuleName;
+    }
+  }
+
   for (const key in nativeProps) {
     let useAttribute = false;
     const attribute = {};

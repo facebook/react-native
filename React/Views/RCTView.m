@@ -211,6 +211,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return CGRectContainsPoint(hitFrame, point);
 }
 
+- (UIView *)reactAccessibilityElement
+{
+  return self;
+}
+
+- (BOOL)isAccessibilityElement
+{
+  if (self.reactAccessibilityElement == self) {
+    return [super isAccessibilityElement];
+  }
+
+  return NO;
+}
+
 - (BOOL)accessibilityActivate
 {
   if (_onAccessibilityTap) {

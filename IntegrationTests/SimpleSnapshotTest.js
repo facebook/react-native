@@ -21,7 +21,7 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-class SimpleSnapshotTest extends React.Component {
+class SimpleSnapshotTest extends React.Component<{}> {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');

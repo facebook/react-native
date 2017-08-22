@@ -12,12 +12,12 @@
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
 
-namespace facebook {
-namespace react {
-
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
+
+namespace facebook {
+namespace react {
 
 class Value;
 
@@ -307,15 +307,17 @@ public:
     return getType() == kJSTypeObject;
   }
 
-  Object asObject() const;
+  RN_EXPORT Object asObject() const;
 
   bool isString() const {
     return getType() == kJSTypeString;
   }
 
-  String toString() const;
+  RN_EXPORT String toString() const;
 
-  static Value makeError(JSContextRef ctx, const char *error);
+  // Create an error, optionally adding an additional number of lines to the stack.
+  // Stack must be empty or newline terminated.
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error, const char *stack = nullptr);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
@@ -330,7 +332,7 @@ public:
   }
 
   RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
-  RN_EXPORT static Value fromJSON(JSContextRef ctx, const String& json);
+  RN_EXPORT static Value fromJSON(const String& json);
   RN_EXPORT static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   RN_EXPORT JSContextRef context() const;
 

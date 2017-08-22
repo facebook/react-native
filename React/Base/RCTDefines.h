@@ -16,8 +16,12 @@
  */
 #if defined(__cplusplus)
 #define RCT_EXTERN extern "C" __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN extern "C" {
+#define RCT_EXTERN_C_END }
 #else
 #define RCT_EXTERN extern __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN
+#define RCT_EXTERN_C_END
 #endif
 
 /**

@@ -13,6 +13,6 @@
 
 @interface RCTSettingsManager : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults;
+- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults NS_DESIGNATED_INITIALIZER;
 
 @end

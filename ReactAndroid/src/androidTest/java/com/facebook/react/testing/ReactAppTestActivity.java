@@ -99,6 +99,11 @@ public class ReactAppTestActivity extends FragmentActivity implements
 
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
+      mReactInstanceManager = null;
+    }
+    if (mReactRootView != null) {
+      mReactRootView.unmountReactApplication();
+      mReactRootView = null;
     }
 
     mScreenshotingFrameLayout.clean();
@@ -128,6 +133,9 @@ public class ReactAppTestActivity extends FragmentActivity implements
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
       mReactInstanceManager = null;
+    }
+    if (mReactRootView != null) {
+      mReactRootView.unmountReactApplication();
     }
     mReactRootView = new ReactRootView(this);
     mScreenshotingFrameLayout.removeAllViews();

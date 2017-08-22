@@ -100,4 +100,17 @@ public class ViewGroupDrawingOrderHelper {
     }
     return mDrawingOrderIndices[index];
   }
+
+  /**
+   * Recheck all children for z-index changes.
+   */
+  public void update() {
+    mNumberOfChildrenWithZIndex = 0;
+    for (int i = 0; i < mViewGroup.getChildCount(); i++) {
+      if (ViewGroupManager.getViewZIndex(mViewGroup.getChildAt(i)) != null) {
+        mNumberOfChildrenWithZIndex++;
+      }
+    }
+    mDrawingOrderIndices = null;
+  }
 }

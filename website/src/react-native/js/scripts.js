@@ -202,6 +202,10 @@
   }
 
   function guessPlatformAndOS() {
+    if (!document.querySelector('block')) {
+      return;
+    }
+
     // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
     // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
     var foundHash = false;
@@ -222,9 +226,6 @@
           var parent = hashLinks[i].parentElement;
           while (parent) {
             if (parent.tagName === 'BLOCK') {
-              var gettingStartedGuideType = null;
-              var devOS = null;
-              var targetPlatform = null;
               // Could be more than one target os and dev platform, but just choose some sort of order
               // of priority here.
 

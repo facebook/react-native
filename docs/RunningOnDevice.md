@@ -80,6 +80,8 @@ previous: integration-with-existing-apps
 
 It's always a good idea to test your app on an actual device before releasing it to your users. This document will guide you through the necessary steps to run your React Native app on a device and to get it ready for production.
 
+If you used Create React Native App to set up your project, you can preview your app on a device by scanning the QR code with the Expo app. In order to build and run your app on a device, you will need to eject and install the native code dependencies from the [Getting Started guide](docs/getting-started.html).
+
 <div class="toggler">
 
   <ul role="tablist" >
@@ -123,7 +125,7 @@ If this is your first time running an app on your iOS device, you may need to re
 
 ### 2. Configure code signing
 
-Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
+Register for an [Apple developer account](https://developer.apple.com/) if you don't have one yet.
 
 Select your project in the Xcode Project Navigator, then select your main target (it should share the same name as your project). Look for the "General" tab. Go to "Signing" and make sure your Apple developer account or team is selected under the Team dropdown.
 
@@ -235,7 +237,43 @@ You can also iterate quickly on a device using the development server. You only 
 
 ![](img/DeveloperMenu.png)
 
+### Troubleshooting
+
 > If you have any issues, ensure that your Mac and device are on the same network and can reach each other. Many open wireless networks with captive portals are configured to prevent devices from reaching other devices on the network. You may use your device's Personal Hotspot feature in this case.
+
+When trying to connect to the development server you might get a [red screen with an error](docs/debugging.html#in-app-errors-and-warnings) saying:
+> Connection to [http://localhost:8081/debugger-proxy?role=client]() timed out. Are you running node proxy? If you are running on the device, check if you have the right IP address in `RCTWebSocketExecutor.m`.
+
+To solve this issue check the following points.
+
+#### 1. Wi-Fi network.
+
+Make sure your laptop and your phone are on the **same** Wi-Fi network.
+
+#### 2. IP address
+
+Make sure that the build script detected the IP address of your machine correctly (e.g. 10.0.1.123). 
+
+![](img/XcodeBuildIP.png)
+
+Open the **Report navigator** tab, select the last **Build** and search for `xip.io`. The IP address which gets embedded in the app should match your machines IP address plus the domain `.xip.io` (e.g. 10.0.1.123.xip.io)
+
+#### 3. Network/router configuration
+
+React Native uses the wildcard DNS service **xip.io** to address your device. Some routers have security features to prevent DNS Servers to resolve anything in the local IP range.
+
+Now check if you are able to resolve the xip.io address, by running `nslookup`.
+
+```bash
+$ nslookup 10.0.1.123.xip.io
+```
+
+If it doesn't resolve your local IP address either the **xip.io** service is down or more likely your router prevents it. 
+
+To still use xip.io behind your rooter:
+
+- configure your phone to use Google DNS (8.8.8.8)
+- disable the appropriate security feature in your router
 
 <block class="mac windows linux android" />
 

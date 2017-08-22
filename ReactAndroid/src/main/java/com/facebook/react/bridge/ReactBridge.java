@@ -12,16 +12,13 @@ package com.facebook.react.bridge;
 import com.facebook.soloader.SoLoader;
 
 public class ReactBridge {
-
-  private static final String REACT_NATIVE_LIB = "reactnativejni";
-  private static final String XREACT_NATIVE_LIB = "reactnativejnifb";
-
-  static {
-    staticInit();
-  }
-
+  private static boolean sDidInit = false;
   public static void staticInit() {
-    SoLoader.loadLibrary(REACT_NATIVE_LIB);
-    SoLoader.loadLibrary(XREACT_NATIVE_LIB);
+    // No locking required here, worst case we'll call into SoLoader twice
+    // which will do its own locking internally
+    if (!sDidInit) {
+      SoLoader.loadLibrary("reactnativejni");
+      sDidInit = true;
+    }
   }
 }

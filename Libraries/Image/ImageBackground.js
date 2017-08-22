@@ -14,7 +14,12 @@
 
 const Image = require('Image');
 const React = require('React');
+const StyleSheet = require('StyleSheet');
 const View = require('View');
+
+const ensureComponentIsNative = require('ensureComponentIsNative');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -40,20 +45,49 @@ const View = require('View');
  * AppRegistry.registerComponent('DisplayAnImageBackground', () => DisplayAnImageBackground);
  * ```
  */
-class ImageBackground extends React.Component {
+class ImageBackground extends React.Component<$FlowFixMeProps> {
+  setNativeProps(props: Object) {
+    // Work-around flow
+    const viewRef = this._viewRef;
+    if (viewRef) {
+      ensureComponentIsNative(viewRef);
+      viewRef.setNativeProps(props);
+    }
+  }
+
+  _viewRef: ?NativeMethodsMixinType = null;
+
+  _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error when upgrading Flow's support for React. Common errors found when
+     * upgrading Flow's React support are documented at
+     * https://fburl.com/eq7bs81w */
+    this._viewRef = ref;
+  };
+
   render() {
-    const {children, style, ...props} = this.props;
+    const {children, style, imageStyle, imageRef, ...props} = this.props;
+
     return (
-      <View style={style}>
+      <View style={style} ref={this._captureRef}>
         <Image
           {...props}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-          }}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              // Temporary Workaround:
+              // Current (imperfect yet) implementation of <Image> overwrites width and height styles
+              // (which is not quite correct), and these styles conflict with explicitly set styles
+              // of <ImageBackground> and with our internal layout model here.
+              // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
+              // This workaround should be removed after implementing proper support of
+              // intrinsic content size of the <Image>.
+              width: style.width,
+              height: style.height,
+            },
+            imageStyle,
+          ]}
+          ref={imageRef}
         />
         {children}
       </View>
