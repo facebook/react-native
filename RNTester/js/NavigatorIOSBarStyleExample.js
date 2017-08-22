@@ -30,7 +30,9 @@ var {
   View
 } = ReactNative;
 
-class EmptyPage extends React.Component {
+class EmptyPage extends React.Component<{
+  text: string,
+}> {
   render() {
     return (
       <View style={styles.emptyPage}>
@@ -42,7 +44,7 @@ class EmptyPage extends React.Component {
   }
 }
 
-class NavigatorIOSColors extends React.Component {
+class NavigatorIOSColors extends React.Component<{}> {
   static title = '<NavigatorIOS> - Custom Bar Style';
   static description = 'iOS navigation with custom nav bar colors';
 
