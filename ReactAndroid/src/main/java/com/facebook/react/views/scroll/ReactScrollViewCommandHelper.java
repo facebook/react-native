@@ -25,11 +25,13 @@ public class ReactScrollViewCommandHelper {
   public static final int COMMAND_SCROLL_TO = 1;
   public static final int COMMAND_SCROLL_TO_END = 2;
   public static final int COMMAND_FLASH_SCROLL_INDICATORS = 3;
+  public static final int COMMAND_SCROLL_BY = 4;
 
   public interface ScrollCommandHandler<T> {
     void scrollTo(T scrollView, ScrollToCommandData data);
     void scrollToEnd(T scrollView, ScrollToEndCommandData data);
     void flashScrollIndicators(T scrollView);
+    void scrollBy(T scrollView, ScrollByCommandData data);
   }
 
   public static class ScrollToCommandData {
@@ -53,6 +55,18 @@ public class ReactScrollViewCommandHelper {
     }
   }
 
+  public static class ScrollByCommandData {
+
+    public final int mDeltaX, mDeltaY;
+    public final boolean mAnimated;
+
+    ScrollByCommandData(int deltaX, int deltaY, boolean animated) {
+      mDeltaX = deltaX;
+      mDeltaY = deltaY;
+      mAnimated = animated;
+    }
+  }
+
   public static Map<String,Integer> getCommandsMap() {
     return MapBuilder.of(
         "scrollTo",
@@ -60,7 +74,9 @@ public class ReactScrollViewCommandHelper {
         "scrollToEnd",
         COMMAND_SCROLL_TO_END,
         "flashScrollIndicators",
-        COMMAND_FLASH_SCROLL_INDICATORS);
+        COMMAND_FLASH_SCROLL_INDICATORS,
+        "scrollBy",
+        COMMAND_SCROLL_BY);
   }
 
   public static <T> void receiveCommand(
@@ -88,6 +104,14 @@ public class ReactScrollViewCommandHelper {
         viewManager.flashScrollIndicators(scrollView);
         return;
 
+      case COMMAND_SCROLL_BY: {
+        int deltaX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
+        int deltaY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
+        boolean animated = args.getBoolean(2);
+
+        viewManager.scrollBy(scrollView, new ScrollByCommandData(deltaX, deltaY, animated));
+        return;
+      }
       default:
         throw new IllegalArgumentException(String.format(
             "Unsupported command %d received by %s.",

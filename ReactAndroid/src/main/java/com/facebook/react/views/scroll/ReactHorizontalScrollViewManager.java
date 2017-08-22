@@ -150,6 +150,19 @@ public class ReactHorizontalScrollViewManager
     }
   }
 
+  @Override
+  public void scrollBy(
+      ReactHorizontalScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollByCommandData data) {
+    int x = scrollView.getScrollX() + data.mDeltaX;
+    int y = scrollView.getScrollY() + data.mDeltaY;
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(x, y);
+    } else {
+      scrollView.scrollTo(x, y);
+    }
+  }
+
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
