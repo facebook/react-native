@@ -175,6 +175,23 @@ RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
    }];
 }
 
+RCT_EXPORT_METHOD(scrollBy:(nonnull NSNumber *)reactTag
+                  deltaX:(CGFloat)deltaX
+                  deltaY:(CGFloat)deltaY
+                  animated:(BOOL)animated)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+     UIView *view = viewRegistry[reactTag];
+     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+       [(id<RCTScrollableProtocol>)view scrollByOffset:(CGPoint){deltaX, deltaY} animated:animated];
+     } else {
+       RCTLogError(@"tried to scrollBy: on non-RCTScrollableProtocol view %@ "
+                   "with tag #%@", view, reactTag);
+     }
+   }];
+}
+
 RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   withRect:(CGRect)rect
                   animated:(BOOL)animated)

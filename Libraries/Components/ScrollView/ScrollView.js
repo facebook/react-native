@@ -531,6 +531,19 @@ const ScrollView = createReactClass({
   },
 
   /**
+   * Scrolls by a given offset, either immediately or with a smooth animation.
+   *
+   * Syntax:
+   *
+   * `scrollBy(options: {deltaX: number = 0; deltaY: number = 0; animated: boolean = true})`
+   */
+  scrollBy: function(options: { deltaX?: number, deltaY?: number, animated?: boolean } ) {
+    const data = {deltaX: options.deltaX || 0, deltaY: options.deltaY || 0, 
+      animated: options.animated !== false};
+    this.getScrollResponder().scrollResponderScrollBy(data);
+  },
+
+  /**
    * Deprecated, use `scrollTo` instead.
    */
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
