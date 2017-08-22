@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders assets based on basename 1`] = `
+exports[`renders assets based on relative path 1`] = `
 <View>
   <Image
     source={
