@@ -459,6 +459,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -471,6 +472,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -492,6 +494,8 @@ class SpringAnimation extends Animation {
   _toValue: any;
   _tension: number;
   _friction: number;
+  _delay: number;
+  _timeout: any;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -508,6 +512,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._delay = withDefault(config.delay, 0);
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this.__iterations = config.iterations !== undefined ? config.iterations : 1;
@@ -571,10 +576,20 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
+
+    var start = () => {
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
+      } else {
+        this.onUpdate();
+      }
+    };
+
+    //  If this._delay is more than 0, we start after the timeout.
+    if (this._delay) {
+      this._timeout = setTimeout(start, this._delay);
     } else {
-      this.onUpdate();
+      start();
     }
   }
 
@@ -685,6 +700,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
+    clearTimeout(this._timeout);
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
@@ -1106,6 +1122,11 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._parent = parent;
     this._config = config;
     this._interpolation = Interpolation.create(config);
+  }
+
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number | string {
@@ -1732,12 +1753,14 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  class AnimatedComponent extends React.Component {
+  class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
+
+    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
 
     constructor(props: Object) {
       super(props);
@@ -1793,7 +1816,8 @@ function createAnimatedComponent(Component: any): any {
       // need to re-render it. In this case, we have a fallback that uses
       // forceUpdate.
       var callback = () => {
-        if (this._component.setNativeProps) {
+        if (!AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY &&
+          this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
             this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
@@ -2477,6 +2501,9 @@ class AnimatedEvent {
           recMapping.setValue(recEvt);
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.53 was deployed. To see
+             * the error delete this comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }
@@ -2713,6 +2740,10 @@ module.exports = {
    * See also [`AnimatedInterpolation`](docs/animated.html#animatedinterpolation).
    */
   Interpolation: AnimatedInterpolation,
+  /**
+   * Exported for ease of type checking. All animated values derive from this class.
+   */
+  Node: Animated,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
@@ -2825,9 +2856,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored

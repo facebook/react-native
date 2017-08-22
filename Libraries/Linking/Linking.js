@@ -79,7 +79,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *    openURL:(NSURL *)url
  *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
  * {
- *   return [RCTLinkingManager application:app openURL:url options:options];
+ *   return [RCTLinkingManager application:application openURL:url options:options];
  * }
  * ```
  * 

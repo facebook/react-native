@@ -38,7 +38,7 @@ std::vector<MethodDescriptor> RCTNativeModule::getMethods() {
 
   for (id<RCTBridgeMethod> method in m_moduleData.methods) {
     descs.emplace_back(
-      method.JSMethodName.UTF8String,
+      method.JSMethodName,
       RCTFunctionDescriptorFromType(method.functionType)
     );
   }
@@ -103,7 +103,7 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
     }
 
     NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
+                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@",
                          exception, method.JSMethodName, m_moduleData.name, objcParams];
     RCTFatal(RCTErrorWithMessage(message));
   }

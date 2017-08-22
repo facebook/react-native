@@ -6,7 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @providesModule Object.es6
  * @polyfill
+ * @nolint
  */
 
 /* eslint-disable strict */
@@ -22,7 +24,7 @@ Object.assign = function(target, sources) {
     }
     if (typeof target !== 'object' && typeof target !== 'function') {
       throw new TypeError(
-        'In this environment the target of assign MUST be an object.' +
+        'In this environment the target of assign MUST be an object. ' +
         'This error is a performance optimization and not spec compliant.'
       );
     }
@@ -38,7 +40,7 @@ Object.assign = function(target, sources) {
       if (typeof nextSource !== 'object' &&
           typeof nextSource !== 'function') {
         throw new TypeError(
-          'In this environment the sources for assign MUST be an object.' +
+          'In this environment the sources for assign MUST be an object. ' +
           'This error is a performance optimization and not spec compliant.'
         );
       }

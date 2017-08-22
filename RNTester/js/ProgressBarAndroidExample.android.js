@@ -43,7 +43,7 @@ var MovingBar = createReactClass({
   },
 });
 
-class ProgressBarAndroidExample extends React.Component {
+class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';
   static description = 'Horizontal bar to show the progress of some operation.';
 

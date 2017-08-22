@@ -22,7 +22,7 @@ var {
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
 
-class Circle extends React.Component {
+class Circle extends React.Component<$FlowFixMeProps> {
   render() {
     var size = this.props.size || 20;
     var backgroundColor = this.props.bgColor || '#527fe4';
@@ -40,7 +40,7 @@ class Circle extends React.Component {
   }
 }
 
-class CircleBlock extends React.Component {
+class CircleBlock extends React.Component<$FlowFixMeProps> {
   render() {
     var circleStyle = {
       flexDirection: 'row',
@@ -57,7 +57,7 @@ class CircleBlock extends React.Component {
   }
 }
 
-class LayoutExample extends React.Component {
+class LayoutExample extends React.Component<$FlowFixMeProps> {
   static title = 'Layout - Flexbox';
   static description = 'Examples of using the flexbox API to layout views.';
   static displayName = 'LayoutExample';

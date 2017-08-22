@@ -23,9 +23,9 @@ const renderApplication = require('renderApplication');
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
-export type ComponentProvider = () => ReactClass<any>;
+export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook =
-  (component: ComponentProvider) => ReactClass<any>;
+  (component: ComponentProvider) => React$ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -43,7 +43,7 @@ export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
-export type WrapperComponentProvider = any => ReactClass<*>;
+export type WrapperComponentProvider = any => React$ComponentType<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
