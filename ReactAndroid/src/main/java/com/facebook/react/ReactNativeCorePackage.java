@@ -9,10 +9,8 @@
 
 package com.facebook.react;
 
-import javax.inject.Provider;
-
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -24,9 +22,9 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
-
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Provider;
 
 /**
  * Package defining core framework modules for initializing ReactNative (e.g. UIManager). It should be used for modules that
@@ -43,14 +41,17 @@ public class ReactNativeCorePackage extends LazyReactPackage {
   private final ReactInstanceManager mReactInstanceManager;
   private final UIImplementationProvider mUIImplementationProvider;
   private final boolean mLazyViewManagersEnabled;
+  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
   public ReactNativeCorePackage(
-    ReactInstanceManager reactInstanceManager,
-    UIImplementationProvider uiImplementationProvider,
-    boolean lazyViewManagersEnabled) {
+      ReactInstanceManager reactInstanceManager,
+      UIImplementationProvider uiImplementationProvider,
+      boolean lazyViewManagersEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
     mUIImplementationProvider = uiImplementationProvider;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
+    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
   }
 
   @Override
@@ -83,10 +84,11 @@ public class ReactNativeCorePackage extends LazyReactPackage {
       List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
         reactContext);
       return new UIManagerModule(
-        reactContext,
-        viewManagersList,
-        mUIImplementationProvider,
-        mLazyViewManagersEnabled);
+          reactContext,
+          viewManagersList,
+          mUIImplementationProvider,
+          mLazyViewManagersEnabled,
+          mMinTimeLeftInFrameForNonBatchedOperationMs);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
