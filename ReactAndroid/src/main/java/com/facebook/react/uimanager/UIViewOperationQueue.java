@@ -899,12 +899,12 @@ public class UIViewOperationQueue {
     flushPendingBatches();
   }
 
-  private boolean flushPendingBatches() {
+  private void flushPendingBatches() {
     if (mIsInIllegalUIState) {
       FLog.w(
         ReactConstants.TAG,
         "Not flushing pending UI operations because of previously thrown Exception");
-      return false;
+      return;
     }
 
     final ArrayList<Runnable> runnables;
@@ -913,18 +913,28 @@ public class UIViewOperationQueue {
         runnables = mDispatchUIRunnables;
         mDispatchUIRunnables = new ArrayList<>();
       } else {
-        runnables = null;
+        return;
       }
     }
 
-    if (runnables == null) {
-      return false;
-    }
-
+    final long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (Runnable runnable : runnables) {
       runnable.run();
     }
-    return true;
+
+    if (mIsProfilingNextBatch) {
+      mProfiledBatchBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
+      mIsProfilingNextBatch = false;
+
+      Systrace.beginAsyncSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "batchedExecutionTime",
+          0,
+          batchedExecutionStartTime * 1000000);
+      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+    }
+    mNonBatchedExecutionTotalTime = 0;
   }
 
   /**
@@ -969,23 +979,7 @@ public class UIViewOperationQueue {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
 
-      final long flushPendingBatchesStartTime = SystemClock.uptimeMillis();
-      if (flushPendingBatches()) {
-        if (mIsProfilingNextBatch) {
-          mProfiledBatchBatchedExecutionTime =
-              SystemClock.uptimeMillis() - flushPendingBatchesStartTime;
-          mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
-          mIsProfilingNextBatch = false;
-
-          Systrace.beginAsyncSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-              "batchedExecutionTime",
-              0,
-              flushPendingBatchesStartTime * 1000000);
-          Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
-        }
-        mNonBatchedExecutionTotalTime = 0;
-      }
+      flushPendingBatches();
 
       ReactChoreographer.getInstance().postFrameCallback(
         ReactChoreographer.CallbackType.DISPATCH_UI, this);

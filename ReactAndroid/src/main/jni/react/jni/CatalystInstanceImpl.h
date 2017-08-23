@@ -35,6 +35,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
     return instance_;
   }
 
+  void quitQueuesSynchronous();
+
  private:
   friend HybridBase;
 

@@ -5,7 +5,9 @@ package com.facebook.react;
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
@@ -34,13 +36,13 @@ public class ReactInstanceManagerBuilder {
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private JSCConfig mJSCConfig = JSCConfig.EMPTY;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
+  private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
   private int mMinNumShakes = 1;
   private boolean mEnableSplitPackage;
@@ -57,6 +59,15 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setUIImplementationProvider(
     @Nullable UIImplementationProvider uiImplementationProvider) {
     mUIImplementationProvider = uiImplementationProvider;
+    return this;
+  }
+
+  /**
+   * Factory for desired implementation of JavaScriptExecutor.
+   */
+  public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
+    @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
+    mJavaScriptExecutorFactory = javaScriptExecutorFactory;
     return this;
   }
 
@@ -170,11 +181,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setJSCConfig(JSCConfig jscConfig) {
-    mJSCConfig = jscConfig;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
     mRedBoxHandler = redBoxHandler;
     return this;
@@ -255,6 +261,9 @@ public class ReactInstanceManagerBuilder {
         mApplication,
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
+        mJavaScriptExecutorFactory == null
+            ? new JSCJavaScriptExecutorFactory()
+            : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
                 mApplication, mJSBundleAssetUrl, false /*Asynchronous*/)
@@ -266,7 +275,6 @@ public class ReactInstanceManagerBuilder {
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
         mNativeModuleCallExceptionHandler,
-        mJSCConfig,
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,

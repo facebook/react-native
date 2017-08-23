@@ -22,6 +22,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaOverflow;
@@ -780,6 +781,10 @@ public class ReactShadowNode {
 
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
+  }
+
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mYogaNode.setBaselineFunction(baselineFunction);
   }
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
