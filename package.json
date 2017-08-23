@@ -196,7 +196,7 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.52.0",
+    "flow-bin": "^0.53.0",
     "jest": "20.1.0-echo.1",
     "mock-fs": "^4.4.1",
     "prettier": "1.5.2",
