@@ -32,7 +32,6 @@ const getPreset = (src, options) => {
     'transform-flow-strip-types',
     'transform-react-jsx',
     'transform-regenerator',
-    require('../transforms/transform-regenerator-runtime-insertion'),
     [
       'transform-es2015-modules-commonjs',
       {strict: false, allowTopLevelThis: true},

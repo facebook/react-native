@@ -60,7 +60,7 @@ function runIOS(argv, config, args) {
     if (selectedDevice) {
       return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
     } else {
-      if (devices){
+      if (devices && devices.length > 0) {
         console.log('Could not find device with the name: "' + args.device + '".');
         console.log('Choose one of the following:');
         printFoundDevices(devices);
@@ -80,7 +80,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   if (selectedDevice) {
     return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
   } else {
-    if (devices){
+    if (devices && devices.length > 0) {
       console.log('Could not find device with the udid: "' + args.udid + '".');
       console.log('Choose one of the following:');
       printFoundDevices(devices);
@@ -90,7 +90,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, scheme){
+function runOnSimulator(xcodeProject, args, scheme) {
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -229,7 +229,7 @@ function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
-function printFoundDevices(devices){
+function printFoundDevices(devices) {
   for (let i = devices.length - 1; i >= 0; i--) {
     console.log(devices[i].name + ' Udid: ' + devices[i].udid);
   }
