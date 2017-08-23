@@ -57,7 +57,7 @@ function runIOS(argv, config, args) {
   );
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
-    if (selectedDevice){
+    if (selectedDevice) {
       return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
     } else {
       if (devices){
@@ -77,7 +77,7 @@ function runIOS(argv, config, args) {
 
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
-  if (selectedDevice){
+  if (selectedDevice) {
     return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
   } else {
     if (devices){
