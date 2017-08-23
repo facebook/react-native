@@ -5,14 +5,14 @@ exports[`renders assets based on relative path 1`] = `
   <Image
     source={
       Object {
-        "uri": "Libraries/Image/__tests__/img/img1.png",
+        "testUri": "Libraries/Image/__tests__/img/img1.png",
       }
     }
   />
   <Image
     source={
       Object {
-        "uri": "Libraries/Image/__tests__/img/img2.png",
+        "testUri": "Libraries/Image/__tests__/img/img2.png",
       }
     }
   />
