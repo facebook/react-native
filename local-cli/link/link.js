@@ -11,7 +11,7 @@
 
 const log = require('npmlog');
 const path = require('path');
-const uniq = require('lodash').uniq;
+const uniqBy = require('lodash').uniqBy;
 const flatten = require('lodash').flatten;
 const chalk = require('chalk');
 
@@ -36,7 +36,7 @@ import type {RNConfig} from '../core';
 
 log.heading = 'rnpm-link';
 
-const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
+const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
 
 const linkDependencyAndroid = (androidProject, dependency) => {
