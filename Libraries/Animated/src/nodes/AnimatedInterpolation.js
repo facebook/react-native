@@ -6,14 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Interpolation
  * @flow
+ * @format
  */
 /* eslint no-bitwise: 0 */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-var normalizeColor = require('normalizeColor');
+const AnimatedNode = require('./AnimatedNode');
+const AnimatedWithChildren = require('./AnimatedWithChildren');
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
+
+const invariant = require('fbjs/lib/invariant');
+const normalizeColor = require('normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
@@ -23,74 +27,76 @@ export type InterpolationConfigType = {
    * detected during the deployment of v0.38.0. To see the error, remove this
    * comment and run flow
    */
-  outputRange: (Array<number> | Array<string>),
-  easing?: ((input: number) => number),
+  outputRange: Array<number> | Array<string>,
+  easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
 };
 
-var linear = (t) => t;
+const linear = t => t;
 
 /**
  * Very handy helper to map input ranges to output ranges with an easing
  * function and custom behavior outside of the ranges.
  */
-class Interpolation {
-  static create(config: InterpolationConfigType): (input: number) => number | string {
+function createInterpolation(
+  config: InterpolationConfigType,
+): (input: number) => number | string {
+  if (config.outputRange && typeof config.outputRange[0] === 'string') {
+    return createInterpolationFromStringOutputRange(config);
+  }
 
-    if (config.outputRange && typeof config.outputRange[0] === 'string') {
-      return createInterpolationFromStringOutputRange(config);
-    }
+  const outputRange: Array<number> = (config.outputRange: any);
+  checkInfiniteRange('outputRange', outputRange);
 
-    var outputRange: Array<number> = (config.outputRange: any);
-    checkInfiniteRange('outputRange', outputRange);
+  const inputRange = config.inputRange;
+  checkInfiniteRange('inputRange', inputRange);
+  checkValidInputRange(inputRange);
 
-    var inputRange = config.inputRange;
-    checkInfiniteRange('inputRange', inputRange);
-    checkValidInputRange(inputRange);
+  invariant(
+    inputRange.length === outputRange.length,
+    'inputRange (' +
+      inputRange.length +
+      ') and outputRange (' +
+      outputRange.length +
+      ') must have the same length',
+  );
 
+  const easing = config.easing || linear;
+
+  let extrapolateLeft: ExtrapolateType = 'extend';
+  if (config.extrapolateLeft !== undefined) {
+    extrapolateLeft = config.extrapolateLeft;
+  } else if (config.extrapolate !== undefined) {
+    extrapolateLeft = config.extrapolate;
+  }
+
+  let extrapolateRight: ExtrapolateType = 'extend';
+  if (config.extrapolateRight !== undefined) {
+    extrapolateRight = config.extrapolateRight;
+  } else if (config.extrapolate !== undefined) {
+    extrapolateRight = config.extrapolate;
+  }
+
+  return input => {
     invariant(
-      inputRange.length === outputRange.length,
-      'inputRange (' + inputRange.length + ') and outputRange (' +
-      outputRange.length + ') must have the same length'
+      typeof input === 'number',
+      'Cannot interpolation an input which is not a number',
     );
 
-    var easing = config.easing || linear;
-
-    var extrapolateLeft: ExtrapolateType = 'extend';
-    if (config.extrapolateLeft !== undefined) {
-      extrapolateLeft = config.extrapolateLeft;
-    } else if (config.extrapolate !== undefined) {
-      extrapolateLeft = config.extrapolate;
-    }
-
-    var extrapolateRight: ExtrapolateType = 'extend';
-    if (config.extrapolateRight !== undefined) {
-      extrapolateRight = config.extrapolateRight;
-    } else if (config.extrapolate !== undefined) {
-      extrapolateRight = config.extrapolate;
-    }
-
-    return (input) => {
-      invariant(
-        typeof input === 'number',
-        'Cannot interpolation an input which is not a number'
-      );
-
-      var range = findRange(input, inputRange);
-      return interpolate(
-        input,
-        inputRange[range],
-        inputRange[range + 1],
-        outputRange[range],
-        outputRange[range + 1],
-        easing,
-        extrapolateLeft,
-        extrapolateRight,
-      );
-    };
-  }
+    const range = findRange(input, inputRange);
+    return interpolate(
+      input,
+      inputRange[range],
+      inputRange[range + 1],
+      outputRange[range],
+      outputRange[range + 1],
+      easing,
+      extrapolateLeft,
+      extrapolateRight,
+    );
+  };
 }
 
 function interpolate(
@@ -99,11 +105,11 @@ function interpolate(
   inputMax: number,
   outputMin: number,
   outputMax: number,
-  easing: ((input: number) => number),
+  easing: (input: number) => number,
   extrapolateLeft: ExtrapolateType,
   extrapolateRight: ExtrapolateType,
 ) {
-  var result = input;
+  let result = input;
 
   // Extrapolate
   if (result < inputMin) {
@@ -162,22 +168,22 @@ function interpolate(
 }
 
 function colorToRgba(input: string): string {
-  var int32Color = normalizeColor(input);
+  let int32Color = normalizeColor(input);
   if (int32Color === null) {
     return input;
   }
 
   int32Color = int32Color || 0;
 
-  var r = (int32Color & 0xff000000) >>> 24;
-  var g = (int32Color & 0x00ff0000) >>> 16;
-  var b = (int32Color & 0x0000ff00) >>> 8;
-  var a = (int32Color & 0x000000ff) / 255;
+  const r = (int32Color & 0xff000000) >>> 24;
+  const g = (int32Color & 0x00ff0000) >>> 16;
+  const b = (int32Color & 0x0000ff00) >>> 8;
+  const a = (int32Color & 0x000000ff) / 255;
 
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-var stringShapeRegex = /[0-9\.-]+/g;
+const stringShapeRegex = /[0-9\.-]+/g;
 
 /**
  * Supports string shapes by extracting numbers so new values can be computed,
@@ -190,7 +196,7 @@ var stringShapeRegex = /[0-9\.-]+/g;
 function createInterpolationFromStringOutputRange(
   config: InterpolationConfigType,
 ): (input: number) => string {
-  var outputRange: Array<string> = (config.outputRange: any);
+  let outputRange: Array<string> = (config.outputRange: any);
   invariant(outputRange.length >= 2, 'Bad output range');
   outputRange = outputRange.map(colorToRgba);
   checkPattern(outputRange);
@@ -206,7 +212,7 @@ function createInterpolationFromStringOutputRange(
   /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
    * guard against this possibility.
    */
-  var outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
+  const outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
   outputRange.forEach(value => {
     /* $FlowFixMe(>=0.18.0): `value.match()` can return `null`. Need to guard
      * against this possibility.
@@ -219,25 +225,28 @@ function createInterpolationFromStringOutputRange(
   /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
    * guard against this possibility.
    */
-  var interpolations = outputRange[0].match(stringShapeRegex).map((value, i) => {
-    return Interpolation.create({
-      ...config,
-      outputRange: outputRanges[i],
+  const interpolations = outputRange[0]
+    .match(stringShapeRegex)
+    .map((value, i) => {
+      return createInterpolation({
+        ...config,
+        outputRange: outputRanges[i],
+      });
     });
-  });
 
   // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
   // round the opacity (4th column).
   const shouldRound = isRgbOrRgba(outputRange[0]);
 
-  return (input) => {
-    var i = 0;
+  return input => {
+    let i = 0;
     // 'rgba(0, 100, 200, 0)'
     // ->
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
       const val = +interpolations[i++](input);
-      const rounded = shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
+      const rounded =
+        shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
       return String(rounded);
     });
   };
@@ -248,8 +257,8 @@ function isRgbOrRgba(range) {
 }
 
 function checkPattern(arr: Array<string>) {
-  var pattern = arr[0].replace(stringShapeRegex, '');
-  for (var i = 1; i < arr.length; ++i) {
+  const pattern = arr[0].replace(stringShapeRegex, '');
+  for (let i = 1; i < arr.length; ++i) {
     invariant(
       pattern === arr[i].replace(stringShapeRegex, ''),
       'invalid pattern ' + arr[0] + ' and ' + arr[i],
@@ -258,7 +267,8 @@ function checkPattern(arr: Array<string>) {
 }
 
 function findRange(input: number, inputRange: Array<number>) {
-  for (var i = 1; i < inputRange.length - 1; ++i) {
+  let i;
+  for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
       break;
     }
@@ -268,7 +278,7 @@ function findRange(input: number, inputRange: Array<number>) {
 
 function checkValidInputRange(arr: Array<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
-  for (var i = 1; i < arr.length; ++i) {
+  for (let i = 1; i < arr.length; ++i) {
     invariant(
       arr[i] >= arr[i - 1],
       /* $FlowFixMe(>=0.13.0) - In the addition expression below this comment,
@@ -277,7 +287,7 @@ function checkValidInputRange(arr: Array<number>) {
        * mean this implicit string conversion, you can do something like
        * String(myThing)
        */
-      'inputRange must be monotonically increasing ' + arr
+      'inputRange must be monotonically increasing ' + arr,
     );
   }
 }
@@ -292,8 +302,86 @@ function checkInfiniteRange(name: string, arr: Array<number>) {
      * this implicit string conversion, you can do something like
      * String(myThing)
      */
-    name + 'cannot be ]-infinity;+infinity[ ' + arr
+    name + 'cannot be ]-infinity;+infinity[ ' + arr,
   );
 }
 
-module.exports = Interpolation;
+class AnimatedInterpolation extends AnimatedWithChildren {
+  // Export for testing.
+  static __createInterpolation = createInterpolation;
+
+  _parent: AnimatedNode;
+  _config: InterpolationConfigType;
+  _interpolation: (input: number) => number | string;
+
+  constructor(parent: AnimatedNode, config: InterpolationConfigType) {
+    super();
+    this._parent = parent;
+    this._config = config;
+    this._interpolation = createInterpolation(config);
+  }
+
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
+  }
+
+  __getValue(): number | string {
+    const parentValue: number = this._parent.__getValue();
+    invariant(
+      typeof parentValue === 'number',
+      'Cannot interpolate an input which is not a number.',
+    );
+    return this._interpolation(parentValue);
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __attach(): void {
+    this._parent.__addChild(this);
+  }
+
+  __detach(): void {
+    this._parent.__removeChild(this);
+    super.__detach();
+  }
+
+  __transformDataType(range: Array<any>) {
+    // Change the string array type to number array
+    // So we can reuse the same logic in iOS and Android platform
+    return range.map(function(value) {
+      if (typeof value !== 'string') {
+        return value;
+      }
+      if (/deg$/.test(value)) {
+        const degrees = parseFloat(value) || 0;
+        const radians = degrees * Math.PI / 180.0;
+        return radians;
+      } else {
+        // Assume radians
+        return parseFloat(value) || 0;
+      }
+    });
+  }
+
+  __getNativeConfig(): any {
+    if (__DEV__) {
+      NativeAnimatedHelper.validateInterpolation(this._config);
+    }
+
+    return {
+      inputRange: this._config.inputRange,
+      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      outputRange: this.__transformDataType(this._config.outputRange),
+      extrapolateLeft:
+        this._config.extrapolateLeft || this._config.extrapolate || 'extend',
+      extrapolateRight:
+        this._config.extrapolateRight || this._config.extrapolate || 'extend',
+      type: 'interpolation',
+    };
+  }
+}
+
+module.exports = AnimatedInterpolation;
