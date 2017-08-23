@@ -41,8 +41,10 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.TaggedRootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -50,19 +52,17 @@ import javax.annotation.Nullable;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
- * manager can re-layout its elements.
- * It delegates handling touch events for itself and child views and sending those events to JS by
- * using JSTouchDispatcher.
- * This view is overriding {@link ViewGroup#onInterceptTouchEvent} method in order to be notified
- * about the events for all of its children and it's also overriding
- * {@link ViewGroup#requestDisallowInterceptTouchEvent} to make sure that
- * {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular
- * touch event this view's {@link View#onTouchEvent} will still return true in order to be notified
- * about all subsequent touch events related to that gesture (in case when JS code want to handle
- * that gesture).
+ * manager can re-layout its elements. It delegates handling touch events for itself and child views
+ * and sending those events to JS by using JSTouchDispatcher. This view is overriding {@link
+ * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
+ * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
+ * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
+ * intercepting it. In case when no child view is interested in handling some particular touch event
+ * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
+ * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
+public class ReactRootView extends SizeMonitoringFrameLayout implements RootView, TaggedRootView {
 
   /**
    * Listener interface for react root view events
@@ -79,9 +79,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag;
+  private int mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
   private boolean mIsAttachedToInstance;
-  private boolean mContentAppeared;
+  private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -195,18 +195,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void onViewAdded(View child) {
     super.onViewAdded(child);
 
-    if (!mContentAppeared) {
-      mContentAppeared = true;
-      ReactMarker.logMarker(
-          ReactMarkerConstants.CONTENT_APPEARED, getJSModuleName(), getRootViewTag());
+    if (mShouldLogContentAppeared) {
+      mShouldLogContentAppeared = false;
+
+      if (mJSModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
+      }
     }
-  }
-
-  @Override
-  public void removeAllViewsInLayout() {
-    super.removeAllViewsInLayout();
-
-    mContentAppeared = false;
   }
 
   /**
@@ -240,6 +235,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
+      mShouldLogContentAppeared = true;
 
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
@@ -261,7 +257,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
+      mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
     }
+    mShouldLogContentAppeared = false;
   }
 
   public void onAttachedToReactInstance() {
@@ -363,12 +361,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         "the onDestroyView() of your hosting Fragment.");
   }
 
+  @Override
   public int getRootViewTag() {
     return mRootViewTag;
-  }
-
-  public void setRootViewTag(int rootViewTag) {
-    mRootViewTag = rootViewTag;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {

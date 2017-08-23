@@ -72,6 +72,14 @@ render() {
 
 Make sure to use `RNTMap` here. We want to require the manager here, which will expose the view of our manager for use in Javascript. 
 
+**Note:** When rendering, don't forget to stretch the view, otherwise you'll be staring at a blank screen.
+
+```javascript
+  render() {
+    return <MapView style={{flex: 1}} />;
+  }
+```
+
 This is now a fully-functioning native map view component in JavaScript, complete with pinch-zoom and other native gesture support.  We can't really control it from JavaScript yet, though :(
 
 ## Properties

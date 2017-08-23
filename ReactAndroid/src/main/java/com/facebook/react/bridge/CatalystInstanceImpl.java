@@ -329,6 +329,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         UiThreadUtil.runOnUiThread(new Runnable() {
           @Override
           public void run() {
+            quitQueuesSynchronous();
             mHybridData.resetNative();
             // Kill non-UI threads from UI thread.
             getReactQueueConfiguration().destroy();
@@ -341,6 +342,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
   }
+
+  private native void quitQueuesSynchronous();
 
   @Override
   public boolean isDestroyed() {

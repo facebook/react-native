@@ -315,15 +315,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIEdgeInsets contentInset = self.contentInset;
   CGSize contentSize = self.contentSize;
-  CGSize fullContentSize = CGSizeMake(
-    contentSize.width + contentInset.left + contentInset.right,
-    contentSize.height + contentInset.top + contentInset.bottom);
 
   CGSize boundsSize = self.bounds.size;
 
   self.contentOffset = CGPointMake(
-    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
-    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
+    MAX(-contentInset.top, MIN(contentSize.width - boundsSize.width + contentInset.bottom, originalOffset.x)),
+    MAX(-contentInset.left, MIN(contentSize.height - boundsSize.height + contentInset.right, originalOffset.y)));
 }
 
 #if !TARGET_OS_TV

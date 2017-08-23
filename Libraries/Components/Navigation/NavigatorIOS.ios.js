@@ -36,7 +36,7 @@ function getuid() {
   return __uid++;
 }
 
-class NavigatorTransitionerIOS extends React.Component {
+class NavigatorTransitionerIOS extends React.Component<$FlowFixMeProps> {
   requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
