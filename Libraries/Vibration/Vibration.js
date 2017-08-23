@@ -25,16 +25,16 @@ var Platform = require('Platform');
  *
  * **Note for Android:**
  * add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
- * 
+ *
  * Since the **vibration duration in iOS is not configurable**, so there are some differences with Android.
  * In Android, if `pattern` is a number, it specified the vibration duration in ms. If `pattern`
  * is an array, those odd indices is the vibration duration, while the even one are the separation time.
- * 
+ *
  * In iOS, invoking `vibrate(duration)` will just ignore the duration and vibrate for a fixed time. While the
  * `pattern` array is used to define the duration between each vibration. See below example for more.
- * 
+ *
  * Repeatable vibration is also supported, the vibration will repeat with defined pattern until `cancel()` is called.
- * 
+ *
  * Example:
  * ```
  * const DURATION = 10000
