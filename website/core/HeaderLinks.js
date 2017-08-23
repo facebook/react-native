@@ -13,19 +13,19 @@
 var AlgoliaDocSearch = require('AlgoliaDocSearch');
 var React = require('React');
 
-var HeaderLinks = React.createClass({
-  linksInternal: [
-    {section: 'docs', href: 'docs/getting-started.html', text: 'Docs', target: '.nav-docs'},
-    {section: 'support', href: '/react-native/support.html', text: 'Help'},
-    {section: 'showcase', href: '/react-native/showcase.html', text: 'Showcase'},
-    {section: 'blog', href: '/react-native/blog/', text: 'Blog'},
-  ],
-  linksExternal: [
-    {section: 'github', href: 'https://github.com/facebook/react-native', text: 'GitHub'},
-    {section: 'react', href: 'http://facebook.github.io/react', text: 'React'},
-  ],
+var linksInternal = [
+  {section: 'docs', href: 'docs/getting-started.html', text: 'Docs', target: '.nav-docs'},
+  {section: 'support', href: '/react-native/support.html', text: 'Community'},
+  {section: 'blog', href: '/react-native/blog/', text: 'Blog'},
+];
 
-  makeLinks: function(links) {
+var linksExternal = [
+  {section: 'github', href: 'https://github.com/facebook/react-native', text: 'GitHub'},
+  {section: 'react', href: 'http://facebook.github.io/react', text: 'React'},
+];
+
+class HeaderLinks extends React.Component {
+  makeLinks(links) {
     return links.map(function(link) {
       return (
         <li key={link.section}>
@@ -38,23 +38,23 @@ var HeaderLinks = React.createClass({
         </li>
       );
     }, this);
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <div className="nav-site-wrapper">
         <ul className="nav-site nav-site-internal">
-          {this.makeLinks(this.linksInternal)}
+          {this.makeLinks(linksInternal)}
         </ul>
 
         <AlgoliaDocSearch />
 
         <ul className="nav-site nav-site-external">
-          {this.makeLinks(this.linksExternal)}
+          {this.makeLinks(linksExternal)}
         </ul>
       </div>
     );
   }
-});
+}
 
 module.exports = HeaderLinks;

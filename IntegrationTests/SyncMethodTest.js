@@ -17,22 +17,22 @@ var { View } = ReactNative;
 
 const {
   TestModule,
-  UIExplorerTestModule,
+  RNTesterTestModule,
 } = ReactNative.NativeModules;
 
 
-class SyncMethodTest extends React.Component {
+class SyncMethodTest extends React.Component<{}> {
   componentDidMount() {
-    if (UIExplorerTestModule.echoString('test string value') !== 'test string value') {
+    if (RNTesterTestModule.echoString('test string value') !== 'test string value') {
       throw new Error('Something wrong with sync method export');
     }
-    if (UIExplorerTestModule.methodThatReturnsNil() != null) {
+    if (RNTesterTestModule.methodThatReturnsNil() != null) {
       throw new Error('Something wrong with sync method export');
     }
     TestModule.markTestCompleted();
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return <View />;
   }
 }

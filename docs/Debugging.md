@@ -4,8 +4,8 @@ title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
-next: accessibility
-previous: platform-specific-code
+next: performance
+previous: timers
 ---
 
 ## Enabling Keyboard Shortcuts
@@ -14,7 +14,7 @@ React Native supports a few keyboard shortcuts in the iOS Simulator. They are de
 
 ## Accessing the In-App Developer Menu
 
-You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the **`Command`**`⌘` + **`D`** keyboard shortcut when your app is running in the iPhone Simulator, or **`Command`**`⌘` + **`M`** when running in an Android emulator.
+You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the `⌘D` keyboard shortcut when your app is running in the iOS Simulator, or `⌘M` when running in an Android emulator.
 
 ![](img/DeveloperMenu.png)
 
@@ -22,7 +22,7 @@ You can access the developer menu by shaking your device or by selecting "Shake 
 
 ## Reloading JavaScript
 
-Instead of recompiling your app every time you make a change, you can reload your app's JavaScript code instantly. To do so, select "Reload" from the Developer Menu. You can also press **`Command`**`⌘` + **`R`** in the iOS Simulator, or press **`R`** twice on Android emulators.
+Instead of recompiling your app every time you make a change, you can reload your app's JavaScript code instantly. To do so, select "Reload" from the Developer Menu. You can also press `⌘R` in the iOS Simulator, or tap `R` twice on Android emulators.
 
 ### Automatic reloading
 
@@ -61,9 +61,9 @@ In CI/Xcode, YellowBoxes can also be disabled by setting the `IS_TESTING` enviro
 
 To debug the JavaScript code in Chrome, select "Debug JS Remotely" from the Developer Menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
 
-Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (**`Command`**`⌘` + **`Option`**`⌥` + **`I`** on Mac, **`Ctrl`** + **`Shift`** + **`I`** on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
+Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (`⌘⌥I` on macOS, `Ctrl` `Shift` `I` on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
-> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read the [next section](#react-developer-tools) to learn how.
+> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read [this section](docs/debugging.html#react-developer-tools) to learn how.
 
 ### Debugging using a custom JavaScript debugger
 
@@ -75,7 +75,7 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 ## React Developer Tools
 
-With React Native 0.43 or higher, you can use [the standalone version of React Developer Tools](https://github.com/facebook/react-devtools/tree/master/packages/react-devtools) to debug the React component hierarchy. To use it, install the `react-devtools` package globally:
+You can use [the standalone version of React Developer Tools](https://github.com/facebook/react-devtools/tree/master/packages/react-devtools) to debug the React component hierarchy. To use it, install the `react-devtools` package globally:
 
 ```
 npm install -g react-devtools
@@ -87,23 +87,35 @@ Now run `react-devtools` from the terminal to launch the standalone DevTools app
 react-devtools
 ```
 
-<img src="https://camo.githubusercontent.com/3226d81c8d40f07f10c1f78876905a1bfc2d6d82/687474703a2f2f692e696d6775722e636f6d2f49586548695a442e706e67" width="700" alt="React DevTools">
+![React DevTools](img/ReactDevTools.png)
 
 It should connect to your simulator within a few seconds.
 
-> Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. With Yarn, you can run `yarn add --dev react-devtools`, and then run `yarn react-devtools` from your project folder to open the DevTools. With npm, you can run `npm install --save-dev react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
+> Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. Add the `react-devtools` package to your project using `npm install --save-dev react-devtools`, then add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
 
 ### Integration with React Native Inspector
 
-You can open the [in-app developer menu](#accessing-the-in-app-developer-menu) and choose "Show Inspector". It will bring up an overlay that lets you tap on any UI element and see information about it:
+Open the in-app developer menu and choose "Show Inspector". It will bring up an overlay that lets you tap on any UI element and see information about it:
 
-<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1R1d2x0O3M0C1t071Q0F/Screen%20Recording%202017-05-01%20at%2020.14.gif?v=45691135" alt="Show Inspector" width="300">
+![React Native Inspector](img/Inspector.gif)
 
 However, when `react-devtools` is running, Inspector will enter a special collapsed mode, and instead use the DevTools as primary UI. In this mode, clicking on something in the simulator will bring up the relevant components in the DevTools:
 
-<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1v031W3O1W322z3G1k15/Screen%20Recording%202017-05-01%20at%2020.16.gif?v=a87eb3f4" alt="Show Inspector with React DevTools" width="700">
+![React DevTools Inspector Integration](img/ReactDevToolsInspector.gif)
 
 You can choose "Hide Inspector" in the same menu to exit this mode.
+
+### Inspecting Component Instances
+
+When debugging JavaScript in Chrome, you can inspect the props and state of the React components in the browser console.
+
+First, follow the instructions for debugging in Chrome to open the Chrome console.
+
+Make sure that the dropdown in the top left corner of the Chrome console says `debuggerWorker.js`. **This step is essential.**
+
+Then select a React component in React DevTools. There is a search box at the top that helps you find one by name. As soon as you select it, it will be available as `$r` in the Chrome console, letting you inspect its props, state, and instance properties.
+
+![React DevTools Chrome Console Integration](img/ReactDevToolsDollarR.gif)
 
 ## Performance Monitor
 
@@ -126,8 +138,6 @@ You can enable a performance overlay to help you debug performance problems by s
 
 ## Accessing console logs
 
-Note: if you're using Create React Native App, these already appear in the same terminal output as the packager.
-
 You can display the console logs for an iOS or Android app by using the following commands in a terminal while the app is running:
 
 ```
@@ -137,9 +147,11 @@ $ react-native log-android
 
 You may also access these through `Debug → Open System Log...` in the iOS Simulator or by running `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal while an Android app is running on a device or emulator.
 
+> If you're using Create React Native App, console logs already appear in the same terminal output as the packager.
+
 ## Debugging on a device with Chrome Developer Tools
 
-Note: if you're using Create React Native App, this is configured for you already.
+> If you're using Create React Native App, this is configured for you already.
 
 On iOS devices, open the file [`RCTWebSocketExecutor.m`](https://github.com/facebook/react-native/blob/master/Libraries/WebSocket/RCTWebSocketExecutor.m) and change "localhost" to the IP address of your computer, then select "Debug JS Remotely" from the Developer Menu.
 
@@ -153,44 +165,74 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
-1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
+Follow this guide to enable Stetho for Debug mode:
+
+1. In `android/app/build.gradle`, add these lines in the `dependencies` section:
 
    ```gradle
-   compile 'com.facebook.stetho:stetho:1.3.1'
-   compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports:
+> The above will configure Stetho v1.5.0. You can check at http://facebook.github.io/stetho/ if a newer version is available.
 
-   ```java
-   import com.facebook.react.modules.network.ReactCookieJarContainer;
-   import com.facebook.stetho.Stetho;
-   import okhttp3.OkHttpClient;
-   import com.facebook.react.modules.network.OkHttpClientProvider;
-   import com.facebook.stetho.okhttp3.StethoInterceptor;
-   import java.util.concurrent.TimeUnit;
-   ```
+2. Create the following Java classes to wrap the Stetho call, one for release and one for debug:
+   
+    ```java
+    // android/app/src/release/java/com/{yourAppName}/StethoWrapper.java
+    
+    public class StethoWrapper {
 
-3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
-   ```java
-   public void onCreate() {
-         super.onCreate();
-         Stetho.initializeWithDefaults(this);
-         OkHttpClient client = new OkHttpClient.Builder()
-         .connectTimeout(0, TimeUnit.MILLISECONDS)
-         .readTimeout(0, TimeUnit.MILLISECONDS)
-         .writeTimeout(0, TimeUnit.MILLISECONDS)
-         .cookieJar(new ReactCookieJarContainer())
-         .addNetworkInterceptor(new StethoInterceptor())
-         .build();
-         OkHttpClientProvider.replaceOkHttpClient(client);
-   }
-   ```
+        public static void initialize(Context context) {
+            // NO_OP
+        }
 
-4. Run  ```react-native run-android ```
+        public static void addInterceptor() {
+            // NO_OP
+        }
+    }
+    ```
 
-5. In a new chrome tab, open : ```chrome://inspect```, click on 'Inspect device' (the one followed by "Powered by Stetho")
+    ```java
+    // android/app/src/debug/java/com/{yourAppName}/StethoWrapper.java
+
+    public class StethoWrapper {
+        public static void initialize(Context context) {
+          Stetho.initializeWithDefaults(context);
+        }
+
+        public static void addInterceptor() {
+          OkHttpClient client = OkHttpClientProvider.getOkHttpClient()
+                 .newBuilder()
+                 .addNetworkInterceptor(new StethoInterceptor())
+                 .build();
+          
+          OkHttpClientProvider.replaceOkHttpClient(client);
+        }
+    }
+    ```
+
+3. Open `android/app/src/main/java/com/{yourAppName}/MainApplication.java` and replace the original `onCreate` function:
+
+```java
+  public void onCreate() {
+      super.onCreate();
+
+      if (BuildConfig.DEBUG) {      
+          StethoWrapper.initialize(this);
+          StethoWrapper.addInterceptor();
+      }
+
+      SoLoader.init(this, /* native exopackage */ false);
+    }
+```
+
+4. Open the project in Android Studio and resolve any dependency issues. The IDE should guide you through this steps after hovering your pointer over the red lines.
+
+5. Run `react-native run-android`.
+
+6. In a new Chrome tab, open: `chrome://inspect`, then click on the 'Inspect device' item next to "Powered by Stetho".
 
 ## Debugging native code
 
-When working with native code (e.g. when writing native modules) you can launch the app from Android Studio or Xcode and take advantage of the debugging features (setup breakpoints, etc.) as you would in case of building a standard native app.
+When working with native code, such as when writing native modules, you can launch the app from Android Studio or Xcode and take advantage of the native debugging features (setting up breakpoints, etc.) as you would in case of building a standard native app.

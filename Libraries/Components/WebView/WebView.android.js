@@ -121,6 +121,13 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android Lollipop and above only, third party cookies are enabled
+     * by default for WebView on Android Kitkat and below and on iOS
+     * @platform android
+     */
+    thirdPartyCookiesEnabled: PropTypes.bool,
+
+    /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
@@ -188,10 +195,20 @@ class WebView extends React.Component {
      * @platform android
      */
     saveFormDataDisabled: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether the given list of URL prefixes should
+     * make {@link com.facebook.react.views.webview.ReactWebViewClient} to launch a
+     * default activity intent for those URL instead of loading it within the webview.
+     * Use this to list URLs that WebView cannot handle, e.g. a PDF url.
+     * @platform android
+     */
+    urlPrefixesForDefaultIntent: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
     javaScriptEnabled : true,
+    thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
     saveFormDataDisabled: false
   };
@@ -253,6 +270,7 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}
         onMessage={this.onMessage}
@@ -267,6 +285,7 @@ class WebView extends React.Component {
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
+        urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}
       />;
 
     return (
@@ -294,6 +313,9 @@ class WebView extends React.Component {
   };
 
   reload = () => {
+    this.setState({
+      viewState: WebViewState.LOADING
+    });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,

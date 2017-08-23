@@ -29,141 +29,104 @@ namespace detail {
 #define JNI_ENTRY_POINT
 #endif
 
+template <typename R>
+struct CreateDefault {
+  static R create() {
+    return R{};
+  }
+};
+
+template <>
+struct CreateDefault<void> {
+  static void create() {}
+};
+
+template <typename R>
+using Converter = Convert<typename std::decay<R>::type>;
+
+template <typename F, F func, typename R, typename... Args>
+struct WrapForVoidReturn {
+  static typename Converter<R>::jniType call(Args&&... args) {
+    return Converter<R>::toJniRet(func(std::forward<Args>(args)...));
+  }
+};
+
+template <typename F, F func, typename... Args>
+struct WrapForVoidReturn<F, func, void, Args...> {
+  static void call(Args&&... args) {
+    func(std::forward<Args>(args)...);
+  }
+};
+
 // registration wrapper for legacy JNI-style functions
-
-template<typename F, F func, typename C, typename... Args>
-inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(JNIEnv*, C, Args... args)) {
-  struct funcWrapper {
-    JNI_ENTRY_POINT static void call(JNIEnv* env, jobject obj, Args... args) {
-      // Note that if func was declared noexcept, then both gcc and clang are smart
-      // enough to elide the try/catch.
-      try {
-        (*func)(env, static_cast<C>(obj), args...);
-      } catch (...) {
-        translatePendingCppExceptionToJavaException();
-      }
+template<typename F, F func, typename C, typename R, typename... Args>
+struct BareJniWrapper {
+  JNI_ENTRY_POINT static R call(JNIEnv* env, jobject obj, Args... args) {
+    ThreadScope ts(env, internal::CacheEnvTag{});
+    try {
+      return (*func)(env, static_cast<JniType<C>>(obj), args...);
+    } catch (...) {
+      translatePendingCppExceptionToJavaException();
+      return CreateDefault<R>::create();
     }
-  };
+  }
+};
 
-  // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
-}
+// registration wrappers for functions, with autoconversion of arguments.
+template<typename F, F func, typename C, typename R, typename... Args>
+struct FunctionWrapper {
+  using jniRet = typename Converter<R>::jniType;
+  JNI_ENTRY_POINT static jniRet call(JNIEnv* env, jobject obj, typename Converter<Args>::jniType... args) {
+    ThreadScope ts(env, internal::CacheEnvTag{});
+    try {
+      return WrapForVoidReturn<F, func, R, JniType<C>, Args...>::call(
+          static_cast<JniType<C>>(obj), Converter<Args>::fromJni(args)...);
+    } catch (...) {
+      translatePendingCppExceptionToJavaException();
+      return CreateDefault<jniRet>::create();
+    }
+  }
+};
+
+// registration wrappers for non-static methods, with autoconvertion of arguments.
+template<typename M, M method, typename C, typename R, typename... Args>
+struct MethodWrapper {
+  using jhybrid = typename C::jhybridobject;
+  static R dispatch(alias_ref<jhybrid> ref, Args&&... args) {
+    try {
+      // This is usually a noop, but if the hybrid object is a
+      // base class of other classes which register JNI methods,
+      // this will get the right type for the registered method.
+      auto cobj = static_cast<C*>(ref->cthis());
+      return (cobj->*method)(std::forward<Args>(args)...);
+    } catch (const std::exception& ex) {
+      C::mapException(ex);
+      throw;
+    }
+  }
+
+  JNI_ENTRY_POINT static typename Converter<R>::jniType call(
+      JNIEnv* env, jobject obj, typename Converter<Args>::jniType... args) {
+    return FunctionWrapper<R(*)(alias_ref<jhybrid>, Args&&...), dispatch, jhybrid, R, Args...>::call(env, obj, args...);
+  }
+};
 
 template<typename F, F func, typename C, typename R, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(JNIEnv*, C, Args... args)) {
-  struct funcWrapper {
-    JNI_ENTRY_POINT static R call(JNIEnv* env, jobject obj, Args... args) {
-      try {
-        return (*func)(env, static_cast<JniType<C>>(obj), args...);
-      } catch (...) {
-        translatePendingCppExceptionToJavaException();
-        return R{};
-      }
-    }
-  };
-
   // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
-}
-
-// registration wrappers for functions, with autoconversion of arguments.
-
-template<typename F, F func, typename C, typename... Args>
-inline NativeMethodWrapper* exceptionWrapJNIMethod(void (*)(alias_ref<C>, Args... args)) {
-  struct funcWrapper {
-    JNI_ENTRY_POINT static void call(JNIEnv*, jobject obj,
-                                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
-      try {
-        (*func)(static_cast<JniType<C>>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...);
-      } catch (...) {
-        translatePendingCppExceptionToJavaException();
-      }
-    }
-  };
-
-  // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
+  return reinterpret_cast<NativeMethodWrapper*>(&(BareJniWrapper<F, func, C, R, Args...>::call));
 }
 
 template<typename F, F func, typename C, typename R, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(R (*)(alias_ref<C>, Args... args)) {
-  struct funcWrapper {
-
-    JNI_ENTRY_POINT static typename Convert<typename std::decay<R>::type>::jniType call(JNIEnv*, jobject obj,
-                                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
-      try {
-        return Convert<typename std::decay<R>::type>::toJniRet(
-          (*func)(static_cast<JniType<C>>(obj), Convert<typename std::decay<Args>::type>::fromJni(args)...));
-      } catch (...) {
-        using jniRet = typename Convert<typename std::decay<R>::type>::jniType;
-        translatePendingCppExceptionToJavaException();
-        return jniRet{};
-      }
-    }
-  };
-
   // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
-}
-
-// registration wrappers for non-static methods, with autoconvertion of arguments.
-
-template<typename M, M method, typename C, typename... Args>
-inline NativeMethodWrapper* exceptionWrapJNIMethod(void (C::*method0)(Args... args)) {
-  struct funcWrapper {
-    JNI_ENTRY_POINT static void call(JNIEnv* env, jobject obj,
-                                     typename Convert<typename std::decay<Args>::type>::jniType... args) {
-      try {
-        try {
-          auto aref = wrap_alias(static_cast<typename C::jhybridobject>(obj));
-          // This is usually a noop, but if the hybrid object is a
-          // base class of other classes which register JNI methods,
-          // this will get the right type for the registered method.
-          auto cobj = static_cast<C*>(facebook::jni::cthis(aref));
-          (cobj->*method)(Convert<typename std::decay<Args>::type>::fromJni(args)...);
-        } catch (const std::exception& ex) {
-          C::mapException(ex);
-          throw;
-        }
-      } catch (...) {
-        translatePendingCppExceptionToJavaException();
-      }
-    }
-  };
-
-  // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
+  return reinterpret_cast<NativeMethodWrapper*>(&(FunctionWrapper<F, func, C, R, Args...>::call));
 }
 
 template<typename M, M method, typename C, typename R, typename... Args>
 inline NativeMethodWrapper* exceptionWrapJNIMethod(R (C::*method0)(Args... args)) {
-  struct funcWrapper {
-
-    JNI_ENTRY_POINT static typename Convert<typename std::decay<R>::type>::jniType call(JNIEnv* env, jobject obj,
-                                       typename Convert<typename std::decay<Args>::type>::jniType... args) {
-      try {
-        try {
-          auto aref = wrap_alias(static_cast<typename C::jhybridobject>(obj));
-          // This is usually a noop, but if the hybrid object is a
-          // base class of other classes which register JNI methods,
-          // this will get the right type for the registered method.
-          auto cobj = static_cast<C*>(facebook::jni::cthis(aref));
-          return Convert<typename std::decay<R>::type>::toJniRet(
-            (cobj->*method)(Convert<typename std::decay<Args>::type>::fromJni(args)...));
-        } catch (const std::exception& ex) {
-          C::mapException(ex);
-          throw;
-        }
-      } catch (...) {
-        using jniRet = typename Convert<typename std::decay<R>::type>::jniType;
-        translatePendingCppExceptionToJavaException();
-        return jniRet{};
-      }
-    }
-  };
-
   // This intentionally erases the real type; JNI will do it anyway
-  return reinterpret_cast<NativeMethodWrapper*>(&(funcWrapper::call));
+  return reinterpret_cast<NativeMethodWrapper*>(&(MethodWrapper<M, method, C, R, Args...>::call));
 }
 
 template<typename R, typename C, typename... Args>
