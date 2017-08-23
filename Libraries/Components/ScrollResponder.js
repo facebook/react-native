@@ -467,8 +467,6 @@ var ScrollResponderMixin = {
 
   /**
    * Displays the scroll indicators momentarily.
-   *
-   * @platform ios
    */
   scrollResponderFlashScrollIndicators: function() {
     UIManager.dispatchViewManagerCommand(
