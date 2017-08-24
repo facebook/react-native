@@ -38,6 +38,7 @@ type DependencyOptions = {|
   +minify: boolean,
   +platform: ?string,
   +recursive: boolean,
+  +rootEntryFile: string,
 |};
 
 /**
@@ -113,6 +114,7 @@ function attachHMRServer<TModule: Moduleish>(
     const response = await packagerServer.getDependencies({
       dev: true,
       entryFile: bundleEntry,
+      rootEntryFile: bundleEntry,
       hot: true,
       minify: false,
       platform: platform,
@@ -137,6 +139,7 @@ function attachHMRServer<TModule: Moduleish>(
       const dependencies = await packagerServer.getShallowDependencies({
         dev: true,
         entryFile: dep.path,
+        rootEntryFile: bundleEntry,
         hot: true,
         minify: false,
         platform: platform,
@@ -249,6 +252,7 @@ function attachHMRServer<TModule: Moduleish>(
       dev: true,
       minify: false,
       entryFile: filename,
+      rootEntryFile: client.bundleEntry,
       hot: true,
       platform: client.platform,
       recursive: true,
@@ -269,6 +273,7 @@ function attachHMRServer<TModule: Moduleish>(
       const response = await packagerServer.getDependencies({
         dev: true,
         entryFile: filename,
+        rootEntryFile: client.bundleEntry,
         hot: true,
         minify: false,
         platform: client.platform,
