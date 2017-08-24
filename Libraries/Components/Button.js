@@ -55,6 +55,7 @@ class Button extends React.Component<{
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
+  hasTVPreferredFocus?: ?boolean,
 }> {
   static propTypes = {
     /**
