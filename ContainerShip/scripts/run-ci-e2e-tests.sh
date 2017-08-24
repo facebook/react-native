@@ -230,13 +230,13 @@ function e2e_suite() {
     # js tests
     if [ $RUN_JS -ne 0 ]; then
       # Check the packager produces a bundle (doesn't throw an error)
-      react-native bundle --max-workers 1 --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js
+      react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js
       if [ $? -ne 0 ]; then
         echo "Could not build android bundle"
         return 1
       fi
 
-      react-native bundle --max-workers 1 --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js
+      react-native bundle --max-workers 1 --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js
       if [ $? -ne 0 ]; then
         echo "Could not build iOS bundle"
         return 1

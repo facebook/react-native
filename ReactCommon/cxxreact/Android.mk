@@ -7,21 +7,21 @@ LOCAL_MODULE := reactnative
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \
   Instance.cpp \
-  JSCExecutor.cpp \
   JSBigString.cpp \
   JSBundleType.cpp \
-  JSCLegacyProfiler.cpp \
+  JSCExecutor.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
   JSCNativeModules.cpp \
   JSCPerfStats.cpp \
+  JSCSamplingProfiler.cpp \
   JSCTracing.cpp \
+  JSCUtils.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
   Platform.cpp \
-	JSCUtils.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)

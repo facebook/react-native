@@ -96,7 +96,8 @@ RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
 #define RCTNullIfNil(value) (value ?: (id)kCFNull)
-#define RCTNilIfNull(value) (value == (id)kCFNull ? nil : value)
+#define RCTNilIfNull(value) \
+  ({ __typeof__(value) t = (value); (id)t == (id)kCFNull ? (__typeof(value))nil : t; })
 
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);

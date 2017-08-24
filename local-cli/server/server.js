@@ -48,9 +48,6 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
       type: 'initialize_packager_done',
     });
   };
-
-  /* $FlowFixMe: we would have either to invariant() everything, or to
-   * auto-generate CLI args Flow types. */
   const runServerArgs: RunServerArgs = args;
   /* $FlowFixMe: ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;

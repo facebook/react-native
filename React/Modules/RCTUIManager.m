@@ -33,6 +33,7 @@
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
+#import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
@@ -53,9 +54,6 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
 
 char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
-NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidRegisterRootViewNotification";
-NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
-NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
 @implementation RCTUIManager
 {
@@ -79,20 +77,9 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
 RCT_EXPORT_MODULE()
 
-- (void)didReceiveNewContentSizeMultiplier
++ (BOOL)requiresMainQueueSetup
 {
-  // Report the event across the bridge.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
-                                              body:@([_bridge.accessibilityManager multiplier])];
-#pragma clang diagnostic pop
-
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
-                                                        object:self];
-    [self setNeedsLayout];
-  });
+  return NO;
 }
 
 - (void)invalidate
@@ -142,7 +129,6 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
-
   _bridge = bridge;
 
   _shadowViewRegistry = [NSMutableDictionary new];
@@ -171,8 +157,87 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
+#if !TARGET_OS_TV
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(namedOrientationDidChange)
+                                               name:UIDeviceOrientationDidChangeNotification
+                                             object:nil];
+#endif
   [RCTLayoutAnimation initializeStatics];
 }
+
+#pragma mark - Event emitting
+
+- (void)didReceiveNewContentSizeMultiplier
+{
+  // Report the event across the bridge.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                              body:@([_bridge.accessibilityManager multiplier])];
+#pragma clang diagnostic pop
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
+                                                        object:self];
+    [self setNeedsLayout];
+  });
+}
+
+#if !TARGET_OS_TV
+// Names and coordinate system from html5 spec:
+// https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
+// https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
+static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
+{
+  NSString *name;
+  NSNumber *degrees = @0;
+  BOOL isLandscape = NO;
+  switch(orientation) {
+    case UIDeviceOrientationPortrait:
+      name = @"portrait-primary";
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:
+      name = @"portrait-secondary";
+      degrees = @180;
+      break;
+    case UIDeviceOrientationLandscapeRight:
+      name = @"landscape-primary";
+      degrees = @-90;
+      isLandscape = YES;
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+      name = @"landscape-secondary";
+      degrees = @90;
+      isLandscape = YES;
+      break;
+    case UIDeviceOrientationFaceDown:
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationUnknown:
+      // Unsupported
+      return nil;
+  }
+  return @{
+    @"name": name,
+    @"rotationDegrees": degrees,
+    @"isLandscape": @(isLandscape),
+  };
+}
+
+- (void)namedOrientationDidChange
+{
+  NSDictionary *orientationEvent = deviceOrientationEventBody([UIDevice currentDevice].orientation);
+  if (!orientationEvent) {
+    return;
+  }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange"
+                                              body:orientationEvent];
+#pragma clang diagnostic pop
+}
+#endif
 
 dispatch_queue_t RCTGetUIManagerQueue(void)
 {
@@ -236,15 +301,11 @@ BOOL RCTIsUIManagerQueue()
     self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [self->_rootViewTags addObject:reactTag];
   });
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
-                                                      object:self
-                                                    userInfo:@{RCTUIManagerRootViewKey: rootView}];
 }
 
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
-  RCTAssertThread(RCTGetUIManagerQueue(), @"viewNameForReactTag can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
   return _shadowViewRegistry[reactTag].viewName;
 }
 
@@ -380,9 +441,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager addUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -393,9 +452,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager prependUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -419,7 +476,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
+  RCTAssertUIManagerQueue();
 
   // This is nuanced. In the JS thread, we create a new update buffer
   // `frameTags`/`frames` that is created/mutated in the JS thread. We access
@@ -749,10 +806,6 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
     [uiManager _purgeChildren:(NSArray<id<RCTComponent>> *)rootView.reactSubviews
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
     [(NSMutableDictionary *)viewRegistry removeObjectForKey:rootReactTag];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
-                                                        object:uiManager
-                                                      userInfo:@{RCTUIManagerRootViewKey: rootView}];
   }];
 }
 
@@ -886,7 +939,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
 
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
                   viewName:(NSString *)viewName
-                  rootTag:(__unused NSNumber *)rootTag
+                  rootTag:(nonnull NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
   RCTComponentData *componentData = _componentDataByName[viewName];
@@ -899,6 +952,10 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   if (shadowView) {
     [componentData setProps:props forShadowView:shadowView];
     _shadowViewRegistry[reactTag] = shadowView;
+    RCTShadowView *rootView = _shadowViewRegistry[rootTag];
+    RCTAssert([rootView isKindOfClass:[RCTRootShadowView class]],
+      @"Given `rootTag` (%@) does not correspond to a valid root shadow view instance.", rootTag);
+    shadowView.rootView = (RCTRootShadowView *)rootView;
   }
 
   // Shadow view is the source of truth for background color this is a little
@@ -1064,8 +1121,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
 - (void)flushUIBlocks
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"flushUIBlocks can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
 
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
@@ -1369,7 +1425,7 @@ RCT_EXPORT_METHOD(setJSResponder:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
     if (!_jsResponder) {
-      RCTLogError(@"Invalid view set to be the JS responder - tag %zd", reactTag);
+      RCTLogError(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
 }
@@ -1396,6 +1452,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1461,7 +1518,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    NSNumber *rootTag = [self _rootTagForReactTag:reactTag];
+    NSNumber *rootTag = [self shadowViewForReactTag:reactTag].rootView.reactTag;
     dispatch_async(dispatch_get_main_queue(), ^{
       UIView *rootView = nil;
       if (rootTag != nil) {
@@ -1470,32 +1527,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
       completion(rootView);
     });
   });
-}
-
-- (NSNumber *)_rootTagForReactTag:(NSNumber *)reactTag
-{
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
-
-  if (reactTag == nil) {
-    return nil;
-  }
-
-  if (RCTIsReactRootView(reactTag)) {
-    return reactTag;
-  }
-
-  NSNumber *rootTag = nil;
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  while (shadowView) {
-    RCTShadowView *parent = [shadowView reactSuperview];
-    if (!parent && RCTIsReactRootView(shadowView.reactTag)) {
-      rootTag = shadowView.reactTag;
-      break;
-    }
-    shadowView = parent;
-  }
-
-  return rootTag;
 }
 
 static UIView *_jsResponder;

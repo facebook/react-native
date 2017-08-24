@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/native-modules-ios.html
 banner: ejected
 next: native-components-ios
-previous: upgrading
+previous: testing
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -29,7 +29,7 @@ A native module is just an Objective-C class that implements the `RCTBridgeModul
 @end
 ```
 
-In addition to implementing the `RCTBridgeModule` protocol, your class must also include the `RCT_EXPORT_MODULE()` macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name.
+In addition to implementing the `RCTBridgeModule` protocol, your class must also include the `RCT_EXPORT_MODULE()` macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name. If the Objective-C class name begins with RCT, the JavaScript module name will exclude the RCT prefix.
 
 ```objectivec
 // CalendarManager.m
@@ -341,7 +341,7 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 
 ## Sending Events to JavaScript
 
-The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `suppportEvents` and call `self sendEventWithName`:
+The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `supportedEvents` and call `self sendEventWithName`:
 
 ```objectivec
 // CalendarManager.h
@@ -437,6 +437,10 @@ class CalendarManager: NSObject {
   @objc(addEvent:location:date:)
   func addEvent(name: String, location: String, date: NSNumber) -> Void {
     // Date is ready to use!
+  }
+  
+  override func constantsToExport() -> [String: Any]! {
+    return ["someKey": "someValue"]
   }
 
 }

@@ -85,6 +85,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
   : instance_(folly::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
+}
+
+void CatalystInstanceImpl::quitQueuesSynchronous() {
   moduleMessageQueue_->quitSynchronous();
   if (uiBackgroundMessageQueue_ != NULL) {
     uiBackgroundMessageQueue_->quitSynchronous();
@@ -95,6 +98,7 @@ void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+    makeNativeMethod("quitQueuesSynchronous", CatalystInstanceImpl::quitQueuesSynchronous),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
@@ -104,9 +108,6 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
     makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
-    makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
-    makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
-    makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
   });
 
   JNativeRunnable::registerNatives();
@@ -264,27 +265,6 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
   #ifdef WITH_JSC_MEMORY_PRESSURE
   instance_->handleMemoryPressure(pressureLevel);
   #endif
-}
-
-jboolean CatalystInstanceImpl::supportsProfiling() {
-  if (!instance_) {
-    return false;
-  }
-  return instance_->supportsProfiling();
-}
-
-void CatalystInstanceImpl::startProfiler(const std::string& title) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->startProfiler(title);
-}
-
-void CatalystInstanceImpl::stopProfiler(const std::string& title, const std::string& filename) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->stopProfiler(title, filename);
 }
 
 }}

@@ -398,8 +398,7 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }), UIBarStyleDefault, integerValue)
 #endif
 
-// TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
-static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
+static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, id json)
 {
   NSUInteger count = fields.count;
   if ([json isKindOfClass:[NSArray class]]) {
@@ -407,23 +406,12 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
       RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json);
     } else {
       for (NSUInteger i = 0; i < count; i++) {
-        result[i] = [RCTConvert CGFloat:json[i]];
+        result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[i])];
       }
     }
   } else if ([json isKindOfClass:[NSDictionary class]]) {
-    if (aliases.count) {
-      json = [json mutableCopy];
-      for (NSString *alias in aliases) {
-        NSString *key = aliases[alias];
-        NSNumber *number = json[alias];
-        if (number != nil) {
-          RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, type, key);
-          ((NSMutableDictionary *)json)[key] = number;
-        }
-      }
-    }
     for (NSUInteger i = 0; i < count; i++) {
-      result[i] = [RCTConvert CGFloat:json[fields[i]]];
+      result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[fields[i]])];
     }
   } else if (json) {
     RCTLogConvertError(json, @(type));
@@ -434,24 +422,25 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
  * This macro is used for creating converter functions for structs that consist
  * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values, aliases) \
-+ (type)type:(id)json                                 \
-{                                                     \
-  static NSArray *fields;                             \
-  static dispatch_once_t onceToken;                   \
-  dispatch_once(&onceToken, ^{                        \
-    fields = values;                                  \
-  });                                                 \
-  type result;                                        \
-  RCTConvertCGStructValue(#type, fields, aliases, (CGFloat *)&result, json); \
-  return result;                                      \
+#define RCT_CGSTRUCT_CONVERTER(type, values)                \
++ (type)type:(id)json                                       \
+{                                                           \
+  static NSArray *fields;                                   \
+  static dispatch_once_t onceToken;                         \
+  dispatch_once(&onceToken, ^{                              \
+    fields = values;                                        \
+  });                                                       \
+  type result;                                              \
+  convertCGStruct(#type, fields, (CGFloat *)&result, json); \
+  return result;                                            \
 }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), (@{@"l": @"x", @"t": @"y"}))
-RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"l": @"x", @"t": @"y", @"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]), nil)
+
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
 
 RCT_ENUM_CONVERTER(CGLineJoin, (@{
   @"miter": @(kCGLineJoinMiter),
@@ -467,7 +456,7 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
 
 RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
-]), nil)
+]))
 
 + (UIColor *)UIColor:(id)json
 {

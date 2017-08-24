@@ -184,23 +184,6 @@ void* NativeToJsBridge::getJavaScriptContext() {
   return m_executor->getJavaScriptContext();
 }
 
-bool NativeToJsBridge::supportsProfiling() {
-  // Intentionally doesn't post to jsqueue. supportsProfiling() can be called from any thread.
-  return m_executor->supportsProfiling();
-}
-
-void NativeToJsBridge::startProfiler(const std::string& title) {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->startProfiler(title);
-  });
-}
-
-void NativeToJsBridge::stopProfiler(const std::string& title, const std::string& filename) {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->stopProfiler(title, filename);
-  });
-}
-
 #ifdef WITH_JSC_MEMORY_PRESSURE
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {

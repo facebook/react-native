@@ -50,7 +50,7 @@ public:
       }
 
       m_jsThread->runOnQueue([this, json]{
-        m_delegate->callNativeModules(*this, [RCTConvert folly_dynamic:json], true);
+        m_delegate->callNativeModules(*this, convertIdToFollyDynamic(json), true);
       });
     };
 
@@ -116,13 +116,6 @@ public:
            asGlobalObjectNamed:@(propName.c_str())
            callback:m_errorBlock];
   }
-
-  virtual bool supportsProfiling() override {
-    return false;
-  };
-  virtual void startProfiler(const std::string &titleString) override {};
-  virtual void stopProfiler(const std::string &titleString,
-                            const std::string &filename) override {};
 
 private:
   id<RCTJavaScriptExecutor> m_jse;

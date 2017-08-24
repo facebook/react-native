@@ -8,6 +8,9 @@
  *
  * @flow
  */
+
+/* eslint-env node */
+
 'use strict';
 
 const babel = require('babel-core');

@@ -128,7 +128,7 @@ static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char*
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
       break;
     case ReactMarker::RUN_JS_BUNDLE_STOP:
-      JReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      JReactMarker::logMarker("RUN_JS_BUNDLE_END", tag);
       break;
     case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
