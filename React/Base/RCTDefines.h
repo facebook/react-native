@@ -48,6 +48,14 @@
 #endif
 #endif
 
+#ifndef RCT_ENABLE_INSPECTOR
+#if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
+#define RCT_ENABLE_INSPECTOR 1
+#else
+#define RCT_ENABLE_INSPECTOR 0
+#endif
+#endif
+
 #if RCT_DEV
 #define RCT_IF_DEV(...) __VA_ARGS__
 #else
