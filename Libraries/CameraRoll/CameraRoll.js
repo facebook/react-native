@@ -150,7 +150,7 @@ class CameraRoll {
   static saveToCameraRoll(
     tag: string,
     type?: 'photo' | 'video',
-  ): Promise<Object> {
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
