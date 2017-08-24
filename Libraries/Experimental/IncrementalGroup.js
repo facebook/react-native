@@ -34,8 +34,7 @@ import type {Props, Context} from 'Incremental';
  *
  * See Incremental.js for more info.
  */
-class IncrementalGroup extends React.Component {
-  props: Props & {disabled?: boolean};
+class IncrementalGroup extends React.Component<Props & {disabled?: boolean}> {
   context: Context;
   _groupInc: string;
   componentWillMount() {
@@ -67,7 +66,7 @@ class IncrementalGroup extends React.Component {
     };
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <Incremental
         onDone={this.props.onDone}

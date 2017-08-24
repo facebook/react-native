@@ -29,7 +29,7 @@ const View = require('View');
  * - The app renders fine
  * - The nativeID property is passed to the native views
  */
-class NativeIdTestApp extends React.Component {
+class NativeIdTestApp extends React.Component<{}> {
   render() {
     const uri = 'data:image/gif;base64,' +
         'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +

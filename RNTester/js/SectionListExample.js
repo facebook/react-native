@@ -68,7 +68,7 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
-class SectionListExample extends React.PureComponent {
+class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
   static title = '<SectionList>';
   static description = 'Performant, scrollable list of data.';
 

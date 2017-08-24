@@ -31,9 +31,11 @@ module.exports = function headerSearchPathIter(project, func) {
         .indexOf('"-lc++"') >= 0;
 
       if (shouldVisitBuildSettings) {
-        buildSettings.HEADER_SEARCH_PATHS = func(
-          buildSettings.HEADER_SEARCH_PATHS || defaultHeaderPaths
-        );
+        const searchPaths = buildSettings.HEADER_SEARCH_PATHS ?
+          [].concat(buildSettings.HEADER_SEARCH_PATHS) :
+          defaultHeaderPaths;
+
+        buildSettings.HEADER_SEARCH_PATHS = func(searchPaths);
       }
     });
 };

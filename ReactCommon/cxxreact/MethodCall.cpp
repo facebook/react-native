@@ -44,12 +44,11 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
   }
 
   if (jsonData.size() > REQUEST_CALLID) {
-    if (!jsonData[REQUEST_CALLID].isInt()) {
+    if (!jsonData[REQUEST_CALLID].isNumber()) {
       throw std::invalid_argument(
         folly::to<std::string>("Did not get valid calls back from JS: %s", folly::toJson(jsonData)));
-    } else {
-      callId = jsonData[REQUEST_CALLID].getInt();
     }
+    callId = jsonData[REQUEST_CALLID].asInt();
   }
 
   std::vector<MethodCall> methodCalls;
@@ -60,8 +59,8 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
     }
 
     methodCalls.emplace_back(
-      moduleIds[i].getInt(),
-      methodIds[i].getInt(),
+      moduleIds[i].asInt(),
+      methodIds[i].asInt(),
       std::move(params[i]),
       callId);
 

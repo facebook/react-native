@@ -30,7 +30,7 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-class Button extends React.Component {
+class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     active: false,
   };
@@ -69,7 +69,7 @@ const supportedOrientationsPickerValues = [
   [],
 ];
 
-class ModalExample extends React.Component {
+class ModalExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animationType: 'none',
     modalVisible: false,

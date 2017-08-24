@@ -16,21 +16,15 @@
   If you answered "No":
 
     We use GitHub Issues exclusively for tracking bugs in React Native. If you're looking for help,
-    check out the How to Get In Touch section of the following guide: 
-    https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#how-to-get-in-touch
+    the Community page at http://facebook.github.io/react-native/support.html list various resources 
+    that should help you get started.
 
   Now scroll below!
 -->
 
-
-### Have you read the Bugs section of the Contributing to React Native Guide?
+### Have you read the [Contributing Guidelines](https://facebook.github.io/react-native/docs/contributing.html)?
 
 (Write your answer here.)
-
-<!--
-  Please read through the bug reporting guidelines thoroughly:
-  https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#bugs
--->
 
 ### Environment
 
@@ -41,15 +35,15 @@
 1. `react-native -v`:
 2. `node -v`:
 3. `npm -v`:
-4. `yarn --version` (if you use Yarn):
+4. `yarn --version`<!-- (if you use Yarn) -->:
 
 Then, specify:
 
 <!-- (What platform are you building for? Choose any from iOS, Android, AppleTV.) -->
-- Target Platform: 
+- Target Platform:
 
 <!-- Which operating system are you using? Specify macOS, Windows, or Linux, along with specific release versions -->
-- Development Operating System: 
+- Development Operating System:
 
 <!-- Include any additional relevant information. Are you using Xcode or Android Studio to build native code? Is the issue specific to a particular iOS or Android SDK? -->
 - Build tools:

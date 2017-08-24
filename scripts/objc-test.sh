@@ -56,7 +56,7 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-open "./scripts/launchPackager.command" || echo "Can't start packager automatically"
+./scripts/packager.sh --max-workers=1 || echo "Can't start packager automatically" &
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 

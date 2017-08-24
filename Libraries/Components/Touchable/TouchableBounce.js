@@ -139,12 +139,36 @@ var TouchableBounce = createReactClass({
   render: function(): React.Element<any> {
     return (
       <Animated.View
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         accessibilityLabel={this.props.accessibilityLabel}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         accessibilityComponentType={this.props.accessibilityComponentType}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         accessibilityTraits={this.props.accessibilityTraits}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         nativeID={this.props.nativeID}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+         * error when upgrading Flow's support for React. Common errors found
+         * when upgrading Flow's React support are documented at
+         * https://fburl.com/eq7bs81w */
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
