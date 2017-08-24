@@ -92,6 +92,9 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
+/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.53 was deployed. To see the error delete this comment and
+ * run Flow. */
 var ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
@@ -173,6 +176,8 @@ var ListView = createReactClass({
      * on every render pass. If they are expensive to re-render, wrap them
      * in StaticContainer or other mechanism as appropriate. Footer is always
      * at the bottom of the list, and header at the top, on every render pass.
+     * In a horizontal ListView, the header is rendered on the left and the
+     * footer on the right.
      */
     renderFooter: PropTypes.func,
     renderHeader: PropTypes.func,
@@ -514,6 +519,9 @@ var ListView = createReactClass({
     }
     Object.assign(props, {
       onScroll: this._onScroll,
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       stickyHeaderIndices: this.props.stickyHeaderIndices.concat(
         stickySectionHeaderIndices,
       ),

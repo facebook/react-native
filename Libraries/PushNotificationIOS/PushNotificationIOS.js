@@ -159,6 +159,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertTitle` : The text displayed as the title of the notification alert.
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
@@ -200,7 +201,7 @@ class PushNotificationIOS {
    * - `userInfo`  : An optional object containing additional notification data.
    * - `thread-id`  : The thread identifier of this notification, if has one.
    */
-  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
+  static getDeliveredNotifications(callback: (notifications: Array<Object>) => void): void {
     RCTPushNotificationManager.getDeliveredNotifications(callback);
   }
 
@@ -209,7 +210,7 @@ class PushNotificationIOS {
    *
    * @param identifiers Array of notification identifiers
    */
-  static removeDeliveredNotifications(identifiers: [string]): void {
+  static removeDeliveredNotifications(identifiers: Array<string>): void {
     RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
   }
 

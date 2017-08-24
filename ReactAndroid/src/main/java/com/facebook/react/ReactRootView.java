@@ -9,25 +9,27 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -39,29 +41,28 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.TaggedRootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
-
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import javax.annotation.Nullable;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
- * manager can re-layout its elements.
- * It delegates handling touch events for itself and child views and sending those events to JS by
- * using JSTouchDispatcher.
- * This view is overriding {@link ViewGroup#onInterceptTouchEvent} method in order to be notified
- * about the events for all of its children and it's also overriding
- * {@link ViewGroup#requestDisallowInterceptTouchEvent} to make sure that
- * {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular
- * touch event this view's {@link View#onTouchEvent} will still return true in order to be notified
- * about all subsequent touch events related to that gesture (in case when JS code want to handle
- * that gesture).
+ * manager can re-layout its elements. It delegates handling touch events for itself and child views
+ * and sending those events to JS by using JSTouchDispatcher. This view is overriding {@link
+ * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
+ * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
+ * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
+ * intercepting it. In case when no child view is interested in handling some particular touch event
+ * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
+ * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
+public class ReactRootView extends SizeMonitoringFrameLayout implements RootView, TaggedRootView {
 
   /**
    * Listener interface for react root view events
@@ -78,8 +79,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag;
+  private int mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
   private boolean mIsAttachedToInstance;
+  private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -189,6 +191,19 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
   }
 
+  @Override
+  public void onViewAdded(View child) {
+    super.onViewAdded(child);
+
+    if (mShouldLogContentAppeared) {
+      mShouldLogContentAppeared = false;
+
+      if (mJSModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
+      }
+    }
+  }
+
   /**
    * {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle)}
    */
@@ -220,6 +235,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
+      mShouldLogContentAppeared = true;
 
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
@@ -241,7 +257,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
+      mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
     }
+    mShouldLogContentAppeared = false;
   }
 
   public void onAttachedToReactInstance() {
@@ -343,12 +361,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         "the onDestroyView() of your hosting Fragment.");
   }
 
+  @Override
   public int getRootViewTag() {
     return mRootViewTag;
-  }
-
-  public void setRootViewTag(int rootViewTag) {
-    mRootViewTag = rootViewTag;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -357,6 +372,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
+    private DisplayMetrics mWindowMetrics = new DisplayMetrics();
+    private DisplayMetrics mScreenMetrics = new DisplayMetrics();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -372,6 +389,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       }
       checkForKeyboardEvents();
       checkForDeviceOrientationChanges();
+      checkForDeviceDimensionsChanges();
     }
 
     private void checkForKeyboardEvents() {
@@ -404,11 +422,35 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
       }
       mDeviceRotation = rotation;
-      // It's important to repopulate DisplayMetrics and export them before emitting the
-      // orientation change event, so that the Dimensions object returns the correct new values.
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
-      emitUpdateDimensionsEvent();
       emitOrientationChanged(rotation);
+    }
+
+    private void checkForDeviceDimensionsChanges() {
+      // Get current display metrics.
+      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      // Check changes to both window and screen display metrics since they may not update at the same time.
+      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics()) ||
+        !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
+        mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
+        mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
+        emitUpdateDimensionsEvent();
+      }
+    }
+
+    private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
+      if (Build.VERSION.SDK_INT >= 17) {
+        return displayMetrics.equals(otherMetrics);
+      } else {
+        // DisplayMetrics didn't have an equals method before API 17.
+        // Check all public fields manually.
+        return displayMetrics.widthPixels == otherMetrics.widthPixels &&
+          displayMetrics.heightPixels == otherMetrics.heightPixels &&
+          displayMetrics.density == otherMetrics.density &&
+          displayMetrics.densityDpi == otherMetrics.densityDpi &&
+          displayMetrics.scaledDensity == otherMetrics.scaledDensity &&
+          displayMetrics.xdpi == otherMetrics.xdpi &&
+          displayMetrics.ydpi == otherMetrics.ydpi;
+      }
     }
 
     private void emitOrientationChanged(final int newRotation) {

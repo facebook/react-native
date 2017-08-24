@@ -26,15 +26,29 @@ using namespace facebook::react;
   std::unique_ptr<CxxModule::Method> _method;
 }
 
-@synthesize JSMethodName = _JSMethodName;
-
 - (instancetype)initWithCxxMethod:(const CxxModule::Method &)method
 {
   if ((self = [super init])) {
-    _JSMethodName = @(method.name.c_str());
     _method = folly::make_unique<CxxModule::Method>(method);
   }
   return self;
+}
+
+- (const char *)JSMethodName
+{
+  return _method->name.c_str();
+}
+
+- (RCTFunctionType)functionType
+{
+  std::string type(_method->getType());
+  if (type == "sync") {
+    return RCTFunctionTypeSync;
+  } else if (type == "async") {
+    return RCTFunctionTypeNormal;
+  } else {
+    return RCTFunctionTypePromise;
+  }
 }
 
 - (id)invokeWithBridge:(RCTBridge *)bridge
@@ -52,7 +66,7 @@ using namespace facebook::react;
   CxxModule::Callback second;
 
   if (arguments.count < _method->callbacks) {
-    RCTLogError(@"Method %@.%s expects at least %lu arguments, but got %tu",
+    RCTLogError(@"Method %@.%s expects at least %zu arguments, but got %tu",
                 RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
                 _method->callbacks, arguments.count);
     return nil;
@@ -110,16 +124,9 @@ using namespace facebook::react;
   }
 }
 
-- (RCTFunctionType)functionType
-{
-  // TODO: support promise-style APIs
-  return _method->syncFunc ? RCTFunctionTypeSync : RCTFunctionTypeNormal;
-}
-
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; name = %@>",
-          [self class], self, self.JSMethodName];
+  return [NSString stringWithFormat:@"<%@: %p; name = %s>", [self class], self, self.JSMethodName];
 }
 
 @end

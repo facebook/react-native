@@ -10,12 +10,12 @@
  * @flow
  */
 
+const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
-const ReactPropTypes = React.PropTypes;
 
 import type { ViewProps } from 'ViewPropTypes';
 
@@ -25,7 +25,7 @@ type Props = ViewProps & {
    * Should be a React element to be rendered and applied as the
    * mask for the child element.
    */
-  maskElement: React.Element<*>,
+  maskElement: React.Element<any>,
 };
 
 /**
@@ -64,12 +64,10 @@ type Props = ViewProps & {
  * transparent pixels block that content.
  *
  */
-class MaskedViewIOS extends React.Component {
-  props: Props;
-
+class MaskedViewIOS extends React.Component<Props> {
   static propTypes = {
     ...ViewPropTypes,
-    maskElement: ReactPropTypes.element.isRequired,
+    maskElement: PropTypes.element.isRequired,
   };
 
   _hasWarnedInvalidRenderMask = false;

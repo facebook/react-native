@@ -186,14 +186,13 @@ public class StackTraceHelper {
         Matcher matcher = STACK_FRAME_PATTERN.matcher(stackTrace[i]);
         if (!matcher.find()) {
           throw new IllegalArgumentException(
-            "Unexpected stack frame format: " + stackTrace[i]);
+             "Unexpected stack frame format: " + stackTrace[i]);
         }
-
         result[i] = new StackFrameImpl(
-            matcher.group(2),
-            matcher.group(1) == null ? "(unknown)" : matcher.group(1),
-            Integer.parseInt(matcher.group(3)),
-            Integer.parseInt(matcher.group(4)));
+          matcher.group(2),
+          matcher.group(1) == null ? "(unknown)" : matcher.group(1),
+          Integer.parseInt(matcher.group(3)),
+          Integer.parseInt(matcher.group(4)));
       }
     }
     return result;

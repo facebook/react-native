@@ -26,7 +26,7 @@ var RNTesterPage = require('./RNTesterPage');
 var Switch = require('Switch');
 var ToolbarAndroid = require('ToolbarAndroid');
 
-class ToolbarAndroidExample extends React.Component {
+class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<ToolbarAndroid>';
   static description = 'Examples of using the Android toolbar.';
 

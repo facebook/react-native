@@ -20,20 +20,15 @@ var React = require('React');
 var PropTypes = require('prop-types');
 var Site = require('Site');
 
-var DocsLayout = React.createClass({
-  childContextTypes: {
-    permalink: PropTypes.string,
-    version: PropTypes.string
-  },
-
-  getChildContext: function() {
+class DocsLayout extends React.Component {
+  getChildContext() {
     return {
       permalink: this.props.metadata.permalink,
       version: Metadata.config.RN_VERSION || 'next'
     };
-  },
+  }
 
-  render: function() {
+  render() {
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
@@ -57,6 +52,11 @@ var DocsLayout = React.createClass({
       </Site>
     );
   }
-});
+}
+
+DocsLayout.childContextTypes = {
+  permalink: PropTypes.string,
+  version: PropTypes.string
+};
 
 module.exports = DocsLayout;

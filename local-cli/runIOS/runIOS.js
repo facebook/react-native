@@ -12,6 +12,7 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
 const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
@@ -19,6 +20,19 @@ const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
 };
 
 function runIOS(argv, config, args) {
+  if (!fs.existsSync(args.projectPath)) {
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['ios'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+      return;
+    } else {
+      throw new Error('iOS project folder not found. Are you sure this is a React Native project?');
+    }
+  }
   process.chdir(args.projectPath);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
   if (!xcodeProject) {
@@ -33,10 +47,10 @@ function runIOS(argv, config, args) {
   );
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
-    if (selectedDevice){
+    if (selectedDevice) {
       return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
     } else {
-      if (devices){
+      if (devices && devices.length > 0) {
         console.log('Could not find device with the name: "' + args.device + '".');
         console.log('Choose one of the following:');
         printFoundDevices(devices);
@@ -53,10 +67,10 @@ function runIOS(argv, config, args) {
 
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
-  if (selectedDevice){
+  if (selectedDevice) {
     return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
   } else {
-    if (devices){
+    if (devices && devices.length > 0) {
       console.log('Could not find device with the udid: "' + args.udid + '".');
       console.log('Choose one of the following:');
       printFoundDevices(devices);
@@ -66,7 +80,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, scheme){
+function runOnSimulator(xcodeProject, args, scheme) {
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -191,7 +205,7 @@ function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
-function printFoundDevices(devices){
+function printFoundDevices(devices) {
   for (let i = devices.length - 1; i >= 0; i--) {
     console.log(devices[i].name + ' Udid: ' + devices[i].udid);
   }

@@ -21,7 +21,7 @@ const {
 } = ReactNative.NativeModules;
 
 
-class AccessibilityManagerTest extends React.Component {
+class AccessibilityManagerTest extends React.Component<{}> {
   componentDidMount() {
     AccessibilityManager.setAccessibilityContentSizeMultipliers({
       'extraSmall': 1.0,
@@ -42,7 +42,7 @@ class AccessibilityManagerTest extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return <View />;
   }
 }

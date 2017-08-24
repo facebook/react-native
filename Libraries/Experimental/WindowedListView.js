@@ -150,9 +150,7 @@ type State = {
   firstRow: number,
   lastRow: number,
 };
-class WindowedListView extends React.Component {
-  props: Props;
-  state: State;
+class WindowedListView extends React.Component<Props, State> {
   /**
    * Recomputing which rows to render is batched up and run asynchronously to avoid wastful updates,
    * e.g. from multiple layout updates in rapid succession.
@@ -423,7 +421,7 @@ class WindowedListView extends React.Component {
     this._firstVisible = newFirstVisible;
     this._lastVisible = newLastVisible;
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     const {firstRow} = this.state;
     const lastRow = clamp(0, this.state.lastRow, this.props.data.length - 1);
     const rowFrames = this._rowFrames;
@@ -613,8 +611,7 @@ type CellProps = {
    */
   onWillUnmount: (rowKey: string) => void,
 };
-class CellRenderer extends React.Component {
-  props: CellProps;
+class CellRenderer extends React.Component<CellProps> {
   _containerRef: NativeMethodsMixinType;
   _offscreenRenderDone = false;
   _timeout = 0;
@@ -700,6 +697,10 @@ class CellRenderer extends React.Component {
     return newProps.rowData !== this.props.rowData;
   }
   _setRef = (ref) => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+     * error when upgrading Flow's support for React. Common errors found when
+     * upgrading Flow's React support are documented at
+     * https://fburl.com/eq7bs81w */
     this._containerRef = ref;
   };
   render() {

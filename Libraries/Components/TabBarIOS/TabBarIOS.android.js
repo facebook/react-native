@@ -17,7 +17,7 @@ const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
 const View = require('View');
 
-class DummyTabBarIOS extends React.Component {
+class DummyTabBarIOS extends React.Component<$FlowFixMeProps> {
   static Item = TabBarItemIOS;
 
   render() {
