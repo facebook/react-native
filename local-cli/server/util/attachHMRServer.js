@@ -239,6 +239,12 @@ function attachHMRServer<TModule: Moduleish>(
     client: Client,
     filename: string,
   ): Promise<?HMRBundle> {
+    // If the main file is an asset, do not generate a bundle.
+    const moduleToUpdate = await packagerServer.getModuleForPath(filename);
+    if (moduleToUpdate.isAsset()) {
+      return;
+    }
+
     const deps = await packagerServer.getShallowDependencies({
       dev: true,
       minify: false,
@@ -269,9 +275,9 @@ function attachHMRServer<TModule: Moduleish>(
         recursive: true,
       });
 
-      const module = await packagerServer.getModuleForPath(filename);
-
-      resolutionResponse = await response.copy({dependencies: [module]});
+      resolutionResponse = await response.copy({
+        dependencies: [moduleToUpdate]},
+      );
     } else {
       // if there're new dependencies compare the full list of
       // dependencies we used to have with the one we now have
@@ -282,8 +288,6 @@ function attachHMRServer<TModule: Moduleish>(
         inverseDependenciesCache: inverseDepsCache,
         resolutionResponse: myResolutionReponse,
       } = await getDependencies(client.platform, client.bundleEntry);
-
-      const moduleToUpdate = await packagerServer.getModuleForPath(filename);
 
       // build list of modules for which we'll send HMR updates
       const modulesToUpdate = [moduleToUpdate];
