@@ -25,11 +25,13 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
   static defaultProps = {
     date: new Date(),
     timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+    locale: false,
   };
 
   state = {
     date: this.props.date,
     timeZoneOffsetInHours: this.props.timeZoneOffsetInHours,
+    locale: this.props.locale,
   };
 
   onDateChange = (date) => {
@@ -42,6 +44,10 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
       return;
     }
     this.setState({timeZoneOffsetInHours: offset});
+  };
+
+  onLocaleChange = (event) => {
+    this.setState({locale: event.nativeEvent.text});
   };
 
   render() {
@@ -64,12 +70,20 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
           />
           <Text> hours from UTC</Text>
         </WithLabel>
+        <WithLabel label="Locale:">
+          <TextInput
+            onChange={this.onLocaleChange}
+            style={styles.textinput}
+            value={this.state.locale}
+          />
+        </WithLabel>
         <Heading label="Date + time picker" />
         <DatePickerIOS
           date={this.state.date}
           mode="datetime"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
           onDateChange={this.onDateChange}
+          locale={this.state.locale}
         />
         <Heading label="Date picker" />
         <DatePickerIOS
@@ -77,12 +91,14 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
           mode="date"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
           onDateChange={this.onDateChange}
+          locale={this.state.locale}
         />
         <Heading label="Time picker, 10-minute interval" />
         <DatePickerIOS
           date={this.state.date}
           mode="time"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
+          locale={this.state.locale}
           onDateChange={this.onDateChange}
           minuteInterval={10}
         />

@@ -34,6 +34,11 @@ RCT_EXPORT_MODULE()
   return [RCTDatePicker new];
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(locale, NSString, UIDatePicker)
+{
+  [view setLocale:[NSLocale localeWithLocaleIdentifier:json ? [RCTConvert NSString:json] : defaultView.locale.localeIdentifier]];
+}
+
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minimumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
