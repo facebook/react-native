@@ -126,7 +126,7 @@ class CameraRoll {
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
    */
-  static saveImageWithTag(tag: string): Promise<Object> {
+  static saveImageWithTag(tag: string): Promise<string> {
     console.warn(
       '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
