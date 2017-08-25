@@ -42,6 +42,7 @@ import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
+import com.facebook.react.modules.callinfo.CallInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
@@ -242,6 +243,14 @@ public class MainReactPackage extends LazyReactPackage {
               @Override
               public NativeModule get() {
                 return new NetInfoModule(context);
+              }
+            }),
+        new ModuleSpec(
+            CallInfoModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new CallInfoModule(context);
               }
             }),
         new ModuleSpec(

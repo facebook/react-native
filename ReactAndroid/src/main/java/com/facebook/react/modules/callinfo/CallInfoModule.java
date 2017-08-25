@@ -39,6 +39,8 @@ public class CallInfoModule extends ReactContextBaseJavaModule
 
   private static final String ERROR_MISSING_PERMISSION = "E_MISSING_PERMISSION";
 
+  private static final String ACTION_PHONE_STATE = "android.intent.action.PHONE_STATE";
+
   private static final String PHONE_STATE_UNKNOWN = "unknown";
   private static final String PHONE_STATE_RINGING = "ringing";
   private static final String PHONE_STATE_OFFHOOK = "offhook";
