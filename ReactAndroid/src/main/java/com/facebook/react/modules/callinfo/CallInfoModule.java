@@ -33,9 +33,6 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
 public class CallInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener {
 
-  private static final String ACTION_PHONE_STATE = "android.intent.action.PHONE_STATE";
-  private static final String ACTION_NEW_OUTGOING_CALL = "android.intent.action.NEW_OUTGOING_CALL";
-
   private static final String MISSING_PERMISSION_MESSAGE =
       "To use CallInfo on Android, add the following to your AndroidManifest.xml:\n" +
       "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />";
