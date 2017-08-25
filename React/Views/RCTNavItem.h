@@ -11,7 +11,15 @@
 
 #import <React/RCTComponent.h>
 
+@protocol RCTNavItemListener <NSObject>
+
+- (void)navItemPropsDidUpdate;
+
+@end
+
 @interface RCTNavItem : UIView
+
+@property (nonatomic, assign) id<RCTNavItemListener> delegate;
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, strong) UIImage *titleImage;

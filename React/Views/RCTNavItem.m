@@ -37,12 +37,14 @@
 {
   _backButtonTitle = backButtonTitle;
   _backButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (void)setBackButtonIcon:(UIImage *)backButtonIcon
 {
   _backButtonIcon = backButtonIcon;
   _backButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (UIBarButtonItem *)backButtonItem
@@ -69,18 +71,21 @@
 {
   _leftButtonTitle = leftButtonTitle;
   _leftButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
 {
   _leftButtonIcon = leftButtonIcon;
   _leftButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (void)setLeftButtonSystemIcon:(UIBarButtonSystemItem)leftButtonSystemIcon
 {
   _leftButtonSystemIcon = leftButtonSystemIcon;
   _leftButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (UIBarButtonItem *)leftButtonItem
@@ -123,18 +128,21 @@
 {
   _rightButtonTitle = rightButtonTitle;
   _rightButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (void)setRightButtonIcon:(UIImage *)rightButtonIcon
 {
   _rightButtonIcon = rightButtonIcon;
   _rightButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (void)setRightButtonSystemIcon:(UIBarButtonSystemItem)rightButtonSystemIcon
 {
   _rightButtonSystemIcon = rightButtonSystemIcon;
   _rightButtonItem = nil;
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
 }
 
 - (UIBarButtonItem *)rightButtonItem
@@ -172,5 +180,21 @@
     _onRightButtonPress(nil);
   }
 }
+
+#define DELEGATE_SETTER(TYPE, SETTER, PROPERTY) \
+- (void)SETTER:(TYPE)PROPERTY \
+{ \
+  _##PROPERTY = PROPERTY; \
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate]; \
+}
+
+DELEGATE_SETTER(BOOL, setNavigationBarHidden, navigationBarHidden)
+DELEGATE_SETTER(BOOL, setShadowHidden, shadowHidden)
+DELEGATE_SETTER(UIColor *, setTintColor, tintColor)
+DELEGATE_SETTER(UIColor *, setBarTintColor, barTintColor)
+DELEGATE_SETTER(BOOL, setTranslucent, translucent)
+DELEGATE_SETTER(NSString *, setTitle, title)
+DELEGATE_SETTER(UIColor *, setTitleTextColor, titleTextColor)
+DELEGATE_SETTER(UIImage *, setTitleImage, titleImage)
 
 @end

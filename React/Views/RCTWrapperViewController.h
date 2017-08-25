@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTViewControllerProtocol.h>
+#import <React/RCTNavItem.h>
 
 @class RCTNavItem;
 @class RCTWrapperViewController;
@@ -21,7 +22,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @end
 
-@interface RCTWrapperViewController : UIViewController <RCTViewControllerProtocol>
+@interface RCTWrapperViewController : UIViewController <RCTViewControllerProtocol, RCTNavItemListener>
 
 - (instancetype)initWithContentView:(UIView *)contentView NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNavItem:(RCTNavItem *)navItem;
