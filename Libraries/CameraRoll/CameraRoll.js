@@ -225,7 +225,7 @@ class CameraRoll {
    *        first: 20,
    *        assetType: 'All',
    *      })
-   *      .then(r => {   
+   *      .then(r => {
    *        this.setState({ photos: r.edges });
    *      })
    *      .catch((err) => {
