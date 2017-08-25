@@ -36,7 +36,7 @@ public class BaseJavaModuleTest {
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
-  private List<JavaModuleWrapper.MethodDescriptor> mMethods;
+  private List<MethodDescriptor> mMethods;
   private JavaModuleWrapper mWrapper;
   private ReadableNativeArray mArguments;
 
@@ -49,10 +49,10 @@ public class BaseJavaModuleTest {
     mArguments = PowerMockito.mock(ReadableNativeArray.class);
   }
 
-  private int findMethod(String mname, List<JavaModuleWrapper.MethodDescriptor> methods) {
+  private int findMethod(String mname, List<MethodDescriptor> methods) {
     int posn = -1;
     for (int i = 0; i< methods.size(); i++) {
-      JavaModuleWrapper.MethodDescriptor md = methods.get(i);
+      MethodDescriptor md = methods.get(i);
       if (md.name == mname) {
         posn = i;
         break;
