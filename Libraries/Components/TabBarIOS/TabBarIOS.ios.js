@@ -57,7 +57,7 @@ class TabBarIOS extends React.Component<{
      * Use 'black' instead of setting `barTintColor` to black. This produces
      * a tab bar with the native iOS style with higher translucency.
      */
-    barStyle: React.PropTypes.oneOf(['default', 'black']),
+    barStyle: PropTypes.oneOf(['default', 'black']),
     /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
