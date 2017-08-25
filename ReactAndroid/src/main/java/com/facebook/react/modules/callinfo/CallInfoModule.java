@@ -38,14 +38,9 @@ public class CallInfoModule extends ReactContextBaseJavaModule
 
   private static final String MISSING_PERMISSION_MESSAGE =
       "To use CallInfo on Android, add the following to your AndroidManifest.xml:\n" +
-      "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />\n" +
-      "<uses-permission android:name=\"android.permission.PROCESS_OUTGOING_CALLS\" />";
+      "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />";
 
   private static final String ERROR_MISSING_PERMISSION = "E_MISSING_PERMISSION";
-
-  private static final String CALL_DIRECTION_UNKNOWN = "unknown";
-  private static final String CALL_DIRECTION_INCOMING = "incoming";
-  private static final String CALL_DIRECTION_OUTGOING = "outgoing";
 
   private static final String PHONE_STATE_UNKNOWN = "unknown";
   private static final String PHONE_STATE_RINGING = "ringing";
@@ -55,7 +50,6 @@ public class CallInfoModule extends ReactContextBaseJavaModule
   private final CallBroadcastReceiver mCallBroadcastReceiver;
   private boolean mNoCallInfoPermission = false;
 
-  private String mCallDirection = CALL_DIRECTION_UNKNOWN;
   private String mPhoneState = PHONE_STATE_UNKNOWN;
 
   public CallInfoModule(ReactApplicationContext reactContext) {
@@ -99,7 +93,6 @@ public class CallInfoModule extends ReactContextBaseJavaModule
   private void registerReceiver() {
     IntentFilter filter = new IntentFilter();
     filter.addAction(ACTION_PHONE_STATE);
-    filter.addAction(ACTION_NEW_OUTGOING_CALL);
     getReactApplicationContext().registerReceiver(mCallBroadcastReceiver, filter);
     mCallBroadcastReceiver.setRegistered(true);
   }
@@ -118,7 +111,6 @@ public class CallInfoModule extends ReactContextBaseJavaModule
 
   private WritableMap createCallInfoEventMap() {
     WritableMap event = new WritableNativeMap();
-    event.putString("call_direction", mCallDirection);
     event.putString("phone_state", mPhoneState);
     return event;
   }
@@ -139,11 +131,17 @@ public class CallInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onReceive(Context context, Intent intent) {
-      if (intent.getAction().equals(ACTION_PHONE_STATE)) {
-        updateAndSendPhoneState();
-      } else if (intent.getAction().equals(ACTION_NEW_OUTGOING_CALL)) {
-        updateAndSendCallDirection();
+      String phoneState = intent.getStringExtra("state");
+
+      if (phoneState.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+        mPhoneState = PHONE_STATE_RINGING;
+      } else if (phoneState.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+        mPhoneState = PHONE_STATE_OFFHOOK;
+      } else if (phoneState.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+        mPhoneState = PHONE_STATE_IDLE;
       }
+
+      sendCallStateChangedEvent();
     }
   }
 }
