@@ -85,6 +85,7 @@ const ReactNative = {
   get Linking() { return require('Linking'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NetInfo() { return require('NetInfo'); },
+  get CallInfo() { return require('CallInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PermissionsAndroid() { return require('PermissionsAndroid'); },
   get PixelRatio() { return require('PixelRatio'); },
