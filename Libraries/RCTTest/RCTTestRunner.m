@@ -152,7 +152,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
 #endif
-    
+
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
     } else {
@@ -165,7 +165,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
   }
 
   // Wait for bridge to disappear before continuing to the next test
-  NSDate *invalidateTimeout = [NSDate dateWithTimeIntervalSinceNow:5];
+  NSDate *invalidateTimeout = [NSDate dateWithTimeIntervalSinceNow:30];
   while (invalidateTimeout.timeIntervalSinceNow > 0 && batchedBridge != nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];

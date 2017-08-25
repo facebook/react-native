@@ -17,7 +17,7 @@
 
 #define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                          \
 {                                                                                                 \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5];                                      \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                      \
   NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
   while ((CONDITION)) {                                                                           \
     [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
