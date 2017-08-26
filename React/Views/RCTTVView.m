@@ -29,19 +29,41 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    self.tvParallaxProperties = @{
-      @"enabled": @YES,
-      @"shiftDistanceX": @2.0f,
-      @"shiftDistanceY": @2.0f,
-      @"tiltAngle": @0.05f,
-      @"magnification": @1.0f,
-	  @"pressMagnification": @1.0f,
-      @"pressDuration": @0.3f,
-      @"pressDelay": @0.0f
-    };
+    dispatch_once(&onceToken, ^{
+      defaultTVParallaxProperties = @{
+                                      @"enabled": @YES,
+                                      @"shiftDistanceX": @2.0f,
+                                      @"shiftDistanceY": @2.0f,
+                                      @"tiltAngle": @0.05f,
+                                      @"magnification": @1.0f,
+                                      @"pressMagnification": @1.0f,
+                                      @"pressDuration": @0.3f,
+                                      @"pressDelay": @0.0f
+                                      };
+    });
+    self.tvParallaxProperties = defaultTVParallaxProperties;
   }
 
   return self;
+}
+
+static NSDictionary* defaultTVParallaxProperties = nil;
+
+static dispatch_once_t onceToken;
+
+
+- (void)setTvParallaxProperties:(NSDictionary *)tvParallaxProperties {
+  if (_tvParallaxProperties == nil) {
+    _tvParallaxProperties = [defaultTVParallaxProperties copy];
+    return;
+  }
+  NSMutableDictionary *newParallaxProperties = [NSMutableDictionary dictionaryWithDictionary:_tvParallaxProperties];
+  for (NSString *k in [defaultTVParallaxProperties allKeys]) {
+    if (tvParallaxProperties[k]) {
+      newParallaxProperties[k] = tvParallaxProperties[k];
+    }
+  }
+  _tvParallaxProperties = [newParallaxProperties copy];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
@@ -64,7 +86,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
 	
 	if([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
-		float magnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
+    float magnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
 		
 		// Duration of press animation
 		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
