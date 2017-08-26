@@ -183,7 +183,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
       "UIManagerModule.addRootView");
-    final int tag = ((TaggedRootView) rootView).getRootViewTag();
+    final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
 
     final int width;
     final int height;
