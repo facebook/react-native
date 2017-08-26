@@ -125,6 +125,11 @@ public class ReactHorizontalScrollViewManager
   }
 
   @Override
+  public void flashScrollIndicators(ReactHorizontalScrollView scrollView) {
+    scrollView.flashScrollIndicators();
+  }
+
+  @Override
   public void scrollTo(
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {

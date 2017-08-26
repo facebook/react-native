@@ -121,6 +121,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     mScrollEnabled = scrollEnabled;
   }
 
+  public void flashScrollIndicators() {
+    awakenScrollBars();
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
