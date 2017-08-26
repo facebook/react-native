@@ -65,12 +65,6 @@ class ItemComponent extends React.PureComponent<{
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
         tvParallaxProperties={{
-            enabled: true,
-			shiftDistanceX: 0,
-			shiftDistanceY: 0,
-			tiltAngle: 0,
-			magnification: 1.0,
-			pressDuration: 0.1,
             pressMagnification: 1.1,
         }}
 

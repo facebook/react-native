@@ -86,7 +86,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
 	
 	if([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
-    float magnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
+    float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
+    float pressMagnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
 		
 		// Duration of press animation
 		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
@@ -97,20 +98,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 		[UIView animateWithDuration:pressDuration
 				delay:pressDelay
 				options: UIViewAnimationOptionBeginFromCurrentState
-				animations: ^{
-	
-					// Transform the view to the initial magnification
-					self.transform = CGAffineTransformMakeScale(1.0, 1.0);
-	
-				}
+        animations: ^{}
 				completion:^(__unused BOOL finished) {
 					
 					// Transform the view the focus magnification
-					self.transform = CGAffineTransformMakeScale(magnification, magnification);
+					self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
 				
-					[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-																		object:@{@"eventType":@"select",@"tag":self.reactTag}];
 				}];
+    [UIView animateWithDuration:pressDuration
+                          delay:pressDelay
+                        options: UIViewAnimationOptionBeginFromCurrentState
+                     animations: ^{}
+                     completion:^(__unused BOOL finished) {
+                       
+                       // Transform the view the focus magnification
+                       self.transform = CGAffineTransformMakeScale(magnification, magnification);
+                       
+                       [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                                           object:@{@"eventType":@"select",@"tag":self.reactTag}];
+                     }];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
 															object:@{@"eventType":@"select",@"tag":self.reactTag}];
