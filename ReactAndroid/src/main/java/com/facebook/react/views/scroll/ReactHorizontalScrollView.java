@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.scroll;
 
+import java.util.HashMap;
+
 import javax.annotation.Nullable;
 
 import android.annotation.TargetApi;
@@ -52,6 +54,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
+  private @Nullable HashMap<String, Integer> mContentOffset = null;
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -92,6 +95,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mPagingEnabled = pagingEnabled;
   }
 
+  public void setContentOffset(HashMap<String, Integer> contentOffset) {
+    mContentOffset = contentOffset;
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
@@ -103,8 +110,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    // Call with the present values in order to re-layout if necessary
-    scrollTo(getScrollX(), getScrollY());
+    // If contentOffset is set scroll to its position
+    if (mContentOffset != null) {
+      scrollTo(mContentOffset.get("x"), mContentOffset.get("y"));
+      if (mPagingEnabled) {
+        smoothScrollToPage(0);
+      }
+    } else {
+      // Call with the present values in order to re-layout if necessary
+      scrollTo(getScrollX(), getScrollY());
+    }
   }
 
   @Override

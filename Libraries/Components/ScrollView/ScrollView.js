@@ -93,7 +93,6 @@ const ScrollView = createReactClass({
     /**
      * Used to manually set the starting scroll offset.
      * The default value is `{x: 0, y: 0}`.
-     * @platform ios
      */
     contentOffset: PointPropType,
     /**
