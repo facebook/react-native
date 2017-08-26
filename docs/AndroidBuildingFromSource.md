@@ -52,10 +52,10 @@ ndk.dir=/Users/your_unix_name/android-sdk-macosx/ndk-bundle
 
 ### Manual Download links for Android NDK
 
-1. Mac OS (64-bit) - http://dl.google.com/android/repository/android-ndk-r14b-darwin-x86_64.zip
-2. Linux (64-bit) - http://dl.google.com/android/repository/android-ndk-r14b-linux-x86_64.zip
-3. Windows (64-bit) - http://dl.google.com/android/repository/android-ndk-r14b-windows-x86_64.zip
-4. Windows (32-bit) - http://dl.google.com/android/repository/android-ndk-r14b-windows-x86.zip
+1. Mac OS (64-bit) - http://dl.google.com/android/repository/android-ndk-r15c-darwin-x86_64.zip
+2. Linux (64-bit) - http://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
+3. Windows (64-bit) - http://dl.google.com/android/repository/android-ndk-r15c-windows-x86_64.zip
+4. Windows (32-bit) - http://dl.google.com/android/repository/android-ndk-r15c-windows-x86.zip
 
 You can find further instructions on the [official page](https://developer.android.com/ndk/index.html).
 
