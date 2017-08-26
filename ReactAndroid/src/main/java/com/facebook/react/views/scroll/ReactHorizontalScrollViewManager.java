@@ -105,6 +105,11 @@ public class ReactHorizontalScrollViewManager
     view.setPagingEnabled(pagingEnabled);
   }
 
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactHorizontalScrollView view, double snapToInterval) {
+    view.setSnapToInterval(snapToInterval);
+  }
+
   /**
    * Controls overScroll behaviour
    */

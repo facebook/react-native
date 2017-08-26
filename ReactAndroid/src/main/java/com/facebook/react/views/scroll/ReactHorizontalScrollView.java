@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -41,6 +42,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable Rect mClippingRect;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
+  private double mSnapToInterval;
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
@@ -92,6 +94,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public void setSnapToInterval(double snapToInterval) {
+    mSnapToInterval = snapToInterval;
   }
 
   @Override
@@ -235,6 +241,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
   }
 
+  private int getPageWidth() {
+    if(mSnapToInterval != 0) {
+      return (int) (PixelUtil.toPixelFromDIP(mSnapToInterval) + 0.5);
+    }
+    return getWidth();
+  }
+
   private boolean isScrollPerfLoggingEnabled() {
     return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
   }
@@ -312,7 +325,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * scrolling.
    */
   private void smoothScrollToPage(int velocity) {
-    int width = getWidth();
+    int width = getPageWidth();
     int currentX = getScrollX();
     // TODO (t11123799) - Should we do anything beyond linear accounting of the velocity
     int predictedX = currentX + velocity;

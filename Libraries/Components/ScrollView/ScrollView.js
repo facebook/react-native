@@ -335,8 +335,6 @@ const ScrollView = createReactClass({
      * that have lengths smaller than the scroll view. Typically used in
      * combination with `snapToAlignment` and `decelerationRate="fast"`.
      * Overrides less configurable `pagingEnabled` prop.
-     *
-     * @platform ios
      */
     snapToInterval: PropTypes.number,
     /**
