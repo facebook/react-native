@@ -41,10 +41,8 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
-import com.facebook.react.uimanager.TaggedRootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -62,7 +60,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code want to handle that
  * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout implements RootView, TaggedRootView {
+public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
   /**
    * Listener interface for react root view events
@@ -79,7 +77,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
+  private int mRootViewTag;
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
@@ -257,7 +255,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
-      mRootViewTag = ReactRootViewTagGenerator.getNextRootViewTag();
     }
     mShouldLogContentAppeared = false;
   }
@@ -361,9 +358,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         "the onDestroyView() of your hosting Fragment.");
   }
 
-  @Override
   public int getRootViewTag() {
     return mRootViewTag;
+  }
+
+  public void setRootViewTag(int rootViewTag) {
+    mRootViewTag = rootViewTag;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
