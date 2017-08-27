@@ -42,9 +42,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTPackagerConnection.h"
 #endif
 
-#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper.h")
-
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
