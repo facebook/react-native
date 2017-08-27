@@ -102,6 +102,8 @@ class AppState extends NativeEventEmitter {
     // the Android implementation.
     this.currentState = RCTAppState.initialAppState || 'active';
 
+    let eventUpdated = false;
+
     // TODO: this is a terrible solution - in order to ensure `currentState` prop
     // is up to date, we have to register an observer that updates it whenever
     // the state changes, even if nobody cares. We should just deprecate the
@@ -109,6 +111,7 @@ class AppState extends NativeEventEmitter {
     this.addListener(
       'appStateDidChange',
       (appStateData) => {
+        eventUpdated = true;
         this.currentState = appStateData.app_state;
       }
     );
@@ -118,7 +121,9 @@ class AppState extends NativeEventEmitter {
     // and expose `getCurrentAppState` method directly.
     RCTAppState.getCurrentAppState(
       (appStateData) => {
-        this.currentState = appStateData.app_state;
+        if (!eventUpdated) {
+          this.currentState = appStateData.app_state;
+        }
       },
       logError
     );

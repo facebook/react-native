@@ -50,7 +50,11 @@ type NetworkRequestInfo = {
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component {
+class NetworkOverlay extends React.Component<Object, {
+  dataSource: ListView.DataSource,
+  newDetailInfo: bool,
+  detailRowID: ?number,
+}> {
   _requests: Array<NetworkRequestInfo>;
   _listViewDataSource: ListView.DataSource;
   _listView: ?ListView;
@@ -72,12 +76,6 @@ class NetworkOverlay extends React.Component {
   _socketIdMap: Object;
   // Map of `xhr._index` -> `index in `_requests``.
   _xhrIdMap: {[key: number]: number};
-
-  state: {
-    dataSource: ListView.DataSource,
-    newDetailInfo: bool,
-    detailRowID: ?number,
-  };
 
   constructor(props: Object) {
     super(props);

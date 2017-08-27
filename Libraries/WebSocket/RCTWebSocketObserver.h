@@ -20,6 +20,7 @@
 @interface RCTWebSocketObserver : NSObject
 
 - (instancetype)initWithURL:(NSURL *)url;
+- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue;
 
 @property (nonatomic, weak) id<RCTWebSocketObserverDelegate> delegate;
 

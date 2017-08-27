@@ -85,7 +85,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
   : instance_(folly::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
-  moduleMessageQueue_->quitSynchronous();
+  if (moduleMessageQueue_ != NULL) {
+    moduleMessageQueue_->quitSynchronous();
+  }
   if (uiBackgroundMessageQueue_ != NULL) {
     uiBackgroundMessageQueue_->quitSynchronous();
   }

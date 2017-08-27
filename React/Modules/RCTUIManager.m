@@ -33,7 +33,7 @@
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
-#import "RCTShadowView+Hierarchy.h"
+#import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
@@ -76,6 +76,11 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
 
 - (void)invalidate
 {
@@ -934,7 +939,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
 
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
                   viewName:(NSString *)viewName
-                  rootTag:(__unused NSNumber *)rootTag
+                  rootTag:(nonnull NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
   RCTComponentData *componentData = _componentDataByName[viewName];
@@ -947,6 +952,10 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   if (shadowView) {
     [componentData setProps:props forShadowView:shadowView];
     _shadowViewRegistry[reactTag] = shadowView;
+    RCTShadowView *rootView = _shadowViewRegistry[rootTag];
+    RCTAssert([rootView isKindOfClass:[RCTRootShadowView class]],
+      @"Given `rootTag` (%@) does not correspond to a valid root shadow view instance.", rootTag);
+    shadowView.rootView = (RCTRootShadowView *)rootView;
   }
 
   // Shadow view is the source of truth for background color this is a little
@@ -1416,7 +1425,7 @@ RCT_EXPORT_METHOD(setJSResponder:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
     if (!_jsResponder) {
-      RCTLogError(@"Invalid view set to be the JS responder - tag %zd", reactTag);
+      RCTLogError(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
 }

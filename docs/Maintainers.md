@@ -4,8 +4,8 @@ title: What to Expect from Maintainers
 layout: docs
 category: Contributing
 permalink: docs/maintainers.html
-next: understanding-cli
-previous: testing
+next: testing
+previous: contributing
 ---
 
 So you have read through the [contributor's guide](docs/contributing.html) and you're getting ready to send your first pull request. Perhaps you've found an issue in React Native and want to work with the maintainers to land a fix. Here's what you can expect to happen when you open an issue or send a pull request.
@@ -19,42 +19,80 @@ We see dozens of new issues being created every day. In order to help maintainer
 * New issues should follow the [Issue Template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md).
 * Issues should provide clear, easy to follow steps alongside sample code to reproduce the issue. Ideally, provide a [Snack](http://snack.expo.io/).
 
-Issues that do not  meet the above criteria can be closed immediately, with a link to the [contributor's guide](docs/contributing.html).
-
-### Issues should be reproducible
-
-Issues should be relatively easy to reproduce. Sometimes the issue affects a particular app but a minimal repro is not provided, perhaps a crash is seen in the logs and the author is not sure where its coming from, maybe the issue is sporadic.
-
-As it happens, if a maintainer cannot easily reproduce the issue, one cannot reasonably expect them to be able to work on a fix. These issues can be closed with a short explanation why.
-
-Exceptions can be made if multiple people appear to be affected by the issue, especially right after a new React Native release is cut.
+Issues that do not meet the above criteria can be closed immediately, with a link to the [contributor's guide](docs/contributing.html).
 
 ### New issue runbook
 
 You have gathered all the information required to open a new issue, and you are confident it meets the [contributor guidelines](docs/contributing.html). Once you post an issue, this is what our maintainers will consider when deciding how to move forward:
 
-1. Is this issue a feature request? If so, they will ask you to use Canny for feature requests by issuing the `@facebook-github-bot feature` command, closing the issue.
-2. Is this issue a request for help? If so, the maintainer will encourage you to ask on Stack Overflow by issuing the `@facebook-github-bot stack-overflow` command, closing the issue.
-3. Was the [Issue Template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md) used to fill out the issue? Did the author answer Yes to both questions at the top? If not, the maintainer will ask you to provide more information by issuing the `@facebook-github-bot no-template` command, closing the issue.
-4. Does the issue include a Snack or list of steps to reproduce the issue? If not, a maintainer will ask for a repro by issuing the `@facebook-github-bot needs-repro` command.
-5. Can the issue be reliably reproduced? If not, a maintainer may issue the `@facebook-github-bot cannot-repro` command, closing the issue.
-6. Is the issue for an old release of React Native? If so, expect to be asked if the issue can be reproduced in the latest release candidate.
+* **Is this issue a feature request?** 
 
-You can learn more about how GitHub Bot commands are used [here](docs/maintainers.html#facebook-github-bot).
+  Some features may not be a good fit for the core React Native library. This is usually the case for **new modules* that Facebook does not use in production. In this case, a maintainer will explain that this should be released to npm as a separate module, allowing users to easily pull in the module in their projects.
+
+  Even if the feature does belong in the core library, adding it means maintaining it. A maintainer will encourage you to submit a pull request or otherwise post your request to [Canny](https://react-native.canny.io/feature-requests) by issuing the `@facebook-github-bot feature` command, closing the issue.
+
+  An exception can be made for proposals and long-running discussions, though these should be rare. If you have been contributing to the project long enough, you will probably already have access to the [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) Facebook Group, where this sort of discussion is usually held.
+
+* **Is this issue a request for help?** 
+
+  Questions should absolutely be asked on Stack Overflow rather than GitHub. Maintainers may encourage you to ask on Stack Overflow by issuing the `@facebook-github-bot stack-overflow` command, closing the issue.
+  Feel free to also answer some [questions on Stack Overflow](stackoverflow.com/questions/tagged/react-native), you'll get rep!
+
+* **Was the [Issue Template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md) used to fill out the issue? Did the author answer Yes to both questions at the top?** 
+
+  If not, the maintainer will ask you to provide more information by issuing the `@facebook-github-bot no-template` command, closing the issue.
+
+* **Is the issue a duplicate of an existing, open issue?**
+
+  A maintainer will use the `@facebook-github-bot duplicate #123` command to mark the issue as a duplicate of issue #123, closing it.
+  
+* **Does the issue include a Snack or list of steps to reproduce the issue?** 
+
+  Issues should be relatively easy to reproduce. Sometimes the issue affects a particular app but a minimal repro is not provided, perhaps a crash is seen in the logs and the author is not sure where its coming from, maybe the issue is sporadic.
+
+  As it happens, if a maintainer cannot easily reproduce the issue, one cannot reasonably expect them to be able to work on a fix. These issues can be closed by issuing the `@facebook-github-bot needs-repro` command.
+
+  Exceptions can be made if multiple people appear to be affected by the issue, especially right after a new React Native release is cut.
+
+* **Is the issue for an old release of React Native?** 
+
+  If so, expect to be asked if the issue can be reproduced in the latest release candidate.
+
+* **Can the issue be reliably reproduced?** 
+
+  If not, a maintainer may issue the `@facebook-github-bot cannot-repro` command, closing the issue.
+
+* **Does the issue need more information?**
+
+  Some issues need additional information in order to reproduce them. Maintainers should explain what additional information is needed, using the `@facebook-github-bot label Needs more information` command to label the issue as such. 
+
+  Issues with the 'Needs more information' label that have been open for more than a week without a response from the author can be closed using `@facebook-github-bot no-reply`.
+
+* **Has the issue been resolved already in the comments?**
+
+  Sometimes another contributor has already provided a solution in the comments. Maintainers may issue the `@facebook-github-bot answered` command to close the issue.
+
+> **Reopening a closed issue:** Sometimes it's necessary to reopen an issue. For example, if an issue was closed waiting for the author, then the author replied and it turns out this is indeed a bug, you can comment `@facebook-github-bot reopen` to reopen it.
+
+Valid bug reports with good repro steps are some of the best issues! Maintainers should thank the author for finding the issue, then explain that React Native is a community project and **ask them if they would be up for sending a fix**.
 
 ### Triaging issues
 
 If a issue is still open after going through all of the checks above, it will move on to the triage stage. A maintainer will then do the following:
 
-1. Add relevant labels: iOS, Android, Tooling, Documentation. They will do so by issuing the `@facebook-github-bot label` command.
+1. Add relevant labels. For example, if this is an issue that affects Android, use the `@facebook-github-bot label Android` command.
 2. Leave a comment saying the issue has been triaged.
 3. Tag the relevant people.
 
-For example, if a issue describes something that needs to be addressed before the next release is cut, a maintainer may tag @grabbou. If the issue concerns Animated, they may tag @janicduplessis. If this is a docs issue, they may tag @hramos. You can generally figure out who is interested in what sort of issue by looking at the [CODEOWNERS](https://github.com/facebook/react-native/blob/master/.github/CODEOWNERS) file.
+You can generally figure out who may be relevant for a given issue by looking at the [CODEOWNERS](https://github.com/facebook/react-native/blob/master/.github/CODEOWNERS) file.
+
+#### What are all the available commands for the bot?
+
+You can find the full command reference in the [Facebook GitHub Bot](/docs/maintainers.html#facebook-github-bot) section below. 
 
 ### Stale issues
 
-Issues that have been open for over six months and have had no activity in the last two months may be closed periodically. If your issue gets closed in this manner, it's nothing personal. If you strongly believe that the issue should remain open, just let us know why.
+Issues in the "Needs more information" state may be closed after a week with no followup from the author. Issues that have have had no activity in the last two months may be closed periodically. If your issue gets closed in this manner, it's nothing personal. If you strongly believe that the issue should remain open, just let us know why.
 
 Simply commenting that the issue still exists is not very compelling (it's rare for critical, release blocking issues to have no activity for two months!). In order to make a good case for reopening the issue, you may need to do a bit of work:
 
@@ -63,7 +101,6 @@ Simply commenting that the issue still exists is not very compelling (it's rare 
 * Is there a pull request that addressed this issue? Post a comment with the PR number so we can follow up.
 
 A couple of contributors making a good case may be all that is needed to reopen the issue.
-
 
 ## Handling pull requests
 
@@ -77,7 +114,40 @@ We use the [Contributors Chrome extension](https://github.com/hzoo/contributors-
 
 Reviewing a PR can sometimes require more time from a maintainer than it took you to write the code. Maintainers need to consider all the ramifications of importing your patch into the codebase. Does it potentially introduce breaking changes? What are the performance considerations of adding a new dependency? Will the docs need to be updated as well? Does this belong in core, or would it be a better fit as a third party package?
 
-Finding the right person to review a pull request can sometimes be tricky. A pull request may simultaneously touch iOS, Java, and JavaScript code. If a pull request has been waiting for review for a while, you can help out by looking at the blame history for the files you're touching. Is there anyone that appears to be knowledgeable in the part of the codebase the PR is touching?
+Once you open a pull request, this is how you can expect maintainers to review it:
+
+* **Is the pull request missing information?**
+
+  A test plan is required! Add the labels 'Needs revision' and 'Needs response from author'. You can then follow up with a response like:
+
+  > Hey @author, thanks for sending the pull request.
+  > Can you please add all the info specified in the [template](https://github.com/facebook/react-native/blob/master/.github/PULL_REQUEST_TEMPLATE.md)? This is necessary for people to be able to understand and review your pull request.
+
+* **Does the code style match the [Style guide](docs/contributing.html#style-guide)?**
+
+  If not, link to the style guide and add the label 'Needs revision'.
+
+* **Does the pull request add a completely new feature we don't want to add to the core and maintain?**
+
+  Ask the author to release it a separate npm module and close the pull request.
+
+* **Does the pull request do several unrelated things at the same time?**
+
+  Ask the author to split it.
+
+* **Is the pull request old and need rebasing?**
+
+  Ask the author "Can you rebase please?" and add the label 'Needs response from author'.
+
+* **Is a pull request waiting for a response from author?**
+
+  Pull requests like these usually have the label 'Needs response from author'. If there has been no reply in the last 30 days, close it with a response like the following:
+
+  > Thanks for making the pull request, but we are closing it due to inactivity. If you want to get your proposed changes merged, please rebase your branch with master and send a new pull request.
+
+* **Is the pull request old and waiting for review?**
+
+  Review it or cc someone who might be able to review. Finding the right person to review a pull request can sometimes be tricky. A pull request may simultaneously touch iOS, Java, and JavaScript code. If a pull request has been waiting for review for a while, you can help out by looking at the blame history for the files you're touching. Is there anyone that appears to be knowledgeable in the part of the codebase the PR is touching?
 
 ### Closing pull requests
 
@@ -96,9 +166,8 @@ If a contributor becomes hostile or disrespectful, they will be referred to the 
 
 ## Facebook GitHub Bot
 
-The Facebook GitHub Bot allows certain active members of the community to perform administrative actions such as labeling and closing issues. The list of community members with this kind of access can be found at the top of the [IssueCommands.txt](https://github.com/facebook/react-native/blob/master/bots/IssueCommands.txt) file in the repository.
-
-Once you have become an active contributor in the community, you may open a pull request to add yourself to the list, making sure to list your prior contributions to the community when doing so.
+The Facebook GitHub Bot allows members of the community to perform administrative actions such as labeling and closing issues. 
+To have access to the bot, please add your GitHub username to the first line of [IssueCommands.txt](https://github.com/facebook/react-native/blob/master/bots/IssueCommands.txt), in alphabetical order, by submitting a Pull Request.
 
 ### Using the Facebook GitHub Bot
 
@@ -241,6 +310,14 @@ Additionally, the following commands can be used on a pull request:
     </h4>
     <div><p>
       Flag the PR for merging. If used by a core contributor, the bot will attempt to import the pull request. In general, core contributors are those who have consistently submitted high quality contributions to the project. Access control for this command is configured internally in Facebook, outside of the IssueCommands.txt file mentioned above.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> large-pr
+    </h4>
+    <div><p>
+      Flag PRs that change too many files at once. These PRs are extremely unlikely to be reviewed. The bot will leave a helpful message indicating next steps such as splitting the PR. The bot will <strong>close</strong> the PR after adding the "Large PR" label.
     </p></div>
   </div>
 </div>

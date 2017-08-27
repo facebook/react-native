@@ -1,9 +1,16 @@
 <!--
-Thank you for sending the PR!
+Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
 
-If you changed any code, please provide us with clear instructions on how you verified your changes work. In other words, a test plan is *required*. Bonus points for screenshots and videos!
+Help us understand your motivation by explaining why you decided to make this change.
 
-Please read the Contribution Guidelines at https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md to learn more about contributing to React Native.
+You can learn more about contributing to React Native here: http://facebook.github.io/react-native/docs/contributing.html
 
 Happy contributing!
+
 -->
+
+(Write your motivation here.)
+
+## Test Plan
+
+(Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!)

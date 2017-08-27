@@ -10,6 +10,7 @@
 - (instancetype)initWithURL:(NSURL *)url;
 - (void)connect;
 - (void)closeQuietly;
+- (void)sendEventToAllConnections:(NSString *)event;
 - (void)sendOpenEvent:(NSString *)pageId;
 @end
 

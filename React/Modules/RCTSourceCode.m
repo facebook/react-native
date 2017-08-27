@@ -17,6 +17,11 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{

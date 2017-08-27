@@ -94,6 +94,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'NavigatorIOSBarStyleExample',
+    module: require('./NavigatorIOSBarStyleExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'NavigatorIOSExample',
     module: require('./NavigatorIOSExample'),
     supportsTVOS: true,
@@ -157,6 +162,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'TabBarIOSExample',
     module: require('./TabBarIOSExample'),
     supportsTVOS: true,
+  },
+  {
+    key: 'TabBarIOSBarStyleExample',
+    module: require('./TabBarIOSBarStyleExample'),
+    supportsTVOS: false,
   },
   {
     key: 'TextExample',
@@ -334,6 +344,11 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'TransformExample',
     module: require('./TransformExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'TVEventHandlerExample',
+    module: require('./TVEventHandlerExample'),
     supportsTVOS: true,
   },
   {
