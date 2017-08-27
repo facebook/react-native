@@ -14,7 +14,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTJSEnvironment.h"
@@ -258,7 +258,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
-  #if ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
