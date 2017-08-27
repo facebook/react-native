@@ -12,12 +12,7 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
-const uuid = require('uuid');
-
-const { BlobModule } = require('NativeModules');
-
-import type { BlobProps, BlobData, BlobOptions } from 'BlobTypes';
+import type { BlobData, BlobOptions } from 'BlobTypes';
 
 /**
  * Opaque JS representation of some binary data in native.
@@ -64,9 +59,9 @@ class Blob {
    * Currently we only support creating Blobs from other Blobs.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
    */
-  constructor(parts: Array<Blob> = [], options: any) {
+  constructor(parts: Array<Blob | string> = [], options?: BlobOptions) {
     const BlobManager = require('BlobManager');
-    this.data = BlobManager.createFromParts(parts).data;
+    this.data = BlobManager.createFromParts(parts, options).data;
   }
 
   /*

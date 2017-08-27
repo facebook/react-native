@@ -17,7 +17,7 @@ const Blob = require('Blob');
 const BlobRegistry = require('BlobRegistry');
 const { BlobModule } = require('NativeModules');
 
-import type { BlobData, BlobOptions } from './BlobTypes';
+import type { BlobData, BlobOptions } from 'BlobTypes';
 
 /**
  * Module to manage blobs
@@ -27,7 +27,7 @@ class BlobManager {
   /**
    * Create blob from existing array of blobs.
    */
-  static createFromParts(parts: Array<Blob | string>, options: BlobOptions): Blob {
+  static createFromParts(parts: Array<Blob | string>, options?: BlobOptions): Blob {
     const blobId = uuid.v4();
     const items = parts.map(part => {
       if (part instanceof ArrayBuffer || global.ArrayBufferView && part instanceof global.ArrayBufferView) {
@@ -60,6 +60,7 @@ class BlobManager {
       offset: 0,
       size,
       type: options ? options.type : '',
+      lastModified: options ? options.lastModified : Date.now(),
     });
   }
 

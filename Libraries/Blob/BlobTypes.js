@@ -16,11 +16,12 @@ export type BlobData = {
   blobId: string,
   offset: number,
   size: number,
+  name?: string,
   type?: string,
   lastModified?: number,
 };
 
 export type BlobOptions = {
   type: string,
-  endings: "transparent" | "native",
+  lastModified: number,
 };
