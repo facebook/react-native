@@ -6,6 +6,7 @@
  */
 #import "RCTNativeAnimatedModule.h"
 
+#import "RCTAnimatedValueChangeEvent.h"
 #import "RCTNativeAnimatedNodesManager.h"
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
@@ -20,6 +21,8 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_preOperations;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
 
@@ -41,7 +44,7 @@ RCT_EXPORT_MODULE();
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  [super setBridge:bridge];
+  _bridge = bridge;
 
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
   _operations = [NSMutableArray new];
@@ -293,15 +296,10 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
 #pragma mark -- Events
 
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[@"onAnimatedValueUpdate"];
-}
-
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value
 {
-  [self sendEventWithName:@"onAnimatedValueUpdate"
-                     body:@{@"tag": node.nodeTag, @"value": @(value)}];
+  RCTAnimatedValueChangeEvent *event = [[RCTAnimatedValueChangeEvent alloc] initWithNodeTag:node.nodeTag value:value];
+  [self.bridge.eventDispatcher sendEvent:event];
 }
 
 - (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event

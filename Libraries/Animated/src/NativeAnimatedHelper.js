@@ -9,13 +9,13 @@
  */
 'use strict';
 
-import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import type {
   EventMapping,
   AnimatedNodeConfig,
   AnimatingNodeConfig,
 } from './NativeAnimatedModule';
 import NativeAnimatedModule from './NativeAnimatedModule';
+import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
 import type {AnimationConfig, EndCallback} from './animations/Animation';
@@ -24,8 +24,6 @@ import type {EventConfig} from './AnimatedEvent';
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
-
-let nativeEventEmitter;
 
 let queueConnections = false;
 let queue = [];
@@ -312,9 +310,6 @@ module.exports = {
   transformDataType,
   // $FlowExpectedError - unsafe getter lint suppresion
   get nativeEventEmitter() {
-    if (!nativeEventEmitter) {
-      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
-    }
-    return nativeEventEmitter;
+    return RCTDeviceEventEmitter;
   },
 };
