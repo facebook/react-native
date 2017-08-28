@@ -2,9 +2,12 @@
 id: troubleshooting
 title: Troubleshooting
 layout: docs
-category: Quick Start
+category: Guides
 permalink: docs/troubleshooting.html
+next: native-modules-ios
+previous: upgrading
 ---
+
 
 These are some common issues you may run into while setting up React Native. If you encounter something that is not listed here, try [searching for the issue in GitHub](https://github.com/facebook/react-native/issues/).
 

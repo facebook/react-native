@@ -38,6 +38,7 @@ type DependencyOptions = {|
   +minify: boolean,
   +platform: ?string,
   +recursive: boolean,
+  +rootEntryFile: string,
 |};
 
 /**
@@ -113,6 +114,7 @@ function attachHMRServer<TModule: Moduleish>(
     const response = await packagerServer.getDependencies({
       dev: true,
       entryFile: bundleEntry,
+      rootEntryFile: bundleEntry,
       hot: true,
       minify: false,
       platform: platform,
@@ -137,6 +139,7 @@ function attachHMRServer<TModule: Moduleish>(
       const dependencies = await packagerServer.getShallowDependencies({
         dev: true,
         entryFile: dep.path,
+        rootEntryFile: bundleEntry,
         hot: true,
         minify: false,
         platform: platform,
@@ -239,10 +242,17 @@ function attachHMRServer<TModule: Moduleish>(
     client: Client,
     filename: string,
   ): Promise<?HMRBundle> {
+    // If the main file is an asset, do not generate a bundle.
+    const moduleToUpdate = await packagerServer.getModuleForPath(filename);
+    if (moduleToUpdate.isAsset()) {
+      return;
+    }
+
     const deps = await packagerServer.getShallowDependencies({
       dev: true,
       minify: false,
       entryFile: filename,
+      rootEntryFile: client.bundleEntry,
       hot: true,
       platform: client.platform,
       recursive: true,
@@ -263,15 +273,16 @@ function attachHMRServer<TModule: Moduleish>(
       const response = await packagerServer.getDependencies({
         dev: true,
         entryFile: filename,
+        rootEntryFile: client.bundleEntry,
         hot: true,
         minify: false,
         platform: client.platform,
         recursive: true,
       });
 
-      const module = await packagerServer.getModuleForPath(filename);
-
-      resolutionResponse = await response.copy({dependencies: [module]});
+      resolutionResponse = await response.copy({
+        dependencies: [moduleToUpdate]},
+      );
     } else {
       // if there're new dependencies compare the full list of
       // dependencies we used to have with the one we now have
@@ -282,8 +293,6 @@ function attachHMRServer<TModule: Moduleish>(
         inverseDependenciesCache: inverseDepsCache,
         resolutionResponse: myResolutionReponse,
       } = await getDependencies(client.platform, client.bundleEntry);
-
-      const moduleToUpdate = await packagerServer.getModuleForPath(filename);
 
       // build list of modules for which we'll send HMR updates
       const modulesToUpdate = [moduleToUpdate];
