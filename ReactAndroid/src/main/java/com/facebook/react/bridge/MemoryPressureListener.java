@@ -10,6 +10,6 @@ public interface MemoryPressureListener {
   /**
    * Called when the system generates a memory warning.
    */
-  void handleMemoryPressure(MemoryPressure level);
+  void handleMemoryPressure(int level);
 
 }

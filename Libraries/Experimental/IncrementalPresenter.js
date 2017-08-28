@@ -40,8 +40,7 @@ type Props = {
   style?: mixed,
   children?: any,
 }
-class IncrementalPresenter extends React.Component {
-  props: Props;
+class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 

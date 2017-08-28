@@ -6,14 +6,19 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jschelpers/JavaScriptCore.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
 namespace ReactMarker {
+
 enum ReactMarkerId {
   NATIVE_REQUIRE_START,
   NATIVE_REQUIRE_STOP,
@@ -22,26 +27,32 @@ enum ReactMarkerId {
   CREATE_REACT_CONTEXT_STOP,
   JS_BUNDLE_STRING_CONVERT_START,
   JS_BUNDLE_STRING_CONVERT_STOP,
-};
-using LogMarker = std::function<void(const ReactMarkerId)>;
-extern LogMarker logMarker;
-};
-
-namespace PerfLogging {
-using InstallNativeHooks = std::function<void(JSGlobalContextRef)>;
-extern InstallNativeHooks installNativeHooks;
+  NATIVE_MODULE_SETUP_START,
+  NATIVE_MODULE_SETUP_STOP,
 };
 
-namespace JSNativeHooks {
-  using Hook = JSValueRef (*) (
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
-      size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  extern Hook loggingHook;
-  extern Hook nowHook;
+using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+extern RN_EXPORT LogTaggedMarker logTaggedMarker;
+
+extern void logMarker(const ReactMarkerId markerId);
+
+}
+
+namespace JSCNativeHooks {
+
+using Hook = JSValueRef(*)(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef *exception);
+extern RN_EXPORT Hook loggingHook;
+extern RN_EXPORT Hook nowHook;
+
+using ConfigurationHook = std::function<void(JSGlobalContextRef)>;
+extern RN_EXPORT ConfigurationHook installPerfHooks;
+
 }
 
 } }

@@ -18,7 +18,6 @@ public interface ReactTestFactory {
   public static interface ReactInstanceEasyBuilder {
     ReactInstanceEasyBuilder setContext(Context context);
     ReactInstanceEasyBuilder addNativeModule(NativeModule module);
-    ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass);
     CatalystInstance build();
   }
 

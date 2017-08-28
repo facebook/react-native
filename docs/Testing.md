@@ -1,22 +1,27 @@
 ---
 id: testing
-title: Testing
+title: Testing your Changes
 layout: docs
-category: Guides
+category: Contributing
 permalink: docs/testing.html
 next: understanding-cli
-previous: gesture-responder-system
+previous: maintainers
 ---
 
-This document is about running tests on React Native itself. If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
+This document is about testing your changes to React Native as a [contributor](docs/contributing.html). If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
 
-## Running Tests and Contributing
-
-The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](https://travis-ci.org/facebook/react-native/builds) and [CircleCI](https://circleci.com/gh/facebook/react-native) continuous integration systems, which will automatically annotate pull requests with the test results.
+The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](https://travis-ci.org/facebook/react-native/builds) and [Circle](https://circleci.com/gh/facebook/react-native) continuous integration systems, which will automatically annotate pull requests with the test results.
 
 Whenever you are fixing a bug or adding new functionality to React Native, you should add a test that covers it. Depending on the change you're making, there are different types of tests that may be appropriate.
 
-## JavaScript Tests
+- [JavaScript](docs/testing.html#javascript)
+- [Android](docs/testing.html#android)
+- [iOS](docs/testing.html#ios)
+- [Apple TV](docs/testing.html#apple-tv)
+- [End-to-end tests](docs/testing.html#end-to-end-tests)
+- [Website](docs/testing.html#website)
+
+## JavaScript
 
 ### Jest
 
@@ -91,10 +96,10 @@ The tests themselves are written in JS, and must call `TestModule.markTestComple
 See the following for example usage and integration points:
 
 - [`IntegrationTestHarnessTest.js`](https://github.com/facebook/react-native/blob/master/IntegrationTests/IntegrationTestHarnessTest.js)
-- [`UIExplorerIntegrationTests.m`](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/UIExplorerIntegrationTests/UIExplorerIntegrationTests.m)
+- [`RNTesterIntegrationTests.m`](https://github.com/facebook/react-native/blob/master/RNTester/RNTesterIntegrationTests/RNTesterIntegrationTests.m)
 - [`IntegrationTestsApp.js`](https://github.com/facebook/react-native/blob/master/IntegrationTests/IntegrationTestsApp.js)
 
-You can run integration tests locally with cmd+U in the IntegrationTest and UIExplorer apps in Xcode, or by running the following in the command line on macOS:
+You can run integration tests locally with cmd+U in the IntegrationTest and RNTester apps in Xcode, or by running the following in the command line on macOS:
 
     $ cd react-native
     $ ./scripts/objc-test-ios.sh
@@ -105,11 +110,11 @@ You can run integration tests locally with cmd+U in the IntegrationTest and UIEx
 
 A common type of integration test is the snapshot test.  These tests render a component, and verify snapshots of the screen against reference images using `TestModule.verifySnapshot()`, using the [`FBSnapshotTestCase`](https://github.com/facebook/ios-snapshot-test-case) library behind the scenes.  Reference images are recorded by setting `recordMode = YES` on the `RCTTestRunner`, then running the tests.  Snapshots will differ slightly between 32 and 64 bit, and various OS versions, so it's recommended that you enforce tests are run with the correct configuration.  It's also highly recommended that all network data be mocked out, along with other potentially troublesome dependencies.  See [`SimpleSnapshotTest`](https://github.com/facebook/react-native/blob/master/IntegrationTests/SimpleSnapshotTest.js) for a basic example.
 
-If you make a change that affects a snapshot test in a PR, such as adding a new example case to one of the examples that is snapshotted, you'll need to re-record the snapshot reference image.  To do this, simply change to `_runner.recordMode = YES;` in [UIExplorer/UIExplorerSnapshotTests.m](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/UIExplorerIntegrationTests/UIExplorerSnapshotTests.m#L42), re-run the failing tests, then flip record back to `NO` and submit/update your PR and wait to see if the Travis build passes.
+If you make a change that affects a snapshot test in a PR, such as adding a new example case to one of the examples that is snapshotted, you'll need to re-record the snapshot reference image.  To do this, simply change to `_runner.recordMode = YES;` in [RNTester/RNTesterSnapshotTests.m](https://github.com/facebook/react-native/blob/master/RNTester/RNTesterIntegrationTests/RNTesterSnapshotTests.m#L42), re-run the failing tests, then flip record back to `NO` and submit/update your PR and wait to see if the Travis build passes.
 
 ## Apple TV
 
-The same tests discussed above for iOS will also run on tvOS.  In the UIExplorer Xcode project, select the UIExplorer-tvOS target, and you can follow the same steps above to run the tests in Xcode.
+The same tests discussed above for iOS will also run on tvOS.  In the RNTester Xcode project, select the RNTester-tvOS target, and you can follow the same steps above to run the tests in Xcode.
 
 You can run Apple TV unit and integration tests locally by running the following in the command line on macOS:
 

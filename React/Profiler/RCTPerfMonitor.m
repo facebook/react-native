@@ -131,11 +131,9 @@ static vm_size_t RCTGetResidentMemorySize(void)
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
++ (BOOL)requiresMainQueueSetup
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+  return YES;
 }
 
 - (dispatch_queue_t)methodQueue

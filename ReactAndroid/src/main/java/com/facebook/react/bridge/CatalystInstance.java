@@ -27,6 +27,9 @@ public interface CatalystInstance
     extends MemoryPressureListener, JSInstance {
   void runJSBundle();
 
+  // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
+  boolean hasRunJSBundle();
+
   /**
    * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
    * bundle has been run yet.
@@ -66,6 +69,12 @@ public interface CatalystInstance
   Collection<NativeModule> getNativeModules();
 
   /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
+
+  /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
    * defined as there being some non-zero number of calls to JS that haven't resolved via a
@@ -78,10 +87,6 @@ public interface CatalystInstance
    * {@link #addBridgeIdleDebugListener}
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
-
-  boolean supportsProfiling();
-  void startProfiler(String title);
-  void stopProfiler(String title, String filename);
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);

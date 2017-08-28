@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,13 +20,13 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import javax.annotation.Nullable;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
@@ -37,6 +35,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+  private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
@@ -91,6 +90,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mPagingEnabled = pagingEnabled;
   }
 
+  public void flashScrollIndicators() {
+    awakenScrollBars();
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
@@ -117,7 +120,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       mActivelyScrolling = true;
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ReactScrollViewHelper.emitScrollEvent(
+        this,
+        mOnScrollDispatchHelper.getXFlingVelocity(),
+        mOnScrollDispatchHelper.getYFlingVelocity());
     }
   }
 
@@ -144,14 +150,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       return false;
     }
 
+    mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      ReactScrollViewHelper.emitScrollEndDragEvent(
+        this,
+        mVelocityHelper.getXVelocity(),
+        mVelocityHelper.getYVelocity());
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
       handlePostTouchScrolling();
     }
+
     return super.onTouchEvent(ev);
   }
 
@@ -275,22 +286,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
           mActivelyScrolling = false;
           ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
         } else {
-          boolean doneWithAllScrolling = true;
           if (mPagingEnabled && !mSnappingToPage) {
             // Only if we have pagingEnabled and we have not snapped to the page do we
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
             smoothScrollToPage(0);
-            doneWithAllScrolling = false;
-          }
-          if (doneWithAllScrolling) {
+            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          } else {
             if (mSendMomentumEvents) {
               ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
             }
             ReactHorizontalScrollView.this.mPostTouchRunnable = null;
             disableFpsListener();
-          } else {
-            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
           }
         }
       }

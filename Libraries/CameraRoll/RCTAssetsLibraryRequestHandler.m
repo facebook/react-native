@@ -9,7 +9,7 @@
 
 #import "RCTAssetsLibraryRequestHandler.h"
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -41,13 +41,13 @@ RCT_EXPORT_MODULE()
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block volatile uint32_t cancelled = 0;
+  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   void (^cancellationBlock)(void) = ^{
-    OSAtomicOr32Barrier(1, &cancelled);
+    atomic_store(&cancelled, YES);
   };
 
   [[self assetsLibrary] assetForURL:request.URL resultBlock:^(ALAsset *asset) {
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
 
@@ -91,7 +91,7 @@ RCT_EXPORT_MODULE()
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
     }
   } failureBlock:^(NSError *loadError) {
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
     [delegate URLRequest:cancellationBlock didCompleteWithError:loadError];

@@ -1,4 +1,6 @@
 {
+  "root": true,
+
   "parser": "babel-eslint",
 
   "ecmaFeatures": {
@@ -11,6 +13,8 @@
   },
 
   "plugins": [
+    "flowtype",
+    "prettier",
     "react"
   ],
 
@@ -49,34 +53,28 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false,
-
-    // Flow global types.
-    "ReactComponent": false,
-    "ReactClass": false,
-    "ReactElement": false,
-    "ReactPropsCheckType": false,
-    "ReactPropsChainableTypeChecker": false,
-    "ReactPropTypes": false,
-    "SyntheticEvent": false,
-    "$Either": false,
-    "$All": false,
-    "$ArrayBufferView": false,
-    "$Tuple": false,
-    "$Supertype": false,
-    "$Subtype": false,
-    "$Shape": false,
-    "$Diff": false,
-    "$Keys": false,
-    "$Enum": false,
-    "$Exports": false,
-    "$FlowIssue": false,
-    "$FlowFixMe": false,
-    "$FixMe": false
+    "pit": false
   },
 
   "rules": {
-    "comma-dangle": 0,               // disallow trailing commas in object literals
+  // Flow Plugin
+  // The following rules are made available via `eslint-plugin-flowtype`
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+
+  // General
+
+    // This must be disallowed in this repo because the minimum supported
+    // version of node is 4 which doesn't support trailing commas.
+    // Once the minimum supported version is 8 or greater this can be changed
+    "comma-dangle": [2, {            // disallow trailing commas in object literals
+        "arrays": "ignore",
+        "objects": "ignore",
+        "imports": "ignore",
+        "exports": "ignore",
+        "functions": "never"
+    }],
+
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
     "no-const-assign": 2,            // disallow assignment to const-declared variables
@@ -176,6 +174,10 @@
     "no-restricted-modules": 1,      // restrict usage of specified node modules (off by default)
     "no-sync": 0,                    // disallow use of synchronous methods (off by default)
 
+  // Prettier Plugin
+  // https://github.com/prettier/eslint-plugin-prettier
+    "prettier/prettier": [2, "fb", "@format"],
+
   // Stylistic Issues
   // These rules are purely matters of style and are quite subjective.
 
@@ -228,6 +230,7 @@
 
     "react/display-name": 0,
     "react/jsx-boolean-value": 0,
+    "react/jsx-no-comment-textnodes": 1,
     "react/jsx-no-duplicate-props": 2,
     "react/jsx-no-undef": 1,
     "react/jsx-sort-props": 0,
@@ -241,6 +244,6 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0,
+    "react/wrap-multilines": 0
   }
 }

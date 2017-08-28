@@ -15,6 +15,19 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
+@implementation RCTConvert (RCTModalHostView)
+
+RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
+  @"fullScreen": @(UIModalPresentationFullScreen),
+#if !TARGET_OS_TV
+  @"pageSheet": @(UIModalPresentationPageSheet),
+  @"formSheet": @(UIModalPresentationFormSheet),
+#endif
+  @"overFullScreen": @(UIModalPresentationOverFullScreen),
+}), UIModalPresentationFullScreen, integerValue)
+
+@end
+
 @interface RCTModalHostShadowView : RCTShadowView
 
 @end
@@ -91,9 +104,14 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
+RCT_EXPORT_VIEW_PROPERTY(presentationStyle, UIModalPresentationStyle)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
+
+#if TARGET_OS_TV
+RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+#endif
 
 @end

@@ -12,11 +12,10 @@
 'use strict';
 
 const ListView = require('ListView');
+const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
-
-const {PropTypes} = React;
 
 type DefaultProps = {
   bounceFirstRowOnMount: boolean,
@@ -54,7 +53,7 @@ type State = {
  * - It can bounce the 1st row of the list so users know it's swipeable
  * - More to come
  */
-class SwipeableListView extends React.Component<DefaultProps, Props, State> {
+class SwipeableListView extends React.Component<Props, State> {
   props: Props;
   state: State;
 
@@ -114,11 +113,18 @@ class SwipeableListView extends React.Component<DefaultProps, Props, State> {
     }
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.53 was deployed. To see the error delete this
+       * comment and run Flow. */
       <ListView
         {...this.props}
         ref={(ref) => {
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+           * an error when upgrading Flow's support for React. Common errors
+           * found when upgrading Flow's React support are documented at
+           * https://fburl.com/eq7bs81w */
           this._listViewRef = ref;
         }}
         dataSource={this.state.dataSource.getDataSource()}

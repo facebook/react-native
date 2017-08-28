@@ -13,8 +13,6 @@
 
 #import "RCTUtils.h"
 
-@implementation RCTPlatform
-
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {
     case UIUserInterfaceIdiomPhone:
@@ -30,7 +28,14 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
+@implementation RCTPlatform
+
 RCT_EXPORT_MODULE(PlatformConstants)
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {

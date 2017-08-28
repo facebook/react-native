@@ -10,7 +10,7 @@
  * @flow
  */
 'use strict';
-var PropTypes = require('React').PropTypes;
+var PropTypes = require('prop-types');
 
 /**
  * Additional View properties for Apple TV
@@ -72,6 +72,16 @@ var TVViewPropTypes = {
      */
     tvParallaxMagnification: PropTypes.number,
 
+};
+
+export type TVViewProps = {
+  isTVSelectable?: bool,
+  hasTVPreferredFocus?: bool,
+  tvParallaxProperties?: Object,
+  tvParallaxShiftDistanceX?: number,
+  tvParallaxShiftDistanceY?: number,
+  tvParallaxTiltAngle?: number,
+  tvParallaxMagnification?: number,
 };
 
 module.exports = TVViewPropTypes;
