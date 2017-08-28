@@ -26,7 +26,7 @@ Here are the notes from each team:
 
 ### Callstack
 
-- Recently open sourced [`react-native-material-palette`](https://github.com/callstack-io/react-native-material-palette). It extracts prominent colors from images to help you create visually engaging apps. At the moment it only supports Android.
+- Recently open sourced [`react-native-material-palette`](https://github.com/callstack-io/react-native-material-palette). It extracts prominent colors from images to help you create visually engaging apps. It's Android only at the moment, but we are looking into adding support for iOS in the future. 
 - We are working on a zero-runtime css in js library. It's still in [early stage](https://twitter.com/_zamotany/status/901408316169048064), but results look promising so far.
 - We have landed HMR support into [`haul`](https://github.com/callstack-io/haul) and a bunch of other, cool stuff! Check out latest releases.
 - Conference is coming! Next month is all about React Native and Poland! Make sure to grab last tickets available [here](https://react-native.eu/)
