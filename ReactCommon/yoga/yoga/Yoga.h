@@ -112,7 +112,7 @@ WIN_EXPORT bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                               const float lastComputedHeight,
                                               const float marginRow,
                                               const float marginColumn,
-                                              YGConfigRef config);
+                                              const YGConfigRef config);
 
 WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode);
 

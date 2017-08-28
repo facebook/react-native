@@ -45,6 +45,24 @@ RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
 /**
+ * This notification fires just before the bridge starts processing a request to
+ * reload.
+ */
+RCT_EXTERN NSString *const RCTBridgeWillReloadNotification;
+
+/**
+ * This notification fires just before the bridge begins downloading a script
+ * from the packager.
+ */
+RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
+
+/**
+ * This notification fires just after the bridge finishes downloading a script
+ * from the packager.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will

@@ -82,16 +82,18 @@ size_t modifiedLength(const uint8_t* str, size_t* length) {
   // NUL-terminated: Scan for length and supplementary characters
   size_t i = 0;
   size_t j = 0;
-  while (str[i] != 0) {
-    if (str[i + 1] == 0 ||
-        str[i + 2] == 0 ||
-        str[i + 3] == 0 ||
-        !isFourByteUTF8Encoding(&(str[i]))) {
-      i += 1;
-      j += 1;
-    } else {
-      i += 4;
-      j += 6;
+  if (str != nullptr) {
+    while (str[i] != 0) {
+      if (str[i + 1] == 0 ||
+          str[i + 2] == 0 ||
+          str[i + 3] == 0 ||
+          !isFourByteUTF8Encoding(&(str[i]))) {
+        i += 1;
+        j += 1;
+      } else {
+        i += 4;
+        j += 6;
+      }
     }
   }
 

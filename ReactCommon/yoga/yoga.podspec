@@ -10,7 +10,7 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'Yoga'
+  spec.name = 'yoga'
   spec.version = "#{version}.React"
   spec.license =  { :type => 'BSD' }
   spec.homepage = 'https://facebook.github.io/yoga/'

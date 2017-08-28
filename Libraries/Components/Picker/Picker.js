@@ -37,14 +37,12 @@ var MODE_DROPDOWN = 'dropdown';
 /**
  * Individual selectable item in a Picker.
  */
-class PickerItem extends React.Component {
- props: {
-  label: string,
-  value?: any,
-  color?: ColorPropType,
-  testID?: string,
- };
-
+class PickerItem extends React.Component<{
+ label: string,
+ value?: any,
+ color?: ColorPropType,
+ testID?: string,
+}> {
  static propTypes = {
    /**
     * Text to display for this item.
@@ -82,18 +80,16 @@ class PickerItem extends React.Component {
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>
  */
-class Picker extends React.Component {
- props: {
-  style?: $FlowFixMe,
-  selectedValue?: any,
-  onValueChange?: Function,
-  enabled?: boolean,
-  mode?: 'dialog' | 'dropdown',
-  itemStyle?: $FlowFixMe,
-  prompt?: string,
-  testID?: string,
- };
-
+class Picker extends React.Component<{
+ style?: $FlowFixMe,
+ selectedValue?: any,
+ onValueChange?: Function,
+ enabled?: boolean,
+ mode?: 'dialog' | 'dropdown',
+ itemStyle?: $FlowFixMe,
+ prompt?: string,
+ testID?: string,
+}> {
  /**
   * On Android, display the options in a dialog.
   */

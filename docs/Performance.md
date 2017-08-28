@@ -91,6 +91,10 @@ Use the new [`FlatList`](docs/flatlist.html) or [`SectionList`](docs/sectionlist
 Besides simplifying the API, the new list components also have significant performance enhancements,
 the main one being nearly constant memory usage for any number of rows.
 
+If your [`FlatList`](docs/flatlist.html) is rendering slow, be sure that you've implemented
+[`getItemLayout`](https://facebook.github.io/react-native/docs/flatlist.html#getitemlayout) to
+optimize rendering speed by skipping measurement of the rendered items.
+
 ### JS FPS plunges when re-rendering a view that hardly changes
 
 If you are using a ListView, you must provide a `rowHasChanged` function that can reduce a lot of work by quickly determining whether or not a row needs to be re-rendered. If you are using immutable data structures, this would be as simple as a reference equality check.
