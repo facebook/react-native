@@ -443,7 +443,7 @@ h1, h2, h3, h4 {
   line-height: 40px; }
 
 h1 {
-  font-size: 39px; }
+  font-size: 40px; }
 
 h2 {
   font-size: 31px; }
@@ -506,6 +506,9 @@ html * {
   color-profile: sRGB;
   rendering-intent: auto; }
 
+.content {
+  font-size: 18px;
+}
 .subHeader {
   font-size: 21px;
   font-weight: 300;
@@ -605,7 +608,8 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   text-decoration: none; }
 
 .nav-main .nav-site-wrapper {
-  display: inline; }
+  display: inline;
+}
 
 .nav-main .nav-site-internal {
   margin: 0 0 0 20px; }
@@ -719,7 +723,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   padding-bottom: 0; }
   .nav-docs-section h3 {
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     line-height: 20px;
     margin-top: 0;
@@ -743,6 +747,13 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   .nav-docs-section .nav-docs-section:last-child {
     padding-bottom: 0;
     border-bottom: 0; }
+
+@media only screen and (min-width: 680px) {
+  .nav-main .nav-site-wrapper {
+    display: inline;
+    float: right;
+  }
+}
 
 @media only screen and (max-device-width: 1024px) {
   @-webkit-keyframes slide-in {
@@ -819,7 +830,8 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   .nav-docs-section a.active {
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    color: #05A5D1; } }
+    color: #05A5D1; }
+}
 
 /**
  * Multicolumn layout for phone (landscape only) & tablet (regardless its screen orientation)/
@@ -928,7 +940,8 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin-bottom: 60px; }
 
 .docs-nextprev {
-  *zoom: 1; }
+  *zoom: 1;
+}
 
 .docs-nextprev:before, .docs-nextprev:after {
   content: " ";
@@ -1000,9 +1013,8 @@ h2 {
   text-rendering: optimizelegibility; }
 
 .docs-prevnext {
-  min-width: 320px;
   max-width: 640px;
-  margin: 0 auto 40px;
+  margin: 40px auto;
   padding-bottom: 20px; }
 
 .button {
@@ -1379,6 +1391,28 @@ div[data-twttr-id] iframe {
   font-weight: normal;
   font-size: 13px; }
 
+.botActions {
+  background-color: #ebf9ff;
+}
+
+.botActions > .botAction:nth-child(2n) {
+  background-color: #e0f6ff;
+}
+
+.botCommand {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-weight: bold;
+  color: #025268;
+}
+
+.botAction {
+  padding: 5px 10px;
+}
+
+.botMentionName {
+  font-weight: normal;
+}
+
 .platform {
   background-color: #bdebff;
   border-radius: 5px;
@@ -1534,7 +1568,7 @@ table.versions {
 
 .edit-page-block {
   padding: 5px;
-  margin-bottom: 40px;
+  margin: 40px auto;
   font-size: 12px;
   color: #887766;
   text-align: center;
@@ -1729,6 +1763,13 @@ input#algolia-doc-search:focus {
   margin: 2px;
 }
 
+@supports (display:grid) {
+  .component-grid {
+    display: grid;
+    grid-gap: 22px;
+  }
+}
+
 @media only screen and (min-device-width: 768px) {
   .component-grid {
     width: 768px;
@@ -1741,6 +1782,17 @@ input#algolia-doc-search:focus {
     height: 150px;
     margin: 0 22px 22px auto;
     vertical-align: top;
+  }
+
+  @supports (display:grid) {
+    .component-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .component {
+      width: auto;
+      height: auto;
+      margin: 0;
+    }
   }
 }
 
@@ -1816,7 +1868,7 @@ input#algolia-doc-search:focus {
   font-size: 24px; }
 
 .help-row {
-  margin: 50px 0; }
+  margin: 0; }
 
 .help-row:after {
   content: "";
@@ -1849,7 +1901,7 @@ input#algolia-doc-search:focus {
   margin: 1.25em 0 1em 0; }
 
 .entry ul, li {
-  margin: 0; }
+  margin: 0 0 10px 0; }
 
 .help-list .help-list-entry {
   padding: 16px 0;
@@ -1987,13 +2039,22 @@ article li {
   padding: 9px 18px;
   border-radius: 4px;
   text-align: center;
-  font-size: 12px; }
+}
 
 .btn a {
   text-decoration: none !important; }
 
 .btn:hover {
   text-decoration: none !important; }
+
+@media screen and (max-width: 373px) {
+  .hero .buttons-unit .button {
+    margin-bottom: 4px; }
+
+  .docs-prevnext .btn {
+    margin-bottom: 4px;
+    display: block;
+    float: none; } }
 
 .video-container {
   border-radius: 4px;
@@ -2019,7 +2080,7 @@ article li {
 footer.nav-footer {
   box-sizing: border-box;
   border: none;
-  font-weight: 300;
+  font-weight: normal;
   color: #202020;
   font-size: 15px;
   line-height: 24px;
@@ -2085,7 +2146,8 @@ footer .sitemap h6,
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
   color: #05A5D1;
-  font-weight: 900; }
+  font-size: 15px;
+}
 
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {

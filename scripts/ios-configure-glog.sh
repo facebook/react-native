@@ -7,6 +7,11 @@ CURRENT_ARCH="${CURRENT_ARCH:-armv7}"
 export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
 export CXX="$CC"
 
+# Remove automake symlink if it exists
+if [ -h "test-driver" ]; then
+    rm test-driver
+fi
+
 ./configure --host arm-apple-darwin
 
 # Fix build for tvOS

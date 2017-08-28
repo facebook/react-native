@@ -115,13 +115,13 @@ class FillRateHelper {
       const derived = {
         avg_blankness: this._info.pixels_blank / this._info.pixels_sampled,
         avg_speed: this._info.pixels_scrolled / (total_time_spent / 1000),
-        avg_speed_when_any_blank: this._info.any_blank_speed_sum /
-          this._info.any_blank_count,
-        any_blank_per_min: this._info.any_blank_count /
-          (total_time_spent / 1000 / 60),
+        avg_speed_when_any_blank:
+          this._info.any_blank_speed_sum / this._info.any_blank_count,
+        any_blank_per_min:
+          this._info.any_blank_count / (total_time_spent / 1000 / 60),
         any_blank_time_frac: this._info.any_blank_ms / total_time_spent,
-        mostly_blank_per_min: this._info.mostly_blank_count /
-          (total_time_spent / 1000 / 60),
+        mostly_blank_per_min:
+          this._info.mostly_blank_count / (total_time_spent / 1000 / 60),
         mostly_blank_time_frac: this._info.mostly_blank_ms / total_time_spent,
       };
       for (const key in derived) {

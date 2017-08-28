@@ -12,8 +12,8 @@
 
 var React = require('React');
 
-var EjectBanner = React.createClass({
-  render: function() {
+class EjectBanner extends React.Component {
+  render() {
     return (
       <div className="banner-crna-ejected">
         <h3>Project with Native Code Required</h3>
@@ -25,6 +25,6 @@ var EjectBanner = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = EjectBanner;

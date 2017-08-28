@@ -16,7 +16,7 @@
 
 #if RCT_DEV
 
-static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
+NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
 
@@ -97,6 +97,11 @@ RCT_EXPORT_MODULE()
   // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
   // no need to call the original implementation.
   RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
 }
 
 - (instancetype)init
@@ -239,7 +244,7 @@ RCT_EXPORT_MODULE()
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return (devSettings.isElementInspectorShown) ? @"Hide Inspector" : @"Show Inspector";
+    return @"Toggle Inspector";
   } handler:^{
     [devSettings toggleElementInspector];
   }]];

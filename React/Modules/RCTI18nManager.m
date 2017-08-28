@@ -14,6 +14,11 @@
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_METHOD(allowRTL:(BOOL)value)
 {
   [[RCTI18nUtil sharedInstance] allowRTL:value];

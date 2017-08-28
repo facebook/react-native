@@ -17,7 +17,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 const RCTScrollView = requireNativeComponent('RCTScrollView');
 
-class ScrollViewMock extends React.Component {
+class ScrollViewMock extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <RCTScrollView {...this.props}>

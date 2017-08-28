@@ -47,7 +47,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  *     return (
  *       <View style={{marginTop: 22}}>
  *         <Modal
- *           animationType={"slide"}
+ *           animationType="slide"
  *           transparent={false}
  *           visible={this.state.modalVisible}
  *           onRequestClose={() => {alert("Modal has been closed.")}}
@@ -79,7 +79,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * ```
  */
 
-class Modal extends React.Component {
+class Modal extends React.Component<Object> {
   static propTypes = {
     /**
      * The `animationType` prop controls how the modal animates.
@@ -118,10 +118,9 @@ class Modal extends React.Component {
      */
     visible: PropTypes.bool,
     /**
-     * The `onRequestClose` callback is called when the user taps the hardware back button.
-     * @platform android
+     * The `onRequestClose` callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
      */
-    onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
+    onRequestClose: (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func,
     /**
      * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
@@ -169,7 +168,7 @@ class Modal extends React.Component {
     }
   }
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (this.props.visible === false) {
       return null;
     }

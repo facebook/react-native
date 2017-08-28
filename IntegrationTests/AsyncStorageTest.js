@@ -168,7 +168,7 @@ function testOptimizedMultiGet() {
 }
 
 
-class AsyncStorageTest extends React.Component {
+class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
   state = {
     messages: 'Initializing...',
     done: false,

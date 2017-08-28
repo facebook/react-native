@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   AlertIOS,
@@ -29,7 +30,7 @@ function burnCPU(milliseconds) {
   while (performanceNow() < (start + milliseconds)) {}
 }
 
-class RequestIdleCallbackTester extends React.Component {
+class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
   state = {
     message: '-',
   };
@@ -111,7 +112,8 @@ class RequestIdleCallbackTester extends React.Component {
   };
 }
 
-var TimerTester = React.createClass({
+var TimerTester = createReactClass({
+  displayName: 'TimerTester',
   mixins: [TimerMixin],
 
   _ii: 0,
@@ -246,7 +248,7 @@ exports.examples = [
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
     render: function(): React.Element<any> {
-      class IntervalExample extends React.Component {
+      class IntervalExample extends React.Component<{}, $FlowFixMeState> {
         state = {
           showTimer: true,
         };

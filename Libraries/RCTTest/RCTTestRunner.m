@@ -10,6 +10,7 @@
 #import "RCTTestRunner.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
@@ -94,20 +95,23 @@ expectErrorRegex:(NSString *)errorRegex
 configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
+  __weak RCTBridge *batchedBridge;
+
   @autoreleasepool {
     __block NSString *error = nil;
     RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+      defaultLogFunction(level, source, fileName, lineNumber, message);
       if (level >= RCTLogLevelError) {
         error = message;
-      } else {
-        defaultLogFunction(level, source, fileName, lineNumber, message);
       }
     });
 
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
                                               moduleProvider:_moduleProvider
                                                launchOptions:nil];
+    batchedBridge = [bridge batchedBridge];
+
 
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
 #if TARGET_OS_TV
@@ -148,7 +152,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
 #endif
-    
+
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
     } else {
@@ -156,8 +160,17 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
     }
+
     [bridge invalidate];
   }
+
+  // Wait for bridge to disappear before continuing to the next test
+  NSDate *invalidateTimeout = [NSDate dateWithTimeIntervalSinceNow:30];
+  while (invalidateTimeout.timeIntervalSinceNow > 0 && batchedBridge != nil) {
+    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  }
+  RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
 }
 
 @end

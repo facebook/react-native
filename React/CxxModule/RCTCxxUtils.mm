@@ -12,31 +12,12 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#include <cxxreact/CxxNativeModule.h>
-#include <jschelpers/Value.h>
+#import <cxxreact/CxxNativeModule.h>
+#import <jschelpers/Value.h>
 
 #import "DispatchMessageQueueThread.h"
 #import "RCTCxxModule.h"
 #import "RCTNativeModule.h"
-
-using namespace facebook::react;
-
-@implementation RCTConvert (folly)
-
-+ (folly::dynamic)folly_dynamic:(id)json;
-{
-  if (json == nil || json == (id)kCFNull) {
-    return nullptr;
-  } else {
-    folly::dynamic dyn = convertIdToFollyDynamic(json);
-     if (dyn == nil) {
-       RCTAssert(false, @"RCTConvert input json is of an impossible type");
-     }
-     return dyn;
-  }
-}
-
-@end
 
 namespace facebook {
 namespace react {
@@ -109,7 +90,8 @@ static NSError *errorWithException(const std::exception &e)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-NSError *tryAndReturnError(const std::function<void()>& func) {
+NSError *tryAndReturnError(const std::function<void()>& func)
+{
   try {
     @try {
       func();
@@ -133,7 +115,8 @@ NSError *tryAndReturnError(const std::function<void()>& func) {
   }
 }
 
-NSString *deriveSourceURL(NSURL *url) {
+NSString *deriveSourceURL(NSURL *url)
+{
   NSString *sourceUrl;
   if (url.isFileURL) {
     // Url will contain only path to resource (i.g. file:// will be removed)

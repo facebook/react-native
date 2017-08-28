@@ -24,6 +24,11 @@
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -93,14 +98,14 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   });
 }
 
+#if !TARGET_OS_TV
+
 - (void)interfaceOrientationDidChange
 {
-#if !TARGET_OS_TV
   __weak typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceOrientationDidChange];
   });
-#endif
 }
 
 
@@ -122,6 +127,8 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
   _currentInterfaceOrientation = nextOrientation;
 }
+
+#endif // TARGET_OS_TV
 
 
 @end

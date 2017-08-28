@@ -19,9 +19,7 @@ var {
   StyleSheet,
 } = ReactNative;
 
-class AnExTilt extends React.Component {
-  state: any;
-
+class AnExTilt extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     this.state = {
@@ -83,7 +81,7 @@ class AnExTilt extends React.Component {
     this._startBurnsZoom();
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <Animated.View
         {...this.state.tiltPanResponder.panHandlers}
