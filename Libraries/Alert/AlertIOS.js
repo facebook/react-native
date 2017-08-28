@@ -86,7 +86,7 @@ export type ButtonsArray = Array<{
  * ```
  * AlertIOS.alert(
  *  'Sync Complete',
- *  'All your data are belong to us.'
+ *  'All your data belongs to us.'
  * );
  * ```
  *
