@@ -252,7 +252,10 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 

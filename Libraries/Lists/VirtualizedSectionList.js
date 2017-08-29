@@ -133,7 +133,10 @@ type State = {childProps: VirtualizedListProps};
  * hood. The only operation that might not scale well is concatting the data arrays of all the
  * sections when new props are received, which should be plenty fast for up to ~10,000 items.
  */
-class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<Props<SectionT>, State> {
+class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
+  Props<SectionT>,
+  State,
+> {
   props: Props<SectionT>;
 
   state: State;
@@ -301,7 +304,10 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     ref && ref.updateSeparatorProps(newProps);
   };
 
-  _getSeparatorComponent(index: number, info?: ?Object): ?React.ComponentType<*> {
+  _getSeparatorComponent(
+    index: number,
+    info?: ?Object,
+  ): ?React.ComponentType<*> {
     info = info || this._subExtractor(index);
     if (!info) {
       return null;
@@ -389,7 +395,10 @@ type ItemWithSeparatorProps = {
   trailingSection: ?Object,
 };
 
-class ItemWithSeparator extends React.Component<ItemWithSeparatorProps, $FlowFixMeState> {
+class ItemWithSeparator extends React.Component<
+  ItemWithSeparatorProps,
+  $FlowFixMeState,
+> {
   state = {
     separatorProps: {
       highlighted: false,

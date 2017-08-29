@@ -1221,23 +1221,26 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-class CellRenderer extends React.Component<{
-  CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
-  cellKey: string,
-  fillRateHelper: FillRateHelper,
-  index: number,
-  inversionStyle: ?StyleObj,
-  item: Item,
-  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  parentProps: {
-    getItemLayout?: ?Function,
-    renderItem: renderItemType,
+class CellRenderer extends React.Component<
+  {
+    CellRendererComponent?: ?React.ComponentType<any>,
+    ItemSeparatorComponent: ?React.ComponentType<*>,
+    cellKey: string,
+    fillRateHelper: FillRateHelper,
+    index: number,
+    inversionStyle: ?StyleObj,
+    item: Item,
+    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
+    onUnmount: (cellKey: string) => void,
+    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+    parentProps: {
+      getItemLayout?: ?Function,
+      renderItem: renderItemType,
+    },
+    prevCellKey: ?string,
   },
-  prevCellKey: ?string,
-}, $FlowFixMeState> {
+  $FlowFixMeState,
+> {
   state = {
     separatorProps: {
       highlighted: false,
