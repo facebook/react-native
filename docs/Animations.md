@@ -195,7 +195,7 @@ This can easily be done by modifying `style` from the example above like so:
 ```
 
 [`interpolate()`](docs/animated.html#interpolate) supports multiple range segments as well, which is handy for defining dead zones and other handy tricks.
-For example, to get an negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:
+For example, to get a negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:
 
 ```javascript
 value.interpolate({
