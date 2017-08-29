@@ -19,7 +19,7 @@ var {
   View,
 } = ReactNative;
 
-class AccessibilityIOSExample extends React.Component {
+class AccessibilityIOSExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -53,7 +53,7 @@ class AccessibilityIOSExample extends React.Component {
   }
 }
 
-class ScreenReaderStatusExample extends React.Component {
+class ScreenReaderStatusExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     screenReaderEnabled: false,
   }

@@ -301,7 +301,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       flush();
 
       ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-      ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+      ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
       return;
 
     case JSLoadSourceErrorVersionMismatch:
@@ -350,7 +350,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   flush();
 
   ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+  ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {

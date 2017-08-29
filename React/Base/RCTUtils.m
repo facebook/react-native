@@ -264,14 +264,29 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 }
 
+static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
+{
+  // The solution was borrowed from a post by Ben Alpert:
+  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
+  if (RCTIsMainQueue()) {
+    dispatch_once(onceToken, block);
+  } else {
+    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_once(onceToken, block);
+      });
+    }
+  }
+}
+
 CGFloat RCTScreenScale()
 {
-  static CGFloat scale;
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      scale = [UIScreen mainScreen].scale;
-    });
+  static CGFloat scale;
+
+  RCTUnsafeExecuteOnMainQueueOnceSync(&onceToken, ^{
+    scale = [UIScreen mainScreen].scale;
   });
 
   return scale;

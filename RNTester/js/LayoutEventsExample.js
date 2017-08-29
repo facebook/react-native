@@ -32,7 +32,7 @@ type State = {
   viewStyle: { margin: number },
 };
 
-class LayoutEventExample extends React.Component {
+class LayoutEventExample extends React.Component<{}, State> {
   state: State = {
     viewStyle: {
       margin: 20,

@@ -74,12 +74,18 @@ public class Systrace {
       final int cookie) {
   }
 
+  public static void beginAsyncSection(
+      long tag, final String sectionName, final int cookie, final long startNanos) {}
+  
   public static void endAsyncSection(
       long tag,
       final String sectionName,
       final int cookie) {
   }
 
+  public static void endAsyncSection(
+      long tag, final String sectionName, final int cookie, final long endNanos) {}
+  
   public static void traceCounter(
       long tag,
       final String counterName,

@@ -57,6 +57,7 @@ if (__DEV__) {
   };
 
   register(reactDevTools);
+  global.registerDevtoolsPlugin = register;
 }
 
 module.exports = {
