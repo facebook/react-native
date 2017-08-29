@@ -876,8 +876,7 @@ public class ReactInstanceManager {
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
-    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-    moveReactContextToCurrentLifecycleState();
+    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);    
 
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
@@ -891,9 +890,10 @@ public class ReactInstanceManager {
         new Runnable() {
           @Override
           public void run() {            
+            mCurrentReactContext = reactContext;
+            moveReactContextToCurrentLifecycleState();
             final ReactInstanceEventListener[] finalListeners =
               mReactInstanceEventListeners.toArray(new ReactInstanceEventListener[0]);
-            mCurrentReactContext = reactContext;
             for (ReactInstanceEventListener listener : finalListeners) {
               listener.onReactContextInitialized(reactContext);
             }
