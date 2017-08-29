@@ -18,7 +18,7 @@ const { BlobModule } = require('NativeModules');
 
 let BLOB_URL_PREFIX = null;
 
-if (typeof BlobModule.BLOB_URI_SCHEME === 'string') {
+if (BlobModule && typeof BlobModule.BLOB_URI_SCHEME === 'string') {
   BLOB_URL_PREFIX = BlobModule.BLOB_URI_SCHEME + ':';
   if (typeof BlobModule.BLOB_URI_HOST === 'string') {
     BLOB_URL_PREFIX += `//${BlobModule.BLOB_URI_HOST}/`;
