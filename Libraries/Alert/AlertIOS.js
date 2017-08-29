@@ -209,7 +209,7 @@ class AlertIOS {
       var callback = type;
       var defaultValue = message;
       RCTAlertManager.alertWithArgs({
-        title: title || undefined,
+        title: title,
         type: 'plain-text',
         defaultValue,
       }, (id, value) => {
@@ -242,7 +242,7 @@ class AlertIOS {
     }
 
     RCTAlertManager.alertWithArgs({
-      title: title || undefined,
+      title: title,
       message: message || undefined,
       buttons,
       type: type || undefined,
