@@ -93,8 +93,8 @@ var Geolocation = {
   setRNConfiguration: function(
     config: GeoConfiguration
   ) {
-    if (RCTLocationObserver.setRNConfiguration) {
-      RCTLocationObserver.setRNConfiguration(config);
+    if (RCTLocationObserver.setConfiguration) {
+      RCTLocationObserver.setConfiguration(config);
     }
   },
 
