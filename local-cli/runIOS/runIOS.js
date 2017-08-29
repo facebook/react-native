@@ -172,9 +172,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
     let xcpretty;
     if (!verbose) {
-      xcpretty = xcprettyAvailable()
-        ? child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] }) 
-        : false;
+      xcpretty = xcprettyAvailable() && child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] });
     }
     const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
     let buildOutput = '';
