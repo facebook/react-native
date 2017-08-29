@@ -110,6 +110,8 @@ class AlertIOS {
    * @static
    * @method alert
    * @param title The dialog's title.
+   *
+   *    An empty string hides the title.
    * @param message An optional message that appears below
    *     the dialog's title.
    * @param callbackOrButtons This optional argument should
