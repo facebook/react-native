@@ -88,6 +88,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
 
       TypeElement typeElement = (TypeElement) reactModuleListElement;
       ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+
       if (reactModuleList == null) {
         continue;
       }

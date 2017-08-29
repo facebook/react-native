@@ -44,24 +44,20 @@ function findRenderer(): ReactRenderer {
   return renderers[keys[0]];
 }
 
-class Inspector extends React.Component {
-  props: {
-    inspectedViewTag: ?number,
-    onRequestRerenderApp: (callback: (tag: ?number) => void) => void
-  };
-
-  state: {
-    devtoolsAgent: ?Object,
-    hierarchy: any,
-    panelPos: string,
-    inspecting: bool,
-    selection: ?number,
-    perfing: bool,
-    inspected: any,
-    inspectedViewTag: any,
-    networking: bool,
-  };
-
+class Inspector extends React.Component<{
+  inspectedViewTag: ?number,
+  onRequestRerenderApp: (callback: (tag: ?number) => void) => void
+}, {
+  devtoolsAgent: ?Object,
+  hierarchy: any,
+  panelPos: string,
+  inspecting: bool,
+  selection: ?number,
+  perfing: bool,
+  inspected: any,
+  inspectedViewTag: any,
+  networking: bool,
+}> {
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {

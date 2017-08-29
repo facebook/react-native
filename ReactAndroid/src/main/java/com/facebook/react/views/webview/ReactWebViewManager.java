@@ -12,6 +12,7 @@ package com.facebook.react.views.webview;
 import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -110,6 +111,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static class ReactWebViewClient extends WebViewClient {
 
     protected boolean mLastLoadFailed = false;
+    protected @Nullable ReadableArray mUrlPrefixesForDefaultIntent;
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -137,8 +139,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://") || url.equals("about:blank")) {
+        boolean useDefaultIntent = false;
+        if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
+          ArrayList<Object> urlPrefixesForDefaultIntent =
+              mUrlPrefixesForDefaultIntent.toArrayList();
+          for (Object urlPrefix : urlPrefixesForDefaultIntent) {
+            if (url.startsWith((String) urlPrefix)) {
+              useDefaultIntent = true;
+              break;
+            }
+          }
+        }
+
+        if (!useDefaultIntent &&
+            (url.startsWith("http://") || url.startsWith("https://") ||
+            url.startsWith("file://") || url.equals("about:blank"))) {
           return false;
         } else {
           try {
@@ -174,17 +189,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
-    @Override
-    public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
-      super.doUpdateVisitedHistory(webView, url, isReload);
-
-      dispatchEvent(
-          webView,
-          new TopLoadingStartEvent(
-              webView.getId(),
-              createWebViewEvent(webView, url)));
-    }
-
     protected void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
           webView,
@@ -205,6 +209,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       event.putBoolean("canGoForward", webView.canGoForward());
       return event;
     }
+
+    public void setUrlPrefixesForDefaultIntent(ReadableArray specialUrls) {
+      mUrlPrefixesForDefaultIntent = specialUrls;
+    }
   }
 
   /**
@@ -214,6 +222,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
     protected @Nullable String injectedJS;
     protected boolean messagingEnabled = false;
+    protected @Nullable ReactWebViewClient mReactWebViewClient;
 
     protected class ReactWebViewBridge {
       ReactWebView mContext;
@@ -252,6 +261,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public void onHostDestroy() {
       cleanupCallbacksAndDestroy();
+    }
+
+    @Override
+    public void setWebViewClient(WebViewClient client) {
+      super.setWebViewClient(client);
+      mReactWebViewClient = (ReactWebViewClient)client;
+    }
+
+    public @Nullable ReactWebViewClient getReactWebViewClient() {
+      return mReactWebViewClient;
     }
 
     public void setInjectedJavaScript(@Nullable String js) {
@@ -413,7 +432,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
   }
-  
+
   @ReactProp(name = "saveFormDataDisabled")
   public void setSaveFormDataDisabled(WebView view, boolean disable) {
     view.getSettings().setSaveFormData(!disable);
@@ -507,7 +526,17 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
       } else if ("compatibility".equals(mixedContentMode)) {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-      } 
+      }
+    }
+  }
+
+  @ReactProp(name = "urlPrefixesForDefaultIntent")
+  public void setUrlPrefixesForDefaultIntent(
+      WebView view,
+      @Nullable ReadableArray urlPrefixesForDefaultIntent) {
+    ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
+    if (client != null && urlPrefixesForDefaultIntent != null) {
+      client.setUrlPrefixesForDefaultIntent(urlPrefixesForDefaultIntent);
     }
   }
 

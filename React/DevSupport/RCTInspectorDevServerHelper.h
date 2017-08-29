@@ -10,6 +10,7 @@
 
 + (void)connectForContext:(JSGlobalContextRef)context
             withBundleURL:(NSURL *)bundleURL;
++ (void)disableDebugger;
 @end
 
 #endif

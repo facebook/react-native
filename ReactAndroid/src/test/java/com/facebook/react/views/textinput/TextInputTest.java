@@ -9,12 +9,12 @@
 
 package com.facebook.react.views.textinput;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import android.widget.EditText;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -27,7 +27,9 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,11 +42,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for TextInput.
@@ -182,11 +179,8 @@ public class TextInputTest {
         new ViewManager[] {
             new ReactTextInputManager(),
         });
-    UIManagerModule uiManagerModule = new UIManagerModule(
-        reactContext,
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    UIManagerModule uiManagerModule =
+        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), false, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

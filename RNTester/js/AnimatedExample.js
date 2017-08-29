@@ -35,9 +35,7 @@ exports.examples = [
       'bring opacity from 0 to 1 when the component ' +
       'mounts.',
     render: function() {
-      class FadeInView extends React.Component {
-        state: any;
-
+      class FadeInView extends React.Component<$FlowFixMeProps, any> {
         constructor(props) {
           super(props);
           this.state = {
@@ -64,9 +62,7 @@ exports.examples = [
           );
         }
       }
-      class FadeInExample extends React.Component {
-        state: any;
-
+      class FadeInExample extends React.Component<$FlowFixMeProps, any> {
         constructor(props) {
           super(props);
           this.state = {

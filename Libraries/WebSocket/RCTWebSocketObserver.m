@@ -36,6 +36,11 @@
   return self;
 }
 
+- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue
+{
+  [_socket setDelegateDispatchQueue:queue];
+}
+
 - (void)start
 {
   _socket.delegate = self;

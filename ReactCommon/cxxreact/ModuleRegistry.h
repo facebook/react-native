@@ -33,7 +33,9 @@ class RN_EXPORT ModuleRegistry {
   // notifyCatalystInstanceInitialized: this is really only used by view-related code
   // notifyCatalystInstanceDestroy: use RAII instead
 
-  ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules);
+  using ModuleNotFoundCallback = std::function<bool(const std::string &name)>;
+
+  ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules, ModuleNotFoundCallback callback = nullptr);
   void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
 
   std::vector<std::string> moduleNames();
@@ -56,6 +58,11 @@ class RN_EXPORT ModuleRegistry {
   // This is populated with modules that are requested via getConfig but are unknown.
   // An error will be thrown if they are subsquently added to the registry.
   std::unordered_set<std::string> unknownModules_;
+
+  // Function will be called if a module was requested but was not found.
+  // If the function returns true, ModuleRegistry will try to find the module again (assuming it's registered)
+  // If the functon returns false, ModuleRegistry will not try to find the module and return nullptr instead.
+  ModuleNotFoundCallback moduleNotFoundCallback_;
 };
 
 }

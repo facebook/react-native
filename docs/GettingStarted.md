@@ -598,7 +598,7 @@ Now that you have successfully run the app, let's modify it.
 Now that you have successfully run the app, let's modify it.
 
 - Open `index.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
+- Press the `R` key twice or select `Reload` from the Developer Menu (`Ctrl + M`) to see your changes!
 
 <block class="native mac ios android" />
 

@@ -53,10 +53,7 @@ const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
   </View>
 );
 
-class RNTesterApp extends React.Component {
-  props: Props;
-  state: RNTesterNavigationState;
-
+class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
@@ -128,6 +125,10 @@ class RNTesterApp extends React.Component {
     return (
       <View style={styles.exampleContainer}>
         <Header title="RNTester" />
+        {/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
+          * an error when upgrading Flow's support for React. Common errors
+          * found when upgrading Flow's React support are documented at
+          * https://fburl.com/eq7bs81w */}
         <RNTesterExampleList
           onNavigate={this._handleAction}
           list={RNTesterList}
@@ -173,7 +174,7 @@ AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
 RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach((Example: RNTesterExample) => {
   const ExampleModule = Example.module;
   if (ExampleModule.displayName) {
-    class Snapshotter extends React.Component {
+    class Snapshotter extends React.Component<{}> {
       render() {
         return (
           <SnapshotViewIOS>

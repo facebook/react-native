@@ -8,18 +8,12 @@
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -31,6 +25,9 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 public class ReactAppTestActivity extends FragmentActivity implements
     DefaultHardwareBackBtnHandler
@@ -39,7 +36,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
   private static final String DEFAULT_BUNDLE_NAME = "AndroidTestBundle.js";
   private static final int ROOT_VIEW_ID = 8675309;
   // we need a bigger timeout for CI builds because they run on a slow emulator
-  private static final long IDLE_TIMEOUT_MS = 60000;
+  private static final long IDLE_TIMEOUT_MS = 120000;
 
   private CountDownLatch mLayoutEvent = new CountDownLatch(1);
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
@@ -164,16 +161,21 @@ public class ReactAppTestActivity extends FragmentActivity implements
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
     ReactInstanceManagerBuilder builder =
-      ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
-        .setApplication(getApplication())
-        .setBundleAssetName(bundleName)
+        ReactTestHelper.getReactTestFactory()
+            .getReactInstanceManagerBuilder()
+            .setApplication(getApplication())
+            .setBundleAssetName(bundleName);
+    if (!spec.getAlternativeReactPackagesForTest().isEmpty()) {
+      builder.addPackages(spec.getAlternativeReactPackagesForTest());
+    } else {
+      builder.addPackage(new MainReactPackage());
+    }
+    builder
+        .addPackage(new InstanceSpecForTestPackage(spec))
         // By not setting a JS module name, we force the bundle to be always loaded from
         // assets, not the devserver, even if dev mode is enabled (such as when testing redboxes).
         // This makes sense because we never run the devserver in tests.
         //.setJSMainModuleName()
-        .addPackage(spec.getAlternativeReactPackageForTest() != null ?
-            spec.getAlternativeReactPackageForTest() : new MainReactPackage())
-        .addPackage(new InstanceSpecForTestPackage(spec))
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
         .setInitialLifecycleState(mLifecycleState)

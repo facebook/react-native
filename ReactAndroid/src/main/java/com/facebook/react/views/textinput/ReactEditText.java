@@ -35,6 +35,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -180,6 +181,16 @@ public class ReactEditText extends EditText {
     if (mScrollWatcher != null) {
       mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
     }
+  }
+
+  @Override
+  public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+    InputConnection connection = super.onCreateInputConnection(outAttrs);
+    if (isMultiline() && getBlurOnSubmit()) {
+      // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
+      outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+    }
+    return connection;
   }
 
   @Override
