@@ -188,7 +188,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Public API
 
-RCT_EXPORT_METHOD(setRNConfiguration:(RCTLocationConfiguration)config)
+RCT_EXPORT_METHOD(setConfiguration:(RCTLocationConfiguration)config)
 {
   _locationConfiguration = config;
 }
