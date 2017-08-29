@@ -8,7 +8,7 @@ authorTwitter: grabbou
 category: engineering
 ---
 
-The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. So, let's see what the rest is up to.
+The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at [React Native EU](https://react-native.eu/) conference in Wroclaw, Poland. Make sure to grab a ticket and see you there in person! Meanwhile, let's see what our teams are up to.
 
 ## Teams
 
@@ -28,7 +28,7 @@ Here are the notes from each team:
 
 - Recently open sourced [`react-native-material-palette`](https://github.com/callstack-io/react-native-material-palette). It extracts prominent colors from images to help you create visually engaging apps. It's Android only at the moment, but we are looking into adding support for iOS in the future. 
 - We have landed HMR support into [`haul`](https://github.com/callstack-io/haul) and a bunch of other, cool stuff! Check out latest releases.
-- Conference is coming! Next month is all about React Native and Poland! Make sure to grab last tickets available [here](https://react-native.eu/)
+- React Native EU 2017 is coming! Next month is all about React Native and Poland! Make sure to grab last tickets available [here](https://react-native.eu/)
 
 ### Expo
 
