@@ -170,19 +170,18 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       '-derivedDataPath', 'build',
     ];
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-    let xcpretty, xcprettyProcess;
+    let xcpretty;
     if (!verbose) {
-      xcpretty = xcprettyAvailable();
-      if (xcpretty) {
-        xcprettyProcess = child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] });
-      }
+      xcpretty = xcprettyAvailable()
+        ? child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] }) 
+        : false;
     }
     const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
     let buildOutput = '';
     buildProcess.stdout.on('data', function(data) {
       buildOutput += data.toString();
-      if (xcpretty && !verbose) {
-        xcprettyProcess.stdin.write(data);
+      if (xcpretty) {
+        xcpretty.stdin.write(data);
       } else {
         console.log(data.toString());
       }
@@ -191,8 +190,8 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       console.error(data.toString());
     });
     buildProcess.on('close', function(code) {
-      if (xcpretty && !verbose) {
-        xcprettyProcess.stdin.end();
+      if (xcpretty) {
+        xcpretty.stdin.end();
       }
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
       let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/m.exec(buildOutput);
