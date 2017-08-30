@@ -9,26 +9,24 @@
  * @flow
  */
 
-'use strict';
+"use strict";
 
-const getInverseDependencies = require('./getInverseDependencies');
-const querystring = require('querystring');
-const url = require('url');
+const getInverseDependencies = require("./getInverseDependencies");
+const querystring = require("querystring");
+const url = require("url");
 
-import type {ResolutionResponse} from './getInverseDependencies';
-import type {Server as HTTPServer} from 'http';
-import type {Server as HTTPSServer} from 'https';
-import type {Client as WebSocketClient} from 'ws';
+import type { ResolutionResponse } from "./getInverseDependencies";
+import type { Server as HTTPServer } from "http";
+import type { Server as HTTPSServer } from "https";
+import type { Client as WebSocketClient } from "ws";
 
-const blacklist = [
-  'Libraries/Utilities/HMRClient.js',
-];
+const blacklist = ["Libraries/Utilities/HMRClient.js"];
 
 type HMRBundle = {
-  getModulesIdsAndCode(): Array<{id: string, code: string}>,
+  getModulesIdsAndCode(): Array<{ id: string, code: string }>,
   getSourceMappingURLs(): Array<mixed>,
   getSourceURLs(): Array<mixed>,
-  isEmpty(): boolean,
+  isEmpty(): boolean
 };
 
 type DependencyOptions = {|
@@ -38,7 +36,7 @@ type DependencyOptions = {|
   +minify: boolean,
   +platform: ?string,
   +recursive: boolean,
-  +rootEntryFile: string,
+  +rootEntryFile: string
 |};
 
 /**
@@ -49,44 +47,60 @@ type DependencyOptions = {|
  */
 type PackagerServer<TModule> = {
   buildBundleForHMR(
-    options: {platform: ?string},
+    options: { platform: ?string },
     host: string,
-    port: number,
+    port: number
   ): Promise<HMRBundle>,
-  getDependencies(options: DependencyOptions): Promise<ResolutionResponse<TModule>>,
+  getDependencies(
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+  	 * comment suppresses an error due to a change in the DepencencyOptions
+     *  object type definition used above versus what is present in the 
+     * metro-bundler release we're pulling in. Remove this comment and run Flow
+     * to see the error. */
+    options: DependencyOptions
+  ): Promise<ResolutionResponse<TModule>>,
   getModuleForPath(entryFile: string): Promise<TModule>,
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+   * comment suppresses an error due to a change in the DepencencyOptions
+   *  object type definition used above versus what is present in the 
+   * metro-bundler release we're pulling in. Remove this comment and run Flow
+   * to see the error. */
   getShallowDependencies(options: DependencyOptions): Promise<Array<string>>,
-  setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed): void,
+  setHMRFileChangeListener(
+    listener: ?(type: string, filePath: string) => mixed
+  ): void
 };
 
 type HMROptions<TModule> = {
   httpServer: HTTPServer | HTTPSServer,
   packagerServer: PackagerServer<TModule>,
-  path: string,
+  path: string
 };
 
 type Moduleish = {
   getName(): Promise<string>,
   isAsset(): boolean,
   isJSON(): boolean,
-  path: string,
+  path: string
 };
 
 /**
  * Attaches a WebSocket based connection to the Packager to expose
  * Hot Module Replacement updates to the simulator.
  */
-function attachHMRServer<TModule: Moduleish>(
-  {httpServer, path, packagerServer}: HMROptions<TModule>,
-) {
+function attachHMRServer<TModule: Moduleish>({
+  httpServer,
+  path,
+  packagerServer
+}: HMROptions<TModule>) {
   type Client = {|
     ws: WebSocketClient,
     platform: string,
     bundleEntry: string,
     dependenciesCache: Array<string>,
-    dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<string>},
-    inverseDependenciesCache: mixed,
+    dependenciesModulesCache: { [mixed]: TModule },
+    shallowDependencies: { [string]: Array<string> },
+    inverseDependenciesCache: mixed
   |};
 
   const clients: Set<Client> = new Set();
@@ -104,12 +118,15 @@ function attachHMRServer<TModule: Moduleish>(
   //   - The full list of dependencies.
   //   - The shallow dependencies each file on the dependency list has
   //   - Inverse shallow dependencies map
-  async function getDependencies(platform: string, bundleEntry: string): Promise<{
+  async function getDependencies(
+    platform: string,
+    bundleEntry: string
+  ): Promise<{
     dependenciesCache: Array<string>,
-    dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<string>},
+    dependenciesModulesCache: { [mixed]: TModule },
+    shallowDependencies: { [string]: Array<string> },
     inverseDependenciesCache: mixed,
-    resolutionResponse: ResolutionResponse<TModule>,
+    resolutionResponse: ResolutionResponse<TModule>
   }> {
     const response = await packagerServer.getDependencies({
       dev: true,
@@ -118,40 +135,42 @@ function attachHMRServer<TModule: Moduleish>(
       hot: true,
       minify: false,
       platform: platform,
-      recursive: true,
+      recursive: true
     });
 
     /* $FlowFixMe: getModuleId might be null */
-    const {getModuleId}: {getModuleId: () => number} = response;
+    const { getModuleId }: { getModuleId: () => number } = response;
 
     // for each dependency builds the object:
     // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
     const deps: Array<{
       path: string,
       name?: string,
-      deps: Array<string>,
-    }> = await Promise.all(response.dependencies.map(async (dep: TModule) => {
-      const depName = await dep.getName();
+      deps: Array<string>
+    }> = await Promise.all(
+      response.dependencies.map(async (dep: TModule) => {
+        const depName = await dep.getName();
 
-      if (dep.isAsset() || dep.isJSON()) {
-        return {path: dep.path, deps: []};
-      }
-      const dependencies = await packagerServer.getShallowDependencies({
-        dev: true,
-        entryFile: dep.path,
-        rootEntryFile: bundleEntry,
-        hot: true,
-        minify: false,
-        platform: platform,
-        recursive: true,
-      });
+        if (dep.isAsset() || dep.isJSON()) {
+          return { path: dep.path, deps: [] };
+        }
+        const dependencies = await packagerServer.getShallowDependencies({
+          dev: true,
+          entryFile: dep.path,
+          rootEntryFile: bundleEntry,
+          hot: true,
+          minify: false,
+          platform: platform,
+          recursive: true
+        });
 
-      return {
-        path: dep.path,
-        name: depName,
-        deps: dependencies,
-      };
-    }));
+        return {
+          path: dep.path,
+          name: depName,
+          deps: dependencies
+        };
+      })
+    );
 
     // list with all the dependencies' filenames the bundle entry has
     const dependenciesCache = response.dependencies.map(dep => dep.path);
@@ -180,8 +199,9 @@ function attachHMRServer<TModule: Moduleish>(
     const inverseDependenciesCache = Object.create(null);
     const inverseDependencies = getInverseDependencies(response);
     for (const [module, dependents] of inverseDependencies) {
-      inverseDependenciesCache[getModuleId(module)] =
-        Array.from(dependents).map(getModuleId);
+      inverseDependenciesCache[getModuleId(module)] = Array.from(
+        dependents
+      ).map(getModuleId);
     }
 
     return {
@@ -189,13 +209,13 @@ function attachHMRServer<TModule: Moduleish>(
       dependenciesModulesCache,
       shallowDependencies,
       inverseDependenciesCache,
-      resolutionResponse: response,
+      resolutionResponse: response
     };
   }
 
   async function prepareResponse(
     client: Client,
-    filename: string,
+    filename: string
   ): Promise<?Object> {
     try {
       const bundle = await generateBundle(client, filename);
@@ -205,42 +225,45 @@ function attachHMRServer<TModule: Moduleish>(
       }
 
       return {
-        type: 'update',
+        type: "update",
         body: {
           modules: bundle.getModulesIdsAndCode(),
           inverseDependencies: client.inverseDependenciesCache,
           sourceURLs: bundle.getSourceURLs(),
-          sourceMappingURLs: bundle.getSourceMappingURLs(),
-        },
+          sourceMappingURLs: bundle.getSourceMappingURLs()
+        }
       };
     } catch (error) {
       // send errors to the client instead of killing packager server
       let body;
-      if (error.type === 'TransformError' ||
-          error.type === 'NotFoundError' ||
-          error.type === 'UnableToResolveError') {
+      if (
+        error.type === "TransformError" ||
+        error.type === "NotFoundError" ||
+        error.type === "UnableToResolveError"
+      ) {
         body = {
           type: error.type,
           description: error.description,
           filename: error.filename,
-          lineNumber: error.lineNumber,
+          lineNumber: error.lineNumber
         };
       } else {
         console.error(error.stack || error);
         body = {
-          type: 'InternalError',
-          description: 'react-packager has encountered an internal error, ' +
-            'please check your terminal error output for more details',
+          type: "InternalError",
+          description:
+            "react-packager has encountered an internal error, " +
+            "please check your terminal error output for more details"
         };
       }
 
-      return {type: 'error', body};
+      return { type: "error", body };
     }
   }
 
   async function generateBundle(
     client: Client,
-    filename: string,
+    filename: string
   ): Promise<?HMRBundle> {
     // If the main file is an asset, do not generate a bundle.
     const moduleToUpdate = await packagerServer.getModuleForPath(filename);
@@ -255,7 +278,7 @@ function attachHMRServer<TModule: Moduleish>(
       rootEntryFile: client.bundleEntry,
       hot: true,
       platform: client.platform,
-      recursive: true,
+      recursive: true
     });
 
     // if the file dependencies have change we need to invalidate the
@@ -277,12 +300,12 @@ function attachHMRServer<TModule: Moduleish>(
         hot: true,
         minify: false,
         platform: client.platform,
-        recursive: true,
+        recursive: true
       });
 
       resolutionResponse = await response.copy({
-        dependencies: [moduleToUpdate]},
-      );
+        dependencies: [moduleToUpdate]
+      });
     } else {
       // if there're new dependencies compare the full list of
       // dependencies we used to have with the one we now have
@@ -291,7 +314,7 @@ function attachHMRServer<TModule: Moduleish>(
         dependenciesModulesCache: depsModulesCache,
         shallowDependencies: shallowDeps,
         inverseDependenciesCache: inverseDepsCache,
-        resolutionResponse: myResolutionReponse,
+        resolutionResponse: myResolutionReponse
       } = await getDependencies(client.platform, client.bundleEntry);
 
       // build list of modules for which we'll send HMR updates
@@ -319,7 +342,7 @@ function attachHMRServer<TModule: Moduleish>(
       client.inverseDependenciesCache = inverseDepsCache;
 
       resolutionResponse = await myResolutionReponse.copy({
-        dependencies: modulesToUpdate,
+        dependencies: modulesToUpdate
       });
     }
 
@@ -331,10 +354,12 @@ function attachHMRServer<TModule: Moduleish>(
     const httpServerAddress = httpServer.address();
 
     // Sanitize the value from the HTTP server
-    let packagerHost = 'localhost';
-    if (httpServer.address().address &&
-        httpServer.address().address !== '::' &&
-        httpServer.address().address !== '') {
+    let packagerHost = "localhost";
+    if (
+      httpServer.address().address &&
+      httpServer.address().address !== "::" &&
+      httpServer.address().address !== ""
+    ) {
       packagerHost = httpServerAddress.address;
     }
 
@@ -342,41 +367,36 @@ function attachHMRServer<TModule: Moduleish>(
       {
         entryFile: client.bundleEntry,
         platform: client.platform,
-        resolutionResponse,
+        resolutionResponse
       },
       packagerHost,
-      httpServerAddress.port,
+      httpServerAddress.port
     );
 
     return bundle;
   }
 
-  function handleFileChange(
-    type: string,
-    filename: string,
-  ): void {
-    clients.forEach(
-      client => sendFileChangeToClient(client, type, filename),
-    );
+  function handleFileChange(type: string, filename: string): void {
+    clients.forEach(client => sendFileChangeToClient(client, type, filename));
   }
 
   async function sendFileChangeToClient(
     client: Client,
     type: string,
-    filename: string,
+    filename: string
   ): Promise<mixed> {
     const blacklisted = blacklist.find(
-      blacklistedPath => filename.indexOf(blacklistedPath) !== -1,
+      blacklistedPath => filename.indexOf(blacklistedPath) !== -1
     );
     if (blacklisted) {
       return;
     }
 
     if (clients.has(client)) {
-      client.ws.send(JSON.stringify({type: 'update-start'}));
+      client.ws.send(JSON.stringify({ type: "update-start" }));
     }
 
-    if (type !== 'delete') {
+    if (type !== "delete") {
       const response = await prepareResponse(client, filename);
 
       if (response && clients.has(client)) {
@@ -385,17 +405,17 @@ function attachHMRServer<TModule: Moduleish>(
     }
 
     if (clients.has(client)) {
-      client.ws.send(JSON.stringify({type: 'update-done'}));
+      client.ws.send(JSON.stringify({ type: "update-done" }));
     }
   }
 
-  const WebSocketServer = require('ws').Server;
+  const WebSocketServer = require("ws").Server;
   const wss = new WebSocketServer({
     server: httpServer,
-    path: path,
+    path: path
   });
 
-  wss.on('connection', async ws => {
+  wss.on("connection", async ws => {
     /* $FlowFixMe: url might be null */
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
@@ -403,7 +423,7 @@ function attachHMRServer<TModule: Moduleish>(
       dependenciesCache,
       dependenciesModulesCache,
       shallowDependencies,
-      inverseDependenciesCache,
+      inverseDependenciesCache
     } = await getDependencies(params.platform, params.bundleEntry);
 
     const client = {
@@ -413,7 +433,7 @@ function attachHMRServer<TModule: Moduleish>(
       dependenciesCache,
       dependenciesModulesCache,
       shallowDependencies,
-      inverseDependenciesCache,
+      inverseDependenciesCache
     };
     clients.add(client);
 
@@ -422,12 +442,12 @@ function attachHMRServer<TModule: Moduleish>(
       packagerServer.setHMRFileChangeListener(handleFileChange);
     }
 
-    client.ws.on('error', e => {
-      console.error('[Hot Module Replacement] Unexpected error', e);
+    client.ws.on("error", e => {
+      console.error("[Hot Module Replacement] Unexpected error", e);
       disconnect(client);
     });
 
-    client.ws.on('close', () => disconnect(client));
+    client.ws.on("close", () => disconnect(client));
   });
 }
 
