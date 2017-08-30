@@ -53,8 +53,18 @@ type PackagerServer<TModule> = {
     host: string,
     port: number,
   ): Promise<HMRBundle>,
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+   * comment suppresses an error due to a change in the DepencencyOptions
+   *  object type definition used above versus what is present in the 
+   * metro-bundler release we're pulling in. Remove this comment and run Flow
+   * to see the error. */
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<TModule>>,
   getModuleForPath(entryFile: string): Promise<TModule>,
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+   * comment suppresses an error due to a change in the DepencencyOptions
+   *  object type definition used above versus what is present in the 
+   * metro-bundler release we're pulling in. Remove this comment and run Flow
+   * to see the error. */
   getShallowDependencies(options: DependencyOptions): Promise<Array<string>>,
   setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed): void,
 };
