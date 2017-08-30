@@ -172,15 +172,21 @@ public class BundleDownloader {
       return;
     }
 
+    File tmpFile = new File(outputFile.getPath() + ".tmp");
     Sink output = null;
     try {
-      output = Okio.sink(outputFile);
+      output = Okio.sink(tmpFile);
       body.readAll(output);
-      callback.onSuccess();
     } finally {
       if (output != null) {
         output.close();
       }
+    }
+
+    if (tmpFile.renameTo(outputFile)) {
+      callback.onSuccess();
+    } else {
+      throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
     }
   }
 }
