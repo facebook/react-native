@@ -1,7 +1,7 @@
 var inquirer = require('inquirer');
 
 module.exports = (questions) => new Promise((resolve, reject) => {
-  if (!questions) {
+  if (!questions || (Array.isArray(questions) && questions.length == 0)) {
     return resolve({});
   }
 
