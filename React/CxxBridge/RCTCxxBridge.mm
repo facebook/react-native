@@ -917,6 +917,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       self->_moduleDataByID = nil;
       self->_moduleClassesByID = nil;
       self->_pendingCalls = nil;
+
+      [self->_jsThread cancel];
+      self->_jsThread = nil;
+      CFRunLoopStop(CFRunLoopGetCurrent());
     }];
   });
 }
