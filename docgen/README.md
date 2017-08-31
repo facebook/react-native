@@ -16,7 +16,7 @@ GIT_USER=your_git_user GITHUB_USERNAME=facebook GITHUB_REPONAME=react-native nod
 
 This will perform a sparse checkout of the `docs/` folder from `master`, generating a clean set of markdown docs in the local `docs/` folder. It will also write to disk an updated `sidebars.json` file based on these docs.
 
-## build.js
+## build-autodocs-markdownjs
 
 Runs the usual autodocs generation scripts used by the `react-page-middleware` variant of the React Native website, but provides markdown instead of HTML. Run this script prior to building the website.
 
@@ -25,6 +25,5 @@ Runs the usual autodocs generation scripts used by the `react-page-middleware` v
 Run the following commands locally (the generate script needs to run first):
 
 ```
-node server/generate.js
-node server/build.js
+node server/build-autodocs-markdown.js
 ```

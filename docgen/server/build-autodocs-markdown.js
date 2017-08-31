@@ -10,7 +10,7 @@
 
 const { cd, cp, echo, exec, exit, ls, mkdir, rm, which } = require("shelljs");
 
-cd(`../docs`);
+cd(`../../docs`);
 rm(`-rf`, `autogen_*.md`);
 cd(`..`);
 cd(`docgen`);
@@ -28,7 +28,3 @@ if (exec(`node server/build.js`).code !== 0) {
   echo(`Error: Generating Markdown failed`);
   exit(1);
 }
-
-cd(`..`);
-cd(`website`);
-// exec(`npm start`);
