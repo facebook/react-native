@@ -268,7 +268,7 @@ class WebView extends React.Component {
     style: ViewPropTypes.style,
 
     /**
-     * Determines the types of data converted to clickable URLs in the web view’s content.
+     * Determines the types of data converted to clickable URLs in the web view's content.
      * By default only phone numbers are detected.
      *
      * You can provide one type or an array of many types.
