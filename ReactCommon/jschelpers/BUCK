@@ -40,7 +40,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = JSC_INTERNAL_DEPS + [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
