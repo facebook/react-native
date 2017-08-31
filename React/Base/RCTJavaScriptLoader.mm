@@ -28,6 +28,7 @@ NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomai
   NSURL *_url;
   NSData *_data;
   NSUInteger _length;
+  NSInteger _filesChangedCount;
 }
 
 @end
@@ -40,6 +41,7 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
   source->_url = url;
   source->_data = data;
   source->_length = length;
+  source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
 }
 
@@ -205,6 +207,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [NSData dataWithBytes:&header length:sizeof(header)];
 }
 
+static void parseHeaders(NSDictionary *headers, RCTSource *source) {
+  source->_filesChangedCount = [headers[@"X-Metro-Files-Changed-Count"] integerValue];
+}
+
 static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadProgressBlock onProgress, RCTSourceLoadBlock onComplete)
 {
   scriptURL = sanitizeURL(scriptURL);
@@ -282,7 +288,9 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       return;
     }
 
-    onComplete(nil, RCTSourceCreate(scriptURL, data, data.length));
+    RCTSource *source = RCTSourceCreate(scriptURL, data, data.length);
+    parseHeaders(headers, source);
+    onComplete(nil, source);
   } progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
     // Only care about download progress events for the javascript bundle part.
     if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {

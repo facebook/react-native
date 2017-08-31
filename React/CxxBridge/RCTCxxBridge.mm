@@ -390,7 +390,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async");
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
-    [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge];
+
+    NSDictionary *userInfo = source ? @{ RCTBridgeDidDownloadScriptNotificationSourceKey: source } : nil;
+    [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
     _onSourceLoad(error, source);
   };
