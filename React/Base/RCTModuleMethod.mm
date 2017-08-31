@@ -22,6 +22,10 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
+#if !defined(RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) && defined(RCT_DEBUG)
+#define RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD 0.020 // seconds
+#endif
+
 typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @implementation RCTMethodArgument
@@ -516,7 +520,22 @@ RCT_EXTERN_C_END
   }
 
   // Invoke method
+#ifdef RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD
+  if (RCTIsMainQueue()) {
+    CFTimeInterval start = CACurrentMediaTime();
+    [_invocation invokeWithTarget:module];
+    CFTimeInterval duration = CACurrentMediaTime() - start;
+    if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
+      RCTLogWarn(@"mainThreadWatchdog: invocation of %@ blocked the main thread for %dms. Consider spending less time on the main thread to keep the app's UI responsive.",
+                 [self methodName],
+                 (int)(duration * 1000));
+    }
+  } else {
+    [_invocation invokeWithTarget:module];
+  }
+#else
   [_invocation invokeWithTarget:module];
+#endif
 
   index = 2;
   [_retainedObjects removeAllObjects];

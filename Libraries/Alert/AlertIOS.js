@@ -110,6 +110,8 @@ class AlertIOS {
    * @static
    * @method alert
    * @param title The dialog's title.
+   *
+   *    An empty string hides the title.
    * @param message An optional message that appears below
    *     the dialog's title.
    * @param callbackOrButtons This optional argument should
@@ -209,7 +211,7 @@ class AlertIOS {
       var callback = type;
       var defaultValue = message;
       RCTAlertManager.alertWithArgs({
-        title: title || undefined,
+        title: title,
         type: 'plain-text',
         defaultValue,
       }, (id, value) => {
@@ -242,7 +244,7 @@ class AlertIOS {
     }
 
     RCTAlertManager.alertWithArgs({
-      title: title || undefined,
+      title: title,
       message: message || undefined,
       buttons,
       type: type || undefined,

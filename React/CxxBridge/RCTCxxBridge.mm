@@ -350,12 +350,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     // Load the source asynchronously, then store it for later execution.
     dispatch_group_enter(prepareBridge);
     __block NSData *sourceCode;
-    [self loadSource:^(NSError *error, NSData *source, int64_t sourceLength) {
+    [self loadSource:^(NSError *error, RCTSource *source) {
       if (error) {
         [weakSelf handleError:error];
       }
 
-      sourceCode = source;
+      sourceCode = source.data;
       dispatch_group_leave(prepareBridge);
     } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
@@ -386,13 +386,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   (void)cookie;
 
   RCTPerformanceLogger *performanceLogger = _performanceLogger;
-  RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source, int64_t sourceLength) {
+  RCTSourceLoadBlock onSourceLoad = ^(NSError *error, RCTSource *source) {
     RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async");
     [performanceLogger markStopForTag:RCTPLScriptDownload];
-    [performanceLogger setValue:sourceLength forTag:RCTPLBundleSize];
+    [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
     [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge];
 
-    _onSourceLoad(error, source, sourceLength);
+    _onSourceLoad(error, source);
   };
 
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
@@ -402,9 +402,9 @@ struct RCTInstanceCallback : public InstanceCallback {
   } else if (!self.bundleURL) {
     NSError *error = RCTErrorWithMessage(@"No bundle URL present.\n\nMake sure you're running a packager " \
                                          "server or have included a .jsbundle file in your application bundle.");
-    onSourceLoad(error, nil, 0);
+    onSourceLoad(error, nil);
   } else {
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
+    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, RCTSource *source) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
@@ -414,7 +414,7 @@ struct RCTInstanceCallback : public InstanceCallback {
           return;
         }
       }
-      onSourceLoad(error, source, sourceLength);
+      onSourceLoad(error, source);
     }];
   }
 }
@@ -962,6 +962,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       self->_moduleDataByID = nil;
       self->_moduleClassesByID = nil;
       self->_pendingCalls = nil;
+
+      [self->_jsThread cancel];
+      self->_jsThread = nil;
+      CFRunLoopStop(CFRunLoopGetCurrent());
     }];
   });
 }

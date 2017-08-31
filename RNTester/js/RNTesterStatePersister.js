@@ -38,10 +38,9 @@ function createContainer<Props: Object, State>(
   },
 ): React.ComponentType<Props> {
   return class ComponentWithPersistedState extends React.Component<Props, $FlowFixMeState> {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     static displayName = `RNTesterStatePersister(${Component.displayName || Component.name})`;
     state = {value: spec.getInitialState(this.props)};
     _cacheKey = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(this.props)}`;
