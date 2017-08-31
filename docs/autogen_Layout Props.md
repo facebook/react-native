@@ -1,7 +1,6 @@
 ---
 id: layout-props
 title: Layout Props
-sidebar: api
 category: APIs
 permalink: docs/layout-props.html
 ---

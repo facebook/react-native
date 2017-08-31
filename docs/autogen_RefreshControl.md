@@ -1,7 +1,6 @@
 ---
 id: refreshcontrol
 title: RefreshControl
-sidebar: api
 category: Components
 permalink: docs/refreshcontrol.html
 ---

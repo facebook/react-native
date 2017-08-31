@@ -1,7 +1,6 @@
 ---
 id: easing
 title: Easing
-sidebar: api
 category: APIs
 permalink: docs/easing.html
 ---

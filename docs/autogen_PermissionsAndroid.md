@@ -1,7 +1,6 @@
 ---
 id: permissionsandroid
 title: PermissionsAndroid
-sidebar: api
 category: APIs
 permalink: docs/permissionsandroid.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: listview
 title: ListView
-sidebar: api
 category: Components
 permalink: docs/listview.html
 ---

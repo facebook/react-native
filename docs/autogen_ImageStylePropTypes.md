@@ -1,7 +1,6 @@
 ---
 id: imagestyleproptypes
 title: ImageStylePropTypes
-sidebar: api
 category: APIs
 permalink: docs/imagestyleproptypes.html
 ---

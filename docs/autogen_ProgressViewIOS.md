@@ -1,7 +1,6 @@
 ---
 id: progressviewios
 title: ProgressViewIOS
-sidebar: api
 category: Components
 permalink: docs/progressviewios.html
 ---

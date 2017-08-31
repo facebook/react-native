@@ -1,7 +1,6 @@
 ---
 id: vibrationios
 title: VibrationIOS
-sidebar: api
 category: APIs
 permalink: docs/vibrationios.html
 ---

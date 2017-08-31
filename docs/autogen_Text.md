@@ -1,7 +1,6 @@
 ---
 id: text
 title: Text
-sidebar: api
 category: Components
 permalink: docs/text.html
 ---

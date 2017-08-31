@@ -1,7 +1,6 @@
 ---
 id: slider
 title: Slider
-sidebar: api
 category: Components
 permalink: docs/slider.html
 ---

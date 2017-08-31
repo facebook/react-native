@@ -1,7 +1,6 @@
 ---
 id: settings
 title: Settings
-sidebar: api
 category: APIs
 permalink: docs/settings.html
 ---

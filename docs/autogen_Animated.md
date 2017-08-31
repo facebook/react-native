@@ -1,7 +1,6 @@
 ---
 id: animated
 title: Animated
-sidebar: api
 category: APIs
 permalink: docs/animated.html
 ---

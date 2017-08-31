@@ -1,7 +1,6 @@
 ---
 id: viewpagerandroid
 title: ViewPagerAndroid
-sidebar: api
 category: Components
 permalink: docs/viewpagerandroid.html
 ---

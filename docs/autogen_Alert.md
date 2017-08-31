@@ -1,7 +1,6 @@
 ---
 id: alert
 title: Alert
-sidebar: api
 category: APIs
 permalink: docs/alert.html
 ---

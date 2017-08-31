@@ -1,7 +1,6 @@
 ---
 id: progressbarandroid
 title: ProgressBarAndroid
-sidebar: api
 category: Components
 permalink: docs/progressbarandroid.html
 ---

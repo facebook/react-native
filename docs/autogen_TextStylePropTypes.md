@@ -1,7 +1,6 @@
 ---
 id: textstyleproptypes
 title: TextStylePropTypes
-sidebar: api
 category: APIs
 permalink: docs/textstyleproptypes.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: virtualizedlist
 title: VirtualizedList
-sidebar: api
 category: Components
 permalink: docs/virtualizedlist.html
 ---

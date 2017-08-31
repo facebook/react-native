@@ -1,7 +1,6 @@
 ---
 id: modal
 title: Modal
-sidebar: api
 category: Components
 permalink: docs/modal.html
 ---

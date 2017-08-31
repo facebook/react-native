@@ -1,7 +1,6 @@
 ---
 id: backandroid
 title: BackAndroid
-sidebar: api
 category: APIs
 permalink: docs/backandroid.html
 ---

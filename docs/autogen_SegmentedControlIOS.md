@@ -1,7 +1,6 @@
 ---
 id: segmentedcontrolios
 title: SegmentedControlIOS
-sidebar: api
 category: Components
 permalink: docs/segmentedcontrolios.html
 ---

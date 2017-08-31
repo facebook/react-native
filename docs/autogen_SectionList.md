@@ -1,7 +1,6 @@
 ---
 id: sectionlist
 title: SectionList
-sidebar: api
 category: Components
 permalink: docs/sectionlist.html
 ---

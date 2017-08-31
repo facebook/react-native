@@ -1,7 +1,6 @@
 ---
 id: panresponder
 title: PanResponder
-sidebar: api
 category: APIs
 permalink: docs/panresponder.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: pixelratio
 title: PixelRatio
-sidebar: api
 category: APIs
 permalink: docs/pixelratio.html
 ---

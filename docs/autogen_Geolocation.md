@@ -1,7 +1,6 @@
 ---
 id: geolocation
 title: Geolocation
-sidebar: api
 category: APIs
 permalink: docs/geolocation.html
 ---

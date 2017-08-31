@@ -1,7 +1,6 @@
 ---
 id: appregistry
 title: AppRegistry
-sidebar: api
 category: APIs
 permalink: docs/appregistry.html
 ---

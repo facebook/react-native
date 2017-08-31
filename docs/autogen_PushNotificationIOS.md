@@ -1,7 +1,6 @@
 ---
 id: pushnotificationios
 title: PushNotificationIOS
-sidebar: api
 category: APIs
 permalink: docs/pushnotificationios.html
 ---

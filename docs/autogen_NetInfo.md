@@ -1,7 +1,6 @@
 ---
 id: netinfo
 title: NetInfo
-sidebar: api
 category: APIs
 permalink: docs/netinfo.html
 ---

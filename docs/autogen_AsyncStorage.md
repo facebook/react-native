@@ -1,7 +1,6 @@
 ---
 id: asyncstorage
 title: AsyncStorage
-sidebar: api
 category: APIs
 permalink: docs/asyncstorage.html
 ---

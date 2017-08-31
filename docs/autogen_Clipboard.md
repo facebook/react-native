@@ -1,7 +1,6 @@
 ---
 id: clipboard
 title: Clipboard
-sidebar: api
 category: APIs
 permalink: docs/clipboard.html
 ---

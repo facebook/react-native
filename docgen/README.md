@@ -8,6 +8,12 @@ For development use only. This script will pull down the current docs from maste
 
 ### Usage
 
+First, install dependencies:
+
+```
+npm install
+```
+
 Run the following command locally:
 
 ```
@@ -16,14 +22,21 @@ GIT_USER=your_git_user GITHUB_USERNAME=facebook GITHUB_REPONAME=react-native nod
 
 This will perform a sparse checkout of the `docs/` folder from `master`, generating a clean set of markdown docs in the local `docs/` folder. It will also write to disk an updated `sidebars.json` file based on these docs.
 
-## build-autodocs-markdownjs
+## build.js
 
 Runs the usual autodocs generation scripts used by the `react-page-middleware` variant of the React Native website, but provides markdown instead of HTML. Run this script prior to building the website.
 
 ### Usage
 
-Run the following commands locally (the generate script needs to run first):
+Run the following command locally:
 
 ```
+node server/build.js
+```
+
+The build script performs some cleanup, then runs the following scripts in order:
+```
+node server/generate.js
 node server/build-autodocs-markdown.js
+node server/build-autodocs-sidebar.js
 ```

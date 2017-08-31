@@ -1,7 +1,6 @@
 ---
 id: layoutanimation
 title: LayoutAnimation
-sidebar: api
 category: APIs
 permalink: docs/layoutanimation.html
 ---

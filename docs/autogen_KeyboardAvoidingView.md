@@ -1,7 +1,6 @@
 ---
 id: keyboardavoidingview
 title: KeyboardAvoidingView
-sidebar: api
 category: Components
 permalink: docs/keyboardavoidingview.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: cameraroll
 title: CameraRoll
-sidebar: api
 category: APIs
 permalink: docs/cameraroll.html
 ---

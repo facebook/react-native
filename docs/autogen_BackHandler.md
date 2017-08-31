@@ -1,7 +1,6 @@
 ---
 id: backhandler
 title: BackHandler
-sidebar: api
 category: APIs
 permalink: docs/backhandler.html
 ---

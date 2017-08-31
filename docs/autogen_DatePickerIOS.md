@@ -1,7 +1,6 @@
 ---
 id: datepickerios
 title: DatePickerIOS
-sidebar: api
 category: Components
 permalink: docs/datepickerios.html
 ---

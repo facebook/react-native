@@ -1,7 +1,6 @@
 ---
 id: dimensions
 title: Dimensions
-sidebar: api
 category: APIs
 permalink: docs/dimensions.html
 ---

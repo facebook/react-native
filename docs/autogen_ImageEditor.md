@@ -1,7 +1,6 @@
 ---
 id: imageeditor
 title: ImageEditor
-sidebar: api
 category: APIs
 permalink: docs/imageeditor.html
 ---

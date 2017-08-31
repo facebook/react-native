@@ -1,7 +1,6 @@
 ---
 id: share
 title: Share
-sidebar: api
 category: APIs
 permalink: docs/share.html
 ---

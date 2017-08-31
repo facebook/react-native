@@ -1,7 +1,6 @@
 ---
 id: drawerlayoutandroid
 title: DrawerLayoutAndroid
-sidebar: api
 category: Components
 permalink: docs/drawerlayoutandroid.html
 ---

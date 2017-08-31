@@ -1,7 +1,6 @@
 ---
 id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
-sidebar: api
 category: Components
 permalink: docs/touchablewithoutfeedback.html
 ---

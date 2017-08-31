@@ -1,7 +1,6 @@
 ---
 id: webview
 title: WebView
-sidebar: api
 category: Components
 permalink: docs/webview.html
 ---

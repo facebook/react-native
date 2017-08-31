@@ -1,7 +1,6 @@
 ---
 id: stylesheet
 title: StyleSheet
-sidebar: api
 category: APIs
 permalink: docs/stylesheet.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: imagepickerios
 title: ImagePickerIOS
-sidebar: api
 category: APIs
 permalink: docs/imagepickerios.html
 ---

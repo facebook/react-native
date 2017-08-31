@@ -1,7 +1,6 @@
 ---
 id: touchablehighlight
 title: TouchableHighlight
-sidebar: api
 category: Components
 permalink: docs/touchablehighlight.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: viewstyleproptypes
 title: ViewStylePropTypes
-sidebar: api
 category: APIs
 permalink: docs/viewstyleproptypes.html
 ---

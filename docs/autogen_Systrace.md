@@ -1,7 +1,6 @@
 ---
 id: systrace
 title: Systrace
-sidebar: api
 category: APIs
 permalink: docs/systrace.html
 ---

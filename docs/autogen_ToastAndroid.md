@@ -1,7 +1,6 @@
 ---
 id: toastandroid
 title: ToastAndroid
-sidebar: api
 category: APIs
 permalink: docs/toastandroid.html
 ---

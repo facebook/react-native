@@ -1,7 +1,6 @@
 ---
 id: statusbar
 title: StatusBar
-sidebar: api
 category: Components
 permalink: docs/statusbar.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: shadow-props
 title: Shadow Props
-sidebar: api
 category: APIs
 permalink: docs/shadow-props.html
 ---

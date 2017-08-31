@@ -1,7 +1,6 @@
 ---
 id: picker
 title: Picker
-sidebar: api
 category: Components
 permalink: docs/picker.html
 ---

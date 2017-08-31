@@ -1,7 +1,6 @@
 ---
 id: interactionmanager
 title: InteractionManager
-sidebar: api
 category: APIs
 permalink: docs/interactionmanager.html
 ---

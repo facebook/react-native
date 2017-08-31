@@ -1,7 +1,6 @@
 ---
 id: maskedviewios
 title: MaskedViewIOS
-sidebar: api
 category: Components
 permalink: docs/maskedviewios.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: actionsheetios
 title: ActionSheetIOS
-sidebar: api
 category: APIs
 permalink: docs/actionsheetios.html
 ---

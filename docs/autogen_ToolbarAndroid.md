@@ -1,7 +1,6 @@
 ---
 id: toolbarandroid
 title: ToolbarAndroid
-sidebar: api
 category: Components
 permalink: docs/toolbarandroid.html
 ---

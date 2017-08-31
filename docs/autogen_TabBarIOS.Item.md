@@ -1,7 +1,6 @@
 ---
 id: tabbarios-item
 title: TabBarIOS.Item
-sidebar: api
 category: Components
 permalink: docs/tabbarios-item.html
 ---

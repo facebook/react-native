@@ -1,7 +1,6 @@
 ---
 id: appstate
 title: AppState
-sidebar: api
 category: APIs
 permalink: docs/appstate.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: navigatorios
 title: NavigatorIOS
-sidebar: api
 category: Components
 permalink: docs/navigatorios.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: flatlist
 title: FlatList
-sidebar: api
 category: Components
 permalink: docs/flatlist.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: linking
 title: Linking
-sidebar: api
 category: APIs
 permalink: docs/linking.html
 ---

@@ -73,7 +73,7 @@ function checkOutDocs() {
     shell.exit(1);
   }
 
-  shell.echo("Checked out react-native-docs");
+  shell.echo(`Checked out ${targetDir}`);
   shell.cd(`../..`);
 }
 
@@ -125,7 +125,6 @@ function generateDocsMetadata(files) {
     }
 
     if (metadata.permalink.match(/^https?:/)) {
-      // skips non-local docs?
       console.log(`Skipping ${file} as its permalink is external`);
       return;
     }

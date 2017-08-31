@@ -1,7 +1,6 @@
 ---
 id: activityindicator
 title: ActivityIndicator
-sidebar: api
 category: Components
 permalink: docs/activityindicator.html
 ---

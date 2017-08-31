@@ -1,7 +1,6 @@
 ---
 id: imagestore
 title: ImageStore
-sidebar: api
 category: APIs
 permalink: docs/imagestore.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: keyboard
 title: Keyboard
-sidebar: api
 category: APIs
 permalink: docs/keyboard.html
 ---

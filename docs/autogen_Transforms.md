@@ -1,7 +1,6 @@
 ---
 id: transforms
 title: Transforms
-sidebar: api
 category: APIs
 permalink: docs/transforms.html
 ---

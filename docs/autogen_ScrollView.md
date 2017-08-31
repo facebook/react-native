@@ -1,7 +1,6 @@
 ---
 id: scrollview
 title: ScrollView
-sidebar: api
 category: Components
 permalink: docs/scrollview.html
 ---

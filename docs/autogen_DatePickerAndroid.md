@@ -1,7 +1,6 @@
 ---
 id: datepickerandroid
 title: DatePickerAndroid
-sidebar: api
 category: APIs
 permalink: docs/datepickerandroid.html
 ---

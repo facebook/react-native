@@ -1,7 +1,6 @@
 ---
 id: textinput
 title: TextInput
-sidebar: api
 category: Components
 permalink: docs/textinput.html
 ---

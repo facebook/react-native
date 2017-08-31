@@ -1,7 +1,6 @@
 ---
 id: switch
 title: Switch
-sidebar: api
 category: Components
 permalink: docs/switch.html
 ---

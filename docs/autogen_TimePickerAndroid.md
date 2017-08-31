@@ -1,7 +1,6 @@
 ---
 id: timepickerandroid
 title: TimePickerAndroid
-sidebar: api
 category: APIs
 permalink: docs/timepickerandroid.html
 ---

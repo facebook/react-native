@@ -1,7 +1,6 @@
 ---
 id: touchablenativefeedback
 title: TouchableNativeFeedback
-sidebar: api
 category: Components
 permalink: docs/touchablenativefeedback.html
 ---

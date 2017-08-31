@@ -1,7 +1,6 @@
 ---
 id: vibration
 title: Vibration
-sidebar: api
 category: APIs
 permalink: docs/vibration.html
 ---

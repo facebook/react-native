@@ -1,7 +1,6 @@
 ---
 id: button
 title: Button
-sidebar: api
 category: Components
 permalink: docs/button.html
 ---

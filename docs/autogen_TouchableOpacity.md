@@ -1,7 +1,6 @@
 ---
 id: touchableopacity
 title: TouchableOpacity
-sidebar: api
 category: Components
 permalink: docs/touchableopacity.html
 ---

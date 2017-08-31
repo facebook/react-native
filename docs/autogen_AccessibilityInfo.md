@@ -1,7 +1,6 @@
 ---
 id: accessibilityinfo
 title: AccessibilityInfo
-sidebar: api
 category: APIs
 permalink: docs/accessibilityinfo.html
 ---

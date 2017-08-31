@@ -1,7 +1,6 @@
 ---
 id: image
 title: Image
-sidebar: api
 category: Components
 permalink: docs/image.html
 ---

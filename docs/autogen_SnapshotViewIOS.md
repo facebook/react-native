@@ -1,7 +1,6 @@
 ---
 id: snapshotviewios
 title: SnapshotViewIOS
-sidebar: api
 category: Components
 permalink: docs/snapshotviewios.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: view
 title: View
-sidebar: api
 category: Components
 permalink: docs/view.html
 ---

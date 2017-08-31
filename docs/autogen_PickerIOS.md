@@ -1,7 +1,6 @@
 ---
 id: pickerios
 title: PickerIOS
-sidebar: api
 category: Components
 permalink: docs/pickerios.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: listviewdatasource
 title: ListViewDataSource
-sidebar: api
 category: APIs
 permalink: docs/listviewdatasource.html
 ---

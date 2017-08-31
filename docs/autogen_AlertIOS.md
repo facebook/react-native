@@ -1,7 +1,6 @@
 ---
 id: alertios
 title: AlertIOS
-sidebar: api
 category: APIs
 permalink: docs/alertios.html
 ---

@@ -1,7 +1,6 @@
 ---
 id: statusbarios
 title: StatusBarIOS
-sidebar: api
 category: APIs
 permalink: docs/statusbarios.html
 ---
