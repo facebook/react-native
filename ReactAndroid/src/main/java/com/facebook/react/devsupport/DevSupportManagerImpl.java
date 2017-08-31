@@ -825,6 +825,8 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
+    final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
+
     mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
@@ -838,7 +840,7 @@ public class DevSupportManagerImpl implements
                 new Runnable() {
                   @Override
                   public void run() {
-                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END);
+                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
                     mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
                   }
                 });
@@ -877,7 +879,8 @@ public class DevSupportManagerImpl implements
           }
         },
         mJSBundleTempFile,
-        bundleURL);
+        bundleURL,
+        bundleInfo);
   }
 
   @Override
