@@ -201,7 +201,7 @@ class PushNotificationIOS {
    * - `userInfo`  : An optional object containing additional notification data.
    * - `thread-id`  : The thread identifier of this notification, if has one.
    */
-  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
+  static getDeliveredNotifications(callback: (notifications: Array<Object>) => void): void {
     RCTPushNotificationManager.getDeliveredNotifications(callback);
   }
 
@@ -210,7 +210,7 @@ class PushNotificationIOS {
    *
    * @param identifiers Array of notification identifiers
    */
-  static removeDeliveredNotifications(identifiers: [string]): void {
+  static removeDeliveredNotifications(identifiers: Array<string>): void {
     RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
   }
 

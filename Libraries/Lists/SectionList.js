@@ -44,7 +44,7 @@ type SectionBase<SectionItemT> = {
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
@@ -86,22 +86,22 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
    * add custom props with `separators.updateProps`.
    */
-  ItemSeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
+  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered at the very end of the list. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered at the top and bottom of each section (note this is different from
    * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
@@ -109,7 +109,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
    * and any custom props from `separators.updateProps`.
    */
-  SectionSeparatorComponent?: ?ReactClass<any>,
+  SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -253,7 +253,6 @@ type DefaultProps = typeof defaultProps;
  *
  */
 class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
-  DefaultProps,
   Props<SectionT>,
   void,
 > {
@@ -333,6 +332,9 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
   _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }

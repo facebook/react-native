@@ -50,17 +50,15 @@ import javax.annotation.Nullable;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
- * manager can re-layout its elements.
- * It delegates handling touch events for itself and child views and sending those events to JS by
- * using JSTouchDispatcher.
- * This view is overriding {@link ViewGroup#onInterceptTouchEvent} method in order to be notified
- * about the events for all of its children and it's also overriding
- * {@link ViewGroup#requestDisallowInterceptTouchEvent} to make sure that
- * {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular
- * touch event this view's {@link View#onTouchEvent} will still return true in order to be notified
- * about all subsequent touch events related to that gesture (in case when JS code want to handle
- * that gesture).
+ * manager can re-layout its elements. It delegates handling touch events for itself and child views
+ * and sending those events to JS by using JSTouchDispatcher. This view is overriding {@link
+ * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
+ * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
+ * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
+ * intercepting it. In case when no child view is interested in handling some particular touch event
+ * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
+ * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * gesture).
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
@@ -81,7 +79,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
   private boolean mIsAttachedToInstance;
-  private boolean mContentAppeared;
+  private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -195,18 +193,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void onViewAdded(View child) {
     super.onViewAdded(child);
 
-    if (!mContentAppeared) {
-      mContentAppeared = true;
-      ReactMarker.logMarker(
-          ReactMarkerConstants.CONTENT_APPEARED, getJSModuleName(), getRootViewTag());
+    if (mShouldLogContentAppeared) {
+      mShouldLogContentAppeared = false;
+
+      if (mJSModuleName != null) {
+        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
+      }
     }
-  }
-
-  @Override
-  public void removeAllViewsInLayout() {
-    super.removeAllViewsInLayout();
-
-    mContentAppeared = false;
   }
 
   /**
@@ -262,6 +255,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
     }
+    mShouldLogContentAppeared = false;
   }
 
   public void onAttachedToReactInstance() {
@@ -312,6 +306,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       if (appProperties != null) {
         appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
       }
+
+      mShouldLogContentAppeared = true;
 
       String jsAppModuleName = getJSModuleName();
       catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);

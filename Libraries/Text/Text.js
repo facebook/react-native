@@ -479,11 +479,11 @@ const Text = createReactClass({
                 });
               };
 
-              this.touchableHandlePress = (e: SyntheticEvent) => {
+              this.touchableHandlePress = (e: SyntheticEvent<>) => {
                 this.props.onPress && this.props.onPress(e);
               };
 
-              this.touchableHandleLongPress = (e: SyntheticEvent) => {
+              this.touchableHandleLongPress = (e: SyntheticEvent<>) => {
                 this.props.onLongPress && this.props.onLongPress(e);
               };
 
@@ -494,28 +494,28 @@ const Text = createReactClass({
             // $FlowFixMe(>=0.41.0)
             return setResponder;
           },
-          onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
+          onResponderGrant: function(e: SyntheticEvent<>, dispatchID: string) {
             // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
               // $FlowFixMe(>=0.41.0)
               this.props.onResponderGrant.apply(this, arguments);
           }.bind(this),
-          onResponderMove: function(e: SyntheticEvent) {
+          onResponderMove: function(e: SyntheticEvent<>) {
             // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
               // $FlowFixMe(>=0.41.0)
               this.props.onResponderMove.apply(this, arguments);
           }.bind(this),
-          onResponderRelease: function(e: SyntheticEvent) {
+          onResponderRelease: function(e: SyntheticEvent<>) {
             // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
               // $FlowFixMe(>=0.41.0)
               this.props.onResponderRelease.apply(this, arguments);
           }.bind(this),
-          onResponderTerminate: function(e: SyntheticEvent) {
+          onResponderTerminate: function(e: SyntheticEvent<>) {
             // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&

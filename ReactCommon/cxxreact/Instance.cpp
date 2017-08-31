@@ -54,7 +54,7 @@ void Instance::loadApplication(std::unique_ptr<JSModulesUnbundle> unbundle,
                                std::unique_ptr<const JSBigString> string,
                                std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("reactbridge_xplat_loadApplication", "sourceURL",
+  SystraceSection s("Instance::loadApplication", "sourceURL",
                     sourceURL);
   nativeToJsBridge_->loadApplication(std::move(unbundle), std::move(string),
                                      std::move(sourceURL));
@@ -66,7 +66,7 @@ void Instance::loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("reactbridge_xplat_loadApplicationSync", "sourceURL",
+  SystraceSection s("Instance::loadApplicationSync", "sourceURL",
                     sourceURL);
   nativeToJsBridge_->loadApplicationSync(std::move(unbundle), std::move(string),
                                          std::move(sourceURL));
@@ -74,7 +74,7 @@ void Instance::loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
 
 void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("reactbridge_xplat_setSourceURL", "sourceURL", sourceURL);
+  SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
   nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
 }
@@ -82,7 +82,7 @@ void Instance::setSourceURL(std::string sourceURL) {
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
                                     std::string sourceURL,
                                     bool loadSynchronously) {
-  SystraceSection s("reactbridge_xplat_loadScriptFromString", "sourceURL",
+  SystraceSection s("Instance::loadScriptFromString", "sourceURL",
                     sourceURL);
   if (loadSynchronously) {
     loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
@@ -123,7 +123,7 @@ void Instance::callJSFunction(std::string &&module, std::string &&method,
 }
 
 void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
-  SystraceSection s("<callback>");
+  SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }

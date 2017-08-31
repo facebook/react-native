@@ -39,60 +39,56 @@ let _useFiber = false;
 // Implements a subset of User Timing API necessary for React measurements.
 // https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
 const REACT_MARKER = '\u269B';
-const userTimingPolyfill = {
+const userTimingPolyfill = __DEV__ ? {
   mark(markName: string) {
-    if (__DEV__) {
-      if (_enabled) {
-        _markStackIndex++;
-        _markStack[_markStackIndex] = markName;
-        let systraceLabel = markName;
-        // Since perf measurements are a shared namespace in User Timing API,
-        // we prefix all React results with a React emoji.
-        if (markName[0] === REACT_MARKER) {
-          // This is coming from React.
-          // Removing component IDs keeps trace colors stable.
-          const indexOfId = markName.lastIndexOf(' (#');
-          const cutoffIndex = indexOfId !== -1 ? indexOfId : markName.length;
-          // Also cut off the emoji because it breaks Systrace
-          systraceLabel = markName.slice(2, cutoffIndex);
-        }
-        Systrace.beginEvent(systraceLabel);
+    if (_enabled) {
+      _markStackIndex++;
+      _markStack[_markStackIndex] = markName;
+      let systraceLabel = markName;
+      // Since perf measurements are a shared namespace in User Timing API,
+      // we prefix all React results with a React emoji.
+      if (markName[0] === REACT_MARKER) {
+        // This is coming from React.
+        // Removing component IDs keeps trace colors stable.
+        const indexOfId = markName.lastIndexOf(' (#');
+        const cutoffIndex = indexOfId !== -1 ? indexOfId : markName.length;
+        // Also cut off the emoji because it breaks Systrace
+        systraceLabel = markName.slice(2, cutoffIndex);
       }
+      Systrace.beginEvent(systraceLabel);
     }
   },
   measure(measureName: string, startMark: ?string, endMark: ?string) {
-    if (__DEV__) {
-      if (_enabled) {
-        invariant(
-          typeof measureName === 'string' &&
-          typeof startMark === 'string' &&
-          typeof endMark === 'undefined',
-          'Only performance.measure(string, string) overload is supported.'
-        );
-        const topMark = _markStack[_markStackIndex];
-        invariant(
-          startMark === topMark,
-          'There was a mismatching performance.measure() call. ' +
-          'Expected "%s" but got "%s."',
-          topMark,
-          startMark,
-        );
-        _markStackIndex--;
-        // We can't use more descriptive measureName because Systrace doesn't
-        // let us edit labels post factum.
-        Systrace.endEvent();
-      }
+    if (_enabled) {
+      invariant(
+        typeof measureName === 'string' &&
+        typeof startMark === 'string' &&
+        typeof endMark === 'undefined',
+        'Only performance.measure(string, string) overload is supported.'
+      );
+      const topMark = _markStack[_markStackIndex];
+      invariant(
+        startMark === topMark,
+        'There was a mismatching performance.measure() call. ' +
+        'Expected "%s" but got "%s."',
+        topMark,
+        startMark,
+      );
+      _markStackIndex--;
+      // We can't use more descriptive measureName because Systrace doesn't
+      // let us edit labels post factum.
+      Systrace.endEvent();
     }
   },
   clearMarks(markName: string) {
-    if (__DEV__) {
-      if (_enabled) {
-        if (_markStackIndex === -1) {
-          return;
-        }
-        if (markName === _markStack[_markStackIndex]) {
-          // React uses this for "cancelling" started measurements.
-          // Systrace doesn't support deleting measurements, so we just stop them.
+    if (_enabled) {
+      if (_markStackIndex === -1) {
+        return;
+      }
+      if (markName === _markStack[_markStackIndex]) {
+        // React uses this for "cancelling" started measurements.
+        // Systrace doesn't support deleting measurements, so we just stop them.
+        if (userTimingPolyfill != null) {
           userTimingPolyfill.measure(markName, markName);
         }
       }
@@ -102,10 +98,10 @@ const userTimingPolyfill = {
     // React calls this to avoid memory leaks in browsers, but we don't keep
     // measurements anyway.
   },
-};
+} : null;
 
 // A hook to get React Stack markers in Systrace.
-const reactDebugToolHook = {
+const reactDebugToolHook = __DEV__ ? {
   onBeforeMountComponent(debugID) {
     const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
     const displayName = ReactComponentTreeHook.getDisplayName(debugID);
@@ -138,15 +134,17 @@ const reactDebugToolHook = {
   onEndLifeCycleTimer(debugID, timerType) {
     Systrace.endEvent();
   },
-};
+} : null;
 
 const Systrace = {
   installReactHook(useFiber: boolean) {
     if (_enabled) {
-      if (useFiber) {
-        global.performance = userTimingPolyfill;
-      } else {
-        require('ReactDebugTool').addHook(reactDebugToolHook);
+      if (__DEV__) {
+        if (useFiber) {
+          global.performance = userTimingPolyfill;
+        } else {
+          require('ReactDebugTool').addHook(reactDebugToolHook);
+        }
       }
     }
     _useFiber = useFiber;

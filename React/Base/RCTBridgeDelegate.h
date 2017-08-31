@@ -106,6 +106,15 @@
 - (BOOL)shouldBridgeUseCxxBridge:(RCTBridge *)bridge;
 
 /**
+* The bridge will call this method when a module been called from JS
+* cannot be found among registered modules.
+* It should return YES if the module with name 'moduleName' was registered
+* in the implementation, and the system must attempt to look for it again among registered.
+* If the module was not registered, return NO to prevent further searches.
+*/
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName;
+
+/**
  * The bridge will automatically attempt to load the JS source code from the
  * location specified by the `sourceURLForBridge:` method, however, if you want
  * to handle loading the JS yourself, you can do so by implementing this method.

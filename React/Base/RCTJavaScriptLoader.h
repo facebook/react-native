@@ -33,8 +33,32 @@ NS_ENUM(NSInteger) {
 
 @end
 
+@interface RCTSource : NSObject
+
+/**
+ * URL of the source object.
+ */
+@property (strong, nonatomic, readonly) NSURL *url;
+
+/**
+ * JS source (or simply the binary header in the case of a RAM bundle).
+ */
+@property (strong, nonatomic, readonly) NSData *data;
+
+/**
+ * Length of the entire JS bundle. Note that self.length != self.data.length in the case of certain bundle formats. For
+ * instance, when using RAM bundles:
+ *
+ *  - self.data will point to the bundle header
+ *  - self.data.length is the length of the bundle header, i.e. sizeof(facebook::react::BundleHeader)
+ *  - self.length is the length of the entire bundle file (header + contents)
+ */
+@property (nonatomic, readonly) NSUInteger length;
+
+@end
+
 typedef void (^RCTSourceLoadProgressBlock)(RCTLoadingProgress *progressData);
-typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
 
 @interface RCTJavaScriptLoader : NSObject
 

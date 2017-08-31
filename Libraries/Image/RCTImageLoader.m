@@ -716,10 +716,30 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         CGSize size;
         if ([imageOrData isKindOfClass:[NSData class]]) {
             NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-            size = (CGSize){
-                [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-            };
+
+            NSInteger imageOrientation = [meta[(id)kCGImagePropertyOrientation] integerValue];
+            switch (imageOrientation) {
+                case kCGImagePropertyOrientationLeft:
+                case kCGImagePropertyOrientationRight:
+                case kCGImagePropertyOrientationLeftMirrored:
+                case kCGImagePropertyOrientationRightMirrored:
+                    // swap width and height
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                    };
+                    break;
+                case kCGImagePropertyOrientationUp:
+                case kCGImagePropertyOrientationDown:
+                case kCGImagePropertyOrientationUpMirrored:
+                case kCGImagePropertyOrientationDownMirrored:
+                default:
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                    };
+                    break;
+            }
         } else {
             UIImage *image = imageOrData;
             size = (CGSize){

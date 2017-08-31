@@ -26,18 +26,16 @@ import type {ImageSource} from 'ImageSource';
  * with SwipeableListView. Each button takes an image and text with optional
  * formatting.
  */
-class SwipeableQuickActionButton extends React.Component {
-  props: {
-    accessibilityLabel?: string,
-    imageSource: ImageSource | number,
-    imageStyle?: ?ViewPropTypes.style,
-    onPress?: Function,
-    style?: ?ViewPropTypes.style,
-    testID?: string,
-    text?: ?(string | Object | Array<string | Object>),
-    textStyle?: ?ViewPropTypes.style,
-  };
-
+class SwipeableQuickActionButton extends React.Component<{
+  accessibilityLabel?: string,
+  imageSource: ImageSource | number,
+  imageStyle?: ?ViewPropTypes.style,
+  onPress?: Function,
+  style?: ?ViewPropTypes.style,
+  testID?: string,
+  text?: ?(string | Object | Array<string | Object>),
+  textStyle?: ?ViewPropTypes.style,
+}> {
   static propTypes = {
     accessibilityLabel: PropTypes.string,
     imageSource: Image.propTypes.source.isRequired,
@@ -49,7 +47,7 @@ class SwipeableQuickActionButton extends React.Component {
     textStyle: Text.propTypes.style,
   };
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (!this.props.imageSource && !this.props.text) {
       return null;
     }

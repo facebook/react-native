@@ -45,7 +45,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  * AppRegistry.registerComponent('DisplayAnImageBackground', () => DisplayAnImageBackground);
  * ```
  */
-class ImageBackground extends React.Component {
+class ImageBackground extends React.Component<$FlowFixMeProps> {
   setNativeProps(props: Object) {
     // Work-around flow
     const viewRef = this._viewRef;
@@ -58,6 +58,9 @@ class ImageBackground extends React.Component {
   _viewRef: ?NativeMethodsMixinType = null;
 
   _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._viewRef = ref;
   };
 

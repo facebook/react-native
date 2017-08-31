@@ -105,7 +105,7 @@ fi
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-$NODE_BINARY $CLI_PATH bundle \
+$NODE_BINARY "$CLI_PATH" bundle \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \
