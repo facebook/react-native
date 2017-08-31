@@ -394,7 +394,9 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
 
   _clearSubscriptions(): void {
     (this._subscriptions || []).forEach(sub => {
-      sub.remove();
+      if (sub) {
+        sub.remove();
+      }
     });
     this._subscriptions = [];
   }

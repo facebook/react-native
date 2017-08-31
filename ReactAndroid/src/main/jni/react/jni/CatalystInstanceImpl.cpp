@@ -85,10 +85,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
   : instance_(folly::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
-}
-
-void CatalystInstanceImpl::quitQueuesSynchronous() {
-  moduleMessageQueue_->quitSynchronous();
+  if (moduleMessageQueue_ != NULL) {
+    moduleMessageQueue_->quitSynchronous();
+  }
   if (uiBackgroundMessageQueue_ != NULL) {
     uiBackgroundMessageQueue_->quitSynchronous();
   }
@@ -98,7 +97,6 @@ void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-    makeNativeMethod("quitQueuesSynchronous", CatalystInstanceImpl::quitQueuesSynchronous),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),

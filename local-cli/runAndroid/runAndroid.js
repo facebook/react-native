@@ -253,24 +253,24 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
 }
 
 function startServerInNewWindow() {
-  const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
+  const terminal = process.env.REACT_TERMINAL;
 
   if (process.platform === 'darwin') {
-    if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+    if (terminal) {
+      return child_process.spawnSync('open', ['-a', terminal, launchPackagerScript], procConfig);
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
     procConfig.detached = true;
-    if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
+    if (terminal){
+      return child_process.spawn(terminal, ['-e', 'sh ' + launchPackagerScript], procConfig);
     }
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
 

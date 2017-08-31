@@ -132,6 +132,10 @@ static BOOL isSupportedVersion(NSNumber *version)
   }
 }
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+}
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
 }

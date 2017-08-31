@@ -15,6 +15,8 @@
 
 @protocol RCTWebSocketProtocolDelegate
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket;
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message;
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
