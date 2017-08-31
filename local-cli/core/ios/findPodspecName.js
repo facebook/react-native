@@ -4,7 +4,6 @@ const glob = require('glob');
 const path = require('path');
 
 module.exports = function findPodspecName(folder) {
-
   const podspecs = glob.sync('*.podspec', { cwd: folder });
   let podspecFile = null;
   if (podspecs.length === 0) {
