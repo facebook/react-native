@@ -35,8 +35,7 @@ JSEventLoopWatchdog.install({thresholdMS: 200});
 
 let totalWidgets = 0;
 
-class SlowWidget extends React.Component {
-  state: {ctorTimestamp: number, timeToMount: number};
+class SlowWidget extends React.Component<$FlowFixMeProps, {ctorTimestamp: number, timeToMount: number}> {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -89,11 +88,10 @@ function Block(props: Object) {
 
 const Row = (props: Object) => <View style={styles.row} {...props} />;
 
-class IncrementalExample extends React.Component {
+class IncrementalExample extends React.Component<mixed, {stats: ?Object}> {
   static title = '<Incremental*>';
   static description = 'Enables incremental rendering of complex components.';
   start: number;
-  state: {stats: ?Object};
   constructor(props: mixed, context: mixed) {
     super(props, context);
     this.start = performanceNow();
@@ -116,7 +114,7 @@ class IncrementalExample extends React.Component {
       console.log('onDone:', stats);
     }, 0);
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <IncrementalGroup
         disabled={false}

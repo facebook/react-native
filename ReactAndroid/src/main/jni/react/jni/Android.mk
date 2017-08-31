@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := reactnativejni
 
 LOCAL_SRC_FILES := \
+  AndroidJSCFactory.cpp \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
   JavaModuleWrapper.cpp \

@@ -18,7 +18,7 @@ const Text = require('Text');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
-class RNTesterSettingSwitchRow extends React.Component {
+class RNTesterSettingSwitchRow extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   componentWillReceiveProps(newProps) {
     const {onEnable, onDisable, persister} = this.props;
     if (newProps.persister.state !== persister.state) {

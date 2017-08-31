@@ -19,7 +19,7 @@ const {
   View
 } = ReactNative;
 
-class AppStateSubscription extends React.Component {
+class AppStateSubscription extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     appState: AppState.currentState,
     previousAppStates: [],

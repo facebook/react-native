@@ -59,8 +59,15 @@ const TouchableWithoutFeedback = createReactClass({
      * that steals the responder lock).
      */
     onPress: PropTypes.func,
+    /**
+    * Called as soon as the touchable element is pressed and invoked even before onPress.
+    * This can be useful when making network requests.
+    */
     onPressIn: PropTypes.func,
-    onPressOut: PropTypes.func,
+    /**
+    * Called as soon as the touch is released even before onPress.
+    */
+     onPressOut: PropTypes.func,
     /**
      * Invoked on mount and layout changes with
      *

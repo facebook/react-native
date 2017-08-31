@@ -25,7 +25,6 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
 const keyMirror = require('fbjs/lib/keyMirror');
@@ -37,11 +36,10 @@ function getuid() {
   return __uid++;
 }
 
-class NavigatorTransitionerIOS extends React.Component {
+class NavigatorTransitionerIOS extends React.Component<$FlowFixMeProps> {
   requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
-      logError,
       cb
     );
   }
@@ -130,7 +128,7 @@ type Event = Object;
  * [`UINavigationController`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/),
  * enabling you to implement a navigation stack. It works exactly the same as it
  * would on a native app using `UINavigationController`, providing the same
- * animations and behavior from UIKIt.
+ * animations and behavior from UIKit.
  *
  * As the name implies, it is only available on iOS. Take a look at
  * [`React Navigation`](https://reactnavigation.org/) for a cross-platform
@@ -143,7 +141,8 @@ type Event = Object;
  * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * import React, { Component, PropTypes } from 'react';
+ * import PropTypes from 'prop-types';
+ * import React, { Component } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
  * export default class NavigatorIOSApp extends Component {
@@ -430,6 +429,13 @@ var NavigatorIOS = createReactClass({
        */
       barTintColor: PropTypes.string,
 
+      /**
+       * The style of the navigation bar. Supported values are 'default', 'black'.
+       * Use 'black' instead of setting `barTintColor` to black. This produces
+       * a navigation bar with the native iOS style with higher translucency.
+       */
+      barStyle: PropTypes.oneOf(['default', 'black']),
+
        /**
        * The text color of the navigation bar title.
        */
@@ -470,6 +476,13 @@ var NavigatorIOS = createReactClass({
      * The default background color of the navigation bar.
      */
     barTintColor: PropTypes.string,
+
+    /**
+     * The style of the navigation bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a navigation bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
 
     /**
      * The default text color of the navigation bar title.

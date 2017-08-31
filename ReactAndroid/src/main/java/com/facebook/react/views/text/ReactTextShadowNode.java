@@ -258,12 +258,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
                 0.f,
-                true);
+                mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
-                .setIncludePad(true)
+                .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)
                 .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
                 .build();
@@ -280,7 +280,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 1.f,
                 0.f,
                 boring,
-                true);
+                mIncludeFontPadding);
           } else {
             // Is used for multiline, boring text and the width is known.
 
@@ -292,12 +292,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                   Layout.Alignment.ALIGN_NORMAL,
                   1.f,
                   0.f,
-                  true);
+                  mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
-                .setIncludePad(true)
+                .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)
                 .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
                 .build();
@@ -351,6 +351,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private boolean mIsUnderlineTextDecorationSet = false;
   private boolean mIsLineThroughTextDecorationSet = false;
+  private boolean mIncludeFontPadding = true;
 
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
@@ -557,6 +558,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       mFontStyle = fontStyle;
       markUpdated();
     }
+  }
+
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
+  public void setIncludeFontPadding(boolean includepad) {
+    mIncludeFontPadding = includepad;
   }
 
   @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)

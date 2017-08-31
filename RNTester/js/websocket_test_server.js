@@ -16,6 +16,9 @@
 
 const WebSocket = require('ws');
 
+const fs = require('fs');
+const path = require('path');
+
 console.log(`\
 Test server for WebSocketExample
 
@@ -33,6 +36,10 @@ server.on('connection', (ws) => {
     if (respondWithBinary) {
       message = new Buffer(message);
     }
+    if (message === 'getImage') {
+      message = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));
+    }
+    console.log('Replying with:', message);
     ws.send(message);
   });
 

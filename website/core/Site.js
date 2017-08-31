@@ -14,8 +14,8 @@ var HeaderLinks = require('HeaderLinks');
 var Metadata = require('Metadata');
 var React = require('React');
 
-var Site = React.createClass({
-  render: function() {
+class Site extends React.Component {
+  render() {
     const path = Metadata.config.RN_DEPLOYMENT_PATH;
     const version = Metadata.config.RN_VERSION;
     const algoliaVersion = version === 'next'
@@ -26,7 +26,7 @@ var Site = React.createClass({
     var currentYear = new Date().getFullYear();
 
     var title = this.props.title
-      ? this.props.title
+      ? this.props.title + ' - React Native'
       : 'React Native | A framework for building native apps using React';
 
     var metaTags = [
@@ -426,6 +426,7 @@ var Site = React.createClass({
         </body>
       </html>
     );
-  },
-});
+  }
+}
+
 module.exports = Site;

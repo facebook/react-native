@@ -16,7 +16,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {Alert, Image, StyleSheet, Text, View} = ReactNative;
 
-class ScreenshotExample extends React.Component {
+class ScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     uri: undefined,
   };

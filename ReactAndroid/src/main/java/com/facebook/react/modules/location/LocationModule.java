@@ -28,6 +28,9 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
+import com.facebook.react.common.ReactConstants;
+import com.facebook.common.logging.FLog;
+
 import javax.annotation.Nullable;
 
 /**
@@ -129,13 +132,13 @@ public class LocationModule extends ReactContextBaseJavaModule {
         return;
       }
       Location location = locationManager.getLastKnownLocation(provider);
-      if (location != null &&
-          SystemClock.currentTimeMillis() - location.getTime() < locationOptions.maximumAge) {
+      if (location != null && (SystemClock.currentTimeMillis() - location.getTime()) < locationOptions.maximumAge) {
         success.invoke(locationToMap(location));
         return;
       }
+
       new SingleUpdateRequest(locationManager, provider, locationOptions.timeout, success, error)
-          .invoke();
+          .invoke(location);
     } catch (SecurityException e) {
       throwLocationPermissionMissing(e);
     }
@@ -246,6 +249,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     private final LocationManager mLocationManager;
     private final String mProvider;
     private final long mTimeout;
+    private Location mOldLocation;
     private final Handler mHandler = new Handler();
     private final Runnable mTimeoutRunnable = new Runnable() {
       @Override
@@ -254,6 +258,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
           if (!mTriggered) {
             mError.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
             mLocationManager.removeUpdates(mLocationListener);
+            FLog.i(ReactConstants.TAG, "LocationModule: Location request timed out");
             mTriggered = true;
           }
         }
@@ -263,11 +268,14 @@ public class LocationModule extends ReactContextBaseJavaModule {
       @Override
       public void onLocationChanged(Location location) {
         synchronized (SingleUpdateRequest.this) {
-          if (!mTriggered) {
+          if (!mTriggered && isBetterLocation(location, mOldLocation)) {
             mSuccess.invoke(locationToMap(location));
             mHandler.removeCallbacks(mTimeoutRunnable);
             mTriggered = true;
+            mLocationManager.removeUpdates(mLocationListener);
           }
+
+          mOldLocation = location;
         }
       }
 
@@ -295,9 +303,69 @@ public class LocationModule extends ReactContextBaseJavaModule {
       mError = error;
     }
 
-    public void invoke() {
-      mLocationManager.requestSingleUpdate(mProvider, mLocationListener, null);
+    public void invoke(Location location) {
+      mOldLocation = location;
+      mLocationManager.requestLocationUpdates(mProvider, 100, 1, mLocationListener);
       mHandler.postDelayed(mTimeoutRunnable, mTimeout);
+    }
+
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+    /** Determines whether one Location reading is better than the current Location fix
+    * taken from Android Examples https://developer.android.com/guide/topics/location/strategies.html
+    *
+    * @param location  The new Location that you want to evaluate
+    * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+    */
+    private boolean isBetterLocation(Location location, Location currentBestLocation) {
+      if (currentBestLocation == null) {
+        // A new location is always better than no location
+        return true;
+      }
+
+      // Check whether the new location fix is newer or older
+      long timeDelta = location.getTime() - currentBestLocation.getTime();
+      boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+      boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+      boolean isNewer = timeDelta > 0;
+
+      // If it's been more than two minutes since the current location, use the new location
+      // because the user has likely moved
+      if (isSignificantlyNewer) {
+        return true;
+      // If the new location is more than two minutes older, it must be worse
+      } else if (isSignificantlyOlder) {
+        return false;
+      }
+
+      // Check whether the new location fix is more or less accurate
+      int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+      boolean isLessAccurate = accuracyDelta > 0;
+      boolean isMoreAccurate = accuracyDelta < 0;
+      boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+      // Check if the old and new location are from the same provider
+      boolean isFromSameProvider = isSameProvider(location.getProvider(),
+      currentBestLocation.getProvider());
+
+      // Determine location quality using a combination of timeliness and accuracy
+      if (isMoreAccurate) {
+        return true;
+      } else if (isNewer && !isLessAccurate) {
+        return true;
+      } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+        return true;
+      }
+
+      return false;
+  }
+
+  /** Checks whether two providers are the same */
+  private boolean isSameProvider(String provider1, String provider2) {
+    if (provider1 == null) {
+        return provider2 == null;
+      }
+    return provider1.equals(provider2);
     }
   }
 }

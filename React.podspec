@@ -36,23 +36,30 @@ Pod::Spec.new do |s|
   s.source                  = source
   s.default_subspec         = "Core"
   s.requires_arc            = true
-  s.platform                = :ios, "8.0"
+  s.platforms               = { :ios => "8.0", :tvos => "9.2" }
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
   s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
   s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|
-    ss.dependency             "Yoga", "#{package["version"]}.React"
+    ss.dependency             "yoga", "#{package["version"]}.React"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files        = "**/__tests__/*",
                               "IntegrationTests/*",
                               "React/DevSupport/*",
                               "React/Inspector/*",
-                              "React/**/RCTTVView.*",
                               "ReactCommon/yoga/*",
                               "React/Cxx*/*",
                               "React/Base/RCTBatchedBridge.mm",
                               "React/Executors/*"
+    ss.ios.exclude_files    = "React/**/RCTTVView.*"
+    ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
+                              "React/Views/RCTDatePicker*",
+                              "React/Views/RCTPicker*",
+                              "React/Views/RCTRefreshControl*",
+                              "React/Views/RCTSlider*",
+                              "React/Views/RCTSwitch*",
+                              "React/Views/RCTWebView*"
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
@@ -87,8 +94,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "jschelpers_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
-    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h"
+    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
+    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
     ss.framework            = "JavaScriptCore"
   end
@@ -115,7 +122,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
-    ss.exclude_files        = "ReactCommon/cxxreact/{JSCTracing,SampleCxxModule}.*"
+    ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxreact/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   end
@@ -141,9 +148,15 @@ Pod::Spec.new do |s|
     ss.header_dir           = "RCTAnimation"
   end
 
+  s.subspec "RCTBlob" do |ss|
+    ss.dependency             "React/Core"
+    ss.source_files         = "Libraries/Blob/*.{h,m}"
+    ss.preserve_paths       = "Libraries/Blob/*.js"
+  end
+
   s.subspec "RCTCameraRoll" do |ss|
     ss.dependency             "React/Core"
-    ss.dependency             "React/RCTImage"
+    ss.dependency             'React/RCTImage'
     ss.source_files         = "Libraries/CameraRoll/*.{h,m}"
   end
 
@@ -185,7 +198,13 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTWebSocket" do |ss|
     ss.dependency             "React/Core"
+    ss.dependency             "React/RCTBlob"
+    ss.dependency             "React/fishhook"
     ss.source_files         = "Libraries/WebSocket/*.{h,m}"
+  end
+
+  s.subspec "fishhook" do |ss|
+    ss.source_files         = "Libraries/fishhook/*.{h,c}"
   end
 
   s.subspec "RCTLinkingIOS" do |ss|

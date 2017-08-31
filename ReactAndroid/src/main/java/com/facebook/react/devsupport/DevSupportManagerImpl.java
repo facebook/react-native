@@ -9,6 +9,8 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import javax.annotation.Nullable;
 
 import java.io.File;
@@ -42,7 +44,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -197,7 +198,7 @@ public class DevSupportManagerImpl implements
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -383,19 +384,6 @@ public class DevSupportManagerImpl implements
             handleReloadJS();
           }
         });
-    if (Inspector.isSupported()) {
-      options.put(
-        "Debug JS on-device (experimental)", new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            List<Inspector.Page> pages = Inspector.getPages();
-            if (pages.size() > 0) {
-              // TODO: We should get the actual page id instead of the first one.
-              mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
-            }
-          }
-        });
-    }
     options.put(
       mDevSettings.isReloadOnJSChangeEnabled()
         ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
@@ -639,6 +627,8 @@ public class DevSupportManagerImpl implements
   public void handleReloadJS() {
     UiThreadUtil.assertOnUiThread();
 
+    ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
+
     // dismiss redbox if exists
     if (mRedBoxDialog != null) {
       mRedBoxDialog.dismiss();
@@ -679,6 +669,8 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void onPackagerReloadCommand() {
+    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+    mDevServerHelper.disableDebugger();
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -828,6 +820,8 @@ public class DevSupportManagerImpl implements
   }
 
   public void reloadJSFromServer(final String bundleURL) {
+    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
+
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
@@ -844,6 +838,7 @@ public class DevSupportManagerImpl implements
                 new Runnable() {
                   @Override
                   public void run() {
+                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END);
                     mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
                   }
                 });
@@ -885,6 +880,18 @@ public class DevSupportManagerImpl implements
         bundleURL);
   }
 
+  @Override
+  public void startInspector() {
+    if (mIsDevSupportEnabled) {
+      mDevServerHelper.openInspectorConnection();
+    }
+  }
+
+  @Override
+  public void stopInspector() {
+    mDevServerHelper.closeInspectorConnection();
+  }
+
   private void reload() {
     // reload settings, show/hide debug overlay if required & start/stop shake detector
     if (mIsDevSupportEnabled) {
@@ -914,7 +921,6 @@ public class DevSupportManagerImpl implements
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
-      mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -956,9 +962,7 @@ public class DevSupportManagerImpl implements
 
       // hide loading view
       mDevLoadingViewController.hide();
-
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

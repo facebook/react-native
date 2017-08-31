@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
+@property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
+
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;

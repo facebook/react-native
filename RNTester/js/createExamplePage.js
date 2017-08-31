@@ -18,9 +18,9 @@ const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 import type { ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
-  : ReactClass<any> {
+  : React.ComponentType<any> {
 
-  class ExamplePage extends React.Component {
+  class ExamplePage extends React.Component<{}> {
     render() {
       return <RNTesterExampleContainer module={exampleModule} title={title} />;
     }

@@ -20,6 +20,7 @@ const ReactNative = {
   get ActivityIndicator() { return require('ActivityIndicator'); },
   get ART() { return require('ReactNativeART'); },
   get Button() { return require('Button'); },
+  get CheckBox() { return require('CheckBox'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get FlatList() { return require('FlatList'); },
@@ -62,7 +63,6 @@ const ReactNative = {
 
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
-  get AdSupportIOS() { return require('AdSupportIOS'); },
   get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },

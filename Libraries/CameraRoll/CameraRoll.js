@@ -88,6 +88,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
           isStored: PropTypes.bool,
+          playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
         location: createStrictShapeTypeChecker({
