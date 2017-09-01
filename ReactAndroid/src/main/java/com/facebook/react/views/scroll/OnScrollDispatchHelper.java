@@ -27,8 +27,6 @@ public class OnScrollDispatchHelper {
 
   private long mLastScrollEventTimeMs = -(MIN_EVENT_SEPARATION_MS + 1);
 
-  private static final float THRESHOLD = 0.1f; // Threshold for end fling
-
   /**
    * Call from a ScrollView in onScrollChanged, returns true if this onScrollChanged is legit (not a
    * duplicate) and should be dispatched.
@@ -39,11 +37,6 @@ public class OnScrollDispatchHelper {
         eventTime - mLastScrollEventTimeMs > MIN_EVENT_SEPARATION_MS ||
             mPrevX != x ||
             mPrevY != y;
-
-    // Skip the first calculation in each scroll
-    if (Math.abs(mXFlingVelocity) < THRESHOLD && Math.abs(mYFlingVelocity) < THRESHOLD) {
-      shouldDispatch = false;
-    }
 
     if (eventTime - mLastScrollEventTimeMs != 0) {
       mXFlingVelocity = (float) (x - mPrevX) / (eventTime - mLastScrollEventTimeMs);
