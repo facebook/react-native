@@ -6,6 +6,7 @@ EXPORTED_HEADERS = [
     "CxxModuleWrapperBase.h",
     "CxxSharedModuleWrapper.h",
     "JavaModuleWrapper.h",
+    "JavaScriptExecutorHolder.h",
     "JSLoader.h",
     "MethodInvoker.h",
     "ModuleRegistryBuilder.h",
