@@ -565,6 +565,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
+      if (stickyIndicesFromProps.has(0)) {
+        stickyHeaderIndices.push(0);
+      }
       const element = React.isValidElement(ListHeaderComponent)
         ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
