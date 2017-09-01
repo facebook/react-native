@@ -9,9 +9,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTAssert.h>
-#import <React/RCTDefines.h>
-#import <React/RCTUtils.h>
+#import "RCTAssert.h"
+#import "RCTDefines.h"
+#import "RCTUtils.h"
 
 #ifndef RCTLOG_ENABLED
 #define RCTLOG_ENABLED 1
