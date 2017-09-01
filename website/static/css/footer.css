@@ -1,0 +1,9 @@
+footer .sitemap h6,
+footer .sitemap h5 > a,
+footer .sitemap h6 > a {
+  color: $secondaryColor;
+}
+
+footer.nav-footer {
+    background-color: #012129;
+}

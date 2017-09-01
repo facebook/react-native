@@ -33,14 +33,14 @@ const siteConfig = {
   /* path to images for header/footer */
   headerIcon: "img/header_logo.png",
   disableHeaderTitle: false /* disable title text in header (only show headerIcon) */,
-  footerIcon: "img/docusaurus.svg",
+  footerIcon: "img/header_logo.png",
   favicon: "img/favicon.png",
   /* colors for website */
   colors: {
     primaryColor: "rgb(34, 34, 34)",
     secondaryColor: "#05A5D1",
     prismColor:
-      "rgba(46, 133, 85, 0.03)" /* primaryColor in rgba form, with 0.03 alpha */
+      "rgba(5, 165, 209, 0.05)" /* primaryColor in rgba form, with 0.03 alpha */
   },
   tagline: "My Tagline",
   recruitingLink:

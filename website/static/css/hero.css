@@ -1,0 +1,96 @@
+.hero .button {
+  background: -webkit-linear-gradient(#9a9a9a, #646464);
+  background: linear-gradient(#9a9a9a, #646464);
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0 12px;
+  display: inline-block;
+  color: #fafafa;
+  text-decoration: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.button:hover {
+  text-decoration: none;
+}
+
+.button:active {
+  box-shadow: none;
+}
+
+.button.blue {
+  background: -webkit-linear-gradient(#77a3d2, #4783c2);
+  background: linear-gradient(#77a3d2, #4783c2);
+}
+
+@media only screen and (max-device-width: 1024px) {
+  .hero {
+    padding: 10px 0 30px 0;
+  }
+}
+
+.hero {
+  background: #2d2d2d;
+  padding: 50px 0;
+  color: #fdf3e7;
+  font-weight: 300;
+}
+
+.hero .text {
+  font-size: 300%;
+  text-align: center;
+  height: 44px;
+}
+
+.hero .minitext {
+  font-size: 24px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 680px) {
+  .hero .text {
+    font-size: 200%;
+    text-align: center;
+  }
+  .hero .minitext {
+    font-size: 18px;
+    text-align: center;
+  }
+}
+
+.buttons-unit {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.buttons-unit a {
+  color: #fa6900;
+}
+
+.buttons-unit .button {
+  background: $secondaryColor;
+  color: #fafafa;
+}
+
+@media screen and (min-width: 600px) {
+  .buttons-unit .button {
+    font-size: 24px;
+  }
+}
+
+.buttons-unit .button:active {
+  background: #0485a9;
+}
+
+.buttons-unit.downloads {
+  margin: 30px 0;
+}
+
+@media screen and (max-width: 373px) {
+  .hero .buttons-unit .button {
+    margin-bottom: 4px;
+  }
+}

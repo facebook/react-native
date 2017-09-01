@@ -1,0 +1,41 @@
+body {
+  background-color: #f5fcff;
+}
+
+.headerTitle {
+  font-weight: 300 !important;
+}
+
+.mainContainer {
+  background-color: #f5fcff !important;
+}
+
+.mainContainer h1,
+.mainContainer h2,
+.mainContainer h3,
+.mainContainer h4,
+.mainContainer h5,
+.mainContainer h6 {
+  color: #005068 !important;
+}
+
+.navGroup {
+  background-color: #eaf2f5 !important;
+}
+
+.navitemactive {
+  color: $secondaryColor !important;
+}
+
+input#search_input_react {
+  background-color: #2f2f2f;
+}
+
+.button {
+  color: #005068;
+  border: 1px solid #005068;
+}
+
+.button:hover {
+  background: #005068;
+}

@@ -6,6 +6,6 @@
     "examples": "docusaurus-examples"
   },
   "devDependencies": {
-    "docusaurus": "https://github.com/facebookexperimental/Docusaurus.git"
+    "docusaurus": "file:../../docusaurus"
   }
 }
