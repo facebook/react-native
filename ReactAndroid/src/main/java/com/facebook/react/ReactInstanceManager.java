@@ -903,25 +903,28 @@ public class ReactInstanceManager {
         });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
-    mCurrentReactContext.runOnJSQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-      }
-    });
-    mCurrentReactContext.runOnNativeModulesQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-      }
-    });
+    reactContext.runOnJSQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+          }
+        });
+    reactContext.runOnNativeModulesQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+          }
+        });
     if (mUseSeparateUIBackgroundThread) {
-      mCurrentReactContext.runOnUiBackgroundQueueThread(new Runnable() {
-        @Override
-        public void run() {
-          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-        }
-      });
+      reactContext.runOnUiBackgroundQueueThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+            }
+          });
     }
   }
 
