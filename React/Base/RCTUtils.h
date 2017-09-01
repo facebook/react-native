@@ -13,8 +13,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import <React/RCTAssert.h>
-#import <React/RCTDefines.h>
+#import "RCTAssert.h"
+#import "RCTDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
