@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTJavaScriptLoader.h>
+#import "RCTJavaScriptLoader.h"
 
 @class RCTBridge;
 @protocol RCTBridgeModule;
