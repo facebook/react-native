@@ -220,7 +220,7 @@ class ViewabilityHelper {
    * clean-up cached _viewableIndices to evaluate changed items on next update
    */
   resetViewableIndices() {
-    this._viewableIndices.length = 0;
+    this._viewableIndices = [];
   }
 
   /**
