@@ -34,7 +34,7 @@ Here are the notes from each team:
 
 - Released support for installing npm packages on [Snack](https://snack.expo.io). Usual Expo restrictions apply -- packages can't depend on custom native APIs that aren't already included in Expo. We are also working on supporting multiple files and uploading assets in Snack. [Satyajit](https://github.com/satya164) will talk about Snack at [React Native Europe](https://react-native.eu/).
 - Released SDK20 with camera, payments, secure storage, magnetometer, pause/resume fs downloads, and improved splash/loading screen.
-- Continuing to work with [Krzysztof](https://github.com/kmagiera/react-native-gesture-handler) on [react-native-gesture-handler](https://github.com/kmagiera/react-native-gesture-handler). Please give it a try, rebuild some gesture that you have previously built using PanResponder or native gesture recognizers and let us know what issues you encounter.
+- Continuing to work with [Krzysztof](https://github.com/kmagiera) on [react-native-gesture-handler](https://github.com/kmagiera/react-native-gesture-handler). Please give it a try, rebuild some gesture that you have previously built using PanResponder or native gesture recognizers and let us know what issues you encounter.
 - Experimenting with JSC debugging protocol, working on a bunch of feature requests on [Canny](https://expo.canny.io/feature-requests).
 
 ### Facebook
