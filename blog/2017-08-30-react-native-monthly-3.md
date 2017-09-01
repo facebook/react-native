@@ -51,9 +51,9 @@ Here are the notes from each team:
 
 ### Shoutem
 
-- We are continuing are efforts on improving and simplifying the developer experience when building apps using [Shoutem](https://microsoft.github.io/reactxp/docs/faq.html).
+- We are continuing are efforts on improving and simplifying the developer experience when building apps using [Shoutem](https://shoutem.github.io/).
 - Started migrating all our apps to react-navigation, but we ended postponing this until a more stable version is released, or one of the native navigation solutions becomes stable.
-- Updating all our [extensions](https://microsoft.github.io/reactxp/docs/faq.html) and most of our open source libraries ([animation](https://github.com/shoutem/animation), [theme](https://github.com/shoutem/theme), [ui](https://github.com/shoutem/ui)) to React Native 0.47.1.
+- Updating all our [extensions](https://github.com/shoutem/extensions) and most of our open source libraries ([animation](https://github.com/shoutem/animation), [theme](https://github.com/shoutem/theme), [ui](https://github.com/shoutem/ui)) to React Native 0.47.1.
 
 ## Next session
 
