@@ -6,18 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-#import "RCTShadowView+Hierarchy.h"
 
-@implementation RCTShadowView (Hierarchy)
+#import <UIKit/UIKit.h>
 
-- (nullable RCTRootShadowView *)rootView
-{
-  RCTShadowView *view = self;
-  while (view != nil && ![view isKindOfClass:[RCTRootShadowView class]]) {
-    view = view.superview;
-  }
+#import <React/RCTShadowView.h>
 
-  return (RCTRootShadowView *)view;
-}
+@class RCTRootShadowView;
+
+@interface RCTShadowView (Internal)
+
+@property (nonatomic, weak, readwrite) RCTRootShadowView *rootView;
 
 @end

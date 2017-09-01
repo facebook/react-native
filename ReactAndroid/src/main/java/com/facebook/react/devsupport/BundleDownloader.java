@@ -9,6 +9,7 @@
 
 package com.facebook.react.devsupport;
 
+import android.util.Log;
 import javax.annotation.Nullable;
 
 import java.io.File;
@@ -37,9 +38,60 @@ import okio.Okio;
 import okio.Sink;
 
 public class BundleDownloader {
+  private static final String TAG = "BundleDownloader";
+
+  // Should be kept in sync with constants in RCTJavaScriptLoader.h
+  private static final int FILES_CHANGED_COUNT_NOT_BUILT_BY_BUNDLER = -2;
+
   private final OkHttpClient mClient;
 
   private @Nullable Call mDownloadBundleFromURLCall;
+
+  public static class BundleInfo {
+    private @Nullable String mUrl;
+    private int mFilesChangedCount;
+
+    public static @Nullable BundleInfo fromJSONString(String jsonStr) {
+      if (jsonStr == null) {
+        return null;
+      }
+
+      BundleInfo info = new BundleInfo();
+
+      try {
+        JSONObject obj = new JSONObject(jsonStr);
+        info.mUrl = obj.getString("url");
+        info.mFilesChangedCount = obj.getInt("filesChangedCount");
+      } catch (JSONException e) {
+        Log.e(TAG, "Invalid bundle info: ", e);
+        return null;
+      }
+
+      return info;
+    }
+
+    public @Nullable String toJSONString() {
+      JSONObject obj = new JSONObject();
+
+      try {
+        obj.put("url", mUrl);
+        obj.put("filesChangedCount", mFilesChangedCount);
+      } catch (JSONException e) {
+        Log.e(TAG, "Can't serialize bundle info: ", e);
+        return null;
+      }
+
+      return obj.toString();
+    }
+
+    public String getUrl() {
+      return mUrl != null ? mUrl : "unknown";
+    }
+
+    public int getFilesChangedCount() {
+      return mFilesChangedCount;
+    }
+  }
 
   public BundleDownloader(OkHttpClient client) {
     mClient = client;
@@ -48,7 +100,8 @@ public class BundleDownloader {
   public void downloadBundleFromURL(
       final DevBundleDownloadListener callback,
       final File outputFile,
-      final String bundleURL) {
+      final String bundleURL,
+      final @Nullable BundleInfo bundleInfo) {
     final Request request = new Request.Builder()
         .url(bundleURL)
         // FIXME: there is a bug that makes MultipartStreamReader to never find the end of the
@@ -103,7 +156,7 @@ public class BundleDownloader {
                 if (headers.containsKey("X-Http-Status")) {
                   status = Integer.parseInt(headers.get("X-Http-Status"));
                 }
-                processBundleResult(url, status, body, outputFile, callback);
+                processBundleResult(url, status, okhttp3.Headers.of(headers), body, outputFile, bundleInfo, callback);
               } else {
                 if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
                   return;
@@ -136,7 +189,7 @@ public class BundleDownloader {
           }
         } else {
           // In case the server doesn't support multipart/mixed responses, fallback to normal download.
-          processBundleResult(url, response.code(), Okio.buffer(response.body().source()), outputFile, callback);
+          processBundleResult(url, response.code(), response.headers(), Okio.buffer(response.body().source()), outputFile, bundleInfo, callback);
         }
       }
     });
@@ -149,11 +202,13 @@ public class BundleDownloader {
     }
   }
 
-  private void processBundleResult(
+  private static void processBundleResult(
       String url,
       int statusCode,
+      okhttp3.Headers headers,
       BufferedSource body,
       File outputFile,
+      BundleInfo bundleInfo,
       DevBundleDownloadListener callback) throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
@@ -172,14 +227,37 @@ public class BundleDownloader {
       return;
     }
 
+    if (bundleInfo != null) {
+      populateBundleInfo(url, headers, bundleInfo);
+    }
+
+    File tmpFile = new File(outputFile.getPath() + ".tmp");
     Sink output = null;
     try {
-      output = Okio.sink(outputFile);
+      output = Okio.sink(tmpFile);
       body.readAll(output);
-      callback.onSuccess();
     } finally {
       if (output != null) {
         output.close();
+      }
+    }
+
+    if (tmpFile.renameTo(outputFile)) {
+      callback.onSuccess();
+    } else {
+      throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
+    }
+  }
+
+  private static void populateBundleInfo(String url, okhttp3.Headers headers, BundleInfo bundleInfo) {
+    bundleInfo.mUrl = url;
+
+    String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");
+    if (filesChangedCountStr != null) {
+      try {
+        bundleInfo.mFilesChangedCount = Integer.parseInt(filesChangedCountStr);
+      } catch (NumberFormatException e) {
+        bundleInfo.mFilesChangedCount = FILES_CHANGED_COUNT_NOT_BUILT_BY_BUNDLER;
       }
     }
   }

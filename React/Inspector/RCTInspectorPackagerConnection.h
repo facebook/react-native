@@ -11,7 +11,6 @@
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;
-- (void)sendOpenEvent:(NSString *)pageId;
 @end
 
 @interface RCTInspectorRemoteConnection : NSObject

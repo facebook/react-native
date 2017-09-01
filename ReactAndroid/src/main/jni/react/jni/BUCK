@@ -1,6 +1,7 @@
 include_defs("//ReactAndroid/DEFS")
 
 EXPORTED_HEADERS = [
+    "AndroidJSCFactory.h",
     "CxxModuleWrapper.h",
     "CxxModuleWrapperBase.h",
     "CxxSharedModuleWrapper.h",
@@ -48,7 +49,7 @@ cxx_library(
     ],
     deps = ([
         "//native/third-party/android-ndk:android",
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
         "//xplat/fbgloginit:fbgloginit",
         "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
