@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTDefines.h>
+#import "RCTDefines.h"
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
