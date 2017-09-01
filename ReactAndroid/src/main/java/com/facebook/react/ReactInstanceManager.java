@@ -870,14 +870,13 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    mCurrentReactContext = Assertions.assertNotNull(reactContext);
+    Assertions.assertNotNull(reactContext);
     CatalystInstance catalystInstance =
       Assertions.assertNotNull(reactContext.getCatalystInstance());
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
-    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-    moveReactContextToCurrentLifecycleState();
+    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);    
 
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
@@ -887,15 +886,14 @@ public class ReactInstanceManager {
     }
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
 
-    ReactInstanceEventListener[] listeners =
-      new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
-    final ReactInstanceEventListener[] finalListeners =
-        mReactInstanceEventListeners.toArray(listeners);
-
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
-          public void run() {
+          public void run() {            
+            mCurrentReactContext = reactContext;
+            moveReactContextToCurrentLifecycleState();
+            final ReactInstanceEventListener[] finalListeners =
+              mReactInstanceEventListeners.toArray(new ReactInstanceEventListener[0]);
             for (ReactInstanceEventListener listener : finalListeners) {
               listener.onReactContextInitialized(reactContext);
             }
@@ -903,20 +901,20 @@ public class ReactInstanceManager {
         });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
-    mCurrentReactContext.runOnJSQueueThread(new Runnable() {
+    reactContext.runOnJSQueueThread(new Runnable() {
       @Override
       public void run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
       }
     });
-    mCurrentReactContext.runOnNativeModulesQueueThread(new Runnable() {
+    reactContext.runOnNativeModulesQueueThread(new Runnable() {
       @Override
       public void run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
       }
     });
     if (mUseSeparateUIBackgroundThread) {
-      mCurrentReactContext.runOnUiBackgroundQueueThread(new Runnable() {
+      reactContext.runOnUiBackgroundQueueThread(new Runnable() {
         @Override
         public void run() {
           Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
