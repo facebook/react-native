@@ -39,6 +39,7 @@ type DependencyOptions = {|
   +platform: ?string,
   +recursive: boolean,
   +rootEntryFile: string,
+  +bundlingOptions?: Object,
 |};
 
 /**
@@ -144,6 +145,7 @@ function attachHMRServer<TModule: Moduleish>(
         minify: false,
         platform: platform,
         recursive: true,
+        bundlingOptions: response.options,
       });
 
       return {
