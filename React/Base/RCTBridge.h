@@ -63,6 +63,12 @@ RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
 
 /**
+ * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification
+ * userInfo dictionary.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will

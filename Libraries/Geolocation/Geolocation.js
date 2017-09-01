@@ -26,6 +26,10 @@ const PermissionsAndroid = require('PermissionsAndroid');
 var subscriptions = [];
 var updatesEnabled = false;
 
+type GeoConfiguration = {
+  skipPermissionRequests: bool;
+}
+
 type GeoOptions = {
   timeout?: number,
   maximumAge?: number,
@@ -74,6 +78,25 @@ type GeoOptions = {
  *
  */
 var Geolocation = {
+
+  /*
+    * Sets configuration options that will be used in all location requests.
+    *
+    * ### Options
+    *
+    * #### iOS
+    *
+    * - `skipPermissionRequests` - defaults to `false`, if `true` you must request permissions
+    * before using Geolocation APIs.
+    *
+    */
+  setRNConfiguration: function(
+    config: GeoConfiguration
+  ) {
+    if (RCTLocationObserver.setConfiguration) {
+      RCTLocationObserver.setConfiguration(config);
+    }
+  },
 
   /*
    * Request suitable Location permission based on the key configured on pList.
