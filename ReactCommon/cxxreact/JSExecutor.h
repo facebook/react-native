@@ -73,9 +73,7 @@ public:
     return nullptr;
   }
 
-  #ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) {}
-  #endif
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
