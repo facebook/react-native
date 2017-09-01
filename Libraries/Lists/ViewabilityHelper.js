@@ -219,7 +219,7 @@ class ViewabilityHelper {
   /**
    * clean-up cached _viewableIndices to evaluate changed items on next update
    */
-  flushViewableIndices() {
+  resetViewableIndices() {
     this._viewableIndices.length = 0;
   }
 

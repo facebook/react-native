@@ -468,7 +468,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
-      this._viewabilityHelper.flushViewableIndices();
+      this._viewabilityHelper.resetViewableIndices();
     }
   }
 
