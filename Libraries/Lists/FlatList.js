@@ -412,10 +412,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listRef: VirtualizedList;
 
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._listRef = ref;
   };
 

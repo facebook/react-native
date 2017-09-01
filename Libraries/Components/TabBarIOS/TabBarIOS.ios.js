@@ -26,6 +26,7 @@ class TabBarIOS extends React.Component<{
   tintColor?: $FlowFixMe,
   unselectedItemTintColor?: $FlowFixMe,
   barTintColor?: $FlowFixMe,
+  barStyle?: 'default' | 'black',
   translucent?: boolean,
   itemPositioning?: 'fill' | 'center' | 'auto',
 }> {
@@ -52,6 +53,12 @@ class TabBarIOS extends React.Component<{
      */
     barTintColor: ColorPropType,
     /**
+     * The style of the tab bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a tab bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
+    /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
     translucent: PropTypes.bool,
@@ -75,6 +82,7 @@ class TabBarIOS extends React.Component<{
         unselectedItemTintColor={this.props.unselectedItemTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
+        barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
         {
