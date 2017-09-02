@@ -1,19 +1,31 @@
 Thanks for submitting a PR! Please read these instructions carefully:
 
-- [ ] Explain the **motivation** for making this change.
-- [ ] Provide a **test plan** demonstrating that the code is solid.
-- [ ] Match the **code formatting** of the rest of the codebase.
-- [ ] Target the `master` branch, NOT a "stable" branch.
+- [x] Explain the **motivation** for making this change.
+- [x] Provide a **test plan** demonstrating that the code is solid.
+- [x] Match the **code formatting** of the rest of the codebase.
+- [x] Target the `master` branch, NOT a "stable" branch.
 
 ## Motivation (required)
+I want to use 'react-native' more comfortable.
 
 What existing problem does the pull request solve?
+---------------------------------------------------------------------
+->in this version, 'button' component couldn't change text size in 'ios'. so, I added button's props 
+"textSizeIOS" for can change button's text size(May be it's similar 'change button size' in ios.)
+-------------------------------------------------------------
+
+ .  
 
 ## Test Plan (required)
 
 A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website. See [What is a Test Plan?][1] to learn more.  
 
 If you have added code that should be tested, add tests.
+-----------------------------------------------------------------
+Ans:
+# **->testing video is here. text size is 10,20 and 30.
+[IMG_1944.MOV.zip](https://github.com/facebook/react-native/files/981039/IMG_1944.MOV.zip)**
+--------------------------------------------------------------------
 
 ## Next Steps
 
