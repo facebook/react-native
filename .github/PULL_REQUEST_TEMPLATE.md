@@ -11,7 +11,7 @@ I want to use 'react-native' more comfortable.
 What existing problem does the pull request solve?
 ---------------------------------------------------------------------
 ->in this version, 'button' component couldn't change text size in 'ios'. so, I added button's props 
-"textSizeIOS" for can change button's text size(May be it's similar 'change button size' in ios.)
+"textSizeIOS",be able to change button's text size(May be it's similar 'change button size' in ios.)
 -------------------------------------------------------------
 
  .  
