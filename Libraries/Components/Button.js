@@ -56,7 +56,7 @@ class Button extends React.Component {
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
     testID?: ?string,
-      textSizeIos?:?string,
+    textSizeIos?: ?string,
   };
 
   static propTypes = {
