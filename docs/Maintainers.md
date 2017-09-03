@@ -312,4 +312,12 @@ Additionally, the following commands can be used on a pull request:
       Flag the PR for merging. If used by a core contributor, the bot will attempt to import the pull request. In general, core contributors are those who have consistently submitted high quality contributions to the project. Access control for this command is configured internally in Facebook, outside of the IssueCommands.txt file mentioned above.
     </p></div>
   </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> large-pr
+    </h4>
+    <div><p>
+      Flag PRs that change too many files at once. These PRs are extremely unlikely to be reviewed. The bot will leave a helpful message indicating next steps such as splitting the PR. The bot will <strong>close</strong> the PR after adding the "Large PR" label.
+    </p></div>
+  </div>
 </div>

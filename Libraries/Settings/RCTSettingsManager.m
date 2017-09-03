@@ -24,36 +24,38 @@
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+- (instancetype)init
+{
+  return [self initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
+}
+
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults
 {
-  if ((self = [self init])) {
+  if ((self = [super init])) {
     _defaults = defaults;
+
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(userDefaultsDidChange:)
+                                                 name:NSUserDefaultsDidChangeNotification
+                                               object:_defaults];
   }
   return self;
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
-  if (!_defaults) {
-    _defaults = [NSUserDefaults standardUserDefaults];
-  }
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(userDefaultsDidChange:)
-                                               name:NSUserDefaultsDidChangeNotification
-                                             object:_defaults];
-}
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{@"settings": RCTJSONClean([_defaults dictionaryRepresentation])};
 }
 
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return @{@"settings": RCTJSONClean([_defaults dictionaryRepresentation])};
 }
 
 - (void)userDefaultsDidChange:(NSNotification *)note

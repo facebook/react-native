@@ -38,7 +38,7 @@ if THIS_IS_FBOBJC:
       '-frtti',
     ],
     deps = [
-      '//xplat/folly:molly',
+      'xplat//folly:molly',
       'xplat//third-party/gmock:gtest',
       react_native_xplat_target('cxxreact:bridge'),
       react_native_xplat_target('jschelpers:jschelpers'),

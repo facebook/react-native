@@ -6,18 +6,22 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-#import "RCTShadowView+Hierarchy.h"
 
-@implementation RCTShadowView (Hierarchy)
+#import "RCTManagedPointer.h"
 
-- (nullable RCTRootShadowView *)rootView
-{
-  RCTShadowView *view = self;
-  while (view != nil && ![view isKindOfClass:[RCTRootShadowView class]]) {
-    view = view.superview;
+@implementation RCTManagedPointer {
+  std::shared_ptr<void> _pointer;
+}
+
+- (instancetype)initWithPointer:(std::shared_ptr<void>)pointer {
+  if (self = [super init]) {
+    _pointer = std::move(pointer);
   }
+  return self;
+}
 
-  return (RCTRootShadowView *)view;
+- (void *)voidPointer {
+  return _pointer.get();
 }
 
 @end

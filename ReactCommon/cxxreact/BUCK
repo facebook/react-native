@@ -26,7 +26,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -49,7 +49,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -62,13 +62,13 @@ rn_xplat_cxx_library(
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
-    soname = "libxplat_react_module_samplemodule.so",
+    soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],
     deps = [
         ":module",
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -122,28 +122,11 @@ rn_xplat_cxx_library(
         "-DWITH_JSC_MEMORY_PRESSURE=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
-    fbandroid_visibility = [
-        # TL;DR: If you depend on this target directly, you're gonna have a
-        # Bad Time(TM).
-        #
-        # `facebook::react::JSCExecutor::initOnJSVMThread` (in `:bridge`) does
-        # some platform-dependant setup. Exactly what setup to do is
-        # determined by some static functors, defined in `Platform.h`, which
-        # are initially `nullptr`. On Android, these functors are properly
-        # assigned as part of `react/jni`'s `JNI_OnLoad`.  By depending directly
-        # on the bridge, we can mess up the SO initialisation order, causing
-        # `initOnJSVMThread` to be called before the platform-specific hooks
-        # have been properly initialised. Bad Times(TM).
-        #     -- @ashokmenon (2017/01/03)
-        react_native_target("jni/react/jni:jni"),
-        react_native_xplat_target("cxxreact/..."),
-    ],
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
     fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
-    fbobjc_visibility = ["PUBLIC"],
     force_static = True,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
@@ -152,11 +135,12 @@ rn_xplat_cxx_library(
     tests = [
         react_native_xplat_target("cxxreact/tests:tests"),
     ],
+    visibility = ["PUBLIC"],
     deps = [
         ":module",
         ":jsbigstring",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("microprofiler:microprofiler"),
     ] + JSC_DEPS,

@@ -22,6 +22,31 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
+@interface RCTSource()
+{
+@public
+  NSURL *_url;
+  NSData *_data;
+  NSUInteger _length;
+  NSInteger _filesChangedCount;
+}
+
+@end
+
+@implementation RCTSource
+
+static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_RETURNS_RETAINED
+{
+  RCTSource *source = [RCTSource new];
+  source->_url = url;
+  source->_data = data;
+  source->_length = length;
+  source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
+  return source;
+}
+
+@end
+
 @implementation RCTLoadingProgress
 
 - (NSString *)description
@@ -51,7 +76,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                               sourceLength:&sourceLength
                                                      error:&error];
   if (data) {
-    onComplete(nil, data, sourceLength);
+    onComplete(nil, RCTSourceCreate(scriptURL, data, sourceLength));
     return;
   }
 
@@ -62,7 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (isCannotLoadSyncError) {
     attemptAsynchronousLoadOfBundleAtURL(scriptURL, onProgress, onComplete);
   } else {
-    onComplete(error, nil, 0);
+    onComplete(error, nil);
   }
 }
 
@@ -182,6 +207,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [NSData dataWithBytes:&header length:sizeof(header)];
 }
 
+static void parseHeaders(NSDictionary *headers, RCTSource *source) {
+  source->_filesChangedCount = [headers[@"X-Metro-Files-Changed-Count"] integerValue];
+}
+
 static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadProgressBlock onProgress, RCTSourceLoadBlock onComplete)
 {
   scriptURL = sanitizeURL(scriptURL);
@@ -193,11 +222,10 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
                                               options:NSDataReadingMappedIfSafe
                                                 error:&error];
-      onComplete(error, source, source.length);
+      onComplete(error, RCTSourceCreate(scriptURL, source, source.length));
     });
     return;
   }
-
 
   RCTMultipartDataTask *task = [[RCTMultipartDataTask alloc] initWithURL:scriptURL partHandler:^(NSInteger statusCode, NSDictionary *headers, NSData *data, NSError *error, BOOL done) {
     if (!done) {
@@ -225,7 +253,7 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
                    NSUnderlyingErrorKey: error,
                    }];
       }
-      onComplete(error, nil, 0);
+      onComplete(error, nil);
       return;
     }
 
@@ -240,7 +268,7 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       error = [NSError errorWithDomain:@"JSServer"
                                   code:statusCode
                               userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding])];
-      onComplete(error, nil, 0);
+      onComplete(error, nil);
       return;
     }
 
@@ -256,11 +284,18 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
                                          @"headers": headers,
                                          @"data": data
                                          }];
-      onComplete(error, nil, 0);
+      onComplete(error, nil);
       return;
     }
 
-    onComplete(nil, data, data.length);
+    RCTSource *source = RCTSourceCreate(scriptURL, data, data.length);
+    parseHeaders(headers, source);
+    onComplete(nil, source);
+  } progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
+    // Only care about download progress events for the javascript bundle part.
+    if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"]) {
+      onProgress(progressEventFromDownloadProgress(loaded, total));
+    }
   }];
 
   [task startTask];
@@ -284,6 +319,16 @@ static RCTLoadingProgress *progressEventFromData(NSData *rawData)
   progress.status = info[@"status"];
   progress.done = info[@"done"];
   progress.total = info[@"total"];
+  return progress;
+}
+
+static RCTLoadingProgress *progressEventFromDownloadProgress(NSNumber *total, NSNumber *done)
+{
+  RCTLoadingProgress *progress = [RCTLoadingProgress new];
+  progress.status = @"Downloading JavaScript bundle";
+  // Progress values are in bytes transform them to kilobytes for smaller numbers.
+  progress.done = done != nil ? @([done integerValue] / 1024) : nil;
+  progress.total = total != nil ? @([total integerValue] / 1024) : nil;
   return progress;
 }
 
