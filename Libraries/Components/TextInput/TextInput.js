@@ -156,6 +156,10 @@ const DataDetectorTypes = [
  * );
  * ```
  *
+ * By default, when you assign a `height` style to TextInput, the text & placeholder
+ * will render at the top for iOS, but the center for Android, to fix this, 
+ * set `textAlignVertical: 'top'` in the style prop. See the Multiline example below.  
+ *
  * `TextInput` has by default a border at the bottom of its view. This border
  * has its padding set by the background image provided by the system, and it
  * cannot be changed. Solutions to avoid this is to either not set height
