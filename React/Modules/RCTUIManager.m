@@ -7,39 +7,39 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTUIManager.h"
+#import <React/RCTUIManager.h>
 
 #import <AVFoundation/AVFoundation.h>
 
 #import <yoga/Yoga.h>
 
-#import "RCTAccessibilityManager.h"
-#import "RCTAnimationType.h"
-#import "RCTAssert.h"
-#import "RCTBridge+Private.h"
-#import "RCTBridge.h"
-#import "RCTComponent.h"
-#import "RCTComponentData.h"
-#import "RCTConvert.h"
-#import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLayoutAnimation.h"
-#import "RCTLayoutAnimationGroup.h"
-#import "RCTLog.h"
-#import "RCTModuleData.h"
-#import "RCTModuleMethod.h"
-#import "RCTProfile.h"
-#import "RCTRootContentView.h"
-#import "RCTRootShadowView.h"
-#import "RCTRootViewInternal.h"
-#import "RCTScrollableProtocol.h"
-#import "RCTShadowView+Internal.h"
-#import "RCTShadowView.h"
-#import "RCTUIManagerObserverCoordinator.h"
-#import "RCTUtils.h"
-#import "RCTView.h"
-#import "RCTViewManager.h"
-#import "UIView+React.h"
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAnimationType.h>
+#import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTComponent.h>
+#import <React/RCTComponentData.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLayoutAnimation.h>
+#import <React/RCTLayoutAnimationGroup.h>
+#import <React/RCTLog.h>
+#import <React/RCTModuleData.h>
+#import <React/RCTModuleMethod.h>
+#import <React/RCTProfile.h>
+#import <React/RCTRootContentView.h>
+#import <React/RCTRootShadowView.h>
+#import <React/RCTRootViewInternal.h>
+#import <React/RCTScrollableProtocol.h>
+#import <React/RCTShadowView+Internal.h>
+#import <React/RCTShadowView.h>
+#import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTUtils.h>
+#import <React/RCTView.h>
+#import <React/RCTViewManager.h>
+#import <React/UIView+React.h>
 
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
