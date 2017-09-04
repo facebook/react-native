@@ -114,12 +114,10 @@ function AnimationBlock(props) {
   );
 }
 
-class RTLExample extends React.Component {
+class RTLExample extends React.Component<any, State> {
   static title = 'RTLExample';
   static description = 'Examples to show how to apply components to RTL layout.';
 
-  state: State;
-  props: any;
   _panResponder: Object;
 
   constructor(props: Object) {

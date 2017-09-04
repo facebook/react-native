@@ -9,7 +9,18 @@
 'use strict';
 
 var semverCmp = require('semver-compare');
-require(`shelljs/global`);
+
+const {
+  cd,
+  cp,
+  echo,
+  exec,
+  exit,
+  ls,
+  mkdir,
+  rm,
+  which,
+} = require('shelljs');
 
 const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH;
 const CIRCLE_PROJECT_USERNAME = process.env.CIRCLE_PROJECT_USERNAME;

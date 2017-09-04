@@ -8,6 +8,7 @@
  *
  * @providesModule VirtualizedSectionList
  * @flow
+ * @format
  */
 'use strict';
 
@@ -38,8 +39,8 @@ type SectionBase = {
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
-  }) => ?React.Element<*>,
-  ItemSeparatorComponent?: ?ReactClass<*>,
+  }) => ?React.Element<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<*>,
   keyExtractor?: (item: SectionItem, index: ?number) => string,
 
   // TODO: support more optional/override props
@@ -56,15 +57,15 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered after the last item in the last section.
    */
-  ListFooterComponent?: ?(ReactClass<*> | React.Element<*>),
+  ListFooterComponent?: ?(React.ComponentType<*> | React.Element<any>),
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?(ReactClass<*> | React.Element<*>),
+  ListHeaderComponent?: ?(React.ComponentType<*> | React.Element<any>),
   /**
    * Default renderer for every item in every section.
    */
-  renderItem: (info: {
+  renderItem?: (info: {
     item: Item,
     index: number,
     section: SectionT,
@@ -77,20 +78,20 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered at the top of each section.
    */
-  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
+  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<*>,
+  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<any>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.
    */
-  SectionSeparatorComponent?: ?ReactClass<*>,
+  SectionSeparatorComponent?: ?React.ComponentType<*>,
   /**
    * Rendered at the bottom of every Item except the very last one in the last section.
    */
-  ItemSeparatorComponent?: ?ReactClass<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<*>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
@@ -108,19 +109,23 @@ type OptionalProps<SectionT: SectionBase> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?({
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
 };
 
-export type Props<SectionT> =
-  RequiredProps<SectionT> &
+export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedListProps;
 
-type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: $ReadOnlyArray<Item>};
+type DefaultProps = typeof VirtualizedList.defaultProps & {
+  data: $ReadOnlyArray<Item>,
+};
 type State = {childProps: VirtualizedListProps};
 
 /**
@@ -128,9 +133,10 @@ type State = {childProps: VirtualizedListProps};
  * hood. The only operation that might not scale well is concatting the data arrays of all the
  * sections when new props are received, which should be plenty fast for up to ~10,000 items.
  */
-class VirtualizedSectionList<SectionT: SectionBase>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, State>
-{
+class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
+  Props<SectionT>,
+  State,
+> {
   props: Props<SectionT>;
 
   state: State;
@@ -141,11 +147,14 @@ class VirtualizedSectionList<SectionT: SectionBase>
   };
 
   scrollToLocation(params: {
-    animated?: ?boolean, itemIndex: number, sectionIndex: number, viewPosition?: number
+    animated?: ?boolean,
+    itemIndex: number,
+    sectionIndex: number,
+    viewPosition?: number,
   }) {
     let index = params.itemIndex + 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
-      index += this.props.sections[ii].data.length + 1;
+      index += this.props.sections[ii].data.length + 2;
     }
     const toIndexParams = {
       ...params,
@@ -169,6 +178,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     section: SectionT,
     key: string, // Key of the section or combined key for section + item
     index: ?number, // Relative index within the section
+    header?: ?boolean, // True if this is the section header
     leadingItem?: ?Item,
     leadingSection?: ?SectionT,
     trailingItem?: ?Item,
@@ -179,11 +189,25 @@ class VirtualizedSectionList<SectionT: SectionBase>
     for (let ii = 0; ii < this.props.sections.length; ii++) {
       const section = this.props.sections[ii];
       const key = section.key || String(ii);
-      itemIndex -= 1; // The section itself is an item
-      if (itemIndex >= section.data.length) {
-        itemIndex -= section.data.length;
+      itemIndex -= 1; // The section adds an item for the header
+      if (itemIndex >= section.data.length + 1) {
+        itemIndex -= section.data.length + 1; // The section adds an item for the footer.
       } else if (itemIndex === -1) {
-        return {section, key, index: null, trailingSection: this.props.sections[ii + 1]};
+        return {
+          section,
+          key: key + ':header',
+          index: null,
+          header: true,
+          trailingSection: this.props.sections[ii + 1],
+        };
+      } else if (itemIndex === section.data.length) {
+        return {
+          section,
+          key: key + ':footer',
+          index: null,
+          header: false,
+          trailingSection: this.props.sections[ii + 1],
+        };
       } else {
         const keyExtractor = section.keyExtractor || defaultKeyExtractor;
         return {
@@ -214,16 +238,22 @@ class VirtualizedSectionList<SectionT: SectionBase>
     };
   };
 
-  _onViewableItemsChanged = (
-    {viewableItems, changed}: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}
-  ) => {
+  _onViewableItemsChanged = ({
+    viewableItems,
+    changed,
+  }: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => {
     if (this.props.onViewableItemsChanged) {
       this.props.onViewableItemsChanged({
-        viewableItems: viewableItems.map(this._convertViewable, this).filter(Boolean),
+        viewableItems: viewableItems
+          .map(this._convertViewable, this)
+          .filter(Boolean),
         changed: changed.map(this._convertViewable, this).filter(Boolean),
       });
     }
-  }
+  };
 
   _renderItem = ({item, index}: {item: Item, index: number}) => {
     const info = this._subExtractor(index);
@@ -232,8 +262,14 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
     const infoIndex = info.index;
     if (infoIndex == null) {
-      const {renderSectionHeader} = this.props;
-      return renderSectionHeader ? renderSectionHeader({section: info.section}) : null;
+      const {section} = info;
+      if (info.header === true) {
+        const {renderSectionHeader} = this.props;
+        return renderSectionHeader ? renderSectionHeader({section}) : null;
+      } else {
+        const {renderSectionFooter} = this.props;
+        return renderSectionFooter ? renderSectionFooter({section}) : null;
+      }
     } else {
       const renderItem = info.section.renderItem || this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
@@ -241,9 +277,8 @@ class VirtualizedSectionList<SectionT: SectionBase>
       return (
         <ItemWithSeparator
           SeparatorComponent={SeparatorComponent}
-          LeadingSeparatorComponent={infoIndex === 0
-            ? this.props.SectionSeparatorComponent
-            : undefined
+          LeadingSeparatorComponent={
+            infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
           }
           cellKey={info.key}
           index={infoIndex}
@@ -252,12 +287,10 @@ class VirtualizedSectionList<SectionT: SectionBase>
           leadingSection={info.leadingSection}
           onUpdateSeparator={this._onUpdateSeparator}
           prevCellKey={(this._subExtractor(index - 1) || {}).key}
-          ref={(ref) => {this._cellRefs[info.key] = ref;}}
+          ref={ref => {
+            this._cellRefs[info.key] = ref;
+          }}
           renderItem={renderItem}
-          renderSectionFooter={infoIndex === info.section.data.length - 1
-            ? this.props.renderSectionFooter
-            : undefined
-          }
           section={info.section}
           trailingItem={info.trailingItem}
           trailingSection={info.trailingSection}
@@ -271,7 +304,10 @@ class VirtualizedSectionList<SectionT: SectionBase>
     ref && ref.updateSeparatorProps(newProps);
   };
 
-  _getSeparatorComponent(index: number, info?: ?Object): ?ReactClass<*> {
+  _getSeparatorComponent(
+    index: number,
+    info?: ?Object,
+  ): ?React.ComponentType<*> {
     info = info || this._subExtractor(index);
     if (!info) {
       return null;
@@ -293,13 +329,10 @@ class VirtualizedSectionList<SectionT: SectionBase>
   _computeState(props: Props<SectionT>): State {
     const offset = props.ListHeaderComponent ? 1 : 0;
     const stickyHeaderIndices = [];
-    const itemCount = props.sections.reduce(
-      (v, section) => {
-        stickyHeaderIndices.push(v + offset);
-        return v + section.data.length + 1;
-      },
-      0
-    );
+    const itemCount = props.sections.reduce((v, section) => {
+      stickyHeaderIndices.push(v + offset);
+      return v + section.data.length + 2; // Add two for the section header and footer.
+    }, 0);
 
     return {
       childProps: {
@@ -310,9 +343,12 @@ class VirtualizedSectionList<SectionT: SectionBase>
         getItemCount: () => itemCount,
         getItem,
         keyExtractor: this._keyExtractor,
-        onViewableItemsChanged:
-          props.onViewableItemsChanged ? this._onViewableItemsChanged : undefined,
-        stickyHeaderIndices: props.stickySectionHeadersEnabled ? stickyHeaderIndices : undefined,
+        onViewableItemsChanged: props.onViewableItemsChanged
+          ? this._onViewableItemsChanged
+          : undefined,
+        stickyHeaderIndices: props.stickySectionHeadersEnabled
+          ? stickyHeaderIndices
+          : undefined,
       },
     };
   }
@@ -327,32 +363,41 @@ class VirtualizedSectionList<SectionT: SectionBase>
   }
 
   render() {
-    return <VirtualizedList {...this.state.childProps} ref={this._captureRef} />;
+    return (
+      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
+    );
   }
 
   _cellRefs = {};
   _listRef: VirtualizedList;
-  _captureRef = (ref) => { this._listRef = ref; };
+  _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
+    this._listRef = ref;
+  };
 }
 
-class ItemWithSeparator extends React.Component {
-  props: {
-    LeadingSeparatorComponent: ?ReactClass<*>,
-    SeparatorComponent: ?ReactClass<*>,
-    cellKey: string,
-    index: number,
-    item: Item,
-    onUpdateSeparator: (cellKey: string, newProps: Object) => void,
-    prevCellKey?: ?string,
-    renderItem: Function,
-    renderSectionFooter: ?Function,
-    section: Object,
-    leadingItem: ?Item,
-    leadingSection: ?Object,
-    trailingItem: ?Item,
-    trailingSection: ?Object,
-  };
+type ItemWithSeparatorProps = {
+  LeadingSeparatorComponent: ?React.ComponentType<*>,
+  SeparatorComponent: ?React.ComponentType<*>,
+  cellKey: string,
+  index: number,
+  item: Item,
+  onUpdateSeparator: (cellKey: string, newProps: Object) => void,
+  prevCellKey?: ?string,
+  renderItem: Function,
+  section: Object,
+  leadingItem: ?Item,
+  leadingSection: ?Object,
+  trailingItem: ?Item,
+  trailingSection: ?Object,
+};
 
+class ItemWithSeparator extends React.Component<
+  ItemWithSeparatorProps,
+  $FlowFixMeState,
+> {
   state = {
     separatorProps: {
       highlighted: false,
@@ -374,41 +419,83 @@ class ItemWithSeparator extends React.Component {
 
   _separators = {
     highlight: () => {
-      ['leading', 'trailing'].forEach(s => this._separators.updateProps(s, {highlighted: true}));
+      ['leading', 'trailing'].forEach(s =>
+        this._separators.updateProps(s, {highlighted: true}),
+      );
     },
     unhighlight: () => {
-      ['leading', 'trailing'].forEach(s => this._separators.updateProps(s, {highlighted: false}));
+      ['leading', 'trailing'].forEach(s =>
+        this._separators.updateProps(s, {highlighted: false}),
+      );
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {LeadingSeparatorComponent, cellKey, prevCellKey} = this.props;
       if (select === 'leading' && LeadingSeparatorComponent) {
         this.setState(state => ({
-          leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps}
+          leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps},
         }));
       } else {
-        this.props.onUpdateSeparator((select === 'leading' && prevCellKey) || cellKey, newProps);
+        this.props.onUpdateSeparator(
+          (select === 'leading' && prevCellKey) || cellKey,
+          newProps,
+        );
       }
     },
   };
 
+  componentWillReceiveProps(props: ItemWithSeparatorProps) {
+    this.setState(state => ({
+      separatorProps: {
+        ...this.state.separatorProps,
+        leadingItem: props.item,
+        leadingSection: props.leadingSection,
+        section: props.section,
+        trailingItem: props.trailingItem,
+        trailingSection: props.trailingSection,
+      },
+      leadingSeparatorProps: {
+        ...this.state.leadingSeparatorProps,
+        leadingItem: props.leadingItem,
+        leadingSection: props.leadingSection,
+        section: props.section,
+        trailingItem: props.item,
+        trailingSection: props.trailingSection,
+      },
+    }));
+  }
+
   updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({separatorProps: {...state.separatorProps, ...newProps}}));
+    this.setState(state => ({
+      separatorProps: {...state.separatorProps, ...newProps},
+    }));
   }
 
   render() {
-    const {LeadingSeparatorComponent, SeparatorComponent, item, index, section} = this.props;
+    const {
+      LeadingSeparatorComponent,
+      SeparatorComponent,
+      item,
+      index,
+      section,
+    } = this.props;
     const element = this.props.renderItem({
       item,
       index,
       section,
       separators: this._separators,
     });
-    const leadingSeparator = LeadingSeparatorComponent &&
+    const leadingSeparator =
+      LeadingSeparatorComponent &&
       <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />;
-    const separator = SeparatorComponent && <SeparatorComponent {...this.state.separatorProps} />;
-    const footer = this.props.renderSectionFooter && this.props.renderSectionFooter({section});
-    return (leadingSeparator || separator || footer)
-      ? <View>{leadingSeparator}{element}{separator}{footer}</View>
+    const separator =
+      SeparatorComponent &&
+      <SeparatorComponent {...this.state.separatorProps} />;
+    return leadingSeparator || separator
+      ? <View>
+          {leadingSeparator}
+          {element}
+          {separator}
+        </View>
       : element;
   }
 }
@@ -419,12 +506,16 @@ function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   }
   let itemIdx = index - 1;
   for (let ii = 0; ii < sections.length; ii++) {
-    if (itemIdx === -1) {
-      return sections[ii]; // The section itself is the item
+    if (itemIdx === -1 || itemIdx === sections[ii].data.length) {
+      // We intend for there to be overflow by one on both ends of the list.
+      // This will be for headers and footers. When returning a header or footer
+      // item the section itself is the item.
+      return sections[ii];
     } else if (itemIdx < sections[ii].data.length) {
+      // If we are in the bounds of the list's data then return the item.
       return sections[ii].data[itemIdx];
     } else {
-      itemIdx -= (sections[ii].data.length + 1);
+      itemIdx -= sections[ii].data.length + 2; // Add two for the header and footer
     }
   }
   return null;

@@ -13,6 +13,7 @@
 
 const Platform = require('Platform');
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -22,7 +23,7 @@ var {
   LayoutAnimation,
 } = ReactNative;
 
-class Entity extends React.Component {
+class Entity extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
@@ -32,7 +33,7 @@ class Entity extends React.Component {
   }
 }
 
-class AttributeToggler extends React.Component {
+class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -72,7 +73,8 @@ class AttributeToggler extends React.Component {
   }
 }
 
-var AdjustingFontSize = React.createClass({
+var AdjustingFontSize = createReactClass({
+  displayName: 'AdjustingFontSize',
   getInitialState: function() {
     return {dynamicText:'', shouldRender: true,};
   },
@@ -106,7 +108,7 @@ var AdjustingFontSize = React.createClass({
     }
     return (
       <View>
-        <Text lineBreakMode="tail" numberOfLines={1} style={{fontSize: 36, marginVertical:6}}>
+        <Text ellipsizeMode="tail" numberOfLines={1} style={{fontSize: 36, marginVertical: 6}}>
           Truncated text is baaaaad.
         </Text>
         <Text numberOfLines={1} adjustsFontSizeToFit={true} style={{fontSize: 40, marginVertical:6}}>

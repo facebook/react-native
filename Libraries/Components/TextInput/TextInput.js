@@ -17,6 +17,7 @@ const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
@@ -95,6 +96,9 @@ const DataDetectorTypes = [
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
+ * Two methods exposed via the native element are .focus() and .blur() that
+ * will focus or blur the TextInput programmatically.
+ *
  * Note that some props are only available with `multiline={true/false}`.
  * Additionally, border styles that apply to only one side of the element
  * (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if
@@ -171,8 +175,10 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
+
 // $FlowFixMe(>=0.41.0)
-const TextInput = React.createClass({
+const TextInput = createReactClass({
+  displayName: 'TextInput',
   statics: {
     /* TODO(brentvatne) docs are needed for this */
     State: TextInputState,
@@ -209,6 +215,13 @@ const TextInput = React.createClass({
      * The default value is `false`.
      */
     autoFocus: PropTypes.bool,
+    /**
+     * If true, will increase the height of the textbox if need be. If false,
+     * the textbox will become scrollable once the height is reached. The
+     * default value is false.
+     * @platform android
+     */
+    autoGrow: PropTypes.bool,
     /**
      * If `false`, text is not editable. The default value is `true`.
      */
@@ -308,6 +321,11 @@ const TextInput = React.createClass({
      * instead of implementing the logic in JS to avoid flicker.
      */
     maxLength: PropTypes.number,
+    /**
+     * If autogrow is `true`, limits the height that the TextInput box can grow
+     * to. Once it reaches this height, the TextInput becomes scrollable.
+     */
+    maxHeight: PropTypes.number,
     /**
      * Sets the number of lines for a `TextInput`. Use it with multiline set to
      * `true` to be able to fill the lines.
@@ -499,6 +517,13 @@ const TextInput = React.createClass({
 
     /**
      * If defined, the provided image resource will be rendered on the left.
+     * The image resource must be inside `/android/app/src/main/res/drawable` and referenced
+     * like
+     * ```
+     * <TextInput
+     *  inlineImageLeft='search_icon'
+     * />
+     * ```
      * @platform android
      */
     inlineImageLeft: PropTypes.string,
@@ -543,6 +568,10 @@ const TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
+  getInitialState: function() {
+    return {layoutHeight: this._layoutHeight};
+  },
+
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
@@ -560,6 +589,7 @@ const TextInput = React.createClass({
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
+  _layoutHeight: (-1: number),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -632,7 +662,7 @@ const TextInput = React.createClass({
     var textContainer;
 
     var props = Object.assign({}, this.props);
-    props.style = [styles.input, this.props.style];
+    props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
       props.selection = {start: props.selection.start, end: props.selection.start};
@@ -692,7 +722,6 @@ const TextInput = React.createClass({
           onScroll={this._onScroll}
         />;
     }
-
     return (
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
@@ -710,9 +739,15 @@ const TextInput = React.createClass({
 
   _renderAndroid: function() {
     const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
+    props.style = this.props.style;
+    if (this.state.layoutHeight >= 0) {
+      props.style = [props.style, {height: this.state.layoutHeight}];
+    }
     props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
@@ -723,11 +758,9 @@ const TextInput = React.createClass({
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
-
     if (props.selection && props.selection.end == null) {
       props.selection = {start: props.selection.start, end: props.selection.start};
     }
-
     const textContainer =
       <AndroidTextInput
         ref={this._setNativeRef}
@@ -736,6 +769,7 @@ const TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onContentSizeChange={this._onContentSizeChange}
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
         text={this._getText()}
@@ -747,7 +781,7 @@ const TextInput = React.createClass({
 
     return (
       <TouchableWithoutFeedback
-        onLayout={this.props.onLayout}
+        onLayout={this._onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
@@ -796,6 +830,26 @@ const TextInput = React.createClass({
 
     this._lastNativeText = text;
     this.forceUpdate();
+  },
+
+  _onContentSizeChange: function(event: Event) {
+    let contentHeight = event.nativeEvent.contentSize.height;
+    if (this.props.autoGrow) {
+      if (this.props.maxHeight) {
+        contentHeight = Math.min(this.props.maxHeight, contentHeight);
+      }
+      this.setState({layoutHeight: Math.max(this._layoutHeight, contentHeight)});
+    }
+
+    this.props.onContentSizeChange && this.props.onContentSizeChange(event);
+  },
+
+  _onLayout: function(event: Event) {
+    const height = event.nativeEvent.layout.height;
+    if (height) {
+      this._layoutHeight = event.nativeEvent.layout.height;
+    }
+    this.props.onLayout && this.props.onLayout(event);
   },
 
   _onSelectionChange: function(event: Event) {
@@ -854,6 +908,9 @@ const TextInput = React.createClass({
   },
 
   _onTextInput: function(event: Event) {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onTextInput && this.props.onTextInput(event);
   },
 
@@ -863,9 +920,6 @@ const TextInput = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  input: {
-    alignSelf: 'stretch',
-  },
   multilineInput: {
     // This default top inset makes RCTTextView seem as close as possible
     // to single-line RCTTextField defaults, using the system defaults

@@ -21,7 +21,7 @@ const {
   TouchableOpacity,
 } = ReactNative;
 
-class AddRemoveExample extends React.Component {
+class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     views: [],
   };
@@ -74,7 +74,7 @@ const BlueSquare = () =>
     <Text>Blue square</Text>
   </View>;
 
-class CrossFadeExample extends React.Component {
+class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     toggled: false,
   };

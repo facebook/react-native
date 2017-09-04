@@ -11,5 +11,5 @@ package com.facebook.react.bridge;
 import java.util.Map;
 
 public interface PerformanceCounter {
-  public Map<String,Double> getPerformanceCounters();
+  public Map<String, Long> getPerformanceCounters();
 }

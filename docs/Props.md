@@ -29,7 +29,7 @@ export default class Bananas extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('Bananas', () => Bananas);
+AppRegistry.registerComponent('AwesomeProject', () => Bananas);
 ```
 
 Notice that `{pic}` is surrounded by braces, to embed the variable `pic` into JSX. You can put any JavaScript expression inside braces in JSX.
@@ -63,7 +63,7 @@ export default class LotsOfGreetings extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('LotsOfGreetings', () => LotsOfGreetings);
+AppRegistry.registerComponent('AwesomeProject', () => LotsOfGreetings);
 ```
 
 Using `name` as a prop lets us customize the `Greeting` component, so we can reuse that component for each of our greetings. This example also uses the `Greeting` component in JSX, just like the built-in components. The power to do this is what makes React so cool - if you find yourself wishing that you had a different set of UI primitives to work with, you just invent new ones.

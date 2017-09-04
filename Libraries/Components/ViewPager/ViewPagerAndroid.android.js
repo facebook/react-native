@@ -68,17 +68,16 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**
@@ -137,6 +136,12 @@ class ViewPagerAndroid extends React.Component {
     * The default value is true.
     */
     scrollEnabled: PropTypes.bool,
+
+    /**
+     * Whether enable showing peekFraction or not. If this is true, the preview of
+     * last and next page will show in current screen. Defaults to false.
+     */
+     peekEnabled: PropTypes.bool,
   };
 
   componentDidMount() {

@@ -4,8 +4,8 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: timers
-previous: debugging
+next: improvingux
+previous: animations
 ---
 
 ## Native App Accessibility (iOS and Android)

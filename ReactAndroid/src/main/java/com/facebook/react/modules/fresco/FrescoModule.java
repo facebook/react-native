@@ -182,7 +182,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     // According to the javadoc for LifecycleEventListener#onHostDestroy, this is only called when
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
-    if (mClearOnDestroy) {
+    if (hasBeenInitialized() && mClearOnDestroy) {
       Fresco.getImagePipeline().clearMemoryCaches();
     }
   }

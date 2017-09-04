@@ -28,6 +28,11 @@ using namespace facebook::react;
   return @"";
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (void)lazyInit
 {
   if (!_module) {

@@ -20,7 +20,7 @@ var {
   StyleSheet,
 } = ReactNative;
 
-class TextEventsExample extends React.Component {
+class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
@@ -49,6 +49,9 @@ class TextEventsExample extends React.Component {
           onChange={(event) => this.updateText(
             'onChange text: ' + event.nativeEvent.text
           )}
+          onContentSizeChange={(event) => this.updateText(
+            'onContentSizeChange size: ' + event.nativeEvent.contentSize
+          )}
           onEndEditing={(event) => this.updateText(
             'onEndEditing text: ' + event.nativeEvent.text
           )}
@@ -67,11 +70,10 @@ class TextEventsExample extends React.Component {
   }
 }
 
-class AutoExpandingTextInput extends React.Component {
+class AutoExpandingTextInput extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {
-      text: 'React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.',
       height: 0,
     };
   }
@@ -83,17 +85,13 @@ class AutoExpandingTextInput extends React.Component {
         onContentSizeChange={(event) => {
           this.setState({height: event.nativeEvent.contentSize.height});
         }}
-        onChangeText={(text) => {
-          this.setState({text});
-        }}
-        style={[styles.default, {height: Math.max(35, this.state.height)}]}
-        value={this.state.text}
+        style={[styles.default, {height: Math.min(200, Math.max(35, this.state.height))}]}
       />
     );
   }
 }
 
-class RewriteExample extends React.Component {
+class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -122,7 +120,7 @@ class RewriteExample extends React.Component {
   }
 }
 
-class TokenizedTextExample extends React.Component {
+class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -176,7 +174,7 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-class BlurOnSubmitExample extends React.Component {
+class BlurOnSubmitExample extends React.Component<{}> {
   focusNextField = (nextField) => {
     this.refs[nextField].focus();
   };
@@ -230,7 +228,7 @@ class BlurOnSubmitExample extends React.Component {
   }
 }
 
-class ToggleDefaultPaddingExample extends React.Component {
+class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
@@ -255,9 +253,7 @@ type SelectionExampleState = {
   value: string;
 };
 
-class SelectionExample extends React.Component {
-  state: SelectionExampleState;
-
+class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExampleState> {
   _textInput: any;
 
   constructor(props) {
@@ -444,11 +440,11 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element { return <TextEventsExample />; },
+    render: function(): React.Element<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colors and text inputs',
@@ -619,6 +615,7 @@ exports.examples = [
         <View>
           <AutoExpandingTextInput
             placeholder="height increases with content"
+            defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
           />
@@ -697,7 +694,7 @@ exports.examples = [
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element { return <ToggleDefaultPaddingExample />; },
+    render: function(): React.Element<any> { return <ToggleDefaultPaddingExample />; },
   },
   {
     title: 'Text selection & cursor placement',

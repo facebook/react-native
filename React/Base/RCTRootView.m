@@ -45,7 +45,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 {
   RCTBridge *_bridge;
   NSString *_moduleName;
-  NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
