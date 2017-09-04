@@ -468,7 +468,12 @@ BOOL RCTRunningInTestEnvironment(void)
 
 BOOL RCTRunningInAppExtension(void)
 {
-  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+  static BOOL isExtension;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    isExtension = [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+  });
+  return isExtension;
 }
 
 UIApplication *__nullable RCTSharedApplication(void)
@@ -476,7 +481,7 @@ UIApplication *__nullable RCTSharedApplication(void)
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+  return [UIApplication performSelector:@selector(sharedApplication)];
 }
 
 UIWindow *__nullable RCTKeyWindow(void)
@@ -510,12 +515,14 @@ BOOL RCTForceTouchAvailable(void)
   static BOOL forceSupported;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    forceSupported = [UITraitCollection class] &&
-    [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+    if ([NSProcessInfo processInfo].operatingSystemVersion.majorVersion >= 9) {
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        forceSupported = [UIScreen mainScreen].traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+      });
+    }
   });
 
-  return forceSupported &&
-    (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+  return forceSupported;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)
@@ -638,7 +645,8 @@ static NSString *bundleName(NSBundle *bundle)
 static NSBundle *bundleForPath(NSString *key)
 {
   static NSMutableDictionary *bundleCache;
-  if (!bundleCache) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
     bundleCache = [NSMutableDictionary new];
     bundleCache[@"main"] = [NSBundle mainBundle];
 
@@ -651,7 +659,7 @@ static NSBundle *bundleForPath(NSString *key)
     for (NSBundle *bundle in [NSBundle allBundles]) {
       bundleCache[bundleName(bundle)] = bundle;
     }
-  }
+  });
 
   return bundleCache[key];
 }

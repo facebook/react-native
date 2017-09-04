@@ -88,7 +88,7 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
  */
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
                                runtimeBCVersion:(int32_t)runtimeBCVersion
-                                   sourceLength:(int64_t *)sourceLength
-                                          error:(NSError **)error;
+                                   sourceLength:(out NSUInteger *)sourceLength
+                                          error:(out NSError **)error;
 
 @end

@@ -35,7 +35,7 @@ NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomai
 
 @implementation RCTSource
 
-static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_RETURNS_RETAINED
+static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, NSUInteger length) NS_RETURNS_RETAINED
 {
   RCTSource *source = [RCTSource new];
   source->_url = url;
@@ -69,7 +69,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 + (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete
 {
-  int64_t sourceLength;
+  NSUInteger sourceLength;
   NSError *error;
   NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
                                           runtimeBCVersion:JSNoBytecodeFileFormatVersion
@@ -93,8 +93,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
                                runtimeBCVersion:(int32_t)runtimeBCVersion
-                                   sourceLength:(int64_t *)sourceLength
-                                          error:(NSError **)error
+                                   sourceLength:(out NSUInteger *)sourceLength
+                                          error:(out NSError **)error
 {
   NSString *unsanitizedScriptURLString = scriptURL.absoluteString;
   // Sanitize the script URL
@@ -202,7 +202,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
   if (sourceLength) {
-    *sourceLength = statInfo.st_size;
+    *sourceLength = (NSUInteger)statInfo.st_size;
   }
   return [NSData dataWithBytes:&header length:sizeof(header)];
 }
