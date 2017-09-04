@@ -348,7 +348,7 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
-}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+}), UIDataDetectorTypePhoneNumber, unsignedIntegerValue)
 #endif
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{

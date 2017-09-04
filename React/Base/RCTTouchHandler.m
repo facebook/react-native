@@ -202,11 +202,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
   // Deep copy the touches because they will be accessed from another thread
   // TODO: would it be safer to do this in the bridge or executor, rather than trusting caller?
-  NSMutableArray<NSDictionary *> *reactTouches =
-  [[NSMutableArray alloc] initWithCapacity:_reactTouches.count];
-  for (NSDictionary *touch in _reactTouches) {
-    [reactTouches addObject:[touch copy]];
-  }
+  NSArray<NSDictionary *> *reactTouches = [[NSArray alloc] initWithArray:_reactTouches copyItems:YES];
 
   BOOL canBeCoalesced = [eventName isEqualToString:@"touchMove"];
 
