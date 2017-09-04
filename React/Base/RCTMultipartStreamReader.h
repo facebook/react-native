@@ -10,7 +10,6 @@
 #import <Foundation/Foundation.h>
 
 typedef void (^RCTMultipartCallback)(NSDictionary *headers, NSData *content, BOOL done);
-typedef void (^RCTMultipartProgressCallback)(NSDictionary *headers, NSNumber *loaded, NSNumber *total);
 
 
 // RCTMultipartStreamReader can be used to parse responses with Content-Type: multipart/mixed
@@ -18,7 +17,6 @@ typedef void (^RCTMultipartProgressCallback)(NSDictionary *headers, NSNumber *lo
 @interface RCTMultipartStreamReader : NSObject
 
 - (instancetype)initWithInputStream:(NSInputStream *)stream boundary:(NSString *)boundary;
-- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
-                          progressCallback:(RCTMultipartProgressCallback)progressCallback;
+- (BOOL)readAllParts:(RCTMultipartCallback)callback;
 
 @end
