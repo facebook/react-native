@@ -161,17 +161,14 @@ describe('VirtualizedList', () => {
   });
 
   it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
-    const ITEM_HEIGHT = 600;
+    const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
-    const scrollEvent = {
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: 0, x: 0},
-        layoutMeasurement: {width: 300, height: 600},
-        contentSize: {width: 300, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
+    const nativeEvent = {
+      contentOffset: {y: 0, x: 0},
+      layoutMeasurement: {width: 300, height: 600},
+      contentSize: {width: 300, height: data.length * ITEM_HEIGHT},
+      zoomScale: 1,
+      contentInset: {right: 0, top: 0, left: 0, bottom: 0},
     };
     const onViewableItemsChanged = jest.fn();
     const props = {
@@ -191,8 +188,11 @@ describe('VirtualizedList', () => {
 
     const instance = component.getInstance();
 
-    instance._onScrollBeginDrag(scrollEvent);
-    instance._onScroll(scrollEvent);
+    instance._onScrollBeginDrag({nativeEvent});
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent,
+    });
 
     expect(onViewableItemsChanged).toHaveBeenCalledTimes(1);
     expect(onViewableItemsChanged).toHaveBeenLastCalledWith(
@@ -203,7 +203,13 @@ describe('VirtualizedList', () => {
     data = [{key: 'i4'}, ...data];
     component.update(<VirtualizedList {...props} data={data} />);
 
-    instance._onScroll(scrollEvent);
+    instance._onScroll({
+      timeStamp: 2000,
+      nativeEvent: {
+        ...nativeEvent,
+        contentOffset: {y: 100, x: 0},
+      },
+    });
 
     expect(onViewableItemsChanged).toHaveBeenCalledTimes(2);
     expect(onViewableItemsChanged).toHaveBeenLastCalledWith(
