@@ -21,7 +21,7 @@ const {
   ShareModule
 } = require('NativeModules');
 
-type Content = { title?: string, message: string } | { title?: string, url: string };
+type Content = { title?: string, message: string, subject?: string } | { title?: string, url: string, subject?: string };
 type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
 
 class Share {
@@ -43,6 +43,7 @@ class Share {
    * #### iOS
    *
    *  - `url` - an URL to share
+   *  - `subject` - a subject to share via email
    *
    * At least one of URL and message is required.
    *
