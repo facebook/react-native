@@ -76,7 +76,7 @@
   // Throttle progress events so we don't send more that around 60 per second.
   CFTimeInterval currentTime = CACurrentMediaTime();
 
-  NSInteger headersContentLength = headers[@"Content-Length"] != nil ? [headers[@"Content-Length"] intValue] : 0;
+  NSInteger headersContentLength = headers[@"Content-Length"] != nil ? [headers[@"Content-Length"] integerValue] : 0;
   if (callback && (currentTime - _lastDownloadProgress > 0.016 || final)) {
     _lastDownloadProgress = currentTime;
     callback(headers, @(headersContentLength), @(contentLength));
