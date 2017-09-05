@@ -76,6 +76,12 @@ type GeoOptions = {
  * Android API >= 18 Positions will also contain a `mocked` boolean to indicate if position
  * was created from a mock provider.
  *
+ * <p>
+ *   Android API >= 23 Requires an additional step to check for, and request
+ *   the ACCESS_FINE_LOCATION permission using
+ *   the <a href="https://facebook.github.io/react-native/docs/permissionsandroid.html" target="_blank">PermissionsAndroid API</a>.
+ *   Failure to do so may result in a hard crash.
+ * </p>
  */
 var Geolocation = {
 
