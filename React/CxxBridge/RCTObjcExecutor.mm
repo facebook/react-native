@@ -117,6 +117,10 @@ public:
            callback:m_errorBlock];
   }
 
+  virtual std::string getDescription() override {
+    return [NSStringFromClass([m_jse class]) UTF8String];
+  }
+
 private:
   id<RCTJavaScriptExecutor> m_jse;
   RCTJavaScriptCompleteBlock m_errorBlock;

@@ -67,8 +67,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        ":module",
         "xplat//folly:molly",
+        ":module",
     ],
 )
 
