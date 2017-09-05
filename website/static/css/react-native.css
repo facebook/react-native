@@ -1,5 +1,5 @@
 body {
-  background-color: #f5fcff;
+  background-color: $backgroundColor;
 }
 
 .headerTitle {
@@ -7,7 +7,7 @@ body {
 }
 
 .mainContainer {
-  background-color: #f5fcff !important;
+  background-color: $backgroundColor !important;
 }
 
 .mainContainer h1,
@@ -16,7 +16,12 @@ body {
 .mainContainer h4,
 .mainContainer h5,
 .mainContainer h6 {
-  color: #005068 !important;
+  color: $tintColor !important;
+}
+
+a {
+  color: $secondaryColor;
+  text-decoration: none !important;
 }
 
 .navGroup {
@@ -32,10 +37,78 @@ input#search_input_react {
 }
 
 .button {
-  color: #005068;
-  border: 1px solid #005068;
+  color: $tintColor;
+  border: 1px solid $tintColor;
 }
 
 .button:hover {
-  background: #005068;
+  background: $tintColor;
 }
+
+code {
+  color: $tintColor !important;
+}
+
+.mainContainer .component-grid {
+  max-width: 800px;
+}
+
+.mainContainer .component {
+  border: 1px solid #05A5D1;
+  border-radius: 3px;
+  margin: 0 auto 10px;
+  width: 100%;
+  display: inline-block;
+  background-color: white;
+}
+
+.mainContainer .component-grid .component h3 {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  padding: 0 10px;
+  background-color: #05A5D1;
+  color: white;
+  line-height: 40px;
+}
+
+.mainContainer .component h3 a {
+  color: white;
+}
+
+.mainContainer .component p {
+  padding: 10px;
+  margin: 2px;
+}
+
+@supports (display:grid) {
+  .mainContainer .component-grid {
+    display: grid;
+    grid-gap: 22px;
+  }
+}
+
+@media only screen and (min-device-width: 768px) {
+  .mainContainer .component-grid {
+    width: 768px;
+  }
+  .mainContainer .component-grid.component-grid-border {
+    border-bottom: 1px solid #f1eff0;
+  }
+  .mainContainer .component {
+    width: 30%;
+    height: 150px;
+    margin: 0 22px 22px auto;
+    vertical-align: top;
+  }
+
+  @supports (display:grid) {
+    .mainContainer .component-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .mainContainer .component {
+      width: auto;
+      height: auto;
+      margin: 0;
+    }
+  }

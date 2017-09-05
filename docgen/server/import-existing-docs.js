@@ -172,12 +172,14 @@ function generateMarkdownFromMetadata(sidebarMetadata) {
       const doc = sidebarMetadata[category][docId];
       const targetFile = `../docs/${doc.id}.md`;
 
+      const migratedContent = doc.content.replace('src="img/', 'src="/react-native/img/');
+
       const res = [
         "---",
         "id: " + doc.id,
         "title: " + doc.title,
         "---",
-        doc.content
+        migratedContent
       ]
         .filter(function(line) {
           return line;

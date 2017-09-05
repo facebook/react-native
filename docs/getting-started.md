@@ -125,7 +125,7 @@ Now that you have successfully run the app, let's modify it. Open `App.js` in yo
 
 Congratulations! You've successfully run and modified your first React Native app.
 
-<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+<center><img src="/react-native/img/react-native-congratulations.png" width="150"></img></center>
 
 ## Now what?
 
@@ -602,7 +602,7 @@ Now that you have successfully run the app, let's modify it.
 
 Congratulations! You've successfully run and modified your first React Native app.
 
-<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+<center><img src="/react-native/img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native windows linux android" />
 
@@ -610,7 +610,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 Congratulations! You've successfully run and modified your first React Native app.
 
-<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+<center><img src="/react-native/img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native mac ios" />
 

@@ -5,7 +5,7 @@ category: Components
 permalink: docs/button.html
 ---
 <div><div><p>A basic button component that should render nicely on any platform. Supports
-a minimal level of customization.</p><span><center><img src="img/buttonExample.png"></center>
+a minimal level of customization.</p><span><center><img src="/react-native/img/buttonExample.png"></center>
 
 </span><p>If this button doesn't look right for your app, you can build your own
 button using <a href="docs/touchableopacity.html" target="_blank">TouchableOpacity</a>

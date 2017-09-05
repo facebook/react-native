@@ -30,7 +30,7 @@ Entering text on touch phone is a challange - small screen, software keyboard. B
 
 Check out [`TextInput` docs](docs/textinput.html) for more configuration options.
 
-<video src="img/textinput.mp4" autoplay loop width="320" height="430"></video>
+<video src="/react-native/img/textinput.mp4" autoplay loop width="320" height="430"></video>
 
 [Try it on your phone](https://snack.expo.io/H1iGt2vSW)
 
@@ -38,7 +38,7 @@ Check out [`TextInput` docs](docs/textinput.html) for more configuration options
 
 Software keyboard takes almost half of the screen. If you have interactive elements that can get covered by the keyboard, make sure they are still accessible by using `KeyboardAvoidingView` ([see docs](docs/keyboardavoidingview.html)).
 
-<video src="img/keyboardavoidingview.mp4" autoplay loop width="320" height="448"></video>
+<video src="/react-native/img/keyboardavoidingview.mp4" autoplay loop width="320" height="448"></video>
 
 [Try it on your phone](https://snack.expo.io/ryxRkwnrW)
 
@@ -46,7 +46,7 @@ Software keyboard takes almost half of the screen. If you have interactive eleme
 
 On mobile phones it's hard to be very precise when pressing buttons. Make sure all interactive elements are 44x44 or larger. One way to do this is to leave enough space for the element, `padding`, `minWidth` and `minHeight` style values can be useful for that. Alternatively, you can use [`hitSlop` prop](docs/touchablewithoutfeedback.html#hitslop) to increase interactive area without affecting the layout. Here's a demo:
 
-<video src="img/hitslop.mp4" autoplay loop width="320" height="120"></video>
+<video src="/react-native/img/hitslop.mp4" autoplay loop width="320" height="120"></video>
 
 [Try it on your phone](https://snack.expo.io/rJPwCt4HZ)
 
@@ -54,7 +54,7 @@ On mobile phones it's hard to be very precise when pressing buttons. Make sure a
 
 Android API 21+ uses the material design ripple to provide user with feedback when they touch an interactable area on the screen. React Native exposes this through the [`TouchableNativeFeedback` component](docs/docs/touchablenativefeedback.html). Using this touchable effect instead of opacity or highlight will often make your app feel much more fitting on the platform. That said, you need to be careful when using it because it doesn't work on iOS or on Android API < 21, so you will need to fallback to using one of the other Touchable components on iOS. You can use a library like [react-native-platform-touchable](https://github.com/react-community/react-native-platform-touchable) to handle the platform differences for you.
 
-<video src="img/ripple.mp4" autoplay loop width="320"></video>
+<video src="/react-native/img/ripple.mp4" autoplay loop width="320"></video>
 
 [Try it on your phone](https://snack.expo.io/SJywqe3rZ)
 

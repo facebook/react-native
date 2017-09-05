@@ -39,6 +39,8 @@ const siteConfig = {
   colors: {
     primaryColor: "rgb(34, 34, 34)",
     secondaryColor: "#05A5D1",
+    tintColor: "#005068",
+    backgroundColor: "#f5fcff",
     prismColor:
       "rgba(5, 165, 209, 0.05)" /* primaryColor in rgba form, with 0.03 alpha */
   },
@@ -50,7 +52,9 @@ const siteConfig = {
     apiKey:
       "0f9f28b9ab9efae89810921a351753b5" /* use your search-only api key */,
     indexName: "github"
-  }
+  },
+  facebookAppId: '1677033832619985',
+  twitter: 'reactnative'
   /* remove this to disable google analytics tracking */
   /* gaTrackingId: "" */
 };

@@ -10,12 +10,16 @@
 const React = require("react");
 
 const CompLibrary = require("../../core/CompLibrary.js");
-const Prism = require("../../core/Prism.js");
 const Marked = CompLibrary.Marked; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
+const Prism = CompLibrary.Prism;
 
 const siteConfig = require(process.cwd() + "/siteConfig.js");
+
+const pinnedApps = siteConfig.users.filter(app => {
+  return app.pinned;
+});
 
 class Button extends React.Component {
   render() {
@@ -73,34 +77,71 @@ class HomeSplash extends React.Component {
   }
 }
 
+class ShowcaseAppIcon extends React.Component {
+  render() {
+    return (
+      <a href={this.props.linkUri}>
+        <img src={this.props.iconUri} alt={this.props.name} />
+      </a>
+    );
+  }
+}
+
+class AppList extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this._renderApp = this._renderApp.bind(this);
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.apps.map(this._renderApp)}
+      </div>
+    );
+  }
+
+  _renderApp(app, i) {
+    return (
+      <div className="showcase" key={i}>
+        <ShowcaseAppIcon
+          iconUri={app.icon}
+          name={app.name}
+          linkUri={app.infoLink} />
+      </div>
+    );
+  }
+}
+
 class Index extends React.Component {
   render() {
     let language = this.props.language || "en";
-    const showcase = siteConfig.users
-      .filter(user => {
-        return user.pinned;
-      })
-      .map(user => {
-        return (
-          <a href={user.infoLink}>
-            <img src={user.image} title={user.caption} />
-          </a>
-        );
-      });
 
     return (
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <Container padding={["bottom", "top"]}>
-            <GridBlock
-              align="left"
-              contents={[
-                {
-                  content:
-                    "React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.",
-                  imageAlign: "right",
-                  code: `import React, { Component } from 'react';
+          <div
+            className="productShowcaseSection paddingBottom"
+            style={{ textAlign: "center" }}
+          >
+            <Marked>React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.</Marked>
+          </div>
+          <Container padding={['bottom', 'top']} background="light">
+            <div className="blockElement imageAlignSide twoByGridBlock">
+              <div className="blockContent">
+                <h2>
+                  Build native mobile apps using JavaScript and React
+                </h2>
+                <div>
+                  <Marked>
+                    React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
+                  </Marked>
+                </div>
+              </div>
+                <Prism>
+                {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
 class WhyReactNativeIsSoGreat extends Component {
@@ -117,14 +158,26 @@ class WhyReactNativeIsSoGreat extends Component {
       </View>
     );
   }
-}`,
-                  title: "Build native mobile apps using JavaScript and React"
-                },
-                {
-                  content:
-                    "With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.",
-                  imageAlign: "left",
-                  code: `import React, { Component } from 'react';
+}`}
+              </Prism>
+
+            </div>
+          </Container>         
+
+          <Container padding={['bottom', 'top']}>
+            <div className="blockElement imageAlignSide twoByGridBlock">
+              <div className="blockContent">
+                <h2>
+                  A React Native app is a real mobile app
+                </h2>
+                <div>
+                  <Marked>
+                    With React Native, you don't build a "mobile web app", an "HTML5 app", or a "hybrid app". You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
+                  </Marked>
+                </div>
+              </div>
+                <Prism>
+                {`import React, { Component } from 'react';
 import { Image, ScrollView, Text } from 'react-native';
 
 class AwkwardScrollingImageWithText extends Component {
@@ -148,23 +201,41 @@ class AwkwardScrollingImageWithText extends Component {
       </ScrollView>
     );
   }
-}`,
-                  title: "A React Native app is a real mobile app"
-                },
-                {
-                  title: "Don't waste time recompiling",
-                  content:
-                    "React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With [Hot Reloading](), you can even run new code while retaining your application state. Give it a try - it's a magical experience.",
-                  imageAlign: "right",
-                  image:
-                    "https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif"
-                },
-                {
-                  title: "Use native code when you need to",
-                  content:
-                    "React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.",
-                  imageAlign: "left",
-                  code: `import React, { Component } from 'react';
+}`}
+              </Prism>
+
+            </div>
+          </Container>  
+          <Container padding={['bottom', 'top']} background="light">
+            <div className="blockElement imageAlignSide twoByGridBlock">
+              <div className="blockContent">
+                <h2>
+                Don't waste time recompiling
+                </h2>
+                <div>
+                  <Marked>
+                  React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With [Hot Reloading](), you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+                  </Marked>
+                </div>
+              </div>
+  <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
+
+            </div>
+          </Container>  
+          <Container padding={['bottom', 'top']}>
+            <div className="blockElement imageAlignSide twoByGridBlock">
+              <div className="blockContent">
+                <h2>
+                  Use native code when you need to
+                </h2>
+                <div>
+                  <Marked>
+                    React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
+                  </Marked>
+                </div>
+              </div>
+                <Prism>
+                {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { TheGreatestComponentInTheWorld } from './your-native-code';
 
@@ -180,59 +251,18 @@ class SomethingFast extends Component {
       </View>
     );
   }
-}`
-                }
-              ]}
-              layout="twoColumn"
-            />
-          </Container>
-          <div
-            className="productShowcaseSection paddingBottom"
-            style={{ textAlign: "center" }}
-          >
-            <h2>Feature Callout</h2>
-            <Marked>These are features of this project</Marked>
-          </div>
-          TODO: Move the gridblock above, to down here
-          <section className="home-get-started-section">
-            <div className="buttons-unit">
-              <a href="docs/getting-started.html#content" className="button">
-                Get Started with React Native
-              </a>
+}`}
+              </Prism>
+
             </div>
-          </section>
-          <Container padding={["bottom", "top"]} id="try">
-            <GridBlock
-              contents={[
-                {
-                  content: "Talk about trying this out",
-                  image: "/test-site/img/docusaurus.svg",
-                  imageAlign: "left",
-                  title: "Try it Out"
-                }
-              ]}
-            />
-          </Container>
-          <Container padding={["bottom", "top"]} background="dark">
-            <GridBlock
-              contents={[
-                {
-                  content:
-                    "This is another description of how this project is useful",
-                  image: "/test-site/img/docusaurus.svg",
-                  imageAlign: "right",
-                  title: "Description"
-                }
-              ]}
-            />
-          </Container>
+          </Container>  
           <div className="productShowcaseSection paddingBottom">
             <h2>
-              {"Who's Using This?"}
+              Who's using React Native?
             </h2>
-            <p>This project is used by all these people</p>
+            <p>Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!</p>
             <div className="logos">
-              {showcase}
+              <AppList apps={pinnedApps} />
             </div>
             <div className="more-users">
               <a
@@ -242,7 +272,7 @@ class SomethingFast extends Component {
                 }
                 target="_self"
               >
-                More "Docusaurus" Users
+                More React Native Apps
               </a>
             </div>
           </div>
