@@ -31,10 +31,12 @@
 
 // Use for methods were access to a JSContextRef is impractical. The first bool param
 // will be dropped before the JSC method is invoked.
-#define __jsc_bool_wrapper(method, useCustomJSC, ...) \
-  (useCustomJSC ?                                     \
-    facebook::react::customJSCWrapper() :             \
-    facebook::react::systemJSCWrapper()               \
+#define __jsc_ensure_bool(field) \
+  static_assert(std::is_same<typename std::decay<decltype(field)>::type, bool>::value, "useCustomJSC must be bool");
+#define __jsc_bool_wrapper(method, useCustomJSC, ...)    \
+  ([]{ __jsc_ensure_bool(useCustomJSC) }, useCustomJSC ? \
+    facebook::react::customJSCWrapper() :                \
+    facebook::react::systemJSCWrapper()                  \
   )->method(__VA_ARGS__)
 
 // Used for wrapping properties
@@ -75,8 +77,9 @@ jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
+#define JSC_FBJSContextStartGCTimers(...) __jsc_wrapper(FBJSContextStartGCTimers, __VA_ARGS__)
 
-jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup)
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup FBJSContextStartGCTimers)
 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
@@ -184,7 +187,8 @@ jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
 #define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-jsc_poison(JSInspectorGetInstance)
+// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSInspectorGetInstance)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)

@@ -14,16 +14,19 @@ var HeaderLinks = require('HeaderLinks');
 var Metadata = require('Metadata');
 var React = require('React');
 
-var Site = React.createClass({
-  render: function() {
+class Site extends React.Component {
+  render() {
     const path = Metadata.config.RN_DEPLOYMENT_PATH;
     const version = Metadata.config.RN_VERSION;
-    const algoliaVersion = version === 'next' ? 'master' : version;
-    var basePath = '/react-native/' + (path ? path + '/' : '');
+    const algoliaVersion = version === 'next'
+      ? 'master'
+      : version;
+    var basePath = '/react-native/' +
+      (path ? path + '/' : '');
     var currentYear = new Date().getFullYear();
 
     var title = this.props.title
-      ? this.props.title
+      ? this.props.title + ' - React Native'
       : 'React Native | A framework for building native apps using React';
 
     var metaTags = [
@@ -37,7 +40,10 @@ var Site = React.createClass({
         content: 'width=device-width',
       },
       // Facebook
-      { property: 'fb:app_id', content: '1677033832619985' },
+      {
+        property: 'fb:app_id',
+        content: '1677033832619985',
+      },
       { property: 'fb:admins', content: '121800083' },
       // Open Graph
       {
@@ -51,7 +57,9 @@ var Site = React.createClass({
       {
         property: 'og:url',
         content: 'https://facebook.github.io/react-native/' +
-          (this.props.path ? this.props.path : 'index.html'),
+          (this.props.path
+            ? this.props.path
+            : 'index.html'),
       },
       {
         property: 'og:image',
@@ -107,7 +115,9 @@ var Site = React.createClass({
       <html>
         <head>
           <title>{title}</title>
-          {metaTags.map((tag, index) => <meta key={index} {...tag} />)}
+          {metaTags.map((tag, index) => (
+            <meta key={index} {...tag} />
+          ))}
 
           <base href={basePath} />
 
@@ -116,8 +126,15 @@ var Site = React.createClass({
             href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"
           />
 
-          <link rel="shortcut icon" href="img/favicon.png?2" />
-          <link rel="stylesheet" href="css/react-native.css" />
+          <link
+            rel="shortcut icon"
+            href="img/favicon.png?2"
+          />
+          <link
+            rel="stylesheet"
+            href="css/react-native.css"
+          />
+          <link rel="stylesheet" href="css/prism.css" />
 
           <link
             rel="alternate"
@@ -131,7 +148,10 @@ var Site = React.createClass({
             type="text/css"
           />
 
-          <script type="text/javascript" src="//use.typekit.net/vqa1hcx.js" />
+          <script
+            type="text/javascript"
+            src="//use.typekit.net/vqa1hcx.js"
+          />
           <script type="text/javascript">
             {'try{Typekit.load();}catch(e){}'}
           </script>
@@ -154,7 +174,10 @@ var Site = React.createClass({
                   <img src="img/header_logo.png" />
                   React Native
                 </a>
-                <a className="nav-version" href="/react-native/versions.html">
+                <a
+                  className="nav-version"
+                  href="/react-native/versions.html"
+                >
                   {version}
                 </a>
                 <HeaderLinks section={this.props.section} />
@@ -165,7 +188,10 @@ var Site = React.createClass({
 
             <footer className="nav-footer">
               <section className="sitemap">
-                <a href="/react-native" className="nav-home">
+                <a
+                  href="/react-native"
+                  className="nav-home"
+                >
                   <img
                     src="img/header_logo.png"
                     alt="React Native"
@@ -175,46 +201,74 @@ var Site = React.createClass({
                 </a>
                 <div>
                   <h5><a href="docs/">Docs</a></h5>
-                  <a href="docs/getting-started.html">Getting Started</a>
-                  <a href="docs/tutorial.html">Tutorial</a>
-                  <a href="docs/integration-with-existing-apps.html">
-                    Integration With Existing Apps
+                  <a href="docs/getting-started.html">
+                    Getting Started
                   </a>
-                  <a href="docs/more-resources.html">More Resources</a>
+                  <a href="docs/tutorial.html">Learn the Basics</a>
+                  <a
+                    href="docs/components-and-apis.html"
+                  >
+                    Components and APIs
+                  </a>
+                  <a href="docs/more-resources.html">
+                    More Resources
+                  </a>
                 </div>
                 <div>
-                  <h5><a href="/react-native/support.html">Community</a></h5>
-                  <a href="/react-native/showcase.html">Showcase</a>
+                  <h5>
+                    <a href="/react-native/support.html">
+                      Community
+                    </a>
+                  </h5>
+                  <a href="/react-native/showcase.html">
+                    Who's using React Native?
+                  </a>
                   <a
                     href="http://www.meetup.com/topics/react-native/"
-                    target="_blank">
-                    Upcoming Events
+                    target="_blank"
+                  >
+                    Meetups
                   </a>
                   <a
                     href="https://www.facebook.com/groups/react.native.community"
-                    target="_blank">
+                    target="_blank"
+                  >
                     Facebook Group
                   </a>
-                  <a href="https://twitter.com/reactnative" target="_blank">
+                  <a
+                    href="https://twitter.com/reactnative"
+                    target="_blank"
+                  >
                     Twitter
                   </a>
                 </div>
                 <div>
-                  <h5><a href="/react-native/support.html">Help</a></h5>
+                  <h5>
+                    <a href="/react-native/support.html">
+                      Help
+                    </a>
+                  </h5>
                   <a
                     href="http://stackoverflow.com/questions/tagged/react-native"
-                    target="_blank">
+                    target="_blank"
+                  >
                     Stack Overflow
                   </a>
-                  <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">
+                  <a
+                    href="https://discord.gg/0ZcbPKXt5bZjGY5n"
+                  >
                     Reactiflux Chat
                   </a>
-                  <a href="/react-native/versions.html" target="_blank">
+                  <a
+                    href="/react-native/versions.html"
+                    target="_blank"
+                  >
                     Latest Releases
                   </a>
                   <a
                     href="https://react-native.canny.io/feature-requests"
-                    target="_blank">
+                    target="_blank"
+                  >
                     Feature Requests
                   </a>
                 </div>
@@ -222,13 +276,30 @@ var Site = React.createClass({
                   <h5>More</h5>
                   <a href="/react-native/blog">Blog</a>
                   <a
-                    href="https://github.com/facebook/react-native"
-                    target="_blank">
-                    GitHub
-                  </a>
-                  <a href="http://facebook.github.io/react/" target="_blank">
+                    href="http://facebook.github.io/react/"
+                    target="_blank"
+                  >
                     React
                   </a>
+                  <a
+                    href="https://github.com/facebook/react-native"
+                    target="_blank"
+                  >
+                    GitHub
+                  </a>
+                  <div className="githubButton">
+                    <a
+                      className="github-button"
+                      href="https://github.com/facebook/react-native"
+                      data-icon="octicon-star"
+                      data-count-href="/facebook/react-native/stargazers"
+                      data-count-api="/repos/facebook/react-native#stargazers_count"
+                      data-count-aria-label="# stargazers on GitHub"
+                      aria-label="Star facebook/react-native on GitHub"
+                    >
+                      Star
+                    </a>
+                  </div>
                 </div>
               </section>
               <section className="newsletter">
@@ -240,10 +311,13 @@ var Site = React.createClass({
                     name="mc-embedded-subscribe-form"
                     className="validate"
                     target="_blank"
-                    noValidate>
+                    noValidate
+                  >
                     <div id="mc_embed_signup_scroll">
                       <label htmlFor="mce-EMAIL">
-                        <h5>Get the React Native Newsletter</h5>
+                        <h5>
+                          Get the React Native Newsletter
+                        </h5>
                       </label>
                       <input
                         type="email"
@@ -255,8 +329,12 @@ var Site = React.createClass({
                         required
                       />
                       <div
-                        style={{ position: 'absolute', left: '-5000px' }}
-                        aria-hidden="true">
+                        style={{
+                          position: 'absolute',
+                          left: '-5000px',
+                        }}
+                        aria-hidden="true"
+                      >
                         <input
                           type="text"
                           name="b_db0dd948e2b729ee62625b1a8_47cd41008f"
@@ -281,7 +359,8 @@ var Site = React.createClass({
               <a
                 href="https://code.facebook.com/projects/"
                 target="_blank"
-                className="fbOpenSource">
+                className="fbOpenSource"
+              >
                 <img
                   src="img/oss_logo.png"
                   alt="Facebook Open Source"
@@ -335,10 +414,19 @@ var Site = React.createClass({
               __html: "(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';}(jQuery));var $mcj = jQuery.noConflict(true);",
             }}
           />
-          <script type="text/javascript" src="https://snack.expo.io/embed.js" />
+          <script
+            type="text/javascript"
+            src="https://snack.expo.io/embed.js"
+          />
+          <script
+            async
+            defer
+            src="https://buttons.github.io/buttons.js"
+          />
         </body>
       </html>
     );
-  },
-});
+  }
+}
+
 module.exports = Site;

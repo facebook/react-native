@@ -9,8 +9,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const getProjectDependencies = require('../getProjectDependencies');
 const path = require('path');
 

@@ -4,8 +4,8 @@ title: Timers
 layout: docs
 category: Guides
 permalink: docs/timers.html
-next: javascript-environment
-previous: accessibility
+next: debugging
+previous: improvingux
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
@@ -64,7 +64,7 @@ This library does not ship with React Native - in order to use it on your projec
 ```javascript
 import TimerMixin from 'react-timer-mixin';
 
-var Component = React.createClass({
+var Component = createReactClass({
   mixins: [TimerMixin],
   componentDidMount: function() {
     this.setTimeout(

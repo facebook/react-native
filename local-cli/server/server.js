@@ -48,9 +48,6 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
       type: 'initialize_packager_done',
     });
   };
-
-  /* $FlowFixMe: we would have either to invariant() everything, or to
-   * auto-generate CLI args Flow types. */
   const runServerArgs: RunServerArgs = args;
   /* $FlowFixMe: ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
@@ -104,6 +101,12 @@ module.exports = {
       return null;
     },
   }, {
+    command: '--max-workers [number]',
+    description: 'Specifies the maximum number of workers the worker-pool ' +
+      'will spawn for transforming files. This defaults to the number of the ' +
+      'cores available on your machine.',
+    parse: (workers: string) => Number(workers),
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
@@ -121,5 +124,14 @@ module.exports = {
   }, {
     command: '--verbose',
     description: 'Enables logging',
+  }, {
+    command: '--https',
+    description: 'Enables https connections to the server',
+  }, {
+    command: '--key [path]',
+    description: 'Path to custom SSL key',
+  }, {
+    command: '--cert [path]',
+    description: 'Path to custom SSL cert',
   }],
 };

@@ -230,14 +230,20 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processArguments")
       .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
       .flush();
-    mArgumentsProcessed = true;
-    mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
-    mSignature = buildSignature(mMethod, mParameterTypes, (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
-    // Since native methods are invoked from a message queue executed on a single thread, it is
-    // safe to allocate only one arguments object per method that can be reused across calls
-    mArguments = new Object[mParameterTypes.length];
-    mJSArgumentsNeeded = calculateJSArgumentsNeeded();
-    com.facebook.systrace.Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    try {
+      mArgumentsProcessed = true;
+      mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
+      mSignature = buildSignature(
+          mMethod,
+          mParameterTypes,
+          (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
+      // Since native methods are invoked from a message queue executed on a single thread, it is
+      // safe to allocate only one arguments object per method that can be reused across calls
+      mArguments = new Object[mParameterTypes.length];
+      mJSArgumentsNeeded = calculateJSArgumentsNeeded();
+    } finally {
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+    }
   }
 
   public Method getMethod() {
@@ -368,7 +374,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
         throw new RuntimeException("Could not invoke " + traceName, ite);
       }
     } finally {
-      com.facebook.systrace.Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }
 

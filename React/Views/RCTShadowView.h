@@ -13,6 +13,7 @@
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
 
+@class RCTRootShadowView;
 @class RCTSparseArray;
 
 typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
@@ -50,6 +51,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
+@property (nonatomic, weak, readonly) RCTRootShadowView *rootView;
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
@@ -217,9 +219,22 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Return whether or not this node acts as a leaf node in the eyes of Yoga.
+ * Returns whether or not this view can have any subviews.
+ * Adding/inserting a child view to leaf view (`canHaveSubviews` equals `NO`)
+ * will throw an error.
+ * Return `NO` for components which must not have any descendants
+ * (like <Image>, for example.)
+ * Defaults to `YES`. Can be overridden in subclasses.
+ * Don't confuse this with `isYogaLeafNode`.
+ */
+- (BOOL)canHaveSubviews;
+
+/**
+ * Returns whether or not this node acts as a leaf node in the eyes of Yoga.
  * For example `RCTShadowText` has children which it does not want Yoga
  * to lay out so in the eyes of Yoga it is a leaf node.
+ * Defaults to `NO`. Can be overridden in subclasses.
+ * Don't confuse this with `canHaveSubviews`.
  */
 - (BOOL)isYogaLeafNode;
 

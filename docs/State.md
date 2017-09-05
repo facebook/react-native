@@ -53,7 +53,7 @@ export default class BlinkApp extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('BlinkApp', () => BlinkApp);
+AppRegistry.registerComponent('AwesomeProject', () => BlinkApp);
 ```
 
 In a real application, you probably won't be setting state with a timer. You might set state when you have new data arrive from the server, or from user input. You can also use a state container like [Redux](http://redux.js.org/index.html) to control your data flow. In that case you would use Redux to modify your state rather than calling `setState` directly.

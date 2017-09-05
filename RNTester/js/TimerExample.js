@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   AlertIOS,
@@ -29,7 +30,7 @@ function burnCPU(milliseconds) {
   while (performanceNow() < (start + milliseconds)) {}
 }
 
-class RequestIdleCallbackTester extends React.Component {
+class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
   state = {
     message: '-',
   };
@@ -50,6 +51,10 @@ class RequestIdleCallbackTester extends React.Component {
 
         <RNTesterButton onPress={this._run.bind(this, true)}>
           Burn CPU inside of requestIdleCallback
+        </RNTesterButton>
+
+        <RNTesterButton onPress={this._runWithTimeout.bind(this)}>
+          Run requestIdleCallback with timeout option
         </RNTesterButton>
 
         <RNTesterButton onPress={this._runBackground}>
@@ -78,6 +83,16 @@ class RequestIdleCallbackTester extends React.Component {
     });
   };
 
+  _runWithTimeout = () => {
+    cancelIdleCallback(this._idleTimer);
+    this._idleTimer = requestIdleCallback((deadline) => {
+      this.setState({
+        message: `${deadline.timeRemaining()}ms remaining in frame, it did timeout: ${deadline.didTimeout ? 'yes' : 'no'}`
+      });
+    }, { timeout: 100 });
+    burnCPU(100);
+  };
+
   _runBackground = () => {
     cancelIdleCallback(this._idleTimer);
     const handler = (deadline) => {
@@ -97,7 +112,8 @@ class RequestIdleCallbackTester extends React.Component {
   };
 }
 
-var TimerTester = React.createClass({
+var TimerTester = createReactClass({
+  displayName: 'TimerTester',
   mixins: [TimerMixin],
 
   _ii: 0,
@@ -232,7 +248,7 @@ exports.examples = [
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
     render: function(): React.Element<any> {
-      class IntervalExample extends React.Component {
+      class IntervalExample extends React.Component<{}, $FlowFixMeState> {
         state = {
           showTimer: true,
         };

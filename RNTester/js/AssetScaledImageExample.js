@@ -20,7 +20,7 @@ var {
   ScrollView
 } = ReactNative;
 
-class AssetScaledImageExample extends React.Component {
+class AssetScaledImageExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     asset: this.props.asset
   };

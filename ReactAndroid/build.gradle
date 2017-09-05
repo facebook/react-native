@@ -168,7 +168,9 @@ def findNdkBuildFullPath() {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
     def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
-            plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder()
+            plugins.getPlugin('com.android.library').hasProperty('sdkHandler') ?
+                    plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder() :
+                    android.ndkDirectory.absolutePath
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
@@ -187,7 +189,7 @@ def getNdkBuildFullPath() {
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
             "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
             "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
             null)
     }
@@ -195,7 +197,7 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/xreact')
+    inputs.file('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
@@ -279,12 +281,12 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.0.1'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
+    compile 'com.facebook.fresco:fresco:1.3.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
     compile 'com.facebook.soloader:soloader:0.1.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'org.webkit:android-jsc:r174650'
 

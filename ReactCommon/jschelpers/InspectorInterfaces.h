@@ -29,7 +29,7 @@ struct InspectorPage {
 
 class IRemoteConnection : public IDestructible {
 public:
-  virtual ~IRemoteConnection() = 0;
+  __attribute__((visibility("default"))) virtual ~IRemoteConnection() = 0;
   virtual void onMessage(std::string message) = 0;
   virtual void onDisconnect() = 0;
 };

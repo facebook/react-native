@@ -119,7 +119,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   status: number = 0;
   timeout: number = 0;
   responseURL: ?string;
-  withCredentials: boolean = false
+  withCredentials: boolean = true
 
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
@@ -394,7 +394,9 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
 
   _clearSubscriptions(): void {
     (this._subscriptions || []).forEach(sub => {
-      sub.remove();
+      if (sub) {
+        sub.remove();
+      }
     });
     this._subscriptions = [];
   }

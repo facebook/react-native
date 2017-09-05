@@ -22,6 +22,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaOverflow;
@@ -452,6 +453,23 @@ public class ReactShadowNode {
     return mTotalNativeChildren;
   }
 
+  public boolean isDescendantOf(ReactShadowNode ancestorNode) {
+    ReactShadowNode parentNode = getParent();
+
+    boolean isDescendant = false;
+
+    while (parentNode != null) {
+      if (parentNode == ancestorNode) {
+        isDescendant = true;
+        break;
+      } else {
+        parentNode = parentNode.getParent();
+      }
+    }
+
+    return isDescendant;
+  }
+
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
    * rooted at this node for the given child. Put another way, this returns the number of native
@@ -763,6 +781,10 @@ public class ReactShadowNode {
 
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
+  }
+
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mYogaNode.setBaselineFunction(baselineFunction);
   }
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {

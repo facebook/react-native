@@ -15,6 +15,7 @@ var Animated = require('Animated');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var PropTypes = require('prop-types');
 var Touchable = require('Touchable');
 
@@ -35,7 +36,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * interesting interactions such as `handleTouchablePress`.
  */
 // $FlowFixMe(>=0.41.0)
-var TouchableBounce = React.createClass({
+var TouchableBounce = createReactClass({
+  displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
@@ -137,12 +139,30 @@ var TouchableBounce = React.createClass({
   render: function(): React.Element<any> {
     return (
       <Animated.View
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityLabel={this.props.accessibilityLabel}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityComponentType={this.props.accessibilityComponentType}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityTraits={this.props.accessibilityTraits}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         nativeID={this.props.nativeID}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}

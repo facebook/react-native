@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 const GRAY = '#999999';
@@ -36,7 +37,11 @@ type DefaultProps = {
 /**
  * Displays a circular loading indicator.
  */
-const ActivityIndicator = React.createClass({
+/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+ * suppresses an error when upgrading Flow's support for React. To see the
+ * error delete this comment and run Flow. */
+const ActivityIndicator = createReactClass({
+  displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
 
   propTypes: {
