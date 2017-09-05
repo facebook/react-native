@@ -17,7 +17,7 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 - [Getting Help](#getting-help)
 - [Documentation](#documentation)
 - [Upgrading](#upgrading)
-- [Opening Issues](#opening-issues)
+- [Opening Issues](CONTRIBUTING.md#reporting-new-issues)
 - [Contributing](#contributing)
 - [License](#license)
 
