@@ -90,3 +90,12 @@ jobs:
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=1
+
+# Workflows enables us to run multiple jobs in parallel
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - test-node-8
+      - test-node-6
+      - test-node-4
