@@ -39,6 +39,7 @@ type DependencyOptions = {|
   +platform: ?string,
   +recursive: boolean,
   +rootEntryFile: string,
+  +bundlingOptions?: Object,
 |};
 
 /**
@@ -55,7 +56,7 @@ type PackagerServer<TModule> = {
   ): Promise<HMRBundle>,
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<TModule>>,
   getModuleForPath(entryFile: string): Promise<TModule>,
-  getShallowDependencies(options: DependencyOptions): Promise<Array<TModule>>,
+  getShallowDependencies(options: DependencyOptions): Promise<Array<string>>,
   setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed): void,
 };
 
@@ -85,7 +86,7 @@ function attachHMRServer<TModule: Moduleish>(
     bundleEntry: string,
     dependenciesCache: Array<string>,
     dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<TModule>},
+    shallowDependencies: {[string]: Array<string>},
     inverseDependenciesCache: mixed,
   |};
 
@@ -107,7 +108,7 @@ function attachHMRServer<TModule: Moduleish>(
   async function getDependencies(platform: string, bundleEntry: string): Promise<{
     dependenciesCache: Array<string>,
     dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<TModule>},
+    shallowDependencies: {[string]: Array<string>},
     inverseDependenciesCache: mixed,
     resolutionResponse: ResolutionResponse<TModule>,
   }> {
@@ -129,7 +130,7 @@ function attachHMRServer<TModule: Moduleish>(
     const deps: Array<{
       path: string,
       name?: string,
-      deps: Array<TModule>,
+      deps: Array<string>,
     }> = await Promise.all(response.dependencies.map(async (dep: TModule) => {
       const depName = await dep.getName();
 
@@ -144,6 +145,7 @@ function attachHMRServer<TModule: Moduleish>(
         minify: false,
         platform: platform,
         recursive: true,
+        bundlingOptions: response.options,
       });
 
       return {

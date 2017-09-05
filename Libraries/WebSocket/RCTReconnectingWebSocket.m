@@ -101,6 +101,11 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   });
 }
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+  [self.delegate webSocketDidOpen:webSocket];
+}
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [self reconnect];

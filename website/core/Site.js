@@ -26,7 +26,7 @@ class Site extends React.Component {
     var currentYear = new Date().getFullYear();
 
     var title = this.props.title
-      ? this.props.title
+      ? this.props.title + ' - React Native'
       : 'React Native | A framework for building native apps using React';
 
     var metaTags = [

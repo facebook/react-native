@@ -12,9 +12,9 @@ cxx_library(
         "//instrumentation_tests/com/facebook/react/...",
     ],
     deps = [
+        "xplat//folly:molly",
         "//native:base",
         "//native/fb:fb",
-        "//xplat/folly:molly",
         react_native_xplat_target("cxxreact:module"),
     ],
 )

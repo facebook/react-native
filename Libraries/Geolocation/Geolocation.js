@@ -26,6 +26,10 @@ const PermissionsAndroid = require('PermissionsAndroid');
 var subscriptions = [];
 var updatesEnabled = false;
 
+type GeoConfiguration = {
+  skipPermissionRequests: bool;
+}
+
 type GeoOptions = {
   timeout?: number,
   maximumAge?: number,
@@ -72,8 +76,33 @@ type GeoOptions = {
  * Android API >= 18 Positions will also contain a `mocked` boolean to indicate if position
  * was created from a mock provider.
  *
+ * <p>
+ *   Android API >= 23 Requires an additional step to check for, and request
+ *   the ACCESS_FINE_LOCATION permission using
+ *   the <a href="https://facebook.github.io/react-native/docs/permissionsandroid.html" target="_blank">PermissionsAndroid API</a>.
+ *   Failure to do so may result in a hard crash.
+ * </p>
  */
 var Geolocation = {
+
+  /*
+    * Sets configuration options that will be used in all location requests.
+    *
+    * ### Options
+    *
+    * #### iOS
+    *
+    * - `skipPermissionRequests` - defaults to `false`, if `true` you must request permissions
+    * before using Geolocation APIs.
+    *
+    */
+  setRNConfiguration: function(
+    config: GeoConfiguration
+  ) {
+    if (RCTLocationObserver.setConfiguration) {
+      RCTLocationObserver.setConfiguration(config);
+    }
+  },
 
   /*
    * Request suitable Location permission based on the key configured on pList.

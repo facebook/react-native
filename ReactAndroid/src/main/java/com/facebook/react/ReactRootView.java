@@ -233,7 +233,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
-      mShouldLogContentAppeared = true;
 
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
@@ -307,6 +306,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       if (appProperties != null) {
         appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
       }
+
+      mShouldLogContentAppeared = true;
 
       String jsAppModuleName = getJSModuleName();
       catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);

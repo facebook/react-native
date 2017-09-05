@@ -467,12 +467,13 @@ var ScrollResponderMixin = {
 
   /**
    * Displays the scroll indicators momentarily.
-   *
-   * @platform ios
    */
   scrollResponderFlashScrollIndicators: function() {
-    invariant(ScrollViewManager && ScrollViewManager.flashScrollIndicators, 'flashScrollIndicators is not implemented');
-    ScrollViewManager.flashScrollIndicators(this.scrollResponderGetScrollableNode());
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      []
+    );
   },
 
   /**

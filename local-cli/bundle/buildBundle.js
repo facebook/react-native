@@ -106,6 +106,7 @@ function buildBundle(
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
+      useDeltaBundler: false,
       watch: false,
       workerPath: config.getWorkerPath && config.getWorkerPath(),
     };
