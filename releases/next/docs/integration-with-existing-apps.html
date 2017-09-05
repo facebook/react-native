@@ -97,7 +97,7 @@
   <span class="token string">&quot;scripts&quot;</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
     <span class="token string">&quot;start&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;node node_modules/react-native/local-cli/cli.js start&quot;</span>
   <span class="token punctuation">}</span>
-<span class="token punctuation">}</span></div><p>Next, you will install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:</p><div class="prism language-javascript">$ npm install <span class="token operator">--</span>save react react<span class="token operator">-</span>native</div><p>This will create a new <code>/node_modules</code> folder in your project&#x27;s root directory. This folder stores all the JavaScript dependencies required to build your project.</p><span><block class="objc swift" />
+<span class="token punctuation">}</span></div><p>Next, you will install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:</p><div class="prism language-javascript">$ npm install <span class="token operator">--</span>save react@<span class="token number">16.0</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token operator">-</span>beta<span class="token number">.5</span> react<span class="token operator">-</span>native</div><blockquote><p>Make sure you use the same React version as specified in the <a href="https://github.com/facebook/react-native/blob/master/package.json" target="_blank">React Native package.json</a> for your release. This will only be necessary as long as React Native depends on a pre-release version of React.</p></blockquote><p>This will create a new <code>/node_modules</code> folder in your project&#x27;s root directory. This folder stores all the JavaScript dependencies required to build your project.</p><span><block class="objc swift" />
 
 </span><h3><a class="anchor" name="3-install-cocoapods"></a>3. Install CocoaPods <a class="hash-link" href="docs/integration-with-existing-apps.html#3-install-cocoapods">#</a></h3><p><a href="http://cocoapods.org" target="_blank">CocoaPods</a> is a package management tool for iOS and macOS development. We use it to add the actual React Native framework code locally into your current project.</p><p>We recommend installing CocoaPods using <a href="http://brew.sh/" target="_blank">Homebrew</a>.</p><div class="prism language-javascript">$ brew install cocoapods</div><blockquote><p>It is technically possible not to use CocoaPods, but that would require manual library and linker additions that would overly complicate this process.</p></blockquote><span><block class="objc swift" />
 
@@ -282,6 +282,7 @@ $ react<span class="token operator">-</span>native run<span class="token operato
 </span><p>You can examine the code that added the React Native screen to our sample app on <a href="https://github.com/JoelMarcey/swift-2048/commit/13272a31ee6dd46dc68b1dcf4eaf16c1a10f5229" target="_blank">GitHub</a>.</p><span><block class="android" />
 
 </span><h2><a class="anchor" name="adding-react-native-to-your-app"></a>Adding React Native to your app <a class="hash-link" href="docs/integration-with-existing-apps.html#adding-react-native-to-your-app">#</a></h2><h3><a class="anchor" name="configuring-maven"></a>Configuring maven <a class="hash-link" href="docs/integration-with-existing-apps.html#configuring-maven">#</a></h3><p>Add the React Native dependency to your app&#x27;s <code>build.gradle</code> file:</p><div class="prism language-javascript">dependencies <span class="token punctuation">{</span>
+    compile <span class="token string">&#x27;com.android.support:appcompat-v7:23.0.1&#x27;</span>
     <span class="token operator">...</span>
     compile <span class="token string">&quot;com.facebook.react:react-native:+&quot;</span><span class="token comment" spellcheck="true"> // From node_modules.
 </span><span class="token punctuation">}</span></div><blockquote><p>If you want to ensure that you are always using a specific React Native version in your native build, replace <code>+</code> with an actual React Native version you&#x27;ve downloaded from <code>npm</code>.</p></blockquote><p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block:</p><div class="prism language-javascript">allprojects <span class="token punctuation">{</span>
@@ -289,7 +290,7 @@ $ react<span class="token operator">-</span>native run<span class="token operato
         <span class="token operator">...</span>
         maven <span class="token punctuation">{</span>
            <span class="token comment" spellcheck="true"> // All of React Native (JS, Android binaries) is installed from npm
-</span>            url <span class="token string">&quot;$rootDir/node_modules/react-native/android&quot;</span>
+</span>            url <span class="token string">&quot;$rootDir/../node_modules/react-native/android&quot;</span>
         <span class="token punctuation">}</span>
     <span class="token punctuation">}</span>
     <span class="token operator">...</span>
@@ -392,7 +393,7 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
     <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">onDestroy<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token keyword">if</span> <span class="token punctuation">(</span>mReactInstanceManager <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">onHostDestroy<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">onHostDestroy<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><p>We also need to pass back button events to React Native:</p><div class="prism language-java">@Override
  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
