@@ -160,7 +160,7 @@ Next, you will install the `react` and `react-native` packages. Open a terminal 
 $ npm install --save react@16.0.0-beta.5 react-native
 ```
 
-> Make sure you use the same React version as specified in the [React Native dependencies](https://github.com/facebook/react-native/blob/master/package.json). As of this writing, that would be `16.0.0-beta.5`. This will only be necessary as long as React Native depends on a beta version of React.
+> Make sure you use the same React version as specified in the [React Native package.json](https://github.com/facebook/react-native/blob/master/package.json) for your release. This will only be necessary as long as React Native depends on a pre-release version of React.
 
 This will create a new `/node_modules` folder in your project's root directory. This folder stores all the JavaScript dependencies required to build your project.
 
