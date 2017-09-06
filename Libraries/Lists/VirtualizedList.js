@@ -26,16 +26,31 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
 import type {StyleObj} from 'StyleSheetTypes';
-import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
+import type {
+  ViewabilityConfig,
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+} from 'ViewabilityHelper';
 
 type Item = any;
 
 type renderItemType = (info: any) => ?React.Element<any>;
+
+type ViewabilityHelperCallbackTuple = {
+  viewabilityHelper: ViewabilityHelper,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
 
 type RequiredProps = {
   renderItem: renderItemType,
@@ -161,6 +176,11 @@ type OptionalProps = {
    */
   updateCellsBatchingPeriod: number,
   viewabilityConfig?: ViewabilityConfig,
+  /**
+   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
+   * will be called when its corresponding ViewabilityConfig's conditions are met.
+   */
+  viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
   /**
    * Determines the maximum number of items rendered outside of the visible area, in units of
    * visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
@@ -311,7 +331,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   recordInteraction() {
-    this._viewabilityHelper.recordInteraction();
+    this._viewabilityTuples.forEach(t => {
+      t.viewabilityHelper.recordInteraction();
+    });
     this._updateViewableItems(this.props.data);
   }
 
@@ -415,9 +437,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
     );
-    this._viewabilityHelper = new ViewabilityHelper(
-      this.props.viewabilityConfig,
-    );
+
+    if (this.props.viewabilityConfigCallbackPairs) {
+      this._viewabilityTuples = this.props.viewabilityConfigCallbackPairs.map(
+        pair => ({
+          viewabilityHelper: new ViewabilityHelper(pair.viewabilityConfig),
+          onViewableItemsChanged: pair.onViewableItemsChanged,
+        }),
+      );
+    } else if (this.props.onViewableItemsChanged) {
+      this._viewabilityTuples.push({
+        viewabilityHelper: new ViewabilityHelper(this.props.viewabilityConfig),
+        onViewableItemsChanged: this.props.onViewableItemsChanged,
+      });
+    }
+
     this.state = {
       first: this.props.initialScrollIndex || 0,
       last:
@@ -444,7 +478,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentWillUnmount() {
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose();
-    this._viewabilityHelper.dispose();
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.dispose();
+    });
     this._fillRateHelper.deactivateAndFlush();
     clearTimeout(this._initialScrollIndexTimeout);
   }
@@ -770,7 +806,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellLength = 0;
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
-  _viewabilityHelper: ViewabilityHelper;
+  _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1062,7 +1098,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onScrollBeginDrag = (e): void => {
-    this._viewabilityHelper.recordInteraction();
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.recordInteraction();
+    });
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 
@@ -1195,19 +1233,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateViewableItems(data: any) {
-    const {getItemCount, onViewableItemsChanged} = this.props;
-    if (!onViewableItemsChanged) {
-      return;
-    }
-    this._viewabilityHelper.onUpdate(
-      getItemCount(data),
-      this._scrollMetrics.offset,
-      this._scrollMetrics.visibleLength,
-      this._getFrameMetrics,
-      this._createViewToken,
-      onViewableItemsChanged,
-      this.state,
-    );
+    const {getItemCount} = this.props;
+
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.onUpdate(
+        getItemCount(data),
+        this._scrollMetrics.offset,
+        this._scrollMetrics.visibleLength,
+        this._getFrameMetrics,
+        this._createViewToken,
+        tuple.onViewableItemsChanged,
+        this.state,
+      );
+    });
   }
 }
 

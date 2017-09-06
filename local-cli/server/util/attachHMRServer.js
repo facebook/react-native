@@ -110,6 +110,9 @@ function attachHMRServer<TModule: Moduleish>(
     dependenciesModulesCache: {[mixed]: TModule},
     shallowDependencies: {[string]: Array<string>},
     inverseDependenciesCache: mixed,
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     resolutionResponse: ResolutionResponse<TModule>,
   }> {
     const response = await packagerServer.getDependencies({
@@ -391,6 +394,9 @@ function attachHMRServer<TModule: Moduleish>(
     }
   }
 
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
   const WebSocketServer = require('ws').Server;
   const wss = new WebSocketServer({
     server: httpServer,

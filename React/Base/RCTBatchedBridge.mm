@@ -63,6 +63,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 @synthesize performanceLogger = _performanceLogger;
+@synthesize bridgeDescription = _bridgeDescription;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {

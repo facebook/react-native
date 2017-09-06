@@ -157,8 +157,10 @@ Go to the root directory for your project and create a new `package.json` file w
 Next, you will install the `react` and `react-native` packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:
 
 ```
-$ npm install --save react react-native
+$ npm install --save react@16.0.0-beta.5 react-native
 ```
+
+> Make sure you use the same React version as specified in the [React Native package.json](https://github.com/facebook/react-native/blob/master/package.json) for your release. This will only be necessary as long as React Native depends on a pre-release version of React.
 
 This will create a new `/node_modules` folder in your project's root directory. This folder stores all the JavaScript dependencies required to build your project.
 
@@ -542,6 +544,7 @@ Add the React Native dependency to your app's `build.gradle` file:
 
 ```
 dependencies {
+    compile 'com.android.support:appcompat-v7:23.0.1'
     ...
     compile "com.facebook.react:react-native:+" // From node_modules.
 }
@@ -557,7 +560,7 @@ allprojects {
         ...
         maven {
             // All of React Native (JS, Android binaries) is installed from npm
-            url "$rootDir/node_modules/react-native/android"
+            url "$rootDir/../node_modules/react-native/android"
         }
     }
     ...
@@ -738,7 +741,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.onHostDestroy(this);
     }
 }
 ```
