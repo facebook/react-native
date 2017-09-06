@@ -54,12 +54,10 @@ jobs:
   test-node-8:
       working_directory: ~/react-native
       docker:
-        - image: circleci/node:8.1.4
+        - image: circleci/node:8
       steps:
         - checkout
-        - restore-cache: *restore-cache
-        - npm install
-        - save-cache: *save-cache
+        - run: npm install --no-package-lock
         - run: |
             npm run lint
             npm run flow -- check
@@ -70,22 +68,18 @@ jobs:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - restore-cache: *restore-cache
-      - npm install
-      - save-cache: *save-cache
+      - run: npm install --no-package-lock
       - run: |
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=1
   test-node-4:
-    working_directory: ~/jest
+    working_directory: ~/react-native
     docker:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - restore-cache: *restore-cache
-      - npm install
-      - save-cache: *save-cache
+      - run: npm install --no-package-lock
       - run: |
           npm run lint
           npm run flow -- check
