@@ -141,7 +141,7 @@ jobs:
           name: Install Buck Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant g++ python2 -y
+            sudo apt-get install ant g++ -y
       - run:
           name: Install Buck
           command: |
