@@ -45,7 +45,7 @@ aliases:
       - v1-buck-dependencies-{{ .Branch }}
   - &save-cache-buck
     paths:
-     - "/home/circleci/buck"
+     - "~/buck"
     key: v1-buck-dependencies-{{ .Branch }}
 
 version: 2
@@ -109,7 +109,6 @@ jobs:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
-      - BASH_ENV: ~/.bashrc
     steps:
       - checkout
       - attach_workspace:
@@ -118,7 +117,7 @@ jobs:
           name: Check for JavaScript bundle
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JS bundle missing, verify build-js-bundle step"; exit 1
+              echo "JS bundle missing, verify build-js-bundle step"; exit 1;
             else
               echo "JS bundle found.";
             fi
@@ -126,11 +125,12 @@ jobs:
       - run:
           name: Set up Buck
           command: |
-            if [[ ! -e /home/circleci/buck ]]; then
-              git clone https://github.com/facebook/buck.git /home/circleci/buck;
+            if [[ ! -e ~/buck ]]; then
+              git clone https://github.com/facebook/buck.git ~/buck;
             fi
-            echo 'export PATH=~/react-native/gradle-2.9/bin:/home/circleci/buck/bin:$PATH' >> $BASH_ENV
-            cd /home/circleci/buck && ant
+            echo 'export PATH=~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            cd ~/buck && ant
             buck --version
       - run:
           name: Install Android SDK and Android virtual device
