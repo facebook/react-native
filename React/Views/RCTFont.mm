@@ -33,42 +33,38 @@
 
 #endif
 
-static NSArray *fontNameOrdering = [NSArray arrayWithObjects:
-    @"normal",
-    @"ultralight",
-    @"thin",
-    @"light",
-    @"regular",
-    @"medium",
-    @"semibold",
-    @"bold",
-    @"heavy",
-    @"black",
-    nil];
-
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
-  static NSDictionary *nameToWeight;
+  static NSArray *fontNames;
+  static NSArray *fontWeights;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    nameToWeight = @{
-       @"normal": @(UIFontWeightRegular),
-       @"ultralight": @(UIFontWeightUltraLight),
-       @"thin": @(UIFontWeightThin),
-       @"light": @(UIFontWeightLight),
-       @"regular": @(UIFontWeightRegular),
-       @"medium": @(UIFontWeightMedium),
-       @"semibold": @(UIFontWeightSemibold),
-       @"bold": @(UIFontWeightBold),
-       @"heavy": @(UIFontWeightHeavy),
-       @"black": @(UIFontWeightBlack),
-       };
+    fontNames = @[@"normal",
+                  @"ultralight",
+                  @"thin",
+                  @"light",
+                  @"regular",
+                  @"medium",
+                  @"semibold",
+                  @"bold",
+                  @"heavy",
+                  @"black"];
+    fontWeights = @[@(UIFontWeightRegular),
+                    @(UIFontWeightUltraLight),
+                    @(UIFontWeightThin),
+                    @(UIFontWeightLight),
+                    @(UIFontWeightRegular),
+                    @(UIFontWeightMedium),
+                    @(UIFontWeightSemibold),
+                    @(UIFontWeightBold),
+                    @(UIFontWeightHeavy),
+                    @(UIFontWeightBlack)];
   });
-
-  for (NSString *name in fontNameOrdering) {
-    if ([font.fontName.lowercaseString hasSuffix:name]) {
-      return [nameToWeight[name] doubleValue];
+  
+  for (NSUInteger i = 0; i < fontNames.count; i++) {
+    if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
+      return [fontWeights[i] doubleValue];
     }
   }
 
