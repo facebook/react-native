@@ -12,6 +12,7 @@
   },
   "jest": {
     "transform": {
+      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
@@ -19,8 +20,7 @@
     ],
     "timers": "fake",
     "moduleNameMapper": {
-      "^React$": "<rootDir>/Libraries/react-native/React.js",
-      "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
+      "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
@@ -196,7 +196,7 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.53.0",
+    "flow-bin": "^0.54.0",
     "jest": "^21",
     "mock-fs": "^4.4.1",
     "prettier": "1.5.2",

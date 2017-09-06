@@ -13,15 +13,27 @@
 'use strict';
 
 require('../../setupBabel')();
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const ReactPackager = require('metro-bundler');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const Terminal = require('metro-bundler/src/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
 const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
 const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults')
   .providesModuleNodeModules;
 const fs = require('fs');
@@ -37,11 +49,17 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {ConfigT} from '../util/Config';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
 export type Args = {|
@@ -141,11 +159,15 @@ function getPackagerServer(args, config) {
       LogReporter = require(path.resolve(args.customLogReporterPath));
     }
   } else {
+    /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.54 was deployed. To see the error delete this
+     * comment and run Flow. */
     LogReporter = require('metro-bundler/src/lib/TerminalReporter');
   }
 
-  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
-   * instance of a net.Socket (a local socket, not network). */
+  /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+   * suppresses an error found when Flow v0.54 was deployed. To see the error
+   * delete this comment and run Flow. */
   const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),

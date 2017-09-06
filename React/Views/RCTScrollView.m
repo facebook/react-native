@@ -315,12 +315,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIEdgeInsets contentInset = self.contentInset;
   CGSize contentSize = self.contentSize;
-
-  CGSize boundsSize = self.bounds.size;
-
-  self.contentOffset = CGPointMake(
-    MAX(-contentInset.top, MIN(contentSize.width - boundsSize.width + contentInset.bottom, originalOffset.x)),
-    MAX(-contentInset.left, MIN(contentSize.height - boundsSize.height + contentInset.right, originalOffset.y)));
+  
+  // If contentSize has not been measured yet we can't check bounds.
+  if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
+    self.contentOffset = originalOffset;
+  } else {
+    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    CGSize boundsSize = self.bounds.size;
+    self.contentOffset = CGPointMake(
+      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
+      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+  }
 }
 
 #if !TARGET_OS_TV
