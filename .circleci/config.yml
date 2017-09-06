@@ -1,67 +1,66 @@
 aliases:
   - &restore-cache
     keys:
-      - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+      - v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - dependencies-{{ .Branch }}-
+      - v1-dependencies-{{ .Branch }}-
   - &save-cache
     paths:
       - node_modules
-    key: dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
 
   - &restore-cache-website
     keys:
-      - website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+      - v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
       # Fallback in case checksum fails
-      - website-dependencies-{{ .Branch }}-
+      - v1-website-dependencies-{{ .Branch }}-
   - &save-cache-website
     paths:
       - website/node_modules
-    key: website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+    key: v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
 
   - &restore-cache-danger
     keys:
-      - danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - danger-dependencies-{{ .Branch }}-
+      - v1-danger-dependencies-{{ .Branch }}-
   - &save-cache-danger
     paths:
       - danger/node_modules
-    key: danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+    key: v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
 
   - &restore-cache-android
     keys:
-      - android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - android-dependencies-{{ .Branch }}-
+      - v1-android-dependencies-{{ .Branch }}-
   - &save-cache-android
     paths:
      - "ReactAndroid/build/downloads"
-    key: android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
 # TODO: Pick file to checksum against
-      - buck-dependencies-{{ .Branch }}
+      - v1-buck-dependencies-{{ .Branch }}
   - &save-cache-buck
     paths:
      - "/home/ubuntu/buck"
-    key: buck-dependencies-{{ .Branch }}
-
+    key: v1-buck-dependencies-{{ .Branch }}
 
 version: 2
 jobs:
   test-node-8:
-      working_directory: ~/react-native
-      docker:
-        - image: circleci/node:8
-      steps:
-        - checkout
-        - run: npm install --no-package-lock
-        - run: |
-            npm run lint
-            npm run flow -- check
-            npm test -- --maxWorkers=1
+    working_directory: ~/react-native
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install --no-package-lock
+      - run: |
+          npm run lint
+          npm run flow -- check
+          npm test -- --maxWorkers=1
   test-node-6:
     working_directory: ~/react-native
     docker:
