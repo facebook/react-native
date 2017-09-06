@@ -134,7 +134,7 @@ jobs:
 # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Launch Android Virtual Device
-          command: $ANDROID_HOME/tools/emulator64 -avd testAVD -no-skin -no-audio -no-window
+          command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window
           background: true
 # Continue configuring dependencies while AVD boots.
       - run:
