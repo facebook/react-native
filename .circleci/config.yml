@@ -127,7 +127,7 @@ jobs:
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
       - run:
           name: Compile native libs for unit and integration tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1:
+          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
           no_output_timeout: 6m
       - run:
           name: Running unit tests
