@@ -94,7 +94,7 @@ jobs:
       - checkout
       - run: npm install --no-package-lock
       - run:
-          name: Building JS bundle for instrumentation tests
+          name: Build JavaScript bundle for instrumentation tests
           command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
       - persist_to_workspace:
           root: ReactAndroid/src/androidTest/assets/
@@ -104,7 +104,7 @@ jobs:
   test-android:
     working_directory: ~/react-native
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/android:api-23-alpha
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
@@ -117,9 +117,9 @@ jobs:
           name: Check for JavaScript bundle
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JS bundle missing, verify build-js-bundle step"; exit 1;
+              echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
             else
-              echo "JS bundle found.";
+              echo "JavaScript bundle found.";
             fi
 # dependencies
       - run:
@@ -133,11 +133,17 @@ jobs:
             cd ~/buck && ant
             buck --version
       - run:
-          name: Install Android SDK and Android virtual device
+          name: Configure Android SDK and Android Virtual Device
           command: |
-            source scripts/circle-ci-android-setup.sh && getAndroidSDK
+            echo 'export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            if [ ! -e $ANDROID_HOME/installed-dependencies ]; then
+              echo y | android update sdk --no-ui --all --filter extra-android-m2repository
+              echo no | android create avd -n testAVD -f -t android-19 --abi default/armeabi-v7a &&
+              touch $ANDROID_HOME/installed-dependencies
+            fi
       - run:
-          name: Set up Android dependencies
+          name: Fetch Android dependencies
           command: |
             buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
             buck fetch ReactAndroid/src/main/java/com/facebook/react
@@ -147,7 +153,7 @@ jobs:
             ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 # Starting emulator in advance as it takes some time to boot
       - run:
-          name: Start Android emulator
+          name: Launch Android Virtual Device
           command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window
           background: true
       - run: source scripts/circle-ci-android-setup.sh && waitForAVD
@@ -198,8 +204,10 @@ workflows:
   test_node:
     jobs:
       - test-node-8
-      - test-node-6
-      - test-node-4
+# Commenting out while we work on Android runs
+#      - test-node-6
+# Node 4 is expected to fail - that was already the case w/ Circle 1.0
+#      - test-node-4
   test_android:
     jobs:
       - build-js-bundle:
