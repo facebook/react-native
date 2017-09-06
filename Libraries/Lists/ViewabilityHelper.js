@@ -22,6 +22,14 @@ export type ViewToken = {
   section?: any,
 };
 
+export type ViewabilityConfigCallbackPair = {
+  viewabilityConfig: ViewabilityConfig,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
+
 export type ViewabilityConfig = {|
   /**
    * Minimum amount of time (in milliseconds) that an item must be physically viewable before the
@@ -256,6 +264,7 @@ class ViewabilityHelper {
       onViewableItemsChanged({
         viewableItems: Array.from(nextItems.values()),
         changed,
+        viewabilityConfig: this._config,
       });
     }
   }
