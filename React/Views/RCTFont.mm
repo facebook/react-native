@@ -61,7 +61,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
                     @(UIFontWeightHeavy),
                     @(UIFontWeightBlack)];
   });
-  
+
   for (NSUInteger i = 0; i < fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
       return [fontWeights[i] doubleValue];
