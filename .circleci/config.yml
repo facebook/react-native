@@ -61,6 +61,7 @@ jobs:
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=1
+
   test-node-6:
     working_directory: ~/react-native
     docker:
@@ -72,6 +73,7 @@ jobs:
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=1
+
   test-node-4:
     working_directory: ~/react-native
     docker:
@@ -83,6 +85,7 @@ jobs:
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=1
+
   test-android:
     working_directory: ~/react-native
     docker:
@@ -165,6 +168,3 @@ workflows:
   test_android:
     jobs:
       - test-android:
-          filters:
-            branches:
-              ignore: gh-pages
