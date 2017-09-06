@@ -100,71 +100,74 @@ jobs:
 # dependencies
       - run: nvm install 8
       - run:
-        name: Setting up Buck and Android dependencies
-        command: |
-          if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
-          cd /home/ubuntu/buck && ant
-          buck --version
-          source scripts/circle-ci-android-setup.sh && getAndroidSDK
-          buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-          buck fetch ReactAndroid/src/main/java/com/facebook/react
-          buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-          buck fetch ReactAndroid/src/test/...
-          buck fetch ReactAndroid/src/androidTest/...
-          ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+          name: Setting up Buck and Android dependencies
+          command: |
+            if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
+            cd /home/ubuntu/buck && ant
+            buck --version
+            source scripts/circle-ci-android-setup.sh && getAndroidSDK
+            buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+            buck fetch ReactAndroid/src/main/java/com/facebook/react
+            buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+            buck fetch ReactAndroid/src/test/...
+            buck fetch ReactAndroid/src/androidTest/...
+            ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
       - run:
-        name: Starting Android emulator in advance because it takes very long to boot
-        command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+          name: Starting Android emulator in advance because it takes very long to boot
+          command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
           background: true
       - run: source scripts/circle-ci-android-setup.sh && waitForAVD
 # tests
       - run:
-        name: Build app
-        command: |
-          buck build ReactAndroid/src/main/java/com/facebook/react
-          buck build ReactAndroid/src/main/java/com/facebook/react/shell
+          name: Build app
+          command: |
+            buck build ReactAndroid/src/main/java/com/facebook/react
+            buck build ReactAndroid/src/main/java/com/facebook/react/shell
       - run:
-        name: Compile native libs for unit and integration tests
-        command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1:
-        no_output_timeout: 6m
+          name: Compile native libs for unit and integration tests
+          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1:
+          no_output_timeout: 6m
       - run:
-        name: Running unit tests
-        command: buck test ReactAndroid/src/test/... --config build.threads=1
+          name: Running unit tests
+          command: buck test ReactAndroid/src/test/... --config build.threads=1
 # integration tests
       - run:
-        name: Building JS bundle for instrumentation tests
-        command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+          name: Building JS bundle for instrumentation tests
+          command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 # Failing test
 #      - run:
-#        name: Building test APK
-#        command: buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+#          name: Building test APK
+#          command: buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
 #      - run:
-#        name: Run installed APK with tests
-#        command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+#          name: Run installed APK with tests
+#          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
     # disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
 #      - run:
-#        name: Running Android end to end tests
-#        command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
+#          name: Running Android end to end tests
+#          command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
 # post (always runs)
       - run:
-        name:
-        command: |
-          mkdir -p $CIRCLE_TEST_REPORTS/junit/
-          find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-          find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+          name:
+          command: |
+            mkdir -p $CIRCLE_TEST_REPORTS/junit/
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 # TODO circle does not understand Buck's report, maybe need to transform xml slightly
 #         find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        when: always
+          when: always
 
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
-#  test_node:
-#    jobs:
-#      - test-node-8
-#      - test-node-6
-#      - test-node-4
+  test_node:
+    jobs:
+      - test-node-8
+      - test-node-6
+      - test-node-4
   test_android:
     jobs:
       - test-android:
+          filters:
+            branches:
+              ignore: gh-pages
