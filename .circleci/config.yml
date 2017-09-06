@@ -188,7 +188,7 @@ workflows:
       - test-node-4
   test_android:
     jobs:
-      - build-js-bundle
+      - build-js-bundle:
           filters:
             branches:
               ignore: gh-pages
