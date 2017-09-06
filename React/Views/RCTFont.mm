@@ -33,6 +33,19 @@
 
 #endif
 
+static NSArray *fontNameOrdering = [NSArray arrayWithObjects:
+    @"normal",
+    @"ultralight",
+    @"thin",
+    @"light",
+    @"regular",
+    @"medium",
+    @"semibold",
+    @"bold",
+    @"heavy",
+    @"black",
+    nil];
+
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
@@ -41,7 +54,6 @@ static RCTFontWeight weightOfFont(UIFont *font)
   dispatch_once(&onceToken, ^{
     nameToWeight = @{
        @"normal": @(UIFontWeightRegular),
-       @"bold": @(UIFontWeightBold),
        @"ultralight": @(UIFontWeightUltraLight),
        @"thin": @(UIFontWeightThin),
        @"light": @(UIFontWeightLight),
@@ -51,10 +63,10 @@ static RCTFontWeight weightOfFont(UIFont *font)
        @"bold": @(UIFontWeightBold),
        @"heavy": @(UIFontWeightHeavy),
        @"black": @(UIFontWeightBlack),
-    };
+       };
   });
 
-  for (NSString *name in nameToWeight) {
+  for (NSString *name in fontNameOrdering) {
     if ([font.fontName.lowercaseString hasSuffix:name]) {
       return [nameToWeight[name] doubleValue];
     }
