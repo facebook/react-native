@@ -45,7 +45,7 @@ aliases:
       - v1-buck-dependencies-{{ .Branch }}
   - &save-cache-buck
     paths:
-     - "/home/ubuntu/buck"
+     - "/home/circleci/buck"
     key: v1-buck-dependencies-{{ .Branch }}
 
 version: 2
@@ -115,19 +115,19 @@ jobs:
           at: ReactAndroid/src/androidTest/assets/
       - run: |
           if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-            echo "Nope!"; exit 1
+            echo "JS bundle missing, verify build-js-bundle step"; exit 1
           else
-            echo "It worked!";
+            echo "JS bundle found.";
           fi
 # dependencies
-      - run: echo 'export PATH=~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH'
+      - run: echo 'export PATH=~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/circleci/buck/bin:$PATH'
       - run:
           name: Setting up Buck and Android dependencies
           command: |
-            if [[ ! -e /home/ubuntu/buck ]]; then
-              git clone https://github.com/facebook/buck.git /home/ubuntu/buck;
+            if [[ ! -e /home/circleci/buck ]]; then
+              git clone https://github.com/facebook/buck.git /home/circleci/buck;
             fi
-            cd /home/ubuntu/buck && ant
+            cd /home/circleci/buck && ant
             buck --version
             source scripts/circle-ci-android-setup.sh && getAndroidSDK
             buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
@@ -169,14 +169,18 @@ jobs:
 
 # post (always runs)
       - run:
-          name:
+          name: Save test results
           command: |
-            mkdir -p $CIRCLE_TEST_REPORTS/junit/
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
 # TODO circle does not understand Buck's report, maybe need to transform xml slightly
-#           find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+#           find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/junit/ \;
           when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: ~/junit
 
 # Workflows enables us to run multiple jobs in parallel
 workflows:
