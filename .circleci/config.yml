@@ -94,7 +94,7 @@ jobs:
       - checkout
       - run: npm install --no-package-lock
       - run:
-          name: Build JavaScript bundle for instrumentation tests
+          name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
       - persist_to_workspace:
           root: ReactAndroid/src/androidTest/assets/
@@ -115,7 +115,7 @@ jobs:
       - attach_workspace:
           at: ReactAndroid/src/androidTest/assets/
       - run:
-          name: Check for JavaScript bundle
+          name: Check for JavaScript Bundle
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
@@ -138,12 +138,12 @@ jobs:
           background: true
 # Continue configuring dependencies while AVD boots.
       - run:
-          name: Install ant
+          name: Install Buck Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant -y
+            sudo apt-get install ant g++ python2 -y
       - run:
-          name: Set up Buck
+          name: Install Buck
           command: |
             if [[ ! -e ~/buck ]]; then
               git clone https://github.com/facebook/buck.git ~/buck;
@@ -153,7 +153,7 @@ jobs:
             cd ~/buck && ant
             buck --version
       - run:
-          name: Fetch Android dependencies
+          name: Download Android Dependencies
           command: |
             buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
             buck fetch ReactAndroid/src/main/java/com/facebook/react
