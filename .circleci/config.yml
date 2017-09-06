@@ -91,13 +91,13 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
     environment:
-      - PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH"
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
     steps:
       - checkout
 # dependencies
+      - run: echo 'export PATH=~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH'
       - run: nvm install 8
       - run:
           name: Setting up Buck and Android dependencies
