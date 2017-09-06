@@ -86,6 +86,21 @@ jobs:
           npm run flow -- check
           npm test -- --maxWorkers=1
 
+  build-js-bundle:
+    working_directory: ~/react-native
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install --no-package-lock
+      - run:
+          name: Building JS bundle for instrumentation tests
+          command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+      - persist_to_workspace:
+          root: ReactAndroid/src/androidTest/assets/
+          paths:
+            - AndroidTestBundle.js
+
   test-android:
     working_directory: ~/react-native
     docker:
@@ -96,9 +111,16 @@ jobs:
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
     steps:
       - checkout
+      - attach_workspace:
+          at: ReactAndroid/src/androidTest/assets/
+      - run: |
+          if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+            echo "Nope!"; exit 1
+          else
+            echo "It worked!";
+          fi
 # dependencies
       - run: echo 'export PATH=~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH'
-      - run: nvm install 8
       - run:
           name: Setting up Buck and Android dependencies
           command: |
@@ -133,9 +155,6 @@ jobs:
           name: Running unit tests
           command: buck test ReactAndroid/src/test/... --config build.threads=1
 # integration tests
-      - run:
-          name: Building JS bundle for instrumentation tests
-          command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 # Failing test
 #      - run:
 #          name: Building test APK
@@ -169,7 +188,10 @@ workflows:
       - test-node-4
   test_android:
     jobs:
-      - test-android:
+      - build-js-bundle
           filters:
             branches:
               ignore: gh-pages
+      - test-android:
+          requires:
+            - build-js-bundle
