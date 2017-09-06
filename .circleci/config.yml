@@ -109,41 +109,51 @@ jobs:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+      - BASH_ENV: ~/.bashrc
     steps:
       - checkout
       - attach_workspace:
           at: ReactAndroid/src/androidTest/assets/
-      - run: |
-          if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-            echo "JS bundle missing, verify build-js-bundle step"; exit 1
-          else
-            echo "JS bundle found.";
-          fi
+      - run:
+          name: Check for JavaScript bundle
+          command: |
+            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+              echo "JS bundle missing, verify build-js-bundle step"; exit 1
+            else
+              echo "JS bundle found.";
+            fi
 # dependencies
       - run:
-          name: Setting up Buck and Android dependencies
+          name: Set up Buck
           command: |
             if [[ ! -e /home/circleci/buck ]]; then
               git clone https://github.com/facebook/buck.git /home/circleci/buck;
             fi
-            echo 'export PATH=~/CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/circleci/buck/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=~/react-native/gradle-2.9/bin:/home/circleci/buck/bin:$PATH' >> $BASH_ENV
             cd /home/circleci/buck && ant
             buck --version
+      - run:
+          name: Install Android SDK and Android virtual device
+          command: |
             source scripts/circle-ci-android-setup.sh && getAndroidSDK
+      - run:
+          name: Set up Android dependencies
+          command: |
             buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
             buck fetch ReactAndroid/src/main/java/com/facebook/react
             buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
             buck fetch ReactAndroid/src/test/...
             buck fetch ReactAndroid/src/androidTest/...
             ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+# Starting emulator in advance as it takes some time to boot
       - run:
-          name: Starting Android emulator in advance
+          name: Start Android emulator
           command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window
           background: true
       - run: source scripts/circle-ci-android-setup.sh && waitForAVD
 # tests
       - run:
-          name: Build app
+          name: Build Android app
           command: |
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
@@ -152,7 +162,7 @@ jobs:
           command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
           no_output_timeout: 6m
       - run:
-          name: Running unit tests
+          name: Unit Tests
           command: buck test ReactAndroid/src/test/... --config build.threads=1
 # integration tests
 # Failing test
