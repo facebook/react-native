@@ -131,25 +131,26 @@ jobs:
             if [ ! -e $ANDROID_HOME/installed-dependencies ]; then
               sdkmanager --update
               sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
+              sdkmanager "add-ons;addon-google_apis-google-23"
               echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a && touch $ANDROID_HOME/installed-dependencies
             fi
 # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Launch Android Virtual Device
-          command: $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window
+          command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
       - run:
           name: Install Buck Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant g++ python-dev -y
+            sudo apt-get install ant autoconf automake g++ gcc make python-dev -y
       - run:
           name: Install Android NDK
           command: |
             sudo mkdir /opt/ndk
             cd /opt/ndk
-            sudo curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+            sudo curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
             sudo unzip ndk.zip
             sudo rm ndk.zip
             sudo chown -R circleci:circleci /opt/ndk/*
@@ -180,7 +181,6 @@ jobs:
           name: Wait for Android Virtual Device
           command: |
             local bootanim=""
-            echo 'export PATH=$(dirname $(dirname $(which android)))/platform-tools:$PATH' >> $BASH_ENV
             until [[ "$bootanim" =~ "stopped" ]]; do
               sleep 5
               bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
