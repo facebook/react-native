@@ -18,6 +18,24 @@ function getAndroidSDK {
   fi
 }
 
+function getAndroidNDK {
+  NDK_HOME="/opt/ndk"
+  DEPS="$NDK_HOME/installed-dependencies"
+
+  if [ ! -e $DEPS ]; then
+    cd $NDK_HOME
+    curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
+    curl -o ndk_64.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+    unzip -o -q ndk.zip
+    unzip -o -q ndk_64.zip
+    rm ndk.zip
+    rm ndk_64.zip
+    echo "Installed Android NDK at $NDK_HOME"
+    touch $DEPS
+  fi
+}
+
+
 function waitForAVD {
   echo "Waiting for AVD to finish booting..."
   local bootanim=""

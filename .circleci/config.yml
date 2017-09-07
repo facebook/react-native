@@ -50,11 +50,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-r10e
+      - v3-android-ndk-r10e
   - &save-cache-ndk
     paths:
-      - ~/ndk
-    key: v2-android-ndk-r10e
+      - /opt/ndk
+    key: v3-android-ndk-r10e
 
   - &restore-cache-buck
     keys:
@@ -181,7 +181,7 @@ jobs:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
-      - ANDROID_NDK: '~/ndk/android-ndk-r10e'
+      - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
     steps:
       - checkout
 # The JavaScript Bundle is built as part of the build-js-bundle workflow.
@@ -218,20 +218,17 @@ jobs:
           command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
+      - run:
+          name: Create Android NDK Directory
+          command: |
+            if [[ ! -e /opt/ndk ]]; then
+              sudo mkdir /opt/ndk
+            fi
+            sudo chown circle:circle /opt/ndk
       - restore-cache: *restore-cache-ndk
       - run:
           name: Install Android NDK
-          command: |
-            if [[ ! -e ~/ndk ]]; then
-              mkdir ~/ndk
-              cd ~/ndk
-              curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
-              curl -o ndk_64.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
-              unzip -o ndk.zip
-              unzip -o ndk_64.zip
-              rm ndk.zip
-              rm ndk_64.zip
-            fi
+          command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
       - save-cache: *save-cache-ndk
       - restore-cache: *restore-cache-buck
       - run:
