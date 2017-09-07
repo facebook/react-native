@@ -42,6 +42,8 @@
     _backedTextInput.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInput.textInputDelegate = self;
 
+    self.font = _fontAttributes.font;
+
     [self addSubview:_backedTextInput];
   }
 
@@ -54,19 +56,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInput;
-}
-
-- (void)updateFont
-{
-  CGFloat scaleMultiplier = self.allowFontScaling ? self.fontSizeMultiplier : 1.0;
-  
-  _backedTextInput.font = [RCTFont updateFont:nil
-                                   withFamily:self.fontFamily
-                                         size:self.fontSize
-                                       weight:self.fontWeight
-                                        style:self.fontStyle
-                                      variant:nil
-                              scaleMultiplier:scaleMultiplier];
 }
 
 - (void)sendKeyValueForString:(NSString *)string

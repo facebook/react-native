@@ -35,6 +35,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Unified <TextInput> properties
 
+RCT_REMAP_VIEW_PROPERTY(allowFontScaling, fontAttributes.allowFontScaling, BOOL)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, backedTextInputView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(color, backedTextInputView.textColor, UIColor)
@@ -49,7 +50,6 @@ RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BO
 RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType)
 RCT_REMAP_VIEW_PROPERTY(textAlign, backedTextInputView.textAlignment, NSTextAlignment)
-RCT_EXPORT_VIEW_PROPERTY(allowFontScaling, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
@@ -64,23 +64,19 @@ RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UI
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextField)
 {
-  view.fontSize = json ?: @(defaultView.backedTextInputView.font.pointSize);
-  [view updateFont];
+  view.fontAttributes.fontSize = json ?: @(defaultView.backedTextInputView.font.pointSize);
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextField)
 {
-  view.fontWeight = json; // defaults to normal
-  [view updateFont]; 
+  view.fontAttributes.fontWeight = json; // defaults to normal
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextField)
 {
-  view.fontStyle = json; // defaults to normal
-  [view updateFont]; 
+  view.fontAttributes.fontStyle = json; // defaults to normal
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextField)
 {
-  view.fontFamily = json ?: defaultView.backedTextInputView.font.familyName;
-  [view updateFont];
+  view.fontAttributes.fontFamily = json ?: defaultView.backedTextInputView.font.familyName;
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 

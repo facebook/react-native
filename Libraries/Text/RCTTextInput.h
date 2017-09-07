@@ -13,16 +13,16 @@
 
 #import "RCTBackedTextInputViewProtocol.h"
 
-@class RCTAccessibilityManager;
 @class RCTBridge;
 @class RCTEventDispatcher;
+@class RCTFontAttributes;
 @class RCTTextSelection;
 
-@interface RCTTextInput : RCTView {
+@interface RCTTextInput : RCTView <RCTFontAttributesDelegate> {
 @protected
-  RCTAccessibilityManager *_accessibilityManager;  
   RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
+  RCTFontAttributes *_fontAttributes;
   NSInteger _nativeEventCount;
   NSInteger _mostRecentEventCount;
   BOOL _blurOnSubmit;
@@ -43,22 +43,15 @@
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
+@property (readonly, nonatomic, strong) UIFont *font;
+
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, copy) RCTTextSelection *selection;
 
-@property (nonatomic, assign) BOOL allowFontScaling;
-@property (nonatomic, copy) NSString *fontFamily;
-@property (nonatomic, strong) NSNumber *fontSize;
-@property (nonatomic, assign) CGFloat fontSizeMultiplier;
-@property (nonatomic, copy) NSString *fontStyle;
-@property (nonatomic, copy) NSString *fontWeight;
-
 - (void)invalidateContentSize;
-
-- (void)updateFont;
 
 // Temporary exposure of particial `RCTBackedTextInputDelegate` support.
 // In the future all methods of the protocol should move to this class.

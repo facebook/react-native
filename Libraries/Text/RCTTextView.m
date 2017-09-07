@@ -58,6 +58,8 @@
 
     _backedTextInput.textInputDelegate = self;
 
+    self.font = _fontAttributes.font;
+
     [self addSubview:_backedTextInput];
   }
   return self;
@@ -71,17 +73,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _backedTextInput;
 }
 
-- (void)updateFont
+- (void)fontAttributesDidChangeWithFont:(RCTFont *)font
 {
-  CGFloat scaleMultiplier = self.allowFontScaling ? self.fontSizeMultiplier : 1.0;
-  
-  self.font = [RCTFont updateFont:nil
-                       withFamily:self.fontFamily
-                             size:self.fontSize
-                           weight:self.fontWeight
-                           style:self.fontStyle
-                         variant:nil
-                 scaleMultiplier:scaleMultiplier];
+  [super fontAttributesDidChangeWithFont:fonte];
 
  // Because the font changed, the TextInput may take up more space now so we call
  // invalidateContentSize. However, if there's currently no text to render, then
