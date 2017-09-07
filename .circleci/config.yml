@@ -50,11 +50,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v1-android-ndk-r10e-{{ .Branch }}
+      - v2-android-ndk-r10e-{{ .Branch }}
   - &save-cache-ndk
     paths:
       - ~/ndk
-    key: v1-android-ndk-r10e-{{ .Branch }}
+    key: v2-android-ndk-r10e-{{ .Branch }}
 
   - &restore-cache-buck
     keys:
@@ -165,7 +165,7 @@ jobs:
             sudo apt-get update -y
             sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 libtool make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
       - run:
-          name: Configure Android SDK and Android Virtual Device
+          name: Install Android SDKs and Create Android Virtual Device
           command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
 # Starting emulator in advance as it takes some time to boot.
       - run:
@@ -193,9 +193,7 @@ jobs:
           name: Install Buck
           command: |
             if [[ ! -e ~/buck ]]; then
-              git clone https://github.com/facebook/buck.git ~/buck
-              cd ~/buck
-              git checkout v2017.09.04.02
+              git clone https://github.com/facebook/buck.git ~/buck --branch v2017.09.04.02 --depth=1
             fi
             cd ~/buck && ant
             buck --version
@@ -206,14 +204,14 @@ jobs:
           command: |
             if [[ ! -e ~/watchman ]]; then
               mkdir ~/watchman
-              git clone https://github.com/facebook/watchman.git ~/watchman
+              git clone https://github.com/facebook/watchman.git ~/watchman --branch v4.9.0 --depth=1
               cd ~/watchman
-              git checkout v4.9.0
               ./autogen.sh
               ./configure
               make
-              sudo make install
             fi
+            cd ~/watchman
+            sudo make install
       - save-cache: *save-cache-watchman
       - run:
           name: Download Android Dependencies
