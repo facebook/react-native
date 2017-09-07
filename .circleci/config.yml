@@ -151,8 +151,11 @@ jobs:
             sudo mkdir /opt/ndk
             cd /opt/ndk
             sudo curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
-            sudo unzip ndk.zip
+            sudo curl -o ndk_64.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+            sudo unzip -o ndk.zip
+            sudo unzip -o ndk_64.zip
             sudo rm ndk.zip
+            sudo rm ndk_64.zip
             sudo chown -R circleci:circleci /opt/ndk/*
             echo 'export PATH=$ANDROID_NDK:$PATH' >> $BASH_ENV
             source $BASH_ENV
