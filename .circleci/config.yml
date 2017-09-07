@@ -136,8 +136,6 @@ jobs:
           name: Deploy Website
           command: |
             if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
-# We don't want to deploy the website if the job is triggered by a pull request.
-# We already ensure this only runs on master and stable in our workflow config.
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
