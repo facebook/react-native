@@ -136,7 +136,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
     if (mJsEventCount != UNSET) {
-      Spannable preparedSpannableText = fromTextCSSNode(this);
+      Spannable preparedSpannableText = spannedFromShadowNode(this);
       ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
           preparedSpannableText,
