@@ -56,6 +56,14 @@ aliases:
       - /opt/ndk
     key: v1-android-ndk-r10e-{{ .Branch }}
 
+  - &restore-cache-buck
+    keys:
+      - v1-buck-v2017.09.04.02-{{ .Branch }}
+  - &save-cache-buck
+    paths:
+      - ~/buck
+    key: v1-buck-v2017.09.04.02-{{ .Branch }}
+
   - &restore-cache-watchman
     keys:
       - v1-watchman-v4.9.0-{{ .Branch }}
@@ -64,10 +72,13 @@ aliases:
       - /opt/watchman
     key: v1-watchman-v4.9.0-{{ .Branch }}
 
+defaults: &defaults
+  working_directory: ~/react-native
+
 version: 2
 jobs:
   test-node-8:
-    working_directory: ~/react-native
+    <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
@@ -79,7 +90,7 @@ jobs:
           npm test -- --maxWorkers=1
 
   test-node-6:
-    working_directory: ~/react-native
+    <<: *defaults
     docker:
       - image: circleci/node:6.11.0
     steps:
@@ -91,7 +102,7 @@ jobs:
           npm test -- --maxWorkers=1
 
   test-node-4:
-    working_directory: ~/react-native
+    <<: *defaults
     docker:
       - image: circleci/node:4.8.4
     steps:
@@ -103,7 +114,7 @@ jobs:
           npm test -- --maxWorkers=1
 
   build-js-bundle:
-    working_directory: ~/react-native
+    <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
@@ -118,7 +129,7 @@ jobs:
             - AndroidTestBundle.js
 
   test-android:
-    working_directory: ~/react-native
+    <<: *defaults
     docker:
       - image: circleci/android:api-23-alpha
     environment:
@@ -178,14 +189,17 @@ jobs:
               rm ndk_64.zip
             fi
       - save-cache: *save-cache-ndk
+      - restore-cache: *restore-cache-buck
       - run:
           name: Install Buck
           command: |
             if [[ ! -e ~/buck ]]; then
               git clone https://github.com/facebook/buck.git ~/buck;
+              git checkout v2017.09.04.02
             fi
             cd ~/buck && ant
             buck --version
+      - save-cache: *save-cache-buck
       - restore-cache: *restore-cache-watchman
       - run:
           name: Install Watchman
@@ -263,10 +277,9 @@ workflows:
   test_node:
     jobs:
       - test-node-8
-# Commenting out while we work on Android runs
-#      - test-node-6
+      - test-node-6
 # Node 4 is expected to fail - that was already the case w/ Circle 1.0
-#      - test-node-4
+      - test-node-4
   test_android:
     jobs:
       - build-js-bundle:
