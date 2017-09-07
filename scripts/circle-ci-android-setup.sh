@@ -43,7 +43,7 @@ function getAndroidNDK {
 
 
 function waitForAVD {
-  echo "Waiting for AVD to finish booting..."
+  echo "Waiting for Android Virtual Device to finish booting..."
   local bootanim=""
   export PATH=$(dirname $(dirname $(which android)))/platform-tools:$PATH
   until [[ "$bootanim" =~ "stopped" ]]; do
@@ -51,7 +51,7 @@ function waitForAVD {
     bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
     echo "boot animation status=$bootanim"
   done
-  echo "AVD ready."
+  echo "Android Virtual Device is ready."
 }
 
 function retry3 {

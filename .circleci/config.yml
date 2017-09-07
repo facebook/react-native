@@ -50,15 +50,6 @@ aliases:
      - "ReactAndroid/build/downloads"
     key: v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
-  - &restore-cache-buck
-    keys:
-# TODO: Pick file to checksum against
-      - v1-buck-dependencies-{{ .Branch }}
-  - &save-cache-buck
-    paths:
-     - "~/buck"
-    key: v1-buck-dependencies-{{ .Branch }}
-
   - &restore-cache-ndk
     keys:
       - v3-android-ndk-r10e
@@ -69,19 +60,19 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v1-buck-v2017.09.04.02-{{ .Branch }}
+      - v1-buck-v2017.09.04.02
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v1-buck-v2017.09.04.02-{{ .Branch }}
+    key: v1-buck-v2017.09.04.02
 
   - &restore-cache-watchman
     keys:
-      - v1-watchman-v4.9.0-{{ .Branch }}
+      - v1-watchman-v4.9.0
   - &save-cache-watchman
     paths:
       - ~/watchman
-    key: v1-watchman-v4.9.0-{{ .Branch }}
+    key: v1-watchman-v4.9.0
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -199,19 +190,9 @@ jobs:
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
       - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+      - BUILD_THREADS: 2
     steps:
       - checkout
-# The JavaScript Bundle is built as part of the build-js-bundle workflow.
-      - attach_workspace:
-          at: ReactAndroid/src/androidTest/assets/
-      - run:
-          name: Check for JavaScript Bundle
-          command: |
-            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
-            else
-              echo "JavaScript bundle found.";
-            fi
 # CircleCI does not support interpolating env variables in the environment: step above.
 # https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
       - run:
@@ -236,7 +217,7 @@ jobs:
           command: source scripts/circle-ci-android-setup.sh && createAVD
 # Starting emulator in advance as it takes some time to boot.
       - run:
-          name: Launch Android Virtual Device
+          name: Launch Android Virtual Device in Background
           command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
@@ -293,28 +274,39 @@ jobs:
             buck fetch ReactAndroid/src/androidTest/...
             ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
       - save-cache: *save-cache-buck-downloads
-# Wait for AVD to finish booting before running tests
-      - run:
-          name: Wait for Android Virtual Device
-          command: source scripts/circle-ci-android-setup.sh && waitForAVD
-# Tests
       - run:
           name: Build Android App
           command: |
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
+# Wait for AVD to finish booting before running tests
+      - run:
+          name: Wait for Android Virtual Device
+          command: source scripts/circle-ci-android-setup.sh && waitForAVD
+# The JavaScript Bundle is built as part of the build-js-bundle workflow, and is required for instrumentation tests.
+      - attach_workspace:
+          at: ReactAndroid/src/androidTest/assets/
+      - run:
+          name: Check for JavaScript Bundle
+          command: |
+            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+              echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
+            else
+              echo "JavaScript bundle found.";
+            fi
+# Tests
       - run:
           name: Compile Native Libs for Unit and Integration Tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=2 -Pcom.android.build.threadPoolSize=1
+          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
           no_output_timeout: 6m
       - run:
           name: Unit Tests
-          command: buck test ReactAndroid/src/test/... --config build.threads=2
+          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
 # Integration Tests
 # Failing test is expected
       - run:
           name: Build and Install Test APK
-          command: buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=2
+          command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
       - run:
           name: Run Installed APK with Tests
           command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
