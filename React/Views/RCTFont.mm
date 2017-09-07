@@ -50,6 +50,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
       @"regular",
       @"medium",
       @"semibold",
+      @"demibold",
       @"bold",
       @"heavy",
       @"black"
@@ -62,13 +63,14 @@ static RCTFontWeight weightOfFont(UIFont *font)
       @(UIFontWeightRegular),
       @(UIFontWeightMedium),
       @(UIFontWeightSemibold),
+      @(UIFontWeightSemibold),
       @(UIFontWeightBold),
       @(UIFontWeightHeavy),
       @(UIFontWeightBlack)
     ];
   });
 
-  for (NSInteger i = 0; i < fontNames.count; i++) {
+  for (NSUInteger i = 0; i < fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
       return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
