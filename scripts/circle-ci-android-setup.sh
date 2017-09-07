@@ -6,9 +6,13 @@ function getAndroidSDK {
   DEPS="$ANDROID_HOME/installed-dependencies"
 
   if [ ! -e $DEPS ]; then
+    echo "Updating installed packages..."
     sdkmanager --update
+    echo "Installing SDKs..."
     sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
+    echo "Installing add-ons..."
     sdkmanager "add-ons;addon-google_apis-google-23"
+    echo "Creating AVD..."
     echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a
     touch $DEPS
   fi
