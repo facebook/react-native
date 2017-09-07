@@ -581,6 +581,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
+  /** Dirties the node associated with the given react tag */
+  public void invalidateNodeLayout(int tag) {
+    ReactShadowNode node = mUIImplementation.resolveShadowNode(tag);
+    if (node == null) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Warning : attempted to dirty a non-existent react shadow node. reactTag=" + tag);
+      return;
+    }
+    node.dirty();
+  }
+
   /**
    * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
    */

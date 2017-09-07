@@ -6,6 +6,7 @@ EXPORTED_HEADERS = [
     "CxxModuleWrapperBase.h",
     "CxxSharedModuleWrapper.h",
     "JavaModuleWrapper.h",
+    "JavaScriptExecutorHolder.h",
     "JSLoader.h",
     "MethodInvoker.h",
     "ModuleRegistryBuilder.h",
@@ -49,7 +50,7 @@ cxx_library(
     ],
     deps = ([
         "//native/third-party/android-ndk:android",
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
         "//xplat/fbgloginit:fbgloginit",
         "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),

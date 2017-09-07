@@ -10,4 +10,6 @@ public class ReactDebugOverlayTags {
 
   public static final DebugOverlayTag PERFORMANCE =
       new DebugOverlayTag("Performance", "Markers for Performance", Color.GREEN);
+  public static final DebugOverlayTag NAVIGATION =
+      new DebugOverlayTag("Navigation", "Tag for navigation", Color.rgb(0x9C, 0x27, 0xB0));
 }

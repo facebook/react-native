@@ -88,6 +88,8 @@ public:
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
 
+  virtual std::string getDescription() override;
+
   virtual void* getJavaScriptContext() override;
 
 #ifdef WITH_JSC_MEMORY_PRESSURE

@@ -72,6 +72,30 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldCallID,
 };
 
+namespace {
+
+class GetDescAdapter : public JSExecutorFactory {
+public:
+  GetDescAdapter(RCTCxxBridge *bridge, std::shared_ptr<JSExecutorFactory> factory)
+    : bridge_(bridge)
+    , factory_(factory) {}
+  std::unique_ptr<JSExecutor> createJSExecutor(
+      std::shared_ptr<ExecutorDelegate> delegate,
+      std::shared_ptr<MessageQueueThread> jsQueue) override {
+    auto ret = factory_->createJSExecutor(delegate, jsQueue);
+    bridge_.bridgeDescription =
+      [NSString stringWithFormat:@"RCTCxxBridge %s",
+                ret->getDescription().c_str()];
+    return std::move(ret);
+  }
+
+private:
+  RCTCxxBridge *bridge_;
+  std::shared_ptr<JSExecutorFactory> factory_;
+};
+
+}
+
 static bool isRAMBundle(NSData *script) {
   BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
@@ -154,6 +178,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 @synthesize performanceLogger = _performanceLogger;
+@synthesize bridgeDescription = _bridgeDescription;
 
 + (void)initialize
 {
@@ -390,7 +415,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async");
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
-    [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge];
+
+    NSDictionary *userInfo = source ? @{ RCTBridgeDidDownloadScriptNotificationSourceKey: source } : nil;
+    [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
     _onSourceLoad(error, source);
   };
@@ -489,6 +516,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initializeBridge:]", nil);
   // This can only be false if the bridge was invalidated before startup completed
   if (_reactInstance) {
+#if RCT_DEV
+    executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
+#endif
+
     // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
     _reactInstance->initializeBridge(
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
