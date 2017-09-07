@@ -119,10 +119,18 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: cd website && npm install --no-package-lock
-      - run: cd website && npm test
       - run:
-          name: Build Static Website
+          name: Install Dependencies
+          command: |
+            cd website
+            npm install --no-package-lock
+      - run:
+          name: Test Website
+          command: |
+            cd website
+            npm test
+      - run:
+          name: Test Build Static Website
           command: cd website && node ./server/generate.js
 
   deploy-website:
@@ -131,9 +139,13 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: cd website && npm install --no-package-lock
       - run:
-          name: Deploy Website
+          name: Install Dependencies
+          command: |
+            cd website
+            npm install --no-package-lock
+      - run:
+          name: Build and Deploy Static Website
           command: |
             if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
               git config --global user.email "reactjs-bot@users.noreply.github.com"
@@ -196,7 +208,7 @@ jobs:
           name: Install Build Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 libtool make maven pkg-config python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
       - run:
           name: Install Android SDKs and Create Android Virtual Device
           command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
@@ -231,21 +243,26 @@ jobs:
             cd ~/buck && ant
             buck --version
       - save-cache: *save-cache-buck
-      - restore-cache: *restore-cache-watchman
-      - run:
-          name: Install Watchman
-          command: |
-            if [[ ! -e ~/watchman ]]; then
-              mkdir ~/watchman
-              git clone https://github.com/facebook/watchman.git ~/watchman --branch v4.9.0 --depth=1
-              cd ~/watchman
-              ./autogen.sh
-              ./configure
-              make
-            fi
-            cd ~/watchman
-            sudo make install
-      - save-cache: *save-cache-watchman
+#      - restore-cache: *restore-cache-watchman
+#      - run:
+#          name: Install Watchman Dependencies
+#          command: |
+#            sudo apt-get update -y
+#            sudo apt-get install libtool pkg-config -y
+#      - run:
+#          name: Install Watchman
+#          command: |
+#            if [[ ! -e ~/watchman ]]; then
+#              mkdir ~/watchman
+#              git clone https://github.com/facebook/watchman.git ~/watchman --branch v4.9.0 --depth=1
+#              cd ~/watchman
+#              ./autogen.sh
+#              ./configure
+#              make
+#            fi
+#            cd ~/watchman
+#            sudo make install
+#      - save-cache: *save-cache-watchman
       - run:
           name: Download Android Dependencies
           command: |
@@ -304,12 +321,13 @@ jobs:
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
-  test_node:
-    jobs:
-      - test-node-8
-      - test-node-6
+# Commenting these out for now, as they work as expected
+#  test_node:
+#    jobs:
+#      - test-node-8
+#      - test-node-6
 # Node 4 is expected to fail - that was already the case w/ Circle 1.0
-      - test-node-4
+#      - test-node-4
   website:
     jobs:
       - test-website
