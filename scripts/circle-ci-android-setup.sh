@@ -9,18 +9,21 @@ function getAndroidSDK {
     sdkmanager --update
     sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
     sdkmanager "add-ons;addon-google_apis-google-23"
-    echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a && touch $DEPS
+    echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a
+    touch $DEPS
   fi
 }
 
 function waitForAVD {
+  echo "Waiting for AVD to finish booting..."
   local bootanim=""
   export PATH=$(dirname $(dirname $(which android)))/platform-tools:$PATH
   until [[ "$bootanim" =~ "stopped" ]]; do
     sleep 5
     bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
-    echo "emulator status=$bootanim"
+    echo "boot animation status=$bootanim"
   done
+  echo "AVD ready."
 }
 
 function retry3 {

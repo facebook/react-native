@@ -48,6 +48,14 @@ aliases:
      - "~/buck"
     key: v1-buck-dependencies-{{ .Branch }}
 
+  - &restore-cache-ndk
+    keys:
+      - v1-android-ndk-r10e-{{ .Branch }}
+  - &save-cache-ndk
+    paths:
+      - /opt/ndk
+    key: v1-android-ndk-r10e-{{ .Branch }}
+
 version: 2
 jobs:
   test-node-8:
@@ -109,11 +117,10 @@ jobs:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
-      - ANDROID_EMULATOR_FORCE_32BIT: true
       - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
-
     steps:
       - checkout
+# The JavaScript Bundle is built as part of the build-js-bundle workflow.
       - attach_workspace:
           at: ReactAndroid/src/androidTest/assets/
       - run:
@@ -124,7 +131,14 @@ jobs:
             else
               echo "JavaScript bundle found.";
             fi
-# dependencies
+# CircleCI does not support interpolating env variables in the environment: step above.
+      - run:
+          name: Configure PATH
+          command: |
+            echo 'export PATH=$ANDROID_NDK:$PATH' >> $BASH_ENV
+            echo 'export PATH=~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+# Configure dependencies
       - run:
           name: Install Dependencies
           command: |
@@ -139,28 +153,28 @@ jobs:
           command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
+      - restore-cache: *restore-cache-ndk
       - run:
           name: Install Android NDK
           command: |
-            sudo mkdir /opt/ndk
-            cd /opt/ndk
-            sudo curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
-            sudo curl -o ndk_64.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
-            sudo unzip -o ndk.zip
-            sudo unzip -o ndk_64.zip
-            sudo rm ndk.zip
-            sudo rm ndk_64.zip
-            sudo chown -R circleci:circleci /opt/ndk/*
-            echo 'export PATH=$ANDROID_NDK:$PATH' >> $BASH_ENV
-            source $BASH_ENV
+            if [[ ! -e /opt/ndk ]]; then
+              sudo mkdir /opt/ndk
+              sudo chown circleci:circleci /opt/ndk
+              cd /opt/ndk
+              curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
+              curl -o ndk_64.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+              unzip -o ndk.zip
+              unzip -o ndk_64.zip
+              rm ndk.zip
+              rm ndk_64.zip
+            fi
+      - save-cache: *save-cache-ndk
       - run:
           name: Install Buck
           command: |
             if [[ ! -e ~/buck ]]; then
               git clone https://github.com/facebook/buck.git ~/buck;
             fi
-            echo 'export PATH=~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
             cd ~/buck && ant
             buck --version
       - run:
@@ -184,28 +198,28 @@ jobs:
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
       - run:
-          name: Compile native libs for unit and integration tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
+          name: Compile Native Libs for Unit and Integration Tests
+          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=2 -Pcom.android.build.threadPoolSize=1
           no_output_timeout: 6m
       - run:
           name: Unit Tests
-          command: buck test ReactAndroid/src/test/... --config build.threads=1
-# integration tests
-# Failing test
-#      - run:
-#          name: Building test APK
-#          command: buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
-#      - run:
-#          name: Run installed APK with tests
-#          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
-# disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
-#      - run:
-#          name: Running Android end to end tests
-#          command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
+          command: buck test ReactAndroid/src/test/... --config build.threads=2
+# Integration Tests
+# Failing test is expected
+      - run:
+          name: Build and Install Test APK
+          command: buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=2
+      - run:
+          name: Run Installed APK with Tests
+          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+# Should be disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
+      - run:
+          name: Run Android End to End Tests
+          command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
 # post (always runs)
       - run:
-          name: Save test results
+          name: Collect Test Results
           command: |
             mkdir -p ~/junit/
             find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
