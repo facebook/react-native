@@ -201,8 +201,7 @@ jobs:
               make
               sudo make install
             fi
-      - run:
-        - save-cache: *save-cache-watchman
+      - save-cache: *save-cache-watchman
       - run:
           name: Download Android Dependencies
           command: |
