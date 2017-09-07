@@ -50,11 +50,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v1-android-ndk-r10e
+      - v2-android-ndk-r10e
   - &save-cache-ndk
     paths:
       - ~/ndk
-    key: v1-android-ndk-r10e
+    key: v2-android-ndk-r10e
 
   - &restore-cache-buck
     keys:
