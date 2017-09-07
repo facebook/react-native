@@ -126,6 +126,11 @@ jobs:
             fi
 # dependencies
       - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+      - run:
           name: Configure Android SDK and Android Virtual Device
           command: |
             if [ ! -e $ANDROID_HOME/installed-dependencies ]; then
@@ -140,11 +145,6 @@ jobs:
           command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
-      - run:
-          name: Install Buck Dependencies
-          command: |
-            sudo apt-get update -y
-            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
       - run:
           name: Install Android NDK
           command: |
