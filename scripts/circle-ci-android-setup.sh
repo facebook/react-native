@@ -6,9 +6,10 @@ function getAndroidSDK {
   DEPS="$ANDROID_HOME/installed-dependencies"
 
   if [ ! -e $DEPS ]; then
-    echo y | android update sdk --no-ui --all --filter extra-android-m2repository
-    echo no | android create avd -n testAVD -f -t android-19 --abi default/armeabi-v7a &&
-    touch $DEPS
+    sdkmanager --update
+    sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
+    sdkmanager "add-ons;addon-google_apis-google-23"
+    echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a && touch $DEPS
   fi
 }
 
