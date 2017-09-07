@@ -106,7 +106,7 @@ jest
     });
     return ReactNative;
   })
-  .mock('ensureComponentIsNative', () => () => true);  
+  .mock('ensureComponentIsNative', () => () => true);
 
 const mockEmptyObject = {};
 const mockNativeModules = {
