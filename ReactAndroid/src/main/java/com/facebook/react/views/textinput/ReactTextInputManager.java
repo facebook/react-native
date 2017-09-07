@@ -487,7 +487,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 InputType.TYPE_TEXT_FLAG_AUTO_CORRECT : InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
             : 0);
   }
-
+  
+  @ReactProp(name = "autoComplete")
+  public void setAutoComplete(ReactEditText view, @Nullable Boolean autoComplete) {
+    updateStagedInputTypeFlag(
+        view,
+        InputType.TYPE_TEXT_FLAG_AUTO_CORRECT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+        autoComplete != null ?
+            (autoComplete.booleanValue() ?
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS : InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
+            : 0);
+  }
+  
   @ReactProp(name = "multiline", defaultBoolean = false)
   public void setMultiline(ReactEditText view, boolean multiline) {
     updateStagedInputTypeFlag(
