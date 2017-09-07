@@ -56,6 +56,14 @@ aliases:
       - /opt/ndk
     key: v1-android-ndk-r10e-{{ .Branch }}
 
+  - &restore-cache-watchman
+    keys:
+      - v1-watchman-v4.9.0-{{ .Branch }}
+  - &save-cache-watchman
+    paths:
+      - /opt/watchman
+    key: v1-watchman-v4.9.0-{{ .Branch }}
+
 version: 2
 jobs:
   test-node-8:
@@ -132,6 +140,7 @@ jobs:
               echo "JavaScript bundle found.";
             fi
 # CircleCI does not support interpolating env variables in the environment: step above.
+# https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
       - run:
           name: Configure PATH
           command: |
@@ -177,6 +186,23 @@ jobs:
             fi
             cd ~/buck && ant
             buck --version
+      - restore-cache: *restore-cache-watchman
+      - run:
+          name: Install Watchman
+          command: |
+            if [[ ! -e /opt/watchman ]]; then
+              sudo mkdir /opt/watchman
+              sudo chown circleci:circleci /opt/watchman
+              cd /opt/watchman
+              git clone https://github.com/facebook/watchman.git /opt/watchman
+              git checkout v4.9.0
+              ./autogen.sh
+              ./configure
+              make
+              sudo make install
+            fi
+      - run:
+        - save-cache: *save-cache-watchman
       - run:
           name: Download Android Dependencies
           command: |
