@@ -110,6 +110,8 @@ jobs:
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
       - ANDROID_EMULATOR_FORCE_32BIT: true
+      - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+
     steps:
       - checkout
       - attach_workspace:
@@ -141,7 +143,18 @@ jobs:
           name: Install Buck Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant g++ -y
+            sudo apt-get install ant g++ python-dev -y
+      - run:
+          name: Install Android NDK
+          command: |
+            sudo mkdir /opt/ndk
+            cd /opt/ndk
+            sudo curl -o ndk.zip --silent https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+            sudo unzip ndk.zip
+            sudo rm ndk.zip
+            sudo chown -R circleci:circleci /opt/ndk/*
+            echo 'export PATH=$ANDROID_NDK:$PATH' >> $BASH_ENV
+            source $BASH_ENV
       - run:
           name: Install Buck
           command: |
