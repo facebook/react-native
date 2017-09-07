@@ -87,7 +87,7 @@ jobs:
       - run: |
           npm run lint
           npm run flow -- check
-          npm test -- --maxWorkers=1
+          npm test -- --maxWorkers=2
 
   test-node-6:
     <<: *defaults
@@ -99,7 +99,7 @@ jobs:
       - run: |
           npm run lint
           npm run flow -- check
-          npm test -- --maxWorkers=1
+          npm test -- --maxWorkers=2
 
   test-node-4:
     <<: *defaults
@@ -111,7 +111,7 @@ jobs:
       - run: |
           npm run lint
           npm run flow -- check
-          npm test -- --maxWorkers=1
+          npm test -- --maxWorkers=2
 
   build-js-bundle:
     <<: *defaults
