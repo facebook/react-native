@@ -29,6 +29,17 @@ aliases:
       - danger/node_modules
     key: v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
 
+  - &restore-cache-android-packages
+    keys:
+      - v1-android-sdkmanager-packages-23
+  - &save-cache-android-packages
+    paths:
+      - /opt/android/sdk/system-images/android-23
+      - /opt/android/sdk/platforms/android-23
+      - /opt/android/sdk/build-tools/23.0.1
+      - /opt/android/sdk/add-ons/addon-google_apis-google-23
+    key: v1-android-sdkmanager-packages-23
+
   - &restore-cache-android
     keys:
       - v1-android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
@@ -209,9 +220,14 @@ jobs:
           command: |
             sudo apt-get update -y
             sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+      - restore-cache: *restore-cache-android-packages
       - run:
-          name: Install Android SDKs and Create Android Virtual Device
+          name: Install Android Packages
           command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
+      - save-cache: *save-cache-android-packages
+      - run:
+          name: Create Android Virtual Device
+          command: source scripts/circle-ci-android-setup.sh && createAVD
 # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Launch Android Virtual Device
@@ -224,7 +240,7 @@ jobs:
             if [[ ! -e /opt/ndk ]]; then
               sudo mkdir /opt/ndk
             fi
-            sudo chown circle:circle /opt/ndk
+            sudo chown circleci:circleci /opt/ndk
       - restore-cache: *restore-cache-ndk
       - run:
           name: Install Android NDK

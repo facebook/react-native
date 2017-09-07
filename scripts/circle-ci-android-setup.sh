@@ -10,12 +10,17 @@ function getAndroidSDK {
     sdkmanager --update
     echo "Installing SDKs..."
     sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
+    echo "Installing build tools..."
+    sdkmanager "build-tools;23.0.1"
     echo "Installing add-ons..."
     sdkmanager "add-ons;addon-google_apis-google-23"
-    echo "Creating AVD..."
-    echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a
     touch $DEPS
   fi
+}
+
+function createAVD {
+  # The package used here should match the package installed in getAndroidSDK
+  echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a
 }
 
 function getAndroidNDK {
