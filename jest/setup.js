@@ -237,6 +237,15 @@ const mockNativeModules = {
       Constants: {},
     },
   },
+  BlobModule: {
+    BLOB_URI_SCHEME: 'content',
+    BLOB_URI_HOST: null,
+    enableBlobSupport: jest.fn(),
+    disableBlobSupport: jest.fn(),
+    createFromParts: jest.fn(),
+    sendBlob: jest.fn(),
+    release: jest.fn(),
+  },
   WebSocketModule: {
     connect: jest.fn(),
     send: jest.fn(),
