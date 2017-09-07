@@ -122,7 +122,7 @@ jobs:
       - run: npm install --no-package-lock
       - run:
           name: Build JavaScript Bundle
-          command: node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+          command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
       - persist_to_workspace:
           root: ReactAndroid/src/androidTest/assets/
           paths:
