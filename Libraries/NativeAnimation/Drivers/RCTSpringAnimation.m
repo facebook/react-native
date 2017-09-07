@@ -129,10 +129,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGFloat k = _stiffness;
   CGFloat v0 = -_initialVelocity;
   
-  NSParameterAssert(m > 0);
-  NSParameterAssert(k > 0);
-  NSParameterAssert(c > 0);
-  
   CGFloat zeta = c / (2 * sqrtf(k * m));
   CGFloat omega0 = sqrtf(k / m);
   CGFloat omega1 = omega0 * sqrtf(1.0 - (zeta * zeta));

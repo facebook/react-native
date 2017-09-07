@@ -65,15 +65,15 @@ class SpringAnimation extends Animation {
   _overshootClamping: boolean;
   _restDisplacementThreshold: number;
   _restSpeedThreshold: number;
-  _initialVelocity: ?number;
   _lastVelocity: number;
   _startPosition: number;
   _lastPosition: number;
   _fromValue: number;
   _toValue: any;
-  _stiffness: ?number;
-  _damping: ?number;
-  _mass: ?number;
+  _stiffness: number;
+  _damping: number;
+  _mass: number;
+  _initialVelocity: number;
   _delay: number;
   _timeout: any;
   _startTime: number;
@@ -145,6 +145,10 @@ class SpringAnimation extends Animation {
       this._damping = springConfig.damping;
       this._mass = 1;
     }
+
+    invariant(this._stiffness > 0, 'Stiffness value must be greater than 0');
+    invariant(this._damping > 0, 'Damping value must be greater than 0');
+    invariant(this._mass > 0, 'Mass value must be greater than 0');
   }
 
   __getNativeAnimationConfig() {
@@ -243,20 +247,13 @@ class SpringAnimation extends Animation {
       now = this._lastTime + MAX_STEPS;
     }
 
-    let deltaTime = 0.0;
-    if (now > this._lastTime) {
-      deltaTime = (now - this._lastTime) / 1000;
-    }
+    const deltaTime = (now - this._lastTime) / 1000;
     this._frameTime += deltaTime;
 
-    const c: number = this._damping || 0;
-    const m: number = this._mass || 0;
-    const k: number = this._stiffness || 0;
-    const v0: number = -(this._initialVelocity || 0);
-
-    invariant(m > 0, 'Mass value must be greater than 0');
-    invariant(k > 0, 'Stiffness value must be greater than 0');
-    invariant(c > 0, 'Damping value must be greater than 0');
+    const c: number = this._damping;
+    const m: number = this._mass;
+    const k: number = this._stiffness;
+    const v0: number = -this._initialVelocity;
 
     const zeta = c / (2 * Math.sqrt(k * m)); // damping ratio
     const omega0 = Math.sqrt(k / m); // undamped angular frequency of the oscillator (rad/ms)
