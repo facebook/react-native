@@ -283,7 +283,7 @@ const mockNativeModules = {
     createFromParts: jest.fn(),
     sendBlob: jest.fn(),
     release: jest.fn(),
-  }
+  },
   WebSocketModule: {
     connect: jest.fn(),
     send: jest.fn(),
