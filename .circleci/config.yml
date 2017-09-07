@@ -40,15 +40,15 @@ aliases:
       - /opt/android/sdk/add-ons/addon-google_apis-google-23
     key: v1-android-sdkmanager-packages-23
 
-  - &restore-cache-android
+  - &restore-cache-buck-downloads
     keys:
-      - v1-android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - v1-android-dependencies-{{ .Branch }}-
-  - &save-cache-android
+      - v1-buck-downloads-{{ .Branch }}-
+  - &save-cache-buck-downloads
     paths:
      - "ReactAndroid/build/downloads"
-    key: v1-android-dependencies-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
@@ -99,6 +99,12 @@ jobs:
           npm run lint
           npm run flow -- check
           npm test -- --maxWorkers=2
+# eslint
+      - run:
+          name: Analyze Code
+          command: |
+            npm install github@0.2.4
+            cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
 
   test-node-6:
     <<: *defaults
@@ -276,8 +282,9 @@ jobs:
 #            cd ~/watchman
 #            sudo make install
 #      - save-cache: *save-cache-watchman
+      - restore-cache: *restore-cache-buck-downloads
       - run:
-          name: Download Android Dependencies
+          name: Download Android App Dependencies
           command: |
             buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
             buck fetch ReactAndroid/src/main/java/com/facebook/react
@@ -285,7 +292,7 @@ jobs:
             buck fetch ReactAndroid/src/test/...
             buck fetch ReactAndroid/src/androidTest/...
             ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-
+      - save-cache: *save-cache-buck-downloads
 # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
@@ -334,10 +341,10 @@ jobs:
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
+  test_node:
+    jobs:
+      - test-node-8
 # Commenting these out for now, as they work as expected
-#  test_node:
-#    jobs:
-#      - test-node-8
 #      - test-node-6
 # Node 4 is expected to fail - that was already the case w/ Circle 1.0
 #      - test-node-4
