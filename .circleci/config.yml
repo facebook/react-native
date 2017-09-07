@@ -132,13 +132,7 @@ jobs:
             sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
       - run:
           name: Configure Android SDK and Android Virtual Device
-          command: |
-            if [ ! -e $ANDROID_HOME/installed-dependencies ]; then
-              sdkmanager --update
-              sdkmanager "system-images;android-23;google_apis;armeabi-v7a"
-              sdkmanager "add-ons;addon-google_apis-google-23"
-              echo no | avdmanager create avd --name testAVD --force --package "system-images;android-23;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a && touch $ANDROID_HOME/installed-dependencies
-            fi
+          command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
 # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Launch Android Virtual Device
@@ -182,13 +176,7 @@ jobs:
 # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
-          command: |
-            local bootanim=""
-            until [[ "$bootanim" =~ "stopped" ]]; do
-              sleep 5
-              bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
-              echo "emulator status=$bootanim"
-            done
+          command: source scripts/circle-ci-android-setup.sh && waitForAVD
 # Tests
       - run:
           name: Build Android app
