@@ -8,6 +8,7 @@
  *
  * @providesModule TouchableBounce
  * @flow
+ * @format
  */
 'use strict';
 
@@ -73,6 +74,12 @@ var TouchableBounce = createReactClass({
      * views.
      */
     hitSlop: EdgeInsetsPropType,
+    releaseVelocity: PropTypes.number.isRequired,
+    releaseBounciness: PropTypes.number.isRequired,
+  },
+
+  getDefaultProps: function() {
+    return {releaseBounciness: 10, releaseVelocity: 10};
   },
 
   getInitialState: function(): State {
@@ -86,7 +93,7 @@ var TouchableBounce = createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function
+    callback?: ?Function,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -115,12 +122,22 @@ var TouchableBounce = createReactClass({
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
         this.state.scale.setValue(0.93);
-        this.bounceTo(1, 10, 10, this.props.onPressAnimationComplete);
+        this.bounceTo(
+          1,
+          this.props.releaseVelocity,
+          this.props.releaseBounciness,
+          this.props.onPressAnimationComplete,
+        );
       });
       return;
     }
 
-    this.bounceTo(1, 10, 10, this.props.onPressAnimationComplete);
+    this.bounceTo(
+      1,
+      this.props.releaseVelocity,
+      this.props.releaseBounciness,
+      this.props.onPressAnimationComplete,
+    );
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -166,18 +183,24 @@ var TouchableBounce = createReactClass({
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderTerminationRequest={
+          this.touchableHandleResponderTerminationRequest
+        }
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {
           // $FlowFixMe(>=0.41.0)
-          this.props.children}
-        {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
+          this.props.children
+        }
+        {Touchable.renderDebugView({
+          color: 'orange',
+          hitSlop: this.props.hitSlop,
+        })}
       </Animated.View>
     );
-  }
+  },
 });
 
 module.exports = TouchableBounce;

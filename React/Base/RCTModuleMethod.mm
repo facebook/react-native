@@ -516,7 +516,26 @@ RCT_EXTERN_C_END
   }
 
   // Invoke method
+#ifdef RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD
+  if (RCTIsMainQueue()) {
+    CFTimeInterval start = CACurrentMediaTime();
+    [_invocation invokeWithTarget:module];
+    CFTimeInterval duration = CACurrentMediaTime() - start;
+    if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
+      RCTLogWarn(
+                 @"Main Thread Watchdog: Invocation of %@ blocked the main thread for %dms. "
+                 "Consider using background-threaded modules and asynchronous calls "
+                 "to spend less time on the main thread and keep the app's UI responsive.",
+                 [self methodName],
+                 (int)(duration * 1000)
+                 );
+    }
+  } else {
+    [_invocation invokeWithTarget:module];
+  }
+#else
   [_invocation invokeWithTarget:module];
+#endif
 
   index = 2;
   [_retainedObjects removeAllObjects];
