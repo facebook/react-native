@@ -261,7 +261,7 @@ public class NativeAnimatedNodeTraversalTest {
     verifyNoMoreInteractions(valueListener);
   }
 
-  public void performSpringAnimationTestWithConfig(JavaOnlyMap config, Boolean testForCriticallyDamped) {
+  public void performSpringAnimationTestWithConfig(JavaOnlyMap config, boolean testForCriticallyDamped) {
     createSimpleAnimatedViewWithOpacity(1000, 0d);
 
     Callback animationCallback = mock(Callback.class);

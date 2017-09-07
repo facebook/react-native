@@ -25,7 +25,7 @@
 
 @end
 
-const CGFloat MAX_DELTA_TIME = 0.064;
+const NSTimeInterval MAX_DELTA_TIME = 0.064;
 
 @implementation RCTSpringAnimation
 {
@@ -48,7 +48,7 @@ const CGFloat MAX_DELTA_TIME = 0.064;
   NSInteger _iterations;
   NSInteger _currentLoop;
   
-  CGFloat _t; // Current time (startTime + dt)
+  NSTimeInterval _t; // Current time (startTime + dt)
 }
 
 - (instancetype)initWithId:(NSNumber *)animationId
@@ -110,7 +110,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   
   // calculate delta time
-  CFTimeInterval deltaTime;
+  NSTimeInterval deltaTime;
   if(_animationStartTime == -1) {
     _t = 0.0;
     _animationStartTime = currentTime;
