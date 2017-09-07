@@ -160,10 +160,10 @@ jobs:
             source $BASH_ENV
 # Configure dependencies
       - run:
-          name: Install Dependencies
+          name: Install Build Dependencies
           command: |
             sudo apt-get update -y
-            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 libtool make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
       - run:
           name: Configure Android SDK and Android Virtual Device
           command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
@@ -173,7 +173,7 @@ jobs:
           command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
           background: true
 # Continue configuring dependencies while AVD boots.
-#      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-ndk
       - run:
           name: Install Android NDK
           command: |
@@ -200,7 +200,7 @@ jobs:
             cd ~/buck && ant
             buck --version
       - save-cache: *save-cache-buck
-#      - restore-cache: *restore-cache-watchman
+      - restore-cache: *restore-cache-watchman
       - run:
           name: Install Watchman
           command: |
@@ -231,7 +231,7 @@ jobs:
           command: source scripts/circle-ci-android-setup.sh && waitForAVD
 # Tests
       - run:
-          name: Build Android app
+          name: Build Android App
           command: |
             buck build ReactAndroid/src/main/java/com/facebook/react
             buck build ReactAndroid/src/main/java/com/facebook/react/shell
