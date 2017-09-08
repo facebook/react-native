@@ -279,7 +279,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
-    runApplication();
+    if (getRootViewTag() != 0) {
+      runApplication();
+    }
   }
 
   /**
