@@ -215,5 +215,14 @@
     "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
     "infoTitle": "Building a React Native App for 80 Million Users",
     "pinned": false
+  },
+  {
+    "name": "Housing.com",
+    "icon": "https://housing.com/mini_logo.png",
+    "linkAppStore": "https://itunes.apple.com/app/id967257660",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.locon.housing",
+    "infoLink": "https://medium.com/engineering-housing/how-we-built-our-react-native-app-3380a33811ac",
+    "infoTitle": "How We Built Our React Native App",
+    "pinned": false
   }
 ]
