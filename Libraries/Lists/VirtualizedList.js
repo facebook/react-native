@@ -1257,7 +1257,7 @@ class CellRenderer extends React.Component<
     ItemSeparatorComponent: ?React.ComponentType<*>,
     cellKey: string,
     fillRateHelper: FillRateHelper,
-    horizontal: boolean,
+    horizontal: ?boolean,
     index: number,
     inversionStyle: ?StyleObj,
     item: Item,
