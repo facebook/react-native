@@ -42,7 +42,8 @@ function createAVD {
 
 function launchAVD {
   # The AVD name here should match the one created in createAVD
-  emulator64-arm -avd $AVD_NAME -no-audio -no-window -no-boot-anim -gpu off
+  # emulator64-arm -avd $AVD_NAME -no-audio -no-window -no-boot-anim -gpu off
+  emulator -avd $AVD_NAME -no-audio -no-window
 }
 
 function waitForAVD {

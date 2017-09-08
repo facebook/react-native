@@ -178,6 +178,8 @@ jobs:
           root: ReactAndroid/src/androidTest/assets/
           paths:
             - AndroidTestBundle.js
+      - store_artifacts:
+          path: ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
   test-android:
     <<: *defaults
