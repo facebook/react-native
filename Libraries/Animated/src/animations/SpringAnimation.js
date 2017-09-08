@@ -196,7 +196,10 @@ class SpringAnimation extends Animation {
     // The following post provides a lot of thoughts into how to build this
     // loop: http://gafferongames.com/game-physics/fix-your-timestep/
     const TIMESTEP_MSEC = 1;
-    const numSteps = Math.floor((now - this._lastTime) / TIMESTEP_MSEC);
+    const numSteps = Math.max(
+      1, // Always take at least one step to make progress.
+      Math.floor((now - this._lastTime) / TIMESTEP_MSEC),
+    );
 
     for (let i = 0; i < numSteps; ++i) {
       // Velocity is based on seconds instead of milliseconds
