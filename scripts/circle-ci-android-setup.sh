@@ -30,9 +30,25 @@ function getAndroidSDK {
     sdkmanager "add-ons;addon-google_apis-google-$ANDROID_SDK_BUILD_API_LEVEL"
     echo "Installing Android Support Repository"
     sdkmanager "extras;android;m2repository"
-    echo "Installing Android NDK"
-    sdkmanager "ndk-bundle"
     touch $DEPS
+  fi
+}
+
+function getAndroidNDK {
+  NDK_HOME="/opt/ndk"
+  DEPS="$NDK_HOME/installed-dependencies"
+
+  if [ ! -e $DEPS ]; then
+    cd $NDK_HOME
+    echo "Downloading NDK..."
+    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
+    curl -o ndk_64.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+    unzip -o -q ndk.zip
+    unzip -o -q ndk_64.zip
+    echo "Installed Android NDK at $NDK_HOME"
+    touch $DEPS
+    rm ndk.zip
+    rm ndk_64.zip
   fi
 }
 

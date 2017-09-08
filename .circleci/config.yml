@@ -43,8 +43,15 @@ aliases:
       - /opt/android/sdk/platforms/android-19
       - /opt/android/sdk/build-tools/23.0.1
       - /opt/android/sdk/add-ons/addon-google_apis-google-23
-      - /opt/android/sdk/ndk-bundle
     key: v1-android-sdkmanager-packages-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+
+  - &restore-cache-ndk
+    keys:
+      - v1-android-ndk-r10e-32-64
+  - &save-cache-ndk
+    paths:
+      - /opt/ndk
+    key: v1-android-ndk-r10e-32-64
 
   - &restore-cache-buck-downloads
     keys:
@@ -189,6 +196,7 @@ jobs:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
       - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+      - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
       - BUILD_THREADS: 2
     steps:
       - checkout
@@ -197,7 +205,6 @@ jobs:
       - run:
           name: Configure PATH
           command: |
-            echo 'export ANDROID_NDK=${ANDROID_HOME}/ndk-bundle/' >> $BASH_ENV
             echo 'export PATH=${ANDROID_NDK}:~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 # Configure dependencies
@@ -220,7 +227,19 @@ jobs:
           command: source scripts/circle-ci-android-setup.sh && launchAVD
           background: true
 # Continue configuring dependencies while AVD boots.
-      - restore-cache: *restore-cache-buck
+      - run:
+          name: Create Android NDK Directory
+          command: |
+            if [[ ! -e /opt/ndk ]]; then
+              sudo mkdir /opt/ndk
+            fi
+            sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
+      - restore-cache: *restore-cache-ndk
+      - run:
+          name: Install Android NDK
+          command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
+      - save-cache: *save-cache-ndk
+     restore-cache: *restore-cache-buck
       - run:
           name: Install Buck
           command: |
