@@ -184,7 +184,7 @@ jobs:
   test-android:
     <<: *defaults
     docker:
-      - image: circleci/android:api-23-alpha
+      - image: circleci/android:api-26-alpha
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
