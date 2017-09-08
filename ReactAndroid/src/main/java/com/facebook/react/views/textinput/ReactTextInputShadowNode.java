@@ -43,7 +43,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
-  private int mJsEventCount = UNSET;
+  private int mMostRecentEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
@@ -111,7 +111,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
   @ReactProp(name = "mostRecentEventCount")
   public void setMostRecentEventCount(int mostRecentEventCount) {
-    mJsEventCount = mostRecentEventCount;
+    mMostRecentEventCount = mostRecentEventCount;
   }
 
   @Override
@@ -135,12 +135,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mJsEventCount != UNSET) {
-      Spannable preparedSpannableText = fromTextCSSNode(this);
+    if (mMostRecentEventCount != UNSET) {
+      Spannable preparedSpannableText = spannedFromShadowNode(this);
       ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
           preparedSpannableText,
-          mJsEventCount,
+          mMostRecentEventCount,
           mContainsImages,
           getPadding(Spacing.LEFT),
           getPadding(Spacing.TOP),

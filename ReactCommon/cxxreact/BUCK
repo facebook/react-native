@@ -139,7 +139,7 @@ rn_xplat_cxx_library(
     deps = [
         ":module",
         ":jsbigstring",
-        "//xplat/fbsystrace:fbsystrace",
+        "xplat//fbsystrace:fbsystrace",
         "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("microprofiler:microprofiler"),
