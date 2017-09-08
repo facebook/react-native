@@ -136,6 +136,15 @@
     "pinned": false
   },
   {
+    "name": "Galarm",
+    "icon": "https://drive.google.com/a/acintyo.com/uc?id=0B65x4eTJ8xXCWHJyV3JDRDFFMkU",
+    "linkAppStore": "https://itunes.apple.com/us/app/galarm-alarms-reminders/id1187849174?mt=8",
+    "linkPlayStore": "http://play.google.com/store/apps/details?id=com.galarmapp",
+    "infoLink": "https://www.galarmapp.com",
+    "infoTitle": "Social alarm app",
+    "pinned": false
+  },
+  {
     "name": "Gyroscope",
     "icon": "https://media.gyrosco.pe/images/magneto/180x180.png",
     "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
