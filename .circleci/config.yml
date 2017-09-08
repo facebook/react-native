@@ -52,11 +52,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r10e
+      - v1-android-ndk-r10e-64
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r10e
+    key: v1-android-ndk-r10e-64
 
   - &restore-cache-buck
     keys:
@@ -218,7 +218,7 @@ jobs:
 # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Launch Android Virtual Device in Background
-          command: emulator64-arm -avd testAVD -no-audio -no-window -no-boot-anim -gpu off
+          command: source scripts/circle-ci-android-setup.sh && launchAVD
           background: true
 # Continue configuring dependencies while AVD boots.
       - run:
@@ -227,7 +227,7 @@ jobs:
             if [[ ! -e /opt/ndk ]]; then
               sudo mkdir /opt/ndk
             fi
-            sudo chown circleci:circleci /opt/ndk
+            sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
       - restore-cache: *restore-cache-ndk
       - run:
           name: Install Android NDK
@@ -243,6 +243,12 @@ jobs:
             cd ~/buck && ant
             buck --version
       - save-cache: *save-cache-buck
+      - run:
+          name: Install Node
+          command: |
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+      - run: npm install
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
