@@ -189,7 +189,7 @@ const Config = {
     extraNodeModules: Object.create(null),
     getAssetExts: () => [],
     getBlacklistRE: () => blacklist(),
-    getEnableBabelRCLookup: () => true,
+    getEnableBabelRCLookup: () => false,
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
     getProjectRoots: () => {
