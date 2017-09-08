@@ -43,7 +43,28 @@ function _toMillis(options: Object, key: string) {
  *   console.warn('Cannot open date picker', message);
  * }
  * ```
+ *
+ * ## Style theme
+ *
+ * Style in android project `res/values/styles.xml` by name `CalendarDatePickerDialog`:
+ *
+ * ### Example
+ *
+ * ```
+ * <resources>
+ *   ...
+ *   <style name="CalendarDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+ *     <item name="colorAccent">#487FFE</item>
+ *     <item name="android:colorAccent">#487FFE</item>
+ *     <item name="android:textColorSecondary">#000000</item>
+ *     ...
+ *   </style>
+ * </resources>
+ * ```
+ * More info about android styles see here: https://developer.android.com/guide/topics/ui/look-and-feel/themes.html#DefiningStyles
+ *
  */
+
 class DatePickerAndroid {
   /**
    * Opens the standard Android date picker dialog.
