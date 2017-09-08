@@ -239,7 +239,7 @@ jobs:
           name: Install Android NDK
           command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
       - save-cache: *save-cache-ndk
-     restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-buck
       - run:
           name: Install Buck
           command: |
