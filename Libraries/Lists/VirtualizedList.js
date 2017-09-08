@@ -518,6 +518,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       data,
       getItem,
       getItemCount,
+      horizontal,
       keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
@@ -537,6 +538,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
+          horizontal={horizontal}
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
@@ -1255,6 +1257,7 @@ class CellRenderer extends React.Component<
     ItemSeparatorComponent: ?React.ComponentType<*>,
     cellKey: string,
     fillRateHelper: FillRateHelper,
+    horizontal: boolean,
     index: number,
     inversionStyle: ?StyleObj,
     item: Item,
@@ -1315,6 +1318,7 @@ class CellRenderer extends React.Component<
       CellRendererComponent,
       ItemSeparatorComponent,
       fillRateHelper,
+      horizontal,
       item,
       index,
       inversionStyle,
@@ -1336,9 +1340,14 @@ class CellRenderer extends React.Component<
     const itemSeparator =
       ItemSeparatorComponent &&
       <ItemSeparatorComponent {...this.state.separatorProps} />;
+    const cellStyle = inversionStyle
+      ? horizontal
+        ? [{flexDirection: 'row-reverse'}, inversionStyle]
+        : [{flexDirection: 'column-reverse'}, inversionStyle]
+      : horizontal ? [{flexDirection: 'row'}, inversionStyle] : inversionStyle;
     if (!CellRendererComponent) {
       return (
-        <View style={inversionStyle} onLayout={onLayout}>
+        <View style={cellStyle} onLayout={onLayout}>
           {element}
           {itemSeparator}
         </View>
@@ -1347,7 +1356,7 @@ class CellRenderer extends React.Component<
     return (
       <CellRendererComponent
         {...this.props}
-        style={inversionStyle}
+        style={cellStyle}
         onLayout={onLayout}>
         {element}
         {itemSeparator}
