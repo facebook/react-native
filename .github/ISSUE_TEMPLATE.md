@@ -29,24 +29,40 @@
 ### Environment
 
 <!--
-  Please fill in all the relevant fields by running these commands in terminal.
+  If you are on v0.48.0 or greater, please run `react-native info` and paste its contents here then specify target platform, like this:
+
+  Environment:
+    OS:  macOS Sierra 10.12.6
+    Node:  8.4.0
+    Yarn:  0.27.5
+    npm:  5.4.0
+    Watchman:  4.7.0
+    Xcode:  Xcode 8.3.3 Build version 8E3004b
+    Android Studio:  2.3 AI-162.4069837
+
+  Packages: (wanted => installed)
+    react-native: 0.48.1 => 0.48.1
+    react: 16.0.0-alpha.12 => 16.0.0-alpha.12
+
+  Target Platform: iOS (10.3)
+
+  Otherwise, fill in the following relevant fields
 -->
 
+<!-- Run these commands in terminal. -->
 1. `react-native -v`:
 2. `node -v`:
 3. `npm -v`:
 4. `yarn --version`<!-- (if you use Yarn) -->:
 
-Then, specify:
-
-<!-- (What platform are you building for? Choose any from iOS, Android, AppleTV.) -->
-- Target Platform:
-
 <!-- Which operating system are you using? Specify macOS, Windows, or Linux, along with specific release versions -->
-- Development Operating System:
+5. Development Operating System:
 
 <!-- Include any additional relevant information. Are you using Xcode or Android Studio to build native code? Is the issue specific to a particular iOS or Android SDK? -->
-- Build tools:
+6. Build tools:
+
+<!-- (What platform are you building for? Choose any from iOS, Android, AppleTV.) -->
+7. Target Platform:
 
 ### Steps to Reproduce
 
