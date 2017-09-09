@@ -161,6 +161,15 @@
     "pinned": false
   },
   {
+    "name": "京东金融",
+    "icon": "http://is5.mzstatic.com/image/thumb/Purple127/v4/5f/bd/de/5fbdde01-36e5-5d52-9b38-e82de0faa8cb/source/175x175bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/cn/app/id895682747?mt=8",
+    "linkPlayStore": "https://m.jr.jd.com/helppage/downApp/jrAppPromote.html",
+    "infoLink": "http://jrhelp.jd.com/show/getProblemInfo?id=688",
+    "infoTitle": "Comprehensive Internet financial services, fund management, financial services, please enjoy!",
+    "pinned": false
+  },
+  {
     "name": "li.st",
     "icon": "https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300",
     "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
