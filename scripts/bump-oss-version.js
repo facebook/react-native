@@ -46,21 +46,32 @@ let versionMajor = branch.slice(0, branch.indexOf(`-stable`));
 // e.g. 0.33.1 or 0.33.0-rc4
 let version = argv._[0];
 if (!version || version.indexOf(versionMajor) !== 0) {
-  echo(`You must pass a tag like ${versionMajor}.[X]-rc[Y] to bump a version`);
+  echo(`You must pass a tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`);
   exit(1);
 }
 
 // Generate version files to detect mismatches between JS and native.
+let [, major, minor, patch, prerelease] = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?$/);
+
 cat('scripts/versiontemplates/ReactNativeVersion.java')
-  .replace('${version}', version)
+  .replace('${major}', major)
+  .replace('${minor}', minor)
+  .replace('${patch}', patch)
+  .replace('${prerelease}', prerelease !== undefined ? prerelease : 'null')
   .to('ReactAndroid/src/main/java/com/facebook/react/ReactNativeVersion.java');
 
 cat('scripts/versiontemplates/RCTVersion.h')
-  .replace('${version}', version)
+  .replace('${major}', `@(${major})`)
+  .replace('${minor}', `@(${minor})`)
+  .replace('${patch}', `@(${patch})`)
+  .replace('${prerelease}', prerelease !== undefined ? `@(${prerelease})` : '[NSNull null]')
   .to('React/Base/RCTVersion.h');
 
 cat('scripts/versiontemplates/ReactNativeVersion.js')
-  .replace('${version}', version)
+  .replace('${major}', major)
+  .replace('${minor}', minor)
+  .replace('${patch}', patch)
+  .replace('${prerelease}', prerelease !== undefined ? prerelease : 'null')
   .to('Libraries/Core/ReactNativeVersion.js');
 
 let packageJson = JSON.parse(cat(`package.json`));

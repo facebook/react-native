@@ -11,6 +11,14 @@
 
 package com.facebook.react;
 
+import com.facebook.react.common.MapBuilder;
+
+import java.util.Map;
+
 public class ReactNativeVersion {
-  public static final String VERSION = "master";
+  public static final Map<String, Integer> VERSION = MapBuilder.of(
+      "major", 0,
+      "minor", 0,
+      "patch", 0,
+      "prerelease", null);
 }

@@ -9,4 +9,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#define REACT_NATIVE_VERSION @"master"
+#define REACT_NATIVE_VERSION @{ \
+  @"major": @(0), \
+  @"minor": @(0), \
+  @"patch": @(0), \
+  @"prerelease": [NSNull null], \
+}

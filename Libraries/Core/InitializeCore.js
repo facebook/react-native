@@ -116,12 +116,18 @@ if (!global.__fbDisableExceptionsManager) {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
+const formatVersion = version =>
+  `${version.major}.${version.minor}.${version.patch}` +
+  (version.prerelease !== null ? `-rc.${version.prerelease}` : '');
+
 const NativeModules = require('NativeModules');
 const ReactNativeVersion = require('./ReactNativeVersion');
-if (ReactNativeVersion.version !== NativeModules.PlatformConstants.reactNativeVersion) {
+const nativeVersion = NativeModules.PlatformConstants.reactNativeVersion;
+if (ReactNativeVersion.version.major !== nativeVersion.major ||
+    ReactNativeVersion.version.minor !== nativeVersion.minor) {
   throw new Error(
-    `React Native version mismatch.\n\nJavaScript version: ${ReactNativeVersion.version}\n` +
-    `Native version: ${NativeModules.PlatformConstants.reactNativeVersion}\n\n` +
+    `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
+    `Native version: ${formatVersion(nativeVersion)}\n\n` +
     'Make sure that you have rebuilt the native code. If the problem persists ' +
     'try clearing the watchman and packager caches with `watchman watch-del-all ' +
     '&& react-native start --reset-cache`.'

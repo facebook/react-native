@@ -25,6 +25,9 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
+; Version templates contain invalid JS.
+<PROJECT_ROOT>/scripts/versiontemplates/.*
+
 [include]
 
 [libs]

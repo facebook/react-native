@@ -13,3 +13,4 @@ website/core/metadata-blog.js
 website/src/react-native/docs/
 website/src/react-native/blog/
 danger/
+scripts/versiontemplates/*

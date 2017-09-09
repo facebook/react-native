@@ -9,4 +9,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#define REACT_NATIVE_VERSION @"${version}"
+#define REACT_NATIVE_VERSION @{ \
+  @"major": ${major}, \
+  @"minor": ${minor}, \
+  @"patch": ${patch}, \
+  @"prerelease": ${prerelease}, \
+}

@@ -11,4 +11,9 @@
  * @flow
  */
 
-exports.version = '${version}';
+exports.version = {
+  major: ${major},
+  minor: ${minor},
+  patch: ${patch},
+  prerelease: ${prerelease},
+};
