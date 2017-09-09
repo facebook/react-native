@@ -70,7 +70,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
     ];
   });
 
-  for (NSUInteger i = 0; i < fontNames.count; i++) {
+  for (NSInteger i = 0; i < fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
       return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
