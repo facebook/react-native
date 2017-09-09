@@ -49,11 +49,13 @@ class FadeInView extends React.Component {
     let { fadeAnim } = this.state;
 
     return (
-      <Animated.View                 // Special animatable View
-        style={{
-          ...this.props.style,
-          opacity: fadeAnim,         // Bind opacity to animated value
-        }}
+      <Animated.View // Special animatable View
+        style={[
+          {
+            opacity: fadeAnim // Bind opacity to animated value
+          },
+          ...this.props.style
+        ]}
       >
         {this.props.children}
       </Animated.View>
