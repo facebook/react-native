@@ -36,34 +36,48 @@
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
-  static NSDictionary *nameToWeight;
+  static NSArray *fontNames;
+  static NSArray *fontWeights;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    nameToWeight = @{
-       @"normal": @(UIFontWeightRegular),
-       @"bold": @(UIFontWeightBold),
-       @"ultralight": @(UIFontWeightUltraLight),
-       @"thin": @(UIFontWeightThin),
-       @"light": @(UIFontWeightLight),
-       @"regular": @(UIFontWeightRegular),
-       @"medium": @(UIFontWeightMedium),
-       @"semibold": @(UIFontWeightSemibold),
-       @"bold": @(UIFontWeightBold),
-       @"heavy": @(UIFontWeightHeavy),
-       @"black": @(UIFontWeightBlack),
-    };
+    // We use two arrays instead of one map because
+    // the order is important for suffix matching.
+    fontNames = @[
+      @"normal",
+      @"ultralight",
+      @"thin",
+      @"light",
+      @"regular",
+      @"medium",
+      @"semibold",
+      @"demibold",
+      @"bold",
+      @"heavy",
+      @"black"
+    ];
+    fontWeights = @[
+      @(UIFontWeightRegular),
+      @(UIFontWeightUltraLight),
+      @(UIFontWeightThin),
+      @(UIFontWeightLight),
+      @(UIFontWeightRegular),
+      @(UIFontWeightMedium),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightBold),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightBlack)
+    ];
   });
 
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
-  if (weight == 0.0) {
-    for (NSString *name in nameToWeight) {
-      if ([font.fontName.lowercaseString hasSuffix:name]) {
-        return [nameToWeight[name] doubleValue];
-      }
+  for (NSInteger i = 0; i < fontNames.count; i++) {
+    if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
+      return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
   }
-  return weight;
+
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
 }
 
 static BOOL isItalicFont(UIFont *font)

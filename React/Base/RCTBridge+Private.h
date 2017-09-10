@@ -35,6 +35,9 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 @property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
 @property (nonatomic, strong) NSLock *flowIDMapLock;
 
+// Used by RCTDevMenu
+@property (nonatomic, copy) NSString *bridgeDescription;
+
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
 
@@ -113,6 +116,11 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
  * the `dispatchViewManagerCommand` method.
  */
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
+
+/**
+* Registers additional classes with the ModuleRegistry.
+*/
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules;
 
 /**
  * Systrace profiler toggling methods exposed for the RCTDevMenu

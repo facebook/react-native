@@ -8,12 +8,6 @@
  */
 'use strict';
 
-jest
-  .unmock('AssetRegistry')
-  .unmock('AssetSourceResolver')
-  .unmock('../resolveAssetSource')
-  .unmock('../../../local-cli/bundle/assetPathUtils');
-
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
 var NativeModules = require('NativeModules');
@@ -128,7 +122,7 @@ describe('resolveAssetSource', () => {
         __packager_asset: true,
         width: 100,
         height: 200,
-        uri: '/Path/To/Sample.app/assets/module/a/logo.png',
+        uri: 'file:///Path/To/Sample.app/assets/module/a/logo.png',
         scale: 1,
       });
     });

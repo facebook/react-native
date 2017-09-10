@@ -25,16 +25,14 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
-class ElementProperties extends React.Component {
-  props: {
-    hierarchy: Array<$FlowFixMe>,
-    style?: Object | Array<$FlowFixMe> | number,
-    source?: {
-      fileName?: string,
-      lineNumber?: number,
-    },
-  };
-
+class ElementProperties extends React.Component<{
+  hierarchy: Array<$FlowFixMe>,
+  style?: Object | Array<$FlowFixMe> | number,
+  source?: {
+    fileName?: string,
+    lineNumber?: number,
+  },
+}> {
   static propTypes = {
     hierarchy: PropTypes.array.isRequired,
     style: PropTypes.oneOfType([

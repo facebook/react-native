@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <fb/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>
@@ -47,6 +47,7 @@ public:
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
+  virtual std::string getDescription() override;
 
 private:
   jni::global_ref<jobject> m_executor;

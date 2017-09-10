@@ -43,14 +43,13 @@ type Props = {
   style?: ?StyleObj,
 };
 
-class RowComponent extends React.PureComponent {
-  props: {
-    item: Object,
-    onNavigate: Function,
-    onPress?: Function,
-    onShowUnderlay?: Function,
-    onHideUnderlay?: Function,
-  };
+class RowComponent extends React.PureComponent<{
+  item: Object,
+  onNavigate: Function,
+  onPress?: Function,
+  onShowUnderlay?: Function,
+  onHideUnderlay?: Function,
+}> {
   _onPress = () => {
     if (this.props.onPress) {
       this.props.onPress();
@@ -80,9 +79,7 @@ const renderSectionHeader = ({section}) =>
     {section.title}
   </Text>;
 
-class RNTesterExampleList extends React.Component {
-  props: Props
-
+class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');

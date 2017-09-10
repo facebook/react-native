@@ -7,37 +7,42 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableHighlight
- * @noflow
+ * @flow
  */
 'use strict';
 
-// Note (avik): add @flow when Flow supports spread properties in propTypes
-
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const React = require('React');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
-var ensureComponentIsNative = require('ensureComponentIsNative');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var keyOf = require('fbjs/lib/keyOf');
-var merge = require('merge');
+const createReactClass = require('create-react-class');
+const ensureComponentIsNative = require('ensureComponentIsNative');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const keyOf = require('fbjs/lib/keyOf');
+const merge = require('merge');
 
-type Event = Object;
+import type {Event} from 'TouchableWithoutFeedback';
 
-var DEFAULT_PROPS = {
+const DEFAULT_PROPS = {
   activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -68,7 +73,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-var TouchableHighlight = React.createClass({
+var TouchableHighlight = createReactClass({
+  displayName: 'TouchableHighlight',
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
     /**
@@ -108,7 +114,6 @@ var TouchableHighlight = React.createClass({
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
-
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -137,6 +142,9 @@ var TouchableHighlight = React.createClass({
   },
 
   getInitialState: function() {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._isMounted = false;
     return merge(
       this.touchableGetInitialState(), this._computeSyntheticState(this.props)
@@ -144,12 +152,18 @@ var TouchableHighlight = React.createClass({
   },
 
   componentDidMount: function() {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._isMounted = true;
     ensurePositiveDelayProps(this.props);
     ensureComponentIsNative(this.refs[CHILD_REF]);
   },
 
   componentWillUnmount: function() {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._isMounted = false;
   },
 
@@ -177,6 +191,9 @@ var TouchableHighlight = React.createClass({
    */
   touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._hideTimeout = null;
     this._showUnderlay();
     this.props.onPressIn && this.props.onPressIn(e);
@@ -192,6 +209,9 @@ var TouchableHighlight = React.createClass({
   touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._showUnderlay();
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._hideTimeout = this.setTimeout(this._hideUnderlay,
       this.props.delayPressOut || 100);
     this.props.onPress && this.props.onPress(e);
@@ -233,6 +253,9 @@ var TouchableHighlight = React.createClass({
 
   _hideUnderlay: function() {
     this.clearTimeout(this._hideTimeout);
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._hideTimeout = null;
     if (this._hasPressHandler() && this.refs[UNDERLAY_REF]) {
       this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
@@ -257,6 +280,9 @@ var TouchableHighlight = React.createClass({
     return (
       <View
         accessible={this.props.accessible !== false}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -273,9 +299,18 @@ var TouchableHighlight = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         nativeID={this.props.nativeID}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         testID={this.props.testID}>
         {React.cloneElement(
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */
           React.Children.only(this.props.children),
           {
             ref: CHILD_REF,

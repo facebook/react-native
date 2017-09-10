@@ -20,6 +20,7 @@ const ReactNative = {
   get ActivityIndicator() { return require('ActivityIndicator'); },
   get ART() { return require('ReactNativeART'); },
   get Button() { return require('Button'); },
+  get CheckBox() { return require('CheckBox'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get FlatList() { return require('FlatList'); },
@@ -29,6 +30,7 @@ const ReactNative = {
   get ImageStore() { return require('ImageStore'); },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
+  get MaskedViewIOS() { return require('MaskedViewIOS'); },
   get Modal() { return require('Modal'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
@@ -61,7 +63,6 @@ const ReactNative = {
 
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
-  get AdSupportIOS() { return require('AdSupportIOS'); },
   get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },
@@ -97,6 +98,7 @@ const ReactNative = {
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get TVEventHandler() { return require('TVEventHandler'); },
   get UIManager() { return require('UIManager'); },
+  get unstable_batchedUpdates() { return require('ReactNative').unstable_batchedUpdates; },
   get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },
 

@@ -12,7 +12,11 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var TimerMixin = require('react-timer-mixin');
 var {
   NativeModules,
@@ -22,7 +26,8 @@ var {
 
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
-var TextUpdateTest = React.createClass({
+var TextUpdateTest = createReactClass({
+  displayName: 'TextUpdateTest',
   mixins: [TimerMixin],
   getInitialState: function() {
     return {seeMore: true};

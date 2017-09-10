@@ -110,6 +110,18 @@ class SimpleAlertExampleBlock extends React.Component {
             <Text>Alert that cannot be dismissed</Text>
           </View>
         </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => Alert.alert(
+            '',
+            alertMessage,
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed!')},
+            ]
+          )}>
+          <View style={styles.button}>
+            <Text>Alert without title</Text>
+          </View>
+        </TouchableHighlight>
       </View>
     );
   }

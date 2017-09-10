@@ -31,8 +31,14 @@ var WEB_PLAYER_VERSION = '1.2.6';
  * AppRegistry.registerComponent('MyApp', () => App);
  * ```
  */
-var WebPlayer = React.createClass({
-  parseParams: function(paramString) {
+class WebPlayer extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.parseParams = this.parseParams.bind(this);
+  }
+
+  parseParams(paramString) {
     var params = {};
 
     if (paramString) {
@@ -44,9 +50,9 @@ var WebPlayer = React.createClass({
     }
 
     return params;
-  },
+  }
 
-  render: function() {
+  render() {
     var hash = `#code=${encodeURIComponent(this.props.children)}`;
 
     if (this.props.params) {
@@ -65,7 +71,7 @@ var WebPlayer = React.createClass({
         />
       </div>
     );
-  },
-});
+  }
+}
 
 module.exports = WebPlayer;

@@ -26,7 +26,7 @@ _Note: Remember to keep your keystore file private and never commit it to versio
 ### Setting up gradle variables
 
 1. Place the `my-release-key.keystore` file under the `android/app` directory in your project folder.
-2. Edit the file `~/.gradle/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
+2. Edit the file `~/.gradle/gradle.properties` or `android/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
 
 ```
 MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
@@ -87,7 +87,7 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 
 ### Testing the release build of your app
 
-Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
+Before uploading the release build to the Play Store, make sure you test it thoroughly. First uninstall any previous version of the app you already have installed. Install it on the device using:
 
 ```sh
 $ react-native run-android --variant=release

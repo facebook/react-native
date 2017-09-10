@@ -28,7 +28,7 @@ const React = require('React');
  * Typically, you will not need to use this component and should opt for normal
  * React reconciliation.
  */
-class StaticContainer extends React.Component {
+class StaticContainer extends React.Component<Object> {
 
   shouldComponentUpdate(nextProps: Object): boolean {
     return !!nextProps.shouldUpdate;

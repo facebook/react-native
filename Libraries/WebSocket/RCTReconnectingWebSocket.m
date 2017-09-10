@@ -11,10 +11,26 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
+#import <fishhook/fishhook.h>
 
 #import "RCTSRWebSocket.h"
 
 #if RCT_DEV // Only supported in dev mode
+
+static void (*orig_nwlog_legacy_v)(int, char*, va_list);
+
+static void my_nwlog_legacy_v(int level, char *format, va_list args) {
+  static const uint buffer_size = 256;
+  static char buffer[buffer_size];
+  va_list copy;
+  va_copy(copy, args);
+  vsnprintf(buffer, buffer_size, format, copy);
+  va_end(copy);
+
+  if (strstr(buffer, "nw_connection_get_connected_socket_block_invoke") == NULL) {
+    orig_nwlog_legacy_v(level, format, args);
+  }
+}
 
 @interface RCTReconnectingWebSocket () <RCTSRWebSocketDelegate>
 @end
@@ -25,6 +41,16 @@
 }
 
 @synthesize delegate = _delegate;
+
++ (void)load
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    rebind_symbols((struct rebinding[1]){
+      {"nwlog_legacy_v", my_nwlog_legacy_v, (void *)&orig_nwlog_legacy_v}
+    }, 1);
+  });
+}
 
 - (instancetype)initWithURL:(NSURL *)url
 {
@@ -44,7 +70,9 @@
   [self stop];
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-
+  if (_delegateDispatchQueue) {
+    [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
+  }
   [_socket open];
 }
 
@@ -73,6 +101,11 @@
   });
 }
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+  [self.delegate webSocketDidOpen:webSocket];
+}
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [self reconnect];
@@ -80,6 +113,7 @@
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
+  [self.delegate webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
   [self reconnect];
 }
 

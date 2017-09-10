@@ -99,7 +99,7 @@ type DefaultProps = {
 type State = {
   doIncrementalRender: boolean,
 };
-class Incremental extends React.Component<DefaultProps, Props, State> {
+class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;
   context: Context;
@@ -154,7 +154,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     }).done();
   }
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {

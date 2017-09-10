@@ -31,7 +31,7 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
 
-class ActionSheetExample extends React.Component {
+class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     clicked: 'none',
   };
@@ -61,7 +61,7 @@ class ActionSheetExample extends React.Component {
   };
 }
 
-class ActionSheetTintExample extends React.Component {
+class ActionSheetTintExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     clicked: 'none',
   };
@@ -92,7 +92,7 @@ class ActionSheetTintExample extends React.Component {
   };
 }
 
-class ShareActionSheetExample extends React.Component {
+class ShareActionSheetExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     text: ''
   };
@@ -132,7 +132,7 @@ class ShareActionSheetExample extends React.Component {
   };
 }
 
-class ShareScreenshotExample extends React.Component {
+class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     text: ''
   };

@@ -48,6 +48,8 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  *
  * ### Example
  * ```
+ * import { PermissionsAndroid } from 'react-native';
+ *
  * async function requestCameraPermission() {
  *   try {
  *     const granted = await PermissionsAndroid.request(

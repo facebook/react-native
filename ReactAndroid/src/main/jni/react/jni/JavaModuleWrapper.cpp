@@ -74,13 +74,12 @@ std::vector<MethodDescriptor> JavaNativeModule::getMethods() {
 
 folly::dynamic JavaNativeModule::getConstants() {
   static auto constantsMethod =
-    wrapper_->getClass()->getMethod<NativeArray::javaobject()>("getConstants");
+    wrapper_->getClass()->getMethod<NativeMap::javaobject()>("getConstants");
   auto constants = constantsMethod(wrapper_);
   if (!constants) {
     return nullptr;
   } else {
-    // See JavaModuleWrapper#getConstants for the other side of this hack.
-    return cthis(constants)->consume()[0];
+    return cthis(constants)->consume();
   }
 }
 
@@ -147,13 +146,12 @@ std::vector<MethodDescriptor> NewJavaNativeModule::getMethods() {
 
 folly::dynamic NewJavaNativeModule::getConstants() {
   static auto constantsMethod =
-    wrapper_->getClass()->getMethod<NativeArray::javaobject()>("getConstants");
+    wrapper_->getClass()->getMethod<NativeMap::javaobject()>("getConstants");
   auto constants = constantsMethod(wrapper_);
   if (!constants) {
     return nullptr;
   } else {
-    // See JavaModuleWrapper#getConstants for the other side of this hack.
-    return cthis(constants)->consume()[0];
+    return cthis(constants)->consume();
   }
 }
 

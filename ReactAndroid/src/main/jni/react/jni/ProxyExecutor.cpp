@@ -2,15 +2,15 @@
 
 #include "ProxyExecutor.h"
 
+#include <cxxreact/JSBigString.h>
+#include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/SystraceSection.h>
 #include <fb/assert.h>
 #include <fb/Environment.h>
-#include <jni/LocalReference.h>
-#include <jni/LocalString.h>
 #include <folly/json.h>
 #include <folly/Memory.h>
-
-#include <cxxreact/SystraceSection.h>
-#include <cxxreact/ModuleRegistry.h>
+#include <jni/LocalReference.h>
+#include <jni/LocalString.h>
 
 namespace facebook {
 namespace react {
@@ -112,6 +112,10 @@ void ProxyExecutor::setGlobalVariable(std::string propName,
     m_executor.get(),
     jni::make_jstring(propName).get(),
     jni::make_jstring(jsonValue->c_str()).get());
+}
+
+std::string ProxyExecutor::getDescription() {
+  return "Chrome";
 }
 
 } }

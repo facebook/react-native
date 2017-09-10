@@ -22,10 +22,12 @@ var View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 var processColor = require('processColor');
 
+var createReactClass = require('create-react-class');
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
 
-var PickerIOS = React.createClass({
+var PickerIOS = createReactClass({
+  displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

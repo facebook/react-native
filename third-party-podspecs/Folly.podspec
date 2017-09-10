@@ -12,33 +12,24 @@ Pod::Spec.new do |spec|
   spec.dependency 'DoubleConversion'
   spec.dependency 'GLog'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-  spec.header_mappings_dir = 'folly'
-  spec.source_files = 'folly/*.h',
-                      'folly/Bits.cpp',
+  spec.source_files = 'folly/Bits.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
                       'folly/StringBase.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
-                      'folly/json.cpp'
+                      'folly/json.cpp',
+                      'folly/portability/BitsFunctexcept.cpp',
+                      'folly/detail/MallocImpl.cpp'
+  # workaround for https://github.com/facebook/react-native/issues/14326
+  spec.preserve_paths = 'folly/*.h',
+                        'folly/detail/*.h',
+                        'folly/portability/*.h'
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, '8.0'
-
-  spec.subspec "detail" do |ss|
-    ss.header_dir = 'folly/detail'
-    ss.source_files = 'folly/detail/*.h',
-                      'folly/detail/MallocImpl.cpp'
-  end
-
-  spec.subspec "portability" do |ss|
-    ss.header_dir = 'folly/portability'
-    ss.source_files = 'folly/portability/*.h',
-                      'folly/portability/BitsFunctexcept.cpp'
-  end
-
+  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 end
