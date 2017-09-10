@@ -51,27 +51,32 @@ if (!version || version.indexOf(versionMajor) !== 0) {
 }
 
 // Generate version files to detect mismatches between JS and native.
-let [, major, minor, patch, prerelease] = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?$/);
+let match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+if (!match) {
+  echo(`You must pass a correctly formatted version; couldn't parse ${version}`);
+  exit(1);
+}
+let [, major, minor, patch, prerelease] = match;
 
 cat('scripts/versiontemplates/ReactNativeVersion.java')
   .replace('${major}', major)
   .replace('${minor}', minor)
   .replace('${patch}', patch)
-  .replace('${prerelease}', prerelease !== undefined ? prerelease : 'null')
+  .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null')
   .to('ReactAndroid/src/main/java/com/facebook/react/ReactNativeVersion.java');
 
 cat('scripts/versiontemplates/RCTVersion.h')
   .replace('${major}', `@(${major})`)
   .replace('${minor}', `@(${minor})`)
   .replace('${patch}', `@(${patch})`)
-  .replace('${prerelease}', prerelease !== undefined ? `@(${prerelease})` : '[NSNull null]')
+  .replace('${prerelease}', prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]')
   .to('React/Base/RCTVersion.h');
 
 cat('scripts/versiontemplates/ReactNativeVersion.js')
   .replace('${major}', major)
   .replace('${minor}', minor)
   .replace('${patch}', patch)
-  .replace('${prerelease}', prerelease !== undefined ? prerelease : 'null')
+  .replace('${prerelease}', prerelease !== undefined ? `'${prerelease}'` : 'null')
   .to('Libraries/Core/ReactNativeVersion.js');
 
 let packageJson = JSON.parse(cat(`package.json`));

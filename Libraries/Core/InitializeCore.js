@@ -118,11 +118,10 @@ if (!global.__fbDisableExceptionsManager) {
 
 const formatVersion = version =>
   `${version.major}.${version.minor}.${version.patch}` +
-  (version.prerelease !== null ? `-rc.${version.prerelease}` : '');
+  (version.prerelease !== null ? `-${version.prerelease}` : '');
 
-const NativeModules = require('NativeModules');
 const ReactNativeVersion = require('./ReactNativeVersion');
-const nativeVersion = NativeModules.PlatformConstants.reactNativeVersion;
+const nativeVersion = require('NativeModules').PlatformConstants.reactNativeVersion;
 if (ReactNativeVersion.version.major !== nativeVersion.major ||
     ReactNativeVersion.version.minor !== nativeVersion.minor) {
   throw new Error(

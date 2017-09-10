@@ -16,7 +16,7 @@ import com.facebook.react.common.MapBuilder;
 import java.util.Map;
 
 public class ReactNativeVersion {
-  public static final Map<String, Integer> VERSION = MapBuilder.of(
+  public static final Map<String, Object> VERSION = MapBuilder.<String, Object>of(
       "major", 0,
       "minor", 0,
       "patch", 0,
