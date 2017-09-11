@@ -31,7 +31,7 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
-    event.viewTag.intValue |
+    ([event respondsToSelector:@selector(viewTag)] ? event.viewTag.intValue : 0) |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32) |
     (((uint64_t)event.coalescingKey) << 48)
   );
@@ -151,34 +151,39 @@ RCT_EXPORT_MODULE()
   }
 
   [_observersLock unlock];
-
-  [_eventQueueLock lock];
-
-  NSNumber *eventID = RCTGetEventID(event);
-
-  id<RCTEvent> previousEvent = _events[eventID];
-  if (previousEvent) {
-    RCTAssert([event canCoalesce], @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
-    event = [previousEvent coalesceWithEvent:event];
+  
+  if (event.canCoalesce) {
+    [_eventQueueLock lock];
+    
+    NSNumber *eventID = RCTGetEventID(event);
+    
+    id<RCTEvent> previousEvent = _events[eventID];
+    if (previousEvent) {
+      event = [previousEvent coalesceWithEvent:event];
+    } else {
+      [_eventQueue addObject:eventID];
+    }
+    _events[eventID] = event;
+    
+    BOOL scheduleEventsDispatch = NO;
+    if (!_eventsDispatchScheduled) {
+      _eventsDispatchScheduled = YES;
+      scheduleEventsDispatch = YES;
+    }
+    
+    // We have to release the lock before dispatching block with events,
+    // since dispatchBlock: can be executed synchronously on the same queue.
+    // (This is happening when chrome debugging is turned on.)
+    [_eventQueueLock unlock];
+    
+    if (scheduleEventsDispatch) {
+      [_bridge dispatchBlock:^{
+        [self flushEventsQueue];
+      } queue:RCTJSThread];
+    }
   } else {
-    [_eventQueue addObject:eventID];
-  }
-  _events[eventID] = event;
-
-  BOOL scheduleEventsDispatch = NO;
-  if (!_eventsDispatchScheduled) {
-    _eventsDispatchScheduled = YES;
-    scheduleEventsDispatch = YES;
-  }
-
-  // We have to release the lock before dispatching block with events,
-  // since dispatchBlock: can be executed synchronously on the same queue.
-  // (This is happening when chrome debugging is turned on.)
-  [_eventQueueLock unlock];
-
-  if (scheduleEventsDispatch) {
     [_bridge dispatchBlock:^{
-      [self flushEventsQueue];
+      [self dispatchEvent:event];
     } queue:RCTJSThread];
   }
 }
