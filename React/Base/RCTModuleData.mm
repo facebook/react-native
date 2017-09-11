@@ -357,6 +357,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (dispatch_queue_t)methodQueue
 {
   (void)[self instance];
+  RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@, bridge.valid: %d)",
+            self, _instance, _bridge.valid);
   return _methodQueue;
 }
 

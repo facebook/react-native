@@ -921,6 +921,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
+  if (!self.valid) {
+    return;
+  }
+
   if (buffer != nil && buffer != (id)kCFNull) {
     _wasBatchActive = YES;
     [self handleBuffer:buffer];
