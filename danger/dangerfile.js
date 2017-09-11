@@ -94,7 +94,7 @@ if (!includesTestPlan && !editsDocs) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[(ANDROID|CLI|DOCS|GENERAL|IOS|TVOS|WINDOWS)\]\s*?\[(BREAKING|FEATURE|ENHANCEMENT|BUGFIX)\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
+const releaseNotesRegex = /\[(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\]\s*?\[(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
 const includesReleaseNotes = danger.github.pr.body.toLowerCase().includes('release notes');
 const correctlyFormattedReleaseNotes = releaseNotesRegex.test(danger.github.pr.body);
 const releaseNotesCaptureGroups = releaseNotesRegex.exec(danger.github.pr.body);

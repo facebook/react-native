@@ -21,14 +21,19 @@ Happy contributing!
 <!--
 Help reviewers and the release process by writing your own release notes
 
- CATEGORY
-[---------]        TYPE
-[ GENERAL ]   [-------------]       WHERE
-[ DOCS    ]   [ BREAKING    ]   [-------------]
-[ CLI     ]   [ BUGFIX      ]   [ {Framework} ]
-[ IOS     ]   [ ENHANCEMENT ]   [ {Component} ]   |-----------|
-[ ANDROID ]   [ FEATURE     ]   [ {File}      ] - | {Message} |
-[---------]   [-------------]   [-------------]   |-----------|
+**INTERNAL and MINOR tagged notes will not be included in the next version's final release notes.**
+
+  CATEGORY
+[----------]        TYPE
+[ CLI      ]   [-------------]      LOCATION
+[ DOCS     ]   [ BREAKING    ]   [-------------]
+[ GENERAl  ]   [ BUGFIX      ]   [-{Component}-]
+[ INTERNAL ]   [ ENHANCEMENT ]   [ {File}      ]
+[ IOS      ]   [ FEATURE     ]   [ {Directory} ]   |-----------|
+[ ANDROID  ]   [ MINOR       ]   [ {Framework} ] - | {Message} |
+[----------]   [-------------]   [-------------]   |-----------|
+
+[CATEGORY] [TYPE] [LOCATION] - MESSAGE
 
  EXAMPLES:
 
@@ -37,4 +42,5 @@ Help reviewers and the release process by writing your own release notes
  [CLI] [FEATURE] [local-cli/info/info.js] - CLI easier to do things with
  [DOCS] [BUGFIX] [GettingStarted.md] - Accidentally a thing/word
  [GENERAL] [ENHANCEMENT] [Yoga] - Added new yoga thing/position
+ [INTERNAL] [FEATURE] [./scripts] - Added thing to script that nobody will see
 -->
