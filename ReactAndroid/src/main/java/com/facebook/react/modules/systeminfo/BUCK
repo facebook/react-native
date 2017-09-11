@@ -23,6 +23,7 @@ android_library(
     name = "systeminfo-moduleless",
     srcs = [
         "AndroidInfoHelpers.java",
+        "ReactNativeVersion.java",
     ],
     visibility = [
         "PUBLIC",
