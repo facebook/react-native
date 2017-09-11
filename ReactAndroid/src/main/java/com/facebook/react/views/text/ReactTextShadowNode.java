@@ -62,8 +62,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
  * passed as "computedDataFromMeasure" down to shadow and native view.
  * <p/>
- * TODO(7255858): Rename *CSSNodeDEPRECATED to *ShadowView (or sth similar) as it's no longer is used solely
- * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
 
@@ -105,7 +103,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
   }
 
-  private static void buildSpannedFromTextCSSNode(
+  private static void buildSpannedFromShadowNode(
       ReactTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
@@ -116,7 +114,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
-        buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
+        buildSpannedFromShadowNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
         // the text so that the image doesn't run over any following text.
@@ -184,7 +182,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
   }
 
-  protected static Spannable fromTextCSSNode(ReactTextShadowNode textCSSNode) {
+  protected static Spannable spannedFromShadowNode(ReactTextShadowNode textShadowNode) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     // TODO(5837930): Investigate whether it's worth optimizing this part and do it if so
 
@@ -192,10 +190,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
-    buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
-    if (textCSSNode.mFontSize == UNSET) {
+    buildSpannedFromShadowNode(textShadowNode, sb, ops);
+    if (textShadowNode.mFontSize == UNSET) {
       sb.setSpan(
-          new AbsoluteSizeSpan(textCSSNode.mAllowFontScaling
+          new AbsoluteSizeSpan(textShadowNode.mAllowFontScaling
           ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
           : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
           0,
@@ -203,17 +201,17 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
     }
 
-    textCSSNode.mContainsImages = false;
-    textCSSNode.mHeightOfTallestInlineImage = Float.NaN;
+    textShadowNode.mContainsImages = false;
+    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images
     for (int i = ops.size() - 1; i >= 0; i--) {
       SetSpanOperation op = ops.get(i);
       if (op.what instanceof TextInlineImageSpan) {
         int height = ((TextInlineImageSpan)op.what).getHeight();
-        textCSSNode.mContainsImages = true;
-        if (Float.isNaN(textCSSNode.mHeightOfTallestInlineImage) || height > textCSSNode.mHeightOfTallestInlineImage) {
-          textCSSNode.mHeightOfTallestInlineImage = height;
+        textShadowNode.mContainsImages = true;
+        if (Float.isNaN(textShadowNode.mHeightOfTallestInlineImage) || height > textShadowNode.mHeightOfTallestInlineImage) {
+          textShadowNode.mHeightOfTallestInlineImage = height;
         }
       }
       op.execute(sb);
@@ -417,7 +415,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     if (isVirtual()) {
       return;
     }
-    mPreparedSpannableText = fromTextCSSNode(this);
+    mPreparedSpannableText = spannedFromShadowNode(this);
     markUpdated();
   }
 

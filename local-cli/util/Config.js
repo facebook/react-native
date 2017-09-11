@@ -10,6 +10,9 @@
  */
 'use strict';
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const blacklist = require('metro-bundler/src/blacklist');
 const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
@@ -17,6 +20,9 @@ const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const {providesModuleNodeModules} = require('metro-bundler/src/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
@@ -26,9 +32,21 @@ import type {
   PostMinifyProcess,
   PostProcessModules,
   PostProcessBundleSourcemap
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 } from 'metro-bundler/src/Bundler';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 import type {TransformVariants} from 'metro-bundler/src/ModuleGraph/types.flow';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 import type {PostProcessModules as PostProcessModulesForBuck} from 'metro-bundler/src/ModuleGraph/types.flow.js';
 
 /**
