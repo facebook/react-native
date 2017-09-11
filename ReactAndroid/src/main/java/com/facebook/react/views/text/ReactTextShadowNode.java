@@ -9,11 +9,6 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.BoringLayout;
@@ -30,27 +25,28 @@ import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
-
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * {@link ReactShadowNode} class for spannable text view.
@@ -107,13 +103,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       ReactTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
+
     int start = sb.length();
-    if (textShadowNode.mText != null) {
-      sb.append(textShadowNode.mText);
-    }
+
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
-      if (child instanceof ReactTextShadowNode) {
+
+      if (child instanceof ReactRawTextShadowNode) {
+        sb.append(((ReactRawTextShadowNode) child).getText());
+      } else if (child instanceof ReactTextShadowNode) {
         buildSpannedFromShadowNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
@@ -182,8 +180,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
   }
 
-  protected static Spannable spannedFromShadowNode(ReactTextShadowNode textShadowNode) {
+  protected static Spannable spannedFromShadowNode(
+      ReactTextShadowNode textShadowNode, String text) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
+
     // TODO(5837930): Investigate whether it's worth optimizing this part and do it if so
 
     // The {@link SpannableStringBuilder} implementation require setSpan operation to be called
@@ -191,6 +191,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
     buildSpannedFromShadowNode(textShadowNode, sb, ops);
+
+    if (text != null) {
+      sb.append(text);
+    }
+
     if (textShadowNode.mFontSize == UNSET) {
       sb.setSpan(
           new AbsoluteSizeSpan(textShadowNode.mAllowFontScaling
@@ -375,7 +380,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
    *     <Text style={{fontFamily="serif}}>Bold Text</Text>
    */
   private @Nullable String mFontFamily = null;
-  private @Nullable String mText = null;
 
   private @Nullable Spannable mPreparedSpannableText;
 
@@ -415,7 +419,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     if (isVirtual()) {
       return;
     }
-    mPreparedSpannableText = spannedFromShadowNode(this);
+    mPreparedSpannableText = spannedFromShadowNode(this, null);
     markUpdated();
   }
 
@@ -426,12 +430,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     if (!isVirtual()) {
       super.dirty();
     }
-  }
-
-  @ReactProp(name = PROP_TEXT)
-  public void setText(@Nullable String text) {
-    mText = text;
-    markUpdated();
   }
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)

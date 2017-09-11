@@ -11,13 +11,14 @@ package com.facebook.react.views.text;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
  * Manages raw text nodes. Since they are used only as a virtual nodes any type of native view
  * operation will throw an {@link IllegalStateException}
  */
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
-public class ReactVirtualTextViewManager extends ReactRawTextManager {
+public class ReactVirtualTextViewManager extends ReactTextViewManager {
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTVirtualText";
@@ -25,5 +26,18 @@ public class ReactVirtualTextViewManager extends ReactRawTextManager {
   @Override
   public String getName() {
     return REACT_CLASS;
+  }
+
+  @Override
+  public ReactTextView createViewInstance(ThemedReactContext context) {
+    throw new IllegalStateException("Attempt to create a native view for RCTVirtualText");
+  }
+
+  @Override
+  public void updateExtraData(ReactTextView view, Object extraData) {}
+
+  @Override
+  public ReactTextShadowNode createShadowNodeInstance() {
+    return new ReactVirtualTextShadowNode();
   }
 }
