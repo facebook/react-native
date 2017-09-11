@@ -38,7 +38,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @required
 
 @property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 
@@ -54,6 +53,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 // Coalescing related methods must only be implemented if canCoalesce
 // returns YES.
+@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 
 @end
@@ -89,12 +89,6 @@ __deprecated_msg("Subclass RCTEventEmitter instead");
  */
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 __deprecated_msg("Subclass RCTEventEmitter instead");
-
-/**
- * Deprecated, do not use.
- */
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
-__deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
 
 /**
  * Send a text input/focus event. For internal use only.

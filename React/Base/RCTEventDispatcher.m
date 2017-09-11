@@ -12,8 +12,9 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTUtils.h"
+#import "RCTComponentEvent.h"
 #import "RCTProfile.h"
+#import "RCTUtils.h"
 
 const NSInteger RCTTextUpdateLagWarningThreshold = 3;
 
@@ -81,20 +82,6 @@ RCT_EXPORT_MODULE()
               completion:NULL];
 }
 
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
-{
-  if (RCT_DEBUG) {
-    RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-      @"Event body dictionary must include a 'target' property containing a React tag");
-  }
-
-  name = RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"RCTEventEmitter"
-                  method:@"receiveEvent"
-                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
-              completion:NULL];
-}
-
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
@@ -136,10 +123,8 @@ RCT_EXPORT_MODULE()
     body[@"key"] = key;
   }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [self sendInputEventWithName:events[type] body:body];
-#pragma clang diagnostic pop
+  RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type] body:body];
+  [self sendEvent:event];
 }
 
 - (void)sendEvent:(id<RCTEvent>)event
