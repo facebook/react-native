@@ -49,7 +49,7 @@ const TextStylePropTypes = {
   textShadowRadius: ReactPropTypes.number,
   textShadowColor: ColorPropType,
   /**
-   * @platform ios
+   * Specifies the letter spacing (kerning).
    */
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,

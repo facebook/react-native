@@ -23,6 +23,8 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
@@ -37,6 +39,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private int mDefaultGravityVertical;
   private boolean mTextIsSelectable;
   private float mLineHeight = Float.NaN;
+  private float mLetterSpacing = Float.NaN;
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
@@ -64,6 +67,22 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       (int) Math.floor(update.getPaddingTop()),
       (int) Math.floor(update.getPaddingRight()),
       (int) Math.floor(update.getPaddingBottom()));
+
+    // API 21+: https://developer.android.com/reference/android/widget/TextView.html#setLetterSpacing(float)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float nextLetterSpacing = update.getLetterSpacing();
+      int fontSize = update.getFontSize();
+      if (!FloatUtil.floatsEqual(mLetterSpacing, nextLetterSpacing)) {
+        mLetterSpacing = nextLetterSpacing;
+        if(Float.isNaN(mLetterSpacing)) {
+          setLetterSpacing((float) 0.0);
+        } else {
+          // Calculate EM from proper font pixels
+          // This does PX to EM conversions since Android does letterSpacing in EM
+          setLetterSpacing(1 + (mLetterSpacing - PixelUtil.toDIPFromPixel(fontSize)) / PixelUtil.toDIPFromPixel(fontSize));
+        }
+      }
+    }
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {

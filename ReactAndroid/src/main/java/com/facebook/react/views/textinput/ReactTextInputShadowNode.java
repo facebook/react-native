@@ -86,6 +86,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
 
+    // API 21+: https://developer.android.com/reference/android/widget/TextView.html#setLetterSpacing(float)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      editText.setLetterSpacing(getLetterSpacing());
+    }
+
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
     }
@@ -146,6 +151,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           getPadding(Spacing.TOP),
           getPadding(Spacing.RIGHT),
           getPadding(Spacing.BOTTOM),
+          getLetterSpacing(),
+          getFontSize(),
           mTextAlign,
           mTextBreakStrategy
         );
