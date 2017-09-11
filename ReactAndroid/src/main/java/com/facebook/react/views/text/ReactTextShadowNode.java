@@ -329,11 +329,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
-  private boolean mAllowFontScaling = true;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
 
+  protected boolean mAllowFontScaling = true;
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;

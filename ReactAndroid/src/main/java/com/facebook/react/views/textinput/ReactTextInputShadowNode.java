@@ -81,10 +81,13 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        mFontSize == UNSET ?
-            (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
+    float textSize = mFontSize;
+    if (mFontSize == UNSET) {
+      textSize = (int) Math.ceil(mAllowFontScaling
+          ? PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)
+          : PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+    }
+    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
