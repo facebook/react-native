@@ -28,6 +28,7 @@ public class ReactTextUpdate {
   private final float mPaddingBottom;
   private final int mTextAlign;
   private final int mTextBreakStrategy;
+  private final float mLetterSpacing;
 
   /**
    * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
@@ -50,6 +51,7 @@ public class ReactTextUpdate {
         paddingTop,
         paddingEnd,
         paddingBottom,
+        0f,
         textAlign,
         Layout.BREAK_STRATEGY_HIGH_QUALITY);
   }
@@ -62,6 +64,7 @@ public class ReactTextUpdate {
     float paddingTop,
     float paddingEnd,
     float paddingBottom,
+    float letterSpacing,
     int textAlign,
     int textBreakStrategy) {
     mText = text;
@@ -71,6 +74,7 @@ public class ReactTextUpdate {
     mPaddingTop = paddingTop;
     mPaddingRight = paddingEnd;
     mPaddingBottom = paddingBottom;
+    mLetterSpacing = letterSpacing;
     mTextAlign = textAlign;
     mTextBreakStrategy = textBreakStrategy;
   }
@@ -101,6 +105,10 @@ public class ReactTextUpdate {
 
   public float getPaddingBottom() {
     return mPaddingBottom;
+  }
+
+  public float getLetterSpacing() {
+    return mLetterSpacing;
   }
 
   public int getTextAlign() {
