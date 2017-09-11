@@ -331,7 +331,7 @@ const JSTimers = {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
-              requestIdleCallbackTimeouts[id];
+              delete requestIdleCallbackTimeouts[id];
             }
             return func(deadline);
           }
