@@ -63,7 +63,7 @@ cat('scripts/versiontemplates/ReactNativeVersion.java')
   .replace('${minor}', minor)
   .replace('${patch}', patch)
   .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null')
-  .to('ReactAndroid/src/main/java/com/facebook/react/ReactNativeVersion.java');
+  .to('ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java');
 
 cat('scripts/versiontemplates/RCTVersion.h')
   .replace('${major}', `@(${major})`)

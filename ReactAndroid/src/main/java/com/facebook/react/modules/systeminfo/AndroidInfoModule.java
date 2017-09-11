@@ -11,7 +11,6 @@ package com.facebook.react.modules.systeminfo;
 
 import android.os.Build;
 
-import com.facebook.react.ReactNativeVersion;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.module.annotations.ReactModule;
 
