@@ -9,7 +9,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react;
+package com.facebook.react.modules.systeminfo;
 
 import com.facebook.react.common.MapBuilder;
 
