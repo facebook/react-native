@@ -212,19 +212,13 @@ var TouchableHighlight = createReactClass({
 
   touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
-<<<<<<< HEAD
     if (!Platform.isTVOS) {
       this._showUnderlay();
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+       * suppresses an error when upgrading Flow's support for React. To see the
+       * error delete this comment and run Flow. */
       this._hideTimeout = this.setTimeout(this._hideUnderlay, this.props.delayPressOut || 100);
 		}
-=======
-    this._showUnderlay();
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
-    this._hideTimeout = this.setTimeout(this._hideUnderlay,
-      this.props.delayPressOut || 100);
->>>>>>> upstream/master
     this.props.onPress && this.props.onPress(e);
   },
 
