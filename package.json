@@ -167,6 +167,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.3.3",
+    "node-notifier": "^5.1.2",
     "npmlog": "^2.0.4",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
