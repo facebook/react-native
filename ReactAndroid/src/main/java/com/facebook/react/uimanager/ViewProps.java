@@ -169,7 +169,7 @@ public class ViewProps {
       return true;
     } else if (POINTER_EVENTS.equals(prop)) {
       String value = map.getString(prop);
-      return "auto".equals(value) || "box-none".equals(value);
+      return "auto".equals(value);
     } else {
       return false;
     }
