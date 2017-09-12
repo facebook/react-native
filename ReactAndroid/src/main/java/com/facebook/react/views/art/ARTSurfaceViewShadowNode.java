@@ -34,7 +34,6 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   implements TextureView.SurfaceTextureListener {
 
   private @Nullable Surface mSurface;
-  private @Nullable boolean mHasPendingUpdates;
 
   private @Nullable Integer mBackgroundColor;
 
@@ -63,7 +62,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
 
   private void drawOutput() {
     if (mSurface == null || !mSurface.isValid()) {
-      mHasPendingUpdates = true;
+      markChildrenUpdatesSeen(this);
       return;
     }
 
@@ -78,6 +77,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
       for (int i = 0; i < getChildCount(); i++) {
         ARTVirtualNode child = (ARTVirtualNode) getChildAt(i);
         child.draw(canvas, paint, 1f);
+        child.markUpdateSeen();
       }
 
       if (mSurface == null) {
@@ -85,20 +85,23 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
       }
 
       mSurface.unlockCanvasAndPost(canvas);
-      mHasPendingUpdates = false;
     } catch (IllegalArgumentException | IllegalStateException e) {
-      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in SurfaceView.drawOutput");
-    } catch (RuntimeException e) {
-      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in SurfaceView.drawOutput");
+      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in Surface.unlockCanvasAndPost");
+    }
+  }
+
+  private void markChildrenUpdatesSeen(ReactShadowNode shadowNode) {
+    for (int i = 0; i < shadowNode.getChildCount(); i++) {
+      ReactShadowNode child = shadowNode.getChildAt(i);
+      child.markUpdateSeen();
+      markChildrenUpdatesSeen(child);
     }
   }
 
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     mSurface = new Surface(surface);
-    if (mHasPendingUpdates) {
-      drawOutput();
-    }
+    drawOutput();
   }
 
   @Override
@@ -109,9 +112,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-    drawOutput();
-  }
+  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
 
   @Override
   public void onSurfaceTextureUpdated(SurfaceTexture surface) {}

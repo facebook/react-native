@@ -16,21 +16,18 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 
 type Props = {
-  children?: React.Element<*>,
+  children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: Object) => void,
   scrollAnimatedValue: Animated.Value,
 };
 
-class ScrollViewStickyHeader extends React.Component {
-  props: Props;
-  state: {
-    measured: boolean,
-    layoutY: number,
-    layoutHeight: number,
-    nextHeaderLayoutY: ?number,
-  };
-
+class ScrollViewStickyHeader extends React.Component<Props, {
+  measured: boolean,
+  layoutY: number,
+  layoutHeight: number,
+  nextHeaderLayoutY: ?number,
+}> {
   constructor(props: Props, context: Object) {
     super(props, context);
     this.state = {

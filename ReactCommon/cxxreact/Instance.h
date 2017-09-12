@@ -27,9 +27,9 @@ class ModuleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
-  virtual void onBatchComplete() = 0;
-  virtual void incrementPendingJSCalls() = 0;
-  virtual void decrementPendingJSCalls() = 0;
+  virtual void onBatchComplete() {}
+  virtual void incrementPendingJSCalls() {}
+  virtual void decrementPendingJSCalls() {}
 };
 
 class RN_EXPORT Instance {

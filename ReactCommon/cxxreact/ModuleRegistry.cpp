@@ -27,8 +27,8 @@ std::string normalizeName(std::string name) {
 
 }
 
-ModuleRegistry::ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules)
-    : modules_(std::move(modules)) {}
+ModuleRegistry::ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules, ModuleNotFoundCallback callback)
+    : modules_{std::move(modules)}, moduleNotFoundCallback_{callback} {}
 
 void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
   for (; index < modules_.size(); index++ ) {
@@ -74,7 +74,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
-  SystraceSection s("getConfig", "module", name);
+  SystraceSection s("ModuleRegistry::getConfig", "module", name);
 
   // Initialize modulesByName_
   if (modulesByName_.empty() && !modules_.empty()) {
@@ -82,13 +82,22 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
   }
 
   auto it = modulesByName_.find(name);
-  if (it == modulesByName_.end()) {
-    unknownModules_.insert(name);
-    return nullptr;
-  }
 
-  CHECK(it->second < modules_.size());
-  NativeModule* module = modules_[it->second].get();
+  if (it == modulesByName_.end()) {
+    if (unknownModules_.find(name) != unknownModules_.end()) {
+      return nullptr;
+    }
+    if (!moduleNotFoundCallback_ ||
+        !moduleNotFoundCallback_(name) ||
+        (it = modulesByName_.find(name)) == modulesByName_.end()) {
+      unknownModules_.insert(name);
+      return nullptr;
+    }
+  }
+  size_t index = it->second;
+
+  CHECK(index < modules_.size());
+  NativeModule *module = modules_[index].get();
 
   // string name, object constants, array methodNames (methodId is index), [array promiseMethodIds], [array syncMethodIds]
   folly::dynamic config = folly::dynamic::array(name);
@@ -131,7 +140,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
     // no constants or methods
     return nullptr;
   } else {
-    return ModuleConfig({it->second, config});
+    return ModuleConfig{index, config};
   }
 }
 

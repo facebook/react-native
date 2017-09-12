@@ -22,6 +22,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaOverflow;
@@ -118,6 +119,16 @@ public class ReactShadowNode {
     return false;
   }
 
+  /**
+   * Nodes that return {@code true} will not manage (and and remove) child Yoga nodes.
+   * For example {@link ReactTextInputShadowNode} or {@link ReactTextShadowNode} have child nodes,
+   * which do not want Yoga to lay out, so in the eyes of Yoga it is a leaf node.
+   * Override this method in subclass to enforce this requirement.
+   */
+  public boolean isYogaLeafNode() {
+    return isMeasureDefined();
+  }
+
   public final String getViewClass() {
     return Assertions.assertNotNull(mViewClassName);
   }
@@ -171,7 +182,7 @@ public class ReactShadowNode {
 
     // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
     // more, it asserts that you don't add children to nodes with measure functions.
-    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+    if (mYogaNode != null && !isYogaLeafNode()) {
       YogaNode childYogaNode = child.mYogaNode;
       if (childYogaNode == null) {
         throw new RuntimeException(
@@ -197,7 +208,7 @@ public class ReactShadowNode {
     ReactShadowNode removed = mChildren.remove(i);
     removed.mParent = null;
 
-    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+    if (mYogaNode != null && !isYogaLeafNode()) {
       mYogaNode.removeChildAt(i);
     }
     markUpdated();
@@ -231,7 +242,7 @@ public class ReactShadowNode {
 
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+      if (mYogaNode != null && !isYogaLeafNode()) {
         mYogaNode.removeChildAt(i);
       }
       ReactShadowNode toRemove = getChildAt(i);
@@ -782,6 +793,10 @@ public class ReactShadowNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mYogaNode.setBaselineFunction(baselineFunction);
+  }
+
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) &&
         getChildCount() != 0) {
@@ -790,6 +805,10 @@ public class ReactShadowNode {
           "not safe to transition to/from having a measure function unless a node has no children");
     }
     mYogaNode.setMeasureFunction(measureFunction);
+  }
+
+  public boolean isMeasureDefined() {
+    return mYogaNode.isMeasureDefined();
   }
 
   @Override

@@ -25,7 +25,7 @@ type Props = ViewProps & {
    * Should be a React element to be rendered and applied as the
    * mask for the child element.
    */
-  maskElement: React.Element<*>,
+  maskElement: React.Element<any>,
 };
 
 /**
@@ -64,9 +64,7 @@ type Props = ViewProps & {
  * transparent pixels block that content.
  *
  */
-class MaskedViewIOS extends React.Component {
-  props: Props;
-
+class MaskedViewIOS extends React.Component<Props> {
   static propTypes = {
     ...ViewPropTypes,
     maskElement: PropTypes.element.isRequired,

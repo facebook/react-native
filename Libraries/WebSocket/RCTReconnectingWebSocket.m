@@ -70,7 +70,9 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   [self stop];
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-
+  if (_delegateDispatchQueue) {
+    [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
+  }
   [_socket open];
 }
 
@@ -97,6 +99,11 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
       [self start];
     }
   });
+}
+
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+  [self.delegate webSocketDidOpen:webSocket];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error

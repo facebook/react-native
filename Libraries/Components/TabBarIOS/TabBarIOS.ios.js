@@ -20,17 +20,16 @@ const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-class TabBarIOS extends React.Component {
-  props: {
-    style?: $FlowFixMe,
-    unselectedTintColor?: $FlowFixMe,
-    tintColor?: $FlowFixMe,
-    unselectedItemTintColor?: $FlowFixMe,
-    barTintColor?: $FlowFixMe,
-    translucent?: boolean,
-    itemPositioning?: 'fill' | 'center' | 'auto',
-  };
-
+class TabBarIOS extends React.Component<{
+  style?: $FlowFixMe,
+  unselectedTintColor?: $FlowFixMe,
+  tintColor?: $FlowFixMe,
+  unselectedItemTintColor?: $FlowFixMe,
+  barTintColor?: $FlowFixMe,
+  barStyle?: 'default' | 'black',
+  translucent?: boolean,
+  itemPositioning?: 'fill' | 'center' | 'auto',
+}> {
   static Item = TabBarItemIOS;
 
   // $FlowFixMe(>=0.41.0)
@@ -53,6 +52,12 @@ class TabBarIOS extends React.Component {
      * Background color of the tab bar
      */
     barTintColor: ColorPropType,
+    /**
+     * The style of the tab bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a tab bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
     /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
@@ -77,6 +82,7 @@ class TabBarIOS extends React.Component {
         unselectedItemTintColor={this.props.unselectedItemTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
+        barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
         {

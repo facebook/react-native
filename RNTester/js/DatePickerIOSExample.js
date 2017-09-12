@@ -21,7 +21,7 @@ var {
   View,
 } = ReactNative;
 
-class DatePickerExample extends React.Component {
+class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
     date: new Date(),
     timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
@@ -91,7 +91,7 @@ class DatePickerExample extends React.Component {
   }
 }
 
-class WithLabel extends React.Component {
+class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.labelContainer}>
@@ -106,7 +106,7 @@ class WithLabel extends React.Component {
   }
 }
 
-class Heading extends React.Component {
+class Heading extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.headingContainer}>

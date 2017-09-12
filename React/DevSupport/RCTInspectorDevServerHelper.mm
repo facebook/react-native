@@ -10,6 +10,8 @@
 
 using namespace facebook::react;
 
+static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
+
 static NSString *getDebugServerHost(NSURL *bundleURL)
 {
   NSString *host = [bundleURL host];
@@ -43,6 +45,20 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
+
+static void sendEventToAllConnections(NSString *event)
+{
+  for (NSString *socketId in socketConnections) {
+    [socketConnections[socketId] sendEventToAllConnections:event];
+  }
+}
+
++ (void)disableDebugger
+{
+  sendEventToAllConnections(kDebuggerMsgDisable);
+}
+
 + (void)connectForContext:(JSGlobalContextRef)context
             withBundleURL:(NSURL *)bundleURL
 {
@@ -55,7 +71,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Note, using a static dictionary isn't really the greatest design, but
   // the packager connection does the same thing, so it's at least consistent.
   // This is a static map that holds different inspector clients per the inspectorURL
-  static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
   if (socketConnections == nil) {
     socketConnections = [NSMutableDictionary new];
   }
