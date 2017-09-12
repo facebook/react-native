@@ -126,7 +126,7 @@ class CameraRoll {
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
    */
-  static saveImageWithTag(tag: string): Promise<Object> {
+  static saveImageWithTag(tag: string): Promise<string> {
     console.warn(
       '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
@@ -150,7 +150,7 @@ class CameraRoll {
   static saveToCameraRoll(
     tag: string,
     type?: 'photo' | 'video',
-  ): Promise<Object> {
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
