@@ -43,10 +43,6 @@ function verifyPropTypes(
 
   if (!propTypes) {
     throw new Error(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
       '`' + componentName + '` has no propTypes defined`'
     );
   }
@@ -58,17 +54,9 @@ function verifyPropTypes(
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       var message;
       if (propTypes.hasOwnProperty(prop)) {
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
         message = '`' + componentName + '` has incorrectly defined propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' + nativeProps[prop];
       } else {
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
         message = '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop] + '`';

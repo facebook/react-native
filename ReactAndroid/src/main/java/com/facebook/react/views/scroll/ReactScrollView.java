@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Field;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -25,15 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
-
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import java.lang.reflect.Field;
+import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -119,6 +116,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
+  }
+
+  public void flashScrollIndicators() {
+    awakenScrollBars();
   }
 
   @Override

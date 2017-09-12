@@ -26,16 +26,31 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
 import type {StyleObj} from 'StyleSheetTypes';
-import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
+import type {
+  ViewabilityConfig,
+  ViewToken,
+  ViewabilityConfigCallbackPair,
+} from 'ViewabilityHelper';
 
 type Item = any;
 
 type renderItemType = (info: any) => ?React.Element<any>;
+
+type ViewabilityHelperCallbackTuple = {
+  viewabilityHelper: ViewabilityHelper,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
 
 type RequiredProps = {
   renderItem: renderItemType,
@@ -162,6 +177,11 @@ type OptionalProps = {
   updateCellsBatchingPeriod: number,
   viewabilityConfig?: ViewabilityConfig,
   /**
+   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
+   * will be called when its corresponding ViewabilityConfig's conditions are met.
+   */
+  viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
+  /**
    * Determines the maximum number of items rendered outside of the visible area, in units of
    * visible lengths. So if your list fills the screen, then `windowSize={21}` (the default) will
    * render the visible screen area plus up to 10 screens above and 10 below the viewport. Reducing
@@ -221,15 +241,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._footerLength -
         this._scrollMetrics.visibleLength,
     );
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
@@ -260,15 +278,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
@@ -303,29 +319,28 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
 
   recordInteraction() {
-    this._viewabilityHelper.recordInteraction();
+    this._viewabilityTuples.forEach(t => {
+      t.viewabilityHelper.recordInteraction();
+    });
     this._updateViewableItems(this.props.data);
   }
 
   flashScrollIndicators() {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._scrollRef.flashScrollIndicators();
   }
 
@@ -336,20 +351,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    */
   getScrollResponder() {
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       return this._scrollRef.getScrollResponder();
     }
   }
 
   getScrollableNode() {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       return this._scrollRef.getScrollableNode();
     } else {
       return ReactNative.findNodeHandle(this._scrollRef);
@@ -358,10 +371,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   setNativeProps(props: Object) {
     if (this._scrollRef) {
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       this._scrollRef.setNativeProps(props);
     }
   }
@@ -425,9 +437,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
     );
-    this._viewabilityHelper = new ViewabilityHelper(
-      this.props.viewabilityConfig,
-    );
+
+    if (this.props.viewabilityConfigCallbackPairs) {
+      this._viewabilityTuples = this.props.viewabilityConfigCallbackPairs.map(
+        pair => ({
+          viewabilityHelper: new ViewabilityHelper(pair.viewabilityConfig),
+          onViewableItemsChanged: pair.onViewableItemsChanged,
+        }),
+      );
+    } else if (this.props.onViewableItemsChanged) {
+      this._viewabilityTuples.push({
+        viewabilityHelper: new ViewabilityHelper(this.props.viewabilityConfig),
+        onViewableItemsChanged: this.props.onViewableItemsChanged,
+      });
+    }
+
     this.state = {
       first: this.props.initialScrollIndex || 0,
       last:
@@ -454,7 +478,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentWillUnmount() {
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose();
-    this._viewabilityHelper.dispose();
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.dispose();
+    });
     this._fillRateHelper.deactivateAndFlush();
     clearTimeout(this._initialScrollIndexTimeout);
   }
@@ -492,6 +518,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       data,
       getItem,
       getItemCount,
+      horizontal,
       keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
@@ -511,6 +538,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
+          horizontal={horizontal}
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
@@ -575,14 +603,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
+      if (stickyIndicesFromProps.has(0)) {
+        stickyHeaderIndices.push(0);
+      }
       const element = React.isValidElement(ListHeaderComponent)
         ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         <View
           key="$header"
           onLayout={this._onLayoutHeader}
@@ -688,10 +718,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? ListEmptyComponent // $FlowFixMe
         : <ListEmptyComponent />;
       cells.push(
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         <View
           key="$empty"
           onLayout={this._onLayoutEmpty}
@@ -705,10 +734,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         <View
           key="$footer"
           onLayout={this._onLayoutFooter}
@@ -780,7 +808,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellLength = 0;
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
-  _viewabilityHelper: ViewabilityHelper;
+  _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -805,15 +833,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.53 was deployed. To see the error delete
-         * this comment and run Flow. */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         <ScrollView
           {...props}
           refreshControl={
-            /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.53 was deployed. To see
-             * the error delete this comment and run Flow. */
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+             * comment suppresses an error when upgrading Flow's support for
+             * React. To see the error delete this comment and run Flow. */
             <RefreshControl
               refreshing={props.refreshing}
               onRefresh={props.onRefresh}
@@ -823,9 +851,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.53 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error when upgrading Flow's support for React.
+       * To see the error delete this comment and run Flow. */
       return <ScrollView {...props} />;
     }
   };
@@ -1072,7 +1100,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onScrollBeginDrag = (e): void => {
-    this._viewabilityHelper.recordInteraction();
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.recordInteraction();
+    });
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 
@@ -1205,39 +1235,43 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateViewableItems(data: any) {
-    const {getItemCount, onViewableItemsChanged} = this.props;
-    if (!onViewableItemsChanged) {
-      return;
-    }
-    this._viewabilityHelper.onUpdate(
-      getItemCount(data),
-      this._scrollMetrics.offset,
-      this._scrollMetrics.visibleLength,
-      this._getFrameMetrics,
-      this._createViewToken,
-      onViewableItemsChanged,
-      this.state,
-    );
+    const {getItemCount} = this.props;
+
+    this._viewabilityTuples.forEach(tuple => {
+      tuple.viewabilityHelper.onUpdate(
+        getItemCount(data),
+        this._scrollMetrics.offset,
+        this._scrollMetrics.visibleLength,
+        this._getFrameMetrics,
+        this._createViewToken,
+        tuple.onViewableItemsChanged,
+        this.state,
+      );
+    });
   }
 }
 
-class CellRenderer extends React.Component<{
-  CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
-  cellKey: string,
-  fillRateHelper: FillRateHelper,
-  index: number,
-  inversionStyle: ?StyleObj,
-  item: Item,
-  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
-  onUnmount: (cellKey: string) => void,
-  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-  parentProps: {
-    getItemLayout?: ?Function,
-    renderItem: renderItemType,
+class CellRenderer extends React.Component<
+  {
+    CellRendererComponent?: ?React.ComponentType<any>,
+    ItemSeparatorComponent: ?React.ComponentType<*>,
+    cellKey: string,
+    fillRateHelper: FillRateHelper,
+    horizontal: ?boolean,
+    index: number,
+    inversionStyle: ?StyleObj,
+    item: Item,
+    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
+    onUnmount: (cellKey: string) => void,
+    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+    parentProps: {
+      getItemLayout?: ?Function,
+      renderItem: renderItemType,
+    },
+    prevCellKey: ?string,
   },
-  prevCellKey: ?string,
-}, $FlowFixMeState> {
+  $FlowFixMeState,
+> {
   state = {
     separatorProps: {
       highlighted: false,
@@ -1284,6 +1318,7 @@ class CellRenderer extends React.Component<{
       CellRendererComponent,
       ItemSeparatorComponent,
       fillRateHelper,
+      horizontal,
       item,
       index,
       inversionStyle,
@@ -1305,9 +1340,14 @@ class CellRenderer extends React.Component<{
     const itemSeparator =
       ItemSeparatorComponent &&
       <ItemSeparatorComponent {...this.state.separatorProps} />;
+    const cellStyle = inversionStyle
+      ? horizontal
+        ? [{flexDirection: 'row-reverse'}, inversionStyle]
+        : [{flexDirection: 'column-reverse'}, inversionStyle]
+      : horizontal ? [{flexDirection: 'row'}, inversionStyle] : inversionStyle;
     if (!CellRendererComponent) {
       return (
-        <View style={inversionStyle} onLayout={onLayout}>
+        <View style={cellStyle} onLayout={onLayout}>
           {element}
           {itemSeparator}
         </View>
@@ -1316,7 +1356,7 @@ class CellRenderer extends React.Component<{
     return (
       <CellRendererComponent
         {...this.props}
-        style={inversionStyle}
+        style={cellStyle}
         onLayout={onLayout}>
         {element}
         {itemSeparator}

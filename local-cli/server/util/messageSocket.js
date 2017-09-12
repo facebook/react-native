@@ -11,6 +11,7 @@
 const url = require('url');
 const WebSocketServer = require('ws').Server;
 const PROTOCOL_VERSION = 2;
+const notifier = require('node-notifier');
 
 function parseMessage(data, binary) {
   if (binary) {
@@ -76,6 +77,14 @@ function attachToServer(server, path) {
       method: message.method,
       params: message.params,
     };
+    if (clients.size === 0) {
+      notifier.notify({
+        'title': 'React Native: No apps connected',
+        'message': `Sending '${message.method}' to all React Native apps ` +
+                  'failed. Make sure your app is running in the simulator ' +
+                  'or on a phone connected via USB.'
+      });
+    }
     for (const [otherId, otherWs] of clients) {
       if (otherId !== broadcasterId) {
         try {

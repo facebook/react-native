@@ -39,6 +39,7 @@ type DependencyOptions = {|
   +platform: ?string,
   +recursive: boolean,
   +rootEntryFile: string,
+  +bundlingOptions?: Object,
 |};
 
 /**
@@ -55,7 +56,7 @@ type PackagerServer<TModule> = {
   ): Promise<HMRBundle>,
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<TModule>>,
   getModuleForPath(entryFile: string): Promise<TModule>,
-  getShallowDependencies(options: DependencyOptions): Promise<Array<TModule>>,
+  getShallowDependencies(options: DependencyOptions): Promise<Array<string>>,
   setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed): void,
 };
 
@@ -85,7 +86,7 @@ function attachHMRServer<TModule: Moduleish>(
     bundleEntry: string,
     dependenciesCache: Array<string>,
     dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<TModule>},
+    shallowDependencies: {[string]: Array<string>},
     inverseDependenciesCache: mixed,
   |};
 
@@ -107,8 +108,11 @@ function attachHMRServer<TModule: Moduleish>(
   async function getDependencies(platform: string, bundleEntry: string): Promise<{
     dependenciesCache: Array<string>,
     dependenciesModulesCache: {[mixed]: TModule},
-    shallowDependencies: {[string]: Array<TModule>},
+    shallowDependencies: {[string]: Array<string>},
     inverseDependenciesCache: mixed,
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     resolutionResponse: ResolutionResponse<TModule>,
   }> {
     const response = await packagerServer.getDependencies({
@@ -129,7 +133,7 @@ function attachHMRServer<TModule: Moduleish>(
     const deps: Array<{
       path: string,
       name?: string,
-      deps: Array<TModule>,
+      deps: Array<string>,
     }> = await Promise.all(response.dependencies.map(async (dep: TModule) => {
       const depName = await dep.getName();
 
@@ -144,6 +148,7 @@ function attachHMRServer<TModule: Moduleish>(
         minify: false,
         platform: platform,
         recursive: true,
+        bundlingOptions: response.options,
       });
 
       return {
@@ -389,6 +394,9 @@ function attachHMRServer<TModule: Moduleish>(
     }
   }
 
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
   const WebSocketServer = require('ws').Server;
   const wss = new WebSocketServer({
     server: httpServer,

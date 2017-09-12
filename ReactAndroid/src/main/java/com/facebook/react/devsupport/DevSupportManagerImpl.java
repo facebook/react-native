@@ -36,7 +36,6 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
@@ -44,7 +43,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -338,7 +336,7 @@ public class DevSupportManagerImpl implements
           public void run() {
             if (mRedBoxDialog == null) {
               mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-              mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+              mRedBoxDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
@@ -385,19 +383,6 @@ public class DevSupportManagerImpl implements
             handleReloadJS();
           }
         });
-    if (Inspector.isSupported()) {
-      options.put(
-        "Debug JS on-device (experimental)", new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            List<Inspector.Page> pages = Inspector.getPages();
-            if (pages.size() > 0) {
-              // TODO: We should get the actual page id instead of the first one.
-              mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
-            }
-          }
-        });
-    }
     options.put(
       mDevSettings.isReloadOnJSChangeEnabled()
         ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
@@ -480,7 +465,7 @@ public class DevSupportManagerImpl implements
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    mDevOptionsDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
 
@@ -839,6 +824,8 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
+    final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
+
     mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
@@ -852,7 +839,7 @@ public class DevSupportManagerImpl implements
                 new Runnable() {
                   @Override
                   public void run() {
-                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END);
+                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
                     mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
                   }
                 });
@@ -891,7 +878,8 @@ public class DevSupportManagerImpl implements
           }
         },
         mJSBundleTempFile,
-        bundleURL);
+        bundleURL,
+        bundleInfo);
   }
 
   @Override

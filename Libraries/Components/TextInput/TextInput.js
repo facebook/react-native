@@ -23,14 +23,23 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInputState = require('TextInputState');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const onlyMultiline = {
@@ -513,6 +522,13 @@ const TextInput = createReactClass({
 
     /**
      * If defined, the provided image resource will be rendered on the left.
+     * The image resource must be inside `/android/app/src/main/res/drawable` and referenced
+     * like
+     * ```
+     * <TextInput
+     *  inlineImageLeft='search_icon'
+     * />
+     * ```
      * @platform android
      */
     inlineImageLeft: PropTypes.string,
@@ -734,9 +750,9 @@ const TextInput = createReactClass({
     }
     props.autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
@@ -897,9 +913,9 @@ const TextInput = createReactClass({
   },
 
   _onTextInput: function(event: Event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onTextInput && this.props.onTextInput(event);
   },
 
