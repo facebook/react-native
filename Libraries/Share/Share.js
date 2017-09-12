@@ -24,7 +24,7 @@ const {
 type Content = { title?: string, message: string } | { title?: string, url: string };
 type Options = {
   dialogTitle?: string,
-  excludeActivityTypes?: Array<string>,
+  excludedActivityTypes?: Array<string>,
   tintColor?: string,
   subject?: string
 };

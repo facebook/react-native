@@ -9,6 +9,7 @@
 'use strict';
 
 jest
+  .clearAllMocks()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})

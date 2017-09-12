@@ -80,7 +80,8 @@
       "denodeify",
       "fbjs",
       "sinon"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
