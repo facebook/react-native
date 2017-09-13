@@ -256,7 +256,7 @@ class SomethingFast extends Component {
 
             </div>
           </Container>  
-          <div className="productShowcaseSection paddingBottom">
+          <div className="home-showcase-section paddingBottom">
             <h2>
               Who's using React Native?
             </h2>
