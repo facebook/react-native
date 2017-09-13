@@ -527,7 +527,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      invariant(item, 'No item for index ' + ii);
+      invariant(item !== false, 'No item for index ' + ii);
       const key = keyExtractor(item, ii);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
