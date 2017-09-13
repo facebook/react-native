@@ -374,7 +374,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (BOOL)canHaveSubviews
 {
-  return NO;
+  return YES;
 }
 
 - (BOOL)isYogaLeafNode
@@ -415,7 +415,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
-  RCTAssert(!self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
+  RCTAssert(self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
 
   [_reactSubviews insertObject:subview atIndex:atIndex];
   if (![self isYogaLeafNode]) {

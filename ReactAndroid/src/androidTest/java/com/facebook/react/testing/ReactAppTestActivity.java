@@ -21,6 +21,8 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
@@ -29,9 +31,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
-public class ReactAppTestActivity extends FragmentActivity implements
-    DefaultHardwareBackBtnHandler
-{
+public class ReactAppTestActivity extends FragmentActivity
+    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private static final String DEFAULT_BUNDLE_NAME = "AndroidTestBundle.js";
   private static final int ROOT_VIEW_ID = 8675309;
@@ -269,4 +270,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
       String[] permissions,
       int[] grantResults) {
   }
+
+  @Override
+  public void requestPermissions(
+      String[] permissions, int requestCode, PermissionListener listener) {}
 }
