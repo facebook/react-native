@@ -58,7 +58,3 @@ node_modules
 
 /coverage
 /third-party
-gradle-wrapper.jar
-gradle-wrapper.properties
-gradlew
-gradlew.bat
