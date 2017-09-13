@@ -186,7 +186,7 @@
     "ws": "^1.1.0",
     "xcode": "^0.9.1",
     "xmldoc": "^0.4.0",
-    "yargs": "^6.4.0"
+    "yargs": "^9.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
