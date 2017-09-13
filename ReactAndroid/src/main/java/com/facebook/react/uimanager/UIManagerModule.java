@@ -33,6 +33,8 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -78,6 +80,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
+  private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
 
   private int mBatchId = 0;
 
@@ -513,6 +516,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchCompleteUI")
           .arg("BatchId", batchId)
           .flush();
+    for (UIManagerModuleListener listener : mListeners) {
+      listener.willDispatchViewUpdates(this);
+    }
     try {
       mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
@@ -550,8 +556,26 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
      }
    });
      */
-  public void addUIBlock (UIBlock block) {
+  public void addUIBlock(UIBlock block) {
     mUIImplementation.addUIBlock(block);
+  }
+
+  /**
+   * Schedule a block to be executed on the UI thread. Useful if you need to execute
+   * view logic before all currently queued view updates have completed.
+   *
+   * @param block that contains UI logic you want to execute.
+   */
+  public void prependUIBlock(UIBlock block) {
+    mUIImplementation.prependUIBlock(block);
+  }
+
+  public void addUIManagerListener(UIManagerModuleListener listener) {
+    mListeners.add(listener);
+  }
+
+  public void removeUIManagerListener(UIManagerModuleListener listener) {
+    mListeners.remove(listener);
   }
 
   /**
