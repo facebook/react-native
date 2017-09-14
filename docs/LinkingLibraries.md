@@ -48,7 +48,8 @@ $ react-native link
 Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
 
 > ***Note:*** If your iOS project is using CocoaPods (contains `Podfile`) and linked library has `podspec` file,
-then `react-native link` will link library using Podfile
+then `react-native link` will link library using Podfile. To support non-trivial Podfiles 
+add `# Add new pods below this line` comment to places where you expect pods to be added.
 
 ### Manual linking
 
