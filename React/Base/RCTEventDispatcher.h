@@ -41,18 +41,24 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 - (BOOL)canCoalesce;
 
-// used directly for doing a JS call
+/** used directly for doing a JS call */
 + (NSString *)moduleDotMethod;
-// must contain only JSON compatible values
+
+/** must contain only JSON compatible values */
 - (NSArray *)arguments;
 
 @optional
 
-// Can be implemented for view based events that need to be coalesced
-// by it's viewTag.
+/**
+ * Can be implemented for view based events that need to be coalesced
+ * by it's viewTag.
+ */
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
-// Coalescing related methods must only be implemented if canCoalesce
-// returns YES.
+
+/**
+ * Coalescing related methods must only be implemented if canCoalesce
+ * returns YES.
+ */
 @property (nonatomic, assign, readonly) uint16_t coalescingKey;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 

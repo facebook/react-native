@@ -10,7 +10,9 @@
 #import <React/RCTEventDispatcher.h>
 
 /**
- * Event that is dispatched to React components.
+ * Generic untyped event for Components. Used internally by RCTDirectEventBlock and
+ * RCTBubblingEventBlock, for other use cases prefer using a class that implements
+ * RCTEvent to have a type safe way to initialize it.
  */
 @interface RCTComponentEvent : NSObject<RCTEvent>
 
