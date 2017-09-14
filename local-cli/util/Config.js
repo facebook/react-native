@@ -14,7 +14,7 @@
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const blacklist = require('metro-bundler/src/blacklist');
-const findSymlinksPaths = require('./findSymlinksPaths');
+const findSymlinkedModules = require('./findSymlinkedModules');
 const fs = require('fs');
 const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
@@ -168,13 +168,14 @@ function getProjectPath() {
   return path.resolve(__dirname, '../..');
 }
 
-const resolveSymlink = (roots) =>
-  roots.concat(
-    findSymlinksPaths(
-      path.join(getProjectPath(), 'node_modules'),
-      roots
-    )
+const resolveSymlinksForRoots = roots =>
+  roots.reduce(
+    (arr, rootPath) => arr.concat(
+      findSymlinkedModules(rootPath, roots)
+    ),
+    [...roots]
   );
+
 
 /**
  * Module capable of getting the configuration out of a given file.
@@ -195,9 +196,9 @@ const Config = {
     getProjectRoots: () => {
       const root = process.env.REACT_NATIVE_APP_ROOT;
       if (root) {
-        return resolveSymlink([path.resolve(root)]);
+        return resolveSymlinksForRoots([path.resolve(root)]);
       }
-      return resolveSymlink([getProjectPath()]);
+      return resolveSymlinksForRoots([getProjectPath()]);
     },
     getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
     getSourceExts: () => [],
