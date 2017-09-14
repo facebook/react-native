@@ -14,6 +14,6 @@
  */
 @interface RCTComponentEvent : NSObject<RCTEvent>
 
-- (instancetype)initWithName:(NSString *)name body:(NSDictionary *)body;
+- (instancetype)initWithName:(NSString *)name viewTag:(NSNumber *)viewTag body:(NSDictionary *)body;
 
 @end

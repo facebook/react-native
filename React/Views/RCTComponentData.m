@@ -115,9 +115,9 @@ static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge 
           return;
         }
 
-        NSMutableDictionary *mutableEvent = [NSMutableDictionary dictionaryWithDictionary:event];
-        mutableEvent[@"target"] = strongTarget.reactTag;
-        RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName body:mutableEvent];
+        RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
+                                                                            viewTag:strongTarget.reactTag
+                                                                               body:event];
         [weakBridge.eventDispatcher sendEvent:componentEvent];
       };
     }

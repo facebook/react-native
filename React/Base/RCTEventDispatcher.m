@@ -99,7 +99,6 @@ RCT_EXPORT_MODULE()
 
   NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"eventCount": @(eventCount),
-    @"target": reactTag
   }];
 
   if (text) {
@@ -123,7 +122,9 @@ RCT_EXPORT_MODULE()
     body[@"key"] = key;
   }
 
-  RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type] body:body];
+  RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type]
+                                                             viewTag:reactTag
+                                                                body:body];
   [self sendEvent:event];
 }
 

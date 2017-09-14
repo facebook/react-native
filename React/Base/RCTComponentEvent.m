@@ -19,20 +19,15 @@
 @synthesize eventName = _eventName;
 @synthesize viewTag = _viewTag;
 
-- (instancetype)initWithName:(NSString *)name body:(NSDictionary *)body
+- (instancetype)initWithName:(NSString *)name viewTag:(NSNumber *)viewTag body:(NSDictionary *)body
 {
   if (self = [super init]) {
-    NSNumber *target = body[@"target"];
-    name = RCTNormalizeInputEventName(name);
-    
-    if (RCT_DEBUG) {
-      RCTAssert([target isKindOfClass:[NSNumber class]],
-                @"Event body dictionary must include a 'target' property containing a React tag");
-    }
-    
-    _eventName = name;
-    _viewTag = target;
-    _arguments = @[target, name, body];
+    NSMutableDictionary *mutableBody = [NSMutableDictionary dictionaryWithDictionary:body];
+    mutableBody[@"target"] = viewTag;
+
+    _eventName = RCTNormalizeInputEventName(name);
+    _viewTag = viewTag;
+    _arguments = @[_viewTag, _eventName, mutableBody];
   }
   return self;
 }
