@@ -66,7 +66,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 static void RCTPrint(YGNodeRef node)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
-  printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
+  printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
 }
 
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)    \
