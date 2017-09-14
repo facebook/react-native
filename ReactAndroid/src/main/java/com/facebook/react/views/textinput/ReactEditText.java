@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.textinput;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -38,13 +34,14 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -76,7 +73,7 @@ public class ReactEditText extends EditText {
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   private boolean mContainsImages;
-  private boolean mBlurOnSubmit;
+  private @Nullable Boolean mBlurOnSubmit;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
@@ -102,7 +99,7 @@ public class ReactEditText extends EditText {
     mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
-    mBlurOnSubmit = true;
+    mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
     mTextWatcherDelegator = null;
@@ -277,11 +274,16 @@ public class ReactEditText extends EditText {
     mSelectionWatcher = selectionWatcher;
   }
 
-  public void setBlurOnSubmit(boolean blurOnSubmit) {
+  public void setBlurOnSubmit(@Nullable Boolean blurOnSubmit) {
     mBlurOnSubmit = blurOnSubmit;
   }
 
   public boolean getBlurOnSubmit() {
+    if (mBlurOnSubmit == null) {
+      // Default blurOnSubmit
+      return isMultiline() ? false : true;
+    }
+
     return mBlurOnSubmit;
   }
 
