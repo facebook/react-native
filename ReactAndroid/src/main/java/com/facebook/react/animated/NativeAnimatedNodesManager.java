@@ -363,12 +363,22 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void onEventDispatch(Event event) {
-    // Only support events dispatched from the UI thread.
-    if (!UiThreadUtil.isOnUiThread()) {
-      return;
+  public void onEventDispatch(final Event event) {
+    // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
+    // UI thread.
+    if (UiThreadUtil.isOnUiThread()) {
+      handleEvent(event);
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          handleEvent(event);
+        }
+      });
     }
+  }
 
+  private void handleEvent(Event event) {
     if (!mEventDrivers.isEmpty()) {
       // If the event has a different name in native convert it to it's JS name.
       String eventName = event.getEventName();
