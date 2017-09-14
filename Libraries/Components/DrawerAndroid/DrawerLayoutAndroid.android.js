@@ -170,14 +170,6 @@ var DrawerLayoutAndroid = createReactClass({
     return this.refs[INNERVIEW_REF].getInnerViewNode();
   },
 
-  componentDidMount: function() {
-    this._updateStatusBarBackground();
-  },
-
-  componentDidReceiveProps: function() {
-    this._updateStatusBarBackground();
-  },
-
   render: function() {
     var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
@@ -195,7 +187,7 @@ var DrawerLayoutAndroid = createReactClass({
         {drawStatusBar &&
         <StatusBar
           translucent
-          backgroundColor={this.state.statusBarBackgroundColor}
+          backgroundColor={this.props.statusBarBackgroundColor}
         />}
         {drawStatusBar &&
         <View style={[
@@ -290,22 +282,6 @@ var DrawerLayoutAndroid = createReactClass({
     return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },
 
-  // Update the StatusBar component background color one frame after creating the
-  // status bar background View to avoid a white flicker that happens because
-  // the StatusBar background becomes transparent before the status bar View
-  // from this component has rendered.
-  _updateStatusBarBackground: function() {
-    if (Platform.Version >= 21 && this.props.statusBarBackgroundColor) {
-      // Check if the value is not already transparent to avoid an extra render.
-      if (this.state.statusBarBackgroundColor !== 'transparent') {
-        requestAnimationFrame(() => {
-          this.setState({statusBarBackgroundColor: 'transparent'});
-        });
-      }
-    } else {
-      this.setState({statusBarBackgroundColor: undefined});
-    }
-  },
 });
 
 var styles = StyleSheet.create({

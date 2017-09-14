@@ -24,7 +24,6 @@ public:
 
   void runOnQueue(std::function<void()>&& func) override {
     dispatch_queue_t queue = moduleData_.methodQueue;
-    RCTAssert(queue != nullptr, @"Module %@ provided invalid queue", moduleData_);
     dispatch_block_t block = [func=std::move(func)] { func(); };
     RCTAssert(block != nullptr, @"Invalid block generated in call to %@", moduleData_);
     if (queue && block) {

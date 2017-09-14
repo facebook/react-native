@@ -25,6 +25,9 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const emptyObject = require('fbjs/lib/emptyObject');
 const invariant = require('fbjs/lib/invariant');
 
@@ -44,24 +47,20 @@ function findRenderer(): ReactRenderer {
   return renderers[keys[0]];
 }
 
-class Inspector extends React.Component {
-  props: {
-    inspectedViewTag: ?number,
-    onRequestRerenderApp: (callback: (tag: ?number) => void) => void
-  };
-
-  state: {
-    devtoolsAgent: ?Object,
-    hierarchy: any,
-    panelPos: string,
-    inspecting: bool,
-    selection: ?number,
-    perfing: bool,
-    inspected: any,
-    inspectedViewTag: any,
-    networking: bool,
-  };
-
+class Inspector extends React.Component<{
+  inspectedViewTag: ?number,
+  onRequestRerenderApp: (callback: (tag: ?number) => void) => void
+}, {
+  devtoolsAgent: ?Object,
+  hierarchy: any,
+  panelPos: string,
+  inspecting: bool,
+  selection: ?number,
+  perfing: bool,
+  inspected: any,
+  inspectedViewTag: any,
+  networking: bool,
+}> {
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {

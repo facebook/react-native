@@ -22,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-class Button extends React.Component {
+class Button extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <TouchableHighlight
@@ -37,7 +37,7 @@ class Button extends React.Component {
   }
 }
 
-class NotificationExample extends React.Component {
+class NotificationExample extends React.Component<{}> {
   componentWillMount() {
     PushNotificationIOS.addEventListener('register', this._onRegistered);
     PushNotificationIOS.addEventListener('registrationError', this._onRegistrationError);
@@ -145,9 +145,7 @@ class NotificationExample extends React.Component {
   }
 }
 
-class NotificationPermissionExample extends React.Component {
-  state: any;
-
+class NotificationPermissionExample extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
     this.state = {permissions: null};

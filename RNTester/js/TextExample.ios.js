@@ -23,7 +23,7 @@ var {
   LayoutAnimation,
 } = ReactNative;
 
-class Entity extends React.Component {
+class Entity extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
@@ -33,7 +33,7 @@ class Entity extends React.Component {
   }
 }
 
-class AttributeToggler extends React.Component {
+class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
