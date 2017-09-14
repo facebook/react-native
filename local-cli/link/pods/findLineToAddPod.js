@@ -9,9 +9,15 @@ module.exports = function findLineToAddPod(podLines, firstTargetLine) {
 	const functionDefinition = /^\s*[a-z_]+\s+do(\s+\|[a-z]+\|)?/g;
 
 	for (let i = firstTargetLine, len = podLines.length; i < len; i++) {
-    const match = podLines[i].match(nextTarget) || podLines[i].match(endOfCurrentTarget) || podLines[i].match(functionDefinition);    
-		if (match) {
-			return i;
+		const matchNextConstruct = podLines[i].match(nextTarget) || podLines[i].match(functionDefinition);
+		const matchEnd = podLines[i].match(endOfCurrentTarget);
+
+		if (matchNextConstruct || matchEnd) {
+			const firstNonSpaceCharacter = podLines[i].search(/\S/);
+			return {
+				indentation: firstNonSpaceCharacter + (matchEnd ? 2 : 0),
+				line: i
+			};
 		}
 	}
 	return null;
