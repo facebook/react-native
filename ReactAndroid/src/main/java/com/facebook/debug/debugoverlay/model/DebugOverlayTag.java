@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.debug.debugoverlay;
+package com.facebook.debug.debugoverlay.model;
 
 import javax.annotation.concurrent.Immutable;
 

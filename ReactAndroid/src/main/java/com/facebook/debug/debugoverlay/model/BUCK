@@ -1,11 +1,8 @@
 include_defs("//ReactAndroid/DEFS")
 
 android_library(
-    name = "tags",
+    name = "model",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        react_native_dep("java/com/facebook/debug/debugoverlay/model:model"),
-    ],
     visibility = [
         "PUBLIC",
     ],
