@@ -13,7 +13,7 @@
 
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
-export type ComponentInterface = ReactClass<any> | {
+export type ComponentInterface = React$ComponentType<any> | {
   name?: string,
   displayName?: string,
   propTypes: Object,

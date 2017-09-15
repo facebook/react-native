@@ -33,7 +33,7 @@
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
-#import "RCTShadowView+Hierarchy.h"
+#import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
@@ -76,6 +76,11 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
 
 - (void)invalidate
 {
@@ -934,7 +939,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
 
 RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
                   viewName:(NSString *)viewName
-                  rootTag:(__unused NSNumber *)rootTag
+                  rootTag:(nonnull NSNumber *)rootTag
                   props:(NSDictionary *)props)
 {
   RCTComponentData *componentData = _componentDataByName[viewName];
@@ -947,6 +952,10 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   if (shadowView) {
     [componentData setProps:props forShadowView:shadowView];
     _shadowViewRegistry[reactTag] = shadowView;
+    RCTShadowView *rootView = _shadowViewRegistry[rootTag];
+    RCTAssert([rootView isKindOfClass:[RCTRootShadowView class]],
+      @"Given `rootTag` (%@) does not correspond to a valid root shadow view instance.", rootTag);
+    shadowView.rootView = (RCTRootShadowView *)rootView;
   }
 
   // Shadow view is the source of truth for background color this is a little
@@ -1416,7 +1425,7 @@ RCT_EXPORT_METHOD(setJSResponder:(nonnull NSNumber *)reactTag
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
     if (!_jsResponder) {
-      RCTLogError(@"Invalid view set to be the JS responder - tag %zd", reactTag);
+      RCTLogError(@"Invalid view set to be the JS responder - tag %@", reactTag);
     }
   }];
 }
@@ -1437,6 +1446,11 @@ RCT_EXPORT_METHOD(clearJSResponder)
   [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
      NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
+     // Register which event-types this view dispatches.
+     // React needs this for the event plugin.
+     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+     NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
      // Add manager class
      moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
 
@@ -1444,6 +1458,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
      moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+     moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+     moduleConstants[@"directEventTypes"] = directEventTypes;
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1452,6 +1468,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
            @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
          };
        }
+       directEventTypes[eventName] = directEvents[eventName];
        if (RCT_DEBUG && bubblingEvents[eventName]) {
          RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
                      "direct event", componentData.name, eventName);
@@ -1469,6 +1486,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
            }
          };
        }
+       bubblingEventTypes[eventName] = bubblingEvents[eventName];
        if (RCT_DEBUG && directEvents[eventName]) {
          RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
                      "bubbling event", componentData.name, eventName);
@@ -1478,9 +1496,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
      RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
      constants[name] = moduleConstants;
   }];
-
-  constants[@"customBubblingEventTypes"] = bubblingEvents;
-  constants[@"customDirectEventTypes"] = directEvents;
 
   return constants;
 }

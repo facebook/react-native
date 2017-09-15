@@ -9,10 +9,10 @@
 
 package com.facebook.react;
 
-import javax.inject.Provider;
-
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
 
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -36,11 +36,9 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
-
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Provider;
 /**
  * This module should be removed following the completion of an experiment into splitting this into
  * three modules to allow for more light-weight instantiations of the bridge without UIManager
@@ -74,16 +72,19 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final UIImplementationProvider mUIImplementationProvider;
   private final boolean mLazyViewManagersEnabled;
+  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
   CoreModulesPackage(
-    ReactInstanceManager reactInstanceManager,
-    DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-    UIImplementationProvider uiImplementationProvider,
-    boolean lazyViewManagersEnabled) {
+      ReactInstanceManager reactInstanceManager,
+      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      UIImplementationProvider uiImplementationProvider,
+      boolean lazyViewManagersEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
+    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
   }
 
   @Override
@@ -189,10 +190,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
       List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
         reactContext);
       return new UIManagerModule(
-        reactContext,
-        viewManagersList,
-        mUIImplementationProvider,
-        mLazyViewManagersEnabled);
+          reactContext,
+          viewManagersList,
+          mUIImplementationProvider,
+          mLazyViewManagersEnabled,
+          mMinTimeLeftInFrameForNonBatchedOperationMs);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

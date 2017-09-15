@@ -26,9 +26,7 @@ var AnExChained = require('./AnExChained');
 var AnExScroll = require('./AnExScroll');
 var AnExTilt = require('./AnExTilt');
 
-class AnExSet extends React.Component {
-  state: any;
-
+class AnExSet extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     function randColor() {
@@ -40,7 +38,7 @@ class AnExSet extends React.Component {
       openColor: randColor(),
     };
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     var backgroundColor = this.props.openVal ?
       this.props.openVal.interpolate({
         inputRange: [0, 1],

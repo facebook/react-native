@@ -15,6 +15,7 @@ import android.text.InputType;
 import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.facebook.react.bridge.CatalystInstance;
@@ -199,6 +200,20 @@ public class ReactTextInputPropertyTest {
 
     mManager.updateProperties(view, buildStyles("multiline", null));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero();
+  }
+
+  @Test
+  public void testBlurMultiline() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+
+    mManager.updateProperties(view, buildStyles("multiline", true));
+    mManager.updateProperties(view, buildStyles("blurOnSubmit", true));
+
+    EditorInfo editorInfo = new EditorInfo();
+    editorInfo.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+    view.onCreateInputConnection(editorInfo);
+
+    assertThat(editorInfo.imeOptions).isEqualTo(EditorInfo.IME_ACTION_DONE);
   }
 
   @Test

@@ -264,6 +264,19 @@ RCT_EXTERN void RCTRegisterModule(Class); \
   }
 
 /**
+ * Most modules can be used from any thread. All of the modules exported non-sync method will be called on its
+ * methodQueue, and the module will be constructed lazily when its first invoked. Some modules have main need to access
+ * information that's main queue only (e.g. most UIKit classes). Since we don't want to dispatch synchronously to the
+ * main thread to this safely, we construct these moduels and export their constants ahead-of-time.
+ *
+ * Note that when set to false, the module constructor will be called from any thread.
+ *
+ * This requirement is currently inferred by checking if the module has a custom initializer or if there's exported
+ * constants. In the future, we'll stop automatically inferring this and instead only rely on this method.
+ */
++ (BOOL)requiresMainQueueSetup;
+
+/**
  * Injects methods into JS.  Entries in this array are used in addition to any
  * methods defined using the macros above.  This method is called only once,
  * before registration.
@@ -271,13 +284,15 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 - (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
 
 /**
- * Injects constants into JS. These constants are made accessible via
- * NativeModules.ModuleName.X.  It is only called once for the lifetime of the
- * bridge, so it is not suitable for returning dynamic values, but may be used
- * for long-lived values such as session keys, that are regenerated only as
- * part of a reload of the entire React application.
+ * Injects constants into JS. These constants are made accessible via NativeModules.ModuleName.X. It is only called once
+ * for the lifetime of the bridge, so it is not suitable for returning dynamic values, but may be used for long-lived
+ * values such as session keys, that are regenerated only as part of a reload of the entire React application.
+ *
+ * If you implement this method and do not implement `requiresMainThreadSetup`, you will trigger deprecated logic
+ * that eagerly initializes your module on bridge startup. In the future, this behaviour will be changed to default
+ * to initializing lazily, and even modules with constants will be initialized lazily.
  */
-- (NSDictionary<NSString *, id> *)constantsToExport;
+- (NSDictionary *)constantsToExport;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.

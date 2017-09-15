@@ -19,7 +19,6 @@
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
-#import <React/RCTWebSocketObserver.h>
 
 #import "RCTPackagerConnectionBridgeConfig.h"
 #import "RCTReloadPackagerMethod.h"
@@ -131,6 +130,14 @@ static BOOL isSupportedVersion(NSNumber *version)
   } else {
     [methodHandler handleNotification:msg[@"params"]];
   }
+}
+
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+}
+
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
 }
 
 @end

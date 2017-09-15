@@ -96,6 +96,23 @@ JSValueRef evaluateSourceCode(
     JSStringRef sourceURL);
 #endif
 
+/**
+ * A lock for protecting accesses to the JSGlobalContext
+ * This will be a no-op for most compilations, where #if WITH_FBJSCEXTENSIONS is false,
+ * but avoids deadlocks in execution environments with advanced locking requirements,
+ * particularly with uses of the pthread mutex lock
+**/
+class JSContextLock {
+public:
+  JSContextLock(JSGlobalContextRef ctx) noexcept;
+  ~JSContextLock() noexcept;
+private:
+#if WITH_FBJSCEXTENSIONS
+  JSGlobalContextRef ctx_;
+  pthread_mutex_t globalLock_;
+#endif
+};
+
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);
 

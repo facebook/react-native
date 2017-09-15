@@ -92,6 +92,7 @@ public class ViewProps {
   public static final String TEXT_BREAK_STRATEGY = "textBreakStrategy";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+  public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
@@ -168,7 +169,7 @@ public class ViewProps {
       return true;
     } else if (POINTER_EVENTS.equals(prop)) {
       String value = map.getString(prop);
-      return "auto".equals(value) || "box-none".equals(value);
+      return "auto".equals(value);
     } else {
       return false;
     }

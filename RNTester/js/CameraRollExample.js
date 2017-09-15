@@ -31,7 +31,10 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-class CameraRollExample extends React.Component {
+class CameraRollExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     groupTypes: 'SavedPhotos',
     sliderValue: 1,
