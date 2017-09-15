@@ -61,6 +61,9 @@ export type ViewPagerScrollState = $Enum<{
  *
  * var styles = {
  *   ...
+ *   viewPager: {
+ *     flex: 1
+ *   },
  *   pageStyle: {
  *     alignItems: 'center',
  *     padding: 20,

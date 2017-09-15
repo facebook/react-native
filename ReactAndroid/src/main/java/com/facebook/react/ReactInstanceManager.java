@@ -37,6 +37,8 @@ import android.os.Process;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -270,6 +272,8 @@ public class ReactInstanceManager {
               mMinTimeLeftInFrameForNonBatchedOperationMs);
       mPackages.add(coreModulesPackage);
     } else {
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
@@ -401,6 +405,8 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   private void recreateReactContextInBackgroundInner() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.recreateReactContextInBackgroundInner()");
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
     if (mUseDeveloperSupport && mJSMainModulePath != null &&
@@ -447,6 +453,8 @@ public class ReactInstanceManager {
     Log.d(
       ReactConstants.TAG,
       "ReactInstanceManager.recreateReactContextInBackgroundFromBundleLoader()");
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from BundleLoader");
     recreateReactContextInBackground(mJavaScriptExecutorFactory, mBundleLoader);
   }
 
@@ -613,6 +621,7 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
+    PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Destroy");
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -903,25 +912,28 @@ public class ReactInstanceManager {
         });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
-    mCurrentReactContext.runOnJSQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-      }
-    });
-    mCurrentReactContext.runOnNativeModulesQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-      }
-    });
+    reactContext.runOnJSQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+          }
+        });
+    reactContext.runOnNativeModulesQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+          }
+        });
     if (mUseSeparateUIBackgroundThread) {
-      mCurrentReactContext.runOnUiBackgroundQueueThread(new Runnable() {
-        @Override
-        public void run() {
-          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-        }
-      });
+      reactContext.runOnUiBackgroundQueueThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+            }
+          });
     }
   }
 
@@ -932,6 +944,7 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
+    rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,

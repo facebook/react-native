@@ -136,7 +136,9 @@ NSString *RCTParseType(const char **input)
     RCTReadChar(input, '>');
   }
   RCTSkipWhitespace(input);
-  RCTReadChar(input, '*');
+  if (!RCTReadChar(input, '*')) {
+    RCTReadChar(input, '&');
+  }
   return type;
 }
 
