@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 
@@ -125,6 +126,11 @@ function requireNativeComponent(
         extraConfig && extraConfig.nativeOnly
       );
     }
+
+    // Register this view's event types with the ReactNative renderer.
+    // This enables view managers to be initialized lazily, improving perf,
+    // While also enabling 3rd party components to define custom event types.
+    ReactNativeBridgeEventPlugin.processEventTypes(viewConfig);
 
     return viewConfig;
   }

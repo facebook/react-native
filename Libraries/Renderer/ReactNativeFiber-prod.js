@@ -15,7 +15,7 @@ var invariant = require("fbjs/lib/invariant"), ExceptionsManager = require("Exce
 
 require("deepFreezeAndThrowOnMutationInDev"), require("InitializeCore");
 
-var RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), Platform = require("Platform"), defaultShowDialog = function(capturedError) {
+var RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), defaultShowDialog = function(capturedError) {
     return !0;
 }, showDialog = defaultShowDialog;
 
@@ -2470,15 +2470,6 @@ var injectInternals_1 = injectInternals$1, onCommitRoot_1 = onCommitRoot$1, onCo
     function scheduleErrorRecovery(fiber) {
         scheduleUpdateImpl(fiber, TaskPriority$1, !0);
     }
-    function performWithPriority(priorityLevel, fn) {
-        var previousPriorityContext = priorityContext;
-        priorityContext = priorityLevel;
-        try {
-            fn();
-        } finally {
-            priorityContext = previousPriorityContext;
-        }
-    }
     function batchedUpdates(fn, a) {
         var previousIsBatchingUpdates = isBatchingUpdates;
         isBatchingUpdates = !0;
@@ -2520,7 +2511,6 @@ var injectInternals_1 = injectInternals$1, onCommitRoot_1 = onCommitRoot$1, onCo
     return {
         scheduleUpdate: scheduleUpdate,
         getPriorityContext: getPriorityContext,
-        performWithPriority: performWithPriority,
         batchedUpdates: batchedUpdates,
         unbatchedUpdates: unbatchedUpdates,
         flushSync: flushSync,
@@ -2548,7 +2538,7 @@ getContextForSubtree_1._injectFiber(function(fiber) {
 });
 
 var ReactFiberReconciler = function(config) {
-    var getPublicInstance = config.getPublicInstance, _ReactFiberScheduler = ReactFiberScheduler(config), scheduleUpdate = _ReactFiberScheduler.scheduleUpdate, getPriorityContext = _ReactFiberScheduler.getPriorityContext, performWithPriority = _ReactFiberScheduler.performWithPriority, batchedUpdates = _ReactFiberScheduler.batchedUpdates, unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates, flushSync = _ReactFiberScheduler.flushSync, deferredUpdates = _ReactFiberScheduler.deferredUpdates;
+    var getPublicInstance = config.getPublicInstance, _ReactFiberScheduler = ReactFiberScheduler(config), scheduleUpdate = _ReactFiberScheduler.scheduleUpdate, getPriorityContext = _ReactFiberScheduler.getPriorityContext, batchedUpdates = _ReactFiberScheduler.batchedUpdates, unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates, flushSync = _ReactFiberScheduler.flushSync, deferredUpdates = _ReactFiberScheduler.deferredUpdates;
     function scheduleTopLevelUpdate(current, element, callback) {
         var forceAsync = ReactFeatureFlags_1.enableAsyncSubtreeAPI && null != element && null != element.type && null != element.type.prototype && !0 === element.type.prototype.unstable_isAsyncReactComponent, priorityLevel = getPriorityContext(current, forceAsync), nextState = {
             element: element
@@ -2565,7 +2555,6 @@ var ReactFiberReconciler = function(config) {
             null === container.context ? container.context = context : container.pendingContext = context, 
             scheduleTopLevelUpdate(current, element, callback);
         },
-        performWithPriority: performWithPriority,
         batchedUpdates: batchedUpdates,
         unbatchedUpdates: unbatchedUpdates,
         deferredUpdates: deferredUpdates,
@@ -2893,7 +2882,7 @@ getInspectorDataForViewTag = function() {
 
 var ReactNativeFiberInspector = {
     getInspectorDataForViewTag: getInspectorDataForViewTag
-}, ReactVersion = "16.0.0-beta.5";
+}, ReactVersion = "16.0.0-rc.1";
 
 function findNodeHandle(componentOrHandle) {
     if (null == componentOrHandle) return null;
@@ -3241,288 +3230,8 @@ function addEventPoolingTo(EventConstructor) {
     EventConstructor.eventPool = [], EventConstructor.getPooled = getPooledEvent, EventConstructor.release = releasePooledEvent;
 }
 
-var COMMON_BUBBLING_EVENT_TYPES = {
-    topBlur: {
-        phasedRegistrationNames: {
-            captured: "onBlurCapture",
-            bubbled: "onBlur"
-        }
-    },
-    topChange: {
-        phasedRegistrationNames: {
-            captured: "onChangeCapture",
-            bubbled: "onChange"
-        }
-    },
-    topEndEditing: {
-        phasedRegistrationNames: {
-            captured: "onEndEditingCapture",
-            bubbled: "onEndEditing"
-        }
-    },
-    topFocus: {
-        phasedRegistrationNames: {
-            captured: "onFocusCapture",
-            bubbled: "onFocus"
-        }
-    },
-    topSubmitEditing: {
-        phasedRegistrationNames: {
-            captured: "onSubmitEditingCapture",
-            bubbled: "onSubmitEditing"
-        }
-    },
-    topTouchEnd: {
-        phasedRegistrationNames: {
-            captured: "onTouchEndCapture",
-            bubbled: "onTouchEnd"
-        }
-    },
-    topTouchMove: {
-        phasedRegistrationNames: {
-            captured: "onTouchMoveCapture",
-            bubbled: "onTouchMove"
-        }
-    },
-    topTouchStart: {
-        phasedRegistrationNames: {
-            captured: "onTouchStartCapture",
-            bubbled: "onTouchStart"
-        }
-    }
-}, COMMON_DIRECT_EVENT_TYPES = {
-    topError: {
-        registrationName: "onError"
-    },
-    topLayout: {
-        registrationName: "onLayout"
-    },
-    topLoad: {
-        registrationName: "onLoad"
-    },
-    topLoadEnd: {
-        registrationName: "onLoadEnd"
-    },
-    topLoadStart: {
-        registrationName: "onLoadStart"
-    },
-    topLoadingError: {
-        registrationName: "onLoadingError"
-    },
-    topLoadingFinish: {
-        registrationName: "onLoadingFinish"
-    },
-    topLoadingStart: {
-        registrationName: "onLoadingStart"
-    },
-    topMessage: {
-        registrationName: "onMessage"
-    },
-    topMomentumScrollBegin: {
-        registrationName: "onMomentumScrollBegin"
-    },
-    topMomentumScrollEnd: {
-        registrationName: "onMomentumScrollEnd"
-    },
-    topRefresh: {
-        registrationName: "onRefresh"
-    },
-    topScroll: {
-        registrationName: "onScroll"
-    },
-    topScrollAnimationEnd: {
-        registrationName: "onScrollAnimationEnd"
-    },
-    topScrollBeginDrag: {
-        registrationName: "onScrollBeginDrag"
-    },
-    topScrollEndDrag: {
-        registrationName: "onScrollEndDrag"
-    },
-    topSelectionChange: {
-        registrationName: "onSelectionChange"
-    },
-    topShow: {
-        registrationName: "onShow"
-    }
-}, ANDROID_BUBBLING_EVENT_TYPES = Object.assign({}, COMMON_BUBBLING_EVENT_TYPES, {
-    topSelect: {
-        phasedRegistrationNames: {
-            bubbled: "onSelect",
-            captured: "onSelectCapture"
-        }
-    },
-    topTextInput: {
-        phasedRegistrationNames: {
-            bubbled: "onTextInput",
-            captured: "onTextInputCapture"
-        }
-    }
-}), ANDROID_DIRECT_EVENT_TYPES = Object.assign({}, COMMON_DIRECT_EVENT_TYPES, {
-    topContentSizeChange: {
-        registrationName: "onContentSizeChange"
-    },
-    topDrawerClosed: {
-        registrationName: "onDrawerClose"
-    },
-    topDrawerOpened: {
-        registrationName: "onDrawerOpen"
-    },
-    topDrawerSlide: {
-        registrationName: "onDrawerSlide"
-    },
-    topDrawerStateChanged: {
-        registrationName: "onDrawerStateChanged"
-    },
-    topPageScroll: {
-        registrationName: "onPageScroll"
-    },
-    topPageScrollStateChanged: {
-        registrationName: "onPageScrollStateChanged"
-    },
-    topPageSelected: {
-        registrationName: "onPageSelected"
-    },
-    topRequestClose: {
-        registrationName: "onRequestClose"
-    },
-    topSlidingComplete: {
-        registrationName: "onSlidingComplete"
-    },
-    topVideoProgress: {
-        registrationName: "onProgress"
-    },
-    topVideoSizeDetected: {
-        registrationName: "onVideoSizeDetected"
-    },
-    topVideoStateChange: {
-        registrationName: "onStateChange"
-    },
-    topZoom: {
-        registrationName: "onZoom"
-    }
-}), IOS_BUBBLING_EVENT_TYPES = Object.assign({}, COMMON_BUBBLING_EVENT_TYPES, {
-    topAnnotationBlur: {
-        phasedRegistrationNames: {
-            captured: "onAnnotationBlurCapture",
-            bubbled: "onAnnotationBlur"
-        }
-    },
-    topAnnotationDragStateChange: {
-        phasedRegistrationNames: {
-            captured: "onAnnotationDragStateChangeCapture",
-            bubbled: "onAnnotationDragStateChange"
-        }
-    },
-    topAnnotationFocus: {
-        phasedRegistrationNames: {
-            captured: "onAnnotationFocusCapture",
-            bubbled: "onAnnotationFocus"
-        }
-    },
-    topContentSizeChange: {
-        phasedRegistrationNames: {
-            captured: "onContentSizeChangeCapture",
-            bubbled: "onContentSizeChange"
-        }
-    },
-    topKeyPress: {
-        phasedRegistrationNames: {
-            captured: "onKeyPressCapture",
-            bubbled: "onKeyPress"
-        }
-    },
-    topLeftButtonPress: {
-        phasedRegistrationNames: {
-            captured: "onLeftButtonPressCapture",
-            bubbled: "onLeftButtonPress"
-        }
-    },
-    topNavigationComplete: {
-        phasedRegistrationNames: {
-            captured: "onNavigationCompleteCapture",
-            bubbled: "onNavigationComplete"
-        }
-    },
-    topPress: {
-        phasedRegistrationNames: {
-            captured: "onPressCapture",
-            bubbled: "onPress"
-        }
-    },
-    topRightButtonPress: {
-        phasedRegistrationNames: {
-            captured: "onRightButtonPressCapture",
-            bubbled: "onRightButtonPress"
-        }
-    },
-    topSlidingComplete: {
-        phasedRegistrationNames: {
-            captured: "onSlidingCompleteCapture",
-            bubbled: "onSlidingComplete"
-        }
-    },
-    topTouchCancel: {
-        phasedRegistrationNames: {
-            captured: "onTouchCancelCapture",
-            bubbled: "onTouchCancel"
-        }
-    },
-    topValueChange: {
-        phasedRegistrationNames: {
-            captured: "onValueChangeCapture",
-            bubbled: "onValueChange"
-        }
-    }
-}), IOS_DIRECT_EVENT_TYPES = Object.assign({}, COMMON_DIRECT_EVENT_TYPES, {
-    topAccessibilityTap: {
-        registrationName: "onAccessibilityTap"
-    },
-    topMagicTap: {
-        registrationName: "onMagicTap"
-    },
-    topNavigationProgress: {
-        registrationName: "onNavigationProgress"
-    },
-    topOrientationChange: {
-        registrationName: "onOrientationChange"
-    },
-    topPartialLoad: {
-        registrationName: "onPartialLoad"
-    },
-    topProgress: {
-        registrationName: "onProgress"
-    },
-    topShouldStartLoadWithRequest: {
-        registrationName: "onShouldStartLoadWithRequest"
-    },
-    topSnapshotReady: {
-        registrationName: "onSnapshotReady"
-    },
-    topStateChange: {
-        registrationName: "onStateChange"
-    },
-    topTextInput: {
-        registrationName: "onTextInput"
-    },
-    topTextLayout: {
-        registrationName: "onTextLayout"
-    }
-}), ReactNativeEventTypes = void 0;
-
-ReactNativeEventTypes = "ios" === Platform.OS ? {
-    customBubblingEventTypes: IOS_BUBBLING_EVENT_TYPES,
-    customDirectEventTypes: IOS_DIRECT_EVENT_TYPES
-} : "android" === Platform.OS ? {
-    customBubblingEventTypes: ANDROID_BUBBLING_EVENT_TYPES,
-    customDirectEventTypes: ANDROID_DIRECT_EVENT_TYPES
-} : {
-    customBubblingEventTypes: emptyObject,
-    customDirectEventTypes: emptyObject
-};
-
-var ReactNativeEventTypes_1 = ReactNativeEventTypes, customBubblingEventTypes = ReactNativeEventTypes_1.customBubblingEventTypes, customDirectEventTypes = ReactNativeEventTypes_1.customDirectEventTypes, ReactNativeBridgeEventPlugin = {
-    eventTypes: Object.assign({}, customBubblingEventTypes, customDirectEventTypes),
+var customBubblingEventTypes = {}, customDirectEventTypes = {}, ReactNativeBridgeEventPlugin = {
+    eventTypes: {},
     extractEvents: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
         var bubbleDispatchConfig = customBubblingEventTypes[topLevelType], directDispatchConfig = customDirectEventTypes[topLevelType];
         invariant(bubbleDispatchConfig || directDispatchConfig, 'Unsupported top level event type "%s" dispatched', topLevelType);
@@ -3532,6 +3241,11 @@ var ReactNativeEventTypes_1 = ReactNativeEventTypes, customBubblingEventTypes = 
             EventPropagators_1.accumulateDirectDispatches(event);
         }
         return event;
+    },
+    processEventTypes: function(viewConfig) {
+        var bubblingEventTypes = viewConfig.bubblingEventTypes, directEventTypes = viewConfig.directEventTypes;
+        if (null != bubblingEventTypes) for (var _topLevelType in bubblingEventTypes) null == customBubblingEventTypes[_topLevelType] && (ReactNativeBridgeEventPlugin.eventTypes[_topLevelType] = customBubblingEventTypes[_topLevelType] = bubblingEventTypes[_topLevelType]);
+        if (null != directEventTypes) for (var _topLevelType2 in directEventTypes) null == customDirectEventTypes[_topLevelType2] && (ReactNativeBridgeEventPlugin.eventTypes[_topLevelType2] = customDirectEventTypes[_topLevelType2] = directEventTypes[_topLevelType2]);
     }
 }, ReactNativeBridgeEventPlugin_1 = ReactNativeBridgeEventPlugin;
 
@@ -3985,6 +3699,7 @@ var ReactNativeFiber = {
     flushSync: ReactNativeFiberRenderer.flushSync,
     __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
         NativeMethodsMixin: NativeMethodsMixin_1,
+        ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin_1,
         ReactGlobalSharedState: ReactGlobalSharedState_1,
         ReactNativeComponentTree: ReactNativeComponentTree_1,
         ReactNativePropRegistry: ReactNativePropRegistry_1,
