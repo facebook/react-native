@@ -25,6 +25,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 /* package */ class UIManagerModuleConstantsHelper {
 
+  private static final String CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
+  private static final String CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
+
   /**
    * Generates map of constants that is then exposed by {@link UIManagerModule}.
    * Provided list of {@param viewManagers} is then used to populate content of
@@ -41,8 +44,20 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     List<ViewManager> viewManagers,
     boolean lazyViewManagersEnabled) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
-    Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
-    Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
+
+    // Generic/default event types:
+    // All view managers are capable of dispatching these events.
+    // They will be automatically registered for each view type.
+    Map genericBubblingEventTypes = UIManagerModuleConstants.getBubblingEventTypeConstants();
+    Map genericDirectEventTypes = UIManagerModuleConstants.getDirectEventTypeConstants();
+
+    // Cumulative event types:
+    // View manager specific event types are collected as views are loaded.
+    // This information is used later when events are dispatched.
+    Map allBubblingEventTypes = MapBuilder.newHashMap();
+    allBubblingEventTypes.putAll(genericBubblingEventTypes);
+    Map allDirectEventTypes = MapBuilder.newHashMap();
+    allDirectEventTypes.putAll(genericDirectEventTypes);
 
     for (ViewManager viewManager : viewManagers) {
       SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "constants for ViewManager")
@@ -52,17 +67,19 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         Map viewManagerConstants = MapBuilder.newHashMap();
         Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
         if (viewManagerBubblingEvents != null) {
-          recursiveMerge(viewManagerBubblingEvents, bubblingEventTypesConstants);
+          recursiveMerge(allBubblingEventTypes, viewManagerBubblingEvents);
+          recursiveMerge(viewManagerBubblingEvents, genericBubblingEventTypes);
           viewManagerConstants.put("bubblingEventTypes", viewManagerBubblingEvents);
         } else {
-          viewManagerConstants.put("bubblingEventTypes", bubblingEventTypesConstants);
+          viewManagerConstants.put("bubblingEventTypes", genericBubblingEventTypes);
         }
         Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
         if (viewManagerDirectEvents != null) {
-          recursiveMerge(viewManagerDirectEvents, directEventTypesConstants);
+          recursiveMerge(allDirectEventTypes, viewManagerDirectEvents);
+          recursiveMerge(viewManagerDirectEvents, genericDirectEventTypes);
           viewManagerConstants.put("directEventTypes", viewManagerDirectEvents);
         } else {
-          viewManagerConstants.put("directEventTypes", directEventTypesConstants);
+          viewManagerConstants.put("directEventTypes", genericDirectEventTypes);
         }
         Map customViewConstants = viewManager.getExportedViewConstants();
         if (customViewConstants != null) {
@@ -84,6 +101,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       }
     }
 
+    // Used by https://fburl.com/6nskr82o
+    constants.put(CUSTOM_BUBBLING_EVENT_TYPES_KEY, allBubblingEventTypes);
+    constants.put(CUSTOM_DIRECT_EVENT_TYPES_KEY, allDirectEventTypes);
     constants.put("AndroidLazyViewManagersEnabled", lazyViewManagersEnabled);
 
     return constants;
