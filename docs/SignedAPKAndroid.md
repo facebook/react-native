@@ -35,6 +35,8 @@ MYAPP_RELEASE_STORE_PASSWORD=*****
 MYAPP_RELEASE_KEY_PASSWORD=*****
 ```
 
+> If you copy and paste the lines above into your editor, make sure you reformat it so each variable is in a separate line, and remove all trailing spaces as well, or else the process to generate the release APK will fail during signing.
+
 These are going to be global gradle variables, which we can later use in our gradle config to sign our app.
 
 > __Note about saving the keystore:__
