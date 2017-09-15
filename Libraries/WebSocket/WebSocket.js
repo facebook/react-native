@@ -128,9 +128,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       invariant(BlobModule, 'Native module BlobModule is required for blob support');
       if (BlobModule) {
         if (binaryType === 'blob') {
-          BlobModule.enableBlobSupport(this._socketId);
+          BlobModule.addWebSocketHandler(this._socketId);
         } else {
-          BlobModule.disableBlobSupport(this._socketId);
+          BlobModule.removeWebSocketHandler(this._socketId);
         }
       }
     }
@@ -159,7 +159,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     if (data instanceof Blob) {
       const BlobModule = NativeModules.BlobModule;
       invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      BlobModule.sendBlob(data.data, this._socketId);
+      BlobModule.sendOverSocket(data.data, this._socketId);
       return;
     }
 

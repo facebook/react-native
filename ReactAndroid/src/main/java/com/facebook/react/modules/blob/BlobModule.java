@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import okio.ByteString;
 
 @ReactModule(name = BlobModule.NAME)
@@ -71,8 +75,88 @@ public class BlobModule extends ReactContextBaseJavaModule {
         }
       };
 
+  private static final NetworkingModule.UriHandler NetworkingUriHandler =
+          new NetworkingModule.UriHandler() {
+            @Override
+            public boolean supports(Uri uri, String responseType) {
+              String scheme = uri.getScheme();
+              boolean isRemote = scheme.equals("http") || scheme.equals("https");
+
+              return  (!isRemote && responseType.equals("blob"));
+            }
+
+            @Override
+            public WritableMap fetch(Uri uri, Context context) throws IOException {
+              ContentResolver resolver = context.getContentResolver();
+
+              byte[] data = getBytesFromUri(uri, resolver);
+
+              WritableMap blob = Arguments.createMap();
+              blob.putString("blobId", store(data));
+              blob.putInt("offset", 0);
+              blob.putInt("size", data.length);
+              blob.putString("type", getMimeTypeFromUri(uri, resolver));
+
+              // Needed for files
+              blob.putString("name", getNameFromUri(uri, resolver));
+              blob.putDouble("lastModified", getLastModifiedFromUri(uri));
+
+              return blob;
+            }
+          };
+
+  private static final NetworkingModule.RequestBodyHandler NetworkingRequestBodyHandler =
+          new NetworkingModule.RequestBodyHandler() {
+            @Override
+            public boolean supports(ReadableMap data) {
+              return data.hasKey("blob");
+            }
+
+            @Override
+            public RequestBody toRequestBody(ReadableMap data, String contentType) {
+              String type = contentType;
+              if (data.hasKey("type") && !data.getString("type").isEmpty()) {
+                type = data.getString("type");
+              }
+              if (type == null) {
+                type = "application/octet-stream";
+              }
+              ReadableMap blob = data.getMap("blob");
+              String blobId = blob.getString("blobId");
+              byte[] bytes = resolve(
+                      blobId,
+                      blob.getInt("offset"),
+                      blob.getInt("size"));;
+
+              return RequestBody.create(MediaType.parse(type), bytes);
+            }
+          };
+
+  private static final NetworkingModule.ResponseHandler NetworkingResponseHandler =
+          new NetworkingModule.ResponseHandler() {
+            @Override
+            public boolean supports(String responseType) {
+              return responseType.equals("blob");
+            }
+
+            @Override
+            public WritableMap toResponseData(ResponseBody body) throws IOException {
+              byte[] data = body.bytes();
+              WritableMap blob = Arguments.createMap();
+              blob.putString("blobId", store(data));
+              blob.putInt("offset", 0);
+              blob.putInt("size", data.length);
+              return blob;
+            }
+          };
+
   public BlobModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    // Enable Blob support for networking modules
+    NetworkingModule.addUriHandler(NetworkingUriHandler);
+    NetworkingModule.addRequestBodyHandler(NetworkingRequestBodyHandler);
+    NetworkingModule.addResponseHandler(NetworkingResponseHandler);
   }
 
   @Override
@@ -146,24 +230,6 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
-  public static WritableMap fetch(Uri uri, Context context) throws IOException {
-    ContentResolver resolver = context.getContentResolver();
-
-    byte[] data = getBytesFromUri(uri, resolver);
-
-    WritableMap blob = Arguments.createMap();
-    blob.putString("blobId", store(data));
-    blob.putInt("offset", 0);
-    blob.putInt("size", data.length);
-    blob.putString("type", getMimeTypeFromUri(uri, resolver));
-
-    // Needed for files
-    blob.putString("name", getNameFromUri(uri, resolver));
-    blob.putDouble("lastModified", getLastModifiedFromUri(uri));
-
-    return blob;
-  }
-
   private static byte[] getBytesFromUri(Uri contentUri, ContentResolver resolver) throws IOException {
     InputStream is = resolver.openInputStream(contentUri);
 
@@ -228,17 +294,17 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void enableBlobSupport(final int id) {
+  public void addWebSocketHandler(final int id) {
     getWebSocketModule().setContentHandler(id, BlobHandler);
   }
 
   @ReactMethod
-  public void disableBlobSupport(final int id) {
+  public void removeWebSocketHandler(final int id) {
     getWebSocketModule().setContentHandler(id, null);
   }
 
   @ReactMethod
-  public void sendBlob(ReadableMap blob, int id) {
+  public void sendOverSocket(ReadableMap blob, int id) {
     byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
 
     if (data != null) {
