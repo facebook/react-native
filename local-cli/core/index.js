@@ -29,7 +29,7 @@ const minimist = require('minimist');
 const path = require('path');
 
 import type {CommandT} from '../commands';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro-bundler';
 
 export type RNConfig = {
   ...ConfigT,
@@ -108,7 +108,7 @@ const defaultRNConfig = {
 function getCliConfig(): RNConfig {
   const cliArgs = minimist(process.argv.slice(2));
   const config = cliArgs.config != null
-    ? Config.loadFile(path.resolve(__dirname, cliArgs.config))
+    ? Config.load(path.resolve(__dirname, cliArgs.config))
     : Config.findOptional(__dirname);
 
   return {...defaultRNConfig, ...config};
