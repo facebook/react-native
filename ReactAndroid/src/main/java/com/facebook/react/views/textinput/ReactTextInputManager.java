@@ -140,6 +140,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         .build();
   }
 
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
+        .build();
+  }
+
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
     return MapBuilder.of("focusTextInput", FOCUS_TEXT_INPUT, "blurTextInput", BLUR_TEXT_INPUT);

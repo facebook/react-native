@@ -14,7 +14,7 @@
 __DEV__ && function() {
     var invariant = require("fbjs/lib/invariant"), require$$0 = require("fbjs/lib/warning"), ExceptionsManager = require("ExceptionsManager"), emptyObject = require("fbjs/lib/emptyObject"), react = require("react"), checkPropTypes = require("prop-types/checkPropTypes"), shallowEqual = require("fbjs/lib/shallowEqual"), deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState"), UIManager = require("UIManager"), deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev");
     require("InitializeCore");
-    var RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), Platform = require("Platform"), ExecutionEnvironment = require("fbjs/lib/ExecutionEnvironment"), performanceNow = require("fbjs/lib/performanceNow"), defaultShowDialog = function(capturedError) {
+    var RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), ExecutionEnvironment = require("fbjs/lib/ExecutionEnvironment"), performanceNow = require("fbjs/lib/performanceNow"), defaultShowDialog = function(capturedError) {
         return !0;
     }, showDialog = defaultShowDialog;
     function logCapturedError(capturedError) {
@@ -2765,15 +2765,6 @@ __DEV__ && function() {
         function scheduleErrorRecovery(fiber) {
             scheduleUpdateImpl(fiber, TaskPriority$1, !0);
         }
-        function performWithPriority(priorityLevel, fn) {
-            var previousPriorityContext = priorityContext;
-            priorityContext = priorityLevel;
-            try {
-                fn();
-            } finally {
-                priorityContext = previousPriorityContext;
-            }
-        }
         function batchedUpdates(fn, a) {
             var previousIsBatchingUpdates = isBatchingUpdates;
             isBatchingUpdates = !0;
@@ -2815,7 +2806,6 @@ __DEV__ && function() {
         return {
             scheduleUpdate: scheduleUpdate,
             getPriorityContext: getPriorityContext,
-            performWithPriority: performWithPriority,
             batchedUpdates: batchedUpdates,
             unbatchedUpdates: unbatchedUpdates,
             flushSync: flushSync,
@@ -3020,7 +3010,7 @@ __DEV__ && function() {
         node._children.forEach(recursivelyUncacheFiberNode));
     }
     var NativeRenderer = function(config) {
-        var getPublicInstance = config.getPublicInstance, _ReactFiberScheduler = ReactFiberScheduler(config), scheduleUpdate = _ReactFiberScheduler.scheduleUpdate, getPriorityContext = _ReactFiberScheduler.getPriorityContext, performWithPriority = _ReactFiberScheduler.performWithPriority, batchedUpdates = _ReactFiberScheduler.batchedUpdates, unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates, flushSync = _ReactFiberScheduler.flushSync, deferredUpdates = _ReactFiberScheduler.deferredUpdates;
+        var getPublicInstance = config.getPublicInstance, _ReactFiberScheduler = ReactFiberScheduler(config), scheduleUpdate = _ReactFiberScheduler.scheduleUpdate, getPriorityContext = _ReactFiberScheduler.getPriorityContext, batchedUpdates = _ReactFiberScheduler.batchedUpdates, unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates, flushSync = _ReactFiberScheduler.flushSync, deferredUpdates = _ReactFiberScheduler.deferredUpdates;
         function scheduleTopLevelUpdate(current, element, callback) {
             "render" === ReactDebugCurrentFiber.phase && null !== ReactDebugCurrentFiber.current && warning$1(!1, "Render methods should be a pure function of props and state; " + "triggering nested component updates from render is not allowed. " + "If necessary, trigger nested updates in componentDidUpdate.\n\n" + "Check the render method of %s.", getComponentName(ReactDebugCurrentFiber.current) || "Unknown");
             var forceAsync = ReactFeatureFlags_1.enableAsyncSubtreeAPI && null != element && null != element.type && null != element.type.prototype && !0 === element.type.prototype.unstable_isAsyncReactComponent, priorityLevel = getPriorityContext(current, forceAsync), nextState = {
@@ -3040,7 +3030,6 @@ __DEV__ && function() {
                 null === container.context ? container.context = context : container.pendingContext = context, 
                 scheduleTopLevelUpdate(current, element, callback);
             },
-            performWithPriority: performWithPriority,
             batchedUpdates: batchedUpdates,
             unbatchedUpdates: unbatchedUpdates,
             deferredUpdates: deferredUpdates,
@@ -3214,7 +3203,7 @@ __DEV__ && function() {
     };
     var ReactNativeFiberInspector = {
         getInspectorDataForViewTag: getInspectorDataForViewTag
-    }, ReactVersion = "16.0.0-beta.5", ReactCurrentOwner$3 = ReactGlobalSharedState_1.ReactCurrentOwner, warning$11 = require$$0;
+    }, ReactVersion = "16.0.0-rc.1", ReactCurrentOwner$3 = ReactGlobalSharedState_1.ReactCurrentOwner, warning$11 = require$$0;
     function findNodeHandle(componentOrHandle) {
         var owner = ReactCurrentOwner$3.current;
         if (null !== owner && null !== owner.stateNode && (warning$11(owner.stateNode._warnedAboutRefsInRender, "%s is accessing findNodeHandle inside its render(). " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", getComponentName_1(owner) || "A component"), 
@@ -3412,13 +3401,13 @@ __DEV__ && function() {
         getParentInstance: getParentInstance,
         traverseTwoPhase: traverseTwoPhase,
         traverseEnterLeave: traverseEnterLeave
-    }, getListener = EventPluginHub_1.getListener, warning$13 = require$$0;
+    }, getListener = EventPluginHub_1.getListener, warning$12 = require$$0;
     function listenerAtPhase(inst, event, propagationPhase) {
         var registrationName = event.dispatchConfig.phasedRegistrationNames[propagationPhase];
         return getListener(inst, registrationName);
     }
     function accumulateDirectionalDispatches(inst, phase, event) {
-        warning$13(inst, "Dispatching inst must not be null");
+        warning$12(inst, "Dispatching inst must not be null");
         var listener = listenerAtPhase(inst, event, phase);
         listener && (event._dispatchListeners = accumulateInto_1(event._dispatchListeners, listener), 
         event._dispatchInstances = accumulateInto_1(event._dispatchInstances, inst));
@@ -3459,7 +3448,7 @@ __DEV__ && function() {
         accumulateTwoPhaseDispatchesSkipTarget: accumulateTwoPhaseDispatchesSkipTarget,
         accumulateDirectDispatches: accumulateDirectDispatches,
         accumulateEnterLeaveDispatches: accumulateEnterLeaveDispatches
-    }, EventPropagators_1 = EventPropagators, didWarnForAddedNewProperty = !1, isProxySupported = "function" == typeof Proxy, EVENT_POOL_SIZE = 10, warning$14 = require$$0, shouldBeReleasedProperties = [ "dispatchConfig", "_targetInst", "nativeEvent", "isDefaultPrevented", "isPropagationStopped", "_dispatchListeners", "_dispatchInstances" ], EventInterface = {
+    }, EventPropagators_1 = EventPropagators, didWarnForAddedNewProperty = !1, isProxySupported = "function" == typeof Proxy, EVENT_POOL_SIZE = 10, warning$13 = require$$0, shouldBeReleasedProperties = [ "dispatchConfig", "_targetInst", "nativeEvent", "isDefaultPrevented", "isPropagationStopped", "_dispatchListeners", "_dispatchInstances" ], EventInterface = {
         type: null,
         target: null,
         currentTarget: emptyFunction.thatReturnsNull,
@@ -3523,7 +3512,7 @@ __DEV__ && function() {
         apply: function(constructor, that, args) {
             return new Proxy(constructor.apply(that, args), {
                 set: function(target, prop, value) {
-                    return "isPersistent" === prop || target.constructor.Interface.hasOwnProperty(prop) || -1 !== shouldBeReleasedProperties.indexOf(prop) || (warning$14(didWarnForAddedNewProperty || target.isPersistent(), "This synthetic event is reused for performance reasons. If you're " + "seeing this, you're adding a new property in the synthetic event object. " + "The property is never released. See " + "https://fb.me/react-event-pooling for more information."), 
+                    return "isPersistent" === prop || target.constructor.Interface.hasOwnProperty(prop) || -1 !== shouldBeReleasedProperties.indexOf(prop) || (warning$13(didWarnForAddedNewProperty || target.isPersistent(), "This synthetic event is reused for performance reasons. If you're " + "seeing this, you're adding a new property in the synthetic event object. " + "The property is never released. See " + "https://fb.me/react-event-pooling for more information."), 
                     didWarnForAddedNewProperty = !0), target[prop] = value, !0;
                 }
             });
@@ -3546,7 +3535,7 @@ __DEV__ && function() {
             getVal;
         }
         function warn(action, result) {
-            warning$14(!1, "This synthetic event is reused for performance reasons. If you're seeing this, " + "you're %s `%s` on a released/nullified synthetic event. %s. " + "If you must keep the original synthetic event around, use event.persist(). " + "See https://fb.me/react-event-pooling for more information.", action, propName, result);
+            warning$13(!1, "This synthetic event is reused for performance reasons. If you're seeing this, " + "you're %s `%s` on a released/nullified synthetic event. %s. " + "If you must keep the original synthetic event around, use event.persist(). " + "See https://fb.me/react-event-pooling for more information.", action, propName, result);
         }
     }
     function getPooledEvent(dispatchConfig, targetInst, nativeEvent, nativeInst) {
@@ -3566,288 +3555,8 @@ __DEV__ && function() {
     function addEventPoolingTo(EventConstructor) {
         EventConstructor.eventPool = [], EventConstructor.getPooled = getPooledEvent, EventConstructor.release = releasePooledEvent;
     }
-    var COMMON_BUBBLING_EVENT_TYPES = {
-        topBlur: {
-            phasedRegistrationNames: {
-                captured: "onBlurCapture",
-                bubbled: "onBlur"
-            }
-        },
-        topChange: {
-            phasedRegistrationNames: {
-                captured: "onChangeCapture",
-                bubbled: "onChange"
-            }
-        },
-        topEndEditing: {
-            phasedRegistrationNames: {
-                captured: "onEndEditingCapture",
-                bubbled: "onEndEditing"
-            }
-        },
-        topFocus: {
-            phasedRegistrationNames: {
-                captured: "onFocusCapture",
-                bubbled: "onFocus"
-            }
-        },
-        topSubmitEditing: {
-            phasedRegistrationNames: {
-                captured: "onSubmitEditingCapture",
-                bubbled: "onSubmitEditing"
-            }
-        },
-        topTouchEnd: {
-            phasedRegistrationNames: {
-                captured: "onTouchEndCapture",
-                bubbled: "onTouchEnd"
-            }
-        },
-        topTouchMove: {
-            phasedRegistrationNames: {
-                captured: "onTouchMoveCapture",
-                bubbled: "onTouchMove"
-            }
-        },
-        topTouchStart: {
-            phasedRegistrationNames: {
-                captured: "onTouchStartCapture",
-                bubbled: "onTouchStart"
-            }
-        }
-    }, COMMON_DIRECT_EVENT_TYPES = {
-        topError: {
-            registrationName: "onError"
-        },
-        topLayout: {
-            registrationName: "onLayout"
-        },
-        topLoad: {
-            registrationName: "onLoad"
-        },
-        topLoadEnd: {
-            registrationName: "onLoadEnd"
-        },
-        topLoadStart: {
-            registrationName: "onLoadStart"
-        },
-        topLoadingError: {
-            registrationName: "onLoadingError"
-        },
-        topLoadingFinish: {
-            registrationName: "onLoadingFinish"
-        },
-        topLoadingStart: {
-            registrationName: "onLoadingStart"
-        },
-        topMessage: {
-            registrationName: "onMessage"
-        },
-        topMomentumScrollBegin: {
-            registrationName: "onMomentumScrollBegin"
-        },
-        topMomentumScrollEnd: {
-            registrationName: "onMomentumScrollEnd"
-        },
-        topRefresh: {
-            registrationName: "onRefresh"
-        },
-        topScroll: {
-            registrationName: "onScroll"
-        },
-        topScrollAnimationEnd: {
-            registrationName: "onScrollAnimationEnd"
-        },
-        topScrollBeginDrag: {
-            registrationName: "onScrollBeginDrag"
-        },
-        topScrollEndDrag: {
-            registrationName: "onScrollEndDrag"
-        },
-        topSelectionChange: {
-            registrationName: "onSelectionChange"
-        },
-        topShow: {
-            registrationName: "onShow"
-        }
-    }, ANDROID_BUBBLING_EVENT_TYPES = Object.assign({}, COMMON_BUBBLING_EVENT_TYPES, {
-        topSelect: {
-            phasedRegistrationNames: {
-                bubbled: "onSelect",
-                captured: "onSelectCapture"
-            }
-        },
-        topTextInput: {
-            phasedRegistrationNames: {
-                bubbled: "onTextInput",
-                captured: "onTextInputCapture"
-            }
-        }
-    }), ANDROID_DIRECT_EVENT_TYPES = Object.assign({}, COMMON_DIRECT_EVENT_TYPES, {
-        topContentSizeChange: {
-            registrationName: "onContentSizeChange"
-        },
-        topDrawerClosed: {
-            registrationName: "onDrawerClose"
-        },
-        topDrawerOpened: {
-            registrationName: "onDrawerOpen"
-        },
-        topDrawerSlide: {
-            registrationName: "onDrawerSlide"
-        },
-        topDrawerStateChanged: {
-            registrationName: "onDrawerStateChanged"
-        },
-        topPageScroll: {
-            registrationName: "onPageScroll"
-        },
-        topPageScrollStateChanged: {
-            registrationName: "onPageScrollStateChanged"
-        },
-        topPageSelected: {
-            registrationName: "onPageSelected"
-        },
-        topRequestClose: {
-            registrationName: "onRequestClose"
-        },
-        topSlidingComplete: {
-            registrationName: "onSlidingComplete"
-        },
-        topVideoProgress: {
-            registrationName: "onProgress"
-        },
-        topVideoSizeDetected: {
-            registrationName: "onVideoSizeDetected"
-        },
-        topVideoStateChange: {
-            registrationName: "onStateChange"
-        },
-        topZoom: {
-            registrationName: "onZoom"
-        }
-    }), IOS_BUBBLING_EVENT_TYPES = Object.assign({}, COMMON_BUBBLING_EVENT_TYPES, {
-        topAnnotationBlur: {
-            phasedRegistrationNames: {
-                captured: "onAnnotationBlurCapture",
-                bubbled: "onAnnotationBlur"
-            }
-        },
-        topAnnotationDragStateChange: {
-            phasedRegistrationNames: {
-                captured: "onAnnotationDragStateChangeCapture",
-                bubbled: "onAnnotationDragStateChange"
-            }
-        },
-        topAnnotationFocus: {
-            phasedRegistrationNames: {
-                captured: "onAnnotationFocusCapture",
-                bubbled: "onAnnotationFocus"
-            }
-        },
-        topContentSizeChange: {
-            phasedRegistrationNames: {
-                captured: "onContentSizeChangeCapture",
-                bubbled: "onContentSizeChange"
-            }
-        },
-        topKeyPress: {
-            phasedRegistrationNames: {
-                captured: "onKeyPressCapture",
-                bubbled: "onKeyPress"
-            }
-        },
-        topLeftButtonPress: {
-            phasedRegistrationNames: {
-                captured: "onLeftButtonPressCapture",
-                bubbled: "onLeftButtonPress"
-            }
-        },
-        topNavigationComplete: {
-            phasedRegistrationNames: {
-                captured: "onNavigationCompleteCapture",
-                bubbled: "onNavigationComplete"
-            }
-        },
-        topPress: {
-            phasedRegistrationNames: {
-                captured: "onPressCapture",
-                bubbled: "onPress"
-            }
-        },
-        topRightButtonPress: {
-            phasedRegistrationNames: {
-                captured: "onRightButtonPressCapture",
-                bubbled: "onRightButtonPress"
-            }
-        },
-        topSlidingComplete: {
-            phasedRegistrationNames: {
-                captured: "onSlidingCompleteCapture",
-                bubbled: "onSlidingComplete"
-            }
-        },
-        topTouchCancel: {
-            phasedRegistrationNames: {
-                captured: "onTouchCancelCapture",
-                bubbled: "onTouchCancel"
-            }
-        },
-        topValueChange: {
-            phasedRegistrationNames: {
-                captured: "onValueChangeCapture",
-                bubbled: "onValueChange"
-            }
-        }
-    }), IOS_DIRECT_EVENT_TYPES = Object.assign({}, COMMON_DIRECT_EVENT_TYPES, {
-        topAccessibilityTap: {
-            registrationName: "onAccessibilityTap"
-        },
-        topMagicTap: {
-            registrationName: "onMagicTap"
-        },
-        topNavigationProgress: {
-            registrationName: "onNavigationProgress"
-        },
-        topOrientationChange: {
-            registrationName: "onOrientationChange"
-        },
-        topPartialLoad: {
-            registrationName: "onPartialLoad"
-        },
-        topProgress: {
-            registrationName: "onProgress"
-        },
-        topShouldStartLoadWithRequest: {
-            registrationName: "onShouldStartLoadWithRequest"
-        },
-        topSnapshotReady: {
-            registrationName: "onSnapshotReady"
-        },
-        topStateChange: {
-            registrationName: "onStateChange"
-        },
-        topTextInput: {
-            registrationName: "onTextInput"
-        },
-        topTextLayout: {
-            registrationName: "onTextLayout"
-        }
-    }), ReactNativeEventTypes = void 0;
-    ReactNativeEventTypes = "ios" === Platform.OS ? {
-        customBubblingEventTypes: IOS_BUBBLING_EVENT_TYPES,
-        customDirectEventTypes: IOS_DIRECT_EVENT_TYPES
-    } : "android" === Platform.OS ? {
-        customBubblingEventTypes: ANDROID_BUBBLING_EVENT_TYPES,
-        customDirectEventTypes: ANDROID_DIRECT_EVENT_TYPES
-    } : {
-        customBubblingEventTypes: emptyObject,
-        customDirectEventTypes: emptyObject
-    };
-    var ReactNativeEventTypes_1 = ReactNativeEventTypes, customBubblingEventTypes = ReactNativeEventTypes_1.customBubblingEventTypes, customDirectEventTypes = ReactNativeEventTypes_1.customDirectEventTypes, warning$12 = require$$0;
-    for (var directTypeName in customDirectEventTypes) warning$12(!customBubblingEventTypes[directTypeName], "Event cannot be both direct and bubbling: %s", directTypeName);
-    var ReactNativeBridgeEventPlugin = {
-        eventTypes: Object.assign({}, customBubblingEventTypes, customDirectEventTypes),
+    var customBubblingEventTypes = {}, customDirectEventTypes = {}, ReactNativeBridgeEventPlugin = {
+        eventTypes: {},
         extractEvents: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
             var bubbleDispatchConfig = customBubblingEventTypes[topLevelType], directDispatchConfig = customDirectEventTypes[topLevelType];
             invariant(bubbleDispatchConfig || directDispatchConfig, 'Unsupported top level event type "%s" dispatched', topLevelType);
@@ -3857,6 +3566,12 @@ __DEV__ && function() {
                 EventPropagators_1.accumulateDirectDispatches(event);
             }
             return event;
+        },
+        processEventTypes: function(viewConfig) {
+            var bubblingEventTypes = viewConfig.bubblingEventTypes, directEventTypes = viewConfig.directEventTypes;
+            if (null != bubblingEventTypes && null != directEventTypes) for (var topLevelType in directEventTypes) invariant(null == bubblingEventTypes[topLevelType], "Event cannot be both direct and bubbling: %s", topLevelType);
+            if (null != bubblingEventTypes) for (var _topLevelType in bubblingEventTypes) null == customBubblingEventTypes[_topLevelType] && (ReactNativeBridgeEventPlugin.eventTypes[_topLevelType] = customBubblingEventTypes[_topLevelType] = bubblingEventTypes[_topLevelType]);
+            if (null != directEventTypes) for (var _topLevelType2 in directEventTypes) null == customDirectEventTypes[_topLevelType2] && (ReactNativeBridgeEventPlugin.eventTypes[_topLevelType2] = customDirectEventTypes[_topLevelType2] = directEventTypes[_topLevelType2]);
         }
     }, ReactNativeBridgeEventPlugin_1 = ReactNativeBridgeEventPlugin;
     function runEventQueueInBatch(events) {
@@ -3866,7 +3581,7 @@ __DEV__ && function() {
         handleTopLevel: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
             runEventQueueInBatch(EventPluginHub_1.extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget));
         }
-    }, ReactEventEmitterMixin_1 = ReactEventEmitterMixin, warning$15 = require$$0, EMPTY_NATIVE_EVENT = {}, touchSubsequence = function(touches, indices) {
+    }, ReactEventEmitterMixin_1 = ReactEventEmitterMixin, warning$14 = require$$0, EMPTY_NATIVE_EVENT = {}, touchSubsequence = function(touches, indices) {
         for (var ret = [], i = 0; i < indices.length; i++) ret.push(touches[indices[i]]);
         return ret;
     }, removeTouchesAtIndices = function(touches, indices) {
@@ -3896,7 +3611,7 @@ __DEV__ && function() {
                 var touch = changedTouches[jj];
                 touch.changedTouches = changedTouches, touch.touches = touches;
                 var nativeEvent = touch, rootNodeID = null, target = nativeEvent.target;
-                null !== target && void 0 !== target && (target < ReactNativeTagHandles_1.tagsStartAt ? warning$15(!1, "A view is reporting that a touch occurred on tag zero.") : rootNodeID = target), 
+                null !== target && void 0 !== target && (target < ReactNativeTagHandles_1.tagsStartAt ? warning$14(!1, "A view is reporting that a touch occurred on tag zero.") : rootNodeID = target), 
                 ReactNativeEventEmitter._receiveRootNodeIDEvent(rootNodeID, eventTopLevelType, nativeEvent);
             }
         }
@@ -3916,7 +3631,7 @@ __DEV__ && function() {
         return SyntheticEvent_1.call(this, dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget);
     }
     SyntheticEvent_1.augmentClass(ResponderSyntheticEvent, ResponderEventInterface);
-    var ResponderSyntheticEvent_1 = ResponderSyntheticEvent, isEndish$2 = EventPluginUtils_1.isEndish, isMoveish$2 = EventPluginUtils_1.isMoveish, isStartish$2 = EventPluginUtils_1.isStartish, warning$16 = require$$0, MAX_TOUCH_BANK = 20, touchBank = [], touchHistory = {
+    var ResponderSyntheticEvent_1 = ResponderSyntheticEvent, isEndish$2 = EventPluginUtils_1.isEndish, isMoveish$2 = EventPluginUtils_1.isMoveish, isStartish$2 = EventPluginUtils_1.isStartish, warning$15 = require$$0, MAX_TOUCH_BANK = 20, touchBank = [], touchHistory = {
         touchBank: touchBank,
         numberActiveTouches: 0,
         indexOfSingleActiveTouch: -1,
@@ -3948,7 +3663,7 @@ __DEV__ && function() {
     }
     function getTouchIdentifier(_ref) {
         var identifier = _ref.identifier;
-        return invariant(null != identifier, "Touch object is missing identifier."), warning$16(identifier <= MAX_TOUCH_BANK, "Touch identifier %s is greater than maximum supported %s which causes " + "performance issues backfilling array locations for all of the indices.", identifier, MAX_TOUCH_BANK), 
+        return invariant(null != identifier, "Touch object is missing identifier."), warning$15(identifier <= MAX_TOUCH_BANK, "Touch identifier %s is greater than maximum supported %s which causes " + "performance issues backfilling array locations for all of the indices.", identifier, MAX_TOUCH_BANK), 
         identifier;
     }
     function recordTouchStart(touch) {
@@ -3996,7 +3711,7 @@ __DEV__ && function() {
                     }
                 }
                 var activeRecord = touchBank[touchHistory.indexOfSingleActiveTouch];
-                warning$16(null != activeRecord && activeRecord.touchActive, "Cannot find single active touch.");
+                warning$15(null != activeRecord && activeRecord.touchActive, "Cannot find single active touch.");
             }
         },
         touchHistory: touchHistory
@@ -4263,8 +3978,8 @@ __DEV__ && function() {
         return "number" != typeof view && "window" !== view && (view = findNumericNodeHandle(view) || "window"), 
         UIManager.__takeSnapshot(view, options);
     }
-    var takeSnapshot_1 = takeSnapshot, ReactInvalidSetStateWarningHook = {}, warning$18 = require$$0, processingChildContext = !1, warnInvalidSetState = function() {
-        warning$18(!processingChildContext, "setState(...): Cannot call setState() inside getChildContext()");
+    var takeSnapshot_1 = takeSnapshot, ReactInvalidSetStateWarningHook = {}, warning$17 = require$$0, processingChildContext = !1, warnInvalidSetState = function() {
+        warning$17(!processingChildContext, "setState(...): Cannot call setState() inside getChildContext()");
     };
     ReactInvalidSetStateWarningHook = {
         onBeginProcessingChildContext: function() {
@@ -4289,11 +4004,11 @@ __DEV__ && function() {
             return history;
         }
     };
-    var ReactHostOperationHistoryHook_1 = ReactHostOperationHistoryHook, ReactComponentTreeHook = ReactGlobalSharedState_1.ReactComponentTreeHook, warning$17 = require$$0, ReactDebugTool = null, hooks = [], didHookThrowForEvent = {}, callHook = function(event, fn, context, arg1, arg2, arg3, arg4, arg5) {
+    var ReactHostOperationHistoryHook_1 = ReactHostOperationHistoryHook, ReactComponentTreeHook = ReactGlobalSharedState_1.ReactComponentTreeHook, warning$16 = require$$0, ReactDebugTool = null, hooks = [], didHookThrowForEvent = {}, callHook = function(event, fn, context, arg1, arg2, arg3, arg4, arg5) {
         try {
             fn.call(context, arg1, arg2, arg3, arg4, arg5);
         } catch (e) {
-            warning$17(didHookThrowForEvent[event], "Exception thrown by hook while handling %s: %s", event, e + "\n" + e.stack), 
+            warning$16(didHookThrowForEvent[event], "Exception thrown by hook while handling %s: %s", event, e + "\n" + e.stack), 
             didHookThrowForEvent[event] = !0;
         }
     }, emitEvent = function(event, arg1, arg2, arg3, arg4, arg5) {
@@ -4330,13 +4045,13 @@ __DEV__ && function() {
         }
         clearHistory(), currentFlushStartTime = performanceNow(), currentFlushMeasurements = [];
     }, checkDebugID = function(debugID) {
-        arguments.length > 1 && void 0 !== arguments[1] && arguments[1] && 0 === debugID || debugID || warning$17(!1, "ReactDebugTool: debugID may not be empty.");
+        arguments.length > 1 && void 0 !== arguments[1] && arguments[1] && 0 === debugID || debugID || warning$16(!1, "ReactDebugTool: debugID may not be empty.");
     }, beginLifeCycleTimer = function(debugID, timerType) {
-        0 !== currentFlushNesting && (currentTimerType && !lifeCycleTimerHasWarned && (warning$17(!1, "There is an internal error in the React performance measurement code." + "\n\nDid not expect %s timer to start while %s timer is still in " + "progress for %s instance.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
+        0 !== currentFlushNesting && (currentTimerType && !lifeCycleTimerHasWarned && (warning$16(!1, "There is an internal error in the React performance measurement code." + "\n\nDid not expect %s timer to start while %s timer is still in " + "progress for %s instance.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
         lifeCycleTimerHasWarned = !0), currentTimerStartTime = performanceNow(), currentTimerNestedFlushDuration = 0, 
         currentTimerDebugID = debugID, currentTimerType = timerType);
     }, endLifeCycleTimer = function(debugID, timerType) {
-        0 !== currentFlushNesting && (currentTimerType === timerType || lifeCycleTimerHasWarned || (warning$17(!1, "There is an internal error in the React performance measurement code. " + "We did not expect %s timer to stop while %s timer is still in " + "progress for %s instance. Please report this as a bug in React.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
+        0 !== currentFlushNesting && (currentTimerType === timerType || lifeCycleTimerHasWarned || (warning$16(!1, "There is an internal error in the React performance measurement code. " + "We did not expect %s timer to stop while %s timer is still in " + "progress for %s instance. Please report this as a bug in React.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
         lifeCycleTimerHasWarned = !0), isProfiling && currentFlushMeasurements.push({
             timerType: timerType,
             instanceID: debugID,
@@ -4715,6 +4430,7 @@ __DEV__ && function() {
         flushSync: ReactNativeFiberRenderer.flushSync,
         __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
             NativeMethodsMixin: NativeMethodsMixin_1,
+            ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin_1,
             ReactGlobalSharedState: ReactGlobalSharedState_1,
             ReactNativeComponentTree: ReactNativeComponentTree_1,
             ReactNativePropRegistry: ReactNativePropRegistry_1,
