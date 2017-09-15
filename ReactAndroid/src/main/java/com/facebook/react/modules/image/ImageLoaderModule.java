@@ -21,7 +21,8 @@ import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.EncodedImage;
+import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
@@ -81,22 +82,23 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
-    DataSource<CloseableReference<CloseableImage>> dataSource =
-      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+    DataSource<CloseableReference<PooledByteBuffer>> dataSource =
+      Fresco.getImagePipeline().fetchEncodedImage(request, mCallerContext);
 
-    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
-      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+    DataSubscriber<CloseableReference<PooledByteBuffer>> dataSubscriber =
+      new BaseDataSubscriber<CloseableReference<PooledByteBuffer>>() {
         @Override
         protected void onNewResultImpl(
-            DataSource<CloseableReference<CloseableImage>> dataSource) {
+            DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
           if (!dataSource.isFinished()) {
             return;
           }
-          CloseableReference<CloseableImage> ref = dataSource.getResult();
+          CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
           if (ref != null) {
+            EncodedImage image = new EncodedImage(ref);
             try {
-              CloseableImage image = ref.get();
-
+              image.parseMetaData();
+              
               WritableMap sizes = Arguments.createMap();
               sizes.putInt("width", image.getWidth());
               sizes.putInt("height", image.getHeight());
@@ -106,6 +108,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
               promise.reject(ERROR_GET_SIZE_FAILURE, e);
             } finally {
               CloseableReference.closeSafely(ref);
+              image.close();
             }
           } else {
             promise.reject(ERROR_GET_SIZE_FAILURE);
@@ -113,7 +116,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
         }
 
         @Override
-        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+        protected void onFailureImpl(DataSource<CloseableReference<PooledByteBuffer>> dataSource) {
           promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
         }
       };
