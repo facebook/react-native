@@ -13,4 +13,12 @@
 
 @interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 
+- (NSString *)store:(NSData *)data;
+
+- (void)store:(NSData *)data withId:(NSString *)blobId;
+
+- (NSData *)resolve:(NSDictionary<NSString *, id> *)blob;
+
+- (NSData *)resolve:(NSString *)blobId offset:(NSInteger)offset size:(NSInteger)size;
+
 @end

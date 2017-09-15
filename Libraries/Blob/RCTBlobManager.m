@@ -86,7 +86,7 @@ RCT_EXPORT_MODULE(BlobModule)
   return data;
 }
 
-RCT_EXPORT_METHOD(enableBlobSupport:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(addWebSocketHandler:(nonnull NSNumber *)socketID)
 {
   if (!_contentHandler) {
     _contentHandler = [[_RCTBlobContentHandler alloc] initWithBlobManager:self];
@@ -94,12 +94,12 @@ RCT_EXPORT_METHOD(enableBlobSupport:(nonnull NSNumber *)socketID)
   [[_bridge webSocketModule] setContentHandler:_contentHandler forSocketID:socketID];
 }
 
-RCT_EXPORT_METHOD(disableBlobSupport:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(removeWebSocketHandler:(nonnull NSNumber *)socketID)
 {
   [[_bridge webSocketModule] setContentHandler:nil forSocketID:socketID];
 }
 
-RCT_EXPORT_METHOD(sendBlob:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(sendOverSocket:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
 {
   [[_bridge webSocketModule] sendData:[self resolve:blob] forSocketID:socketID];
 }
@@ -111,12 +111,11 @@ RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)par
     NSString *type = [RCTConvert NSString:part[@"type"]];
 
     if ([type isEqualToString:@"blob"]) {
-      NSDictionary *data = [RCTConvert NSDictionary:part[@"data"]];
-      NSData *partData = [self resolve:data];
-      [blob appendData:partData];
+      NSData *partData = [self resolve:part];
+      [data appendData:partData];
     } else if ([type isEqualToString:@"string"]) {
-      NSData *data = [[RCTConvert NSString:part[@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
-      [blob appendData:data];
+      NSData *partData = [[RCTConvert NSString:part[@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+      [data appendData:partData];
     } else {
       [NSException raise:@"Invalid type for blob" format:@"%@ is invalid", type];
     }

@@ -107,27 +107,6 @@ RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String forSocketID:(nonnull NSNum
   [_sockets[socketID] send:data];
 }
 
-RCT_EXPORT_METHOD(sendBlob:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
-{
-  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
-  NSData *data = [blobManager resolve:blob];
-  // Unfortunately we don't have access to the WebSocket object, so we have to
-  // convert it to base64 and send it through the existing method :(
-  [self sendBinary:[data base64EncodedStringWithOptions:0] socketID:socketID];
-}
-
-RCT_EXPORT_METHOD(setBinaryType:(NSString *)binaryType socketID:(nonnull NSNumber *)socketID)
-{
-  if (!_blobsEnabled) {
-    _blobsEnabled = [NSMutableSet new];
-  }
-  if ([binaryType isEqualToString:@"blob"]) {
-    [_blobsEnabled addObject:socketID];
-  } else {
-    [_blobsEnabled removeObject:socketID];
-  }
-}
-
 RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] sendPing:NULL];
