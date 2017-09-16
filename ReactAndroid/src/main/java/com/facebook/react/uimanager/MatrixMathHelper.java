@@ -11,11 +11,11 @@ public class MatrixMathHelper {
   private static final double EPSILON = .00001d;
 
   public static class MatrixDecompositionContext {
-    double[] perspective = new double[4];
-    double[] scale = new double[3];
-    double[] skew = new double[3];
-    double[] translation = new double[3];
-    double[] rotationDegrees = new double[3];
+    public double[] perspective = new double[4];
+    public double[] scale = new double[3];
+    public double[] skew = new double[3];
+    public double[] translation = new double[3];
+    public double[] rotationDegrees = new double[3];
   }
 
   private static boolean isZero(double d) {

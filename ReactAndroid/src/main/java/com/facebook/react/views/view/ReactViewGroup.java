@@ -22,12 +22,15 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.touch.OnInterceptTouchEventListener;
+import com.facebook.react.uimanager.MatrixMathHelper;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
@@ -36,6 +39,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
+import com.facebook.react.uimanager.TransformHelper;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
@@ -56,6 +60,7 @@ public class ReactViewGroup extends ViewGroup implements
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
+  private static double[] sTransformDecompositionArray = new double[16];
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -113,6 +118,10 @@ public class ReactViewGroup extends ViewGroup implements
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
+  private MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
+    new MatrixMathHelper.MatrixDecompositionContext();
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -864,5 +873,46 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void decomposeMatrix(ReadableArray matrix) {
+    if (matrix != null) {
+      TransformHelper.processTransform(matrix, sTransformDecompositionArray);
+      MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
+      setBackfaceVisibilityDependantOpacity();
+    }
+  }
+
+  private void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+    boolean isRotationInformationAvailable = sMatrixDecompositionContext != null;
+
+    if (isBackfaceVisible || !isRotationInformationAvailable) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = (float) sMatrixDecompositionContext.rotationDegrees[0];
+    float rotationY = (float) sMatrixDecompositionContext.rotationDegrees[1];
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }
