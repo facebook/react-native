@@ -17,6 +17,9 @@ const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');

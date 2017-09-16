@@ -301,7 +301,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       flush();
 
       ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-      ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+      ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
       return;
 
     case JSLoadSourceErrorVersionMismatch:
@@ -350,7 +350,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   flush();
 
   ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+  ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
@@ -507,6 +507,18 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
+}
+
+std::string JSCExecutor::getDescription() {
+#if defined(__APPLE__)
+  if (isCustomJSCPtr(m_context)) {
+    return "Custom JSC";
+  } else {
+    return "System JSC";
+  }
+#else
+  return "JSC";
+#endif
 }
 
 String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {

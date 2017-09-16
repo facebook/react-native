@@ -20,12 +20,10 @@ var {
   View,
 } = ReactNative;
 
-class RNTesterBlock extends React.Component {
-  props: {
-    title?: string,
-    description?: string,
-  };
-
+class RNTesterBlock extends React.Component<{
+  title?: string,
+  description?: string,
+}, $FlowFixMeState> {
   static propTypes = {
     title: PropTypes.string,
     description: PropTypes.string,

@@ -304,12 +304,11 @@ const WarningInspector = ({
   );
 };
 
-class YellowBox extends React.Component {
-  state: {
-    stacktraceVisible: boolean,
-    inspecting: ?string,
-    warningMap: Map<any, any>,
-  };
+class YellowBox extends React.Component<mixed, {
+  stacktraceVisible: boolean,
+  inspecting: ?string,
+  warningMap: Map<any, any>,
+}> {
   _listener: ?EmitterSubscription;
   dismissWarning: (warning: ?string) => void;
 

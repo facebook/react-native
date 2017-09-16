@@ -45,7 +45,7 @@ var THUMB_URLS = [
 var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
-class Thumb extends React.Component {
+class Thumb extends React.Component<{}, $FlowFixMeState> {
   componentWillMount() {
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -86,8 +86,7 @@ class Thumb extends React.Component {
   }
 }
 
-class ListViewPagingExample extends React.Component {
-  state: *;
+class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
   static title = '<ListView> - Paging';
   static description = 'Floating headers & layout animations.';
 

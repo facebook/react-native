@@ -114,4 +114,8 @@ void ProxyExecutor::setGlobalVariable(std::string propName,
     jni::make_jstring(jsonValue->c_str()).get());
 }
 
+std::string ProxyExecutor::getDescription() {
+  return "Chrome";
+}
+
 } }

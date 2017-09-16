@@ -14,7 +14,9 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
+#endif
 #import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
@@ -27,6 +29,10 @@ NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillS
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
+NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -253,10 +259,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
-  #if ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
 
   /**
    * Any thread
