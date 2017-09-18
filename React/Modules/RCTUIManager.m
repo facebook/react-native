@@ -768,7 +768,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     // So, let's temporary restore the view back after removing.
     // To do so, we have to memorize original `superview` (which can differ from `container`) and an index of removed view.
     UIView *originalSuperview = removedChild.superview;
-    NSUInteger *originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
+    NSUInteger originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
     [container removeReactSubview:removedChild];
     [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
