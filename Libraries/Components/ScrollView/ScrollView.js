@@ -803,6 +803,7 @@ const ScrollView = createReactClass({
       onTouchEnd: this.scrollResponderHandleTouchEnd,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchStart: this.scrollResponderHandleTouchStart,
+      onTouchCancel: this.scrollResponderHandleTouchCancel,
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
