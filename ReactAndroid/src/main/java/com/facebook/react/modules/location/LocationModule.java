@@ -238,8 +238,13 @@ public class LocationModule extends ReactContextBaseJavaModule {
   private static void throwLocationPermissionMissing(SecurityException e) {
     throw new SecurityException(
       "Looks like the app doesn't have the permission to access location.\n" +
-      "Add the following line to your app's AndroidManifest.xml:\n" +
-      "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />", e);
+      "To solve this add the following line to your app's AndroidManifest.xml:\n" +
+      "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n" +
+      "Or request the permission programmatically before accessing the location using the following example:\n" +
+      "PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)\n" +
+      "  .then((result) => {\n" +
+      "    if (PermissionsAndroid.RESULTS.GRANTED === result) { ... }\n" +
+      "  })", e);
   }
 
   private static class SingleUpdateRequest {
