@@ -120,15 +120,15 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
     final HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
     headlessJsTaskContext.addTaskEventListener(this);
 
-    Runnable myRunnable = new Runnable() {
-      @Override
-      public void run() {
-        int taskId = headlessJsTaskContext.startTask(taskConfig);
-        mActiveTasks.add(taskId);
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          int taskId = headlessJsTaskContext.startTask(taskConfig);
+          mActiveTasks.add(taskId);
+        }
       }
-    };
-
-    UiThreadUtil.runOnUiThread(myRunnable);
+    );
   }
 
   @Override
