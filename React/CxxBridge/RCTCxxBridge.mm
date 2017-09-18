@@ -1155,25 +1155,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
-  [self _tryAndHandleError:^{
-    NSString *sourceUrlStr = deriveSourceURL(url);
-    if (isRAMBundle(script)) {
-      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
-      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
-      std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
-      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
-      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance) {
-        self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           sourceUrlStr.UTF8String, false);
-      }
-    } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 sourceUrlStr.UTF8String, false);
-    } else {
-      throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
-    }
-  }];
+  [self executeApplicationScript:script url:url async:YES];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -1186,6 +1168,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
 {
+  [self executeApplicationScript:script url:url async:NO];
+}
+
+- (void)executeApplicationScript:(NSData *)script
+                             url:(NSURL *)url
+                           async:(BOOL)async
+{
   [self _tryAndHandleError:^{
     NSString *sourceUrlStr = deriveSourceURL(url);
     if (isRAMBundle(script)) {
@@ -1196,18 +1185,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           sourceUrlStr.UTF8String, true);
+                                           sourceUrlStr.UTF8String, !async);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 sourceUrlStr.UTF8String, true);
+                                                 sourceUrlStr.UTF8String, !async);
     } else {
-      throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
+      std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
+      throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");
     }
   }];
 }
-
-
 
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method
