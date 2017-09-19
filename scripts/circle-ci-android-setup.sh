@@ -4,8 +4,8 @@
 ANDROID_SDK_BUILD_TOOLS_REVISION=23.0.1
 # API Level we build with
 ANDROID_SDK_BUILD_API_LEVEL="23"
-# Minimum API Level we target, used for emulator image
-ANDROID_SDK_TARGET_API_LEVEL="19"
+# API Level we use for emulator image
+ANDROID_SDK_TARGET_API_LEVEL="26"
 # Emulator name
 AVD_NAME="testAVD"
 
@@ -59,7 +59,7 @@ function createAVD {
 function launchAVD {
   # The AVD name here should match the one created in createAVD
   # emulator64-arm -avd $AVD_NAME -no-audio -no-window -no-boot-anim -gpu off
-  emulator -avd $AVD_NAME -no-audio -no-window
+  emulator -avd $AVD_NAME -no-audio -no-window -no-boot-anim
 }
 
 function waitForAVD {
