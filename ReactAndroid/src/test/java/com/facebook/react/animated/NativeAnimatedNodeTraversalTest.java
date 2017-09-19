@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -106,6 +108,27 @@ public class NativeAnimatedNodeTraversalTest {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
         return MapBuilder.of("customDirectEventTypes", MapBuilder.newHashMap());
+      }
+    });
+    PowerMockito
+        .when(mUIManagerMock.getDirectEventNamesResolver())
+        .thenAnswer(new Answer<UIManagerModule.CustomEventNamesResolver>() {
+      @Override
+      public UIManagerModule.CustomEventNamesResolver answer(InvocationOnMock invocation) throws Throwable {
+        return new UIManagerModule.CustomEventNamesResolver() {
+          @Override
+          public String resolveCustomEventName(String eventName) {
+            Map<String, Map> directEventTypes =
+                (Map<String, Map>) mUIManagerMock.getConstants().get("customDirectEventTypes");
+            if (directEventTypes != null) {
+              Map<String, String> customEventType = (Map<String, String>) directEventTypes.get(eventName);
+              if (customEventType != null) {
+                return customEventType.get("registrationName");
+              }
+            }
+            return eventName;
+          }
+        };
       }
     });
     mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock);
