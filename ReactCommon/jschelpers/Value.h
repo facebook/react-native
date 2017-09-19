@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <sstream>
 #include <unordered_map>
@@ -150,6 +151,8 @@ private:
 // heap-allocated, since otherwise you may end up with an invalid reference.
 class Object : public noncopyable {
 public:
+  using TimeType = std::chrono::time_point<std::chrono::system_clock>;
+
   Object(JSContextRef context, JSObjectRef obj) :
     m_context(context),
     m_obj(obj)
@@ -208,6 +211,9 @@ public:
       m_isProtected = true;
     }
   }
+
+  RN_EXPORT static Object makeArray(JSContextRef ctx, JSValueRef* elements, unsigned length);
+  RN_EXPORT static Object makeDate(JSContextRef ctx, TimeType time);
 
   template<typename ReturnType>
   ReturnType* getPrivate() const {
@@ -330,6 +336,14 @@ public:
 
   static Value makeNull(JSContextRef ctx) {
     return Value(ctx, JSC_JSValueMakeNull(ctx));
+  }
+
+  static Value makeBoolean(JSContextRef ctx, bool value) {
+    return Value(ctx, JSC_JSValueMakeBoolean(ctx, value));
+  }
+
+  static Value makeString(JSContextRef ctx, const char* utf8) {
+    return Value(ctx, String(ctx, utf8));
   }
 
   RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
