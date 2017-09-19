@@ -65,13 +65,17 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       this.what = what;
     }
 
-    public void execute(SpannableStringBuilder sb) {
+    public void execute(SpannableStringBuilder sb, int priority) {
       // All spans will automatically extend to the right of the text, but not the left - except
       // for spans that start at the beginning of the text.
       int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
       if (start == 0) {
         spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
       }
+
+      spanFlags &= ~Spannable.SPAN_PRIORITY;
+      spanFlags |= (priority << Spannable.SPAN_PRIORITY_SHIFT) & Spannable.SPAN_PRIORITY;
+
       sb.setSpan(what, start, end, spanFlags);
     }
   }
@@ -167,6 +171,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
+
     buildSpannedFromShadowNode(textShadowNode, sb, ops);
 
     if (text != null) {
@@ -174,22 +179,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     if (textShadowNode.mFontSize == UNSET) {
-      sb.setSpan(
-          new AbsoluteSizeSpan(
-              textShadowNode.mAllowFontScaling
-                  ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-                  : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
-          0,
-          sb.length(),
-          Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+      int defaultFontSize =
+          textShadowNode.mAllowFontScaling
+              ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+              : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+
+      ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
     }
 
     textShadowNode.mContainsImages = false;
     textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
 
-    // While setting the Spans on the final text, we also check whether any of them are images
-    for (int i = ops.size() - 1; i >= 0; i--) {
-      SetSpanOperation op = ops.get(i);
+    // While setting the Spans on the final text, we also check whether any of them are images.
+    int priority = 0;
+    for (SetSpanOperation op : ops) {
       if (op.what instanceof TextInlineImageSpan) {
         int height = ((TextInlineImageSpan) op.what).getHeight();
         textShadowNode.mContainsImages = true;
@@ -198,8 +201,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
           textShadowNode.mHeightOfTallestInlineImage = height;
         }
       }
-      op.execute(sb);
+
+      // Actual order of calling {@code execute} does NOT matter,
+      // but the {@code priority} DOES matter.
+      op.execute(sb, priority);
+      priority++;
     }
+
     return sb;
   }
 
