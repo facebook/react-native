@@ -173,36 +173,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
    *
-   * Note that this must be called after getWidth()/getHeight() actually return something. See
+   * <p>Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addRootView thread safe
-   * NB: this method is horribly not-thread-safe.
+   * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
-  public int addRootView(final SizeMonitoringFrameLayout rootView) {
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+      final T rootView) {
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
       "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
-
-    final int width;
-    final int height;
-    // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
-    if (rootView.getLayoutParams() != null &&
-      rootView.getLayoutParams().width > 0 &&
-      rootView.getLayoutParams().height > 0) {
-      width = rootView.getLayoutParams().width;
-      height = rootView.getLayoutParams().height;
-    } else {
-      width = rootView.getWidth();
-      height = rootView.getHeight();
-    }
-
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
       new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
-    mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
+    mUIImplementation.registerRootView(rootView, tag, themedRootContext);
 
     rootView.setOnSizeChangedListener(
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
@@ -581,9 +567,28 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
+  /** Dirties the node associated with the given react tag */
+  public void invalidateNodeLayout(int tag) {
+    ReactShadowNode node = mUIImplementation.resolveShadowNode(tag);
+    if (node == null) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Warning : attempted to dirty a non-existent react shadow node. reactTag=" + tag);
+      return;
+    }
+    node.dirty();
+  }
+
   /**
-   * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
+   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
+   * parameters.
    */
+  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
+    mUIImplementation.dispatchViewUpdates(-1);
+  }
+
+  /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */
   private class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override

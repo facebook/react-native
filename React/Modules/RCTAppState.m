@@ -41,9 +41,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  // UIApplication.applicationState seems reasonably safe to access from
-  // a background thread.
-  return NO;
+  return YES;
 }
 
 - (dispatch_queue_t)methodQueue

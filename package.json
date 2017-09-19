@@ -12,6 +12,7 @@
   },
   "jest": {
     "transform": {
+      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
@@ -19,8 +20,7 @@
     ],
     "timers": "fake",
     "moduleNameMapper": {
-      "^React$": "<rootDir>/Libraries/react-native/React.js",
-      "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
+      "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
@@ -80,7 +80,8 @@
       "denodeify",
       "fbjs",
       "sinon"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
@@ -131,9 +132,6 @@
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
   },
-  "peerDependencies": {
-    "react": "16.0.0-beta.5"
-  },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
@@ -161,7 +159,7 @@
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
     "lodash": "^4.16.6",
-    "metro-bundler": "^0.13.0",
+    "metro-bundler": "^0.18.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -185,7 +183,7 @@
     "ws": "^1.1.0",
     "xcode": "^0.9.1",
     "xmldoc": "^0.4.0",
-    "yargs": "^6.4.0"
+    "yargs": "^9.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -196,12 +194,12 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.53.0",
-    "jest": "20.1.0-echo.1",
+    "flow-bin": "^0.54.0",
+    "jest": "^21",
     "mock-fs": "^4.4.1",
     "prettier": "1.5.2",
-    "react": "16.0.0-beta.5",
-    "react-test-renderer": "16.0.0-beta.5",
+    "react": "16.0.0-rc.3",
+    "react-test-renderer": "16.0.0-rc.3",
     "shelljs": "0.6.0",
     "sinon": "^2.2.0"
   }
