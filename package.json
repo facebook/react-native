@@ -132,6 +132,9 @@
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
   },
+  "peerDependencies": {
+    "react": "16.0.0-rc.3"
+  },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
