@@ -11,6 +11,7 @@
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
+#include <privatedata/PrivateDataBase.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -211,10 +212,10 @@ public:
   template<typename ReturnType>
   ReturnType* getPrivate() const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
-    return static_cast<ReturnType*>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
+    return PrivateDataBase::cast<ReturnType>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
   }
 
-  void setPrivate(void* data) const {
+  void setPrivate(PrivateDataBase* data) const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
     JSC_JSObjectSetPrivate(isCustomJSC, m_obj, data);
   }
