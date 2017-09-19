@@ -14,6 +14,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
+#include <privatedata/PrivateDataBase.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -50,7 +51,7 @@ struct JSCValueEncoder<folly::dynamic> {
   }
 };
 
-class RN_EXPORT JSCExecutor : public JSExecutor {
+class RN_EXPORT JSCExecutor : public JSExecutor, public PrivateDataBase {
 public:
   /**
    * Must be invoked from thread this Executor will run on.
@@ -87,6 +88,8 @@ public:
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
+
+  virtual std::string getDescription() override;
 
   virtual void* getJavaScriptContext() override;
 

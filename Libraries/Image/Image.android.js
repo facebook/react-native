@@ -246,34 +246,11 @@ var Image = createReactClass({
 
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class. Since it can render
-   * as 3 different native components we need to update viewConfig accordingly
+   * make `this` look like an actual native component class.
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView,
-  },
-
-  _updateViewConfig: function(props) {
-    if (props.children) {
-      this.viewConfig = {
-        uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RCTView,
-      };
-    } else {
-      this.viewConfig = {
-        uiViewClassName: 'RCTImageView',
-        validAttributes: ImageViewAttributes,
-      };
-    }
-  },
-
-  componentWillMount: function() {
-    this._updateViewConfig(this.props);
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this._updateViewConfig(nextProps);
   },
 
   contextTypes: {
@@ -316,27 +293,10 @@ var Image = createReactClass({
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
-      if (nativeProps.children) {
-        // TODO(6033040): Consider implementing this as a separate native component
-        const containerStyle = filterObject(style, (val, key) => !ImageSpecificStyleKeys.has(key));
-        const imageStyle = filterObject(style, (val, key) => ImageSpecificStyleKeys.has(key));
-        const imageProps = merge(nativeProps, {
-          style: [imageStyle, styles.absoluteImage],
-          children: undefined,
-        });
-
-        return (
-          <View style={containerStyle}>
-            <RKImage {...imageProps}/>
-            {this.props.children}
-          </View>
-        );
+      if (this.context.isInAParentText) {
+        return <RCTTextInlineImage {...nativeProps}/>;
       } else {
-        if (this.context.isInAParentText) {
-          return <RCTTextInlineImage {...nativeProps}/>;
-        } else {
-          return <RKImage {...nativeProps}/>;
-        }
+        return <RKImage {...nativeProps}/>;
       }
     }
     return null;
@@ -347,13 +307,6 @@ var styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
-  absoluteImage: {
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    position: 'absolute'
-  }
 });
 
 var cfg = {

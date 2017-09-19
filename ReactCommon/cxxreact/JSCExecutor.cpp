@@ -509,6 +509,18 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
   }
 }
 
+std::string JSCExecutor::getDescription() {
+#if defined(__APPLE__)
+  if (isCustomJSCPtr(m_context)) {
+    return "Custom JSC";
+  } else {
+    return "System JSC";
+  }
+#else
+  return "JSC";
+#endif
+}
+
 String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
   #if defined(WITH_FBJSCEXTENSIONS)
   const JSBigString* string = script.release();

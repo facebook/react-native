@@ -194,6 +194,10 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 
 - (NSString *)accessibilityLabel
 {
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
+  if (superAccessibilityLabel) {
+    return superAccessibilityLabel;
+  }
   return _textStorage.string;
 }
 
