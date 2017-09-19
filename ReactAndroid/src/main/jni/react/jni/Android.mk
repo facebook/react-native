@@ -35,7 +35,7 @@ LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_LDLIBS += -landroid
-LOCAL_SHARED_LIBRARIES := libfolly_json libfbjni libjsc libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libjsc libglog_init libyoga
 LOCAL_STATIC_LIBRARIES := libreactnative
 
 include $(BUILD_SHARED_LIBRARY)
