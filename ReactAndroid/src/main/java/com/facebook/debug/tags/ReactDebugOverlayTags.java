@@ -14,4 +14,7 @@ public class ReactDebugOverlayTags {
       new DebugOverlayTag("Navigation", "Tag for navigation", Color.rgb(0x9C, 0x27, 0xB0));
   public static final DebugOverlayTag RN_CORE =
       new DebugOverlayTag("RN Core", "Tag for React Native Core", Color.BLACK);
+  public static final DebugOverlayTag BRIDGE_CALLS =
+      new DebugOverlayTag(
+          "Bridge Calls", "JS to Java calls (warning: this is spammy)", Color.MAGENTA);
 }
