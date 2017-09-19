@@ -18,13 +18,7 @@ var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
   dataBlob: any,
-  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.53 was deployed. To see the error delete this comment
-   * and run Flow. */
   sectionID: number | string,
-  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.53 was deployed. To see the error delete this comment
-   * and run Flow. */
   rowID: number | string,
 ): any {
   return dataBlob[sectionID][rowID];
