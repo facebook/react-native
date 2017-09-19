@@ -53,11 +53,22 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
 
   private ReactContext mReactContext;
   private ForwardingCookieHandler mCookieHandler;
+  private OkHttpClient mHttpClient;
 
   public WebSocketModule(ReactApplicationContext context) {
+    OkHttpClient client = new OkHttpClient.Builder()
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .writeTimeout(10, TimeUnit.SECONDS)
+      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+      .build();
+    this(context, client);
+  }
+  
+  public WebSocketModule(ReactApplicationContext context, OkHttpClient client) {
     super(context);
     mReactContext = context;
     mCookieHandler = new ForwardingCookieHandler(context);
+    mHttpClient = client;
   }
 
   private void sendEvent(String eventName, WritableMap params) {
@@ -85,12 +96,6 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     @Nullable final ReadableArray protocols,
     @Nullable final ReadableMap options,
     final int id) {
-    OkHttpClient client = new OkHttpClient.Builder()
-      .connectTimeout(10, TimeUnit.SECONDS)
-      .writeTimeout(10, TimeUnit.SECONDS)
-      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-      .build();
-
     Request.Builder builder = new Request.Builder().tag(id).url(url);
 
     String cookie = getCookie(url);
@@ -136,7 +141,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       }
     }
 
-    client.newWebSocket(
+    mHttpClient.newWebSocket(
         builder.build(),
         new WebSocketListener() {
 
