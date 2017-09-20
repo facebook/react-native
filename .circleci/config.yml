@@ -348,22 +348,20 @@ workflows:
   test_node:
     jobs:
       - test-node-8
-# Commenting these out for now, as they work as expected
-#      - test-node-6
-# Node 4 is expected to fail - that was already the case w/ Circle 1.0
+     - test-node-6
+# Node 4 tests are already failing on Circle 1.0
 #      - test-node-4
-#  website:
-#    jobs:
-#      - test-website
-#      - deploy-website:
-#          requires:
-#            - test-website
-#          filters:
-#            branches:
-#              only:
-#                - /.*-stable/
-#                - master
-
+  website:
+    jobs:
+      - test-website
+      - deploy-website:
+          requires:
+            - test-website
+          filters:
+            branches:
+              only:
+                - /.*-stable/
+                - master
   test_android:
     jobs:
       - build-js-bundle:
