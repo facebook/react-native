@@ -698,7 +698,8 @@ module.exports = {
    *
    *   - `velocity`: Initial velocity.  Required.
    *   - `deceleration`: Rate of decay.  Default 0.997.
-   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the `InteractionManager`. Default true.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   decay,
@@ -713,7 +714,8 @@ module.exports = {
    *   - `easing`: Easing function to define curve.
    *     Default is `Easing.inOut(Easing.ease)`.
    *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
-   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the `InteractionManager`. Default true.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   timing,
@@ -745,17 +747,23 @@ module.exports = {
    * CASpringAnimation primitive.
    *
    *   - `stiffness`: The spring stiffness coefficient. Default 100.
-   *   - `damping`: Defines how the spring’s motion should be damped due to the forces of friction. Default 10.
+   *   - `damping`: Defines how the spring’s motion should be damped due to the forces of friction.
+   *     Default 10.
    *   - `mass`: The mass of the object attached to the end of the spring. Default 1.
    *
    * Other configuration options are as follows:
    *
-   *   - `velocity`: The initial velocity of the object attached to the spring. Default 0 (object is at rest).
-   *   - `overshootClamping`: Boolean indiciating whether the spring should be clamped and not bounce. Default false.
-   *   - `restDisplacementThreshold`: The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
-   *   - `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
+   *   - `velocity`: The initial velocity of the object attached to the spring. Default 0 (object
+   *     is at rest).
+   *   - `overshootClamping`: Boolean indiciating whether the spring should be clamped and not
+   *     bounce. Default false.
+   *   - `restDisplacementThreshold`: The threshold of displacement from rest below which the
+   *     spring should be considered at rest. Default 0.001.
+   *   - `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels
+   *     per second. Default 0.001.
    *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
-   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the `InteractionManager`. Default true.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
