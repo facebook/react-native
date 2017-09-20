@@ -122,10 +122,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // `onSubmitEditing` is called when "Submit" button
   // (the blue key on onscreen keyboard) did pressed
   // (no connection to any specific "submitting" process).
-  //
-  // Behavior here should match ReactTextInputManager.java in
-  // ReactAndroid.
-
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
                                      text:self.backedTextInputView.text
