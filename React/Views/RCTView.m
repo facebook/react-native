@@ -302,7 +302,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     // View has cliping enabled, so we can easily test if it is partially
     // or completely within the clipRect, and mount or unmount it accordingly
 
-    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
+    if (!CGSizeEqualToSize(CGRectIntersection(clipRect, view.frame).size, CGSizeZero)) {
 
       // View is at least partially visible, so remount it if unmounted
       if (view.superview == nil) {
