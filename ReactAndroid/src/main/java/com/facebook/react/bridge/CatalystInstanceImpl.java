@@ -10,7 +10,9 @@
 package com.facebook.react.bridge;
 
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.util.Log;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
@@ -326,11 +328,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
             listener.onTransitionToBridgeIdle();
           }
         }
-        UiThreadUtil.runOnUiThread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
           @Override
           public void run() {
+            // Kill non-UI threads from neutral third party
+            // potentially expensive, so don't run on UI thread
             mHybridData.resetNative();
-            // Kill non-UI threads from UI thread.
             getReactQueueConfiguration().destroy();
             Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
           }

@@ -768,7 +768,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     // So, let's temporary restore the view back after removing.
     // To do so, we have to memorize original `superview` (which can differ from `container`) and an index of removed view.
     UIView *originalSuperview = removedChild.superview;
-    NSUInteger *originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
+    NSUInteger originalIndex = [originalSuperview.subviews indexOfObjectIdenticalTo:removedChild];
     [container removeReactSubview:removedChild];
     [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
@@ -821,7 +821,7 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
     return;
   }
 
-  NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObject:shadowView];
+  NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObjectIdenticalTo:shadowView];
   RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
   NSArray<NSNumber *> *removeAtIndices = @[@(indexOfView)];
   NSArray<NSNumber *> *addTags = @[newReactTag];
@@ -1446,6 +1446,11 @@ RCT_EXPORT_METHOD(clearJSResponder)
   [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
      NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
+     // Register which event-types this view dispatches.
+     // React needs this for the event plugin.
+     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+     NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
      // Add manager class
      moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
 
@@ -1453,6 +1458,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
      moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+     moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+     moduleConstants[@"directEventTypes"] = directEventTypes;
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1461,6 +1468,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
            @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
          };
        }
+       directEventTypes[eventName] = directEvents[eventName];
        if (RCT_DEBUG && bubblingEvents[eventName]) {
          RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
                      "direct event", componentData.name, eventName);
@@ -1478,6 +1486,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
            }
          };
        }
+       bubblingEventTypes[eventName] = bubblingEvents[eventName];
        if (RCT_DEBUG && directEvents[eventName]) {
          RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
                      "bubbling event", componentData.name, eventName);
@@ -1487,9 +1496,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
      RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
      constants[name] = moduleConstants;
   }];
-
-  constants[@"customBubblingEventTypes"] = bubblingEvents;
-  constants[@"customDirectEventTypes"] = directEvents;
 
   return constants;
 }

@@ -1021,8 +1021,8 @@
 		59B1EBCA1EBD47520047B19B /* RCTShadowView+Layout.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
 		59EB6DBB1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
 		59EB6DBC1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
-		59EB6DBD1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m */; };
-		59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m */; };
+		59EB6DBD1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */; };
+		59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */; };
 		59EB6DBF1EBD6FFC0072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
 		59EB6DC01EBD70130072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
 		59FBEFB01E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
@@ -1071,6 +1071,14 @@
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
+		9936F3371F5F2F480010BF04 /* PrivateDataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */; };
+		9936F3381F5F2F480010BF04 /* PrivateDataBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		9936F3391F5F2F5C0010BF04 /* PrivateDataBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		9936F33A1F5F2F7C0010BF04 /* PrivateDataBase.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		9936F33B1F5F2F9D0010BF04 /* PrivateDataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */; };
+		9936F33C1F5F2FE70010BF04 /* PrivateDataBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		9936F33D1F5F2FF40010BF04 /* PrivateDataBase.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		9936F33E1F5F2FFC0010BF04 /* PrivateDataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */; };
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
@@ -1174,6 +1182,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3D3CD90C1DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
+		};
+		9936F33F1F5F305D0010BF04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9936F2F81F5F2E4B0010BF04;
+			remoteInfo = privatedata;
+		};
+		9936F3411F5F30640010BF04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9936F3141F5F2E5B0010BF04;
+			remoteInfo = "privatedata-tvOS";
+		};
+		9936F3431F5F30780010BF04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9936F2F81F5F2E4B0010BF04;
+			remoteInfo = privatedata;
+		};
+		9936F3451F5F30830010BF04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9936F3141F5F2E5B0010BF04;
+			remoteInfo = "privatedata-tvOS";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1616,6 +1652,28 @@
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9936F3021F5F2E4B0010BF04 /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/privatedata;
+			dstSubfolderSpec = 16;
+			files = (
+				9936F33D1F5F2FF40010BF04 /* PrivateDataBase.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9936F31E1F5F2E5B0010BF04 /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/privatedata;
+			dstSubfolderSpec = 16;
+			files = (
+				9936F33A1F5F2F7C0010BF04 /* PrivateDataBase.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1967,7 +2025,7 @@
 		59A7B9FB1E577DBF0068EDBF /* RCTRootContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootContentView.h; sourceTree = "<group>"; };
 		59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootContentView.m; sourceTree = "<group>"; };
 		59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManagerObserverCoordinator.h; sourceTree = "<group>"; };
-		59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerObserverCoordinator.m; sourceTree = "<group>"; };
+		59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTUIManagerObserverCoordinator.mm; sourceTree = "<group>"; };
 		59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentShadowView.h; sourceTree = "<group>"; };
 		59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentShadowView.m; sourceTree = "<group>"; };
 		59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentViewManager.h; sourceTree = "<group>"; };
@@ -2014,6 +2072,10 @@
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTConvert.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
 		83F15A171B7CC46900F10295 /* UIView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+Private.h"; sourceTree = "<group>"; };
+		9936F3131F5F2E4B0010BF04 /* libprivatedata.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libprivatedata.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9936F32F1F5F2E5B0010BF04 /* libprivatedata-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libprivatedata-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PrivateDataBase.cpp; path = privatedata/PrivateDataBase.cpp; sourceTree = "<group>"; };
+		9936F3361F5F2F480010BF04 /* PrivateDataBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrivateDataBase.h; path = privatedata/PrivateDataBase.h; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
@@ -2255,7 +2317,7 @@
 				13E067481A70F434002CDEE1 /* RCTUIManager.h */,
 				13E067491A70F434002CDEE1 /* RCTUIManager.m */,
 				59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */,
-				59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m */,
+				59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -2392,6 +2454,7 @@
 		3D10A3C71DDF3CED004A0F9D /* ReactCommon */ = {
 			isa = PBXGroup;
 			children = (
+				9936F3341F5F2F360010BF04 /* privatedata */,
 				130A77021DF767AF001F9587 /* yoga */,
 				AC70D2EA1DE489FC002E6351 /* cxxreact */,
 				3D4A621D1DDD3985001F41B4 /* jschelpers */,
@@ -2554,6 +2617,8 @@
 				139D7ECE1E25DB7D00323FB7 /* libthird-party.a */,
 				3D383D3C1EBD27B6005632C8 /* libthird-party.a */,
 				3D383D621EBD27B9005632C8 /* libdouble-conversion.a */,
+				9936F3131F5F2E4B0010BF04 /* libprivatedata.a */,
+				9936F32F1F5F2E5B0010BF04 /* libprivatedata-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2654,6 +2719,15 @@
 				83CBBA501A601E3B00E9B192 /* RCTUtils.m */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		9936F3341F5F2F360010BF04 /* privatedata */ = {
+			isa = PBXGroup;
+			children = (
+				9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */,
+				9936F3361F5F2F480010BF04 /* PrivateDataBase.h */,
+			);
+			name = privatedata;
 			sourceTree = "<group>";
 		};
 		AC70D2EA1DE489FC002E6351 /* cxxreact */ = {
@@ -3062,6 +3136,7 @@
 				3D80DA2E1DF820620028D040 /* RCTImageSource.h in Headers */,
 				3D80DA2F1DF820620028D040 /* RCTInvalidating.h in Headers */,
 				3D7BFD251EA8E351008DFB7A /* RCTSamplingProfilerPackagerMethod.h in Headers */,
+				9936F3381F5F2F480010BF04 /* PrivateDataBase.h in Headers */,
 				3D80DA301DF820620028D040 /* RCTJavaScriptExecutor.h in Headers */,
 				135A9BFF1E7B0EE600587AEB /* RCTJSCHelpers.h in Headers */,
 				3D80DA311DF820620028D040 /* RCTJavaScriptLoader.h in Headers */,
@@ -3184,6 +3259,22 @@
 				3D80DA931DF820620028D040 /* UIView+Private.h in Headers */,
 				59FBEFB01E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */,
 				3D80DA941DF820620028D040 /* UIView+React.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9936F2FB1F5F2E4B0010BF04 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9936F33C1F5F2FE70010BF04 /* PrivateDataBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9936F3171F5F2E5B0010BF04 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9936F3391F5F2F5C0010BF04 /* PrivateDataBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3325,6 +3416,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9936F3441F5F30780010BF04 /* PBXTargetDependency */,
 				1320081B1E283DC300F0C457 /* PBXTargetDependency */,
 			);
 			name = jschelpers;
@@ -3343,6 +3435,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9936F3461F5F30830010BF04 /* PBXTargetDependency */,
 				3D383D641EBD27CE005632C8 /* PBXTargetDependency */,
 			);
 			name = "jschelpers-tvOS";
@@ -3361,6 +3454,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9936F3401F5F305D0010BF04 /* PBXTargetDependency */,
 				3D3CD9501DE5FDB900167DC4 /* PBXTargetDependency */,
 			);
 			name = cxxreact;
@@ -3379,6 +3473,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9936F3421F5F30640010BF04 /* PBXTargetDependency */,
 				3DC159E81E83E2A0007B1282 /* PBXTargetDependency */,
 			);
 			name = "cxxreact-tvOS";
@@ -3406,6 +3501,40 @@
 			name = React;
 			productName = React;
 			productReference = 83CBBA2E1A601D0E00E9B192 /* libReact.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9936F2F81F5F2E4B0010BF04 /* privatedata */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9936F3101F5F2E4B0010BF04 /* Build configuration list for PBXNativeTarget "privatedata" */;
+			buildPhases = (
+				9936F2FB1F5F2E4B0010BF04 /* Headers */,
+				9936F3021F5F2E4B0010BF04 /* Copy Headers */,
+				9936F30A1F5F2E4B0010BF04 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = privatedata;
+			productName = React;
+			productReference = 9936F3131F5F2E4B0010BF04 /* libprivatedata.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9936F3141F5F2E5B0010BF04 /* privatedata-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9936F32C1F5F2E5B0010BF04 /* Build configuration list for PBXNativeTarget "privatedata-tvOS" */;
+			buildPhases = (
+				9936F3171F5F2E5B0010BF04 /* Headers */,
+				9936F31E1F5F2E5B0010BF04 /* Copy Headers */,
+				9936F3261F5F2E5B0010BF04 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "privatedata-tvOS";
+			productName = "React-tvOS";
+			productReference = 9936F32F1F5F2E5B0010BF04 /* libprivatedata-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -3467,6 +3596,8 @@
 				3D383D211EBD27B6005632C8 /* third-party-tvOS */,
 				139D7E871E25C6D100323FB7 /* double-conversion */,
 				3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */,
+				9936F2F81F5F2E4B0010BF04 /* privatedata */,
+				9936F3141F5F2E5B0010BF04 /* privatedata-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -3625,7 +3756,7 @@
 				2D3B5ED51D9B098000451313 /* RCTModalHostViewController.m in Sources */,
 				2D3B5EBC1D9B092600451313 /* RCTKeyboardObserver.m in Sources */,
 				657734931EE8356100A0E9EA /* RCTInspector.mm in Sources */,
-				59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m in Sources */,
+				59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				2D3B5E971D9B089000451313 /* RCTBridge.m in Sources */,
 				2D3B5E9B1D9B08A000451313 /* RCTFrameUpdate.m in Sources */,
 				2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */,
@@ -3884,7 +4015,7 @@
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
 				C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
-				59EB6DBD1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.m in Sources */,
+				59EB6DBD1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				13AF20451AE707F9005F5298 /* RCTSlider.m in Sources */,
 				130443A21E3FEAA900D93A67 /* RCTFollyConvert.mm in Sources */,
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
@@ -3960,6 +4091,7 @@
 				137327E81AA5CF210034F82E /* RCTTabBarItem.m in Sources */,
 				83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */,
 				13E067551A70F44B002CDEE1 /* RCTShadowView.m in Sources */,
+				9936F3371F5F2F480010BF04 /* PrivateDataBase.cpp in Sources */,
 				1450FF871BCFF28A00208362 /* RCTProfileTrampoline-arm.S in Sources */,
 				131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */,
 				58114A171AAE854800E7D092 /* RCTPickerManager.m in Sources */,
@@ -3984,6 +4116,22 @@
 				1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */,
 				13AB90C11B6FA36700713B4F /* RCTComponentData.m in Sources */,
 				13B0801B1A69489C00A75B9A /* RCTNavigatorManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9936F30A1F5F2E4B0010BF04 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9936F33E1F5F2FFC0010BF04 /* PrivateDataBase.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9936F3261F5F2E5B0010BF04 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9936F33B1F5F2F9D0010BF04 /* PrivateDataBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4039,6 +4187,26 @@
 			isa = PBXTargetDependency;
 			target = 3D3CD90C1DE5FBD800167DC4 /* jschelpers-tvOS */;
 			targetProxy = 3DC159E71E83E2A0007B1282 /* PBXContainerItemProxy */;
+		};
+		9936F3401F5F305D0010BF04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9936F2F81F5F2E4B0010BF04 /* privatedata */;
+			targetProxy = 9936F33F1F5F305D0010BF04 /* PBXContainerItemProxy */;
+		};
+		9936F3421F5F30640010BF04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9936F3141F5F2E5B0010BF04 /* privatedata-tvOS */;
+			targetProxy = 9936F3411F5F30640010BF04 /* PBXContainerItemProxy */;
+		};
+		9936F3441F5F30780010BF04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9936F2F81F5F2E4B0010BF04 /* privatedata */;
+			targetProxy = 9936F3431F5F30780010BF04 /* PBXContainerItemProxy */;
+		};
+		9936F3461F5F30830010BF04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9936F3141F5F2E5B0010BF04 /* privatedata-tvOS */;
+			targetProxy = 9936F3451F5F30830010BF04 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4555,6 +4723,73 @@
 			};
 			name = Release;
 		};
+		9936F3111F5F2E4B0010BF04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+			};
+			name = Debug;
+		};
+		9936F3121F5F2E4B0010BF04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+			};
+			name = Release;
+		};
+		9936F32D1F5F2E5B0010BF04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
+				SDKROOT = appletvos;
+			};
+			name = Debug;
+		};
+		9936F32E1F5F2E5B0010BF04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
+				SDKROOT = appletvos;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4671,6 +4906,24 @@
 			buildConfigurations = (
 				83CBBA401A601D0F00E9B192 /* Debug */,
 				83CBBA411A601D0F00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9936F3101F5F2E4B0010BF04 /* Build configuration list for PBXNativeTarget "privatedata" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9936F3111F5F2E4B0010BF04 /* Debug */,
+				9936F3121F5F2E4B0010BF04 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9936F32C1F5F2E5B0010BF04 /* Build configuration list for PBXNativeTarget "privatedata-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9936F32D1F5F2E5B0010BF04 /* Debug */,
+				9936F32E1F5F2E5B0010BF04 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
