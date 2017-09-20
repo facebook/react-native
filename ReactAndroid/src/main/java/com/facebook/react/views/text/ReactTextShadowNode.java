@@ -169,6 +169,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
+  public void markUpdated() {
+    super.markUpdated();
+    // Telling to Yoga that the node should be remeasured on next layout pass.
+    super.dirty();
+  }
+
+  @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 

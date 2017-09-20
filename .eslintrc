@@ -232,7 +232,7 @@
     "react/jsx-boolean-value": 0,
     "react/jsx-no-comment-textnodes": 1,
     "react/jsx-no-duplicate-props": 2,
-    "react/jsx-no-undef": 1,
+    "react/jsx-no-undef": 2,
     "react/jsx-sort-props": 0,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,

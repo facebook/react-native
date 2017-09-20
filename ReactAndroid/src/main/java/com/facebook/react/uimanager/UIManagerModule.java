@@ -70,6 +70,17 @@ import javax.annotation.Nullable;
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
+
+  /**
+   * Resolves a name coming from native side to a name of the event that is exposed to JS.
+   */
+  public interface CustomEventNamesResolver {
+    /**
+     * Returns custom event name by the provided event name.
+     */
+    @Nullable String resolveCustomEventName(String eventName);
+  }
+
   protected static final String NAME = "UIManager";
 
   private static final boolean DEBUG = false;
@@ -162,6 +173,27 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
+  }
+
+  /**
+   * Resolves Direct Event name exposed to JS from the one known to the Native side.
+   */
+  public CustomEventNamesResolver getDirectEventNamesResolver() {
+    return new CustomEventNamesResolver() {
+      @Override
+      public @Nullable String resolveCustomEventName(String eventName) {
+        Map<String, Map> directEventTypes =
+            (Map<String, Map>) getConstants().get(
+                UIManagerModuleConstantsHelper.CUSTOM_DIRECT_EVENT_TYPES_KEY);
+        if (directEventTypes != null) {
+          Map<String, String> customEventType = (Map<String, String>) directEventTypes.get(eventName);
+          if (customEventType != null) {
+            return customEventType.get("registrationName");
+          }
+        }
+        return eventName;
+      }
+    };
   }
 
   @Override

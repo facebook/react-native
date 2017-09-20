@@ -37,6 +37,8 @@ import android.os.Process;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -270,6 +272,8 @@ public class ReactInstanceManager {
               mMinTimeLeftInFrameForNonBatchedOperationMs);
       mPackages.add(coreModulesPackage);
     } else {
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
@@ -401,6 +405,8 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   private void recreateReactContextInBackgroundInner() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.recreateReactContextInBackgroundInner()");
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
     if (mUseDeveloperSupport && mJSMainModulePath != null &&
@@ -447,6 +453,8 @@ public class ReactInstanceManager {
     Log.d(
       ReactConstants.TAG,
       "ReactInstanceManager.recreateReactContextInBackgroundFromBundleLoader()");
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from BundleLoader");
     recreateReactContextInBackground(mJavaScriptExecutorFactory, mBundleLoader);
   }
 
@@ -613,6 +621,7 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
+    PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Destroy");
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);

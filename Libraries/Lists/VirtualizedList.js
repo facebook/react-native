@@ -527,7 +527,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      invariant(item, 'No item for index ' + ii);
       const key = keyExtractor(item, ii);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
@@ -1168,7 +1167,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _createViewToken = (index: number, isViewable: boolean) => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
-    invariant(item, 'Missing item for index ' + index);
     return {index, item, key: keyExtractor(item, index), isViewable};
   };
 

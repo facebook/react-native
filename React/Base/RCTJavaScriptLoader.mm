@@ -157,7 +157,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   case facebook::react::ScriptTag::RAMBundle:
     break;
 
-  case facebook::react::ScriptTag::String:
+  case facebook::react::ScriptTag::String: {
+#if RCT_ENABLE_INSPECTOR
+    NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
+                                            options:NSDataReadingMappedIfSafe
+                                              error:error];
+    if (sourceLength && source != nil) {
+      *sourceLength = source.length;
+    }
+    return source;
+#else
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
@@ -165,7 +174,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             @"Cannot load text/javascript files synchronously"}];
     }
     return nil;
-
+#endif
+  }
   case facebook::react::ScriptTag::BCBundle:
     if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
       if (error) {

@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
 banner: ejected
-next: contributing
+next: communication-android
 previous: android-ui-performance
 ---
 

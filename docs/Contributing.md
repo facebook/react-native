@@ -5,7 +5,7 @@ layout: docs
 category: Contributing
 permalink: docs/contributing.html
 next: maintainers
-previous: upgrading
+previous: native-modules-android
 ---
 
 React Native is one of Facebook's first open source projects that is both under very active development and is also being used to ship code to everybody using Facebook's mobile apps. If you're interested in contributing to React Native, hopefully this document makes the process for contributing clear.
