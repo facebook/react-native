@@ -17,4 +17,6 @@ public class ReactDebugOverlayTags {
   public static final DebugOverlayTag BRIDGE_CALLS =
       new DebugOverlayTag(
           "Bridge Calls", "JS to Java calls (warning: this is spammy)", Color.MAGENTA);
+  public static final DebugOverlayTag NATIVE_MODULE =
+      new DebugOverlayTag("Native Module", "Native Module init", Color.rgb(0x80, 0x00, 0x80));
 }
