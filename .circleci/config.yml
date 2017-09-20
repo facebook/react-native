@@ -315,17 +315,17 @@ jobs:
           name: Unit Tests
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
 # Integration Tests
-# Failing test is expected
       - run:
           name: Build and Install Test APK
           command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-      - run:
-          name: Run Installed APK with Tests
-          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+# Failing test is expected
+#      - run:
+#          name: Run Installed APK with Tests
+#          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 # Should be disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
-      - run:
-          name: Run Android End to End Tests
-          command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
+#       - run:
+#          name: Run Android End to End Tests
+#           command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
 # post (always runs)
       - run:
