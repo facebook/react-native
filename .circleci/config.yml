@@ -348,7 +348,7 @@ workflows:
   test_node:
     jobs:
       - test-node-8
-     - test-node-6
+      - test-node-6
 # Node 4 tests are already failing on Circle 1.0
 #      - test-node-4
   website:
