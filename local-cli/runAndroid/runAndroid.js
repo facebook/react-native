@@ -20,7 +20,8 @@ const Promise = require('promise');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
-  return fs.existsSync(path.join(root, 'android/gradlew'));
+  const androidProjectPath = root ? root : 'android';
+  return fs.existsSync(path.join(androidProjectPath, 'gradlew'));
 }
 
 /**
@@ -90,7 +91,8 @@ function tryRunAdbReverse(packagerPort, device) {
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
-  process.chdir(path.join(args.root, 'android'));
+  const androidProjectPath = args.root ? args.root : 'android';
+  process.chdir(path.join(androidProjectPath));
   const cmd = process.platform.startsWith('win')
     ? 'gradlew.bat'
     : './gradlew';
@@ -291,7 +293,7 @@ module.exports = {
     command: '--install-debug',
   }, {
     command: '--root [string]',
-    description: 'Override the root directory for the android build (which contains the android directory)',
+    description: 'Path relative to project root directory where the Android project lives. The default is \'android\'.',
     default: '',
   }, {
     command: '--flavor [string]',
