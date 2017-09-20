@@ -742,8 +742,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
               // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
               // Additionally we always generate a `submit` event.
-              //
-              // Behavior here should match RCTTextInput.m from iOS.
 
               EventDispatcher eventDispatcher =
                   reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
