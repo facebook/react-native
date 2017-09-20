@@ -405,6 +405,7 @@ describe('onUpdate', function() {
     expect(onViewableItemsChanged.mock.calls.length).toBe(1);
     expect(onViewableItemsChanged.mock.calls[0][0]).toEqual({
       changed: [{isViewable: true, key: 'a'}],
+      viewabilityConfig: {viewAreaCoveragePercentThreshold: 0},
       viewableItems: [{isViewable: true, key: 'a'}],
     });
 
@@ -430,6 +431,7 @@ describe('onUpdate', function() {
     expect(onViewableItemsChanged.mock.calls.length).toBe(2);
     expect(onViewableItemsChanged.mock.calls[1][0]).toEqual({
       changed: [{isViewable: true, key: 'c'}, {isViewable: false, key: 'a'}],
+      viewabilityConfig: {viewAreaCoveragePercentThreshold: 0},
       viewableItems: [{isViewable: true, key: 'c'}],
     });
   });
