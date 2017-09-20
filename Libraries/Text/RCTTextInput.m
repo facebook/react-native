@@ -123,20 +123,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // (the blue key on onscreen keyboard) did pressed
   // (no connection to any specific "submitting" process).
   //
-  // We do not send `submit` if `_multiline` is set
-  // and `_blurOnSubmit` is not, since in that case the submit
-  // button just inserts a newline.
-  //
   // Behavior here should match ReactTextInputManager.java in
   // ReactAndroid.
-  if (_blurOnSubmit || !_multiline) {
 
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                   reactTag:self.reactTag
-                                       text:self.backedTextInputView.text
-                                        key:nil
-                                 eventCount:_nativeEventCount];
-  }
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
 
   return _blurOnSubmit;
 }

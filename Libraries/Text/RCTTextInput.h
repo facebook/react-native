@@ -43,7 +43,6 @@
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign) BOOL blurOnSubmit;
-@property (nonatomic, assign) BOOL multiline;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, copy) RCTTextSelection *selection;
