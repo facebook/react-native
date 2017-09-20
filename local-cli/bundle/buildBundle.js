@@ -46,7 +46,7 @@ const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults').p
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro-bundler';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(

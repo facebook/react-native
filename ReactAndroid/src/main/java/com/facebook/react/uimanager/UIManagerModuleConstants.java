@@ -68,6 +68,15 @@ import com.facebook.react.uimanager.events.TouchEventType;
                     "onTouchEnd",
                     "captured",
                     "onTouchEndCapture")))
+        .put(
+            TouchEventType.CANCEL.getJSEventName(),
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of(
+                    "bubbled",
+                    "onTouchCancel",
+                    "captured",
+                    "onTouchCancelCapture")))
         .build();
   }
 

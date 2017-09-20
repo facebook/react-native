@@ -25,15 +25,6 @@
 @optional
 
 /**
- * The bridge will attempt to load the JS source code from the location specified
- * by the `sourceURLForBridge:` method, if loading fails, you can implement this
- * method to specify fallbackSourceURL.
- * NOTE: We don't plan to support this API permanently (this method will be
- * removed after we track down why a valid sourceURL fails to load sometimes).
- */
-- (NSURL *)fallbackSourceURLForBridge:(RCTBridge *)bridge;
-
-/**
  * The bridge initializes any registered RCTBridgeModules automatically, however
  * if you wish to instantiate your own module instances, you can return them
  * from this method.
