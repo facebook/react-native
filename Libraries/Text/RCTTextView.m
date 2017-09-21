@@ -75,7 +75,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)fontAttributesDidChangeWithFont:(RCTFont *)font
 {
-  [super fontAttributesDidChangeWithFont:fonte];
+  [super fontAttributesDidChangeWithFont:font];
 
  // Because the font changed, the TextInput may take up more space now so we call
  // invalidateContentSize. However, if there's currently no text to render, then

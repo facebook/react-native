@@ -28,9 +28,9 @@
   RCTAssertParam(bridge);
 
   if (self = [super initWithFrame:CGRectZero]) {
-      _bridge = bridge;
+    _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
-    _fontAttributes = [[RCTFontAttributes alloc ] initWithAccessibilityManager:bridge.accessibilityManager];
+    _fontAttributes = [[RCTFontAttributes alloc] initWithAccessibilityManager:bridge.accessibilityManager];
     _fontAttributes.delegate = self;
   }
 
