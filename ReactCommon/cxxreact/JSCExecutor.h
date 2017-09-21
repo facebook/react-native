@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 
 #include <cxxreact/JSCNativeModules.h>
 #include <cxxreact/JSExecutor.h>
@@ -24,6 +23,7 @@ namespace facebook {
 namespace react {
 
 class MessageQueueThread;
+class RAMBundleRegistry;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
@@ -106,7 +106,7 @@ private:
   std::shared_ptr<ExecutorDelegate> m_delegate;
   std::shared_ptr<bool> m_isDestroyed = std::shared_ptr<bool>(new bool(false));
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
-  std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  std::unique_ptr<RAMBundleRegistry> m_bundleRegistry;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
   std::once_flag m_bindFlag;
@@ -125,7 +125,7 @@ private:
   void callNativeModules(Value&&);
   void flush();
   void flushQueueImmediate(Value&&);
-  void loadModule(uint32_t moduleId);
+  void loadModule(uint32_t bundleId, uint32_t moduleId);
 
   String adoptString(std::unique_ptr<const JSBigString>);
 
