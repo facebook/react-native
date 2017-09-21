@@ -35,8 +35,8 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
+#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #import <cxxreact/Platform.h>
-#import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
 
 #import "NSDataBigString.h"
@@ -1185,7 +1185,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        auto registry = std::make_unique<RAMBundleRegistry>(std::move(ramBundle));
+        std::string baseDirectoryPath = sourceUrlStr.stringByDeletingLastPathComponent.UTF8String;
+        auto registry = std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), baseDirectoryPath);
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }

@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := \
   JSCTracing.cpp \
   JSCUtils.cpp \
   JSIndexedRAMBundle.cpp \
+	JSIndexedRAMBundleRegistry.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
