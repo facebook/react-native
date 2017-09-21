@@ -65,8 +65,7 @@ public:
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
 
-  virtual void setJSModulesUnbundle(
-    std::unique_ptr<JSModulesUnbundle> unbundle) override;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) override;
 
   virtual void callFunction(
     const std::string& moduleId,
