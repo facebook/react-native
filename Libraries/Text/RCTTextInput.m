@@ -47,7 +47,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   return nil;
 }
 
-- (void)fontAttributesDidChangeWithFont:(RCTFont *)font
+- (void)setFont:(UIFont *)font
+{
+  self.backedTextInputView.font = font;
+}
+
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
 {
   self.font = font;
 }

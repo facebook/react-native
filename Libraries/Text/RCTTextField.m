@@ -42,7 +42,7 @@
     _backedTextInput.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInput.textInputDelegate = self;
 
-    self.font = _fontAttributes.font;
+    self.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }

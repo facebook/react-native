@@ -58,7 +58,7 @@
 
     _backedTextInput.textInputDelegate = self;
 
-    self.font = _fontAttributes.font;
+    self.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }
@@ -73,7 +73,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _backedTextInput;
 }
 
-- (void)fontAttributesDidChangeWithFont:(RCTFont *)font
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
 {
   [super fontAttributesDidChangeWithFont:font];
 

@@ -9,11 +9,17 @@
 
 #import "RCTFontAttributes.h"
 
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAssert.h>
+#import <React/RCTFont.h>
+#import <React/RCTLog.h>
+
 @interface RCTFontAttributes ()
+{
+  RCTAccessibilityManager *_accessibilityManager;
+}
 
 @property (nonatomic, strong) UIFont *font;
-
-RCTAccessibilityManager *_accessibilityManager;  
 
 @end
 
@@ -49,20 +55,20 @@ RCTAccessibilityManager *_accessibilityManager;
 
 - (void)setAllowFontScaling:(BOOL)allowFontScaling
 {
-  _allowFontScaling = allowFontScaling
+  _allowFontScaling = allowFontScaling;
   [self updateFont];
 }
 
 - (void)setFontFamily:(NSString *)fontFamily
 {
   _fontFamily = fontFamily;
-  [self updateFont]
+  [self updateFont];
 }
 
 - (void)setFontSize:(NSNumber *)fontSize
 {
   _fontSize = fontSize;
-  [self updateFont]
+  [self updateFont];
 }
 
 - (void)setFontSizeMultiplier:(CGFloat)fontSizeMultiplier
@@ -80,13 +86,13 @@ RCTAccessibilityManager *_accessibilityManager;
 - (void)setFontStyle:(NSString *)fontStyle
 {
   _fontStyle = fontStyle;
-  [self updateFont]
+  [self updateFont];
 }
 
 - (void)setFontWeight:(NSString *)fontWeight
 {
   _fontWeight = fontWeight;
-  [self updateFont]
+  [self updateFont];
 }
 
 - (void)updateFont

@@ -7,9 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-@protocol RCTFontAttributesDelegate;
+#import "RCTFontAttributesDelegate.h"
+
+@class RCTAccessibilityManager;
 
 @interface RCTFontAttributes : NSObject
 
@@ -25,11 +27,5 @@
 @property (nonatomic, copy) NSString *fontWeight;
 
 - (instancetype)initWithAccessibilityManager:(RCTAccessibilityManager *)accessibilityManager;
-
-@end
-
-@protocol RCTFontAttributesDelegate <NSObject>
-
-- (void)fontAttributesDidChangeWithFont:(RCTFont *)font;
 
 @end
