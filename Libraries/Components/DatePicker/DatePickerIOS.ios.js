@@ -125,7 +125,7 @@ const DatePickerIOS = createReactClass({
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={ picker => { this._picker = picker; } }
+          ref={this._picker}
           style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={

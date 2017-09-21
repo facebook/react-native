@@ -66,7 +66,7 @@ var PickerIOS = createReactClass({
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={picker => this._picker = picker}
+          ref={this._picker}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
