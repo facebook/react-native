@@ -39,13 +39,11 @@ public class MyTaskService extends HeadlessJsTaskService {
   @Override
   protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
     Bundle extras = intent.getExtras();
-    if (extras != null) {
-      return new HeadlessJsTaskConfig(
-          "SomeTaskName",
-          Arguments.fromBundle(extras),
-          5000);
-    }
-    return null;
+    WritableMap data = extras != null ? Arguments.fromBundle(extras) : null;
+    return new HeadlessJsTaskConfig(
+        "SomeTaskName",
+        data,
+        5000);
   }
 }
 ```
