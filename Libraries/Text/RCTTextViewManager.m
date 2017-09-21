@@ -41,6 +41,10 @@ RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UIT
 RCT_REMAP_VIEW_PROPERTY(color, backedTextInputView.textColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(editable, backedTextInputView.editable, BOOL)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, backedTextInputView.enablesReturnKeyAutomatically, BOOL)
+RCT_REMAP_VIEW_PROPERTY(fontSize, fontAttributes.fontSize, NSNumber)
+RCT_REMAP_VIEW_PROPERTY(fontWeight, fontAttributes.fontWeight, NSString)
+RCT_REMAP_VIEW_PROPERTY(fontStyle, fontAttributes.fontStyle, NSString)
+RCT_REMAP_VIEW_PROPERTY(fontFamily, fontAttributes.fontFamily, NSString)
 RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboardAppearance, UIKeyboardAppearance)
 RCT_REMAP_VIEW_PROPERTY(keyboardType, backedTextInputView.keyboardType, UIKeyboardType)
 RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
@@ -65,22 +69,6 @@ RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextView)
-{
-  view.fontAttributes.fontSize = json ?: @(defaultView.font.pointSize);
-}
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextView)
-{
-  view.fontAttributes.fontWeight = json; //defaults to normal
-}
-RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextView)
-{
-  view.fontAttributes.fontStyle = json; //defaults to normal
-}
-RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
-{
-  view.fontAttributes.fontFamily = json ?: defaultView.font.familyName;
-}
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 
 #if !TARGET_OS_TV
