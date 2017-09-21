@@ -44,7 +44,8 @@ type DefaultProps = {
  * import {
  *   ActivityIndicator,
  *   AppRegistry,
- *   StyleSheet,  Text,
+ *   StyleSheet,
+ *   Text,
  *   View,
  * } from 'react-native'
  *
