@@ -574,16 +574,7 @@ JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef property
 JSValueRef JSCExecutor::nativeRequire(
     size_t argumentCount,
     const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
-      Value(m_context, arguments[0]).toString().str()));
-  }
-
+  uint32_t moduleId = parseNativeRequireParameters(m_context, arguments, argumentCount).second;
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
   loadModule(moduleId);
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
