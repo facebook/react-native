@@ -3,6 +3,7 @@
 #include "JSIndexedRAMBundle.h"
 
 #include "oss-compat-util.h"
+#include "JSBigString.h"
 
 namespace facebook {
 namespace react {
