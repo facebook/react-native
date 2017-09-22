@@ -84,10 +84,10 @@ void ProxyExecutor::loadApplicationScript(
   // we launch the application.
 }
 
-void ProxyExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) {
+void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
   jni::throwNewJavaException(
     "java/lang/UnsupportedOperationException",
-    "Loading application RAM bundles is not supported for proxy executors");
+    "Loading application unbundles is not supported for proxy executors");
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {

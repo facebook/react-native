@@ -87,7 +87,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeModule.h",
     "NativeToJsBridge.h",
     "Platform.h",
-    "RAMBundleRegistry.h",
     "RecoverableError.h",
     "SharedProxyCxxModule.h",
     "SystraceSection.h",

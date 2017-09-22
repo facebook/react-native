@@ -91,8 +91,8 @@ public:
       }];
   }
 
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override {
-    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
+  void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
+    RCTAssert(NO, @"Unbundle is not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,
