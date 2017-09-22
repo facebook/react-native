@@ -354,11 +354,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
 }
 
-void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
+void JSCExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) {
   if (!m_bundleRegistry) {
     installNativeHook<&JSCExecutor::nativeRequire>("nativeRequire");
   }
-  m_bundleRegistry = folly::make_unique<RAMBundleRegistry>(std::move(unbundle));
+  m_bundleRegistry = std::move(bundleRegistry);
 }
 
 void JSCExecutor::bindBridge() throw(JSException) {

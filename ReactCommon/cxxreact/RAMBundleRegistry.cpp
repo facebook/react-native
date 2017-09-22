@@ -12,6 +12,10 @@ RAMBundleRegistry::RAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBund
 }
 
 JSModulesUnbundle::Module RAMBundleRegistry::getModule(uint32_t bundleId, uint32_t moduleId) {
+  if (m_bundles.find(bundleId) == m_bundles.end()) {
+    m_bundles.emplace(bundleId, this->bundleById(bundleId));
+  }
+
   return getBundle(bundleId)->getModule(moduleId);
 }
 
