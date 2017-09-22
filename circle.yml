@@ -89,7 +89,7 @@ test:
     - cd website && npm test
     - cd website && node ./server/generate.js
     # if website can be built, deploy regardless of test failures
-    - if [[ ($CIRCLE_BRANCH =~ .*-stable || $CIRCLE_BRANCH == "master") && $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then git config --global user.email "reactjs-bot@users.noreply.github.com" && git config --global user.name "Website Deployment Script" && echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc && cd website && GIT_USER=reactjs-bot npm run gh-pages; fi
+#    - if [[ ($CIRCLE_BRANCH =~ .*-stable || $CIRCLE_BRANCH == "master") && $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then git config --global user.email "reactjs-bot@users.noreply.github.com" && git config --global user.name "Website Deployment Script" && echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc && cd website && GIT_USER=reactjs-bot npm run gh-pages; fi
 
   post:
     # copy test report for Circle CI to display
