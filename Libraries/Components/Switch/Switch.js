@@ -93,9 +93,9 @@ var Switch = createReactClass({
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
     //Change the props after the native props are set in case the props change removes the component
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
@@ -115,10 +115,9 @@ var Switch = createReactClass({
     return (
       <RCTSwitch
         {...props}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         ref={(ref) => { this._rctSwitch = ref; }}
         onChange={this._onChange}
       />

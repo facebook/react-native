@@ -42,9 +42,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTPackagerConnection.h"
 #endif
 
-#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper.h")
-
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
@@ -171,7 +169,7 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
   [self _configurePackagerConnection];
 
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it

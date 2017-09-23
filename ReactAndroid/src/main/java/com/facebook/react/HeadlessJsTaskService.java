@@ -116,11 +116,19 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
     }
   }
 
-  private void invokeStartTask(ReactContext reactContext, HeadlessJsTaskConfig taskConfig) {
-    HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
+  private void invokeStartTask(ReactContext reactContext, final HeadlessJsTaskConfig taskConfig) {
+    final HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
     headlessJsTaskContext.addTaskEventListener(this);
-    int taskId = headlessJsTaskContext.startTask(taskConfig);
-    mActiveTasks.add(taskId);
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          int taskId = headlessJsTaskContext.startTask(taskConfig);
+          mActiveTasks.add(taskId);
+        }
+      }
+    );
   }
 
   @Override

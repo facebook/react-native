@@ -27,6 +27,9 @@ var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const keyMirror = require('fbjs/lib/keyMirror');
 
 var TRANSITIONER_REF = 'transitionerRef';
@@ -429,6 +432,13 @@ var NavigatorIOS = createReactClass({
        */
       barTintColor: PropTypes.string,
 
+      /**
+       * The style of the navigation bar. Supported values are 'default', 'black'.
+       * Use 'black' instead of setting `barTintColor` to black. This produces
+       * a navigation bar with the native iOS style with higher translucency.
+       */
+      barStyle: PropTypes.oneOf(['default', 'black']),
+
        /**
        * The text color of the navigation bar title.
        */
@@ -469,6 +479,13 @@ var NavigatorIOS = createReactClass({
      * The default background color of the navigation bar.
      */
     barTintColor: PropTypes.string,
+
+    /**
+     * The style of the navigation bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a navigation bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
 
     /**
      * The default text color of the navigation bar title.

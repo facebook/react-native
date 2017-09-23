@@ -90,11 +90,12 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 - (void)testNamespacedCxxStruct
 {
   NSArray *arguments;
-  const char *methodSignature = "foo:(foo::type &)foo";
+  const char *methodSignature = "foo:(foo::type &)foo bar:(bar::type &)bar";
   SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
-  XCTAssertEqual(arguments.count, (NSUInteger)1);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"foo::type");
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"bar::type");
 }
 
 - (void)testAttributes

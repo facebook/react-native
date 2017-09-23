@@ -14,7 +14,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTJSEnvironment.h"
@@ -32,6 +32,7 @@ NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNot
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -258,7 +259,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
-  #if ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif

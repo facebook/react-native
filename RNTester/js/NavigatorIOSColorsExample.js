@@ -33,7 +33,7 @@ class EmptyPage extends React.Component {
 }
 
 class NavigatorIOSColors extends React.Component {
-  static title = '<NavigatorIOS> - Custom';
+  static title = '<NavigatorIOS> - Custom Colors';
   static description = 'iOS navigation with custom nav bar colors';
 
   render() {

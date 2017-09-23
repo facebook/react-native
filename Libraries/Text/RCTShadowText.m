@@ -220,7 +220,10 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   }
 
   textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+  textContainer.size = (CGSize){
+    widthMode == YGMeasureModeUndefined || isnan(width) ? CGFLOAT_MAX : width,
+    CGFLOAT_MAX
+  };
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];

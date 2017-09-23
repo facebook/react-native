@@ -9,12 +9,21 @@
  * @flow
  */
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const log = require('npmlog');
 const path = require('path');
-const uniq = require('lodash').uniq;
+const uniqBy = require('lodash').uniqBy;
 const flatten = require('lodash').flatten;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
@@ -36,7 +45,7 @@ import type {RNConfig} from '../core';
 
 log.heading = 'rnpm-link';
 
-const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
+const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
 
 const linkDependencyAndroid = (androidProject, dependency) => {

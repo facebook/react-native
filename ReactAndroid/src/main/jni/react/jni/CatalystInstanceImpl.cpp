@@ -13,6 +13,7 @@
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
@@ -85,10 +86,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
   : instance_(folly::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
-}
-
-void CatalystInstanceImpl::quitQueuesSynchronous() {
-  moduleMessageQueue_->quitSynchronous();
+  if (moduleMessageQueue_ != NULL) {
+    moduleMessageQueue_->quitSynchronous();
+  }
   if (uiBackgroundMessageQueue_ != NULL) {
     uiBackgroundMessageQueue_->quitSynchronous();
   }
@@ -98,7 +98,6 @@ void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-    makeNativeMethod("quitQueuesSynchronous", CatalystInstanceImpl::quitQueuesSynchronous),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
@@ -187,8 +186,10 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
-    instance_->loadUnbundle(
-      folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
+    auto bundle = folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL);
+    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    instance_->loadRAMBundle(
+      std::move(registry),
       std::move(script),
       sourceURL,
       loadSynchronously);
@@ -216,8 +217,9 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   if (isIndexedRAMBundle(zFileName)) {
     auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
     auto startupScript = bundle->getStartupCode();
-    instance_->loadUnbundle(
-      std::move(bundle),
+    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    instance_->loadRAMBundle(
+      std::move(registry),
       std::move(startupScript),
       sourceURL,
       loadSynchronously);
