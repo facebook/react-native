@@ -9,6 +9,12 @@
 
 #import "RCTModalManager.h"
 
+@interface RCTModalManager ()
+
+@property BOOL shouldEmit;
+
+@end
+
 @implementation RCTModalManager
 
 RCT_EXPORT_MODULE();
@@ -18,9 +24,21 @@ RCT_EXPORT_MODULE();
   return @[ @"modalDismissed" ];
 }
 
+- (void)startObserving
+{
+  _shouldEmit = YES;
+}
+
+- (void)stopObserving
+{
+  _shouldEmit = NO;
+}
+
 - (void)modalDismissed:(NSNumber *)modalID
 {
-  [self sendEventWithName:@"modalDismissed" body:@{ @"modalID": modalID }];
+  if (_shouldEmit) {
+    [self sendEventWithName:@"modalDismissed" body:@{ @"modalID": modalID }];
+  }
 }
 
 @end
