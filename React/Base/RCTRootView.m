@@ -90,8 +90,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 #if TARGET_OS_TV
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
-      [self addGestureRecognizer:gr];
+    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
     }
 #endif
 
