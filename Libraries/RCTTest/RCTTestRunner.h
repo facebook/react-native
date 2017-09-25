@@ -50,6 +50,10 @@
  */
 @property (nonatomic, assign) BOOL recordMode;
 
+@property (nonatomic, assign, readwrite) BOOL useBundler;
+
+@property (nonatomic, assign, readwrite) BOOL useJSDebugger;
+
 @property (nonatomic, copy) NSString *testSuffix;
 
 @property (nonatomic, readonly) NSURL *scriptURL;

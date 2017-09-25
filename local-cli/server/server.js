@@ -15,7 +15,7 @@ const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro-bundler';
 import type {Args as RunServerArgs} from './runServer';
 
 /**

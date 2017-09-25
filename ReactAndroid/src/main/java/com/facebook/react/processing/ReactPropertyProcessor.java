@@ -2,6 +2,36 @@
 
 package com.facebook.react.processing;
 
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+import static javax.tools.Diagnostic.Kind.WARNING;
+
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -19,37 +49,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.infer.annotation.SuppressFieldNotInitialized;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
-
-import static javax.lang.model.element.Modifier.*;
-import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.WARNING;
 
 /**
  * This annotation processor crawls subclasses of ReactShadowNode and ViewManager and finds their
@@ -230,13 +229,12 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeName typeName = TypeName.get(mirror);
     if (typeName instanceof ParameterizedTypeName) {
       ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if (parameterizedTypeName.rawType.equals(VIEW_MANAGER_TYPE)) {
+      if (parameterizedTypeName.rawType.equals(VIEW_MANAGER_TYPE)
+          || parameterizedTypeName.rawType.equals(SHADOW_NODE_TYPE)) {
         return parameterizedTypeName.typeArguments.get(0);
       }
-    } else if (typeName.equals(SHADOW_NODE_TYPE)) {
-      return SHADOW_NODE_TYPE;
     } else if (typeName.equals(TypeName.OBJECT)) {
-      throw new IllegalArgumentException("Could not find target type");
+      throw new IllegalArgumentException("Could not find target type " + typeName);
     }
 
     List<? extends TypeMirror> types = mTypes.directSupertypes(mirror);

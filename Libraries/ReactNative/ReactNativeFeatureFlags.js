@@ -8,6 +8,7 @@
  *
  * @providesModule ReactNativeFeatureFlags
  * @flow
+ * @format
  */
 
 'use strict';
@@ -33,7 +34,7 @@ var ReactNativeFeatureFlags = {
     if (useFiber != null) {
       throw new Error(
         'Cannot set useFiber feature flag after it has been accessed. ' +
-        'Please override it before requiring React.',
+          'Please override it before requiring React.',
       );
     }
     useFiber = enabled;

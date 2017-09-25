@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, facebook-open-source-bot, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, radko93, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, vjeux
+React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, facebook-open-source-bot, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, radko93, rigdern, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, vjeux
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered.

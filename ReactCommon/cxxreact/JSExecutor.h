@@ -16,6 +16,7 @@ class JSExecutor;
 class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
+class RAMBundleRegistry;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -48,9 +49,9 @@ public:
                                      std::string sourceURL) = 0;
 
   /**
-   * Add an application "unbundle" file
+   * Add an application "RAM" bundle registry
    */
-  virtual void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> bundle) = 0;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
