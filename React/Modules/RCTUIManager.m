@@ -784,11 +784,10 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     UIView *originalSuperview = removedChild.superview;
     NSUInteger originalIndex = [originalSuperview.subviews indexOfObjectIdenticalTo:removedChild];
     [container removeReactSubview:removedChild];
-    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
-
     // Disable user interaction while the view is animating
     // since the view is (conseptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
+    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
     NSString *property = deletingLayoutAnimation.property;
     [deletingLayoutAnimation performAnimations:^{
