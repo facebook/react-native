@@ -439,22 +439,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting content inside <Image> component',
-    render: function() {
-      return (
-        <View style={{width: 60, height: 60}}>
-          <Image
-            style={{...StyleSheet.absoluteFillObject}}
-            source={fullImage}/>
-          <Text style={styles.nestedText}>
-            React
-          </Text>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Nesting content inside <ImageBackground> component',
+    title: 'Nesting',
     render: function() {
       return (
         <ImageBackground
