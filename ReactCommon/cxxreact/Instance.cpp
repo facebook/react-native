@@ -4,10 +4,10 @@
 
 #include "JSBigString.h"
 #include "JSExecutor.h"
-#include "JSModulesUnbundle.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
 #include "NativeToJsBridge.h"
+#include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
@@ -50,17 +50,17 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
-void Instance::loadApplication(std::unique_ptr<JSModulesUnbundle> unbundle,
+void Instance::loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                                std::unique_ptr<const JSBigString> string,
                                std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::loadApplication", "sourceURL",
                     sourceURL);
-  nativeToJsBridge_->loadApplication(std::move(unbundle), std::move(string),
+  nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(string),
                                      std::move(sourceURL));
 }
 
-void Instance::loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
+void Instance::loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                                    std::unique_ptr<const JSBigString> string,
                                    std::string sourceURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
@@ -68,7 +68,7 @@ void Instance::loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
 
   SystraceSection s("Instance::loadApplicationSync", "sourceURL",
                     sourceURL);
-  nativeToJsBridge_->loadApplicationSync(std::move(unbundle), std::move(string),
+  nativeToJsBridge_->loadApplicationSync(std::move(bundleRegistry), std::move(string),
                                          std::move(sourceURL));
 }
 
@@ -91,15 +91,15 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   }
 }
 
-void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                            std::unique_ptr<const JSBigString> startupScript,
-                            std::string startupScriptSourceURL,
-                            bool loadSynchronously) {
+void Instance::loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                             std::unique_ptr<const JSBigString> startupScript,
+                             std::string startupScriptSourceURL,
+                             bool loadSynchronously) {
   if (loadSynchronously) {
-    loadApplicationSync(std::move(unbundle), std::move(startupScript),
+    loadApplicationSync(std::move(bundleRegistry), std::move(startupScript),
                         std::move(startupScriptSourceURL));
   } else {
-    loadApplication(std::move(unbundle), std::move(startupScript),
+    loadApplication(std::move(bundleRegistry), std::move(startupScript),
                     std::move(startupScriptSourceURL));
   }
 }

@@ -876,7 +876,9 @@ __DEV__ && function() {
     function popContextProvider(fiber) {
         isContextProvider$1(fiber) && (pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber));
     }
-    var popContextProvider_1 = popContextProvider, pushTopLevelContextObject = function(fiber, context, didChange) {
+    var popContextProvider_1 = popContextProvider, popTopLevelContextObject = function(fiber) {
+        pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber);
+    }, pushTopLevelContextObject = function(fiber, context, didChange) {
         invariant(null == contextStackCursor.cursor, "Unexpected context found on stack. " + "This error is likely caused by a bug in React. Please file an issue."), 
         push(contextStackCursor, context, fiber), push(didPerformWorkStackCursor, didChange, fiber);
     };
@@ -930,6 +932,7 @@ __DEV__ && function() {
         isContextConsumer: isContextConsumer_1,
         isContextProvider: isContextProvider_1,
         popContextProvider: popContextProvider_1,
+        popTopLevelContextObject: popTopLevelContextObject,
         pushTopLevelContextObject: pushTopLevelContextObject,
         processChildContext: processChildContext_1,
         pushContextProvider: pushContextProvider,
@@ -968,7 +971,7 @@ __DEV__ && function() {
         workInProgress.type = current.type, workInProgress.stateNode = current.stateNode, 
         workInProgress._debugID = current._debugID, workInProgress._debugSource = current._debugSource, 
         workInProgress._debugOwner = current._debugOwner, workInProgress.alternate = current, 
-        current.alternate = workInProgress) : (workInProgress.effectTag = NoWork$1, workInProgress.nextEffect = null, 
+        current.alternate = workInProgress) : (workInProgress.effectTag = NoEffect$1, workInProgress.nextEffect = null, 
         workInProgress.firstEffect = null, workInProgress.lastEffect = null), workInProgress.pendingWorkPriority = renderPriority, 
         workInProgress.child = current.child, workInProgress.memoizedProps = current.memoizedProps, 
         workInProgress.memoizedState = current.memoizedState, workInProgress.updateQueue = current.updateQueue, 
@@ -1530,7 +1533,7 @@ __DEV__ && function() {
     Object.defineProperty(fakeInternalInstance, "_processChildContext", {
         enumerable: !1,
         value: function() {
-            invariant(!1, "_processChildContext is not available in React 16+. This likely " + "means you have multiple copies of React and are attempting to nest " + "a React 15 tree inside a React 16 tree using " + "unstable_renderSubtreeIntoContainer, which isn't supported. Try " + "to make sure you have only one copy of React (and ideally, switch " + "to ReactDOM.unstable_createPortal).");
+            invariant(!1, "_processChildContext is not available in React 16+. This likely " + "means you have multiple copies of React and are attempting to nest " + "a React 15 tree inside a React 16 tree using " + "unstable_renderSubtreeIntoContainer, which isn't supported. Try " + "to make sure you have only one copy of React (and ideally, switch " + "to ReactDOM.createPortal).");
         }
     }), Object.freeze(fakeInternalInstance);
     var ReactFiberClassComponent = function(scheduleUpdate, getPriorityContext, memoizeProps, memoizeState) {
@@ -1698,10 +1701,13 @@ __DEV__ && function() {
             memoizeProps(workInProgress, instance.props), hasContext && invalidateContextProvider$1(workInProgress, !0), 
             workInProgress.child;
         }
-        function updateHostRoot(current, workInProgress, priorityLevel) {
+        function pushHostRootContext(workInProgress) {
             var root = workInProgress.stateNode;
             root.pendingContext ? pushTopLevelContextObject$1(workInProgress, root.pendingContext, root.pendingContext !== root.context) : root.context && pushTopLevelContextObject$1(workInProgress, root.context, !1), 
             pushHostContainer(workInProgress, root.containerInfo);
+        }
+        function updateHostRoot(current, workInProgress, priorityLevel) {
+            pushHostRootContext(workInProgress);
             var updateQueue = workInProgress.updateQueue;
             if (null !== updateQueue) {
                 var prevState = workInProgress.memoizedState, state = beginUpdateQueue$1(current, workInProgress, updateQueue, null, prevState, null, priorityLevel);
@@ -1779,6 +1785,10 @@ __DEV__ && function() {
         }
         function bailoutOnLowPriority(current, workInProgress) {
             switch (cancelWorkTimer(workInProgress), workInProgress.tag) {
+              case HostRoot$6:
+                pushHostRootContext(workInProgress);
+                break;
+
               case ClassComponent$6:
                 pushContextProvider$1(workInProgress);
                 break;
@@ -1841,8 +1851,7 @@ __DEV__ && function() {
                 break;
 
               case HostRoot$6:
-                var root = workInProgress.stateNode;
-                pushHostContainer(workInProgress, root.containerInfo);
+                pushHostRootContext(workInProgress);
                 break;
 
               default:
@@ -1861,7 +1870,7 @@ __DEV__ && function() {
             beginWork: beginWork,
             beginFailedWork: beginFailedWork
         };
-    }, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$7 = ReactTypeOfWork.HostRoot, HostComponent$7 = ReactTypeOfWork.HostComponent, HostText$5 = ReactTypeOfWork.HostText, HostPortal$6 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$4 = ReactTypeOfWork.YieldComponent, Fragment$4 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactDebugCurrentFiber$5 = ReactDebugCurrentFiber_1, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
+    }, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, popTopLevelContextObject$1 = ReactFiberContext.popTopLevelContextObject, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$7 = ReactTypeOfWork.HostRoot, HostComponent$7 = ReactTypeOfWork.HostComponent, HostText$5 = ReactTypeOfWork.HostText, HostPortal$6 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$4 = ReactTypeOfWork.YieldComponent, Fragment$4 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactDebugCurrentFiber$5 = ReactDebugCurrentFiber_1, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
         var createInstance = config.createInstance, createTextInstance = config.createTextInstance, appendInitialChild = config.appendInitialChild, finalizeInitialChildren = config.finalizeInitialChildren, prepareUpdate = config.prepareUpdate, getRootHostContainer = hostContext.getRootHostContainer, popHostContext = hostContext.popHostContext, getHostContext = hostContext.getHostContext, popHostContainer = hostContext.popHostContainer, prepareToHydrateHostInstance = hydrationContext.prepareToHydrateHostInstance, prepareToHydrateHostTextInstance = hydrationContext.prepareToHydrateHostTextInstance, popHydrationState = hydrationContext.popHydrationState;
         function markUpdate(workInProgress) {
             workInProgress.effectTag |= Update$2;
@@ -1919,6 +1928,7 @@ __DEV__ && function() {
                 return popContextProvider$2(workInProgress), null;
 
               case HostRoot$7:
+                popHostContainer(workInProgress), popTopLevelContextObject$1(workInProgress);
                 var fiberRoot = workInProgress.stateNode;
                 return fiberRoot.pendingContext && (fiberRoot.context = fiberRoot.pendingContext, 
                 fiberRoot.pendingContext = null), null !== current && null !== current.child || (popHydrationState(workInProgress), 
@@ -1935,7 +1945,7 @@ __DEV__ && function() {
                     if (!newProps) return invariant(null !== workInProgress.stateNode, "We must have new props for new mounts. This error is likely " + "caused by a bug in React. Please file an issue."), 
                     null;
                     var _currentHostContext = getHostContext();
-                    if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance) && markUpdate(workInProgress); else {
+                    if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance, _currentHostContext) && markUpdate(workInProgress); else {
                         var _instance = createInstance(type, newProps, rootContainerInstance, _currentHostContext, workInProgress);
                         appendAllChildren(_instance, workInProgress), finalizeInitialChildren(_instance, type, newProps, rootContainerInstance) && markUpdate(workInProgress), 
                         workInProgress.stateNode = _instance;
@@ -2375,8 +2385,8 @@ __DEV__ && function() {
                 fiber.stateNode = nextInstance, hydrationParentFiber = fiber, nextHydratableInstance = getFirstHydratableChild(nextInstance);
             }
         }
-        function prepareToHydrateHostInstance(fiber, rootContainerInstance) {
-            var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, fiber);
+        function prepareToHydrateHostInstance(fiber, rootContainerInstance, hostContext) {
+            var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, hostContext, fiber);
             return fiber.updateQueue = updatePayload, null !== updatePayload;
         }
         function prepareToHydrateHostTextInstance(fiber) {
@@ -3203,7 +3213,7 @@ __DEV__ && function() {
     };
     var ReactNativeFiberInspector = {
         getInspectorDataForViewTag: getInspectorDataForViewTag
-    }, ReactVersion = "16.0.0-rc.1", ReactCurrentOwner$3 = ReactGlobalSharedState_1.ReactCurrentOwner, warning$11 = require$$0;
+    }, ReactVersion = "16.0.0-rc.3", ReactCurrentOwner$3 = ReactGlobalSharedState_1.ReactCurrentOwner, warning$11 = require$$0;
     function findNodeHandle(componentOrHandle) {
         var owner = ReactCurrentOwner$3.current;
         if (null !== owner && null !== owner.stateNode && (warning$11(owner.stateNode._warnedAboutRefsInRender, "%s is accessing findNodeHandle inside its render(). " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", getComponentName_1(owner) || "A component"), 
@@ -4422,7 +4432,7 @@ __DEV__ && function() {
         unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
             ReactNativeFiber.unmountComponentAtNode(containerTag), UIManager.removeRootView(containerTag);
         },
-        unstable_createPortal: function(children, containerTag) {
+        createPortal: function(children, containerTag) {
             var key = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
             return ReactPortal.createPortal(children, containerTag, null, key);
         },
