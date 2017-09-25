@@ -16,7 +16,6 @@
 const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const React = require('React');
-const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
 const RCTLog = require('RCTLog');
 
@@ -265,49 +264,47 @@ const WarningInspector = ({
 
   return (
     <View style={styles.inspector}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.inspectorCount}>
-          <Text style={styles.inspectorCountText}>
-            {countSentence}
+      <View style={styles.inspectorCount}>
+        <Text style={styles.inspectorCountText}>
+          {countSentence}
+        </Text>
+        <TouchableHighlight
+          onPress={toggleStacktrace}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>
+            {stacktraceVisible ? '\u{25BC}' : '\u{25B6}'} Stacktrace
           </Text>
-          <TouchableHighlight
-            onPress={toggleStacktrace}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>
-              {stacktraceVisible ? '\u{25BC}' : '\u{25B6}'} Stacktrace
-            </Text>
-          </TouchableHighlight>
-        </View>
-        <ScrollView style={styles.inspectorWarning}>
-          {stacktraceList}
-          <Text style={styles.inspectorWarningText}>
-            {warning}
-          </Text>
-        </ScrollView>
-        <View style={styles.inspectorButtons}>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onMinimize}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>Minimize</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onDismiss}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>Dismiss</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onDismissAll}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>Dismiss All</Text>
-          </TouchableHighlight>
-        </View>
-      </SafeAreaView>
+        </TouchableHighlight>
+      </View>
+      <ScrollView style={styles.inspectorWarning}>
+        {stacktraceList}
+        <Text style={styles.inspectorWarningText}>
+          {warning}
+        </Text>
+      </ScrollView>
+      <View style={styles.inspectorButtons}>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onMinimize}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>Minimize</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onDismiss}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>Dismiss</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onDismissAll}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>Dismiss All</Text>
+        </TouchableHighlight>
+      </View>
     </View>
   );
 };
@@ -466,9 +463,6 @@ var styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 22,
     backgroundColor: backgroundColor(1),
-  },
-  safeArea: {
-    flex: 1,
   },
   stacktraceList: {
     paddingBottom: 5,
