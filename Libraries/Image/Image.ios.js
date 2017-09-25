@@ -25,6 +25,7 @@ const StyleSheetPropType = require('StyleSheetPropType');
 
 const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
+const invariant = require('invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
@@ -373,6 +374,8 @@ const Image = createReactClass({
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
+
+    invariant(!this.props.children, 'The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
 
     return (
       <RCTImageView

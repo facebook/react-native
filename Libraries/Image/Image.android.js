@@ -28,6 +28,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 var createReactClass = require('create-react-class');
 var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
+var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -271,6 +272,8 @@ var Image = createReactClass({
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
+
+    invariant(!this.props.children, 'The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
 
     if (source && (source.uri || Array.isArray(source))) {
       let style;
