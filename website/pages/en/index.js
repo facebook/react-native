@@ -61,7 +61,7 @@ class HomeSplash extends React.Component {
       <div className="homeContainer">
         <Hero
           title="React Native"
-          subtitle="Learn once, write anywhere: Build mobile apps with React"
+          subtitle="Build native mobile apps using JavaScript and React"
         >
           <div className="buttons-unit">
             <a href="docs/getting-started.html" className="button">
@@ -126,20 +126,27 @@ class Index extends React.Component {
             className="productShowcaseSection paddingBottom"
             style={{ textAlign: "center" }}
           >
-            <Marked>React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.</Marked>
+            <Container>
+              <GridBlock
+                align="center"
+                contents={[{
+                    title: 'Learn once, write anywhere',
+                    content: 'React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.'
+                  }, {
+                    title: 'Build real mobile apps',
+                    content: 'With React Native, you don\'t build a "mobile web app", an "HTML5 app", or a "hybrid app". React Native uses the same fundamental UI building blocks as regular iOS and Android apps.'
+                  }, {
+                    title: 'Don\'t waste time recompiling',
+                    content: 'Instead of recompiling, you can reload your app instantly. With [Hot Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html), you can even run new code while retaining your application state. Give it a try - it\'s a magical experience.'
+                  }]
+                }
+                layout="fourColumn"
+              />
+            </Container>
+
           </div>
-          <Container padding={['bottom', 'top']} background="light">
+          <Container>
             <div className="blockElement imageAlignSide twoByGridBlock">
-              <div className="blockContent">
-                <h2>
-                  Build native mobile apps using JavaScript and React
-                </h2>
-                <div>
-                  <Marked>
-                    React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
-                  </Marked>
-                </div>
-              </div>
                 <Prism>
                 {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
@@ -162,7 +169,7 @@ class WhyReactNativeIsSoGreat extends Component {
               </Prism>
 
             </div>
-          </Container>         
+          </Container>
 
           <Container padding={['bottom', 'top']}>
             <div className="blockElement imageAlignSide twoByGridBlock">
@@ -205,7 +212,7 @@ class AwkwardScrollingImageWithText extends Component {
               </Prism>
 
             </div>
-          </Container>  
+          </Container>
           <Container padding={['bottom', 'top']} background="light">
             <div className="blockElement imageAlignSide twoByGridBlock">
               <div className="blockContent">
@@ -214,14 +221,14 @@ class AwkwardScrollingImageWithText extends Component {
                 </h2>
                 <div>
                   <Marked>
-                  React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With [Hot Reloading](), you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+                  React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With [Hot Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html), you can even run new code while retaining your application state. Give it a try - it's a magical experience.
                   </Marked>
                 </div>
               </div>
   <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
 
             </div>
-          </Container>  
+          </Container>
           <Container padding={['bottom', 'top']}>
             <div className="blockElement imageAlignSide twoByGridBlock">
               <div className="blockContent">
@@ -255,7 +262,7 @@ class SomethingFast extends Component {
               </Prism>
 
             </div>
-          </Container>  
+          </Container>
           <div className="home-showcase-section paddingBottom">
             <h2>
               Who's using React Native?

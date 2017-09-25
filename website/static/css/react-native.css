@@ -45,6 +45,13 @@ input#search_input_react {
   background: $tintColor;
 }
 
+.hero {
+  box-sizing: border-box;
+}
+.hero .button {
+  text-transform: none;
+}
+
 code {
   color: $tintColor !important;
 }
