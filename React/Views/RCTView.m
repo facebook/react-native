@@ -346,8 +346,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // Mount / unmount views
   for (UIView *view in self.reactSubviews) {
-    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
-
+    if (!CGSizeEqualToSize(CGRectIntersection(clipRect, view.frame).size, CGSizeZero)) {
       // View is at least partially visible, so remount it if unmounted
       [self addSubview:view];
 
