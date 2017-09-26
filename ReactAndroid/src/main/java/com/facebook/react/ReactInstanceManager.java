@@ -23,6 +23,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CON
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
@@ -856,56 +858,63 @@ public class ReactInstanceManager {
       }
     }
 
-    mCreateReactContextThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        synchronized (ReactInstanceManager.this.mHasStartedDestroying) {
-          while (ReactInstanceManager.this.mHasStartedDestroying) {
-            try {
-              ReactInstanceManager.this.mHasStartedDestroying.wait();
-            } catch (InterruptedException e) {
-              continue;
-            }
-          }
-        }
-        // As destroy() may have run and set this to false, ensure that it is true before we create
-        mHasStartedCreatingInitialContext = true;
+    mCreateReactContextThread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                ReactMarker.logMarker(REACT_CONTEXT_THREAD_END);
+                synchronized (ReactInstanceManager.this.mHasStartedDestroying) {
+                  while (ReactInstanceManager.this.mHasStartedDestroying) {
+                    try {
+                      ReactInstanceManager.this.mHasStartedDestroying.wait();
+                    } catch (InterruptedException e) {
+                      continue;
+                    }
+                  }
+                }
+                // As destroy() may have run and set this to false, ensure that it is true before we create
+                mHasStartedCreatingInitialContext = true;
 
-        try {
-          Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-          final ReactApplicationContext reactApplicationContext = createReactContext(
-              initParams.getJsExecutorFactory().create(),
-              initParams.getJsBundleLoader());
+                try {
+                  Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
+                  final ReactApplicationContext reactApplicationContext =
+                      createReactContext(
+                          initParams.getJsExecutorFactory().create(),
+                          initParams.getJsBundleLoader());
 
-          mCreateReactContextThread = null;
-          ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
-          final Runnable maybeRecreateReactContextRunnable = new Runnable() {
-            @Override
-            public void run() {
-              if (mPendingReactContextInitParams != null) {
-                runCreateReactContextOnNewThread(mPendingReactContextInitParams);
-                mPendingReactContextInitParams = null;
+                  mCreateReactContextThread = null;
+                  ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
+                  final Runnable maybeRecreateReactContextRunnable =
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          if (mPendingReactContextInitParams != null) {
+                            runCreateReactContextOnNewThread(mPendingReactContextInitParams);
+                            mPendingReactContextInitParams = null;
+                          }
+                        }
+                      };
+                  Runnable setupReactContextRunnable =
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          try {
+                            setupReactContext(reactApplicationContext);
+                          } catch (Exception e) {
+                            mDevSupportManager.handleException(e);
+                          }
+                        }
+                      };
+
+                  reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
+                  UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
+                } catch (Exception e) {
+                  mDevSupportManager.handleException(e);
+                }
               }
-            }
-          };
-          Runnable setupReactContextRunnable = new Runnable() {
-            @Override
-            public void run() {
-              try {
-                setupReactContext(reactApplicationContext);
-              } catch (Exception e) {
-                mDevSupportManager.handleException(e);
-              }
-            }
-          };
-
-          reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
-          UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
-        } catch (Exception e) {
-          mDevSupportManager.handleException(e);
-        }
-      }
-    });
+            });
+    ReactMarker.logMarker(REACT_CONTEXT_THREAD_START);
     mCreateReactContextThread.start();
   }
 

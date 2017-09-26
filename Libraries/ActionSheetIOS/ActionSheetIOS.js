@@ -26,6 +26,9 @@ var ActionSheetIOS = {
    * - `destructiveButtonIndex` (int) - index of destructive button in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   *
+   * The 'callback' function takes one parameter, the zero-based index
+   * of the selected item.
    */
   showActionSheetWithOptions(options: Object, callback: Function) {
     invariant(
@@ -55,6 +58,15 @@ var ActionSheetIOS = {
    * NOTE: if `url` points to a local file, or is a base64-encoded
    * uri, the file it points to will be loaded and shared directly.
    * In this way, you can share images, videos, PDF files, etc.
+   *
+   * The 'failureCallback' function takes one parameter, an error object.
+   * The only property defined on this object is an optional `stack` property
+   * of type `string`.
+   *
+   * The 'successCallback' function takes two parameters:
+   *
+   * - a boolean value signifying success or failure
+   * - a string that, in the case of success, indicates the method of sharing
    */
   showShareActionSheetWithOptions(
     options: Object,
