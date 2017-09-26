@@ -64,21 +64,21 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * } from 'react-native'
  *
  * class App extends Component {
- * constructor(props) {
- *  super(props)
- *  this.state = { count: 0 }
- * }
+ *   constructor(props) {
+ *     super(props)
+ *     this.state = { count: 0 }
+ *   }
  *
- * onPress = () => {
- *   this.setState({
- *     count: this.state.count+1
- *   })
- * }
+ *   onPress = () => {
+ *     this.setState({
+ *       count: this.state.count+1
+ *     })
+ *   }
  *
  *  render() {
- *     return (
- *       <View style={styles.container}>
- *         <TouchableOpacity
+ *    return (
+ *      <View style={styles.container}>
+ *        <TouchableOpacity
  *          style={styles.button}
  *          onPress={this.onPress}
  *        >

@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 
 #include <cxxreact/JSCNativeModules.h>
 #include <cxxreact/JSExecutor.h>
@@ -14,6 +13,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
+#include <privatedata/PrivateDataBase.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -23,6 +23,7 @@ namespace facebook {
 namespace react {
 
 class MessageQueueThread;
+class RAMBundleRegistry;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
@@ -50,7 +51,7 @@ struct JSCValueEncoder<folly::dynamic> {
   }
 };
 
-class RN_EXPORT JSCExecutor : public JSExecutor {
+class RN_EXPORT JSCExecutor : public JSExecutor, public PrivateDataBase {
 public:
   /**
    * Must be invoked from thread this Executor will run on.
@@ -64,8 +65,7 @@ public:
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
 
-  virtual void setJSModulesUnbundle(
-    std::unique_ptr<JSModulesUnbundle> unbundle) override;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) override;
 
   virtual void callFunction(
     const std::string& moduleId,
@@ -105,7 +105,7 @@ private:
   std::shared_ptr<ExecutorDelegate> m_delegate;
   std::shared_ptr<bool> m_isDestroyed = std::shared_ptr<bool>(new bool(false));
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
-  std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  std::unique_ptr<RAMBundleRegistry> m_bundleRegistry;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
   std::once_flag m_bindFlag;
@@ -124,7 +124,7 @@ private:
   void callNativeModules(Value&&);
   void flush();
   void flushQueueImmediate(Value&&);
-  void loadModule(uint32_t moduleId);
+  void loadModule(uint32_t bundleId, uint32_t moduleId);
 
   String adoptString(std::unique_ptr<const JSBigString>);
 

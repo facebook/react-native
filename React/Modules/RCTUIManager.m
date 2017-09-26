@@ -339,6 +339,20 @@ BOOL RCTIsUIManagerQueue()
   });
 }
 
+- (void)setLocalData:(NSObject *)localData forView:(UIView *)view
+{
+  RCTAssertMainQueue();
+  NSNumber *tag = view.reactTag;
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    RCTShadowView *shadowView = self->_shadowViewRegistry[tag];
+    RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", tag);
+
+    shadowView.localData = localData;
+    [self setNeedsLayout];
+  });
+}
+
 /**
  * TODO(yuwang): implement the nativeID functionality in a more efficient way
  *               instead of searching the whole view tree
@@ -770,11 +784,10 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     UIView *originalSuperview = removedChild.superview;
     NSUInteger originalIndex = [originalSuperview.subviews indexOfObjectIdenticalTo:removedChild];
     [container removeReactSubview:removedChild];
-    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
-
     // Disable user interaction while the view is animating
     // since the view is (conseptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
+    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
     NSString *property = deletingLayoutAnimation.property;
     [deletingLayoutAnimation performAnimations:^{

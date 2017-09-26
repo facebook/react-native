@@ -9,16 +9,16 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.systrace.SystraceMessage;
-
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.SystraceMessage;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
@@ -332,6 +332,12 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
       .arg("method", traceName)
       .flush();
+    PrinterHolder.getPrinter()
+        .logMessage(
+            ReactDebugOverlayTags.BRIDGE_CALLS,
+            "JS->Java: %s.%s()",
+            mModuleWrapper.getName(),
+            mMethod.getName());
     try {
       if (!mArgumentsProcessed) {
         processArguments();
