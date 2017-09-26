@@ -37,6 +37,7 @@ const ReactNative = {
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
+  get SafeAreaView() { return require('SafeAreaView'); },
   get ScrollView() { return require('ScrollView'); },
   get SectionList() { return require('SectionList'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },

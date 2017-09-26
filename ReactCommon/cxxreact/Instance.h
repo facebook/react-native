@@ -21,9 +21,9 @@ namespace react {
 
 class JSBigString;
 class JSExecutorFactory;
-class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
+class RAMBundleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
@@ -44,9 +44,9 @@ public:
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
-  void loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                    std::unique_ptr<const JSBigString> startupScript,
-                    std::string startupScriptSourceURL, bool loadSynchronously);
+  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                     std::unique_ptr<const JSBigString> startupScript,
+                     std::string startupScriptSourceURL, bool loadSynchronously);
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
@@ -73,10 +73,10 @@ public:
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadApplication(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> startupScript,
                        std::string startupScriptSourceURL);
-  void loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                            std::unique_ptr<const JSBigString> startupScript,
                            std::string startupScriptSourceURL);
 

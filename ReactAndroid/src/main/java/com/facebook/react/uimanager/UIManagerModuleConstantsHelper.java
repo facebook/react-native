@@ -12,7 +12,6 @@ package com.facebook.react.uimanager;
 import java.util.List;
 import java.util.Map;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -25,8 +24,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 /* package */ class UIManagerModuleConstantsHelper {
 
-  private static final String CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
-  private static final String CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
+  /* package */ static final String CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
+  /* package */ static final String CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
 
   /**
    * Generates map of constants that is then exposed by {@link UIManagerModule}.
@@ -41,8 +40,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
    * TODO(6845124): Create a test for this
    */
   /* package */ static Map<String, Object> createConstants(
-    List<ViewManager> viewManagers,
-    boolean lazyViewManagersEnabled) {
+      List<ViewManager> viewManagers, boolean lazyViewManagersEnabled) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
 
     // Generic/default event types:
@@ -69,18 +67,20 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         if (viewManagerBubblingEvents != null) {
           recursiveMerge(allBubblingEventTypes, viewManagerBubblingEvents);
           recursiveMerge(viewManagerBubblingEvents, genericBubblingEventTypes);
-          viewManagerConstants.put("bubblingEventTypes", viewManagerBubblingEvents);
         } else {
-          viewManagerConstants.put("bubblingEventTypes", genericBubblingEventTypes);
+          viewManagerBubblingEvents = genericBubblingEventTypes;
         }
+        viewManagerConstants.put("bubblingEventTypes", viewManagerBubblingEvents);
+
         Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
         if (viewManagerDirectEvents != null) {
           recursiveMerge(allDirectEventTypes, viewManagerDirectEvents);
           recursiveMerge(viewManagerDirectEvents, genericDirectEventTypes);
-          viewManagerConstants.put("directEventTypes", viewManagerDirectEvents);
         } else {
-          viewManagerConstants.put("directEventTypes", genericDirectEventTypes);
+          viewManagerDirectEvents = genericDirectEventTypes;
         }
+        viewManagerConstants.put("directEventTypes", viewManagerDirectEvents);
+
         Map customViewConstants = viewManager.getExportedViewConstants();
         if (customViewConstants != null) {
           viewManagerConstants.put("Constants", customViewConstants);
