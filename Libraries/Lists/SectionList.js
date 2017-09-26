@@ -45,7 +45,7 @@ type SectionBase<SectionItemT> = {
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  itemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
@@ -61,7 +61,7 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *     sections: $ReadOnlyArray<{
    *       data: $ReadOnlyArray<SectionItem>,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
-   *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
+   *       itemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
   sections: $ReadOnlyArray<SectionT>,
@@ -87,7 +87,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
    * add custom props with `separators.updateProps`.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  itemSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -105,9 +105,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered at the top and bottom of each section (note this is different from
-   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * `itemSeparatorComponent` which is only rendered between items). These are intended to separate
    * sections from the headers above and below and typically have the same highlight response as
-   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * `itemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
    * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?React.ComponentType<any>,
