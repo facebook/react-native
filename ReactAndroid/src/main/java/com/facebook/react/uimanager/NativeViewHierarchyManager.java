@@ -373,8 +373,9 @@ public class NativeViewHierarchyManager {
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // The view will be removed and dropped by the 'delete' layout animation
-          // instead, so do nothing
+          // Only remove the view from the 'React' view hierarchy, it will be removed from native
+          // at the end of the layout delete animation.
+          viewManager.removeReactViewAt(viewToManage, indexToRemove);
         } else {
           viewManager.removeViewAt(viewToManage, indexToRemove);
         }
@@ -423,7 +424,7 @@ public class NativeViewHierarchyManager {
           mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
             public void onAnimationEnd() {
-              viewManager.removeView(viewToManage, viewToDestroy);
+              viewManager.removeNativeView(viewToManage, viewToDestroy);
               dropView(viewToDestroy);
             }
           });

@@ -10,9 +10,6 @@
 package com.facebook.react.uimanager;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -28,6 +25,9 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     extends BaseViewManager<T, LayoutShadowNode> {
 
   private static WeakHashMap<View, Integer> mZIndexHash = new WeakHashMap<>();
+  // This is used to remove views from the React view hierarchy but keep them in the Native one.
+  // Mapping from the parent view to a list of its children.
+  private static WeakHashMap<View, List<View>> mReactChildrenMap = new WeakHashMap<>();
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {
@@ -44,7 +44,19 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   }
 
   public void addView(T parent, View child, int index) {
-    parent.addView(child, index);
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+    if (reactChildren != null) {
+      reactChildren.add(index, child);
+      if (index == reactChildren.size() - 1) {
+        parent.addView(child);
+      } else {
+        View addBeforeView = reactChildren.get(index + 1);
+        int addBeforeIndex = parent.indexOfChild(addBeforeView);
+        parent.addView(child, addBeforeIndex - 1);
+      }
+    } else {
+      parent.addView(child, index);
+    }
   }
 
   /**
@@ -69,15 +81,36 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   }
 
   public int getChildCount(T parent) {
-    return parent.getChildCount();
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+    if (reactChildren != null) {
+      return reactChildren.size();
+    } else {
+      return parent.getChildCount();
+    }
   }
 
   public View getChildAt(T parent, int index) {
-    return parent.getChildAt(index);
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+    if (reactChildren != null) {
+      return reactChildren.get(index);
+    } else {
+      return parent.getChildAt(index);
+    }
   }
 
   public void removeViewAt(T parent, int index) {
-    parent.removeViewAt(index);
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+    if (reactChildren != null) {
+      View removedView = reactChildren.remove(index);
+      if (removedView != null) {
+        parent.removeView(removedView);
+      }
+      mReactChildrenMap.remove(removedView);
+    } else {
+      View removedView = parent.getChildAt(index);
+      parent.removeViewAt(index);
+      mReactChildrenMap.remove(removedView);
+    }
   }
 
   public void removeView(T parent, View view) {
@@ -93,6 +126,35 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     for (int i = getChildCount(parent) - 1; i >= 0; i--) {
       removeViewAt(parent, i);
     }
+  }
+
+  /**
+   * Remove a view from the React view hierarchy but keep the actual native view there. Use
+   * {@link ViewGroupManager#removeNativeView} to remove it completely.
+   */
+  public void removeReactViewAt(T parent, int index) {
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+
+    // Create the React children mapping lazily the first time it diverges from native.
+    if (reactChildren == null) {
+      reactChildren = new ArrayList<>(parent.getChildCount());
+      for (int i = 0; i < parent.getChildCount(); i++) {
+        reactChildren.add(parent.getChildAt(i));
+      }
+      mReactChildrenMap.put(parent, reactChildren);
+    }
+    reactChildren.remove(index);
+  }
+
+  /**
+   * Remove a view that was previously removed from the React view hierarchy but not from native.
+   */
+  public void removeNativeView(T parent, View view) {
+    List<View> reactChildren = mReactChildrenMap.get(parent);
+    if (reactChildren != null) {
+      reactChildren.remove(view);
+    }
+    parent.removeView(view);
   }
 
   /**

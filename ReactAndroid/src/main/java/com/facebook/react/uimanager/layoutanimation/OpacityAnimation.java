@@ -15,10 +15,12 @@ import android.view.animation.Transformation;
   static class OpacityAnimationListener implements AnimationListener {
 
     private final View mView;
+    private final float mEndOpacity;
     private boolean mLayerTypeChanged = false;
 
-    public OpacityAnimationListener(View view) {
+    public OpacityAnimationListener(View view, float endOpacity) {
       mView = view;
+      mEndOpacity = endOpacity;
     }
 
     @Override
@@ -35,6 +37,7 @@ import android.view.animation.Transformation;
       if (mLayerTypeChanged) {
         mView.setLayerType(View.LAYER_TYPE_NONE, null);
       }
+      mView.setAlpha(mEndOpacity);
     }
 
     @Override
@@ -51,7 +54,7 @@ import android.view.animation.Transformation;
     mStartOpacity = startOpacity;
     mDeltaOpacity = endOpacity - startOpacity;
 
-    setAnimationListener(new OpacityAnimationListener(view));
+    setAnimationListener(new OpacityAnimationListener(view, endOpacity));
   }
 
   @Override
