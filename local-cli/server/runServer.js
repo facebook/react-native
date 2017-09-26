@@ -194,6 +194,7 @@ function getPackagerServer(args, config, reporter) {
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
+    runBeforeMainModule: config.runBeforeMainModule,
     reporter,
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),

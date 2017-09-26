@@ -125,6 +125,7 @@ function buildBundle(
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(terminal),
+      runBeforeMainModule: config.runBeforeMainModule,
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
