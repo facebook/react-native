@@ -34,7 +34,7 @@ if (__DEV__) {
    * comment and run Flow. */
   const reactDevTools = require('react-devtools-core');
 
-  register = function (plugin: DevToolsPlugin) {
+  register = function (plugin: DevToolsPlugin, options: DevToolsPluginConnection) {
     // Initialize dev tools only if the native module for WebSocket is available
     if (WebSocket.isAvailable) {
       // Don't steal the DevTools from currently active app.
@@ -51,15 +51,17 @@ if (__DEV__) {
       plugin.connectToDevTools({
         isAppActive,
         host,
-        // Read the optional global variable for backward compatibility.
-        // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
-        port: window.__REACT_DEVTOOLS_PORT__,
         resolveRNStyle: require('flattenStyle'),
+        ...options,
       });
     }
   };
 
-  register(reactDevTools);
+  register(reactDevTools, {
+    // Read the optional global variable for backward compatibility.
+    // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
+    port: window.__REACT_DEVTOOLS_PORT__,
+  });
   global.registerDevtoolsPlugin = register;
 }
 
