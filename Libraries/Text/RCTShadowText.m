@@ -198,7 +198,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 {
   if (
       _cachedTextStorage &&
-      width == _cachedTextStorageWidth &&
+      (width == _cachedTextStorageWidth || (isnan(width) && isnan(_cachedTextStorageWidth))) &&
       widthMode == _cachedTextStorageWidthMode &&
       _cachedEffectiveLayoutDirection == self.effectiveLayoutDirection
   ) {
