@@ -35,6 +35,12 @@ typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
 extern NSString *const RCTContentDidAppearNotification;
 
 /**
+ * This notification is sent when the bounds of the rootView have changed after a 
+ * call to layoutSubviews.
+ */
+extern NSString *const RCTContentDidResizeNotification;
+
+/**
  * Native view used to host React-managed views within the app. Can be used just
  * like any ordinary UIView. You can have multiple RCTRootViews on screen at
  * once, all controlled by the same JavaScript application.

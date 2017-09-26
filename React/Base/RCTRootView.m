@@ -34,6 +34,8 @@
 #endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
+NSString *const RCTContentDidResizeNotification = @"RCTContentDidResizeNotification";
+
 
 @interface RCTUIManager (RCTRootView)
 
@@ -176,11 +178,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  CGSize previousSize = _contentView.frame.size;
   _contentView.frame = self.bounds;
   _loadingView.center = (CGPoint){
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+  
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground
+      && !CGSizeEqualToSize(previousSize, self.bounds.size)) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidResizeNotification object:self];
+  }
 }
 
 - (UIViewController *)reactViewController
