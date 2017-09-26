@@ -144,6 +144,12 @@ const mockNativeModules = {
       },
     },
   },
+  Dimensions: {
+    get: jest.fn(() => ({
+      width: 750,
+      height: 1334,
+    })),
+  },
   FacebookSDK: {
     login: jest.fn(),
     logout: jest.fn(),
