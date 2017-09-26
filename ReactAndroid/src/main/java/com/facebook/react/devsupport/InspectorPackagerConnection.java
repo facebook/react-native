@@ -56,15 +56,6 @@ public class InspectorPackagerConnection {
     }
   }
 
-  public void sendOpenEvent(String pageId) {
-    try {
-      JSONObject payload = makePageIdPayload(pageId);
-      sendEvent("open", payload);
-    } catch (JSONException e) {
-      FLog.e(TAG, "Failed to open page", e);
-    }
-  }
-
   void handleProxyMessage(JSONObject message)
       throws JSONException, IOException {
     String event = message.getString("event");

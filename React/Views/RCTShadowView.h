@@ -13,6 +13,7 @@
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
 
+@class RCTRootShadowView;
 @class RCTSparseArray;
 
 typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
@@ -50,11 +51,24 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
+@property (nonatomic, weak, readonly) RCTRootShadowView *rootView;
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
+
+/**
+ * In some cases we need a way to specify some environmental data to shadow view
+ * to improve layout (or do something similar), so `localData` serves these needs.
+ * For example, any stateful embedded native views may benefit from this.
+ * Have in mind that this data is not supposed to interfere with the state of
+ * the shadow view.
+ * Please respect one-directional data flow of React.
+ * Use `-[RCTUIManager setLocalData:forView:]` to set this property
+ * (to provide local/environmental data for a shadow view) from the main thread.
+ */
+@property (nonatomic, strong) NSObject *localData;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is

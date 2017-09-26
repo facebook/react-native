@@ -9,21 +9,11 @@
 
 package com.facebook.react.views.textinput;
 
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import android.os.Build;
 import android.text.Layout;
-import android.text.Spannable;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -32,18 +22,26 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.view.MeasureUtil;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+import javax.annotation.Nullable;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
-  private int mJsEventCount = UNSET;
+  private int mMostRecentEventCount = UNSET;
+
+  @VisibleForTesting public static final String PROP_TEXT = "text";
+
+  private @Nullable String mText = null;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
@@ -111,7 +109,17 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
   @ReactProp(name = "mostRecentEventCount")
   public void setMostRecentEventCount(int mostRecentEventCount) {
-    mJsEventCount = mostRecentEventCount;
+    mMostRecentEventCount = mostRecentEventCount;
+  }
+
+  @ReactProp(name = PROP_TEXT)
+  public void setText(@Nullable String text) {
+    mText = text;
+    markUpdated();
+  }
+
+  public @Nullable String getText() {
+    return mText;
   }
 
   @Override
@@ -135,20 +143,18 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mJsEventCount != UNSET) {
-      Spannable preparedSpannableText = fromTextCSSNode(this);
+    if (mMostRecentEventCount != UNSET) {
       ReactTextUpdate reactTextUpdate =
-        new ReactTextUpdate(
-          preparedSpannableText,
-          mJsEventCount,
-          mContainsImages,
-          getPadding(Spacing.LEFT),
-          getPadding(Spacing.TOP),
-          getPadding(Spacing.RIGHT),
-          getPadding(Spacing.BOTTOM),
-          mTextAlign,
-          mTextBreakStrategy
-        );
+          new ReactTextUpdate(
+              spannedFromShadowNode(this, getText()),
+              mMostRecentEventCount,
+              mContainsImages,
+              getPadding(Spacing.LEFT),
+              getPadding(Spacing.TOP),
+              getPadding(Spacing.RIGHT),
+              getPadding(Spacing.BOTTOM),
+              mTextAlign,
+              mTextBreakStrategy);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

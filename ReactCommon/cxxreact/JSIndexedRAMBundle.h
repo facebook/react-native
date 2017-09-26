@@ -5,6 +5,7 @@
 #include <fstream>
 #include <memory>
 
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
 #ifndef RN_EXPORT
@@ -13,9 +14,6 @@
 
 namespace facebook {
 namespace react {
-
-class JSBigString;
-class JSBigBufferString;
 
 class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
 public:

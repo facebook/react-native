@@ -5,9 +5,9 @@ package com.facebook.react;
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
@@ -122,6 +122,11 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder addPackage(ReactPackage reactPackage) {
     mPackages.add(reactPackage);
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder addPackages(List<ReactPackage> reactPackages) {
+    mPackages.addAll(reactPackages);
     return this;
   }
 

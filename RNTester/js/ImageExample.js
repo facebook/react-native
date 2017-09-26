@@ -98,9 +98,9 @@ var NetworkImageCallbackExample = createReactClass({
   },
 
   _loadEventFired(event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.setState((state) => {
       return state.events = [...state.events, event];
     });
@@ -439,7 +439,22 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting',
+    title: 'Nesting content inside <Image> component',
+    render: function() {
+      return (
+        <View style={{width: 60, height: 60}}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}/>
+          <Text style={styles.nestedText}>
+            React
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
     render: function() {
       return (
         <ImageBackground
