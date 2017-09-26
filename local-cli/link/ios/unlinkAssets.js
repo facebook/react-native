@@ -30,14 +30,20 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
     );
   }
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.removeResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  const removeResourceFile = function (f) {
+    (f || [])
+      .map(asset =>
+        project.removeResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .map(file => file.basename);
+      .map(file => file.basename);
+  }
+
+  removeResourceFile(assets.image);
+
+  const fonts = removeResourceFile(assets.font);
 
   plist.UIAppFonts = difference(plist.UIAppFonts || [], fonts);
 
