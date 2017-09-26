@@ -311,7 +311,6 @@ function parseAPIJsDocFormat(filepath, fileContent) {
     'sourceFileName': fileName,
     'plugins': [
       'transform-flow-strip-types',
-      'babel-plugin-syntax-trailing-function-commas',
     ]
   };
   // Babel transform
