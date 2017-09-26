@@ -124,6 +124,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SafeAreaViewExample',
+    module: require('./SafeAreaViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
     supportsTVOS: true,

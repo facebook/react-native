@@ -30,6 +30,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -711,10 +712,12 @@ public class DevSupportManagerImpl implements
           return;
         }
         try {
-          long jsContext = mCurrentContext.getJavaScriptContext();
-          Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
-          RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext);
-          handler.onRequest(null, responder);
+          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
+          synchronized (jsContext) {
+            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
+            handler.onRequest(null, responder);
+          }
         } catch (Exception e) {
           // Module not present
         }

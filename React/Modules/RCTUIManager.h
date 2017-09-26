@@ -80,6 +80,17 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView;
 
 /**
+ * Sets local data for a shadow view corresponded with given view.
+ * In some cases we need a way to specify some environmental data to shadow view
+ * to improve layout (or do something similar), so `localData` serves these needs.
+ * For example, any stateful embedded native views may benefit from this.
+ * Have in mind that this data is not supposed to interfere with the state of
+ * the shadow view.
+ * Please respect one-directional data flow of React.
+ */
+- (void)setLocalData:(NSObject *)localData forView:(UIView *)view;
+
+/**
  * Set the size of a view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */
