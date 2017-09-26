@@ -9,22 +9,19 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.CopyOnWriteArraySet;
+import javax.annotation.Nullable;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and
@@ -372,9 +369,12 @@ public class ReactContext extends ContextWrapper {
   }
 
   /**
-   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance. Use
+   * the following pattern to ensure that the JS context is not cleared while you are using it:
+   * JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
+   * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  public long getJavaScriptContext() {
-    return mCatalystInstance.getJavaScriptContext();
+  public JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mCatalystInstance.getJavaScriptContextHolder();
   }
 }

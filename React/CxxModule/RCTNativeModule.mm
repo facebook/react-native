@@ -77,10 +77,10 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 }
 
 MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
-  return invokeInner(reactMethodId, std::move(params));
+  return invokeInner(reactMethodId, params);
 }
 
-MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &&params) {
+MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &params) {
   if (!m_bridge.valid) {
     return folly::none;
   }

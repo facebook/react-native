@@ -98,6 +98,10 @@ function runServer(
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
     .use(
+      '/debugger-ui',
+      connect.static(path.join(__dirname, 'util', 'debugger-ui')),
+    )
+    .use(
       getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
     )
     .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))

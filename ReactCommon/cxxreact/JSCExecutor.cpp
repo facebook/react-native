@@ -32,6 +32,7 @@
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 #include "Platform.h"
+#include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
@@ -353,11 +354,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
 }
 
-void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
-  if (!m_unbundle) {
+void JSCExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) {
+  if (!m_bundleRegistry) {
     installNativeHook<&JSCExecutor::nativeRequire>("nativeRequire");
   }
-  m_unbundle = std::move(unbundle);
+  m_bundleRegistry = std::move(bundleRegistry);
 }
 
 void JSCExecutor::bindBridge() throw(JSException) {
@@ -550,8 +551,8 @@ void JSCExecutor::flushQueueImmediate(Value&& queue) {
   m_delegate->callNativeModules(*this, folly::parseJson(queueStr), false);
 }
 
-void JSCExecutor::loadModule(uint32_t moduleId) {
-  auto module = m_unbundle->getModule(moduleId);
+void JSCExecutor::loadModule(uint32_t bundleId, uint32_t moduleId) {
+  auto module = m_bundleRegistry->getModule(bundleId, moduleId);
   auto sourceUrl = String::createExpectingAscii(m_context, module.name);
   auto source = String::createExpectingAscii(m_context, module.code);
   evaluateScript(m_context, source, sourceUrl);
@@ -574,18 +575,10 @@ JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef property
 JSValueRef JSCExecutor::nativeRequire(
     size_t argumentCount,
     const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
-      Value(m_context, arguments[0]).toString().str()));
-  }
-
+  uint32_t bundleId, moduleId;
+  std::tie(bundleId, moduleId) = parseNativeRequireParameters(m_context, arguments, argumentCount);
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
-  loadModule(moduleId);
+  loadModule(bundleId, moduleId);
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
   return Value::makeUndefined(m_context);
 }
