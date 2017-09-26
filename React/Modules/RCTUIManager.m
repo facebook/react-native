@@ -36,6 +36,7 @@
 #import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewManager.h"
@@ -52,7 +53,6 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
   }
 }
 
-char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
 
 @implementation RCTUIManager
@@ -238,32 +238,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 #pragma clang diagnostic pop
 }
 #endif
-
-dispatch_queue_t RCTGetUIManagerQueue(void)
-{
-  static dispatch_queue_t shadowQueue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
-      dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-      shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, attr);
-    } else {
-      shadowQueue = dispatch_queue_create(RCTUIManagerQueueName, DISPATCH_QUEUE_SERIAL);
-      dispatch_set_target_queue(shadowQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
-    }
-  });
-  return shadowQueue;
-}
-
-BOOL RCTIsUIManagerQueue()
-{
-  static void *queueKey = &queueKey;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    dispatch_queue_set_specific(RCTGetUIManagerQueue(), queueKey, queueKey, NULL);
-  });
-  return dispatch_get_specific(queueKey) == queueKey;
-}
 
 - (dispatch_queue_t)methodQueue
 {
