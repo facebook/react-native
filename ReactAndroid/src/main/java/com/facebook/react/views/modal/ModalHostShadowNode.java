@@ -10,9 +10,8 @@
 package com.facebook.react.views.modal;
 
 import android.graphics.Point;
-
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 
 /**
  * We implement the Modal by using an Android Dialog. That will fill the entire window of the
@@ -26,10 +25,10 @@ class ModalHostShadowNode extends LayoutShadowNode {
 
   /**
    * We need to set the styleWidth and styleHeight of the one child (represented by the <View/>
-   * within the <RCTModalHostView/> in Modal.js.  This needs to fill the entire window.
+   * within the <RCTModalHostView/> in Modal.js. This needs to fill the entire window.
    */
   @Override
-  public void addChildAt(ReactShadowNode child, int i) {
+  public void addChildAt(ReactShadowNodeImpl child, int i) {
     super.addChildAt(child, i);
     Point modalSize = ModalHostHelper.getModalHostSize(getThemedContext());
     child.setStyleWidth(modalSize.x);

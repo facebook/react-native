@@ -717,7 +717,9 @@ function popContextProvider(fiber) {
     isContextProvider$1(fiber) && (pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber));
 }
 
-var popContextProvider_1 = popContextProvider, pushTopLevelContextObject = function(fiber, context, didChange) {
+var popContextProvider_1 = popContextProvider, popTopLevelContextObject = function(fiber) {
+    pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber);
+}, pushTopLevelContextObject = function(fiber, context, didChange) {
     invariant(null == contextStackCursor.cursor, "Unexpected context found on stack. " + "This error is likely caused by a bug in React. Please file an issue."), 
     push(contextStackCursor, context, fiber), push(didPerformWorkStackCursor, didChange, fiber);
 };
@@ -765,6 +767,7 @@ var processChildContext_1 = processChildContext$1, pushContextProvider = functio
     isContextConsumer: isContextConsumer_1,
     isContextProvider: isContextProvider_1,
     popContextProvider: popContextProvider_1,
+    popTopLevelContextObject: popTopLevelContextObject,
     pushTopLevelContextObject: pushTopLevelContextObject,
     processChildContext: processChildContext_1,
     pushContextProvider: pushContextProvider,
@@ -796,7 +799,7 @@ var createWorkInProgress = function(current, renderPriority) {
     var workInProgress = current.alternate;
     return null === workInProgress ? (workInProgress = createFiber(current.tag, current.key, current.internalContextTag), 
     workInProgress.type = current.type, workInProgress.stateNode = current.stateNode, 
-    workInProgress.alternate = current, current.alternate = workInProgress) : (workInProgress.effectTag = NoWork$1, 
+    workInProgress.alternate = current, current.alternate = workInProgress) : (workInProgress.effectTag = NoEffect$1, 
     workInProgress.nextEffect = null, workInProgress.firstEffect = null, workInProgress.lastEffect = null), 
     workInProgress.pendingWorkPriority = renderPriority, workInProgress.child = current.child, 
     workInProgress.memoizedProps = current.memoizedProps, workInProgress.memoizedState = current.memoizedState, 
@@ -1458,10 +1461,13 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
         memoizeProps(workInProgress, instance.props), hasContext && invalidateContextProvider$1(workInProgress, !0), 
         workInProgress.child;
     }
-    function updateHostRoot(current, workInProgress, priorityLevel) {
+    function pushHostRootContext(workInProgress) {
         var root = workInProgress.stateNode;
         root.pendingContext ? pushTopLevelContextObject$1(workInProgress, root.pendingContext, root.pendingContext !== root.context) : root.context && pushTopLevelContextObject$1(workInProgress, root.context, !1), 
         pushHostContainer(workInProgress, root.containerInfo);
+    }
+    function updateHostRoot(current, workInProgress, priorityLevel) {
+        pushHostRootContext(workInProgress);
         var updateQueue = workInProgress.updateQueue;
         if (null !== updateQueue) {
             var prevState = workInProgress.memoizedState, state = beginUpdateQueue$1(current, workInProgress, updateQueue, null, prevState, null, priorityLevel);
@@ -1526,6 +1532,10 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
     }
     function bailoutOnLowPriority(current, workInProgress) {
         switch (workInProgress.tag) {
+          case HostRoot$5:
+            pushHostRootContext(workInProgress);
+            break;
+
           case ClassComponent$6:
             pushContextProvider$1(workInProgress);
             break;
@@ -1588,8 +1598,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
             break;
 
           case HostRoot$5:
-            var root = workInProgress.stateNode;
-            pushHostContainer(workInProgress, root.containerInfo);
+            pushHostRootContext(workInProgress);
             break;
 
           default:
@@ -1608,7 +1617,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
         beginWork: beginWork,
         beginFailedWork: beginFailedWork
     };
-}, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$6 = ReactTypeOfWork.HostRoot, HostComponent$6 = ReactTypeOfWork.HostComponent, HostText$4 = ReactTypeOfWork.HostText, HostPortal$5 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$3 = ReactTypeOfWork.YieldComponent, Fragment$3 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
+}, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, popTopLevelContextObject$1 = ReactFiberContext.popTopLevelContextObject, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$6 = ReactTypeOfWork.HostRoot, HostComponent$6 = ReactTypeOfWork.HostComponent, HostText$4 = ReactTypeOfWork.HostText, HostPortal$5 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$3 = ReactTypeOfWork.YieldComponent, Fragment$3 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
     var createInstance = config.createInstance, createTextInstance = config.createTextInstance, appendInitialChild = config.appendInitialChild, finalizeInitialChildren = config.finalizeInitialChildren, prepareUpdate = config.prepareUpdate, getRootHostContainer = hostContext.getRootHostContainer, popHostContext = hostContext.popHostContext, getHostContext = hostContext.getHostContext, popHostContainer = hostContext.popHostContainer, prepareToHydrateHostInstance = hydrationContext.prepareToHydrateHostInstance, prepareToHydrateHostTextInstance = hydrationContext.prepareToHydrateHostTextInstance, popHydrationState = hydrationContext.popHydrationState;
     function markUpdate(workInProgress) {
         workInProgress.effectTag |= Update$2;
@@ -1665,6 +1674,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
             return popContextProvider$2(workInProgress), null;
 
           case HostRoot$6:
+            popHostContainer(workInProgress), popTopLevelContextObject$1(workInProgress);
             var fiberRoot = workInProgress.stateNode;
             return fiberRoot.pendingContext && (fiberRoot.context = fiberRoot.pendingContext, 
             fiberRoot.pendingContext = null), null !== current && null !== current.child || (popHydrationState(workInProgress), 
@@ -1681,7 +1691,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
                 if (!newProps) return invariant(null !== workInProgress.stateNode, "We must have new props for new mounts. This error is likely " + "caused by a bug in React. Please file an issue."), 
                 null;
                 var _currentHostContext = getHostContext();
-                if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance) && markUpdate(workInProgress); else {
+                if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance, _currentHostContext) && markUpdate(workInProgress); else {
                     var _instance = createInstance(type, newProps, rootContainerInstance, _currentHostContext, workInProgress);
                     appendAllChildren(_instance, workInProgress), finalizeInitialChildren(_instance, type, newProps, rootContainerInstance) && markUpdate(workInProgress), 
                     workInProgress.stateNode = _instance;
@@ -2095,8 +2105,8 @@ var injectInternals_1 = injectInternals$1, onCommitRoot_1 = onCommitRoot$1, onCo
             fiber.stateNode = nextInstance, hydrationParentFiber = fiber, nextHydratableInstance = getFirstHydratableChild(nextInstance);
         }
     }
-    function prepareToHydrateHostInstance(fiber, rootContainerInstance) {
-        var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, fiber);
+    function prepareToHydrateHostInstance(fiber, rootContainerInstance, hostContext) {
+        var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, hostContext, fiber);
         return fiber.updateQueue = updatePayload, null !== updatePayload;
     }
     function prepareToHydrateHostTextInstance(fiber) {
@@ -2882,7 +2892,7 @@ getInspectorDataForViewTag = function() {
 
 var ReactNativeFiberInspector = {
     getInspectorDataForViewTag: getInspectorDataForViewTag
-}, ReactVersion = "16.0.0-rc.1";
+}, ReactVersion = "16.0.0-rc.3";
 
 function findNodeHandle(componentOrHandle) {
     if (null == componentOrHandle) return null;
@@ -3691,7 +3701,7 @@ var ReactNativeFiber = {
     unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
         ReactNativeFiber.unmountComponentAtNode(containerTag), UIManager.removeRootView(containerTag);
     },
-    unstable_createPortal: function(children, containerTag) {
+    createPortal: function(children, containerTag) {
         var key = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
         return ReactPortal.createPortal(children, containerTag, null, key);
     },
