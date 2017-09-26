@@ -45,7 +45,7 @@ const BridgeSpyStallHandler = {
               }
             }
             return `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
-              `${info.module ? (info.module + '.') : ''}${info.method}(${JSON.stringify(args)})`;
+              `${info.module ? (info.module + '.') : ''}${info.method}(${args})`;
           }),
         );
       },

@@ -1,12 +1,14 @@
 include_defs("//ReactAndroid/DEFS")
 
 android_library(
-    name = "debugoverlay",
+    name = "common",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
 )

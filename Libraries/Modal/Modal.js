@@ -13,6 +13,8 @@
 
 const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
+const NativeEventEmitter = require('NativeEventEmitter');
+const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
@@ -22,6 +24,10 @@ const View = require('View');
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+const ModalEventEmitter = Platform.OS === 'ios' && NativeModules.ModalManager ?
+  new NativeEventEmitter(NativeModules.ModalManager) : null;
+
+import type EmitterSubscription from 'EmitterSubscription';
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -79,6 +85,12 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * ```
  */
 
+// In order to route onDismiss callbacks, we need to uniquely identifier each
+// <Modal> on screen. There can be different ones, either nested or as siblings.
+// We cannot pass the onDismiss callback to native as the view will be
+// destroyed before the callback is fired.
+var uniqueModalIdentifier = 0;
+
 class Modal extends React.Component<Object> {
   static propTypes = {
     /**
@@ -125,6 +137,11 @@ class Modal extends React.Component<Object> {
      * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
     onShow: PropTypes.func,
+    /**
+     * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
+     * @platform ios
+     */
+    onDismiss: PropTypes.func,
     animated: deprecatedPropType(
       PropTypes.bool,
       'Use the `animationType` prop instead.'
@@ -153,9 +170,32 @@ class Modal extends React.Component<Object> {
     rootTag: PropTypes.number,
   };
 
+  _identifier: number;
+  _eventSubscription: ?EmitterSubscription;
+
   constructor(props: Object) {
     super(props);
     Modal._confirmProps(props);
+    this._identifier = uniqueModalIdentifier++;
+  }
+
+  componentDidMount() {
+    if (ModalEventEmitter) {
+      this._eventSubscription = ModalEventEmitter.addListener(
+        'modalDismissed',
+        event => {
+          if (event.modalID === this._identifier && this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        },
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._eventSubscription) {
+      this._eventSubscription.remove();
+    }
   }
 
   componentWillReceiveProps(nextProps: Object) {
@@ -208,6 +248,7 @@ class Modal extends React.Component<Object> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
+        identifier={this._identifier}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
