@@ -709,10 +709,16 @@
 		597AD1C01E577D7800152581 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 597AD1BC1E577D7800152581 /* RCTRootContentView.m */; };
 		598C22D61EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */; };
 		598C22D71EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */; };
-		598C22D81EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m */; };
-		598C22D91EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m */; };
+		598C22D81EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm */; };
+		598C22D91EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm */; };
 		598C22DA1EDCBF61009AF445 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */; };
 		598C22DB1EDCBF82009AF445 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */; };
+		59DA562B1F71C6C700D9EADA /* RCTUIManagerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */; };
+		59DA562C1F71C6C700D9EADA /* RCTUIManagerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */; };
+		59DA562D1F71C6C700D9EADA /* RCTUIManagerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 59DA562A1F71C6C700D9EADA /* RCTUIManagerUtils.m */; };
+		59DA562E1F71C6C700D9EADA /* RCTUIManagerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 59DA562A1F71C6C700D9EADA /* RCTUIManagerUtils.m */; };
+		59DA562F1F71C73400D9EADA /* RCTUIManagerUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */; };
+		59DA56301F71C73F00D9EADA /* RCTUIManagerUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
@@ -846,6 +852,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				59DA56301F71C73F00D9EADA /* RCTUIManagerUtils.h in Copy Headers */,
 				C6827DFE1EF1804600D66BEF /* RCTJSEnvironment.h in Copy Headers */,
 				598C22DB1EDCBF82009AF445 /* RCTUIManagerObserverCoordinator.h in Copy Headers */,
 				5954055C1EC03A8E00766D3C /* RCTShadowView+Layout.h in Copy Headers */,
@@ -1008,6 +1015,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				59DA562F1F71C73400D9EADA /* RCTUIManagerUtils.h in Copy Headers */,
 				C6827DFD1EF1803F00D66BEF /* RCTJSEnvironment.h in Copy Headers */,
 				598C22DA1EDCBF61009AF445 /* RCTUIManagerObserverCoordinator.h in Copy Headers */,
 				5954055B1EC03A7F00766D3C /* RCTShadowView+Layout.h in Copy Headers */,
@@ -1381,7 +1389,9 @@
 		597AD1BB1E577D7800152581 /* RCTRootContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootContentView.h; sourceTree = "<group>"; };
 		597AD1BC1E577D7800152581 /* RCTRootContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootContentView.m; sourceTree = "<group>"; };
 		598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManagerObserverCoordinator.h; sourceTree = "<group>"; };
-		598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerObserverCoordinator.m; sourceTree = "<group>"; };
+		598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTUIManagerObserverCoordinator.mm; sourceTree = "<group>"; };
+		59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManagerUtils.h; sourceTree = "<group>"; };
+		59DA562A1F71C6C700D9EADA /* RCTUIManagerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerUtils.m; sourceTree = "<group>"; };
 		65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = systemJSCWrapper.cpp; sourceTree = "<group>"; };
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
@@ -1550,7 +1560,9 @@
 				13E067481A70F434002CDEE1 /* RCTUIManager.h */,
 				13E067491A70F434002CDEE1 /* RCTUIManager.m */,
 				598C22D41EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.h */,
-				598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m */,
+				598C22D51EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm */,
+				59DA56291F71C6C600D9EADA /* RCTUIManagerUtils.h */,
+				59DA562A1F71C6C700D9EADA /* RCTUIManagerUtils.m */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -1927,6 +1939,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59DA562C1F71C6C700D9EADA /* RCTUIManagerUtils.h in Headers */,
 				3D6B76D31E83DD1C008FA614 /* RCTJSCErrorHandling.h in Headers */,
 				3D6B76D41E83DD1C008FA614 /* RCTConvert+Transform.h in Headers */,
 				A12E9E231E5DEB160029001B /* RCTPackagerClient.h in Headers */,
@@ -2246,6 +2259,7 @@
 				3D80DA7C1DF820620028D040 /* RCTRefreshControlManager.h in Headers */,
 				3D80DA7D1DF820620028D040 /* RCTRootShadowView.h in Headers */,
 				594AD5D11E46D87500B07237 /* RCTScrollContentViewManager.h in Headers */,
+				59DA562B1F71C6C700D9EADA /* RCTUIManagerUtils.h in Headers */,
 				3D80DA7E1DF820620028D040 /* RCTScrollableProtocol.h in Headers */,
 				3D80DA7F1DF820620028D040 /* RCTScrollView.h in Headers */,
 				3D80DA801DF820620028D040 /* RCTScrollViewManager.h in Headers */,
@@ -2559,6 +2573,7 @@
 				2D3B5ED51D9B098000451313 /* RCTModalHostViewController.m in Sources */,
 				2D3B5EBC1D9B092600451313 /* RCTKeyboardObserver.m in Sources */,
 				3D4153571F276EE1005B8EFE /* RCTLayoutAnimation.m in Sources */,
+				59DA562E1F71C6C700D9EADA /* RCTUIManagerUtils.m in Sources */,
 				2D3B5E971D9B089000451313 /* RCTBridge.m in Sources */,
 				C6194AB81EF1569C0034D062 /* RCTPackagerConnectionBridgeConfig.m in Sources */,
 				2D3B5E9B1D9B08A000451313 /* RCTFrameUpdate.m in Sources */,
@@ -2584,7 +2599,7 @@
 				2D3B5E9F1D9B08AF00451313 /* RCTKeyCommands.m in Sources */,
 				2D3B5EA51D9B08C700451313 /* RCTRootView.m in Sources */,
 				2D3B5EAC1D9B08EF00451313 /* RCTJSCExecutor.mm in Sources */,
-				598C22D91EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m in Sources */,
+				598C22D91EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				2D3B5EB11D9B090100451313 /* RCTAppState.m in Sources */,
 				2D3B5EC21D9B093B00451313 /* RCTProfile.m in Sources */,
 				2D3B5ECB1D9B096200451313 /* RCTConvert+CoreLocation.m in Sources */,
@@ -2703,6 +2718,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				597AD1BF1E577D7800152581 /* RCTRootContentView.m in Sources */,
+				59DA562D1F71C6C700D9EADA /* RCTUIManagerUtils.m in Sources */,
 				13723B501A82FD3C00F88898 /* RCTStatusBarManager.m in Sources */,
 				000E6CEB1AB0E980000CDF4D /* RCTSourceCode.m in Sources */,
 				916F9C2E1F743F7E002E5920 /* RCTModalManager.m in Sources */,
@@ -2727,7 +2743,7 @@
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
 				13AF20451AE707F9005F5298 /* RCTSlider.m in Sources */,
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
-				598C22D81EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.m in Sources */,
+				598C22D81EDCBEE1009AF445 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,

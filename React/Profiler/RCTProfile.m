@@ -10,10 +10,10 @@
 #import "RCTProfile.h"
 
 #import <dlfcn.h>
-#import <stdatomic.h>
 #import <mach/mach.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <stdatomic.h>
 
 #import <UIKit/UIKit.h>
 
@@ -25,6 +25,7 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";

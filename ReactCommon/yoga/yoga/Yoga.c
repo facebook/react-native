@@ -503,7 +503,7 @@ YGNodeRef YGNodeGetParent(const YGNodeRef node) {
   return node->parent;
 }
 
-inline uint32_t YGNodeGetChildCount(const YGNodeRef node) {
+uint32_t YGNodeGetChildCount(const YGNodeRef node) {
   return YGNodeListCount(node->children);
 }
 
