@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @format
  * @flow
  */
 'use strict';
@@ -28,7 +29,9 @@ import type {ConfigT as MetroConfigT} from 'metro-bundler';
 export type ConfigT = MetroConfigT;
 
 function getProjectPath() {
-  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+  if (
+    __dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)
+  ) {
     // Packager is running from node_modules.
     // This is the default case for all projects created using 'react-native init'.
     return path.resolve(__dirname, '../../../..');
@@ -41,10 +44,8 @@ function getProjectPath() {
 
 const resolveSymlinksForRoots = roots =>
   roots.reduce(
-    (arr, rootPath) => arr.concat(
-      findSymlinkedModules(rootPath, roots)
-    ),
-    [...roots]
+    (arr, rootPath) => arr.concat(findSymlinkedModules(rootPath, roots)),
+    [...roots],
   );
 
 const getProjectRoots = () => {
@@ -68,6 +69,9 @@ const Config = {
     ...MetroConfig.DEFAULT,
     getProjectRoots,
     getPolyfills,
+    runBeforeMainModule: [
+      require.resolve('../../Libraries/Core/InitializeCore'),
+    ],
   }: ConfigT),
 
   find(startDir: string): ConfigT {
@@ -86,9 +90,7 @@ const Config = {
 
   findOptional(startDir: string): ConfigT {
     const configPath = findConfigPath(startDir);
-    return configPath
-      ? this.load(configPath, startDir)
-      : {...Config.DEFAULT};
+    return configPath ? this.load(configPath, startDir) : {...Config.DEFAULT};
   },
 
   load(configFile: string): ConfigT {
@@ -105,7 +107,7 @@ function findConfigPath(cwd: string): ?string {
 // a file named `filename`
 function findParentDirectory(currentFullPath, filename) {
   const root = path.parse(currentFullPath).root;
-  const testDir = (parts) => {
+  const testDir = parts => {
     if (parts.length === 0) {
       return null;
     }

@@ -16,27 +16,6 @@
 #import <React/RCTViewManager.h>
 
 /**
- * UIManager queue
- */
-RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
-
-/**
- * Default name for the UIManager queue
- */
-RCT_EXTERN char *const RCTUIManagerQueueName;
-
-/**
- * Check if we are currently on UIManager queue.
- */
-RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
-
-/**
- * Convenience macro for asserting that we're running on UIManager queue.
- */
-#define RCTAssertUIManagerQueue() RCTAssert(RCTIsUIManagerQueue(), \
-@"This function must be called on the UIManager queue")
-
-/**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
  * next render cycle will pick up updated views and layout appropriately.
  */
