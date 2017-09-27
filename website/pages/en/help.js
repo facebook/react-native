@@ -40,7 +40,7 @@ class Help extends React.Component {
         <Container className="mainContainer documentContainer postContainer">
           <div className="post">
             <header className="postHeader">
-              <h2>Need help?</h2>
+              <h1>Need help?</h1>
             </header>
             <p>
               At Facebook, there are dozens of engineers who work on React

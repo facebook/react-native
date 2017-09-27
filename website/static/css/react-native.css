@@ -17,6 +17,7 @@ body {
 .mainContainer h5,
 .mainContainer h6 {
   color: $tintColor !important;
+  font-weight: 400;
 }
 
 a {
@@ -119,3 +120,63 @@ code {
       margin: 0;
     }
   }
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+}
+
+.container .wrapper h2 {
+  font-size: 31px;
+}
+
+.container .wrapper .prism {
+  margin: 14px 0;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.big-button {
+  text-align: center;
+  background: $secondaryColor;
+  color: #fafafa;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0 12px;
+  display: inline-block;
+  color: #fafafa;
+  text-decoration: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, color 0.3s;
+}
+
+.big-button:hover {
+  background: $tintColor;
+  color: #fff;
+}
+
+.big-button a {
+  color:white;
+}
+
+.big-button:active {
+  background: #0485a9;
+}
+
+@media screen and (min-width: 600px) {
+  .big-button {
+    font-size: 24px;
+  }
+}
+
+@media screen and (max-width: 373px) {
+  .big-button {
+    margin-bottom: 4px;
+  }
+}

@@ -13,7 +13,7 @@ const CompLibrary = require("../../core/CompLibrary.js");
 const Marked = CompLibrary.Marked; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
-const Prism = CompLibrary.Prism;
+const Prism = require("../../core/Prism.js"); // replace with CompLibrary.Prism when docusaurus is updated in npm
 
 const siteConfig = require(process.cwd() + "/siteConfig.js");
 
@@ -24,18 +24,12 @@ const pinnedApps = siteConfig.users.filter(app => {
 class Button extends React.Component {
   render() {
     return (
-      <div className="pluginWrapper buttonWrapper">
-        <a className="button" href={this.props.href} target={this.props.target}>
-          {this.props.children}
-        </a>
-      </div>
+      <a className="big-button" href={this.props.href} target={this.props.target}>
+        {this.props.children}
+      </a>
     );
   }
 }
-
-Button.defaultProps = {
-  target: "_self"
-};
 
 class Hero extends React.Component {
   render() {
@@ -64,12 +58,18 @@ class HomeSplash extends React.Component {
           subtitle="Build native mobile apps using JavaScript and React"
         >
           <div className="buttons-unit">
-            <a href="docs/getting-started.html" className="button">
+            <Button
+              href={siteConfig.baseUrl + "docs/getting-started.html"}
+              target="_self"
+            >
               Get Started
-            </a>
-            <a href="docs/tutorial.html" className="button">
+            </Button>
+            <Button
+              href={siteConfig.baseUrl + this.props.language + "/docs/tutorial.html"}
+              target="_self"
+            >
               Learn the Basics
-            </a>
+            </Button>
           </div>
         </Hero>
       </div>
@@ -122,32 +122,15 @@ class Index extends React.Component {
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <div
-            className="productShowcaseSection paddingBottom"
-            style={{ textAlign: "center" }}
-          >
-            <Container>
-              <GridBlock
-                align="center"
-                contents={[{
-                    title: 'Learn once, write anywhere',
-                    content: 'React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.'
-                  }, {
-                    title: 'Build real mobile apps',
-                    content: 'With React Native, you don\'t build a "mobile web app", an "HTML5 app", or a "hybrid app". React Native uses the same fundamental UI building blocks as regular iOS and Android apps.'
-                  }, {
-                    title: 'Don\'t waste time recompiling',
-                    content: 'Instead of recompiling, you can reload your app instantly. With [Hot Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html), you can even run new code while retaining your application state. Give it a try - it\'s a magical experience.'
-                  }]
-                }
-                layout="fourColumn"
-              />
-            </Container>
-
-          </div>
           <Container>
-            <div className="blockElement imageAlignSide twoByGridBlock">
-                <Prism>
+            <div className="blockElement">
+              <div className="blockContent">
+                <h2>Build native mobile apps using JavaScript and React</h2>
+                <Marked>
+                  React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
+                </Marked>
+              </div>
+              <Prism>
                 {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
@@ -167,23 +150,19 @@ class WhyReactNativeIsSoGreat extends Component {
   }
 }`}
               </Prism>
-
             </div>
           </Container>
-
-          <Container padding={['bottom', 'top']}>
-            <div className="blockElement imageAlignSide twoByGridBlock">
+          <Container>
+            <div className="blockElement">
               <div className="blockContent">
                 <h2>
                   A React Native app is a real mobile app
                 </h2>
-                <div>
-                  <Marked>
-                    With React Native, you don't build a "mobile web app", an "HTML5 app", or a "hybrid app". You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
-                  </Marked>
-                </div>
+                <Marked>
+                  With React Native, you don't build a "mobile web app", an "HTML5 app", or a "hybrid app". You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
+                </Marked>
               </div>
-                <Prism>
+              <Prism>
                 {`import React, { Component } from 'react';
 import { Image, ScrollView, Text } from 'react-native';
 
@@ -210,11 +189,10 @@ class AwkwardScrollingImageWithText extends Component {
   }
 }`}
               </Prism>
-
             </div>
           </Container>
-          <Container padding={['bottom', 'top']} background="light">
-            <div className="blockElement imageAlignSide twoByGridBlock">
+          <Container>
+            <div className="blockElement">
               <div className="blockContent">
                 <h2>
                 Don't waste time recompiling
@@ -225,12 +203,11 @@ class AwkwardScrollingImageWithText extends Component {
                   </Marked>
                 </div>
               </div>
-  <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
-
+              <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
             </div>
           </Container>
-          <Container padding={['bottom', 'top']}>
-            <div className="blockElement imageAlignSide twoByGridBlock">
+          <Container>
+            <div className="blockElement">
               <div className="blockContent">
                 <h2>
                   Use native code when you need to
@@ -241,7 +218,7 @@ class AwkwardScrollingImageWithText extends Component {
                   </Marked>
                 </div>
               </div>
-                <Prism>
+              <Prism>
                 {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { TheGreatestComponentInTheWorld } from './your-native-code';
@@ -263,6 +240,16 @@ class SomethingFast extends Component {
 
             </div>
           </Container>
+          <Container>
+            <div style={{ textAlign: "center" }}>
+              <Button
+                href={siteConfig.baseUrl + "docs/getting-started.html"}
+                target="_self"
+              >
+                Get Started with React Native
+              </Button>
+            </div>
+          </Container>
           <div className="home-showcase-section paddingBottom">
             <h2>
               Who's using React Native?
@@ -272,15 +259,12 @@ class SomethingFast extends Component {
               <AppList apps={pinnedApps} />
             </div>
             <div className="more-users">
-              <a
-                className="button"
-                href={
-                  siteConfig.baseUrl + this.props.language + "/" + "users.html"
-                }
+              <Button
+                href={siteConfig.baseUrl + "users.html"}
                 target="_self"
               >
                 More React Native Apps
-              </a>
+              </Button>
             </div>
           </div>
         </div>

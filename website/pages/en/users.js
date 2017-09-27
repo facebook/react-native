@@ -111,7 +111,7 @@ class Users extends React.Component {
   render() {
     return (
       <div className="mainContainer">
-        <Container padding={["bottom", "top"]}>
+        <Container padding={["bottom"]}>
           <div className="showcaseSection">
             <div className="prose">
               <h1>Who's using React Native?</h1>

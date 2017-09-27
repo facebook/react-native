@@ -7,3 +7,8 @@ footer .sitemap h6 > a {
 footer.nav-footer {
     background-color: #012129;
 }
+
+footer.nav-footer .nav-home img {
+  height: auto;
+  width: 34px;
+}

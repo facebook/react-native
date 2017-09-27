@@ -22,8 +22,8 @@ const siteConfig = {
   /* header links for links on this site, 'LANGUAGE' will be replaced by whatever
      language the page is for, ex: 'en' */
   headerLinks: [
-    { doc: "accessibility", label: "Docs" },
-    { doc: "accessibilityinfo", label: "APIs" },
+    { doc: "getting-started", label: "Docs" },
+    { doc: "components", label: "APIs" },
     { page: "help", label: "Community" },
     { blog: true, label: "Blog" },
     { search: true },
@@ -44,7 +44,7 @@ const siteConfig = {
     prismColor:
       "rgba(5, 165, 209, 0.05)" /* primaryColor in rgba form, with 0.03 alpha */
   },
-  tagline: "My Tagline",
+  tagline: "A framework for building native apps using React",
   recruitingLink:
     "https://crowdin.com/project/react-native" /* translation site "help translate" link */,
   /* remove this section to disable search bar */

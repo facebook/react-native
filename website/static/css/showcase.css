@@ -1,7 +1,15 @@
 .showcaseSection .inner-content {
   width: 800px;
 }
-  
+
+.showcaseSection .prose h1 {
+  padding: 0 0;
+}
+
+.showcaseSection .prose {
+  max-width: 800px;
+}
+
 @media only screen and (max-device-width: 840px) {
   .showcaseSection .inner-content {
     width: 100%; 
@@ -15,13 +23,20 @@
 }
 
 .home-showcase-section p {
-  max-width: 540px;
+  max-width: 560px;
   margin: 0 auto;
 }
 
 .footnote {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.4);
+}
+
+
+.home-showcase-section h2 {
+  font-size: 31px;
+  line-height: 40px;
+  margin: 10px 0;
 }
 
 .home-showcase-section .showcase img {
@@ -55,11 +70,13 @@
   line-height: 20px;
   padding-left: 5px;
   padding-right: 5px;
+  padding-bottom: 0 !important;
   font-size: 16px;
 }
 
 .showcase p {
   margin-top: 5px;
+  padding-top: 0 !important;
 }
 
 .showcase h3,
@@ -71,6 +88,10 @@
   width: 100px;
   height: 100px;
   border-radius: 20px;
+}
+
+.showcaseSection .logos img {
+  padding: 0;
 }
 
 .pinned img {

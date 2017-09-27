@@ -6,6 +6,6 @@
     "examples": "docusaurus-examples"
   },
   "devDependencies": {
-    "docusaurus": "file:../../docusaurus"
+    "docusaurus": "^1.0.0-alpha.35"
   }
 }
