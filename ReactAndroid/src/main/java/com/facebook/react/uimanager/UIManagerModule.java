@@ -15,6 +15,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -83,7 +85,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   protected static final String NAME = "UIManager";
 
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG =
+      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.UI_MANAGER);
 
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
@@ -254,9 +257,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     if (DEBUG) {
-      FLog.d(
-          ReactConstants.TAG,
-          "(UIManager.createView) tag: " + tag + ", class: " + className + ", props: " + props);
+      String message =
+          "(UIManager.createView) tag: " + tag + ", class: " + className + ", props: " + props;
+      FLog.d(ReactConstants.TAG, message);
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
     mUIImplementation.createView(tag, className, rootViewTag, props);
   }
@@ -264,9 +268,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
     if (DEBUG) {
-      FLog.d(
-          ReactConstants.TAG,
-          "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props);
+      String message =
+          "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props;
+      FLog.d(ReactConstants.TAG, message);
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
     mUIImplementation.updateView(tag, className, props);
   }
@@ -291,14 +296,21 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
     if (DEBUG) {
-      FLog.d(
-          ReactConstants.TAG,
-          "(UIManager.manageChildren) tag: " + viewTag +
-          ", moveFrom: " + moveFrom +
-          ", moveTo: " + moveTo +
-          ", addTags: " + addChildTags +
-          ", atIndices: " + addAtIndices +
-          ", removeFrom: " + removeFrom);
+      String message =
+          "(UIManager.manageChildren) tag: "
+              + viewTag
+              + ", moveFrom: "
+              + moveFrom
+              + ", moveTo: "
+              + moveTo
+              + ", addTags: "
+              + addChildTags
+              + ", atIndices: "
+              + addAtIndices
+              + ", removeFrom: "
+              + removeFrom;
+      FLog.d(ReactConstants.TAG, message);
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
     mUIImplementation.manageChildren(
         viewTag,
@@ -321,9 +333,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     int viewTag,
     ReadableArray childrenTags) {
     if (DEBUG) {
-      FLog.d(
-          ReactConstants.TAG,
-          "(UIManager.setChildren) tag: " + viewTag + ", children: " + childrenTags);
+      String message = "(UIManager.setChildren) tag: " + viewTag + ", children: " + childrenTags;
+      FLog.d(ReactConstants.TAG, message);
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
     mUIImplementation.setChildren(viewTag, childrenTags);
   }
