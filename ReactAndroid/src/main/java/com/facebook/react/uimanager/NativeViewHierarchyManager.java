@@ -229,6 +229,9 @@ public class NativeViewHierarchyManager {
       // React views from layout xmls. Thus it is easier to just reuse that field instead of
       // creating another (potentially much more expensive) mapping from view to React tag
       view.setId(tag);
+
+      // setId after event emitter may cause bugs
+      viewManager.addEventEmitters(themedContext, view);
       if (initialProps != null) {
         viewManager.updateProperties(view, initialProps);
       }
