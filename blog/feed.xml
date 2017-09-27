@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-08-30T00:00:00Z</updated>
+    <updated>2017-09-21T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[React Native Monthly #4]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html">
+        </link>
+        <updated>2017-09-21T00:00:00Z</updated>
+        <summary type="html"><![CDATA[The React Native monthly meeting continues! Here are the notes from each team:]]></summary>
+        <author>
+            <name>Mike Grabowski</name>
+            <uri>https://github.com/grabbou</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #3]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/08/30/react-native-monthly-3.html</id>

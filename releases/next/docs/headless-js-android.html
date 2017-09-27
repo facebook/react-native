@@ -9,7 +9,9 @@
       <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">HeadlessJsTaskConfig</span><span class="token punctuation">(</span>
           <span class="token string">&quot;SomeTaskName&quot;</span><span class="token punctuation">,</span>
           Arguments<span class="token punctuation">.</span><span class="token function">fromBundle<span class="token punctuation">(</span></span>extras<span class="token punctuation">)</span><span class="token punctuation">,</span>
-          <span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token number">5000</span><span class="token punctuation">,</span><span class="token comment" spellcheck="true"> // timeout for the task
+</span>          <span class="token boolean">false</span><span class="token comment" spellcheck="true"> // optional: defines whether or not  the task is allowed in foreground. Default is false
+</span>        <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token keyword">return</span> null<span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
