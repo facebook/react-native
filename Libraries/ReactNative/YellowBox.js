@@ -188,11 +188,9 @@ const WarningRow = ({count, warning, onPress}) => {
   const View = require('View');
 
   const countText =
-    count > 1
-      ? <Text style={styles.listRowCount}>
-          {'(' + count + ') '}
-        </Text>
-      : null;
+    count > 1 ? (
+      <Text style={styles.listRowCount}>{'(' + count + ') '}</Text>
+    ) : null;
 
   return (
     <View style={styles.listRow}>
@@ -267,9 +265,7 @@ const WarningInspector = ({
     <View style={styles.inspector}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.inspectorCount}>
-          <Text style={styles.inspectorCountText}>
-            {countSentence}
-          </Text>
+          <Text style={styles.inspectorCountText}>{countSentence}</Text>
           <TouchableHighlight
             onPress={toggleStacktrace}
             underlayColor="transparent">
@@ -280,9 +276,7 @@ const WarningInspector = ({
         </View>
         <ScrollView style={styles.inspectorWarning}>
           {stacktraceList}
-          <Text style={styles.inspectorWarningText}>
-            {warning}
-          </Text>
+          <Text style={styles.inspectorWarningText}>{warning}</Text>
         </ScrollView>
         <View style={styles.inspectorButtons}>
           <TouchableHighlight
@@ -390,18 +384,18 @@ class YellowBox extends React.Component<
 
     const {inspecting, stacktraceVisible} = this.state;
     const inspector =
-      inspecting !== null
-        ? <WarningInspector
-            warningInfo={this.state.warningMap.get(inspecting)}
-            warning={inspecting}
-            stacktraceVisible={stacktraceVisible}
-            onDismiss={() => this.dismissWarning(inspecting)}
-            onDismissAll={() => this.dismissWarning(null)}
-            onMinimize={() => this.setState({inspecting: null})}
-            toggleStacktrace={() =>
-              this.setState({stacktraceVisible: !stacktraceVisible})}
-          />
-        : null;
+      inspecting !== null ? (
+        <WarningInspector
+          warningInfo={this.state.warningMap.get(inspecting)}
+          warning={inspecting}
+          stacktraceVisible={stacktraceVisible}
+          onDismiss={() => this.dismissWarning(inspecting)}
+          onDismissAll={() => this.dismissWarning(null)}
+          onMinimize={() => this.setState({inspecting: null})}
+          toggleStacktrace={() =>
+            this.setState({stacktraceVisible: !stacktraceVisible})}
+        />
+      ) : null;
 
     const rows = [];
     this.state.warningMap.forEach((warningInfo, warning) => {

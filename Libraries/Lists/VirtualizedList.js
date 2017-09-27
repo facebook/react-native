@@ -605,9 +605,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (stickyIndicesFromProps.has(0)) {
         stickyHeaderIndices.push(0);
       }
-      const element = React.isValidElement(ListHeaderComponent)
-        ? ListHeaderComponent // $FlowFixMe
-        : <ListHeaderComponent />;
+      const element = React.isValidElement(ListHeaderComponent) ? (
+        ListHeaderComponent
+      ) : (
+        // $FlowFixMe
+        <ListHeaderComponent />
+      );
       cells.push(
         /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
          * comment suppresses an error when upgrading Flow's support for React.
@@ -713,9 +716,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     } else if (ListEmptyComponent) {
-      const element = React.isValidElement(ListEmptyComponent)
-        ? ListEmptyComponent // $FlowFixMe
-        : <ListEmptyComponent />;
+      const element = React.isValidElement(ListEmptyComponent) ? (
+        ListEmptyComponent
+      ) : (
+        // $FlowFixMe
+        <ListEmptyComponent />
+      );
       cells.push(
         /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
          * comment suppresses an error when upgrading Flow's support for React.
@@ -729,9 +735,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     }
     if (ListFooterComponent) {
-      const element = React.isValidElement(ListFooterComponent)
-        ? ListFooterComponent // $FlowFixMe
-        : <ListFooterComponent />;
+      const element = React.isValidElement(ListFooterComponent) ? (
+        ListFooterComponent
+      ) : (
+        // $FlowFixMe
+        <ListFooterComponent />
+      );
       cells.push(
         /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
          * comment suppresses an error when upgrading Flow's support for React.
@@ -942,7 +951,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           borderColor: 'blue',
           borderWidth: 1,
         }}>
-        {framesInLayout.map((f, ii) =>
+        {framesInLayout.map((f, ii) => (
           <View
             key={'f' + ii}
             style={{
@@ -952,8 +961,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               height: f.length * normalize,
               backgroundColor: 'orange',
             }}
-          />,
-        )}
+          />
+        ))}
         <View
           style={{
             ...baseStyle,
@@ -1335,9 +1344,9 @@ class CellRenderer extends React.Component<
         : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator =
-      ItemSeparatorComponent &&
-      <ItemSeparatorComponent {...this.state.separatorProps} />;
+    const itemSeparator = ItemSeparatorComponent && (
+      <ItemSeparatorComponent {...this.state.separatorProps} />
+    );
     const cellStyle = inversionStyle
       ? horizontal
         ? [{flexDirection: 'row-reverse'}, inversionStyle]
