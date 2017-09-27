@@ -11,5 +11,13 @@ namespace react {
 
 String jsStringFromBigString(JSContextRef ctx, const JSBigString& bigstr);
 
+/**
+ * Parses "nativeRequire" parameters
+ * and returns pair of "bundle id" & "module id" values
+ */
+std::pair<uint32_t, uint32_t> parseNativeRequireParameters(const JSGlobalContextRef& context,
+                                                           const JSValueRef arguments[],
+                                                           size_t argumentCount);
+
 }
 }

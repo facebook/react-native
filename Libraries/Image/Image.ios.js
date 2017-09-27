@@ -23,6 +23,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 
+const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
@@ -34,8 +35,10 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This example shows both fetching and displaying an image from local
- * storage as well as one from network.
+ * This example shows fetching and displaying an image from local storage
+ * as well as one from network and even from data provided in the `'data:'` uri scheme.
+ *
+ * > Note that for network and data images, you will need to manually specify the dimensions of your image!
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
@@ -51,6 +54,10 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *         <Image
  *           style={{width: 50, height: 50}}
  *           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *         />
+ *         <Image
+ *           style={{width: 66, height: 58}}
+ *           source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}
  *         />
  *       </View>
  *     );
@@ -103,17 +110,17 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  * dependencies {
  *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
- *   compile 'com.facebook.fresco:animated-base-support:1.0.1'
+ *   compile 'com.facebook.fresco:animated-base-support:1.3.0'
  *
  *   // For animated GIF support
- *   compile 'com.facebook.fresco:animated-gif:1.0.1'
+ *   compile 'com.facebook.fresco:animated-gif:1.3.0'
  *
  *   // For WebP support, including animated WebP
- *   compile 'com.facebook.fresco:animated-webp:1.0.1'
- *   compile 'com.facebook.fresco:webpsupport:1.0.1'
+ *   compile 'com.facebook.fresco:animated-webp:1.3.0'
+ *   compile 'com.facebook.fresco:webpsupport:1.3.0'
  *
  *   // For WebP support, without animations
- *   compile 'com.facebook.fresco:webpsupport:1.0.1'
+ *   compile 'com.facebook.fresco:webpsupport:1.3.0'
  * }
  * ```
  *
@@ -126,7 +133,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  */
 // $FlowFixMe(>=0.41.0)
-const Image = React.createClass({
+const Image = createReactClass({
+  displayName: 'Image',
   propTypes: {
     /**
      * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the
@@ -364,6 +372,10 @@ const Image = React.createClass({
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
+    if (this.props.children) {
+      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
     }
 
     return (

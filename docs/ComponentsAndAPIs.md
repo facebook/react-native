@@ -45,8 +45,8 @@ Most apps will end up using one of these basic components. You'll want to get yo
     <p>Provides a scrolling container that can host multiple components and views.</p>
   </div>
   <div class="component">
-    <h3><a href="docs/button.html">Button</a></h3>
-    <p>A basic button component for handling touches that should render nicely on any platform.</p>
+    <h3><a href="docs/stylesheet.html">StyleSheet</a></h3>
+    <p>Provides an abstraction layer similar to CSS stylesheets.</p>
   </div>
 </div>
 
@@ -55,6 +55,10 @@ Most apps will end up using one of these basic components. You'll want to get yo
 Render common user interface controls on any platform using the following components. For platform specific components, keep reading.
 
 <div class="component-grid component-grid-border">
+  <div class="component">
+    <h3><a href="docs/button.html">Button</a></h3>
+    <p>A basic button component for handling touches that should render nicely on any platform.</p>
+  </div>
   <div class="component">
     <h3><a href="docs/picker.html">Picker</a></h3>
     <p>Renders the native picker component on iOS and Android.</p>
@@ -92,10 +96,6 @@ Many of the following components provide wrappers for commonly used UIKit classe
   <div class="component">
     <h3><a href="docs/actionsheetios.html">ActionSheetIOS</a></h3>
     <p>API to display an iOS action sheet or share sheet.</p>
-  </div>
-  <div class="component">
-    <h3><a href="docs/adsupportios.html">AdSupportIOS</a></h3>
-    <p>API to access the "advertising identifier" on iOS.</p>
   </div>
   <div class="component">
     <h3><a href="docs/alertios.html">AlertIOS</a></h3>
@@ -189,6 +189,10 @@ These components may come in handy for certain applications. For an exhaustive l
     <p>Launches an alert dialog with the specified title and message.</p>
   </div>
   <div class="component">
+    <h3><a href="docs/animated.html">Animated</a></h3>
+    <p>A library for creating fluid, powerful animations that are easy to build and maintain.</p>
+  </div>
+  <div class="component">
     <h3><a href="docs/cameraroll.html">CameraRoll</a></h3>
     <p>Provides access to the local camera roll / gallery.</p>
   </div>
@@ -223,10 +227,6 @@ These components may come in handy for certain applications. For an exhaustive l
   <div class="component">
     <h3><a href="docs/statusbar.html">StatusBar</a></h3>
     <p>Component to control the app status bar.</p>
-  </div>
-  <div class="component">
-    <h3><a href="docs/stylesheet.html">StyleSheet</a></h3>
-    <p>Provides an abstraction layer similar to CSS stylesheets.</p>
   </div>
   <div class="component">
     <h3><a href="docs/webview.html">WebView</a></h3>

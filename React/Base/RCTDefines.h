@@ -16,8 +16,12 @@
  */
 #if defined(__cplusplus)
 #define RCT_EXTERN extern "C" __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN extern "C" {
+#define RCT_EXTERN_C_END }
 #else
 #define RCT_EXTERN extern __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN
+#define RCT_EXTERN_C_END
 #endif
 
 /**
@@ -41,6 +45,14 @@
 #define RCT_DEV 1
 #else
 #define RCT_DEV 0
+#endif
+#endif
+
+#ifndef RCT_ENABLE_INSPECTOR
+#if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
+#define RCT_ENABLE_INSPECTOR 1
+#else
+#define RCT_ENABLE_INSPECTOR 0
 #endif
 #endif
 

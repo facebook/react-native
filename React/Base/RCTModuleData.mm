@@ -38,20 +38,37 @@
   _implementsBatchDidComplete = [_moduleClass instancesRespondToSelector:@selector(batchDidComplete)];
   _implementsPartialBatchDidFlush = [_moduleClass instancesRespondToSelector:@selector(partialBatchDidFlush)];
 
-  static IMP objectInitMethod;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
-  });
-
-  // If a module overrides `init` then we must assume that it expects to be
-  // initialized on the main thread, because it may need to access UIKit.
-  _requiresMainQueueSetup = !_instance &&
-  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
-
-  // If a module overrides `constantsToExport` then we must assume that it
-  // must be called on the main thread, because it may need to access UIKit.
+  // If a module overrides `constantsToExport` and doesn't implement `requiresMainQueueSetup`, then we must assume
+  // that it must be called on the main thread, because it may need to access UIKit.
   _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
+
+  const BOOL implementsRequireMainQueueSetup = [_moduleClass respondsToSelector:@selector(requiresMainQueueSetup)];
+  if (implementsRequireMainQueueSetup) {
+    _requiresMainQueueSetup = [_moduleClass requiresMainQueueSetup];
+  } else {
+    static IMP objectInitMethod;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
+    });
+
+    // If a module overrides `init` then we must assume that it expects to be
+    // initialized on the main thread, because it may need to access UIKit.
+    const BOOL hasCustomInit = !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+
+    _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
+    if (_requiresMainQueueSetup) {
+      const char *methodName = "";
+      if (_hasConstantsToExport) {
+        methodName = "constantsToExport";
+      } else if (hasCustomInit) {
+        methodName = "init";
+      }
+      RCTLogWarn(@"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
+        "`requiresMainQueueSetup. In a future release React Native will default to initializing all native modules "
+        "on a background thread unless explicitly opted-out of.", _moduleClass, methodName);
+    }
+  }
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -101,7 +118,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     if (!_setupComplete && _bridge.valid) {
       if (!_instance) {
-        if (RCT_DEBUG && _requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
+        if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
@@ -222,7 +239,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
-    if (_requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
+    if (_requiresMainQueueSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
       // get accessed by client code during bridge setup, and a very low risk of
@@ -269,14 +286,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         SEL selector = method_getName(method);
         if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
           IMP imp = method_getImplementation(method);
-          NSArray *entries =
-            ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
-          id<RCTBridgeMethod> moduleMethod =
-            [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
-                                                JSMethodName:entries[0]
-                                                      isSync:((NSNumber *)entries[2]).boolValue
-                                                 moduleClass:_moduleClass];
-
+          auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
+          id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
+                                                                                 moduleClass:_moduleClass];
           [moduleMethods addObject:moduleMethod];
         }
       }
@@ -295,9 +307,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (_allowOffMainQueueRegistration) {
-      _constantsToExport = [_instance constantsToExport] ?: @{};
-    } else {
+    if (_requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
       }
@@ -305,6 +315,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       RCTUnsafeExecuteOnMainQueueSync(^{
         self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
       });
+    } else {
+      _constantsToExport = [_instance constantsToExport] ?: @{};
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
@@ -344,7 +356,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       }
       [syncMethods addObject:@(methods.count)];
     }
-    [methods addObject:method.JSMethodName];
+    [methods addObject:@(method.JSMethodName)];
   }
 
   NSArray *config = @[
@@ -361,6 +373,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (dispatch_queue_t)methodQueue
 {
   (void)[self instance];
+  RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@, bridge.valid: %d)",
+            self, _instance, _bridge.valid);
   return _methodQueue;
 }
 

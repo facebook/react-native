@@ -14,6 +14,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
@@ -37,7 +38,7 @@ std::vector<MethodDescriptor> RCTNativeModule::getMethods() {
 
   for (id<RCTBridgeMethod> method in m_moduleData.methods) {
     descs.emplace_back(
-      method.JSMethodName.UTF8String,
+      method.JSMethodName,
       RCTFunctionDescriptorFromType(method.functionType)
     );
   }
@@ -49,7 +50,7 @@ folly::dynamic RCTNativeModule::getConstants() {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
     @"[RCTNativeModule getConstants] moduleData.exportedConstants", nil);
   NSDictionary *constants = m_moduleData.exportedConstants;
-  folly::dynamic ret = [RCTConvert folly_dynamic:constants];
+  folly::dynamic ret = convertIdToFollyDynamic(constants);
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return ret;
 }
@@ -76,10 +77,10 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 }
 
 MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
-  return invokeInner(reactMethodId, std::move(params));
+  return invokeInner(reactMethodId, params);
 }
 
-MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &&params) {
+MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &params) {
   if (!m_bridge.valid) {
     return folly::none;
   }
@@ -102,7 +103,7 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
     }
 
     NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
+                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@",
                          exception, method.JSMethodName, m_moduleData.name, objcParams];
     RCTFatal(RCTErrorWithMessage(message));
   }

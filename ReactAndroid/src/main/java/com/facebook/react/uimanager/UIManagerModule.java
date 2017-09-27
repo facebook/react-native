@@ -9,15 +9,11 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
@@ -37,9 +33,9 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -74,11 +70,19 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
+
+  /**
+   * Resolves a name coming from native side to a name of the event that is exposed to JS.
+   */
+  public interface CustomEventNamesResolver {
+    /**
+     * Returns custom event name by the provided event name.
+     */
+    @Nullable String resolveCustomEventName(String eventName);
+  }
+
   protected static final String NAME = "UIManager";
 
-  // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
-  // increment here is 10
-  private static final int ROOT_VIEW_TAG_INCREMENT = 10;
   private static final boolean DEBUG = false;
 
   private final EventDispatcher mEventDispatcher;
@@ -86,20 +90,24 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
-  private int mNextRootViewTag = 1;
   private int mBatchId = 0;
 
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
       UIImplementationProvider uiImplementationProvider,
-      boolean lazyViewManagersEnabled) {
+      boolean lazyViewManagersEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
-    mUIImplementation = uiImplementationProvider
-      .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
+    mUIImplementation =
+        uiImplementationProvider.createUIImplementation(
+            reactContext,
+            viewManagerList,
+            mEventDispatcher,
+            minTimeLeftInFrameForNonBatchedOperationMs);
 
     reactContext.addLifecycleEventListener(this);
   }
@@ -167,48 +175,52 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
   }
 
-  public Map<String,Double> getPerformanceCounters() {
-    Map<String,Double> perfMap = new HashMap<>();
-    perfMap.put("LayoutCount", mUIImplementation.getLayoutCount());
-    perfMap.put("LayoutTimer", mUIImplementation.getLayoutTimer());
-    return perfMap;
+  /**
+   * Resolves Direct Event name exposed to JS from the one known to the Native side.
+   */
+  public CustomEventNamesResolver getDirectEventNamesResolver() {
+    return new CustomEventNamesResolver() {
+      @Override
+      public @Nullable String resolveCustomEventName(String eventName) {
+        Map<String, Map> directEventTypes =
+            (Map<String, Map>) getConstants().get(
+                UIManagerModuleConstantsHelper.CUSTOM_DIRECT_EVENT_TYPES_KEY);
+        if (directEventTypes != null) {
+          Map<String, String> customEventType = (Map<String, String>) directEventTypes.get(eventName);
+          if (customEventType != null) {
+            return customEventType.get("registrationName");
+          }
+        }
+        return eventName;
+      }
+    };
+  }
+
+  @Override
+  public Map<String, Long> getPerformanceCounters() {
+    return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
    *
-   * Note that this must be called after getWidth()/getHeight() actually return something. See
+   * <p>Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addRootView thread safe
-   * NB: this method is horribly not-thread-safe.
+   * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
-  public int addRootView(final SizeMonitoringFrameLayout rootView) {
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+      final T rootView) {
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
       "UIManagerModule.addRootView");
-    final int tag = mNextRootViewTag;
-    mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
-
-    final int width;
-    final int height;
-    // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
-    if (rootView.getLayoutParams() != null &&
-      rootView.getLayoutParams().width > 0 &&
-      rootView.getLayoutParams().height > 0) {
-      width = rootView.getLayoutParams().width;
-      height = rootView.getLayoutParams().height;
-    } else {
-      width = rootView.getWidth();
-      height = rootView.getHeight();
-    }
-
+    final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
       new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
-    mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
+    mUIImplementation.registerRootView(rootView, tag, themedRootContext);
 
     rootView.setOnSizeChangedListener(
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
@@ -587,9 +599,28 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
+  /** Dirties the node associated with the given react tag */
+  public void invalidateNodeLayout(int tag) {
+    ReactShadowNode node = mUIImplementation.resolveShadowNode(tag);
+    if (node == null) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Warning : attempted to dirty a non-existent react shadow node. reactTag=" + tag);
+      return;
+    }
+    node.dirty();
+  }
+
   /**
-   * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
+   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
+   * parameters.
    */
+  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
+    mUIImplementation.dispatchViewUpdates(-1);
+  }
+
+  /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */
   private class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override

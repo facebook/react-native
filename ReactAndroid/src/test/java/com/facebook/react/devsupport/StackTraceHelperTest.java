@@ -9,14 +9,12 @@
 
 package com.facebook.react.devsupport;
 
-import com.facebook.react.devsupport.interfaces.StackFrame;
+import static org.fest.assertions.api.Assertions.assertThat;
 
+import com.facebook.react.devsupport.interfaces.StackFrame;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 
 @RunWith(RobolectricTestRunner.class)
 public class StackTraceHelperTest {
@@ -43,11 +41,19 @@ public class StackTraceHelperTest {
 
   @Test
   public void testParseStackFrameWithInvalidFrame() {
-    try {
-      StackTraceHelper.convertJsStackTrace("Test.bundle:ten:twenty");
-      failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    final StackFrame frame = StackTraceHelper.convertJsStackTrace("Test.bundle:ten:twenty")[0];
+    assertThat(frame.getMethod()).isEqualTo("Test.bundle:ten:twenty");
+    assertThat(frame.getFileName()).isEqualTo("");
+    assertThat(frame.getLine()).isEqualTo(-1);
+    assertThat(frame.getColumn()).isEqualTo(-1);
+  }
+
+  @Test
+  public void testParseStackFrameWithNativeCodeFrame() {
+    final StackFrame frame = StackTraceHelper.convertJsStackTrace("forEach@[native code]")[0];
+    assertThat(frame.getMethod()).isEqualTo("forEach@[native code]");
+    assertThat(frame.getFileName()).isEqualTo("");
+    assertThat(frame.getLine()).isEqualTo(-1);
+    assertThat(frame.getColumn()).isEqualTo(-1);
   }
 }

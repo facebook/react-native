@@ -36,19 +36,15 @@ type Event = Object;
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
-class PickerAndroid extends React.Component {
-  props: {
-    style?: $FlowFixMe,
-    selectedValue?: any,
-    enabled?: boolean,
-    mode?: 'dialog' | 'dropdown',
-    onValueChange?: Function,
-    prompt?: string,
-    testID?: string,
-  };
-
-  state: *;
-
+class PickerAndroid extends React.Component<{
+  style?: $FlowFixMe,
+  selectedValue?: any,
+  enabled?: boolean,
+  mode?: 'dialog' | 'dropdown',
+  onValueChange?: Function,
+  prompt?: string,
+  testID?: string,
+}, *> {
   static propTypes = {
     ...ViewPropTypes,
     style: pickerStyleType,

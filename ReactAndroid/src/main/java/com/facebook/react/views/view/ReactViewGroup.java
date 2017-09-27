@@ -9,23 +9,21 @@
 
 package com.facebook.react.views.view;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.view.animation.Animation;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
-import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
@@ -33,6 +31,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import javax.annotation.Nullable;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -147,13 +146,13 @@ public class ReactViewGroup extends ViewGroup implements
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
-    super.setBackground(null);
+    updateBackgroundDrawable(null);
     if (mReactBackgroundDrawable != null && background != null) {
       LayerDrawable layerDrawable =
           new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, background});
-      super.setBackground(layerDrawable);
+      updateBackgroundDrawable(layerDrawable);
     } else if (background != null) {
-      super.setBackground(background);
+      updateBackgroundDrawable(background);
     }
   }
 
@@ -420,6 +419,13 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  public void updateDrawingOrder() {
+    mDrawingOrderHelper.update();
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+    invalidate();
+  }
+
+  @Override
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
   }
@@ -555,14 +561,15 @@ public class ReactViewGroup extends ViewGroup implements
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      updateBackgroundDrawable(
+          null); // required so that drawable callback is cleared before we add the
                                   // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        updateBackgroundDrawable(mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        updateBackgroundDrawable(layerDrawable);
       }
     }
     return mReactBackgroundDrawable;
@@ -575,6 +582,21 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setHitSlopRect(@Nullable Rect rect) {
     mHitSlopRect = rect;
+  }
+
+  /**
+   * Set the background for the view or remove the background. It calls {@link
+   * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
+   *
+   * @param drawable {@link Drawable} The Drawable to use as the background, or null to remove the
+   *     background
+   */
+  private void updateBackgroundDrawable(Drawable drawable) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      super.setBackground(drawable);
+    } else {
+      super.setBackgroundDrawable(drawable);
+    }
   }
 
 }

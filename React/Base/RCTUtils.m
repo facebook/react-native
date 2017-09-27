@@ -264,14 +264,29 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 }
 
+static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
+{
+  // The solution was borrowed from a post by Ben Alpert:
+  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
+  if (RCTIsMainQueue()) {
+    dispatch_once(onceToken, block);
+  } else {
+    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_once(onceToken, block);
+      });
+    }
+  }
+}
+
 CGFloat RCTScreenScale()
 {
-  static CGFloat scale;
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      scale = [UIScreen mainScreen].scale;
-    });
+  static CGFloat scale;
+
+  RCTUnsafeExecuteOnMainQueueOnceSync(&onceToken, ^{
+    scale = [UIScreen mainScreen].scale;
   });
 
   return scale;
@@ -397,7 +412,7 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%zd", error.domain.uppercaseString, error.code];
+  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%lld", error.domain.uppercaseString, (long long)error.code];
   return RCTJSErrorFromCodeMessageAndNSError(codeWithDomain,
                                              error.localizedDescription,
                                              error);
@@ -587,7 +602,7 @@ NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
     // Not a file path
     return nil;
   }
-  NSString *path = URL.path;
+  NSString *path = [NSString stringWithUTF8String:[URL fileSystemRepresentation]];
   NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
   if (![path hasPrefix:bundlePath]) {
     // Not a bundle-relative file
@@ -663,11 +678,13 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 
   if (!image) {
     // Attempt to load from the file system
-    NSString *filePath = imageURL.path;
-    if (filePath.pathExtension.length == 0) {
-      filePath = [filePath stringByAppendingPathExtension:@"png"];
+    NSData *fileData;
+    if (imageURL.pathExtension.length == 0) {
+      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
+    } else {
+      fileData = [NSData dataWithContentsOfURL:imageURL];
     }
-    image = [UIImage imageWithContentsOfFile:filePath];
+    image = [UIImage imageWithData:fileData];
   }
 
   if (!image && !bundle) {

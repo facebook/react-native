@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   AlertIOS,
@@ -20,8 +21,14 @@ var {
   Text,
   View,
 } = ReactNative;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var TimerMixin = require('react-timer-mixin');
 var RNTesterButton = require('./RNTesterButton');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var performanceNow = require('fbjs/lib/performanceNow');
 
 function burnCPU(milliseconds) {
@@ -29,7 +36,7 @@ function burnCPU(milliseconds) {
   while (performanceNow() < (start + milliseconds)) {}
 }
 
-class RequestIdleCallbackTester extends React.Component {
+class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
   state = {
     message: '-',
   };
@@ -111,7 +118,8 @@ class RequestIdleCallbackTester extends React.Component {
   };
 }
 
-var TimerTester = React.createClass({
+var TimerTester = createReactClass({
+  displayName: 'TimerTester',
   mixins: [TimerMixin],
 
   _ii: 0,
@@ -246,7 +254,7 @@ exports.examples = [
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
     render: function(): React.Element<any> {
-      class IntervalExample extends React.Component {
+      class IntervalExample extends React.Component<{}, $FlowFixMeState> {
         state = {
           showTimer: true,
         };

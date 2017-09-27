@@ -16,6 +16,8 @@
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
 
+#import "RCTTextSelection.h"
+
 @implementation RCTTextInput {
   CGSize _previousContentSize;
 }
@@ -60,14 +62,123 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   [self setNeedsLayout];
 }
 
+- (RCTTextSelection *)selection
+{
+  id<RCTBackedTextInputViewProtocol> backedTextInput = self.backedTextInputView;
+  UITextRange *selectedTextRange = backedTextInput.selectedTextRange;
+  return [[RCTTextSelection new] initWithStart:[backedTextInput offsetFromPosition:backedTextInput.beginningOfDocument toPosition:selectedTextRange.start]
+                                           end:[backedTextInput offsetFromPosition:backedTextInput.beginningOfDocument toPosition:selectedTextRange.end]];
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  id<RCTBackedTextInputViewProtocol> backedTextInput = self.backedTextInputView;
+
+  UITextRange *previousSelectedTextRange = backedTextInput.selectedTextRange;
+  UITextPosition *start = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [backedTextInput textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![previousSelectedTextRange isEqual:selectedTextRange]) {
+    [backedTextInput setSelectedTextRange:selectedTextRange notifyDelegate:NO];
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInput.text, (long long)eventLag);
+  }
+}
+
+#pragma mark - RCTBackedTextInputDelegate
+
+- (BOOL)textInputShouldBeginEditing
+{
+  return YES;
+}
+
+- (void)textInputDidBeginEditing
+{
+  if (_clearTextOnFocus) {
+    self.backedTextInputView.text = @"";
+  }
+
+  if (_selectTextOnFocus) {
+    [self.backedTextInputView selectAll:nil];
+  }
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
+- (BOOL)textInputShouldReturn
+{
+  // We send `submit` event here, in `textInputShouldReturn`
+  // (not in `textInputDidReturn)`, because of semantic of the event:
+  // `onSubmitEditing` is called when "Submit" button
+  // (the blue key on onscreen keyboard) did pressed
+  // (no connection to any specific "submitting" process).
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+
+  return _blurOnSubmit;
+}
+
+- (void)textInputDidReturn
+{
+  // Does nothing.
+}
+
+- (void)textInputDidChangeSelection
+{
+  if (!_onSelectionChange) {
+    return;
+  }
+
+  RCTTextSelection *selection = self.selection;
+  _onSelectionChange(@{
+    @"selection": @{
+      @"start": @(selection.start),
+      @"end": @(selection.end),
+    },
+  });
+}
+
+- (BOOL)textInputShouldEndEditing
+{
+  return YES;
+}
+
+- (void)textInputDidEndEditing
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
 #pragma mark - Content Size (in Yoga terms, without any insets)
 
 - (CGSize)contentSize
 {
-  CGSize contentSize = self.intrinsicContentSize;
-  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
-  contentSize.width -= compoundInsets.left + compoundInsets.right;
-  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
+  CGSize contentSize = self.backedTextInputView.contentSize;
+  UIEdgeInsets reactPaddingInsets = self.reactPaddingInsets;
+  contentSize.width -= reactPaddingInsets.left + reactPaddingInsets.right;
+  contentSize.height -= reactPaddingInsets.top + reactPaddingInsets.bottom;
   // Returning value does NOT include border and padding insets.
   return contentSize;
 }
@@ -133,7 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 #pragma mark - Accessibility
 
-- (UIView *)reactAccessibleView
+- (UIView *)reactAccessibilityElement
 {
   return self.backedTextInputView;
 }
@@ -212,7 +323,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)handleInputAccessoryDoneButton
 {
-  [self.backedTextInputView endEditing:YES];
+  if ([self textInputShouldReturn]) {
+    [self.backedTextInputView endEditing:YES];
+  }
 }
 
 @end

@@ -22,7 +22,7 @@ const {
 } = require('NativeModules');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
-type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
+type Options = { dialogTitle?: string, excludedActivityTypes?: Array<string>, tintColor?: string };
 
 class Share {
 

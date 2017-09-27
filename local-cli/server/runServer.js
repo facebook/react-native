@@ -13,17 +13,27 @@
 'use strict';
 
 require('../../setupBabel')();
-const InspectorProxy = require('./util/inspectorProxy.js');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const ReactPackager = require('metro-bundler');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const Terminal = require('metro-bundler/src/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
 const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
 const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults')
   .providesModuleNodeModules;
 const fs = require('fs');
@@ -37,10 +47,19 @@ const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInE
 const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-import type {ConfigT} from '../util/Config';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
+import type {ConfigT} from 'metro-bundler';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
 export type Args = {|
@@ -66,13 +85,22 @@ function runServer(
 ) {
   var wsProxy = null;
   var ms = null;
-  const packagerServer = getPackagerServer(args, config);
-  startedCallback(packagerServer._reporter);
 
-  const inspectorProxy = new InspectorProxy();
+  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
+   * instance of a net.Socket (a local socket, not network). */
+  const terminal = new Terminal(process.stdout);
+  const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
+  const reporter = new ReporterImpl(terminal);
+  const packagerServer = getPackagerServer(args, config, reporter);
+  startedCallback(reporter);
+
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
+    .use(
+      '/debugger-ui',
+      connect.static(path.join(__dirname, 'util', 'debugger-ui')),
+    )
     .use(
       getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
     )
@@ -81,11 +109,7 @@ function runServer(
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
-    .use(
-      unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)),
-    )
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -115,8 +139,7 @@ function runServer(
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
     ms = messageSocket.attachToServer(serverInstance, '/message');
-    inspectorProxy.attachToServer(serverInstance, '/inspector');
-    readyCallback(packagerServer._reporter);
+    readyCallback(reporter);
   });
   // Disable any kind of automatic timeout behavior for incoming
   // requests in case it takes the packager more than the default
@@ -124,54 +147,60 @@ function runServer(
   serverInstance.timeout = 0;
 }
 
-function getPackagerServer(args, config) {
+function getReporterImpl(customLogReporterPath: ?string) {
+  if (customLogReporterPath == null) {
+    return require('metro-bundler/src/lib/TerminalReporter');
+  }
+  try {
+    // First we let require resolve it, so we can require packages in node_modules
+    // as expected. eg: require('my-package/reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(customLogReporterPath);
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+    // If that doesn't work, then we next try relative to the cwd, eg:
+    // require('./reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(path.resolve(customLogReporterPath));
+  }
+}
+
+function getPackagerServer(args, config, reporter) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
+    : config.getTransformModulePath();
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
-  let LogReporter;
-  if (args.customLogReporterPath) {
-    try {
-      // First we let require resolve it, so we can require packages in node_modules
-      // as expected. eg: require('my-package/reporter');
-      /* $FlowFixMe: can't type dynamic require */
-      LogReporter = require(args.customLogReporterPath);
-    } catch (e) {
-      // If that doesn't work, then we next try relative to the cwd, eg:
-      // require('./reporter');
-      /* $FlowFixMe: can't type dynamic require */
-      LogReporter = require(path.resolve(args.customLogReporterPath));
-    }
-  } else {
-    LogReporter = require('metro-bundler/src/lib/TerminalReporter');
-  }
-
-  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
-   * instance of a net.Socket (a local socket, not network). */
-  const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
+    globalTransformCache: null,
     hasteImpl: config.hasteImpl,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
     postMinifyProcess: config.postMinifyProcess,
+    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
-    reporter: new LogReporter(terminal),
+    runBeforeMainModule: config.runBeforeMainModule,
+    reporter,
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
+    transformCache: TransformCaching.useTempDir(),
+    useDeltaBundler: false,
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

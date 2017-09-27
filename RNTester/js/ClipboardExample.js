@@ -19,7 +19,7 @@ var {
   Text,
 } = ReactNative;
 
-class ClipboardExample extends React.Component {
+class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     content: 'Content will appear here'
   };

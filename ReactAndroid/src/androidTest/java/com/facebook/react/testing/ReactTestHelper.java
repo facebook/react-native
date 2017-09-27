@@ -30,7 +30,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.modules.core.ReactChoreographer;
 
@@ -73,7 +73,7 @@ public class ReactTestHelper {
         }
         JavaScriptExecutor executor = null;
         try {
-          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+          executor = new JSCJavaScriptExecutorFactory().create();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }

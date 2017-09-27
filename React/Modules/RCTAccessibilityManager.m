@@ -17,21 +17,7 @@
 
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
 
-@interface RCTAccessibilityManager ()
-
-@property (nonatomic, copy) NSString *contentSizeCategory;
-@property (nonatomic, assign) CGFloat multiplier;
-
-@end
-
-@implementation RCTAccessibilityManager
-
-@synthesize bridge = _bridge;
-@synthesize multipliers = _multipliers;
-
-RCT_EXPORT_MODULE()
-
-+ (NSDictionary<NSString *, NSString *> *)JSToUIKitMap
+static NSString *UIKitCategoryFromJSCategory(NSString *JSCategory)
 {
   static NSDictionary *map = nil;
   static dispatch_once_t onceToken;
@@ -49,12 +35,26 @@ RCT_EXPORT_MODULE()
             @"accessibilityExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraLarge,
             @"accessibilityExtraExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraExtraLarge};
   });
-  return map;
+  return map[JSCategory];
 }
 
-+ (NSString *)UIKitCategoryFromJSCategory:(NSString *)JSCategory
+@interface RCTAccessibilityManager ()
+
+@property (nonatomic, copy) NSString *contentSizeCategory;
+@property (nonatomic, assign) CGFloat multiplier;
+
+@end
+
+@implementation RCTAccessibilityManager
+
+@synthesize bridge = _bridge;
+@synthesize multipliers = _multipliers;
+
+RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
 {
-  return [self JSToUIKitMap][JSCategory];
+  return YES;
 }
 
 - (instancetype)init
@@ -65,13 +65,13 @@ RCT_EXPORT_MODULE()
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
-                                               object:RCTSharedApplication()];
+                                               object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewVoiceOverStatus:)
                                                  name:UIAccessibilityVoiceOverStatusChanged
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(accessibilityAnnouncementDidFinish:)
                                                  name:UIAccessibilityAnnouncementDidFinishNotification
@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE()
   // Response dictionary to populate the event with.
   NSDictionary *response = @{@"announcement": userInfo[UIAccessibilityAnnouncementKeyStringValue],
                               @"success": userInfo[UIAccessibilityAnnouncementKeyWasSuccessful]};
-    
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementDidFinish"
@@ -176,7 +176,7 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMulti
   NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];
   for (NSString *__nonnull JSCategory in JSMultipliers) {
     NSNumber *m = [RCTConvert NSNumber:JSMultipliers[JSCategory]];
-    NSString *UIKitCategory = [[self class] UIKitCategoryFromJSCategory:JSCategory];
+    NSString *UIKitCategory = UIKitCategoryFromJSCategory(JSCategory);
     multipliers[UIKitCategory] = m;
   }
   self.multipliers = multipliers;

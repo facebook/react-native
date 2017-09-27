@@ -101,25 +101,29 @@ var TextAttributes = merge(RenderableAttributes, {
 
 // Native Components
 
-var NativeSurfaceView = createReactNativeComponentClass({
-  validAttributes: SurfaceViewAttributes,
-  uiViewClassName: 'ARTSurfaceView',
-});
+var NativeSurfaceView = createReactNativeComponentClass('ARTSurfaceView',
+  () => ({
+    validAttributes: SurfaceViewAttributes,
+    uiViewClassName: 'ARTSurfaceView',
+  }));
 
-var NativeGroup = createReactNativeComponentClass({
-  validAttributes: GroupAttributes,
-  uiViewClassName: 'ARTGroup',
-});
+var NativeGroup = createReactNativeComponentClass('ARTGroup',
+  () => ({
+    validAttributes: GroupAttributes,
+    uiViewClassName: 'ARTGroup',
+  }));
 
-var NativeShape = createReactNativeComponentClass({
-  validAttributes: ShapeAttributes,
-  uiViewClassName: 'ARTShape',
-});
+var NativeShape = createReactNativeComponentClass('ARTShape',
+  () => ({
+    validAttributes: ShapeAttributes,
+    uiViewClassName: 'ARTShape',
+  }));
 
-var NativeText = createReactNativeComponentClass({
-  validAttributes: TextAttributes,
-  uiViewClassName: 'ARTText',
-});
+var NativeText = createReactNativeComponentClass('ARTText',
+  () => ({
+    validAttributes: TextAttributes,
+    uiViewClassName: 'ARTText',
+  }));
 
 // Utilities
 
@@ -392,7 +396,7 @@ class Shape extends React.Component {
   render() {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
-    var d = new Path(path).toJSON();
+    var d = (path instanceof Path ? path : new Path(path)).toJSON();
     return (
       <NativeShape
         fill={extractBrush(props.fill, props)}
@@ -486,7 +490,8 @@ function extractAlignment(alignment) {
 class Text extends React.Component {
   render() {
     var props = this.props;
-    var textPath = props.path ? new Path(props.path).toJSON() : null;
+    var path = props.path;
+    var textPath = path ? (path instanceof Path ? path : new Path(path)).toJSON() : null;
     var textFrame = extractFontAndLines(
       props.font,
       childrenAsString(props.children)

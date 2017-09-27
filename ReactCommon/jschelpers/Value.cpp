@@ -18,6 +18,33 @@
 namespace facebook {
 namespace react {
 
+/* static */
+Object Object::makeDate(JSContextRef ctx, Object::TimeType time) {
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+
+  JSValueRef arguments[1];
+  arguments[0] = JSC_JSValueMakeNumber(
+    ctx,
+    duration_cast<milliseconds>(time.time_since_epoch()).count());
+
+  JSValueRef exn;
+  auto result = JSC_JSObjectMakeDate(ctx, 1, arguments, &exn);
+  if (!result) {
+    throw JSException(ctx, exn, "Failed to create Date");
+  }
+  return Object(ctx, result);
+}
+
+Object Object::makeArray(JSContextRef ctx, JSValueRef* elements, unsigned length) {
+  JSValueRef exn;
+  auto arr = JSC_JSObjectMakeArray(ctx, length, elements, &exn);
+  if (!arr) {
+    throw JSException(ctx, exn, "Failed to create an Array");
+  }
+  return Object(ctx, arr);
+}
+
 Value::Value(JSContextRef context, JSValueRef value)
   : m_context(context), m_value(value) {}
 
@@ -28,6 +55,7 @@ JSContextRef Value::context() const {
   return m_context;
 }
 
+/* static */
 std::string Value::toJSONString(unsigned indent) const {
   JSValueRef exn;
   auto stringToAdopt = JSC_JSValueCreateJSONString(m_context, m_value, indent, &exn);

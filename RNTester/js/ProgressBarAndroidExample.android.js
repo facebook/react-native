@@ -13,12 +13,14 @@
 
 var ProgressBar = require('ProgressBarAndroid');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
 
 var TimerMixin = require('react-timer-mixin');
 
-var MovingBar = React.createClass({
+var MovingBar = createReactClass({
+  displayName: 'MovingBar',
   mixins: [TimerMixin],
 
   getInitialState: function() {
@@ -41,7 +43,7 @@ var MovingBar = React.createClass({
   },
 });
 
-class ProgressBarAndroidExample extends React.Component {
+class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';
   static description = 'Horizontal bar to show the progress of some operation.';
 

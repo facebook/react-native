@@ -2,6 +2,7 @@ include_defs("//ReactAndroid/DEFS")
 
 java_annotation_processor(
     name = "processing",
+    does_not_affect_abi = True,
     processor_class = "com.facebook.react.module.processing.ReactModuleSpecProcessor",
     visibility = [
         "PUBLIC",

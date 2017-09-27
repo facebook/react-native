@@ -16,6 +16,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"

@@ -16,6 +16,7 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -65,9 +66,10 @@ public abstract class ReactNativeHost {
   protected ReactInstanceManager createReactInstanceManager() {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
-      .setJSMainModuleName(getJSMainModuleName())
+      .setJSMainModulePath(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
+      .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
       .setUIImplementationProvider(getUIImplementationProvider())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
@@ -88,6 +90,14 @@ public abstract class ReactNativeHost {
    * Get the {@link RedBoxHandler} to send RedBox-related callbacks to.
    */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  /**
+   * Get the {@link JavaScriptExecutorFactory}.  Override this to use a custom
+   * Executor.
+   */
+  protected @Nullable JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
     return null;
   }
 

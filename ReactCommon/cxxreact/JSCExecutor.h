@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 
 #include <cxxreact/JSCNativeModules.h>
 #include <cxxreact/JSExecutor.h>
@@ -14,6 +13,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
+#include <privatedata/PrivateDataBase.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -23,6 +23,7 @@ namespace facebook {
 namespace react {
 
 class MessageQueueThread;
+class RAMBundleRegistry;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
@@ -36,10 +37,21 @@ private:
   folly::dynamic m_jscConfig;
 };
 
-template <typename T>
-struct ValueEncoder;
+template<typename T>
+struct JSCValueEncoder {
+  // If you get a build error here, it means the compiler can't see the template instantation of toJSCValue
+  // applicable to your type.
+  static const Value toJSCValue(JSGlobalContextRef ctx, T&& value);
+};
 
-class RN_EXPORT JSCExecutor : public JSExecutor {
+template<>
+struct JSCValueEncoder<folly::dynamic> {
+  static const Value toJSCValue(JSGlobalContextRef ctx, const folly::dynamic &&value) {
+    return Value::fromDynamic(ctx, value);
+  }
+};
+
+class RN_EXPORT JSCExecutor : public JSExecutor, public PrivateDataBase {
 public:
   /**
    * Must be invoked from thread this Executor will run on.
@@ -53,8 +65,7 @@ public:
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
 
-  virtual void setJSModulesUnbundle(
-    std::unique_ptr<JSModulesUnbundle> unbundle) override;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) override;
 
   virtual void callFunction(
     const std::string& moduleId,
@@ -69,7 +80,7 @@ public:
   Value callFunctionSync(
       const std::string& module, const std::string& method, T&& args) {
     return callFunctionSyncWithValue(
-      module, method, ValueEncoder<typename std::decay<T>::type>::toValue(
+      module, method, JSCValueEncoder<typename std::decay<T>::type>::toJSCValue(
         m_context, std::forward<T>(args)));
   }
 
@@ -77,11 +88,9 @@ public:
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
 
-  virtual void* getJavaScriptContext() override;
+  virtual std::string getDescription() override;
 
-  virtual bool supportsProfiling() override;
-  virtual void startProfiler(const std::string &titleString) override;
-  virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
+  virtual void* getJavaScriptContext() override;
 
 #ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
@@ -96,7 +105,7 @@ private:
   std::shared_ptr<ExecutorDelegate> m_delegate;
   std::shared_ptr<bool> m_isDestroyed = std::shared_ptr<bool>(new bool(false));
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
-  std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  std::unique_ptr<RAMBundleRegistry> m_bundleRegistry;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
   std::once_flag m_bindFlag;
@@ -115,7 +124,7 @@ private:
   void callNativeModules(Value&&);
   void flush();
   void flushQueueImmediate(Value&&);
-  void loadModule(uint32_t moduleId);
+  void loadModule(uint32_t bundleId, uint32_t moduleId);
 
   String adoptString(std::unique_ptr<const JSBigString>);
 
