@@ -20,5 +20,6 @@
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, strong) NSNumber *maxLength;
+@property (nonatomic, strong) NSNumber *decimalPlaces;
 
 @end

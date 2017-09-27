@@ -52,6 +52,7 @@ RCT_REMAP_VIEW_PROPERTY(textAlign, backedTextInputView.textAlignment, NSTextAlig
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(decimalPlaces, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
