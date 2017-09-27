@@ -120,7 +120,7 @@ const formatVersion = version =>
   `${version.major}.${version.minor}.${version.patch}` +
   (version.prerelease !== null ? `-${version.prerelease}` : '');
 
-const ReactNativeVersion = require('./ReactNativeVersion');
+const ReactNativeVersion = require('ReactNativeVersion');
 const nativeVersion = require('NativeModules').PlatformConstants.reactNativeVersion;
 if (ReactNativeVersion.version.major !== nativeVersion.major ||
     ReactNativeVersion.version.minor !== nativeVersion.minor) {

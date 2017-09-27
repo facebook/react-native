@@ -58,21 +58,21 @@ if (!match) {
 }
 let [, major, minor, patch, prerelease] = match;
 
-cat('scripts/versiontemplates/ReactNativeVersion.java')
+cat('scripts/versiontemplates/ReactNativeVersion.java.template')
   .replace('${major}', major)
   .replace('${minor}', minor)
   .replace('${patch}', patch)
   .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null')
   .to('ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java');
 
-cat('scripts/versiontemplates/RCTVersion.h')
+cat('scripts/versiontemplates/RCTVersion.h.template')
   .replace('${major}', `@(${major})`)
   .replace('${minor}', `@(${minor})`)
   .replace('${patch}', `@(${patch})`)
   .replace('${prerelease}', prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]')
   .to('React/Base/RCTVersion.h');
 
-cat('scripts/versiontemplates/ReactNativeVersion.js')
+cat('scripts/versiontemplates/ReactNativeVersion.js.template')
   .replace('${major}', major)
   .replace('${minor}', minor)
   .replace('${patch}', patch)
