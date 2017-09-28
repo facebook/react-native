@@ -57,6 +57,18 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        new ViewManagerRegistry(viewManagerResolver),
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  public UIImplementation(
+      ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {

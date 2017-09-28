@@ -69,7 +69,7 @@ public class UIManagerModuleConstantsTest {
   public void testNoCustomConstants() {
     List<ViewManager> viewManagers = Arrays.asList(mock(ViewManager.class));
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat(constants)
         .containsKey(CUSTOM_BUBBLING_EVENT_TYPES)
@@ -84,7 +84,7 @@ public class UIManagerModuleConstantsTest {
     when(mockViewManager.getExportedCustomBubblingEventTypeConstants())
         .thenReturn(MapBuilder.of("onTwirl", TWIRL_BUBBLING_EVENT_MAP));
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_BUBBLING_EVENT_TYPES))
         .contains(MapEntry.entry("onTwirl", TWIRL_BUBBLING_EVENT_MAP))
@@ -98,7 +98,7 @@ public class UIManagerModuleConstantsTest {
     when(mockViewManager.getExportedCustomDirectEventTypeConstants())
         .thenReturn(MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP));
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_DIRECT_EVENT_TYPES))
         .contains(MapEntry.entry("onTwirl", TWIRL_DIRECT_EVENT_MAP))
@@ -113,7 +113,7 @@ public class UIManagerModuleConstantsTest {
     when(mockViewManager.getExportedViewConstants())
         .thenReturn(MapBuilder.of("PhotoSizeType", MapBuilder.of("Small", 1, "Large", 2)));
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat(constants).containsKey("RedPandaPhotoOfTheDayView");
     assertThat((Map) constants.get("RedPandaPhotoOfTheDayView")).containsKey("Constants");
@@ -129,7 +129,7 @@ public class UIManagerModuleConstantsTest {
     when(mockViewManager.getNativeProps())
         .thenReturn(MapBuilder.of("fooProp", "number"));
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((String) valueAtPath(constants, "SomeView", "NativeProps", "fooProp"))
         .isEqualTo("number");
@@ -161,7 +161,7 @@ public class UIManagerModuleConstantsTest {
 
     List<ViewManager> viewManagers = Arrays.asList(managerX, managerY);
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, false, 0);
+        new UIManagerModule(mReactContext, viewManagers, mUIImplementationProvider, 0);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_DIRECT_EVENT_TYPES)).containsKey("onTwirl");
 
