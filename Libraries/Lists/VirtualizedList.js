@@ -144,6 +144,16 @@ type OptionalProps = {
    */
   onRefresh?: ?Function,
   /**
+   * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
+   * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
+   * then try again after more items have been rendered.
+   */
+  onScrollToIndexFailed?: ?(info: {
+    index: number,
+    highestMeasuredFrameIndex: number,
+    averageItemLength: number,
+  }) => void,
+  /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
@@ -259,17 +269,31 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     viewOffset?: number,
     viewPosition?: number,
   }) {
-    const {data, horizontal, getItemCount, getItemLayout} = this.props;
+    const {
+      data,
+      horizontal,
+      getItemCount,
+      getItemLayout,
+      onScrollToIndexFailed,
+    } = this.props;
     const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0 && index < getItemCount(data),
       `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
     );
-    invariant(
-      getItemLayout || index <= this._highestMeasuredFrameIndex,
-      'scrollToIndex should be used in conjunction with getItemLayout, ' +
-        'otherwise there is no way to know the location of an arbitrary index.',
-    );
+    if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
+      invariant(
+        !!onScrollToIndexFailed,
+        'scrollToIndex should be used in conjunction with getItemLayout or onScrollToIndexFailed, ' +
+          'otherwise there is no way to know the location of offscreen indices or handle failures.',
+      );
+      onScrollToIndexFailed({
+        averageItemLength: this._averageCellLength,
+        highestMeasuredFrameIndex: this._highestMeasuredFrameIndex,
+        index,
+      });
+      return;
+    }
     const frame = this._getFrameMetricsApprox(index);
     const offset =
       Math.max(
