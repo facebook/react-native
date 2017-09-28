@@ -67,7 +67,7 @@ type HMROptions<TModule> = {
 };
 
 type Moduleish = {
-  getName(): Promise<string>,
+  getName(): string,
   isAsset(): boolean,
   isJSON(): boolean,
   path: string,
@@ -135,7 +135,7 @@ function attachHMRServer<TModule: Moduleish>(
       name?: string,
       deps: Array<string>,
     }> = await Promise.all(response.dependencies.map(async (dep: TModule) => {
-      const depName = await dep.getName();
+      const depName = dep.getName();
 
       if (dep.isAsset() || dep.isJSON()) {
         return {path: dep.path, deps: []};

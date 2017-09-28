@@ -9,21 +9,23 @@
 
 package com.facebook.react.views.art;
 
+import javax.annotation.Nullable;
+
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
+import com.facebook.react.uimanager.ReactShadowNode;
 
 /**
  * Base class for ARTView virtual nodes: {@link ARTGroupShadowNode}, {@link ARTShapeShadowNode} and
  * indirectly for {@link ARTTextShadowNode}.
  */
-public abstract class ARTVirtualNode extends ReactShadowNodeImpl {
+public abstract class ARTVirtualNode extends ReactShadowNode {
 
   protected static final float MIN_OPACITY_FOR_DRAW = 0.01f;
 

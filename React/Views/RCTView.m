@@ -197,7 +197,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     case RCTPointerEventsBoxNone:
       return hitSubview;
     default:
-      RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
+      RCTLogError(@"Invalid pointer-events specified %lld on %@", (long long)_pointerEvents, self);
       return hitSubview ?: hitView;
   }
 }
@@ -346,8 +346,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // Mount / unmount views
   for (UIView *view in self.reactSubviews) {
-    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
-
+    if (!CGSizeEqualToSize(CGRectIntersection(clipRect, view.frame).size, CGSizeZero)) {
       // View is at least partially visible, so remount it if unmounted
       [self addSubview:view];
 

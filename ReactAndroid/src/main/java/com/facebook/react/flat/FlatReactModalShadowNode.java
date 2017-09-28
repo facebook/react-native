@@ -15,9 +15,10 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.yoga.YogaUnit;
+
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.yoga.YogaValue;
+import com.facebook.yoga.YogaUnit;
 
 /**
  * FlatReactModalShadowNode
@@ -42,11 +43,11 @@ class FlatReactModalShadowNode extends FlatShadowNode implements AndroidView {
 
   /**
    * We need to set the styleWidth and styleHeight of the one child (represented by the <View/>
-   * within the <RCTModalHostView/> in Modal.js. This needs to fill the entire window.
+   * within the <RCTModalHostView/> in Modal.js.  This needs to fill the entire window.
    */
   @Override
   @TargetApi(16)
-  public void addChildAt(ReactShadowNodeImpl child, int i) {
+  public void addChildAt(ReactShadowNode child, int i) {
     super.addChildAt(child, i);
 
     Context context = getThemedContext();

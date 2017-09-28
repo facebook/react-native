@@ -10,7 +10,6 @@
 package com.facebook.react.flat;
 
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -19,6 +18,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
+
 import javax.annotation.Nullable;
 
 /* package */ final class NativeViewWrapper extends FlatShadowNode implements AndroidView {
@@ -95,7 +95,7 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void addChildAt(ReactShadowNodeImpl child, int i) {
+  public void addChildAt(ReactShadowNode child, int i) {
     super.addChildAt(child, i);
     if (mForceMountGrandChildrenToView && child instanceof FlatShadowNode) {
       ((FlatShadowNode) child).forceMountChildrenToView();

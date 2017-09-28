@@ -97,7 +97,7 @@ public class UIImplementation {
   }
 
   protected ReactShadowNode createRootShadowNode() {
-    ReactShadowNode rootCSSNode = new ReactShadowNodeImpl();
+    ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
       rootCSSNode.setLayoutDirection(YogaDirection.RTL);
