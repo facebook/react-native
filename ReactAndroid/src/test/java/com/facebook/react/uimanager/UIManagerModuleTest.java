@@ -816,7 +816,7 @@ public class UIManagerModuleTest {
         new ReactTextViewManager(),
         new ReactRawTextManager());
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }
