@@ -24,4 +24,6 @@ public class ReactDebugOverlayTags {
           "UI Manager",
           "UI Manager View Operations (requires restart\nwarning: this is spammy)",
           Color.CYAN);
+  public static final DebugOverlayTag RELAY =
+      new DebugOverlayTag("Relay", "including prefetching", Color.rgb(0xFF, 0x99, 0x00));
 }
