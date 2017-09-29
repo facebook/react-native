@@ -241,6 +241,7 @@ class WebView extends React.Component {
     /**
      * The amount by which the web view content is inset from the edges of
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+     * @platform ios
      */
     contentInset: EdgeInsetsPropType,
     /**
