@@ -29,9 +29,9 @@
 }
 
 .methodTitle {
-  font-weight: bold;
-  font-size: 24px;
-  color: #025268;
+  font-weight: bold !important;
+  font-size: 24px !important;
+  color: #025268 !important;
 }
 
 .compactProps .methodTitle {
