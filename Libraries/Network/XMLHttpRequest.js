@@ -25,6 +25,7 @@ const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 const Blob = require('Blob');
 const BlobManager = require('BlobManager');
+const NativeModules = require('NativeModules');
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
@@ -203,6 +204,18 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       SUPPORTED_RESPONSE_TYPES[responseType] || responseType === 'document',
       `The provided value '${responseType}' is unsupported in this environment.`
     );
+
+    if (this._responseType === 'blob' || responseType === 'blob') {
+      const BlobModule = NativeModules.BlobModule;
+      invariant(BlobModule, 'Native module BlobModule is required for blob support');
+      if (BlobModule) {
+        if (responseType === 'blob') {
+          BlobModule.addXMLHttpRequestHandler();
+        } else {
+          BlobModule.removeXMLHttpRequestHandler();
+        }
+      }
+    }
     this._responseType = responseType;
   }
 

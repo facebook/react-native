@@ -10,6 +10,13 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 
+@protocol RCTXMLHttpRequestContentHandler <NSObject>
+
+- (NSData *)processBlob:(NSDictionary *)blob;
+- (NSString *)storeBlob:(NSData *)data;
+
+@end
+
 @interface RCTNetworking : RCTEventEmitter
 
 /**
@@ -23,6 +30,8 @@
  */
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                            completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+
+- (void)setContentHandler:(id<RCTXMLHttpRequestContentHandler>)handler;
 
 @end
 

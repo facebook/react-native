@@ -19,7 +19,6 @@
 #import <React/RCTURLRequestHandler.h>
 #import <React/RCTUtils.h>
 
-#import "RCTBlobManager.h"
 #import "RCTHTTPRequestHandler.h"
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
@@ -132,6 +131,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
+  id<RCTXMLHttpRequestContentHandler> _contentHandler;
 }
 
 @synthesize methodQueue = _methodQueue;
@@ -321,11 +321,18 @@ RCT_EXPORT_MODULE()
   }
   NSDictionary *blob = [RCTConvert NSDictionary:query[@"blob"]];
   if (blob) {
-    RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
-    NSData *data = [blobManager resolve:blob];
-    if (data) {
-      return callback(nil, @{@"body": data});
+    if (_contentHandler) {
+      NSData *data = [_contentHandler processBlob:blob];
+      if (data) {
+        return callback(nil, @{@"body": data});
+      }
     }
+
+    // RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+    // NSData *data = [blobManager resolve:blob];
+    // if (data) {
+    //   return callback(nil, @{@"body": data});
+    // }
   }
   NSString *base64String = [RCTConvert NSString:query[@"base64"]];
   if (base64String) {
@@ -443,15 +450,16 @@ RCT_EXPORT_MODULE()
     }
     responseJSON = @[task.requestID, responseString];
   } else if ([responseType isEqualToString:@"blob"]) {
-    RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
-    NSDictionary *responseData = @{
-      @"blobId": [blobManager store:data],
-      @"offset": @0,
-      @"size": @(data.length),
-      @"name": fileName,
-      @"type": mimeType,
-    };
-    responseJSON = @[task.requestID, responseData];
+    if (_contentHandler) {
+      NSDictionary *responseData = @{
+        @"blobId": [_contentHandler storeBlob:data],
+        @"offset": @0,
+        @"size": @(data.length),
+        @"name": fileName,
+        @"type": mimeType,
+      };
+      responseJSON = @[task.requestID, responseData];
+    }
   } else if ([responseType isEqualToString:@"base64"]) {
     NSString *responseString = [data base64EncodedStringWithOptions:0];
     responseJSON = @[task.requestID, responseString];
@@ -572,6 +580,11 @@ RCT_EXPORT_MODULE()
   }
 
   [task start];
+}
+
+- (void)setContentHandler:(id<RCTXMLHttpRequestContentHandler>)handler
+{
+  _contentHandler = handler;
 }
 
 #pragma mark - Public API
