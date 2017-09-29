@@ -1,0 +1,99 @@
+.props {
+  background-color: #ebf9ff; 
+}
+  
+.compactProps {
+  border-left: 2px solid #e0f6ff;
+  margin-left: 20px;
+  padding-left: 5px;
+}
+
+.props > .prop:nth-child(2n) {
+  background-color: #e0f6ff;
+}
+
+.propTitle {
+  font-weight: bold !important;
+  font-size: 16px !important;
+}
+
+.compactProps .propTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.compactProps .propTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
+.methodTitle {
+  font-weight: bold;
+  font-size: 24px;
+  color: #025268;
+}
+
+.compactProps .methodTitle {
+  font-size: 14px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.compactProps .methodTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
+.prop {
+  word-wrap: break-word;
+  padding: 5px 10px;
+}
+
+.compactProps .prop {
+  padding: 3px 10px;
+}
+
+.propType {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-weight: normal;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.compactProps .propType {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.methodType {
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.compactProps .methodType {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.botActions {
+  background-color: #ebf9ff;
+}
+
+.botActions > .botAction:nth-child(2n) {
+  background-color: #e0f6ff;
+}
+
+.botCommand {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-weight: bold;
+  color: #025268;
+}
+
+.botAction {
+  padding: 5px 10px;
+}
+
+.botMentionName {
+  font-weight: normal;
+}
