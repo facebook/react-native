@@ -21,6 +21,7 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
       return (
         <ScrollView>
           <Text style={{fontSize:96}}>Scroll me plz</Text>
+          { /* Images can be loaded from the local filesystem. In this case, we load a favicon.png image from the img directory in our project. */ }
           <Image source={require('./img/favicon.png')} />
           <Image source={require('./img/favicon.png')} />
           <Image source={require('./img/favicon.png')} />
