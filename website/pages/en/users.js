@@ -110,7 +110,7 @@ class AppList extends React.Component {
 class Users extends React.Component {
   render() {
     return (
-      <div className="mainContainer">
+      <div className="pageContainer">
         <Container padding={["bottom"]}>
           <div className="showcaseSection">
             <div className="prose">

@@ -37,6 +37,7 @@
   padding: 50px 0;
   color: #fdf3e7;
   font-weight: 300;
+  text-align: center;  
 }
 
 .hero .text {
@@ -63,7 +64,6 @@
 
 .buttons-unit {
   margin-top: 40px;
-  text-align: center;
 }
 
 .buttons-unit a {

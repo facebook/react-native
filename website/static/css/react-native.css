@@ -17,7 +17,6 @@ body {
 .mainContainer h5,
 .mainContainer h6 {
   color: $tintColor !important;
-  font-weight: 400;
 }
 
 a {
@@ -120,10 +119,10 @@ code {
       margin: 0;
     }
   }
+}
 
 .container {
-  max-width: 800px;
-  margin: 40px auto;
+  max-width: 900px;
 }
 
 .container .wrapper h2 {
@@ -132,6 +131,10 @@ code {
 
 .container .wrapper .prism {
   margin: 14px 0;
+}
+
+.pageContainer .container {
+  margin: 40px auto;
 }
 
 p {
@@ -180,3 +183,23 @@ p {
     margin-bottom: 4px;
   }
 }
+
+@media only screen and (min-width: 1024px) {
+  .docsNavContainer {
+    margin-right: 0;
+  }
+}
+
+.prose h1 {
+  padding: 0 0;
+}
+
+.prose {
+  max-width: 800px;
+}
+
+/* @media only screen and (min-device-width: 768px) {
+  .container {
+    margin-right: 0;
+  }
+} */

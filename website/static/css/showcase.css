@@ -2,14 +2,6 @@
   width: 800px;
 }
 
-.showcaseSection .prose h1 {
-  padding: 0 0;
-}
-
-.showcaseSection .prose {
-  max-width: 800px;
-}
-
 @media only screen and (max-device-width: 840px) {
   .showcaseSection .inner-content {
     width: 100%; 
@@ -18,8 +10,9 @@
 
 .home-showcase-section {
   max-width: 800px;
-  margin: 20px auto 100px auto;
+  margin: 20px auto 20px auto;
   text-align: center;
+  padding-bottom: 40px;
 }
 
 .home-showcase-section p {
