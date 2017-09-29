@@ -49,7 +49,11 @@
       URL.revokeObjectURL(cachedBundle.url);
     }
 
-    const blobContent = deltaPatcher.getAllModules();
+    // To make Source Maps work correctly, we need to add a newline between
+    // modules.
+    const blobContent = deltaPatcher
+      .getAllModules()
+      .map(module => module + '\n');
 
     // Build the blob with the whole JS bundle.
     const blob = new Blob(blobContent, {
