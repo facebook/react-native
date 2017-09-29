@@ -34,7 +34,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('InitializeCore')
+  .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))

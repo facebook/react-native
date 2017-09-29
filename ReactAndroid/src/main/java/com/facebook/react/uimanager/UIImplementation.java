@@ -57,6 +57,18 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        new ViewManagerRegistry(viewManagerResolver),
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  public UIImplementation(
+      ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
@@ -97,7 +109,7 @@ public class UIImplementation {
   }
 
   protected ReactShadowNode createRootShadowNode() {
-    ReactShadowNode rootCSSNode = new ReactShadowNodeImpl();
+    ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
       rootCSSNode.setLayoutDirection(YogaDirection.RTL);
