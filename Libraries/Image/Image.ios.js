@@ -374,6 +374,10 @@ const Image = createReactClass({
       console.warn('The <Image> component requires a `source` property rather than `src`.');
     }
 
+    if (this.props.children) {
+      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
+    }
+
     return (
       <RCTImageView
         {...this.props}

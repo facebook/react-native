@@ -9,12 +9,8 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spanned;
@@ -22,10 +18,10 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.view.ReactViewBackgroundManager;
+import javax.annotation.Nullable;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
@@ -41,10 +37,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
 
-  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
+  private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactTextView(Context context) {
     super(context);
+    mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mDefaultGravityHorizontal =
       getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
@@ -204,15 +201,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
   }
 
-  @Override
-  public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
-      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
-    } else {
-      getOrCreateReactViewBackground().setColor(color);
-    }
-  }
-
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
       gravityHorizontal = mDefaultGravityHorizontal;
@@ -244,40 +232,28 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     setEllipsize(ellipsizeLocation);
   }
 
+  @Override
+  public void setBackgroundColor(int color) {
+    mReactBackgroundManager.setBackgroundColor(color);
+  }
+
   public void setBorderWidth(int position, float width) {
-    getOrCreateReactViewBackground().setBorderWidth(position, width);
+    mReactBackgroundManager.setBorderWidth(position, width);
   }
 
   public void setBorderColor(int position, float color, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+    mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
   public void setBorderRadius(float borderRadius) {
-    getOrCreateReactViewBackground().setRadius(borderRadius);
+    mReactBackgroundManager.setBorderRadius(borderRadius);
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    mReactBackgroundManager.setBorderRadius(borderRadius, position);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    getOrCreateReactViewBackground().setBorderStyle(style);
-  }
-
-  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
-    if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
-      Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
-      // drawable back as a part of LayerDrawable
-      if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
-      } else {
-        LayerDrawable layerDrawable =
-                new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
-      }
-    }
-    return mReactBackgroundDrawable;
+    mReactBackgroundManager.setBorderStyle(style);
   }
 }

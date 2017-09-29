@@ -19,7 +19,7 @@ In accordance with the ancient traditions of our people, we must first build an 
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { AppRegistry, Text } from 'react-native';
 
 export default class HelloWorldApp extends Component {
   render() {
@@ -28,6 +28,9 @@ export default class HelloWorldApp extends Component {
     );
   }
 }
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => HelloWorldApp);
 ```
 
 If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `App.js` file to create a real app on your local machine.

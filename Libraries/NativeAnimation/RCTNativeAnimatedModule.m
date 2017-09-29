@@ -239,11 +239,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
 - (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
 {
-  // Native animated events only work for events dispatched from the main queue.
-  if (!RCTIsMainQueue()) {
-    return;
-  }
-  return [_nodesManager handleAnimatedEvent:event];
+  // Events can be dispatched from any queue so we have to make sure handleAnimatedEvent
+  // is run from the main queue.
+  RCTExecuteOnMainQueue(^{
+    [self->_nodesManager handleAnimatedEvent:event];
+  });
 }
 
 @end

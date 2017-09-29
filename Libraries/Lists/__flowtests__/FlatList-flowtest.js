@@ -60,13 +60,14 @@ module.exports = {
     ];
     return (
       <FlatList
-        renderItem={info =>
+        renderItem={info => (
           <span>
             {
               // $FlowExpectedError - bad widgetCount type 6, should be Object
               info.item.widget.missingProp
             }
-          </span>}
+          </span>
+        )}
         data={data}
       />
     );
