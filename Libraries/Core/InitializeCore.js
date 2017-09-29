@@ -105,9 +105,9 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console-disallow */
+      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console-disallow */
+      /* eslint-enable no-console */
       throw e;
     }
   };
