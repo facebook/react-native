@@ -12,6 +12,8 @@
 <meta charset=utf-8>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>React Native Debugger</title>
+<script src="/debugger-ui/DeltaPatcher.js"></script>
+<script src="/debugger-ui/deltaUrlToBlobUrl.js"></script>
 <script>
 /* eslint-env browser */
 'use strict';
@@ -150,7 +152,7 @@
       Page.setState({status: {type: 'connecting'}});
     };
 
-    ws.onmessage = function(message) {
+    ws.onmessage = async function(message) {
       if (!message.data) {
         return;
       }
@@ -176,6 +178,11 @@
       } else if (object.method === '$disconnected') {
         shutdownJSRuntime();
         Page.setState({status: {type: 'disconnected'}});
+      } else if (object.method === 'executeApplicationScript') {
+        worker.postMessage({
+          ...object,
+          url: await getBlobUrl(object.url),
+        });
       } else {
         // Otherwise, pass through to the worker.
         worker.postMessage(object);
@@ -198,6 +205,9 @@
 
   connectToDebuggerProxy();
 
+  async function getBlobUrl(url) {
+    return await window.deltaUrlToBlobUrl(url.replace('.bundle', '.delta'));
+  }
 })();
 </script>
 <style type="text/css">
