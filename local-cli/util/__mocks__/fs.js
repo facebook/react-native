@@ -11,9 +11,11 @@
 
 'use strict';
 
+const asyncify = require('async/asyncify');
 const {EventEmitter} = require('events');
 const {dirname} = require.requireActual('path');
 const fs = jest.genMockFromModule('fs');
+const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const stream = require.requireActual('stream');
 
@@ -74,8 +76,7 @@ fs.readFile.mockImplementation(function(filepath, encoding, callback) {
   let node;
   try {
     node = getToNode(filepath);
-    // dir check
-    if (node && typeof node === 'object' && node.SYMLINK == null) {
+    if (isDirNode(node)) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
     if (node == null) {
@@ -90,12 +91,50 @@ fs.readFile.mockImplementation(function(filepath, encoding, callback) {
 
 fs.readFileSync.mockImplementation(function(filepath, encoding) {
   const node = getToNode(filepath);
-  // dir check
-  if (node && typeof node === 'object' && node.SYMLINK == null) {
+  if (isDirNode(node)) {
     throw new Error('Error readFileSync a dir: ' + filepath);
   }
   return node;
 });
+
+fs.writeFile.mockImplementation(asyncify(fs.writeFileSync));
+
+fs.writeFileSync.mockImplementation((filePath, content, options) => {
+  if (options == null || typeof options === 'string') {
+    options = {encoding: options};
+  }
+  invariant(
+    options.encoding == null || options.encoding === 'utf8',
+    '`options` argument supports only `null` or `"utf8"`',
+  );
+  const dirPath = path.dirname(filePath);
+  const node = getToNode(dirPath);
+  if (!isDirNode(node)) {
+    throw fsError('ENOTDIR', 'not a directory: ' + dirPath);
+  }
+  node[path.basename(filePath)] = content;
+});
+
+fs.mkdir.mockImplementation(asyncify(fs.mkdirSync));
+
+fs.mkdirSync.mockImplementation((dirPath, mode) => {
+  const parentPath = path.dirname(dirPath);
+  const node = getToNode(parentPath);
+  if (!isDirNode(node)) {
+    throw fsError('ENOTDIR', 'not a directory: ' + parentPath);
+  }
+  node[path.basename(dirPath)] = {};
+});
+
+function fsError(code, message) {
+  const error = new Error(code + ': ' + message);
+  error.code = code;
+  return error;
+}
+
+function isDirNode(node) {
+  return node && typeof node === 'object' && node.SYMLINK == null;
+}
 
 function readlinkSync(filepath) {
   const node = getToNode(filepath);
@@ -250,7 +289,7 @@ fs.close.mockImplementation((fd, callback = noop) => {
   callback(null);
 });
 
-let filesystem;
+let filesystem = {};
 
 fs.createReadStream.mockImplementation(filepath => {
   if (!filepath.startsWith('/')) {

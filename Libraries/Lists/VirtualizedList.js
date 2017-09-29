@@ -42,7 +42,7 @@ import type {
 
 type Item = any;
 
-type renderItemType = (info: any) => ?React.Element<any>;
+export type renderItemType = (info: any) => ?React.Element<any>;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
