@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const deprecatedPropType = require('deprecatedPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
@@ -21,6 +22,17 @@ const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
 } = require('ViewAccessibility');
+
+const ViewLayerType = [
+  'none',
+  'software',
+  'hardware'
+];
+
+var TVViewPropTypes = {};
+if (Platform.isTVOS) {
+  TVViewPropTypes = require('TVViewPropTypes');
+}
 
 import type {
   AccessibilityComponentType,
@@ -73,6 +85,7 @@ export type ViewProps = {
   pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
   style?: stylePropType,
   removeClippedSubviews?: bool,
+  viewLayerTypeAndroid?: 'none' | 'software' | 'hardware',
   renderToHardwareTextureAndroid?: bool,
   shouldRasterizeIOS?: bool,
   collapsable?: bool,
@@ -401,20 +414,40 @@ module.exports = {
   removeClippedSubviews: PropTypes.bool,
 
   /**
-   * Whether this `View` should render itself (and all of its children) into a
-   * single hardware texture on the GPU.
+   * View layer type for this view.
    *
+   * none - Default behavior. The view is not backed by an off-screen buffer.
+   *
+   * hardware -
    * On Android, this is useful for animations and interactions that only
    * modify opacity, rotation, translation, and/or scale: in those cases, the
    * view doesn't have to be redrawn and display lists don't need to be
    * re-executed. The texture can just be re-used and re-composited with
    * different parameters. The downside is that this can use up limited video
-   * memory, so this prop should be set back to false at the end of the
+   * memory, so this prop should be set back to 'none' at the end of the
    * interaction/animation.
+   *
+   * software -
+   * On Android, this value is useful in a couple of cases:
+   *   1. To avoid rendering artifacts which are exhibited with the other view layer types.
+   *   2. To avoid stack overflows on devices with a small stack size. KitKat and below use
+   *      the dalvik java virutal machine by default which has a main thread with an
+   *      unconfigurable stack size of 32k. The hardware accelerated flow requires two
+   *      additional stack frames per view so if you have a stack overflow issue, you may
+   *      consider using this view layer type as a workaround. Note that all subviews will
+   *      use software rendering as well.
+   *
+   * For more details see: 
+   *   https://developer.android.com/guide/topics/graphics/hardware-accel.html#layers
    *
    * @platform android
    */
-  renderToHardwareTextureAndroid: PropTypes.bool,
+  viewLayerTypeAndroid: PropTypes.oneOf(ViewLayerType),
+
+  /**
+   * deprecated use viewLayerTypeAndroid instead
+   */
+  renderToHardwareTextureAndroid: deprecatedPropType(PropTypes.bool, 'Use the viewLayerTypeAndroid prop instead.'),
 
   /**
    * Whether this `View` should be rendered as a bitmap before compositing.
@@ -455,7 +488,7 @@ module.exports = {
    * Rendering offscreen to preserve correct alpha behavior is extremely
    * expensive and hard to debug for non-native developers, which is why it is
    * not turned on by default. If you do need to enable this property for an
-   * animation, consider combining it with renderToHardwareTextureAndroid if the
+   * animation, consider combining it with viewLayerTypeAndroid === 'hardware' if the
    * view **contents** are static (i.e. it doesn't need to be redrawn each frame).
    * If that property is enabled, this View will be rendered off-screen once,
    * saved in a hardware texture, and then composited onto the screen with an alpha

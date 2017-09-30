@@ -117,7 +117,8 @@ Caveats:
 
 This is especially true when you have text with a transparent background positioned on top of an image,
 or any other situation where alpha compositing would be required to re-draw the view on each frame.
-You will find that enabling `shouldRasterizeIOS` or `renderToHardwareTextureAndroid` can help with this significantly.
+You will find that enabling `shouldRasterizeIOS` or setting `viewLayerTypeAndroid` to `'hardware'` can
+help with this significantly.
 
 Be careful not to overuse this or your memory usage could go through the roof.
 Profile your performance and memory usage when using these props.
@@ -338,7 +339,7 @@ Notice the long amount of time spent in `DrawFrame` that crosses frame boundarie
 
 To mitigate this, you should:
 
-- investigate using `renderToHardwareTextureAndroid` for complex, static content that is being animated/transformed (e.g. the `Navigator` slide/alpha animations)
+- investigate using `viewLayerTypeAndroid` for complex, static content that is being animated/transformed (e.g. the `Navigator` slide/alpha animations)
 - make sure that you are **not** using `needsOffscreenAlphaCompositing`, which is disabled by default, as it greatly increases the per-frame load on the GPU in most cases.
 
 If these don't help and you want to dig deeper into what the GPU is actually doing, you can check out [Tracer for OpenGL ES](http://developer.android.com/tools/help/gltracer.html).
