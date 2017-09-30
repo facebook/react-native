@@ -163,6 +163,11 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
+  @ReactProp(name = ViewProps.OVERFLOW)
+  public void setOverflow(ReactViewGroup view, String overflow) {
+    view.setOverflow(overflow);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
