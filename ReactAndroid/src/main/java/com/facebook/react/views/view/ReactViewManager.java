@@ -9,17 +9,10 @@
 
 package com.facebook.react.views.view;
 
-import javax.annotation.Nullable;
-
-import java.util.Locale;
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
-
-import com.facebook.yoga.YogaConstants;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -34,6 +27,10 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View manager for AndroidViews (plain React Views).
@@ -144,9 +141,16 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
-  @ReactPropGroup(names = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  }, customType = "Color")
+  @ReactPropGroup(
+    names = {
+      ViewProps.BORDER_COLOR,
+      ViewProps.BORDER_LEFT_COLOR,
+      ViewProps.BORDER_RIGHT_COLOR,
+      ViewProps.BORDER_TOP_COLOR,
+      ViewProps.BORDER_BOTTOM_COLOR
+    },
+    customType = "Color"
+  )
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
     float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
