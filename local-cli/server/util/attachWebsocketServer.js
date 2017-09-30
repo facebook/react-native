@@ -47,9 +47,14 @@ function attachWebsocketServer<TClient: Object>({
   });
 
   wss.on('connection', async ws => {
+    let connected = true;
     const url = ws.upgradeReq.url;
 
-    const sendFn = ws.send.bind(ws);
+    const sendFn = (...args) => {
+      if (connected) {
+        ws.send(...args);
+      }
+    };
 
     const client = await websocketServer.onClientConnect(url, sendFn);
 
@@ -60,6 +65,7 @@ function attachWebsocketServer<TClient: Object>({
     ws.on('close', () => {
       websocketServer.onClientDisconnect &&
         websocketServer.onClientDisconnect(client);
+      connected = false;
     });
 
     ws.on('message', message => {
