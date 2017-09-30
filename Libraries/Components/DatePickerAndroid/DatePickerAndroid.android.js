@@ -19,7 +19,7 @@ const DatePickerModule = require('NativeModules').DatePickerAndroid;
 function _toMillis(options: Object, key: string) {
   const dateVal = options[key];
   // Is it a Date object?
-  if (typeof dateVal === 'object' && typeof dateVal.getMonth === 'function') {
+  if (typeof dateVal === 'object' && dateVal !== null && typeof dateVal.getMonth === 'function') {
     options[key] = dateVal.getTime();
   }
 }
