@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const isString = require('lodash/isString');
 const path = require('path');
 const Promise = require('promise');
@@ -27,7 +28,16 @@ function checkAndroid(root) {
  */
 function runAndroid(argv, config, args) {
   if (!checkAndroid(args.root)) {
-    console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['android'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+    } else {
+      console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    }
     return;
   }
 
@@ -56,10 +66,10 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+function tryRunAdbReverse(packagerPort, device) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+    const adbArgs = ['reverse', `tcp:${packagerPort}`, `tcp:${packagerPort}`];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -78,6 +88,16 @@ function tryRunAdbReverse(device) {
   }
 }
 
+function getPackageNameWithSuffix(appId, appIdSuffix, packageName) {
+  if (appId) {
+    return appId;
+  } else if (appIdSuffix) {
+    return packageName + '.' + appIdSuffix;
+  }
+
+  return packageName;
+}
+
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
@@ -90,7 +110,7 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-  const packageNameWithSuffix = args.appIdSuffix ? packageName + '.' + args.appIdSuffix : packageName;
+  const packageNameWithSuffix = getPackageNameWithSuffix(args.appId, args.appIdSuffix, packageName);
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
@@ -167,7 +187,7 @@ function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPat
 }
 
 function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
-  tryRunAdbReverse(selectedDevice);
+  tryRunAdbReverse(args.port, selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
   tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
@@ -216,7 +236,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     const devices = adb.getDevices();
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-        tryRunAdbReverse(device);
+        tryRunAdbReverse(args.port, device);
         tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
@@ -243,24 +263,24 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
 }
 
 function startServerInNewWindow() {
-  const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
+  const terminal = process.env.REACT_TERMINAL;
 
   if (process.platform === 'darwin') {
-    if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+    if (terminal) {
+      return child_process.spawnSync('open', ['-a', terminal, launchPackagerScript], procConfig);
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
     procConfig.detached = true;
-    if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
+    if (terminal){
+      return child_process.spawn(terminal, ['-e', 'sh ' + launchPackagerScript], procConfig);
     }
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
 
@@ -293,6 +313,10 @@ module.exports = {
     description: 'Specify a different application folder name for the android source.',
     default: 'app',
   }, {
+    command: '--appId [string]',
+    description: 'Specify an applicationId to launch after build.',
+    default: '',
+  }, {
     command: '--appIdSuffix [string]',
     description: 'Specify an applicationIdSuffix to launch after build.',
     default: '',
@@ -307,5 +331,9 @@ module.exports = {
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
+  }, {
+    command: '--port [number]',
+    default: 8081,
+    parse: (val: string) => Number(val),
   }],
 };

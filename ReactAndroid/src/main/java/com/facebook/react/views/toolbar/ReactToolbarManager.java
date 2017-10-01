@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.toolbar;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -20,8 +16,6 @@ import android.graphics.Color;
 import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -32,6 +26,8 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of ReactToolbar.
@@ -169,15 +165,17 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     TypedArray contentInsets = null;
 
     try {
-      toolbarStyle = theme
-              .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+      toolbarStyle =
+          theme.obtainStyledAttributes(new int[] {getIdentifier(context, "toolbarStyle")});
 
       int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
 
-      contentInsets = theme.obtainStyledAttributes(
-              toolbarStyleResId, new int[]{
-                      R.attr.contentInsetStart,
-                      R.attr.contentInsetEnd,
+      contentInsets =
+          theme.obtainStyledAttributes(
+              toolbarStyleResId,
+              new int[] {
+                getIdentifier(context, "contentInsetStart"),
+                getIdentifier(context, "contentInsetEnd"),
               });
 
       int contentInsetStart = contentInsets.getDimensionPixelSize(0, 0);
@@ -199,14 +197,18 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     TypedArray subtitleTextAppearance = null;
 
     try {
-      toolbarStyle = theme
-          .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+      toolbarStyle =
+          theme.obtainStyledAttributes(new int[] {getIdentifier(context, "toolbarStyle")});
+
       int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
-      textAppearances = theme.obtainStyledAttributes(
-          toolbarStyleResId, new int[]{
-              R.attr.titleTextAppearance,
-              R.attr.subtitleTextAppearance,
-          });
+      textAppearances =
+          theme.obtainStyledAttributes(
+              toolbarStyleResId,
+              new int[] {
+                getIdentifier(context, "titleTextAppearance"),
+                getIdentifier(context, "subtitleTextAppearance"),
+              });
+
       int titleTextAppearanceResId = textAppearances.getResourceId(0, 0);
       int subtitleTextAppearanceResId = textAppearances.getResourceId(1, 0);
 
@@ -231,6 +233,15 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     if (style != null) {
       style.recycle();
     }
+  }
+
+  /**
+   * The appcompat-v7 BUCK dep is listed as a provided_dep, which complains that
+   * com.facebook.react.R doesn't exist. Since the attributes provided from a parent, we can access
+   * those attributes dynamically.
+   */
+  private static int getIdentifier(Context context, String name) {
+    return context.getResources().getIdentifier(name, "attr", context.getPackageName());
   }
 
 }

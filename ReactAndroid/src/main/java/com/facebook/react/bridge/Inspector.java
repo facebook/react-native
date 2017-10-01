@@ -19,16 +19,6 @@ public class Inspector {
 
   private final HybridData mHybridData;
 
-  public static boolean isSupported() {
-    try {
-      // This isn't a very nice way to do this but it works :|
-      instance().getPagesNative();
-      return true;
-    } catch (UnsatisfiedLinkError e) {
-      return false;
-    }
-  }
-
   public static List<Page> getPages() {
     try {
       return Arrays.asList(instance().getPagesNative());

@@ -156,6 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
 @property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
+@property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
 @end
@@ -174,6 +175,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
+
+    #if !TARGET_OS_TV
+    _pinchGestureEnabled = YES;
+    #endif
   }
   return self;
 }
@@ -310,15 +315,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIEdgeInsets contentInset = self.contentInset;
   CGSize contentSize = self.contentSize;
-  CGSize fullContentSize = CGSizeMake(
-    contentSize.width + contentInset.left + contentInset.right,
-    contentSize.height + contentInset.top + contentInset.bottom);
-
-  CGSize boundsSize = self.bounds.size;
-
-  self.contentOffset = CGPointMake(
-    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
-    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
+  
+  // If contentSize has not been measured yet we can't check bounds.
+  if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
+    self.contentOffset = originalOffset;
+  } else {
+    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    CGSize boundsSize = self.bounds.size;
+    self.contentOffset = CGPointMake(
+      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
+      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+  }
 }
 
 #if !TARGET_OS_TV
@@ -329,6 +336,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   _rctRefreshControl = refreshControl;
   [self addSubview:_rctRefreshControl];
+}
+
+- (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
+{
+  self.pinchGestureRecognizer.enabled = pinchGestureEnabled;
+  _pinchGestureEnabled = pinchGestureEnabled;
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
+  // in the setter gets overriden when the view loads.
+  self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV
 
@@ -354,10 +375,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
+
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
+    // We set the default behavior to "never" so that iOS
+    // doesn't do weird things to UIScrollView insets automatically
+    // and keeps it as an opt-in behavior.
+    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+#endif
+
     _automaticallyAdjustContentInsets = YES;
     _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
@@ -900,6 +933,18 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
+{
+  // `contentInsetAdjustmentBehavior` is available since iOS 11.
+  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+    CGPoint contentOffset = _scrollView.contentOffset;
+    _scrollView.contentInsetAdjustmentBehavior = behavior;
+    _scrollView.contentOffset = contentOffset;
+  }
+}
+#endif
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView

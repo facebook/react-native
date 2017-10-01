@@ -17,10 +17,16 @@ const PanResponder = require('PanResponder');
 const React = require('React');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
 const createReactClass = require('create-react-class');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const IS_RTL = I18nManager.isRTL;
@@ -72,7 +78,6 @@ const SwipeableRow = createReactClass({
   propTypes: {
     children: PropTypes.any,
     isOpen: PropTypes.bool,
-    preventSwipeLeft: PropTypes.bool,
     preventSwipeRight: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
@@ -110,7 +115,6 @@ const SwipeableRow = createReactClass({
   getDefaultProps(): Object {
     return {
       isOpen: false,
-      preventSwipeLeft: false,
       preventSwipeRight: false,
       maxSwipeDistance: 0,
       onOpen: emptyFunction,
@@ -339,12 +343,10 @@ const SwipeableRow = createReactClass({
 
   // Ignore swipes due to user's finger moving slightly when tapping
   _isValidSwipe(gestureState: Object): boolean {
-    if (this.props.preventSwipeLeft && gestureState.dx < 0) {
+    if (this.props.preventSwipeRight && this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0) {
       return false;
     }
-    if (this.props.preventSwipeRight && gestureState.dx > 0) {
-      return false;
-    }
+
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 

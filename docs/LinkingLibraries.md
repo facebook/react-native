@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
 banner: ejected
 next: running-on-simulator-ios
-previous: native-components-ios
+previous: custom-webview-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support
@@ -24,7 +24,7 @@ to `require` it. Other libraries also rely on some native code, in that case
 you'll have to add these files to your app, otherwise the app will throw an
 error as soon as you try to use the library._
 
-## Here the few steps to link your libraries that contain native code
+## Here are the few steps to link your libraries that contain native code
 
 ### Automatic linking
 

@@ -18,11 +18,11 @@ namespace react {
 
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance, const folly::dynamic& callbackId) {
-  if (!callbackId.isInt()) {
+  if (!callbackId.isNumber()) {
     throw std::invalid_argument("Expected callback(s) as final argument");
   }
 
-  auto id = callbackId.getInt();
+  auto id = callbackId.asInt();
   return [winstance = std::move(instance), id](folly::dynamic args) {
     if (auto instance = winstance.lock()) {
       instance->callJSCallback(id, std::move(args));

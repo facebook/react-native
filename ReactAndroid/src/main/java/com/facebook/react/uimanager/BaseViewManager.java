@@ -5,7 +5,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
-
+import android.view.ViewParent;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -20,7 +20,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_TRANSFORM = "transform";
-  private static final String PROP_OPACITY = "opacity";
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
@@ -63,7 +62,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
+  @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
   }
@@ -80,6 +79,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setZIndex(T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
+    ViewParent parent = view.getParent();
+    if (parent != null && parent instanceof ReactZIndexedViewGroup) {
+      ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
+    }
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
@@ -184,16 +187,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     if (perspectiveArray.length > PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX) {
       float invertedCameraDistance = (float) perspectiveArray[PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX];
-      if (invertedCameraDistance < 0) {
-        float cameraDistance = -1 / invertedCameraDistance;
-        float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
-
-        // The following converts the matrix's perspective to a camera distance
-        // such that the camera perspective looks the same on Android and iOS
-        float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
-
-        view.setCameraDistance(normalizedCameraDistance);
+      if (invertedCameraDistance == 0) {
+        // Default camera distance, before scale multiplier (1280)
+        invertedCameraDistance = 0.00078125f;
       }
+      float cameraDistance = -1 / invertedCameraDistance;
+      float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
+
+      // The following converts the matrix's perspective to a camera distance
+      // such that the camera perspective looks the same on Android and iOS
+      float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      view.setCameraDistance(normalizedCameraDistance);
+
     }
   }
 

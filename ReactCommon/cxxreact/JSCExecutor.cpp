@@ -32,6 +32,7 @@
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 #include "Platform.h"
+#include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
@@ -287,6 +288,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   // TODO t15069155: reduce the number of overrides here
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
+    JSContextLock lock(m_context);
     JSLoadSourceStatus jsStatus;
     auto bcSourceCode = JSCreateSourceCodeFromFile(fileStr->fd(), jsSourceURL, nullptr, &jsStatus);
 
@@ -295,13 +297,12 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       if (!bcSourceCode) {
         throw std::runtime_error("Unexpected error opening compiled bundle");
       }
-
       evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
 
       flush();
 
       ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-      ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+      ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
       return;
 
     case JSLoadSourceErrorVersionMismatch:
@@ -332,6 +333,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 #endif
   {
     String jsScript;
+    JSContextLock lock(m_context);
     {
       SystraceSection s_("JSCExecutor::loadApplicationScript-createExpectingAscii");
       ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
@@ -349,14 +351,14 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   flush();
 
   ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
-  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
+  ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
 }
 
-void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
-  if (!m_unbundle) {
+void JSCExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) {
+  if (!m_bundleRegistry) {
     installNativeHook<&JSCExecutor::nativeRequire>("nativeRequire");
   }
-  m_unbundle = std::move(unbundle);
+  m_bundleRegistry = std::move(bundleRegistry);
 }
 
 void JSCExecutor::bindBridge() throw(JSException) {
@@ -433,10 +435,10 @@ void JSCExecutor::flush() {
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   SystraceSection s("JSCExecutor::callFunction");
-
   // This weird pattern is because Value is not default constructible.
   // The lambda is inlined, so there's no overhead.
   auto result = [&] {
+    JSContextLock lock(m_context);
     try {
       if (!m_callFunctionReturnResultAndFlushedQueueJS) {
         bindBridge();
@@ -451,13 +453,13 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
         std::runtime_error("Error calling " + moduleId + "." + methodId));
     }
   }();
-
   callNativeModules(std::move(result));
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
   SystraceSection s("JSCExecutor::invokeCallback");
   auto result = [&] {
+    JSContextLock lock(m_context);
     try {
       if (!m_invokeCallbackAndReturnFlushedQueueJS) {
         bindBridge();
@@ -471,29 +473,29 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
         std::runtime_error(folly::to<std::string>("Error invoking callback ", callbackId)));
     }
   }();
-
   callNativeModules(std::move(result));
 }
 
 Value JSCExecutor::callFunctionSyncWithValue(
     const std::string& module, const std::string& method, Value args) {
   SystraceSection s("JSCExecutor::callFunction");
-
-  if (!m_callFunctionReturnResultAndFlushedQueueJS) {
-    bindBridge();
-  }
-  Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
-    Value(m_context, String::createExpectingAscii(m_context, module)),
-    Value(m_context, String::createExpectingAscii(m_context, method)),
-    std::move(args),
-  }).asObject();
+  Object result = [&] {
+    JSContextLock lock(m_context);
+    if (!m_callFunctionReturnResultAndFlushedQueueJS) {
+      bindBridge();
+    }
+    return m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
+      Value(m_context, String::createExpectingAscii(m_context, module)),
+      Value(m_context, String::createExpectingAscii(m_context, method)),
+      std::move(args),
+    }).asObject();
+    }();
 
   Value length = result.getProperty("length");
 
   if (!length.isNumber() || length.asInteger() != 2) {
     std::runtime_error("Return value of a callFunction must be an array of size 2");
   }
-
   callNativeModules(result.getPropertyAtIndex(1));
   return result.getPropertyAtIndex(0);
 }
@@ -506,6 +508,18 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
+}
+
+std::string JSCExecutor::getDescription() {
+#if defined(__APPLE__)
+  if (isCustomJSCPtr(m_context)) {
+    return "Custom JSC";
+  } else {
+    return "System JSC";
+  }
+#else
+  return "JSC";
+#endif
 }
 
 String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
@@ -537,8 +551,8 @@ void JSCExecutor::flushQueueImmediate(Value&& queue) {
   m_delegate->callNativeModules(*this, folly::parseJson(queueStr), false);
 }
 
-void JSCExecutor::loadModule(uint32_t moduleId) {
-  auto module = m_unbundle->getModule(moduleId);
+void JSCExecutor::loadModule(uint32_t bundleId, uint32_t moduleId) {
+  auto module = m_bundleRegistry->getModule(bundleId, moduleId);
   auto sourceUrl = String::createExpectingAscii(m_context, module.name);
   auto source = String::createExpectingAscii(m_context, module.code);
   evaluateScript(m_context, source, sourceUrl);
@@ -561,18 +575,10 @@ JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef property
 JSValueRef JSCExecutor::nativeRequire(
     size_t argumentCount,
     const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
-      Value(m_context, arguments[0]).toString().str()));
-  }
-
+  uint32_t bundleId, moduleId;
+  std::tie(bundleId, moduleId) = parseNativeRequireParameters(m_context, arguments, argumentCount);
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
-  loadModule(moduleId);
+  loadModule(bundleId, moduleId);
   ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
   return Value::makeUndefined(m_context);
 }

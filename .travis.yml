@@ -3,7 +3,7 @@ language: objective-c
 osx_image: xcode8.3
 
 install:
-  - nvm install 7
+  - nvm install 8
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - brew install yarn --ignore-dependencies
   - brew install watchman
@@ -46,3 +46,4 @@ notifications:
     on_pull_requests: false
     on_failure: change
     on_success: change
+  webhooks: https://code.facebook.com/travis/webhook/

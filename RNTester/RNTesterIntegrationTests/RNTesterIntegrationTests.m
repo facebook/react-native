@@ -80,5 +80,4 @@ RCT_TEST(AccessibilityManagerTest)
 RCT_TEST(WebViewTest)
 #endif
 
-
 @end

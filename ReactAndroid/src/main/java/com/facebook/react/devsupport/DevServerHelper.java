@@ -9,8 +9,23 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Handler;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.FileIoHandler;
+import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.RequestHandler;
+import com.facebook.react.packagerconnection.RequestOnlyHandler;
+import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,31 +33,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Handler;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.network.OkHttpCallUtil;
-import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
-import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
-import com.facebook.react.devsupport.interfaces.StackFrame;
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-import com.facebook.react.packagerconnection.FileIoHandler;
-import com.facebook.react.packagerconnection.JSPackagerClient;
-import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.packagerconnection.NotificationOnlyHandler;
-import com.facebook.react.packagerconnection.RequestOnlyHandler;
-import com.facebook.react.packagerconnection.Responder;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -54,6 +45,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Okio;
 import okio.Sink;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -69,7 +63,7 @@ public class DevServerHelper {
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
+      "http://%s/%s.bundle?platform=android&dev=%s&minify=%s";
   private static final String RESOURCE_URL_FORMAT = "http://%s/%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
@@ -89,6 +83,8 @@ public class DevServerHelper {
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
+
+  private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
   public interface OnServerContentChangeListener {
     void onServerContentChanged();
@@ -205,9 +201,15 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void openInspector(String id) {
+  public void sendEventToAllConnections(String event) {
     if (mInspectorPackagerConnection != null) {
-      mInspectorPackagerConnection.sendOpenEvent(id);
+      mInspectorPackagerConnection.sendEventToAllConnections(event);
+    }
+  }
+
+  public void disableDebugger() {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendEventToAllConnections(DEBUGGER_MSG_DISABLE);
     }
   }
 
@@ -354,20 +356,12 @@ public class DevServerHelper {
     return mSettings.isJSMinifyEnabled();
   }
 
-  /**
-   * @return whether we should enabled HMR when requesting JS bundles.
-   */
-  private boolean getHMR() {
-    return mSettings.isHotModuleReplacementEnabled();
-  }
-
   private static String createBundleURL(
       String host,
       String jsModulePath,
       boolean devMode,
-      boolean hmr,
       boolean jsMinify) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, jsMinify);
   }
 
   private static String createResourceURL(String host, String resourcePath) {
@@ -387,7 +381,6 @@ public class DevServerHelper {
       mSettings.getPackagerConnectionSettings().getDebugServerHost(),
       jsModulePath,
       getDevMode(),
-      getHMR(),
       getJSMinifyMode());
   }
 
@@ -551,7 +544,6 @@ public class DevServerHelper {
         mSettings.getPackagerConnectionSettings().getDebugServerHost(),
         mainModuleName,
         getDevMode(),
-        getHMR(),
         getJSMinifyMode());
   }
 
@@ -562,7 +554,6 @@ public class DevServerHelper {
         mSettings.getPackagerConnectionSettings().getDebugServerHost(),
         mainModuleName,
         getDevMode(),
-        getHMR(),
         getJSMinifyMode());
   }
 
@@ -574,7 +565,6 @@ public class DevServerHelper {
         getHostForJSProxy(),
         mainModuleName,
         getDevMode(),
-        getHMR(),
         getJSMinifyMode());
   }
 

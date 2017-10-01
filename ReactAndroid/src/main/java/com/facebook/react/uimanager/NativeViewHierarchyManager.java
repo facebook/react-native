@@ -9,9 +9,6 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import android.content.res.Resources;
 import android.util.Log;
 import android.util.SparseArray;
@@ -22,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
@@ -39,6 +35,8 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -137,12 +135,7 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized void updateLayout(
-      int parentTag,
-      int tag,
-      int x,
-      int y,
-      int width,
-      int height) {
+      int parentTag, int tag, int x, int y, int width, int height) {
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_VIEW,
@@ -167,6 +160,19 @@ public class NativeViewHierarchyManager {
       viewToUpdate.measure(
           View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
           View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+
+      // We update the layout of the ReactRootView when there is a change in the layout of its child.
+      // This is required to re-measure the size of the native View container (usually a
+      // FrameLayout) that is configured with layout_height = WRAP_CONTENT or layout_width =
+      // WRAP_CONTENT
+      //
+      // This code is going to be executed ONLY when there is a change in the size of the Root
+      // View defined in the js side. Changes in the layout of inner views will not trigger an update
+      // on the layour of the Root View.
+      ViewParent parent = viewToUpdate.getParent();
+      if (parent instanceof RootView) {
+        parent.requestLayout();
+      }
 
       // Check if the parent of the view has to layout the view, or the child has to lay itself out.
       if (!mRootTags.get(parentTag)) {

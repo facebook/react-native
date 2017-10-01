@@ -29,7 +29,7 @@ exports.framework = 'React';
 exports.title = 'PermissionsAndroid';
 exports.description = 'Permissions example for API 23+.';
 
-class PermissionsExample extends React.Component {
+class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     permission: PermissionsAndroid.PERMISSIONS.CAMERA,
     hasPermission: 'Not Checked',

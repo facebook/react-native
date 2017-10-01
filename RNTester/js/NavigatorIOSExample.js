@@ -27,7 +27,7 @@ const {
   View,
 } = ReactNative;
 
-class EmptyPage extends React.Component {
+class EmptyPage extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.emptyPage}>
@@ -39,7 +39,7 @@ class EmptyPage extends React.Component {
   }
 }
 
-class NavigatorIOSExamplePage extends React.Component {
+class NavigatorIOSExamplePage extends React.Component<$FlowFixMeProps> {
   render() {
     var recurseTitle = 'Recurse Navigation';
     if (!this.props.depth || this.props.depth === 1) {
@@ -230,7 +230,7 @@ class NavigatorIOSExamplePage extends React.Component {
   };
 }
 
-class NavigatorIOSExample extends React.Component {
+class NavigatorIOSExample extends React.Component<$FlowFixMeProps> {
   static title = '<NavigatorIOS>';
   static description = 'iOS navigation capabilities';
   static external = true;

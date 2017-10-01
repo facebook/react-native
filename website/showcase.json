@@ -45,12 +45,10 @@
     "pinned": true
   },
   {
-    "name": "Walmart",
-    "icon": "http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg",
-    "linkAppStore": "https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.walmart.android&hl=en",
-    "infoLink": " https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc",
-    "infoTitle": "React Native at Walmart Labs",
+    "name": "Skype",
+    "icon": "http://is1.mzstatic.com/image/thumb/Purple118/v4/9c/86/19/9c861944-900e-2d61-18b5-9250b3840277/source/175x175bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/skype-for-iphone/id304878510?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.skype.raider&hl=en",
     "pinned": true
   },
   {
@@ -61,18 +59,20 @@
     "pinned": true
   },
   {
-    "name": "Tencent QQ",
-    "icon": "http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96",
-    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
-    "infoLink": "https://www.tencent.com/en-us/system.html",
-    "infoTitle": "QQ is China's largest messaging platform, with over 829 million active accounts",
+    "name": "Walmart",
+    "icon": "http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.walmart.android&hl=en",
+    "infoLink": " https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc",
+    "infoTitle": "React Native at Walmart Labs",
     "pinned": true
   },
   {
-    "name": "UberEATS",
-    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
-    "infoLink": "https://eng.uber.com/ubereats-react-native/",
-    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "name": "Artsy",
+    "icon": "https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8",
+    "infoLink": "https://artsy.github.io/series/react-native-at-artsy/",
+    "infoTitle": "React Native at Artsy",
     "pinned": false
   },
   {
@@ -94,84 +94,11 @@
     "pinned": false
   },
   {
-    "name": "Vogue",
-    "icon": "http://a2.mzstatic.com/us/r30/Purple30/v4/06/24/92/0624927f-a389-746c-27f9-e2466d59e55b/icon175x175.jpeg",
-    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8",
-    "infoLink": "http://www.vogue.com/app",
-    "infoTitle": "",
-    "pinned": false
-  },
-  {
-    "name": "li.st",
-    "icon": "https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
-    "infoLink": "https://www.youtube.com/watch?v=cI9bDvDEsYE",
-    "infoTitle": "Building li.st for Android with React Native",
-    "pinned": false
-  },
-  {
-    "name": "Discord",
-    "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
-    "linkAppStore": "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
-    "infoLink": "https://blog.discordapp.com/using-react-native-one-year-later-91fd5e949933",
-    "infoTitle": "Using React Native: One Year Later",
-    "pinned": false
-  },
-  {
-    "name": "Gyroscope",
-    "icon": "https://media.gyrosco.pe/images/magneto/180x180.png",
-    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
-    "infoLink": "https://blog.gyrosco.pe/building-the-app-1dac1a97d253",
-    "infoTitle": "Building a visualization experience with React Native",
-    "pinned": false
-  },
-  {
-    "name": "Townske",
-    "icon": "http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
-    "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
-    "infoTitle": "The experience of a web developer building an app using React Native",
-    "pinned": false
-  },
-  {
-    "name": "SoundCloud Pulse",
-    "icon": "https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg",
-    "linkAppStore": "https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8",
-    "infoLink": "https://developers.soundcloud.com/blog/react-native-at-soundcloud",
-    "infoTitle": "Why React Native worked well for us",
-    "pinned": false
-  },
-  {
     "name": "CBS Sports Franchise Football",
     "icon": "http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png",
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015",
     "infoLink": "http://www.cbssports.com/fantasy/football/games/franchise/2015",
     "infoTitle": "Award winning Fantasy Football league manager built with React Native",
-    "pinned": false
-  },
-  {
-    "name": "Artsy",
-    "icon": "https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8",
-    "infoLink": "https://artsy.github.io/series/react-native-at-artsy/",
-    "infoTitle": "React Native at Artsy",
-    "pinned": false
-  },
-  {
-    "name": "Huiseoul (惠首尔)",
-    "icon": "https://cdn.huiseoul.com/icon.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8",
-    "infoLink": "https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07",
-    "infoTitle": "Building a conversational E-commerce app in 6 weeks with React Native",
-    "pinned": false
-  },
-  {
-    "name": "JD（手机京东）",
-    "icon": "http://is3.mzstatic.com/image/thumb/Purple111/v4/d4/3c/10/d43c107a-f120-caac-65c0-d412ace0606c/source/175x175bb.jpg",
-    "linkAppStore": "https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8",
-    "linkPlayStore": "https://app.jd.com/android.html",
-    "infoLink": "http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile",
-    "infoTitle": "JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.",
     "pinned": false
   },
   {
@@ -192,12 +119,93 @@
     "pinned": false
   },
   {
+    "name": "Discord",
+    "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
+    "linkAppStore": "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
+    "infoLink": "https://blog.discordapp.com/using-react-native-one-year-later-91fd5e949933",
+    "infoTitle": "Using React Native: One Year Later",
+    "pinned": false
+  },
+  {
     "name": "Flare by GoDaddy",
     "icon": "http://x.co/FlareIcon",
     "linkAppStore": "http://x.co/Flare",
     "linkPlayStore": "http://x.co/FlareAndr",
     "infoLink": "http://x.co/FlareNews",
     "infoTitle": "Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts",
+    "pinned": false
+  },
+  {
+    "name": "Gyroscope",
+    "icon": "https://media.gyrosco.pe/images/magneto/180x180.png",
+    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
+    "infoLink": "https://blog.gyrosco.pe/building-the-app-1dac1a97d253",
+    "infoTitle": "Building a visualization experience with React Native",
+    "pinned": false
+  },
+  {
+    "name": "Huiseoul (惠首尔)",
+    "icon": "https://cdn.huiseoul.com/icon.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8",
+    "infoLink": "https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07",
+    "infoTitle": "Building a conversational E-commerce app in 6 weeks with React Native",
+    "pinned": false
+  },
+  {
+    "name": "JD（手机京东）",
+    "icon": "http://is3.mzstatic.com/image/thumb/Purple111/v4/d4/3c/10/d43c107a-f120-caac-65c0-d412ace0606c/source/175x175bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8",
+    "linkPlayStore": "https://app.jd.com/android.html",
+    "infoLink": "http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile",
+    "infoTitle": "JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.",
+    "pinned": false
+  },
+  {
+    "name": "li.st",
+    "icon": "https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
+    "infoLink": "https://www.youtube.com/watch?v=cI9bDvDEsYE",
+    "infoTitle": "Building li.st for Android with React Native",
+    "pinned": false
+  },
+  {
+    "name": "SoundCloud Pulse",
+    "icon": "https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.soundcloud.creators&hl=en",
+    "infoLink": "https://developers.soundcloud.com/blog/react-native-at-soundcloud",
+    "infoTitle": "Why React Native worked well for us",
+    "pinned": false
+  },
+  {
+    "name": "Tencent QQ",
+    "icon": "http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96",
+    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
+    "infoLink": "https://www.tencent.com/en-us/system.html",
+    "infoTitle": "QQ is China's largest messaging platform, with over 829 million active accounts",
+    "pinned": false
+  },
+  {
+    "name": "Townske",
+    "icon": "http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
+    "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
+    "infoTitle": "The experience of a web developer building an app using React Native",
+    "pinned": false
+  },
+  {
+    "name": "UberEATS",
+    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
+    "infoLink": "https://eng.uber.com/ubereats-react-native/",
+    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "pinned": false
+  },
+  {
+    "name": "Vogue",
+    "icon": "http://a2.mzstatic.com/us/r30/Purple30/v4/06/24/92/0624927f-a389-746c-27f9-e2466d59e55b/icon175x175.jpeg",
+    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8",
+    "infoLink": "http://www.vogue.com/app",
+    "infoTitle": "",
     "pinned": false
   },
   {

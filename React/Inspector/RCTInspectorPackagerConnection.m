@@ -51,12 +51,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return self;
 }
 
-- (void)sendOpenEvent:(NSString *)pageId
-{
-  NSDictionary<NSString *, id> *payload = makePageIdPayload(pageId);
-  [self sendEvent:@"open" payload:payload];
-}
-
 - (void)handleProxyMessage:(NSDictionary<NSString *, id> *)message
 {
   NSString *event = message[@"event"];
@@ -71,6 +65,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self handleDisconnect:payload];
   } else {
     RCTLogError(@"Unknown event: %@", event);
+  }
+}
+
+- (void)sendEventToAllConnections:(NSString *)event
+{
+  for (NSString *pageId in _inspectorConnections) {
+    [_inspectorConnections[pageId] sendMessage:event];
   }
 }
 
