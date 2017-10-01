@@ -11,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -57,6 +58,8 @@
 
     _backedTextInput.textInputDelegate = self;
 
+    self.font = self.fontAttributes.font;
+
     [self addSubview:_backedTextInput];
   }
   return self;
@@ -68,6 +71,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInput;
+}
+
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
+{
+  [super fontAttributesDidChangeWithFont:font];
+
+ // Because the font changed, the TextInput may take up more space now so we call
+ // invalidateContentSize. However, if there's currently no text to render, then
+ // there's no need to call invalidateContentSize.
+ if ([self text].length != 0) {
+   [self invalidateContentSize];
+ }
 }
 
 #pragma mark - RCTComponent

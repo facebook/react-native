@@ -12,6 +12,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -40,6 +41,8 @@
     _backedTextInput = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInput.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInput.textInputDelegate = self;
+
+    self.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }

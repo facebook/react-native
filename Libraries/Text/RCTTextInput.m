@@ -9,6 +9,7 @@
 
 #import "RCTTextInput.h"
 
+#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -29,6 +30,8 @@
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
+    _fontAttributes = [[RCTFontAttributes alloc] initWithAccessibilityManager:bridge.accessibilityManager];
+    _fontAttributes.delegate = self;
   }
 
   return self;
@@ -42,6 +45,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
   return nil;
+}
+
+- (void)setFont:(UIFont *)font
+{
+  self.backedTextInputView.font = font;
+}
+
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
+{
+  self.font = font;
 }
 
 #pragma mark - Properties
