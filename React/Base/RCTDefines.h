@@ -99,3 +99,10 @@ _Pragma("clang diagnostic ignored \"-Wunused-parameter\"") \
 RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class); \
 method NS_UNAVAILABLE { @throw _RCTNotImplementedException(_cmd, [self class]); } \
 _Pragma("clang diagnostic pop")
+
+/**
+ * Add the default Metro packager port number 
+ */
+#ifndef RCT_METRO_PORT
+#define RCT_METRO_PORT 8081
+#endif
