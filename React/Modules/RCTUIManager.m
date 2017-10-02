@@ -377,6 +377,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     if (shadowView == nil) {
+      RCTLogWarn(@"Could not locate shadow view with tag #%@, this is probably caused by a temporary inconsistency between native views and shadow views.", reactTag);
       return;
     }    
 
