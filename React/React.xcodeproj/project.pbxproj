@@ -1023,6 +1023,13 @@
 		597633371F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = 597633341F4E021D005BE8A4 /* RCTShadowView+Internal.m */; };
 		597633381F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 597633351F4E021D005BE8A4 /* RCTShadowView+Internal.h */; };
 		597633391F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 597633351F4E021D005BE8A4 /* RCTShadowView+Internal.h */; };
+		598FD1911F816998006C54CB /* JSIndexedRAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D3801E1F71D91600621378 /* JSIndexedRAMBundleRegistry.h */; };
+		598FD1921F816A2A006C54CB /* RAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
+		598FD1931F817284006C54CB /* PrivateDataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9936F3351F5F2F480010BF04 /* PrivateDataBase.cpp */; };
+		598FD1941F8172A9006C54CB /* PrivateDataBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 9936F3361F5F2F480010BF04 /* PrivateDataBase.h */; };
+		598FD1951F817335006C54CB /* RCTModalManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 91076A881F743AB00081B4FA /* RCTModalManager.h */; };
+		598FD1961F817335006C54CB /* RCTModalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91076A871F743AB00081B4FA /* RCTModalManager.m */; };
+		598FD1971F817336006C54CB /* RCTModalManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 91076A881F743AB00081B4FA /* RCTModalManager.h */; };
 		59A7B9FD1E577DBF0068EDBF /* RCTRootContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A7B9FB1E577DBF0068EDBF /* RCTRootContentView.h */; };
 		59A7B9FE1E577DBF0068EDBF /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */; };
 		59B1EBC91EBD46250047B19B /* RCTShadowView+Layout.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
@@ -1407,6 +1414,8 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				598FD1921F816A2A006C54CB /* RAMBundleRegistry.h in Copy Headers */,
+				598FD1911F816998006C54CB /* JSIndexedRAMBundleRegistry.h in Copy Headers */,
 				3DA9823B1E5B1053004F2374 /* CxxModule.h in Copy Headers */,
 				3DA9823C1E5B1053004F2374 /* CxxNativeModule.h in Copy Headers */,
 				3DA9823D1E5B1053004F2374 /* JSExecutor.h in Copy Headers */,
@@ -2851,6 +2860,7 @@
 				3DA982391E5B0F8A004F2374 /* UIView+Private.h in Headers */,
 				13134C8D1E296B2A00B9F3CB /* RCTMessageThread.h in Headers */,
 				130443DE1E401B0D00D93A67 /* RCTTVView.h in Headers */,
+				598FD1941F8172A9006C54CB /* PrivateDataBase.h in Headers */,
 				3D7AA9C51E548CDB001955CF /* NSDataBigString.h in Headers */,
 				5960C1BA1F0804A00066FD5B /* RCTLayoutAnimationGroup.h in Headers */,
 				13134C991E296B2A00B9F3CB /* RCTCxxMethod.h in Headers */,
@@ -2951,6 +2961,7 @@
 				3D302F6B1DF828F800D6DDAE /* RCTActivityIndicatorViewManager.h in Headers */,
 				3D7BFD301EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */,
 				3D302F6C1DF828F800D6DDAE /* RCTAnimationType.h in Headers */,
+				598FD1951F817335006C54CB /* RCTModalManager.h in Headers */,
 				657734871EE834E000A0E9EA /* RCTInspectorDevServerHelper.h in Headers */,
 				3D302F6D1DF828F800D6DDAE /* RCTAutoInsetsProtocol.h in Headers */,
 				3D302F6E1DF828F800D6DDAE /* RCTBorderDrawing.h in Headers */,
@@ -3183,6 +3194,7 @@
 				3D80DA2D1DF820620028D040 /* RCTFrameUpdate.h in Headers */,
 				3D80DA2E1DF820620028D040 /* RCTImageSource.h in Headers */,
 				3D80DA2F1DF820620028D040 /* RCTInvalidating.h in Headers */,
+				598FD1971F817336006C54CB /* RCTModalManager.h in Headers */,
 				3D7BFD251EA8E351008DFB7A /* RCTSamplingProfilerPackagerMethod.h in Headers */,
 				9936F3381F5F2F480010BF04 /* PrivateDataBase.h in Headers */,
 				3D80DA301DF820620028D040 /* RCTJavaScriptExecutor.h in Headers */,
@@ -3785,6 +3797,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				598FD1931F817284006C54CB /* PrivateDataBase.cpp in Sources */,
 				3DC159E41E83E1AE007B1282 /* RCTRootContentView.m in Sources */,
 				3D80D91B1DF6F8200028D040 /* RCTPlatform.m in Sources */,
 				2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */,
@@ -3864,6 +3877,7 @@
 				135A9C041E7B0F6400587AEB /* RCTJSCErrorHandling.mm in Sources */,
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
+				598FD1961F817335006C54CB /* RCTModalManager.m in Sources */,
 				3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */,
 				130443DB1E401ADD00D93A67 /* RCTConvert+Transform.m in Sources */,
 				3D0B84301EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m in Sources */,
