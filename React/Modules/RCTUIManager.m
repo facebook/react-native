@@ -494,7 +494,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       reactTags[index] = shadowView.reactTag;
       frameDataArray[index++] = (RCTFrameData){
         shadowView.frame,
-        shadowView.layoutDirection,
+        shadowView.effectiveLayoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
         shadowView.isHidden,

@@ -84,10 +84,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
- * Layout direction for the view as computed in applyLayoutNode.
+ * Computed layout direction for the view backed to Yoga node value.
  */
-
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
 
 /**
  * Position and dimensions.
@@ -187,11 +186,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
  */
 @property (nonatomic, assign) CGSize intrinsicContentSize;
-
-/**
- * Return the layout direction stored in the Yoga node that backs this view.
- */
-- (UIUserInterfaceLayoutDirection)getLayoutDirectionFromYogaNode;
 
 /**
  * Calculate property changes that need to be propagated to the view.

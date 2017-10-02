@@ -204,11 +204,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
   }};
 
-  UIUserInterfaceLayoutDirection updatedLayoutDirection = [self getLayoutDirectionFromYogaNode];
-
-  if (!CGRectEqualToRect(frame, _frame) || _layoutDirection != updatedLayoutDirection) {
+  if (!CGRectEqualToRect(frame, _frame)) {
     _frame = frame;
-    _layoutDirection = updatedLayoutDirection;
     [viewsWithNewFrame addObject:self];
   }
 
@@ -496,7 +493,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 // Layout Direction
 
-- (UIUserInterfaceLayoutDirection)getLayoutDirectionFromYogaNode {
+- (UIUserInterfaceLayoutDirection)effectiveLayoutDirection {
   // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
   // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
   return YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;

@@ -27,7 +27,7 @@
        absolutePosition:(CGPoint)absolutePosition
 {
   // Call super method if LTR layout is enforced.
-  if (self.layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight) {
+  if (self.effectiveLayoutDirection == UIUserInterfaceLayoutDirectionLeftToRight) {
     [super applyLayoutNode:node
          viewsWithNewFrame:viewsWithNewFrame
           absolutePosition:absolutePosition];
