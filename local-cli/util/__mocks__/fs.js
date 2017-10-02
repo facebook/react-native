@@ -291,6 +291,12 @@ fs.close.mockImplementation((fd, callback = noop) => {
 
 let filesystem = {};
 
+fs.mock = {
+  clear() {
+    filesystem = {};
+  },
+};
+
 fs.createReadStream.mockImplementation(filepath => {
   if (!filepath.startsWith('/')) {
     throw Error('Cannot open file ' + filepath);
