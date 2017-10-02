@@ -327,12 +327,6 @@ RCT_EXPORT_MODULE()
         return callback(nil, @{@"body": data});
       }
     }
-
-    // RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
-    // NSData *data = [blobManager resolve:blob];
-    // if (data) {
-    //   return callback(nil, @{@"body": data});
-    // }
   }
   NSString *base64String = [RCTConvert NSString:query[@"base64"]];
   if (base64String) {
@@ -429,9 +423,9 @@ RCT_EXPORT_MODULE()
 
 - (void)sendData:(NSData *)data
     responseType:(NSString *)responseType
-    mimeType:(NSString *)mimeType
-    fileName:(NSString *)fileName
-    forTask:(RCTNetworkTask *)task
+        mimeType:(NSString *)mimeType
+        fileName:(NSString *)fileName
+         forTask:(RCTNetworkTask *)task
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
 
@@ -552,9 +546,9 @@ RCT_EXPORT_MODULE()
     if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
       [strongSelf sendData:data
               responseType:responseType
-              mimeType:[response MIMEType]
-              fileName:[response suggestedFilename]
-              forTask:task];
+                  mimeType:[response MIMEType]
+                  fileName:[response suggestedFilename]
+                   forTask:task];
     }
     NSArray *responseJSON = @[task.requestID,
                               RCTNullIfNil(error.localizedDescription),

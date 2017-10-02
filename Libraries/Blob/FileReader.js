@@ -8,18 +8,19 @@
  *
  * @providesModule FileReader
  * @flow
+ * @format
  */
 
 'use strict';
 
 const EventTarget = require('event-target-shim');
 const Blob = require('Blob');
-const { FileReaderModule } = require('NativeModules');
+const {FileReaderModule} = require('NativeModules');
 
 type ReadyState =
   | 0 // EMPTY
   | 1 // LOADING
-  | 2 // DONE
+  | 2; // DONE
 
 type ReaderResult = string | ArrayBuffer;
 
@@ -37,7 +38,6 @@ const LOADING = 1;
 const DONE = 2;
 
 class FileReader extends EventTarget(...READER_EVENTS) {
-
   static EMPTY = EMPTY;
   static LOADING = LOADING;
   static DONE = DONE;
@@ -70,16 +70,16 @@ class FileReader extends EventTarget(...READER_EVENTS) {
 
   _setReadyState(newState: ReadyState) {
     this._readyState = newState;
-    this.dispatchEvent({ type: 'readystatechange' });
+    this.dispatchEvent({type: 'readystatechange'});
     if (newState === DONE) {
       if (this._aborted) {
-        this.dispatchEvent({ type: 'abort' });
+        this.dispatchEvent({type: 'abort'});
       } else if (this._error) {
-        this.dispatchEvent({ type: 'error' });
+        this.dispatchEvent({type: 'error'});
       } else {
-        this.dispatchEvent({ type: 'load' });
+        this.dispatchEvent({type: 'load'});
       }
-      this.dispatchEvent({ type: 'loadend' });
+      this.dispatchEvent({type: 'loadend'});
     }
   }
 
@@ -90,37 +90,43 @@ class FileReader extends EventTarget(...READER_EVENTS) {
   readAsDataURL(blob: Blob) {
     this._aborted = false;
 
-    FileReaderModule.readAsDataURL(blob.data).then((text: string) => {
-      if (this._aborted) {
-        return;
-      }
-      this._result = text;
-      this._setReadyState(DONE);
-    }, error => {
-      if (this._aborted) {
-        return;
-      }
-      this._error = error;
-      this._setReadyState(DONE);
-    });
+    FileReaderModule.readAsDataURL(blob.data).then(
+      (text: string) => {
+        if (this._aborted) {
+          return;
+        }
+        this._result = text;
+        this._setReadyState(DONE);
+      },
+      error => {
+        if (this._aborted) {
+          return;
+        }
+        this._error = error;
+        this._setReadyState(DONE);
+      },
+    );
   }
 
   readAsText(blob: Blob, encoding: string = 'UTF-8') {
     this._aborted = false;
 
-    FileReaderModule.readAsText(blob.data, encoding).then((text: string) => {
-      if (this._aborted) {
-        return;
-      }
-      this._result = text;
-      this._setReadyState(DONE);
-    }, error => {
-      if (this._aborted) {
-        return;
-      }
-      this._error = error;
-      this._setReadyState(DONE);
-    });
+    FileReaderModule.readAsText(blob.data, encoding).then(
+      (text: string) => {
+        if (this._aborted) {
+          return;
+        }
+        this._result = text;
+        this._setReadyState(DONE);
+      },
+      error => {
+        if (this._aborted) {
+          return;
+        }
+        this._error = error;
+        this._setReadyState(DONE);
+      },
+    );
   }
 
   abort() {

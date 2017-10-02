@@ -8,22 +8,33 @@
  *
  * @providesModule File
  * @flow
+ * @format
  */
 'use strict';
 
 const Blob = require('Blob');
 
-import type { BlobOptions } from 'BlobTypes';
+const invariant = require('invariant');
+
+import type {BlobOptions} from 'BlobTypes';
 
 /**
  * The File interface provides information about files.
  */
 class File extends Blob {
-
   /**
    * Constructor for JS consumers.
    */
-  constructor(parts: Array<Blob | string> = [], name?: string, options?: BlobOptions) {
+  constructor(
+    parts: Array<Blob | string>,
+    name: string,
+    options?: BlobOptions,
+  ) {
+    invariant(
+      parts != null && name != null,
+      'Failed to construct `File`: Must pass both `parts` and `name` arguments.',
+    );
+
     super(parts, options);
     this.data.name = name;
   }

@@ -132,7 +132,7 @@ RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)par
     NSString *type = [RCTConvert NSString:part[@"type"]];
 
     if ([type isEqualToString:@"blob"]) {
-      NSData *partData = [self resolve:part];
+      NSData *partData = [self resolve:part[@"data"]];
       [data appendData:partData];
     } else if ([type isEqualToString:@"string"]) {
       NSData *partData = [[RCTConvert NSString:part[@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
@@ -215,7 +215,8 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 @end
 
-@implementation _RCTBlobWebSocketContentHandler {
+@implementation _RCTBlobWebSocketContentHandler
+{
   __weak RCTBlobManager *_blobManager;
 }
 
@@ -244,11 +245,12 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 @end
 
-@implementation _RCTBlobXMLHttpRequestContentHandler {
+@implementation _RCTBlobXMLHttpRequestContentHandler
+{
   __weak RCTBlobManager *_blobManager;
 }
 
--(instancetype)initWithBlobManager:(RCTBlobManager *)blobManager
+- (instancetype)initWithBlobManager:(RCTBlobManager *)blobManager
 {
   if (self = [super init]) {
     _blobManager = blobManager;
@@ -256,11 +258,13 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   return self;
 }
 
-- (NSData *)processBlob:(NSDictionary *)blob {
+- (NSData *)processBlob:(NSDictionary *)blob
+{
   return [_blobManager resolve:blob];
 }
 
-- (NSString *)storeBlob:(NSData *)data {
+- (NSString *)storeBlob:(NSData *)data
+{
   return [_blobManager store:data];
 }
 

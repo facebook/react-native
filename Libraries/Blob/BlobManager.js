@@ -8,6 +8,7 @@
  *
  * @providesModule BlobManager
  * @flow
+ * @format
  */
 
 'use strict';
@@ -15,23 +16,30 @@
 const uuid = require('uuid');
 const Blob = require('Blob');
 const BlobRegistry = require('BlobRegistry');
-const { BlobModule } = require('NativeModules');
+const {BlobModule} = require('NativeModules');
 
-import type { BlobData, BlobOptions } from 'BlobTypes';
+import type {BlobData, BlobOptions} from 'BlobTypes';
 
 /**
  * Module to manage blobs
  */
 class BlobManager {
-
   /**
    * Create blob from existing array of blobs.
    */
-  static createFromParts(parts: Array<Blob | string>, options?: BlobOptions): Blob {
+  static createFromParts(
+    parts: Array<Blob | string>,
+    options?: BlobOptions,
+  ): Blob {
     const blobId = uuid.v4();
     const items = parts.map(part => {
-      if (part instanceof ArrayBuffer || global.ArrayBufferView && part instanceof global.ArrayBufferView) {
-        throw new Error('Creating blobs from \'ArrayBuffer\' and \'ArrayBufferView\' are not supported');
+      if (
+        part instanceof ArrayBuffer ||
+        (global.ArrayBufferView && part instanceof global.ArrayBufferView)
+      ) {
+        throw new Error(
+          "Creating blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported",
+        );
       }
       if (part instanceof Blob) {
         return {
@@ -70,7 +78,7 @@ class BlobManager {
    */
   static createFromOptions(options: BlobData): Blob {
     BlobRegistry.register(options.blobId);
-    return Object.assign(Object.create(Blob.prototype), { data: options });
+    return Object.assign(Object.create(Blob.prototype), {data: options});
   }
 
   /**

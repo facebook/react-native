@@ -8,19 +8,12 @@
  *
  * @providesModule Blob
  * @flow
+ * @format
  */
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const uuid = require('uuid');
-
-const { BlobModule } = require('NativeModules');
-
-import type { BlobProps } from 'BlobTypes';
+import type {BlobData, BlobOptions} from 'BlobTypes';
 
 /**
  * Opaque JS representation of some binary data in native.
@@ -82,15 +75,16 @@ class Blob {
   }
 
   get data(): BlobData {
-    if (this._data) {
-      return this._data;
+    if (!this._data) {
+      throw new Error('Blob has been closed and is no longer available');
     }
-    throw new Error('Blob has been closed and is no longer available');
+
+    return this._data;
   }
 
   slice(start?: number, end?: number): Blob {
     const BlobManager = require('BlobManager');
-    let { offset, size } = this.data;
+    let {offset, size} = this.data;
 
     if (typeof start === 'number') {
       if (start > size) {

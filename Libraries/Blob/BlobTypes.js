@@ -8,6 +8,7 @@
  *
  * @providesModule BlobTypes
  * @flow
+ * @format
  */
 
 'use strict';

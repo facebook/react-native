@@ -191,6 +191,18 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mResponseHandlers.add(handler);
   }
 
+  public static void removeUriHandler(UriHandler handler) {
+    mUriHandlers.remove(handler);
+  }
+
+  public static void removeRequestBodyHandler(RequestBodyHandler handler) {
+    mRequestBodyHandlers.remove(handler);
+  }
+
+  public static void removeResponseHandler(ResponseHandler handler) {
+    mResponseHandlers.remove(handler);
+  }
+
   @ReactMethod
   /**
    * @param timeout value of 0 results in no timeout

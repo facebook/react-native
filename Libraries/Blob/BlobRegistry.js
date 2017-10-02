@@ -8,9 +8,10 @@
  *
  * @providesModule BlobRegistry
  * @flow
+ * @format
  */
 
-const registry: { [key: string]: number } = {};
+const registry: {[key: string]: number} = {};
 
 const register = (id: string) => {
   if (registry[id]) {

@@ -152,11 +152,6 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   public BlobModule(ReactApplicationContext reactContext) {
     super(reactContext);
-
-    // Enable Blob support for networking modules
-    NetworkingModule.addUriHandler(NetworkingUriHandler);
-    NetworkingModule.addRequestBodyHandler(NetworkingRequestBodyHandler);
-    NetworkingModule.addResponseHandler(NetworkingResponseHandler);
   }
 
   @Override
@@ -288,7 +283,21 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
     return type;
   }
-  
+
+  @ReactMethod
+  public void addXMLHttpRequestHandler() {
+    NetworkingModule.addUriHandler(NetworkingUriHandler);
+    NetworkingModule.addRequestBodyHandler(NetworkingRequestBodyHandler);
+    NetworkingModule.addResponseHandler(NetworkingResponseHandler);
+  }
+
+  @ReactMethod
+  public void removeXMLHttpRequestHandler() {
+    NetworkingModule.removeUriHandler(NetworkingUriHandler);
+    NetworkingModule.removeRequestBodyHandler(NetworkingRequestBodyHandler);
+    NetworkingModule.removeResponseHandler(NetworkingResponseHandler);
+  }
+
   private WebSocketModule getWebSocketModule() {
     return getReactApplicationContext().getNativeModule(WebSocketModule.class);
   }

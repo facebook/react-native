@@ -1,20 +1,22 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
  */
 'use strict';
 
-jest
-  .unmock('Blob')
-  .unmock('BlobManager')
-  .unmock('../__mocks__/BlobModule')
-  .setMock('NativeModules', {
-    BlobModule: require('../__mocks__/BlobModule'),
-  });
+jest.setMock('NativeModules', {
+  BlobModule: require('../__mocks__/BlobModule'),
+});
 
 var Blob = require('Blob');
 
 describe('Blob', function() {
-
   it('should create empty blob', () => {
     const blob = new Blob();
     expect(blob).toBeInstanceOf(Blob);
@@ -29,19 +31,20 @@ describe('Blob', function() {
     const blobB = new Blob();
     const textA = 'i ♥ dogs';
     const textB = '𐀀';
-    const textC = 'Z͑ͫ̓ͪ̂ͫ̽͏̴̙̤̞͉͚̯̞̠͍A̴̵̜̰͔ͫ͗͢L̠ͨͧͩ͘G̴̻͈͍͔̹̑͗̎̅͛́Ǫ̵̹̻̝̳͂̌̌͘!͖̬̰̙̗̿̋ͥͥ̂ͣ̐́́͜͞';
+    const textC =
+      'Z͑ͫ̓ͪ̂ͫ̽͏̴̙̤̞͉͚̯̞̠͍A̴̵̜̰͔ͫ͗͢L̠ͨͧͩ͘G̴̻͈͍͔̹̑͗̎̅͛́Ǫ̵̹̻̝̳͂̌̌͘!͖̬̰̙̗̿̋ͥͥ̂ͣ̐́́͜͞';
 
     blobA.data.size = 34540;
     blobB.data.size = 65452;
 
-    const blob = new Blob([ blobA, blobB, textA, textB, textC ]);
+    const blob = new Blob([blobA, blobB, textA, textB, textC]);
 
     expect(blob.size).toBe(
       blobA.size +
-      blobB.size +
-      global.Buffer.byteLength(textA, 'UTF-8') +
-      global.Buffer.byteLength(textB, 'UTF-8') +
-      global.Buffer.byteLength(textC, 'UTF-8')
+        blobB.size +
+        global.Buffer.byteLength(textA, 'UTF-8') +
+        global.Buffer.byteLength(textB, 'UTF-8') +
+        global.Buffer.byteLength(textC, 'UTF-8'),
     );
     expect(blob.type).toBe('');
   });
@@ -71,5 +74,4 @@ describe('Blob', function() {
 
     expect(() => blob.size).toThrow();
   });
-
 });
