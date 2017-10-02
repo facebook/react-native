@@ -11,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -54,8 +55,8 @@
     _backedTextInput.scrollsToTop = NO;
 #endif
     _backedTextInput.scrollEnabled = YES;
-
     _backedTextInput.textInputDelegate = self;
+    _backedTextInput.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }
