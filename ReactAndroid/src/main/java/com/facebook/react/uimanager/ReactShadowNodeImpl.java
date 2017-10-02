@@ -518,6 +518,18 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     return isDescendant;
   }
 
+  /*
+   * In some cases we need a way to specify some environmental data to shadow node
+   * to improve layout (or do something similar), so {@code localData} serves these needs.
+   * For example, any stateful embedded native views may benefit from this.
+   * Have in mind that this data is not supposed to interfere with the state of
+   * the shadow node.
+   * Please respect one-directional data flow of React.
+   * Use  {@link ReactUIManagerModule#setViewLocalData} to set this property
+   * (to provide local/environmental data for a shadow node) from the main thread.
+   */
+  public void setLocalData(Object data) {}
+
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
    * rooted at this node for the given child. Put another way, this returns the number of native

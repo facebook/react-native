@@ -324,6 +324,29 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
 
+  /**
+   * Sets local data for a shadow node corresponded with given tag.
+   * In some cases we need a way to specify some environmental data to shadow node
+   * to improve layout (or do something similar), so {@code localData} serves these needs.
+   * For example, any stateful embedded native views may benefit from this.
+   * Have in mind that this data is not supposed to interfere with the state of
+   * the shadow view.
+   * Please respect one-directional data flow of React.
+   */
+  public void setViewLocalData(final int tag, final Object data) {
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    reactApplicationContext.assertOnUiQueueThread();
+
+    reactApplicationContext.runUIBackgroundRunnable(
+        new GuardedRunnable(reactApplicationContext) {
+          @Override
+          public void runGuarded() {
+            mUIImplementation.setViewLocalData(tag, data);
+          }
+        });
+  }
+
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     if (DEBUG) {
