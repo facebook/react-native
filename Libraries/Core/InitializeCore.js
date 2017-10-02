@@ -105,15 +105,32 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console-disallow */
+      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console-disallow */
+      /* eslint-enable no-console */
       throw e;
     }
   };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
+}
+
+const formatVersion = version =>
+  `${version.major}.${version.minor}.${version.patch}` +
+  (version.prerelease !== null ? `-${version.prerelease}` : '');
+
+const ReactNativeVersion = require('ReactNativeVersion');
+const nativeVersion = require('NativeModules').PlatformConstants.reactNativeVersion;
+if (ReactNativeVersion.version.major !== nativeVersion.major ||
+    ReactNativeVersion.version.minor !== nativeVersion.minor) {
+  throw new Error(
+    `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
+    `Native version: ${formatVersion(nativeVersion)}\n\n` +
+    'Make sure that you have rebuilt the native code. If the problem persists ' +
+    'try clearing the watchman and packager caches with `watchman watch-del-all ' +
+    '&& react-native start --reset-cache`.'
+  );
 }
 
 // Set up collections

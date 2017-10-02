@@ -103,8 +103,8 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
     }
 
     NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@",
-                         exception, method.JSMethodName, m_moduleData.name, objcParams];
+                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@\ncallstack: %@",
+                         exception, method.JSMethodName, m_moduleData.name, objcParams, exception.callStackSymbols];
     RCTFatal(RCTErrorWithMessage(message));
   }
 }

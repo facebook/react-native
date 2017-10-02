@@ -23,6 +23,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
+#include "JniRAMBundleRegistry.h"
 #include "JNativeRunnable.h"
 #include "NativeArray.h"
 
@@ -186,8 +187,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
-    auto bundle = folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL);
-    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
+    auto registry = folly::make_unique<JniRAMBundleRegistry>(std::move(bundle), manager, sourceURL);
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(script),

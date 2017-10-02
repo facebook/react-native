@@ -79,13 +79,10 @@ if (Platform.OS === 'ios') {
       });
     }
   });
-} else if (
-  Platform.OS === 'android' &&
-  UIManager.AndroidLazyViewManagersEnabled
-) {
+} else if (Platform.OS === 'android' && UIManager.ViewManagerNames) {
   UIManager.ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(UIManager, viewManagerName, {
-      get: () => NativeModules[viewManagerName.replace(/^(RCT|RK)/, '')],
+      get: () => UIManager.getConstantsForViewManager(viewManagerName),
     });
   });
 }

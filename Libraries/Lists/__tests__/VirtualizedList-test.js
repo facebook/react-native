@@ -140,7 +140,7 @@ describe('VirtualizedList', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={outerInfo =>
+        renderItem={outerInfo => (
           <VirtualizedList
             data={[
               {key: outerInfo.item.key + ':inner0'},
@@ -152,7 +152,8 @@ describe('VirtualizedList', () => {
             }}
             getItem={(data, index) => data[index]}
             getItemCount={data => data.length}
-          />}
+          />
+        )}
         getItem={(data, index) => data[index]}
         getItemCount={data => data.length}
       />,

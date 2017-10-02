@@ -614,7 +614,7 @@ const ScrollView = createReactClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console-disallow
+        console.log( // eslint-disable-line no-console
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +
