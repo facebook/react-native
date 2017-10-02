@@ -376,7 +376,9 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
-    RCTAssert(shadowView != nil, @"Could not locate view with tag #%@", reactTag);
+    if (shadowView == nil) {
+      return;
+    }    
 
     if (!CGSizeEqualToSize(shadowView.intrinsicContentSize, size)) {
       shadowView.intrinsicContentSize = size;
