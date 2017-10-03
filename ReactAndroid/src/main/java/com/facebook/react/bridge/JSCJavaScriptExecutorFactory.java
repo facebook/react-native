@@ -23,7 +23,7 @@ public class JSCJavaScriptExecutorFactory implements JavaScriptExecutorFactory {
     WritableNativeMap jscConfig = new WritableNativeMap();
     jscConfig.putString("OwnerIdentity", "ReactNative");
     jscConfig.putString("AppIdentity", mAppName);
-    jscConfig.putString("OwnerIdentity", mDeviceName);
+    jscConfig.putString("DeviceIdentity", mDeviceName);
     return new JSCJavaScriptExecutor(jscConfig);
   }
 }
