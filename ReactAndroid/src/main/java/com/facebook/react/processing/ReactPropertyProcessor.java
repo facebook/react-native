@@ -72,8 +72,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
 
   private static final TypeName VIEW_MANAGER_TYPE =
       ClassName.get("com.facebook.react.uimanager", "ViewManager");
-  private static final TypeName SHADOW_NODE_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "ReactShadowNode");
+  private static final TypeName SHADOW_NODE_IMPL_TYPE =
+      ClassName.get("com.facebook.react.uimanager", "ReactShadowNodeImpl");
 
   private static final ClassName VIEW_MANAGER_SETTER_TYPE =
       ClassName.get(
@@ -184,9 +184,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return true;
   }
 
+  private boolean isShadowNodeType(TypeName typeName) {
+    return typeName.equals(SHADOW_NODE_IMPL_TYPE);
+  }
+
   private ClassInfo parseClass(ClassName className, TypeElement typeElement) {
     TypeName targetType = getTargetType(typeElement.asType());
-    TypeName viewType = targetType.equals(SHADOW_NODE_TYPE) ? null : targetType;
+    TypeName viewType = isShadowNodeType(targetType) ? null : targetType;
 
     ClassInfo classInfo = new ClassInfo(className, typeElement, viewType);
     findProperties(classInfo, typeElement);
@@ -229,10 +233,11 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeName typeName = TypeName.get(mirror);
     if (typeName instanceof ParameterizedTypeName) {
       ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if (parameterizedTypeName.rawType.equals(VIEW_MANAGER_TYPE)
-          || parameterizedTypeName.rawType.equals(SHADOW_NODE_TYPE)) {
+      if (parameterizedTypeName.rawType.equals(VIEW_MANAGER_TYPE)) {
         return parameterizedTypeName.typeArguments.get(0);
       }
+    } else if (isShadowNodeType(typeName)) {
+      return SHADOW_NODE_IMPL_TYPE;
     } else if (typeName.equals(TypeName.OBJECT)) {
       throw new IllegalArgumentException("Could not find target type " + typeName);
     }

@@ -88,6 +88,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -148,7 +149,7 @@ public class ReactInstanceManager {
       Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
-  // Identifies whether the insance manager destroy function is in process,
+  // Identifies whether the instance manager destroy function is in process,
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
   private final UIImplementationProvider mUIImplementationProvider;
@@ -268,33 +269,32 @@ public class ReactInstanceManager {
     mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
-
-    if (!splitPackagesEnabled) {
-      CoreModulesPackage coreModulesPackage =
+    synchronized (mPackages) {
+      if (!splitPackagesEnabled) {
+        CoreModulesPackage coreModulesPackage =
           new CoreModulesPackage(
+            this,
+            mBackBtnHandler,
+            mUIImplementationProvider,
+            mLazyViewManagersEnabled,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+        mPackages.add(coreModulesPackage);
+      } else {
+        PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
+        mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
+        if (mUseDeveloperSupport) {
+          mPackages.add(new DebugCorePackage());
+        }
+        if (!useOnlyDefaultPackages) {
+          mPackages.add(new ReactNativeCorePackage(
               this,
-              mBackBtnHandler,
               mUIImplementationProvider,
               mLazyViewManagersEnabled,
-              mMinTimeLeftInFrameForNonBatchedOperationMs);
-      mPackages.add(coreModulesPackage);
-    } else {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
-      if (mUseDeveloperSupport) {
-        mPackages.add(new DebugCorePackage());
+              mMinTimeLeftInFrameForNonBatchedOperationMs));
+        }
       }
-      if (!useOnlyDefaultPackages) {
-        mPackages.add(
-            new ReactNativeCorePackage(
-                this,
-                mUIImplementationProvider,
-                mLazyViewManagersEnabled,
-                mMinTimeLeftInFrameForNonBatchedOperationMs));
-      }
+      mPackages.addAll(packages);
     }
-    mPackages.addAll(packages);
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -352,9 +352,11 @@ public class ReactInstanceManager {
 
     // CatalystInstance hasn't been created, so add packages for later evaluation
     if (!hasStartedCreatingInitialContext()) {
-      for (ReactPackage p : packages) {
-        if (!mPackages.contains(p)) {
-          mPackages.add(p);
+      synchronized (mPackages) {
+        for (ReactPackage p : packages) {
+          if (!mPackages.contains(p)) {
+            mPackages.add(p);
+          }
         }
       }
       return;
@@ -771,14 +773,52 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_VIEW_MANAGERS_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
     try {
-      List<ViewManager> allViewManagers = new ArrayList<>();
-      for (ReactPackage reactPackage : mPackages) {
-        allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+      synchronized (mPackages) {
+        List<ViewManager> allViewManagers = new ArrayList<>();
+        for (ReactPackage reactPackage : mPackages) {
+          allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+        }
+        return allViewManagers;
       }
-      return allViewManagers;
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_VIEW_MANAGERS_END);
+    }
+  }
+
+  public @Nullable ViewManager createViewManager(String viewManagerName) {
+    ReactApplicationContext context =
+        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+    synchronized (mPackages) {
+      for (ReactPackage reactPackage : mPackages) {
+        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+          ViewManager viewManager =
+            ((ViewManagerOnDemandReactPackage) reactPackage)
+              .createViewManager(context, viewManagerName);
+          if (viewManager != null) {
+            return viewManager;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  public List<String> getViewManagerNames() {
+    ReactApplicationContext context =
+        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+    synchronized (mPackages) {
+      Set<String> uniqueNames = new HashSet<>();
+      for (ReactPackage reactPackage : mPackages) {
+        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+          List<String> names =
+            ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+          if (names != null) {
+            uniqueNames.addAll(names);
+          }
+        }
+      }
+      return new ArrayList<>(uniqueNames);
     }
   }
 
@@ -1108,20 +1148,20 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 
     // TODO(6818138): Solve use-case of native modules overriding
-    for (ReactPackage reactPackage : packages) {
-      if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
-        continue;
-      }
-      Systrace.beginSection(
-        TRACE_TAG_REACT_JAVA_BRIDGE,
-        "createAndProcessCustomReactPackage");
-      try {
-        if (checkAndUpdatePackageMembership) {
-          mPackages.add(reactPackage);
+    synchronized (mPackages) {
+      for (ReactPackage reactPackage : packages) {
+        if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
+          continue;
         }
-        processPackage(reactPackage, nativeModuleRegistryBuilder);
-      } finally {
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
+        try {
+          if (checkAndUpdatePackageMembership) {
+            mPackages.add(reactPackage);
+          }
+          processPackage(reactPackage, nativeModuleRegistryBuilder);
+        } finally {
+          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        }
       }
     }
     ReactMarker.logMarker(PROCESS_PACKAGES_END);

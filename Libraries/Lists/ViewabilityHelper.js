@@ -112,8 +112,7 @@ class ViewabilityHelper {
       : itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-        itemVisiblePercentThreshold !=
-          null !==
+        (itemVisiblePercentThreshold != null) !==
           (viewAreaCoveragePercentThreshold != null),
       'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );

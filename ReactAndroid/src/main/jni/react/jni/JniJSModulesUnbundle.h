@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
@@ -14,9 +16,11 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
    */
 public:
   JniJSModulesUnbundle() = default;
-  JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& entryFile);
+  JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& moduleDirectory);
   JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
   JniJSModulesUnbundle& operator= (JSModulesUnbundle&& other) = delete;
+
+  static std::unique_ptr<JniJSModulesUnbundle> fromEntryFile(AAssetManager *assetManager, const std::string& entryFile);
 
   static bool isUnbundle(
     AAssetManager *assetManager,

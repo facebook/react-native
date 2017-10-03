@@ -113,7 +113,7 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
 
     final UIManagerModule mUIManager =
         new UIManagerModule(
-            getContext(), new ArrayList<ViewManager>(), new UIImplementationProvider(), false, 0);
+            getContext(), new ArrayList<ViewManager>(), new UIImplementationProvider(), 0);
 
     mAssertModule = new AssertModule();
 

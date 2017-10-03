@@ -484,19 +484,21 @@ class ItemWithSeparator extends React.Component<
       section,
       separators: this._separators,
     });
-    const leadingSeparator =
-      LeadingSeparatorComponent &&
-      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />;
-    const separator =
-      SeparatorComponent &&
-      <SeparatorComponent {...this.state.separatorProps} />;
-    return leadingSeparator || separator
-      ? <View>
-          {leadingSeparator}
-          {element}
-          {separator}
-        </View>
-      : element;
+    const leadingSeparator = LeadingSeparatorComponent && (
+      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />
+    );
+    const separator = SeparatorComponent && (
+      <SeparatorComponent {...this.state.separatorProps} />
+    );
+    return leadingSeparator || separator ? (
+      <View>
+        {leadingSeparator}
+        {element}
+        {separator}
+      </View>
+    ) : (
+      element
+    );
   }
 }
 

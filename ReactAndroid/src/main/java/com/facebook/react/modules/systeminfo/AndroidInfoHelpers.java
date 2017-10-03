@@ -31,6 +31,7 @@ public class AndroidInfoHelpers {
     return getServerIpAddress(INSPECTOR_PROXY_PORT);
   }
 
+  // FIXME(festevezga): This method is duplicated in an internal module. Any changes should be applied to both.
   public static String getFriendlyDeviceName() {
     if (isRunningOnGenymotion()) {
       // Genymotion already has a friendly name by default
