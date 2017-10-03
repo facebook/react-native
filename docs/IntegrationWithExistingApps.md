@@ -305,7 +305,6 @@ First, create an empty `index.js` file in the root of your React Native project.
 In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
 
 ```javascript
-'use strict';
 
 import React from 'react';
 import {
@@ -600,7 +599,6 @@ First, create an empty `index.js` file in the root of your React Native project.
 In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
 
 ```javascript
-'use strict';
 
 import React from 'react';
 import {
