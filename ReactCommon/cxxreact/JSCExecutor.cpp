@@ -209,9 +209,14 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   Object::getGlobalObject(m_context).setPrivate(this);
 
   if (canUseInspector(m_context)) {
-    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "main").getString();
+    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "unknown").getString();
+    const std::string appId = m_jscConfig.getDefault("AppIdentity", "unknown").getString();
+    const std::string deviceId = m_jscConfig.getDefault("DeviceIdentity", "unknown").getString();
+    const std::function<bool()> checkIsInspectedRemote = [&ownerId, &appId, &deviceId](){
+      return false;
+    };
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->registerGlobalContext(ownerId, m_context);
+    pInspector->registerGlobalContext(ownerId, checkIsInspectedRemote, m_context);
   }
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
