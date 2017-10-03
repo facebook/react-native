@@ -174,7 +174,7 @@ RCT_EXPORT_MODULE()
                                               body:@([_bridge.accessibilityManager multiplier])];
 #pragma clang diagnostic pop
 
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
     [self setNeedsLayout];
@@ -259,7 +259,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   _viewRegistry[reactTag] = rootView;
 
   // Register shadow view
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     if (!self->_viewRegistry) {
       return;
     }
@@ -296,7 +296,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertMainQueue();
   NSNumber *reactTag = rootView.reactTag;
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     RCTRootShadowView *shadowView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
     RCTAssert([shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view (with tag #%@) is actually not root view.", reactTag);
@@ -315,7 +315,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   RCTAssertMainQueue();
   NSNumber *tag = view.reactTag;
 
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[tag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", tag);
 
@@ -356,7 +356,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
@@ -374,7 +374,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     if (shadowView == nil) {
       RCTLogWarn(@"Could not locate shadow view with tag #%@, this is probably caused by a temporary inconsistency between native views and shadow views.", reactTag);
@@ -393,7 +393,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     if (!self->_viewRegistry) {
       return;
     }
@@ -1510,7 +1510,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
     return;
   }
 
-  dispatch_async(RCTGetUIManagerQueue(), ^{
+  RCTExecuteOnUIManagerQueue(^{
     NSNumber *rootTag = [self shadowViewForReactTag:reactTag].rootView.reactTag;
     dispatch_async(dispatch_get_main_queue(), ^{
       UIView *rootView = nil;
