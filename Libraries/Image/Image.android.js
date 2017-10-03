@@ -107,6 +107,7 @@ var Image = createReactClass({
           uri: PropTypes.string,
           width: PropTypes.number,
           height: PropTypes.number,
+          headers: PropTypes.objectOf(PropTypes.string),
         }))
     ]),
     /**
