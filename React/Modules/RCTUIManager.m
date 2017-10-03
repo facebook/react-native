@@ -88,7 +88,7 @@ RCT_EXPORT_MODULE()
   // This only accessed from the shadow queue
   _pendingUIBlocks = nil;
 
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
     for (NSNumber *rootViewTag in self->_rootViewTags) {
       [(id<RCTInvalidating>)self->_viewRegistry[rootViewTag] invalidate];
@@ -538,7 +538,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     if (RCTIsReactRootView(reactTag)) {
       CGSize contentSize = shadowView.frame.size;
 
-      dispatch_async(dispatch_get_main_queue(), ^{
+      RCTExecuteOnMainQueue(^{
         UIView *view = self->_viewRegistry[reactTag];
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
@@ -953,7 +953,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
   __weak RCTUIManager *weakManager = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     RCTUIManager *uiManager = weakManager;
     if (!uiManager) {
       return;
@@ -1119,7 +1119,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   if (previousPendingUIBlocks.count) {
     // Execute the previously queued UI blocks
     RCTProfileBeginFlowEvent();
-    dispatch_async(dispatch_get_main_queue(), ^{
+    RCTExecuteOnMainQueue(^{
       RCTProfileEndFlowEvent();
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
         @"count": [@(previousPendingUIBlocks.count) stringValue],
@@ -1512,7 +1512,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
 
   RCTExecuteOnUIManagerQueue(^{
     NSNumber *rootTag = [self shadowViewForReactTag:reactTag].rootView.reactTag;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    RCTExecuteOnMainQueue(^{
       UIView *rootView = nil;
       if (rootTag != nil) {
         rootView = [self viewForReactTag:rootTag];
