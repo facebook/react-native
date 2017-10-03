@@ -38,7 +38,7 @@ static CGFloat const kAutoSizeGranularity       = 0.001f;
   CGFloat _cachedTextStorageWidthMode;
   NSAttributedString *_cachedAttributedString;
   CGFloat _effectiveLetterSpacing;
-  UIUserInterfaceLayoutDirection _cachedEffectiveLayoutDirection;
+  UIUserInterfaceLayoutDirection _cachedLayoutDirection;
 }
 
 static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
@@ -72,7 +72,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _fontSizeMultiplier = 1.0;
     _textAlign = NSTextAlignmentNatural;
     _writingDirection = NSWritingDirectionNatural;
-    _cachedEffectiveLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
+    _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
@@ -198,7 +198,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       _cachedTextStorage &&
       (width == _cachedTextStorageWidth || (isnan(width) && isnan(_cachedTextStorageWidth))) &&
       widthMode == _cachedTextStorageWidthMode &&
-      _cachedEffectiveLayoutDirection == self.effectiveLayoutDirection
+      _cachedLayoutDirection == self.layoutDirection
   ) {
     return _cachedTextStorage;
   }
@@ -272,12 +272,12 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   if (
       ![self isTextDirty] &&
       _cachedAttributedString &&
-      _cachedEffectiveLayoutDirection == self.effectiveLayoutDirection
+      _cachedLayoutDirection == self.layoutDirection
   ) {
     return _cachedAttributedString;
   }
 
-  _cachedEffectiveLayoutDirection = self.effectiveLayoutDirection;
+  _cachedLayoutDirection = self.layoutDirection;
 
   if (_fontSize && !isnan(_fontSize)) {
     fontSize = @(_fontSize);
@@ -419,7 +419,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   // Text alignment
   NSTextAlignment textAlign = _textAlign;
   if (textAlign == NSTextAlignmentRight || textAlign == NSTextAlignmentLeft) {
-    if (_cachedEffectiveLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+    if (_cachedLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
       if (textAlign == NSTextAlignmentRight) {
         textAlign = NSTextAlignmentLeft;
       } else {

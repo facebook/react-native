@@ -84,9 +84,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
- * Computed layout direction for the view backed to Yoga node value.
+ * Computed layout direction of the view.
  */
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
 
 /**
  * Position and dimensions.
