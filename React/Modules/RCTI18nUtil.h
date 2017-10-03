@@ -22,6 +22,6 @@
 - (void)allowRTL:(BOOL)value;
 - (BOOL)isRTLForced;
 - (void)forceRTL:(BOOL)value;
-+ (id)sharedInstance;
++ (instancetype)sharedInstance;
 
 @end
