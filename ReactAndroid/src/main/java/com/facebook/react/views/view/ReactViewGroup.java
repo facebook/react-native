@@ -10,11 +10,8 @@
 package com.facebook.react.views.view;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
@@ -34,7 +31,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
-import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
 /**
@@ -104,7 +100,6 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
-  private @Nullable Path mPath;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -590,11 +585,6 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
-  public void setOverflow(String overflow) {
-    mOverflow = overflow;
-    invalidate();
-  }
-
   /**
    * Set the background for the view or remove the background. It calls {@link
    * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
@@ -608,47 +598,5 @@ public class ReactViewGroup extends ViewGroup implements
     } else {
       super.setBackgroundDrawable(drawable);
     }
-  }
-
-  @Override
-  protected void dispatchDraw(Canvas canvas) {
-    if (mOverflow != null) {
-      switch (mOverflow) {
-        case "visible":
-          if (mPath != null) {
-            mPath.rewind();
-          }
-          break;
-        case "hidden":
-          if (mReactBackgroundDrawable != null) {
-            float left = 0f;
-            float top = 0f;
-            float right = getWidth();
-            float bottom = getHeight();
-            if (mReactBackgroundDrawable.getFullBorderWidth() != 0f) {
-              float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
-              left += borderWidth;
-              top += borderWidth;
-              right -= borderWidth;
-              bottom -= borderWidth;
-            }
-            float radius = mReactBackgroundDrawable.getRadius();
-
-            if (radius != YogaConstants.UNDEFINED) {
-              if (mPath == null) {
-                mPath = new Path();
-              }
-              mPath.rewind();
-              mPath.addRoundRect(
-                  new RectF(left, top, right, bottom), radius, radius, Path.Direction.CW);
-              canvas.clipPath(mPath);
-            }
-          }
-          break;
-        default:
-          break;
-      }
-    }
-    super.dispatchDraw(canvas);
   }
 }

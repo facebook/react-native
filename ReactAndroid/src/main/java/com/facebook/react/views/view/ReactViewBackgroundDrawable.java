@@ -9,6 +9,11 @@
 
 package com.facebook.react.views.view;
 
+import javax.annotation.Nullable;
+
+import java.util.Arrays;
+import java.util.Locale;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -21,13 +26,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
-import com.facebook.yoga.YogaConstants;
-import java.util.Arrays;
-import java.util.Locale;
-import javax.annotation.Nullable;
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports
@@ -228,10 +230,6 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
   }
 
-  public float getRadius() {
-    return mBorderRadius;
-  }
-
   public void setColor(int color) {
     mColor = color;
     invalidateSelf();
@@ -335,8 +333,9 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mPaint.setPathEffect(mPathEffectForBorderStyle);
   }
 
+
   /** For rounded borders we use default "borderWidth" property. */
-  public float getFullBorderWidth() {
+  private float getFullBorderWidth() {
     return (mBorderWidth != null && !YogaConstants.isUndefined(mBorderWidth.getRaw(Spacing.ALL))) ?
         mBorderWidth.getRaw(Spacing.ALL) : 0f;
   }
