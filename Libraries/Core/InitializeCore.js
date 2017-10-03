@@ -232,6 +232,12 @@ if (__DEV__) {
 
     // Set up inspector
     const JSInspector = require('JSInspector');
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
+     * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
     JSInspector.registerAgent(require('NetworkAgent'));
   }
 }

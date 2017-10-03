@@ -912,7 +912,6 @@ if (Platform.OS === 'android') {
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
-  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 
