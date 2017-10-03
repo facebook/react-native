@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19BA88FE1F84391700741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		19BA88FF1F84392900741C5A /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		19BA89001F84392F00741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		19BA89011F84393D00741C5A /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
 		AD0871131E215B28007D136D /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
@@ -24,6 +28,7 @@
 			dstPath = include/RCTBlob;
 			dstSubfolderSpec = 16;
 			files = (
+				19BA88FE1F84391700741C5A /* RCTFileReaderModule.h in Copy Headers */,
 				AD08711A1E2162C8007D136D /* RCTBlobManager.h in Copy Headers */,
 			);
 			name = "Copy Headers";
@@ -35,6 +40,7 @@
 			dstPath = include/RCTBlob;
 			dstSubfolderSpec = 16;
 			files = (
+				19BA89001F84392F00741C5A /* RCTFileReaderModule.h in Copy Headers */,
 				AD0871131E215B28007D136D /* RCTBlobManager.h in Copy Headers */,
 			);
 			name = "Copy Headers";
@@ -91,6 +97,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19BA88FF1F84392900741C5A /* RCTFileReaderModule.h in Headers */,
 				AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -182,6 +189,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19BA89011F84393D00741C5A /* RCTFileReaderModule.m in Sources */,
 				ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

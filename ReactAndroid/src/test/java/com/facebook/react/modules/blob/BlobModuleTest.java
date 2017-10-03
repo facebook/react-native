@@ -135,11 +135,6 @@ public class BlobModuleTest {
 
     blobModule.createFromParts(parts, id);
 
-    JavaOnlyMap resultBlob = new JavaOnlyMap();
-    resultBlob.putString("blobId", id);
-    blob.putInt("offset", 0);
-    blob.putInt("size", bytes.length);
-
     int resultSize = bytes.length + stringBytes.length;
 
     byte[] result = BlobModule.resolve(id, 0, resultSize);

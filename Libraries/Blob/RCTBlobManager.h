@@ -21,4 +21,8 @@
 
 - (NSData *)resolve:(NSString *)blobId offset:(NSInteger)offset size:(NSInteger)size;
 
+- (void)remove:(NSString *)blobId;
+
+- (void)createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId;
+
 @end

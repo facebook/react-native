@@ -54,6 +54,8 @@
 		192F69B91E82409A008692C7 /* RCTConvert_YGValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */; };
 		192F69BA1E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */; };
 		192F69DA1E8240E2008692C7 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
+		19BA88D51F84344F00741C5A /* RCTBlobManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 19BA88D41F84344F00741C5A /* RCTBlobManagerTests.m */; };
+		19BA89031F8439A700741C5A /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA511EEAC9A700AC40CD /* libRCTBlob.a */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
@@ -489,6 +491,7 @@
 		192F69B51E82409A008692C7 /* RCTAnimationUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationUtilsTests.m; sourceTree = "<group>"; };
 		192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_YGValueTests.m; sourceTree = "<group>"; };
 		192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNativeAnimatedNodesManagerTests.m; sourceTree = "<group>"; };
+		19BA88D41F84344F00741C5A /* RCTBlobManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTBlobManagerTests.m; sourceTree = "<group>"; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
 		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
 		27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootViewIntegrationTests.m; sourceTree = "<group>"; };
@@ -526,6 +529,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19BA89031F8439A700741C5A /* libRCTBlob.a in Frameworks */,
 				192F69DA1E8240E2008692C7 /* libRCTAnimation.a in Frameworks */,
 				14D6D71E1B2222EF001FB087 /* libRCTActionSheet.a in Frameworks */,
 				14D6D7201B2222EF001FB087 /* libRCTGeolocation.a in Frameworks */,
@@ -729,6 +733,7 @@
 			isa = PBXGroup;
 			children = (
 				192F69B51E82409A008692C7 /* RCTAnimationUtilsTests.m */,
+				19BA88D41F84344F00741C5A /* RCTBlobManagerTests.m */,
 				192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */,
 				192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */,
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
@@ -842,6 +847,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		19BA89021F8439A700741C5A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		272E6B3A1BEA846C001FCF37 /* NativeExampleViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -928,6 +940,7 @@
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				2DD323911DA2DD8B000FE1B8 /* RNTester-tvOS */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				19BA89021F8439A700741C5A /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -1607,6 +1620,7 @@
 				8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */,
 				192F69B91E82409A008692C7 /* RCTConvert_YGValueTests.m in Sources */,
 				BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */,
+				19BA88D51F84344F00741C5A /* RCTBlobManagerTests.m in Sources */,
 				68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */,
 				8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */,
 			);

@@ -94,6 +94,11 @@ RCT_EXPORT_MODULE(BlobModule)
   return data;
 }
 
+- (void)remove:(NSString *)blobId
+{
+  [_blobs removeObjectForKey:blobId];
+}
+
 RCT_EXPORT_METHOD(addXMLHttpRequestHandler)
 {
   if (!_xmlHttpRequestContentHandler) {
@@ -146,7 +151,7 @@ RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)par
 
 RCT_EXPORT_METHOD(release:(NSString *)blobId)
 {
-  [_blobs removeObjectForKey:blobId];
+  [self remove:blobId];
 }
 
 #pragma mark - RCTURLRequestHandler methods
