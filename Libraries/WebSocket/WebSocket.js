@@ -148,14 +148,11 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
     }
     if (this._binaryType === 'blob' || binaryType === 'blob') {
-      const BlobModule = NativeModules.BlobModule;
-      invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      if (BlobModule) {
-        if (binaryType === 'blob') {
-          BlobModule.addWebSocketHandler(this._socketId);
-        } else {
-          BlobModule.removeWebSocketHandler(this._socketId);
-        }
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      if (binaryType === 'blob') {
+        BlobManager.addWebSocketHandler(this._socketId);
+      } else {
+        BlobManager.removeWebSocketHandler(this._socketId);
       }
     }
     this._binaryType = binaryType;
@@ -181,9 +178,8 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     }
 
     if (data instanceof Blob) {
-      const BlobModule = NativeModules.BlobModule;
-      invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      BlobModule.sendOverSocket(data.data, this._socketId);
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      BlobManager.sendOverSocket(data.data, this._socketId);
       return;
     }
 
@@ -216,6 +212,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       WebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
       WebSocketModule.close(this._socketId);
+    }
+
+    if (BlobManager.isAvailable && this._binaryType === 'blob') {
+      BlobManager.removeWebSocketHandler(this._socketId);
     }
   }
 

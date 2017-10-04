@@ -10,10 +10,17 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 
-@protocol RCTXMLHttpRequestContentHandler <NSObject>
+@protocol RCTNetworkingRequestHandler <NSObject>
 
-- (NSData *)processBlob:(NSDictionary *)blob;
-- (NSString *)storeBlob:(NSData *)data;
+- (BOOL)canHandleNetworkingRequest:(NSDictionary *)data;
+- (NSDictionary *)handleNetworkingRequest:(NSDictionary *)data;
+
+@end
+
+@protocol RCTNetworkingResponseHandler <NSObject>
+
+- (BOOL)canHandleNetworkingResponse:(NSString *)responseType;
+- (id)handleNetworkingResponse:(NSURLResponse *)response data:(NSData *)data;
 
 @end
 
@@ -31,7 +38,13 @@
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                            completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
 
-- (void)setContentHandler:(id<RCTXMLHttpRequestContentHandler>)handler;
+- (void)addRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
+
+- (void)addResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
+
+- (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
+
+- (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
 
 @end
 

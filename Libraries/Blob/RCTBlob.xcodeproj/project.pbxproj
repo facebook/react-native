@@ -15,8 +15,8 @@
 		AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD08711A1E2162C8007D136D /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
-		AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
-		ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
+		AD9A43C31DFC7126008DC588 /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */; };
+		ADD01A711E09404A00F6D226 /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */; };
 		ADDFBA6C1F33455F0064C998 /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
 /* End PBXBuildFile section */
@@ -51,7 +51,7 @@
 /* Begin PBXFileReference section */
 		358F4ED71D1E81A9004DF814 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBlobManager.h; sourceTree = "<group>"; };
-		AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBlobManager.m; sourceTree = "<group>"; };
+		AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBlobManager.mm; sourceTree = "<group>"; };
 		ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFileReaderModule.h; sourceTree = "<group>"; };
 		ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFileReaderModule.m; sourceTree = "<group>"; };
@@ -64,7 +64,7 @@
 				ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */,
 				ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */,
 				AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */,
-				AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */,
+				AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */,
 				358F4ED81D1E81A9004DF814 /* Products */,
 			);
 			indentWidth = 2;
@@ -181,7 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */,
-				AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */,
+				AD9A43C31DFC7126008DC588 /* RCTBlobManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,7 +190,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19BA89011F84393D00741C5A /* RCTFileReaderModule.m in Sources */,
-				ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */,
+				ADD01A711E09404A00F6D226 /* RCTBlobManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

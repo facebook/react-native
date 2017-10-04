@@ -23,9 +23,7 @@ const invariant = require('fbjs/lib/invariant');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const warning = require('fbjs/lib/warning');
-const Blob = require('Blob');
 const BlobManager = require('BlobManager');
-const NativeModules = require('NativeModules');
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
@@ -57,6 +55,11 @@ type XHRInterceptor = {
     error: string
   ): void,
 };
+
+// The native blob module is optional so inject it here if available.
+if (BlobManager.isAvailable) {
+  BlobManager.addNetworkingHandler();
+}
 
 const UNSENT = 0;
 const OPENED = 1;
@@ -205,16 +208,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       `The provided value '${responseType}' is unsupported in this environment.`
     );
 
-    if (this._responseType === 'blob' || responseType === 'blob') {
-      const BlobModule = NativeModules.BlobModule;
-      invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      if (BlobModule) {
-        if (responseType === 'blob') {
-          BlobModule.addXMLHttpRequestHandler();
-        } else {
-          BlobModule.removeXMLHttpRequestHandler();
-        }
-      }
+    if (responseType === 'blob') {
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
     }
     this._responseType = responseType;
   }

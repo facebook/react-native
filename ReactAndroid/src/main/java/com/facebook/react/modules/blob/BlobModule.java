@@ -285,17 +285,10 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void addXMLHttpRequestHandler() {
+  public void addNetworkingHandler() {
     NetworkingModule.addUriHandler(NetworkingUriHandler);
     NetworkingModule.addRequestBodyHandler(NetworkingRequestBodyHandler);
     NetworkingModule.addResponseHandler(NetworkingResponseHandler);
-  }
-
-  @ReactMethod
-  public void removeXMLHttpRequestHandler() {
-    NetworkingModule.removeUriHandler(NetworkingUriHandler);
-    NetworkingModule.removeRequestBodyHandler(NetworkingRequestBodyHandler);
-    NetworkingModule.removeResponseHandler(NetworkingResponseHandler);
   }
 
   private WebSocketModule getWebSocketModule() {

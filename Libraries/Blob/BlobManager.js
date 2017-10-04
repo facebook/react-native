@@ -21,9 +21,14 @@ const {BlobModule} = require('NativeModules');
 import type {BlobData, BlobOptions} from 'BlobTypes';
 
 /**
- * Module to manage blobs
+ * Module to manage blobs. Wrapper around the native blob module.
  */
 class BlobManager {
+  /**
+   * If the native blob module is available.
+   */
+  static isAvailable = !!BlobModule;
+
   /**
    * Create blob from existing array of blobs.
    */
@@ -84,12 +89,43 @@ class BlobManager {
   /**
    * Deallocate resources for a blob.
    */
-  static release(blobId: string) {
+  static release(blobId: string): void {
     BlobRegistry.unregister(blobId);
     if (BlobRegistry.has(blobId)) {
       return;
     }
     BlobModule.release(blobId);
+  }
+
+  /**
+   * Inject the blob content handler in the networking module to support blob
+   * requests and responses.
+   */
+  static addNetworkingHandler(): void {
+    BlobModule.addNetworkingHandler();
+  }
+
+  /**
+   * Indicate the the websocket should return a blob for incoming binary
+   * messages.
+   */
+  static addWebSocketHandler(socketId: number): void {
+    BlobModule.addWebSocketHandler(socketId);
+  }
+
+  /**
+   * Indicate the the websocket should no longer return a blob for incoming
+   * binary messages.
+   */
+  static removeWebSocketHandler(socketId: number): void {
+    BlobModule.removeWebSocketHandler(socketId);
+  }
+
+  /**
+   * Send a blob message to a websocket.
+   */
+  static sendOverSocket(data: Blob, socketId: number): void {
+    BlobModule.sendOverSocket(data, socketId);
   }
 }
 

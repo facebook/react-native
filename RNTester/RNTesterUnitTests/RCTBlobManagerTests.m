@@ -28,6 +28,7 @@
   [super setUp];
   
   _module = [RCTBlobManager new];
+  [_module setValue:nil forKey:@"bridge"];
   NSInteger size = 120;
   _data = [NSMutableData dataWithCapacity:size];
   for (NSInteger i = 0; i < size / 4; i++) {
@@ -53,6 +54,14 @@
     @"offset": @(0),
   };
   XCTAssertTrue([_data isEqualToData:[_module resolve:map]]);
+}
+
+- (void)testResolveURL
+{
+  NSURLComponents *components = [NSURLComponents new];
+  [components setPath:_blobId];
+  [components setQuery:[NSString stringWithFormat:@"offset=0&size=%lu", (unsigned long)_data.length]];
+  XCTAssertTrue([_data isEqualToData:[_module resolveURL:[components URL]]]);
 }
 
 - (void)testRemove

@@ -21,6 +21,8 @@
 
 - (NSData *)resolve:(NSString *)blobId offset:(NSInteger)offset size:(NSInteger)size;
 
+- (NSData *)resolveURL:(NSURL *)url;
+
 - (void)remove:(NSString *)blobId;
 
 - (void)createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId;
