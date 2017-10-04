@@ -204,6 +204,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "fishhook" do |ss|
+    ss.header_dir           = "fishhook"
     ss.source_files         = "Libraries/fishhook/*.{h,c}"
   end
 
