@@ -10,14 +10,14 @@
 package com.facebook.react.views.textinput;
 
 import android.os.Build;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.widget.EditText;
 
 /** Local state bearer for EditText instance. */
 public final class ReactTextInputLocalData {
 
-  private final SpannableString mText;
+  private final SpannableStringBuilder mText;
   private final float mTextSize;
   private final int mMinLines;
   private final int mMaxLines;
@@ -25,7 +25,7 @@ public final class ReactTextInputLocalData {
   private final int mBreakStrategy;
 
   public ReactTextInputLocalData(EditText editText) {
-    mText = new SpannableString(editText.getText());
+    mText = new SpannableStringBuilder(editText.getText());
     mTextSize = editText.getTextSize();
     mMinLines = editText.getMinLines();
     mMaxLines = editText.getMaxLines();
