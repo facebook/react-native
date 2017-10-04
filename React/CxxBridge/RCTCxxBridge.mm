@@ -328,13 +328,14 @@ struct RCTInstanceCallback : public InstanceCallback {
       BOOL useCustomJSC =
         [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
         [self.delegate shouldBridgeUseCustomJSC:self];
-      NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-      NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      // We use the name of the device and the app for debugging & metrics
+      NSString *deviceName = [[UIDevice currentDevice] name];
+      NSString *appName = [[NSBundle mainBundle] bundleIdentifier];
       // The arg is a cache dir.  It's not used with standard JSC.
       executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
         ("OwnerIdentity", "ReactNative")
-        ("AppIdentity", [(escapedAppName ?: @"unknown") UTF8String])
-        ("DeviceIdentity", [(escapedDeviceName ?: @"unknown") UTF8String])
+        ("AppIdentity", [(appName ?: @"unknown") UTF8String])
+        ("DeviceIdentity", [(deviceName ?: @"unknown") UTF8String])
         ("UseCustomJSC", (bool)useCustomJSC)
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
