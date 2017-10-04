@@ -74,6 +74,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'MaskedViewExample',
+    module: require('./MaskedViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ModalExample',
     module: require('./ModalExample'),
     supportsTVOS: true,
@@ -86,6 +91,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'NavigatorIOSColorsExample',
     module: require('./NavigatorIOSColorsExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'NavigatorIOSBarStyleExample',
+    module: require('./NavigatorIOSBarStyleExample'),
     supportsTVOS: false,
   },
   {
@@ -114,6 +124,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SafeAreaViewExample',
+    module: require('./SafeAreaViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
     supportsTVOS: true,
@@ -139,6 +154,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'SwipeableListViewExample',
     module: require('./SwipeableListViewExample'),
     supportsTVOS: false,
@@ -152,6 +172,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'TabBarIOSExample',
     module: require('./TabBarIOSExample'),
     supportsTVOS: true,
+  },
+  {
+    key: 'TabBarIOSBarStyleExample',
+    module: require('./TabBarIOSBarStyleExample'),
+    supportsTVOS: false,
   },
   {
     key: 'TextExample',
@@ -195,11 +220,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'ActionSheetIOSExample',
     module: require('./ActionSheetIOSExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'AdSupportIOSExample',
-    module: require('./AdSupportIOSExample'),
-    supportsTVOS: false,
   },
   {
     key: 'AlertExample',
@@ -334,6 +354,11 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'TransformExample',
     module: require('./TransformExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'TVEventHandlerExample',
+    module: require('./TVEventHandlerExample'),
     supportsTVOS: true,
   },
   {

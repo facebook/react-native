@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   ActivityIndicator,
@@ -29,7 +30,8 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-var NetworkImageCallbackExample = React.createClass({
+var NetworkImageCallbackExample = createReactClass({
+  displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
     return {
       events: [],
@@ -96,13 +98,16 @@ var NetworkImageCallbackExample = React.createClass({
   },
 
   _loadEventFired(event) {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.setState((state) => {
       return state.events = [...state.events, event];
     });
   }
 });
 
-var NetworkImageExample = React.createClass({
+var NetworkImageExample = createReactClass({
   getInitialState: function() {
     return {
       error: false,
@@ -130,7 +135,7 @@ var NetworkImageExample = React.createClass({
   }
 });
 
-var ImageSizeExample = React.createClass({
+var ImageSizeExample = createReactClass({
   getInitialState: function() {
     return {
       width: 0,
@@ -162,7 +167,7 @@ var ImageSizeExample = React.createClass({
   },
 });
 
-var MultipleSourcesExample = React.createClass({
+var MultipleSourcesExample = createReactClass({
   getInitialState: function() {
     return {
       width: 30,
@@ -192,7 +197,7 @@ var MultipleSourcesExample = React.createClass({
             source={[
               {uri: 'https://facebook.github.io/react/img/logo_small.png', width: 38, height: 38},
               {uri: 'https://facebook.github.io/react/img/logo_small_2x.png', width: 76, height: 76},
-              {uri: 'https://facebook.github.io/react/img/logo_og.png', width: 400, height: 400}
+              {uri: 'https://facebook.github.io/react/logo-og.png', width: 400, height: 400}
             ]}
           />
         </View>
@@ -232,7 +237,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+          source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
           style={styles.base}
         />
       );
@@ -266,7 +271,7 @@ exports.examples = [
     title: 'Error Handler',
     render: function() {
       return (
-        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/logo-og.png'}} />
       );
     },
     platform: 'ios',
@@ -434,7 +439,22 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting',
+    title: 'Nesting content inside <Image> component',
+    render: function() {
+      return (
+        <View style={{width: 60, height: 60}}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}/>
+          <Text style={styles.nestedText}>
+            React
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
     render: function() {
       return (
         <ImageBackground
@@ -707,7 +727,7 @@ exports.examples = [
   },
 ];
 
-var fullImage = {uri: 'https://facebook.github.io/react/img/logo_og.png'};
+var fullImage = {uri: 'https://facebook.github.io/react/logo-og.png'};
 var smallImage = {uri: 'https://facebook.github.io/react/img/logo_small_2x.png'};
 
 var styles = StyleSheet.create({

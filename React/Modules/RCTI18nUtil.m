@@ -13,13 +13,15 @@
 
 @implementation RCTI18nUtil
 
-+ (id)sharedInstance {
-   static RCTI18nUtil *sharedRCTI18nUtilInstance = nil;
-   @synchronized(self) {
-     if (sharedRCTI18nUtilInstance == nil)
-      sharedRCTI18nUtilInstance = [self new];
-   }
-   return sharedRCTI18nUtilInstance;
++ (instancetype)sharedInstance
+{
+  static RCTI18nUtil *sharedInstance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [self new];
+  });
+  
+  return sharedInstance;
 }
 
 /**

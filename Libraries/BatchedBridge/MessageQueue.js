@@ -8,6 +8,7 @@
  *
  * @providesModule MessageQueue
  * @flow
+ * @format
  */
 
 /*eslint no-bitwise: 0*/
@@ -24,9 +25,9 @@ const stringifySafe = require('stringifySafe');
 export type SpyData = {
   type: number,
   module: ?string,
-  method: string|number,
-  args: any
-}
+  method: string | number,
+  args: any,
+};
 
 const TO_JS = 0;
 const TO_NATIVE = 1;
@@ -44,7 +45,7 @@ const DEBUG_INFO_LIMIT = 32;
 let JSTimers = null;
 
 class MessageQueue {
-  _lazyCallableModules: {[key: string]: void => Object};
+  _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
   _successCallbacks: Array<?Function>;
   _failureCallbacks: Array<?Function>;
@@ -74,22 +75,30 @@ class MessageQueue {
       this._remoteMethodTable = {};
     }
 
-    (this:any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(this);
-    (this:any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(this);
-    (this:any).flushedQueue = this.flushedQueue.bind(this);
-    (this:any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(this);
+    (this: any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
+      this,
+    );
+    (this: any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(
+      this,
+    );
+    (this: any).flushedQueue = this.flushedQueue.bind(this);
+    (this: any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
+      this,
+    );
   }
 
   /**
    * Public APIs
    */
 
-  static spy(spyOrToggle: boolean|(data: SpyData) => void){
-    if (spyOrToggle === true){
+  static spy(spyOrToggle: boolean | ((data: SpyData) => void)) {
+    if (spyOrToggle === true) {
       MessageQueue.prototype.__spy = info => {
-        console.log(`${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
-                    `${info.module ? (info.module + '.') : ''}${info.method}` +
-                    `(${JSON.stringify(info.args)})`);
+        console.log(
+          `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
+            `${info.module ? info.module + '.' : ''}${info.method}` +
+            `(${JSON.stringify(info.args)})`,
+        );
       };
     } else if (spyOrToggle === false) {
       MessageQueue.prototype.__spy = null;
@@ -98,7 +107,11 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnFlushedQueue(
+    module: string,
+    method: string,
+    args: Array<any>,
+  ) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
@@ -106,7 +119,11 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  callFunctionReturnResultAndFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnResultAndFlushedQueue(
+    module: string,
+    method: string,
+    args: Array<any>,
+  ) {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
@@ -143,7 +160,7 @@ class MessageQueue {
 
   registerLazyCallableModule(name: string, factory: void => Object) {
     let module: Object;
-    let getValue: ?(void => Object) = factory;
+    let getValue: ?(void) => Object = factory;
     this._lazyCallableModules[name] = () => {
       if (getValue) {
         module = getValue();
@@ -153,12 +170,18 @@ class MessageQueue {
     };
   }
 
-  _getCallableModule(name: string) {
+  getCallableModule(name: string) {
     const getValue = this._lazyCallableModules[name];
     return getValue ? getValue() : null;
   }
 
-  enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
+  enqueueNativeCall(
+    moduleID: number,
+    methodID: number,
+    params: Array<any>,
+    onFail: ?Function,
+    onSucc: ?Function,
+  ) {
     if (onFail || onSucc) {
       if (__DEV__) {
         this._debugInfo[this._callID] = [moduleID, methodID];
@@ -176,7 +199,11 @@ class MessageQueue {
 
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
-        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+        global.nativeTraceBeginAsyncFlow(
+          TRACE_TAG_REACT_APPS,
+          'native',
+          this._callID,
+        );
     }
     this._callID++;
 
@@ -188,14 +215,16 @@ class MessageQueue {
       JSON.stringify(params);
 
       // The params object should not be mutated after being queued
-      deepFreezeAndThrowOnMutationInDev((params:any));
+      deepFreezeAndThrowOnMutationInDev((params: any));
     }
     this._queue[PARAMS].push(params);
 
     const now = new Date().getTime();
-    if (global.nativeFlushQueueImmediate &&
-        (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-         this._inCall === 0)) {
+    if (
+      global.nativeFlushQueueImmediate &&
+      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
+        this._inCall === 0)
+    ) {
       var queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
@@ -203,14 +232,19 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
-      this.__spy(
-        { type: TO_NATIVE,
-          module: this._remoteModuleTable[moduleID],
-          method: this._remoteMethodTable[moduleID][methodID],
-          args: params }
-      );
+      this.__spy({
+        type: TO_NATIVE,
+        module: this._remoteModuleTable[moduleID],
+        method: this._remoteMethodTable[moduleID][methodID],
+        args: params,
+      });
     } else if (this.__spy) {
-      this.__spy({type: TO_NATIVE, module: moduleID + '', method: methodID, args: params});
+      this.__spy({
+        type: TO_NATIVE,
+        module: moduleID + '',
+        method: methodID,
+        args: params,
+      });
     }
   }
 
@@ -250,18 +284,20 @@ class MessageQueue {
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
     if (this.__spy) {
-      this.__spy({ type: TO_JS, module, method, args});
+      this.__spy({type: TO_JS, module, method, args});
     }
-    const moduleMethods = this._getCallableModule(module);
+    const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',
-      module, method
+      module,
+      method,
     );
     invariant(
       !!moduleMethods[method],
       'Method %s does not exist on module %s',
-      method, module
+      method,
+      module,
     );
     const result = moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
@@ -274,7 +310,10 @@ class MessageQueue {
 
     // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
     const callID = cbID >>> 1;
-    const callback = (cbID & 1) ? this._successCallbacks[callID] : this._failureCallbacks[callID];
+    const callback =
+      cbID & 1
+        ? this._successCallbacks[callID]
+        : this._failureCallbacks[callID];
 
     if (__DEV__) {
       const debug = this._debugInfo[callID];
@@ -283,20 +322,21 @@ class MessageQueue {
       if (!callback) {
         let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
-          errorMessage = `The callback ${method}() exists in module ${module}, `
-          + 'but only one callback may be registered to a function in a native module.';
+          errorMessage =
+            `The callback ${method}() exists in module ${module}, ` +
+            'but only one callback may be registered to a function in a native module.';
         }
-        invariant(
-          callback,
-          errorMessage
-        );
+        invariant(callback, errorMessage);
       }
-      const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
+      const profileName = debug
+        ? '<callback for ' + module + '.' + method + '>'
+        : cbID;
       if (callback && this.__spy) {
-        this.__spy({ type: TO_JS, module:null, method:profileName, args });
+        this.__spy({type: TO_JS, module: null, method: profileName, args});
       }
       Systrace.beginEvent(
-        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
+        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`,
+      );
     }
 
     if (!callback) {

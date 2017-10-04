@@ -99,6 +99,7 @@ public class ReactToolbar extends Toolbar {
     @Override
     protected void setDrawable(Drawable d) {
       mItem.setIcon(d);
+      ReactToolbar.this.requestLayout();
     }
   }
 

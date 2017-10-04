@@ -15,8 +15,14 @@
  * After changing the files it makes a commit and tags it.
  * All you have to do is push changes to remote and CI will make a new build.
  */
-/*eslint-disable no-undef */
-require(`shelljs/global`);
+
+const {
+  cat,
+  echo,
+  exec,
+  exit,
+  sed,
+} = require('shelljs');
 
 const minimist = require('minimist');
 
@@ -40,9 +46,38 @@ let versionMajor = branch.slice(0, branch.indexOf(`-stable`));
 // e.g. 0.33.1 or 0.33.0-rc4
 let version = argv._[0];
 if (!version || version.indexOf(versionMajor) !== 0) {
-  echo(`You must pass a tag like ${versionMajor}.[X]-rc[Y] to bump a version`);
+  echo(`You must pass a tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`);
   exit(1);
 }
+
+// Generate version files to detect mismatches between JS and native.
+let match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+if (!match) {
+  echo(`You must pass a correctly formatted version; couldn't parse ${version}`);
+  exit(1);
+}
+let [, major, minor, patch, prerelease] = match;
+
+cat('scripts/versiontemplates/ReactNativeVersion.java.template')
+  .replace('${major}', major)
+  .replace('${minor}', minor)
+  .replace('${patch}', patch)
+  .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null')
+  .to('ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java');
+
+cat('scripts/versiontemplates/RCTVersion.h.template')
+  .replace('${major}', `@(${major})`)
+  .replace('${minor}', `@(${minor})`)
+  .replace('${patch}', `@(${patch})`)
+  .replace('${prerelease}', prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]')
+  .to('React/Base/RCTVersion.h');
+
+cat('scripts/versiontemplates/ReactNativeVersion.js.template')
+  .replace('${major}', major)
+  .replace('${minor}', minor)
+  .replace('${patch}', patch)
+  .replace('${prerelease}', prerelease !== undefined ? `'${prerelease}'` : 'null')
+  .to('Libraries/Core/ReactNativeVersion.js');
 
 let packageJson = JSON.parse(cat(`package.json`));
 packageJson.version = version;
@@ -93,4 +128,3 @@ if (version.indexOf(`rc`) === -1) {
 exec(`git push ${remote} ${branch} --follow-tags`);
 
 exit(0);
-/*eslint-enable no-undef */

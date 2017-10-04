@@ -10,8 +10,6 @@
  * @nolint
  */
 
-/* eslint-disable */
-
 // These annotations are copy/pasted from the built-in Flow definitions for
 // Native Set.
 

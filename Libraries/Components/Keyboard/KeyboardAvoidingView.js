@@ -11,23 +11,22 @@
  */
 'use strict';
 
+const createReactClass = require('create-react-class');
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
+import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
-type Rect = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
 type ScreenRect = {
   screenX: number,
   screenY: number,
@@ -40,11 +39,6 @@ type KeyboardChangeEvent = {
   duration?: number,
   easing?: string,
 };
-type LayoutEvent = {
-  nativeEvent: {
-    layout: Rect,
-  }
-};
 
 const viewRef = 'VIEW';
 
@@ -53,7 +47,8 @@ const viewRef = 'VIEW';
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
 // $FlowFixMe(>=0.41.0)
-const KeyboardAvoidingView = React.createClass({
+const KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
   propTypes: {
@@ -85,7 +80,7 @@ const KeyboardAvoidingView = React.createClass({
   },
 
   subscriptions: ([]: Array<EmitterSubscription>),
-  frame: (null: ?Rect),
+  frame: (null: ?ViewLayout),
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
@@ -121,7 +116,7 @@ const KeyboardAvoidingView = React.createClass({
     this.setState({bottom: height});
   },
 
-  onLayout(event: LayoutEvent) {
+  onLayout(event: ViewLayoutEvent) {
     this.frame = event.nativeEvent.layout;
   },
 

@@ -27,6 +27,7 @@ export type ResolutionResponse<TModule> = {
   getResolvedDependencyPairs(
     module: TModule,
   ): $ReadOnlyArray<[string, TModule]>,
+  options: Object,
 };
 
 function resolveModuleRequires<TModule>(

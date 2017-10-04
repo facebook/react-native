@@ -40,25 +40,24 @@ const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will
- * replace it but maintain its descriptor configuration. By default, the property
- * will replaced with a lazy getter.
+ * replace it but maintain its descriptor configuration. The property will be
+ * replaced with a lazy getter.
  *
- * The original property value will be preserved as `original[PropertyName]` so
- * that, if necessary, it can be restored. For example, if you want to route
+ * In DEV mode the original property value will be preserved as `original[PropertyName]`
+ * so that, if necessary, it can be restored. For example, if you want to route
  * network requests through DevTools (to trace them):
  *
  *   global.XMLHttpRequest = global.originalXMLHttpRequest;
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-function defineProperty<T>(
+function defineLazyProperty<T>(
   object: Object,
   name: string,
   getValue: () => T,
-  eager?: boolean
 ): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  if (descriptor) {
+  if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
       ...descriptor,
@@ -72,20 +71,15 @@ function defineProperty<T>(
     return;
   }
 
-  if (eager === true) {
-    Object.defineProperty(object, name, {
-      configurable: true,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-      value: getValue(),
-    });
-  } else {
-    defineLazyObjectProperty(object, name, {
-      get: getValue,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-    });
-  }
+  defineLazyObjectProperty(object, name, {
+    get: getValue,
+    enumerable: enumerable !== false,
+    writable: writable !== false,
+  });
+}
+
+function polyfillGlobal<T>(name: string, getValue: () => T): void {
+  defineLazyProperty(global, name, getValue);
 }
 
 // Set up process
@@ -101,11 +95,6 @@ if (global.__RCTProfileIsProfiling) {
   Systrace.setEnabled(true);
 }
 
-if (__DEV__ && global.performance === undefined) {
-  const Systrace = require('Systrace');
-  global.performance = Systrace.getUserTimingPolyfill();
-}
-
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
@@ -116,9 +105,9 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console-disallow */
+      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console-disallow */
+      /* eslint-enable no-console */
       throw e;
     }
   };
@@ -127,29 +116,55 @@ if (!global.__fbDisableExceptionsManager) {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
+const {PlatformConstants} = require('NativeModules');
+if (PlatformConstants) {
+  const formatVersion = version =>
+    `${version.major}.${version.minor}.${version.patch}` +
+    (version.prerelease !== null ? `-${version.prerelease}` : '');
+
+  const ReactNativeVersion = require('ReactNativeVersion');
+  const nativeVersion = PlatformConstants.reactNativeVersion;
+  if (ReactNativeVersion.version.major !== nativeVersion.major ||
+      ReactNativeVersion.version.minor !== nativeVersion.minor) {
+    throw new Error(
+      `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
+      `Native version: ${formatVersion(nativeVersion)}\n\n` +
+      'Make sure that you have rebuilt the native code. If the problem persists ' +
+      'try clearing the watchman and packager caches with `watchman watch-del-all ' +
+      '&& react-native start --reset-cache`.'
+    );
+  }
+}
+
 // Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
-// not exist if it were lazily defined).
-defineProperty(global, 'Map', () => require('Map'), true);
-defineProperty(global, 'Set', () => require('Set'), true);
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  polyfillGlobal('Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  polyfillGlobal('Set', () => require('Set'));
+}
 
 // Set up Promise
 // The native Promise implementation throws the following error:
 // ERROR: Event loop not supported.
-defineProperty(global, 'Promise', () => require('Promise'));
+polyfillGlobal('Promise', () => require('Promise'));
 
 // Set up regenerator.
-defineProperty(global, 'regeneratorRuntime', () => {
+polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
   require('regenerator-runtime/runtime');
   return global.regeneratorRuntime;
 });
 
 // Set up timers
 const defineLazyTimer = name => {
-  defineProperty(global, name, () => require('JSTimers')[name]);
+  polyfillGlobal(name, () => require('JSTimers')[name]);
 };
 defineLazyTimer('setTimeout');
 defineLazyTimer('setInterval');
@@ -165,14 +180,16 @@ defineLazyTimer('cancelIdleCallback');
 // Set up XHR
 // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
 // let you fetch anything from the internet
-defineProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
-defineProperty(global, 'FormData', () => require('FormData'));
+polyfillGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
+polyfillGlobal('FormData', () => require('FormData'));
 
-defineProperty(global, 'fetch', () => require('fetch').fetch);
-defineProperty(global, 'Headers', () => require('fetch').Headers);
-defineProperty(global, 'Request', () => require('fetch').Request);
-defineProperty(global, 'Response', () => require('fetch').Response);
-defineProperty(global, 'WebSocket', () => require('WebSocket'));
+polyfillGlobal('fetch', () => require('fetch').fetch);
+polyfillGlobal('Headers', () => require('fetch').Headers);
+polyfillGlobal('Request', () => require('fetch').Request);
+polyfillGlobal('Response', () => require('fetch').Response);
+polyfillGlobal('WebSocket', () => require('WebSocket'));
+polyfillGlobal('Blob', () => require('Blob'));
+polyfillGlobal('URL', () => require('URL'));
 
 // Set up alert
 if (!global.alert) {
@@ -190,8 +207,8 @@ if (navigator === undefined) {
 }
 
 // see https://github.com/facebook/react-native/issues/10881
-defineProperty(navigator, 'product', () => 'ReactNative', true);
-defineProperty(navigator, 'geolocation', () => require('Geolocation'));
+defineLazyProperty(navigator, 'product', () => 'ReactNative');
+defineLazyProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
@@ -216,10 +233,14 @@ if (__DEV__) {
       require('setupDevtools');
     }
 
-    require('RCTDebugComponentOwnership');
-
     // Set up inspector
     const JSInspector = require('JSInspector');
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
+     * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
     JSInspector.registerAgent(require('NetworkAgent'));
   }
 }

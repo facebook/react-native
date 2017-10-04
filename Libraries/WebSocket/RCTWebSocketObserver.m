@@ -36,6 +36,11 @@
   return self;
 }
 
+- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue
+{
+  [_socket setDelegateDispatchQueue:queue];
+}
+
 - (void)start
 {
   _socket.delegate = self;
@@ -59,6 +64,14 @@
       RCTLogError(@"WebSocketManager failed to parse message with error %@\n<message>\n%@\n</message>", error, message);
     }
   }
+}
+
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+}
+
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
 }
 
 @end

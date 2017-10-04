@@ -24,7 +24,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
-  public static class Factory implements JavaScriptExecutor.Factory {
+  public static class Factory implements JavaScriptExecutorFactory {
     private final JavaJSExecutor.Factory mJavaJSExecutorFactory;
 
     public Factory(JavaJSExecutor.Factory javaJSExecutorFactory) {
