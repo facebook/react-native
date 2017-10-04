@@ -46,7 +46,6 @@ public class MainActivity extends ReactActivity {
 ```
 
 ```
-'use strict';
 
 import React from 'react';
 import {
