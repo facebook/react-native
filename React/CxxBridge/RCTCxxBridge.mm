@@ -1190,8 +1190,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        std::string baseDirectoryPath = sourceUrlStr.stringByDeletingLastPathComponent.UTF8String;
-        auto registry = std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), baseDirectoryPath);
+        auto registry = std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), sourceUrlStr.UTF8String);
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }
