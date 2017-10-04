@@ -11,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -54,8 +55,8 @@
     _backedTextInput.scrollsToTop = NO;
 #endif
     _backedTextInput.scrollEnabled = YES;
-
     _backedTextInput.textInputDelegate = self;
+    _backedTextInput.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }
@@ -235,7 +236,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
     [self invalidateContentSize];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", self.text, (long long)eventLag);
   }
 }
 

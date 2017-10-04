@@ -44,16 +44,28 @@ import javax.annotation.Nullable;
  */
 public class UIImplementation {
 
+  protected final EventDispatcher mEventDispatcher;
+  protected final ReactApplicationContext mReactContext;
+  protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final Set<Integer> mMeasuredRootNodes = new HashSet<>();
-  private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
-  private final ReactApplicationContext mReactContext;
-  protected final EventDispatcher mEventDispatcher;
 
   private long mLastCalculateLayoutTime = 0;
+
+  public UIImplementation(
+      ReactApplicationContext reactContext,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        new ViewManagerRegistry(viewManagerResolver),
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
 
   public UIImplementation(
       ReactApplicationContext reactContext,
@@ -97,7 +109,7 @@ public class UIImplementation {
   }
 
   protected ReactShadowNode createRootShadowNode() {
-    ReactShadowNode rootCSSNode = new ReactShadowNode();
+    ReactShadowNode rootCSSNode = new ReactShadowNodeImpl();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
       rootCSSNode.setLayoutDirection(YogaDirection.RTL);
@@ -224,12 +236,20 @@ public class UIImplementation {
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
 
-    // If we're in the middle of a batch, the change will automatically be dispatched at the end of
-    // the batch. As all batches are executed as a single runnable on the event queue this should
-    // always be empty, but that calling architecture is an implementation detail.
-    if (mOperationsQueue.isEmpty()) {
-      dispatchViewUpdates(-1); // -1 = no associated batch id
+    dispatchViewUpdatesIfNeeded();
+  }
+
+  public void setViewLocalData(int tag, Object data) {
+    ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(tag);
+
+    if (shadowNode == null) {
+      throw new IllegalViewOperationException(
+          "Trying to set local data for view with unknown tag: " + tag);
     }
+
+    shadowNode.setLocalData(data);
+
+    dispatchViewUpdatesIfNeeded();
   }
 
   public void profileNextBatch() {
@@ -626,6 +646,17 @@ public class UIImplementation {
       mOperationsQueue.dispatchViewUpdates(batchId, commitStartTime, mLastCalculateLayoutTime);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  private void dispatchViewUpdatesIfNeeded() {
+    // If we are in the middle of a batch update, any additional changes
+    // will automatically be dispatched at the end of the batch.
+    // If we are not, we have to initiate new batch update.
+    // As all batches are executed as a single runnable on the event queue
+    // this should always be empty, but that calling architecture is an implementation detail.
+    if (mOperationsQueue.isEmpty()) {
+      dispatchViewUpdates(-1); // "-1" means "no associated batch id"
     }
   }
 

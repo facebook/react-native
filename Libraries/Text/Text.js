@@ -408,7 +408,6 @@ const Text = createReactClass({
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
-      disabled: false,
     };
   },
   getInitialState: function(): Object {

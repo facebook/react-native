@@ -11,7 +11,7 @@
  * @format
  */
 
-/* eslint-disable no-console-disallow */
+/* eslint-disable no-console */
 
 'use strict';
 
