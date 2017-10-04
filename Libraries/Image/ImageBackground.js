@@ -33,7 +33,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *         source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>
