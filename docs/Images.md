@@ -97,11 +97,11 @@ Many of the images you will display in your app will not be available at compile
 
 ```javascript
 // GOOD
-<Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+<Image source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
        style={{width: 400, height: 400}} />
 
 // BAD
-<Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}} />
+<Image source={{uri: 'https://facebook.github.io/react/logo-og.png'}} />
 ```
 
 ### Network Requests for Images
@@ -110,7 +110,7 @@ Many of the images you will display in your app will not be available at compile
 
   ```javascript
   <Image source={{
-      uri: 'https://facebook.github.io/react/img/logo_og.png',
+      uri: 'https://facebook.github.io/react/logo-og.png',
       method: 'POST',
       headers: {
         Pragma: 'no-cache'
@@ -147,7 +147,7 @@ to a URL load request, no attempt is made to load the data from the originating 
 and the load is considered to have failed.
 
 ```javascript
-<Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png', cache: 'only-if-cached'}}
+<Image source={{uri: 'https://facebook.github.io/react/logo-og.png', cache: 'only-if-cached'}}
        style={{width: 400, height: 400}} />
 ```
 
