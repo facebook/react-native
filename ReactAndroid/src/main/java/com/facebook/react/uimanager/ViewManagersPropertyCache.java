@@ -330,8 +330,10 @@ import javax.annotation.Nullable;
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
       Class<? extends ReactShadowNode> cls) {
-    if (cls == ReactShadowNodeImpl.class) {
-      return EMPTY_PROPS_MAP;
+    for (Class iface : cls.getInterfaces()) {
+      if (iface == ReactShadowNode.class) {
+        return EMPTY_PROPS_MAP;
+      }
     }
     Map<String, PropSetter> props = CLASS_PROPS_CACHE.get(cls);
     if (props != null) {

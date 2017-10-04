@@ -44,14 +44,14 @@ import javax.annotation.Nullable;
  */
 public class UIImplementation {
 
+  protected final EventDispatcher mEventDispatcher;
+  protected final ReactApplicationContext mReactContext;
+  protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final Set<Integer> mMeasuredRootNodes = new HashSet<>();
-  private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
-  private final ReactApplicationContext mReactContext;
-  protected final EventDispatcher mEventDispatcher;
 
   private long mLastCalculateLayoutTime = 0;
 
