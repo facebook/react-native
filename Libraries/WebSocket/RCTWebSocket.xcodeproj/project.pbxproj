@@ -131,7 +131,7 @@
 				3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */,
 				3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
-				AD0871001E2158CB007D136D /* Frameworks */,
+				13526A501F362F7F0008EF00 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -147,13 +147,6 @@
 				3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AD0871001E2158CB007D136D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -332,7 +325,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -347,7 +339,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -394,7 +385,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../Blob";
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
@@ -437,7 +428,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../Blob";
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
@@ -451,13 +442,8 @@
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../ReactCommon/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -466,13 +452,8 @@
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../ReactCommon/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
