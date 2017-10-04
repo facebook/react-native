@@ -50,8 +50,12 @@ const siteConfig = {
   /* remove this section to disable search bar */
   algolia: {
     apiKey:
-      "0f9f28b9ab9efae89810921a351753b5" /* use your search-only api key */,
-    indexName: "github"
+      "2c98749b4a1e588efec53b2acec13025" /* use your search-only api key */,
+    indexName: "react-native-versions",
+    algoliaOptions: { 
+      facetFilters: [ "tags:VERSION" ], 
+      hitsPerPage: 5 
+    }
   },
   facebookAppId: '1677033832619985',
   twitter: 'reactnative'

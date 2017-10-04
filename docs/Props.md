@@ -8,7 +8,7 @@ Most components can be customized when they are created, with different paramete
 For example, one basic React Native component is the `Image`. When you
 create an image, you can use a prop named `source` to control what image it shows.
 
-<WebPlayer params="javascript">
+```ReactNativeWebPlayer
 import React, { Component } from 'react';
 import { AppRegistry, Image } from 'react-native';
 
@@ -25,7 +25,7 @@ export default class Bananas extends Component {
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => Bananas);
-</WebPlayer>
+```
 
 Notice that `{pic}` is surrounded by braces, to embed the variable `pic` into JSX. You can put any JavaScript expression inside braces in JSX.
 

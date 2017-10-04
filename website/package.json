@@ -4,8 +4,5 @@
     "build": "docusaurus-build",
     "publish-gh-pages": "docusaurus-publish",
     "examples": "docusaurus-examples"
-  },
-  "devDependencies": {
-    "docusaurus": "^1.0.0-alpha.35"
   }
 }

@@ -77,8 +77,13 @@
   color: #484848;
 }
 
+@media only screen and (min-device-width: 736px) {
+  .showcaseSection .showcase img {
+    width: 100px;
+  }
+}
+
 .showcaseSection .showcase img {
-  width: 100px;
   height: 100px;
   border-radius: 20px;
 }
