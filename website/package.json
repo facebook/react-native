@@ -25,7 +25,8 @@
     "react-page-middleware": "0.4.1",
     "remove-markdown": "^0.1.0",
     "request": "^2.69.0",
-    "semver-compare": "^1.0.0"
+    "semver-compare": "^1.0.0",
+    "shelljs": "^0.7.8"
   },
   "devDependencies": {
     "jest": "^15.1.1"

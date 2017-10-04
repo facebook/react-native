@@ -430,7 +430,7 @@ public class ReactTextTest {
             new ReactRawTextManager(),
         });
     UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

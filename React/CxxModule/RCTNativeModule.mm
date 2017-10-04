@@ -77,10 +77,10 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 }
 
 MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
-  return invokeInner(reactMethodId, std::move(params));
+  return invokeInner(reactMethodId, params);
 }
 
-MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &&params) {
+MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &params) {
   if (!m_bridge.valid) {
     return folly::none;
   }
@@ -103,8 +103,8 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
     }
 
     NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@",
-                         exception, method.JSMethodName, m_moduleData.name, objcParams];
+                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@\ncallstack: %@",
+                         exception, method.JSMethodName, m_moduleData.name, objcParams, exception.callStackSymbols];
     RCTFatal(RCTErrorWithMessage(message));
   }
 }

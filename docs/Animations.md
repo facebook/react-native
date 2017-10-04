@@ -106,7 +106,7 @@ Animated.timing(
   this.state.xPosition,
   {
     toValue: 100,
-    easing: Easing.back,
+    easing: Easing.back(),
     duration: 2000,
   }                              
 ).start();  

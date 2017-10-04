@@ -502,11 +502,7 @@ var ListView = createReactClass({
             adjacentRowHighlighted,
           );
           if (separator) {
-            bodyComponents.push(
-              <View key={'s_' + comboID}>
-                {separator}
-              </View>,
-            );
+            bodyComponents.push(<View key={'s_' + comboID}>{separator}</View>);
             totalIndex++;
           }
         }
