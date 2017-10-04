@@ -9,7 +9,6 @@
 
 #import "RCTWebSocketModule.h"
 #import "RCTSRWebSocket.h"
-#import "RCTBlobManager.h"
 
 #import <objc/runtime.h>
 
