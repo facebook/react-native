@@ -88,7 +88,7 @@ public class ReactEditText extends EditText {
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
-  public ReactEditText(Context context, InputConnectionWrapper inputConnection) {
+  public ReactEditText(Context context, InputConnectionWrapper inputConnectionWrapper) {
     super(context);
     setFocusableInTouchMode(false);
 
@@ -109,7 +109,7 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
-    mInputConnectionWrapper = inputConnection;
+    mInputConnectionWrapper = inputConnectionWrapper;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.

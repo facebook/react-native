@@ -48,6 +48,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={(event) => this.updateText(
