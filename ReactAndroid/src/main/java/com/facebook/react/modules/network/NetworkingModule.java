@@ -422,8 +422,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             }
             removeRequest(requestId);
             String errorMessage = e.getMessage() != null
-              ? e.getMessage()
-              : "Error while executing request: " + e.getClass().getSimpleName();
+                    ? e.getMessage()
+                    : "Error while executing request: " + e.getClass().getSimpleName();
             ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
           }
 
