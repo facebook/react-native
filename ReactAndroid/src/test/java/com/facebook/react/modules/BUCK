@@ -1,10 +1,13 @@
 include_defs("//ReactAndroid/DEFS")
 
 rn_robolectric_test(
-    # Please change the contact to the oncall of your team
-    contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
     name = "modules",
     srcs = glob(["**/*.java"]),
+    # Please change the contact to the oncall of your team
+    contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
+    visibility = [
+        "PUBLIC",
+    ],
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
@@ -16,11 +19,12 @@ rn_robolectric_test(
         react_native_dep("third-party/java/okhttp:okhttp3"),
         react_native_dep("third-party/java/okio:okio"),
         react_native_dep("third-party/java/robolectric3/robolectric:robolectric"),
+        react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/animation:animation"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
-        react_native_target("java/com/facebook/react/common/network:network"),
         react_native_target("java/com/facebook/react/common:common"),
-        react_native_target("java/com/facebook/react/devsupport:devsupport"),
+        react_native_target("java/com/facebook/react/common/network:network"),
+        react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/jstasks:jstasks"),
         react_native_target("java/com/facebook/react/modules/blob:blob"),
         react_native_target("java/com/facebook/react/modules/clipboard:clipboard"),
@@ -34,10 +38,6 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-        react_native_target("java/com/facebook/react:react"),
         react_native_tests_target("java/com/facebook/react/bridge:testhelpers"),
-    ],
-    visibility = [
-      "PUBLIC"
     ],
 )
