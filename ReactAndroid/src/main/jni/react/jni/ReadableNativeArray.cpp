@@ -43,16 +43,9 @@ jdouble ReadableNativeArray::getDouble(jint index) {
 }
 
 jint ReadableNativeArray::getInt(jint index) {
-  auto integer = array_.at(index).getInt();
-  static_assert(std::is_same<decltype(integer), int64_t>::value,
-                "folly::dynamic int is not int64_t");
-  jint javaint = static_cast<jint>(integer);
-  if (integer != javaint) {
-    throwNewJavaException(
-      exceptions::gUnexpectedNativeTypeExceptionClass,
-      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
-  }
-  return javaint;
+  const folly::dynamic& val = array_.at(index);
+  int64_t integer = convertDynamicIfIntegral(val);
+  return makeJIntOrThrow(integer);
 }
 
 const char* ReadableNativeArray::getString(jint index) {
