@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- * <p>
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -90,9 +90,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
-  private final
-  @Nullable
-  String mDefaultUserAgent;
+  private final @Nullable String mDefaultUserAgent;
   private final CookieJarContainer mCookieJarContainer;
   private final Set<Integer> mRequestIds;
   private final List<RequestBodyHandler> mRequestBodyHandlers = new ArrayList<>();
@@ -101,10 +99,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private boolean mShuttingDown;
 
   /* package */ NetworkingModule(
-    ReactApplicationContext reactContext,
-    @Nullable String defaultUserAgent,
-    OkHttpClient client,
-    @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+      ReactApplicationContext reactContext,
+      @Nullable String defaultUserAgent,
+      OkHttpClient client,
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
 
     if (networkInterceptorCreators != null) {
@@ -214,15 +212,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param timeout value of 0 results in no timeout
    */
   public void sendRequest(
-    String method,
-    String url,
-    final int requestId,
-    ReadableArray headers,
-    ReadableMap data,
-    final String responseType,
-    final boolean useIncrementalUpdates,
-    int timeout,
-    boolean withCredentials) {
+      String method,
+      String url,
+      final int requestId,
+      ReadableArray headers,
+      ReadableMap data,
+      final String responseType,
+      final boolean useIncrementalUpdates,
+      int timeout,
+      boolean withCredentials) {
     final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
 
     try {
@@ -370,7 +368,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
-        RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
+          RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
         ResponseUtil.onRequestError(
           eventEmitter,
@@ -380,15 +378,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         return;
       }
       requestBuilder.method(
-        method,
-        RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
+          method,
+          RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
       MultipartBody.Builder multipartBuilder =
-        constructMultipartBody(parts, contentType, requestId);
+          constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
@@ -398,17 +396,17 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         RequestBodyUtil.createProgressRequest(
           multipartBuilder.build(),
           new ProgressListener() {
-            long last = System.nanoTime();
+        long last = System.nanoTime();
 
-            @Override
-            public void onProgress(long bytesWritten, long contentLength, boolean done) {
-              long now = System.nanoTime();
-              if (done || shouldDispatch(now, last)) {
-                ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
-                last = now;
-              }
-            }
-          }));
+        @Override
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
+          long now = System.nanoTime();
+          if (done || shouldDispatch(now, last)) {
+            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+            last = now;
+          }
+        }
+      }));
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
@@ -416,85 +414,85 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
     addRequest(requestId);
     client.newCall(requestBuilder.build()).enqueue(
-      new Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-          if (mShuttingDown) {
-            return;
+        new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            if (mShuttingDown) {
+              return;
+            }
+            removeRequest(requestId);
+            String errorMessage = e.getMessage() != null
+              ? e.getMessage()
+              : "Error while executing request: " + e.getClass().getSimpleName();
+            ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
           }
-          removeRequest(requestId);
-          String errorMessage = e.getMessage() != null
-            ? e.getMessage()
-            : "Error while executing request: " + e.getClass().getSimpleName();
-          ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
-        }
 
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-          if (mShuttingDown) {
-            return;
-          }
-          removeRequest(requestId);
-          // Before we touch the body send headers to JS
-          ResponseUtil.onResponseReceived(
-            eventEmitter,
-            requestId,
-            response.code(),
-            translateHeaders(response.headers()),
-            response.request().url().toString());
+          @Override
+          public void onResponse(Call call, Response response) throws IOException {
+            if (mShuttingDown) {
+              return;
+            }
+            removeRequest(requestId);
+            // Before we touch the body send headers to JS
+            ResponseUtil.onResponseReceived(
+              eventEmitter,
+              requestId,
+              response.code(),
+              translateHeaders(response.headers()),
+              response.request().url().toString());
 
-          ResponseBody responseBody = response.body();
-          try {
-            // Check if a handler is registered
-            for (ResponseHandler handler : mResponseHandlers) {
-              if (handler.supports(responseType)) {
-                WritableMap res = handler.toResponseData(responseBody);
-                ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+            ResponseBody responseBody = response.body();
+            try {
+              // Check if a handler is registered
+              for (ResponseHandler handler : mResponseHandlers) {
+                if (handler.supports(responseType)) {
+                  WritableMap res = handler.toResponseData(responseBody);
+                  ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+                  ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                  return;
+                }
+              }
+
+              // If JS wants progress updates during the download, and it requested a text response,
+              // periodically send response data updates to JS.
+              if (useIncrementalUpdates && responseType.equals("text")) {
+                readWithProgress(eventEmitter, requestId, responseBody);
                 ResponseUtil.onRequestSuccess(eventEmitter, requestId);
                 return;
               }
-            }
 
-            // If JS wants progress updates during the download, and it requested a text response,
-            // periodically send response data updates to JS.
-            if (useIncrementalUpdates && responseType.equals("text")) {
-              readWithProgress(eventEmitter, requestId, responseBody);
-              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-              return;
-            }
-
-            // Otherwise send the data in one big chunk, in the format that JS requested.
-            String responseString = "";
-            if (responseType.equals("text")) {
-              try {
-                responseString = responseBody.string();
-              } catch (IOException e) {
-                if (response.request().method().equalsIgnoreCase("HEAD")) {
-                  // The request is an `HEAD` and the body is empty,
-                  // the OkHttp will produce an exception.
-                  // Ignore the exception to not invalidate the request in the
-                  // Javascript layer.
-                  // Introduced to fix issue #7463.
-                } else {
-                  ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+              // Otherwise send the data in one big chunk, in the format that JS requested.
+              String responseString = "";
+              if (responseType.equals("text")) {
+                try {
+                  responseString = responseBody.string();
+                } catch (IOException e) {
+                  if (response.request().method().equalsIgnoreCase("HEAD")) {
+                    // The request is an `HEAD` and the body is empty,
+                    // the OkHttp will produce an exception.
+                    // Ignore the exception to not invalidate the request in the
+                    // Javascript layer.
+                    // Introduced to fix issue #7463.
+                  } else {
+                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                  }
                 }
+              } else if (responseType.equals("base64")) {
+                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
               }
-            } else if (responseType.equals("base64")) {
-              responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+              ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+            } catch (IOException e) {
+              ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
             }
-            ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
-            ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-          } catch (IOException e) {
-            ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
           }
-        }
-      });
+        });
   }
 
   private void readWithProgress(
-    RCTDeviceEventEmitter eventEmitter,
-    int requestId,
-    ResponseBody responseBody) throws IOException {
+      RCTDeviceEventEmitter eventEmitter,
+      int requestId,
+      ResponseBody responseBody) throws IOException {
     long totalBytesRead = -1;
     long contentLength = -1;
     try {
@@ -548,8 +546,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // multiple values for the same header
       if (responseHeaders.hasKey(headerName)) {
         responseHeaders.putString(
-          headerName,
-          responseHeaders.getString(headerName) + ", " + headers.value(i));
+            headerName,
+            responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -579,12 +577,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mCookieHandler.clearCookies(callback);
   }
 
-  private
-  @Nullable
-  MultipartBody.Builder constructMultipartBody(
-    ReadableArray body,
-    String contentType,
-    int requestId) {
+  private @Nullable MultipartBody.Builder constructMultipartBody(
+      ReadableArray body,
+      String contentType,
+      int requestId) {
     RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
@@ -626,7 +622,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
         InputStream fileInputStream =
-          RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
+            RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
             eventEmitter,
@@ -646,11 +642,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /**
    * Extracts the headers from the Array. If the format is invalid, this method will return null.
    */
-  private
-  @Nullable
-  Headers extractHeaders(
-    @Nullable ReadableArray headersArray,
-    @Nullable ReadableMap requestData) {
+  private @Nullable Headers extractHeaders(
+      @Nullable ReadableArray headersArray,
+      @Nullable ReadableMap requestData) {
     if (headersArray == null) {
       return null;
     }
