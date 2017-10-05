@@ -36,8 +36,6 @@ static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamp
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
-#define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
-
 #if ENABLE_PACKAGER_CONNECTION
 #import "RCTPackagerConnection.h"
 #endif
