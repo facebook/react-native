@@ -65,7 +65,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Text>Hello</Text>
       <Image
         source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png?cacheBust=notinCache' + Date.now(),
               cache: 'only-if-cached'
             }}
         onLoad={() => this.testComplete('only-if-cached', false)}
@@ -74,7 +74,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
       />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png?cacheBust=notinCache' + Date.now(),
               cache: 'default'
             }}
           onLoad={() => this.testComplete('default', true)}
@@ -83,7 +83,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png?cacheBust=notinCache' + Date.now(),
               cache: 'reload'
             }}
           onLoad={() => this.testComplete('reload', true)}
@@ -92,7 +92,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png?cacheBust=notinCache' + Date.now(),
               cache: 'force-cache'
             }}
           onLoad={() => this.testComplete('force-cache', true)}

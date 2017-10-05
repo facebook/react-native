@@ -55,7 +55,7 @@ function generateRequestId() {
  *         />
  *         <Image
  *           style={styles.logo}
- *           source={{uri: 'https://reactjs.org/logo-og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react-native/img/logo-og.png'}}
  *         />
  *       </View>
  *     );
