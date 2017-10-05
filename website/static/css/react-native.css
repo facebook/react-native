@@ -222,3 +222,26 @@ p {
     font-size: 11px;
   }
 }
+
+table.versions {
+  width: 60%;
+  border: 0;
+  border-collapse: separate;
+}
+
+table.versions th {
+  width: 20%;
+}
+
+table.versions td, table.versions th {
+  padding: 2px 5px;
+}
+
+table.versions tr:nth-child(2n+1) {
+  background-color: #e0f6ff;
+}
+
+table.versions tr th, table.versions tr td {
+  border: 0;
+}
+

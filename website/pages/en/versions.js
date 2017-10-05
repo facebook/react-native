@@ -15,6 +15,8 @@ const GridBlock = CompLibrary.GridBlock;
 
 const siteConfig = require(process.cwd() + "/siteConfig.js");
 
+const versions = require(process.cwd() + "/versions.json");
+
 class Versions extends React.Component {
   render() {
     const supportLinks = [
@@ -35,6 +37,10 @@ class Versions extends React.Component {
       }
     ];
 
+    const preReleaseVersion = versions[0];
+    const stableVersions = versions.slice(1);
+    const stableVersion = stableVersions[0];
+    
     return (
       <div className="docMainWrapper wrapper">
         <Container className="mainContainer documentContainer postContainer">
@@ -54,10 +60,48 @@ class Versions extends React.Component {
               follow <a href="/react-native/docs/upgrading.html">our guide to upgrade your app to the latest version</a>.
             </p>
             <h2>Current version (Stable)</h2>
+            <table className="versions">
+              <tbody>
+                <tr>
+                  <th>{stableVersion}</th>
+                  <td><a href="/react-native">Documentation</a></td>
+                  <td><a href={"https://github.com/facebook/react-native/releases/tag/v" + stableVersion + ".0"}>Release Notes</a></td>
+                </tr>
+              </tbody>
+            </table>
             <p>This is the version that is configured automatically when you create a new project using <code>react-native init</code>.</p>
             <h2>Pre-release versions</h2>
+            <table className="versions">
+              <tbody>
+                <tr>
+                  <th>Master</th>
+                  <td><a href="/react-native/docs/next/getting-started.html">Documentation</a></td>
+                  <td><a href="https://github.com/facebook/react-native/releases/tag/v0.49.0">Release Notes</a></td>
+                </tr>
+                <tr>
+                  <th>RC</th>
+                  <td><a href="/react-native/docs/next/getting-started.html">Documentation</a></td>
+                  <td><a href="https://github.com/facebook/react-native/releases/tag/v0.49.0">Release Notes</a></td>
+                </tr>
+              </tbody>
+            </table>
             <p>To see what changes are coming and provide better feedback to React Native contributors, use the latest release candidate when possible. By the time a release candidate is released, the changes it contains will have been shipped in production Facebook apps for over two weeks.</p>
+
             <h2>Past versions</h2>
+            <table className="versions">
+              <tbody>
+                {stableVersions.map(function(version) {
+                  return (
+                    <tr>
+                      <th>{version}</th>
+                      <td><a href={"/react-native/docs/" + version + "/getting-started.html"}>Documentation</a></td>
+                      <td><a href={"https://github.com/facebook/react-native/releases/tag/v"
+                       + version + ".0"}>Release Notes</a></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>            
             <p>You can find past versions of React Native on GitHub. The release notes can be useful if you would like to learn when a specific feature or fix was released.</p>
             <p>You can also view the docs for a particular version of React Native by clicking on the Docs link next to the release in this page. You can come back to this page and switch the version of the docs you're reading at any time by clicking on the version number at the top of the page.</p>
           </div>

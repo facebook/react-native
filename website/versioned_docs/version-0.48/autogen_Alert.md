@@ -1,0 +1,28 @@
+---
+id: version-0.48-alert
+title: Alert
+category: APIs
+permalink: docs/alert.html
+original_id: alert
+---
+<div><div><p>Launches an alert dialog with the specified title and message.</p><p>Optionally provide a list of buttons. Tapping any button will fire the
+respective onPress callback and dismiss the alert. By default, the only
+button will be an 'OK' button.</p><p>This is an API that works both on iOS and Android and can show static
+alerts. To show an alert that prompts the user to enter some information,
+see <code>AlertIOS</code>; entering text in an alert is common on iOS only.</p><h2><a class="anchor" name="ios"></a>iOS <a class="hash-link" href="docs/alert.html#ios">#</a></h2><p>On iOS you can specify any number of buttons. Each button can optionally
+specify a style, which is one of 'default', 'cancel' or 'destructive'.</p><h2><a class="anchor" name="android"></a>Android <a class="hash-link" href="docs/alert.html#android">#</a></h2><p>On Android at most three buttons can be specified. Android has a concept
+of a neutral, negative and a positive button:</p><ul><li>If you specify one button, it will be the 'positive' one (such as 'OK')</li><li>Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')</li><li>Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')</li></ul><p>By default alerts on Android can be dismissed by tapping outside of the alert
+box. This event can be handled by providing an optional <code>options</code> parameter,
+with an <code>onDismiss</code> callback property <code>{ onDismiss: () =&gt; {} }</code>.</p><p>Alternatively, the dismissing behavior can be disabled altogether by providing
+an optional <code>options</code> parameter with the <code>cancelable</code> property set to <code>false</code>
+i.e. <code>{ cancelable: false }</code></p><p>Example usage:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Works on both iOS and Android
+</span>Alert<span class="token punctuation">.</span><span class="token function">alert</span><span class="token punctuation">(</span>
+  <span class="token string">'Alert Title'</span><span class="token punctuation">,</span>
+  <span class="token string">'My Alert Msg'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>text<span class="token punctuation">:</span> <span class="token string">'Ask me later'</span><span class="token punctuation">,</span> onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Ask me later pressed'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>text<span class="token punctuation">:</span> <span class="token string">'Cancel'</span><span class="token punctuation">,</span> onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> style<span class="token punctuation">:</span> <span class="token string">'cancel'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>text<span class="token punctuation">:</span> <span class="token string">'OK'</span><span class="token punctuation">,</span> onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'OK Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> cancelable<span class="token punctuation">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+<span class="token punctuation">)</span></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/alert.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="alert"></a><span class="methodType">static </span>alert<span class="methodType">(title, message?, buttons?, options?, type?)</span> <a class="hash-link" href="docs/alert.html#alert">#</a></h4></div></div></span></div>

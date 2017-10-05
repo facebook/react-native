@@ -3,6 +3,7 @@
     "start": "docusaurus-start",
     "build": "docusaurus-build",
     "publish-gh-pages": "docusaurus-publish",
+    "version": "docusaurus-version",
     "examples": "docusaurus-examples"
   }
 }
