@@ -137,64 +137,64 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
 
     client.newWebSocket(
-      builder.build(),
-      new WebSocketListener() {
+        builder.build(),
+        new WebSocketListener() {
 
-        @Override
-        public void onOpen(WebSocket webSocket, Response response) {
-          mWebSocketConnections.put(id, webSocket);
-          WritableMap params = Arguments.createMap();
-          params.putInt("id", id);
-          sendEvent("websocketOpen", params);
-        }
-
-        @Override
-        public void onClosed(WebSocket webSocket, int code, String reason) {
-          WritableMap params = Arguments.createMap();
-          params.putInt("id", id);
-          params.putInt("code", code);
-          params.putString("reason", reason);
-          sendEvent("websocketClosed", params);
-        }
-
-        @Override
-        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-          notifyWebSocketFailed(id, t.getMessage());
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, String text) {
-          WritableMap params = Arguments.createMap();
-          params.putInt("id", id);
-          params.putString("type", "text");
-
-          ContentHandler contentHandler = mContentHandlers.get(id);
-          if (contentHandler != null) {
-            contentHandler.onMessage(text, params);
-          } else {
-            params.putString("data", text);
-          }
-          sendEvent("websocketMessage", params);
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, ByteString bytes) {
-          WritableMap params = Arguments.createMap();
-          params.putInt("id", id);
-          params.putString("type", "binary");
-
-          ContentHandler contentHandler = mContentHandlers.get(id);
-          if (contentHandler != null) {
-            contentHandler.onMessage(bytes, params);
-          } else {
-            String text = bytes.base64();
-
-            params.putString("data", text);
+          @Override
+          public void onOpen(WebSocket webSocket, Response response) {
+            mWebSocketConnections.put(id, webSocket);
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            sendEvent("websocketOpen", params);
           }
 
-          sendEvent("websocketMessage", params);
-        }
-      });
+          @Override
+          public void onClosed(WebSocket webSocket, int code, String reason) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putInt("code", code);
+            params.putString("reason", reason);
+            sendEvent("websocketClosed", params);
+          }
+
+          @Override
+          public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            notifyWebSocketFailed(id, t.getMessage());
+          }
+
+          @Override
+          public void onMessage(WebSocket webSocket, String text) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putString("type", "text");
+
+            ContentHandler contentHandler = mContentHandlers.get(id);
+            if (contentHandler != null) {
+              contentHandler.onMessage(text, params);
+            } else {
+              params.putString("data", text);
+            }
+            sendEvent("websocketMessage", params);
+          }
+
+          @Override
+          public void onMessage(WebSocket webSocket, ByteString bytes) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putString("type", "binary");
+
+            ContentHandler contentHandler = mContentHandlers.get(id);
+            if (contentHandler != null) {
+              contentHandler.onMessage(bytes, params);
+            } else {
+              String text = bytes.base64();
+
+              params.putString("data", text);
+            }
+
+            sendEvent("websocketMessage", params);
+          }
+        });
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown();

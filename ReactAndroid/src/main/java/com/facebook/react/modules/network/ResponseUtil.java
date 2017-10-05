@@ -71,6 +71,7 @@ public class ResponseUtil {
 
     eventEmitter.emit("didReceiveNetworkData", args);
   }
+
   public static void onDataReceived(
     RCTDeviceEventEmitter eventEmitter,
     int requestId,

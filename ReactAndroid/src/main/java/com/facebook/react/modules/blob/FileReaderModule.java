@@ -11,7 +11,12 @@ package com.facebook.react.modules.blob;
 
 
 import android.util.Base64;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 
@@ -29,9 +34,14 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
     return "FileReaderModule";
   }
 
+  private BlobModule getBlobModule() {
+    return getReactApplicationContext().getNativeModule(BlobModule.class);
+  }
+
   @ReactMethod
   public void readAsText(ReadableMap blob, String encoding, Promise promise) {
-    byte[] bytes = BlobModule.resolve(
+
+    byte[] bytes = getBlobModule().resolve(
         blob.getString("blobId"),
         blob.getInt("offset"),
         blob.getInt("size"));
@@ -50,7 +60,7 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void readAsDataURL(ReadableMap blob, Promise promise) {
-    byte[] bytes = BlobModule.resolve(
+    byte[] bytes = getBlobModule().resolve(
         blob.getString("blobId"),
         blob.getInt("offset"),
         blob.getInt("size"));
