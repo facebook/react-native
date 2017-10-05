@@ -20,9 +20,10 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 
-@ReactModule(name = "FileReaderModule")
+@ReactModule(name = FileReaderModule.NAME)
 public class FileReaderModule extends ReactContextBaseJavaModule {
 
+  protected static final String NAME = "FileReaderModule";
   private static final String ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB";
 
   public FileReaderModule(ReactApplicationContext reactContext) {
@@ -31,7 +32,7 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "FileReaderModule";
+    return NAME;
   }
 
   private BlobModule getBlobModule() {
