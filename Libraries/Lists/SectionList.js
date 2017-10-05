@@ -15,6 +15,7 @@
 const MetroListView = require('MetroListView');
 const Platform = require('Platform');
 const React = require('React');
+const ScrollView = require('ScrollView');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
@@ -22,7 +23,7 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 
 type Item = any;
 
-type SectionBase<SectionItemT> = {
+export type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
@@ -186,10 +187,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedSectionListProps<SectionT>;
-
+export type Props<SectionT> = {
+  ...$Exact<RequiredProps<SectionT>>,
+  ...$Exact<OptionalProps<SectionT>>,
+  ...$Exact<VirtualizedSectionListProps<SectionT>>,
+};
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
@@ -252,7 +254,10 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
@@ -299,7 +304,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder() {
+  getScrollResponder(): ?ScrollView {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollResponder();
@@ -329,10 +334,9 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }

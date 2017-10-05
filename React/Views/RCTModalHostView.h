@@ -26,6 +26,8 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
+@property (nonatomic, copy) NSNumber *identifier;
+
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;

@@ -67,8 +67,8 @@ class KeyboardSpacerIOS extends Component<Props, State> {
     this._unRegisterEvents();
   }
 
-  _keyboardWillShowSubscription: { remove: Function };
-  _keyboardWillHideSubscription: { remove: Function };
+  _keyboardWillShowSubscription: { +remove: Function };
+  _keyboardWillHideSubscription: { +remove: Function };
 
   _registerEvents = () => {
     this._keyboardWillShowSubscription = Keyboard.addListener(

@@ -1,10 +1,12 @@
+include_defs("//ReactAndroid/DEFS")
+
 # NOTE(agallagher): The platform really should be responsible for providing
 # this type of provided dependency.  As it is now, we need to setup dummy
 # rules to model glibc's libraries.
 
 # libpthread is implicitly included in the android runtime so, when building
 # on an android platform, we don't do anything.
-prebuilt_cxx_library(
+deprecated_prebuilt_cxx_library(
     name = "pthread",
     exported_platform_linker_flags = [
         (
@@ -26,7 +28,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+deprecated_prebuilt_cxx_library(
     name = "dl",
     exported_linker_flags = [
         "-ldl",
@@ -37,7 +39,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+deprecated_prebuilt_cxx_library(
     name = "m",
     exported_linker_flags = [
         "-lm",
@@ -48,7 +50,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+deprecated_prebuilt_cxx_library(
     name = "rt",
     exported_platform_linker_flags = [
         (

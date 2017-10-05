@@ -180,7 +180,7 @@ However, there are still some styles that the linter cannot pick up.
 #### JavaScript
 
 * Use semicolons;
-* `'use strict';`
+* ES6 standards
 * Prefer `'` over `"`
 * Do not use the optional parameters of `setTimeout` and `setInterval`
 * 80 character line length

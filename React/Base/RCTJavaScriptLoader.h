@@ -25,6 +25,11 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
+NS_ENUM(NSInteger) {
+  RCTSourceFilesChangedCountNotBuiltByBundler = -2,
+  RCTSourceFilesChangedCountRebuiltFromScratch = -1,
+};
+
 @interface RCTLoadingProgress : NSObject
 
 @property (nonatomic, copy) NSString *status;
@@ -33,8 +38,41 @@ NS_ENUM(NSInteger) {
 
 @end
 
+@interface RCTSource : NSObject
+
+/**
+ * URL of the source object.
+ */
+@property (strong, nonatomic, readonly) NSURL *url;
+
+/**
+ * JS source (or simply the binary header in the case of a RAM bundle).
+ */
+@property (strong, nonatomic, readonly) NSData *data;
+
+/**
+ * Length of the entire JS bundle. Note that self.length != self.data.length in the case of certain bundle formats. For
+ * instance, when using RAM bundles:
+ *
+ *  - self.data will point to the bundle header
+ *  - self.data.length is the length of the bundle header, i.e. sizeof(facebook::react::BundleHeader)
+ *  - self.length is the length of the entire bundle file (header + contents)
+ */
+@property (nonatomic, readonly) NSUInteger length;
+
+/**
+ * Returns number of files changed when building this bundle:
+ *
+ *  - RCTSourceFilesChangedCountNotBuiltByBundler if the source wasn't built by the bundler (e.g. read from disk)
+ *  - RCTSourceFilesChangedCountRebuiltFromScratch if the source was rebuilt from scratch by the bundler
+ *  - Otherwise, the number of files changed when incrementally rebuilding the source
+ */
+@property (nonatomic, readonly) NSInteger filesChangedCount;
+
+@end
+
 typedef void (^RCTSourceLoadProgressBlock)(RCTLoadingProgress *progressData);
-typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
 
 @interface RCTJavaScriptLoader : NSObject
 

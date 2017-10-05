@@ -38,6 +38,9 @@ const invariant = require('fbjs/lib/invariant');
  * Example usage:
  *
  * ```
+ * import { Button } from 'react-native';
+ * ...
+ *
  * <Button
  *   onPress={onPressLearnMore}
  *   title="Learn More"

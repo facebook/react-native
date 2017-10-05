@@ -68,8 +68,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@:%p input=\"%@\" flags=%zd hasBlock=%@>",
-          [self class], self, _keyCommand.input, _keyCommand.modifierFlags,
+  return [NSString stringWithFormat:@"<%@:%p input=\"%@\" flags=%lld hasBlock=%@>",
+          [self class], self, _keyCommand.input, (long long)_keyCommand.modifierFlags,
           _block ? @"YES" : @"NO"];
 }
 

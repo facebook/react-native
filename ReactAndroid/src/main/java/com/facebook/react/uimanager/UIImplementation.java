@@ -8,7 +8,12 @@
  */
 package com.facebook.react.uimanager;
 
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+
 import android.os.SystemClock;
+import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
@@ -27,8 +32,10 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaDirection;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -37,15 +44,28 @@ import javax.annotation.Nullable;
  */
 public class UIImplementation {
 
-  private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
+  protected final EventDispatcher mEventDispatcher;
+  protected final ReactApplicationContext mReactContext;
+  protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
+  private final Set<Integer> mMeasuredRootNodes = new HashSet<>();
   private final ViewManagerRegistry mViewManagers;
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
-  private final ReactApplicationContext mReactContext;
-  protected final EventDispatcher mEventDispatcher;
 
   private long mLastCalculateLayoutTime = 0;
+
+  public UIImplementation(
+      ReactApplicationContext reactContext,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        new ViewManagerRegistry(viewManagerResolver),
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
 
   public UIImplementation(
       ReactApplicationContext reactContext,
@@ -89,7 +109,7 @@ public class UIImplementation {
   }
 
   protected ReactShadowNode createRootShadowNode() {
-    ReactShadowNode rootCSSNode = new ReactShadowNode();
+    ReactShadowNode rootCSSNode = new ReactShadowNodeImpl();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
       rootCSSNode.setLayoutDirection(YogaDirection.RTL);
@@ -116,20 +136,66 @@ public class UIImplementation {
   }
 
   /**
-   * Registers a root node with a given tag, size and ThemedReactContext
-   * and adds it to a node registry.
+   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
+   * parameters.
    */
-  public void registerRootView(
-      SizeMonitoringFrameLayout rootView,
-      int tag,
-      int width,
-      int height,
-      ThemedReactContext context) {
+  public void updateRootView(int tag, int widthMeasureSpec, int heightMeasureSpec) {
+    ReactShadowNode rootCSSNode = mShadowNodeRegistry.getNode(tag);
+    if (rootCSSNode == null) {
+      FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + tag);
+      return;
+    }
+    updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
+  }
+
+  /**
+   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
+   * parameters.
+   */
+  public void updateRootView(
+      ReactShadowNode rootCSSNode, int widthMeasureSpec, int heightMeasureSpec) {
+    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+    switch (widthMode) {
+      case EXACTLY:
+        rootCSSNode.setStyleWidth(widthSize);
+        break;
+      case AT_MOST:
+        rootCSSNode.setStyleMaxWidth(widthSize);
+        break;
+      case UNSPECIFIED:
+        rootCSSNode.setStyleWidthAuto();
+        break;
+    }
+
+    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+    switch (heightMode) {
+      case EXACTLY:
+        rootCSSNode.setStyleHeight(heightSize);
+        break;
+      case AT_MOST:
+        rootCSSNode.setStyleMaxHeight(heightSize);
+        break;
+      case UNSPECIFIED:
+        rootCSSNode.setStyleHeightAuto();
+        break;
+    }
+  }
+
+  /**
+   * Registers a root node with a given tag, size and ThemedReactContext and adds it to a node
+   * registry.
+   */
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> void registerRootView(
+      T rootView, int tag, ThemedReactContext context) {
     final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
     rootCSSNode.setThemedContext(context);
-    rootCSSNode.setStyleWidth(width);
-    rootCSSNode.setStyleHeight(height);
+
+    int widthMeasureSpec = rootView.getWidthMeasureSpec();
+    int heightMeasureSpec = rootView.getHeightMeasureSpec();
+    updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
@@ -170,12 +236,20 @@ public class UIImplementation {
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
 
-    // If we're in the middle of a batch, the change will automatically be dispatched at the end of
-    // the batch. As all batches are executed as a single runnable on the event queue this should
-    // always be empty, but that calling architecture is an implementation detail.
-    if (mOperationsQueue.isEmpty()) {
-      dispatchViewUpdates(-1); // -1 = no associated batch id
+    dispatchViewUpdatesIfNeeded();
+  }
+
+  public void setViewLocalData(int tag, Object data) {
+    ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(tag);
+
+    if (shadowNode == null) {
+      throw new IllegalViewOperationException(
+          "Trying to set local data for view with unknown tag: " + tag);
     }
+
+    shadowNode.setLocalData(data);
+
+    dispatchViewUpdatesIfNeeded();
   }
 
   public void profileNextBatch() {
@@ -575,6 +649,17 @@ public class UIImplementation {
     }
   }
 
+  private void dispatchViewUpdatesIfNeeded() {
+    // If we are in the middle of a batch update, any additional changes
+    // will automatically be dispatched at the end of the batch.
+    // If we are not, we have to initiate new batch update.
+    // As all batches are executed as a single runnable on the event queue
+    // this should always be empty, but that calling architecture is an implementation detail.
+    if (mOperationsQueue.isEmpty()) {
+      dispatchViewUpdates(-1); // "-1" means "no associated batch id"
+    }
+  }
+
   protected void updateViewHierarchy() {
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -583,27 +668,29 @@ public class UIImplementation {
       for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
         int tag = mShadowNodeRegistry.getRootTag(i);
         ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
-        SystraceMessage.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "UIImplementation.notifyOnBeforeLayoutRecursive")
-          .arg("rootTag", cssRoot.getReactTag())
-          .flush();
-        try {
-          notifyOnBeforeLayoutRecursive(cssRoot);
-        } finally {
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-        }
 
-        calculateRootLayout(cssRoot);
-        SystraceMessage.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "UIImplementation.applyUpdatesRecursive")
-          .arg("rootTag", cssRoot.getReactTag())
-          .flush();
-        try {
-          applyUpdatesRecursive(cssRoot, 0f, 0f);
-        } finally {
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        if (mMeasuredRootNodes.contains(tag)) {
+          SystraceMessage.beginSection(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                  "UIImplementation.notifyOnBeforeLayoutRecursive")
+              .arg("rootTag", cssRoot.getReactTag())
+              .flush();
+          try {
+            notifyOnBeforeLayoutRecursive(cssRoot);
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+
+          calculateRootLayout(cssRoot);
+          SystraceMessage.beginSection(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.applyUpdatesRecursive")
+              .arg("rootTag", cssRoot.getReactTag())
+              .flush();
+          try {
+            applyUpdatesRecursive(cssRoot, 0f, 0f);
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
         }
       }
     } finally {
@@ -729,6 +816,7 @@ public class UIImplementation {
   private void removeShadowNodeRecursive(ReactShadowNode nodeToRemove) {
     NativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
+    mMeasuredRootNodes.remove(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
       removeShadowNodeRecursive(nodeToRemove.getChildAt(i));
     }
@@ -905,5 +993,14 @@ public class UIImplementation {
     }
 
     return rootTag;
+  }
+
+  /**
+   * Enables Layout calculation for a Root node that has been measured.
+   *
+   * @param rootViewTag {@link int} Tag of the root node
+   */
+  public void enableLayoutCalculationForRootNode(int rootViewTag) {
+    this.mMeasuredRootNodes.add(rootViewTag);
   }
 }

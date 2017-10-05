@@ -201,12 +201,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void openInspector(String id) {
-    if (mInspectorPackagerConnection != null) {
-      mInspectorPackagerConnection.sendOpenEvent(id);
-    }
-  }
-
   public void sendEventToAllConnections(String event) {
     if (mInspectorPackagerConnection != null) {
       mInspectorPackagerConnection.sendEventToAllConnections(event);
