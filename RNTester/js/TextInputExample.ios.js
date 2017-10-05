@@ -610,12 +610,12 @@ exports.examples = [
         <View>
           <TextInput
             style={styles.default}
-            selectionColor={"green"}
+            selectionColor={'green'}
             defaultValue="Highlight me"
           />
           <TextInput
             style={styles.default}
-            selectionColor={"rgba(86, 76, 205, 1)"}
+            selectionColor={'rgba(86, 76, 205, 1)'}
             defaultValue="Highlight me"
           />
         </View>
@@ -872,7 +872,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

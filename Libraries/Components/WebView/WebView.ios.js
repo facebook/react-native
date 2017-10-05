@@ -376,7 +376,7 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
-    
+
     /**
      * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.

@@ -227,7 +227,7 @@ function parseSegmentType(stream, pos) {
   var segmentAst;
   if (stream[pos].type == TOKENS.OPENSEGMENT &&
       (segmentAst = parseAnyType(stream, ++pos))) {
-    pos += segmentAst.length
+    pos += segmentAst.length;
     if (stream[pos].type == TOKENS.CLOSESEGMENT) {
       return createAst(SYMBOLS.SEGMENT, segmentAst, segmentAst.length + 2);
     }
@@ -235,9 +235,9 @@ function parseSegmentType(stream, pos) {
 }
 
 function parseAnyType(stream, pos, parsers) {
-  if (!parsers) parsers =
+  if (!parsers) {parsers =
     PARSERS.SEGMENT | PARSERS.SIMPLE | PARSERS.UNION | PARSERS.GENERIC
-    | PARSERS.FUNCTION;
+    | PARSERS.FUNCTION;}
 
   var ast =
     (parsers & PARSERS.UNION && parseUnionType(stream, pos)) ||
