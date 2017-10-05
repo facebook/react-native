@@ -112,12 +112,6 @@ public class ReactEditText extends EditText {
     mInputConnectionWrapper = inputConnection;
   }
 
-  @Override
-  public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    mInputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
-    return mInputConnectionWrapper;
-  }
-
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
   // If it has, it will not scroll the text to the end of the new text inserted, but wait for the
   // next layout() to be called. However, we do not perform a layout() after a requestLayout(), so
@@ -190,12 +184,13 @@ public class ReactEditText extends EditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    InputConnection connection = super.onCreateInputConnection(outAttrs);
+    mInputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
+
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return connection;
+    return mInputConnectionWrapper;
   }
 
   @Override

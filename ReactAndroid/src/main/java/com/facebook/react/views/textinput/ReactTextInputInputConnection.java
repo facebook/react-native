@@ -11,6 +11,8 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
+import android.view.KeyEvent;
+import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
@@ -65,17 +67,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * input, and then set the composing text to be the character the user entered. In this case we
  * choose our onKeyPress to be the new composing character.
  */
- class ReactTextInputInputConnection extends InputConnectionWrapper {
+class ReactTextInputInputConnection extends InputConnectionWrapper {
   public static final String NewLineRawValue = "\n";
   public static final String BackspaceKeyValue = "Backspace";
   public static final String EnterKeyValue = "Enter";
 
   private @Nullable ReactEditText mEditText;
   private EventDispatcher mEventDispatcher;
-  private int mPreviousSelectionStart;
-  private int mPreviousSelectionEnd;
-  private String mCommittedText;
-  private String mComposedText;
+  private boolean mIsBatchEdit;
+  private String mKey = null;
 
   public ReactTextInputInputConnection(
       InputConnection target,
@@ -90,66 +90,80 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   @Override
-  public boolean setComposingText(CharSequence text, int newCursorPosition) {
-    mComposedText = text.toString();
-    return super.setComposingText(text, newCursorPosition);
-  }
-
-  @Override
-  public boolean commitText(CharSequence text, int newCursorPosition) {
-    mCommittedText = text.toString();
-    return super.commitText(text, newCursorPosition);
-  }
-
-  @Override
   public boolean beginBatchEdit() {
-    mPreviousSelectionStart = mEditText.getSelectionStart();
-    mPreviousSelectionEnd = mEditText.getSelectionEnd();
-    mCommittedText = null;
-    mComposedText = null;
+    mIsBatchEdit = true;
     return super.beginBatchEdit();
   }
 
   @Override
   public boolean endBatchEdit() {
+    mIsBatchEdit = false;
+    if(mKey != null) {
+      dispatchKeyEvent(mKey);
+      mKey = null;
+    }
+    return super.endBatchEdit();
+  }
+
+  @Override
+  public boolean setComposingText(CharSequence text, int newCursorPosition) {
+    final int previousSelectionStart = mEditText.getSelectionStart();
+    final int previousSelectionEnd = mEditText.getSelectionEnd();
     String key;
-    int selectionStart = mEditText.getSelectionStart();
-    if (mCommittedText == null) {
-      if ((noPreviousSelection() && selectionStart < mPreviousSelectionStart)
-          || (!noPreviousSelection() && selectionStart == mPreviousSelectionStart)
-          || (mPreviousSelectionStart == 0 && selectionStart == 0)) {
-        key = BackspaceKeyValue;
-      } else {
-        char enteredChar = mEditText.getText().charAt(selectionStart - 1);
-        key = String.valueOf(enteredChar);
-      }
+    final boolean consumed = super.setComposingText(text, newCursorPosition);
+    final boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
+    if ((noPreviousSelection && mEditText.getSelectionStart() < previousSelectionStart)
+            || !noPreviousSelection && mEditText.getSelectionStart() == previousSelectionStart) {
+      key = BackspaceKeyValue;
+    } else {
+      key = String.valueOf(mEditText.getText().charAt(mEditText.getSelectionStart() - 1));
     }
-    else {
-      key = mComposedText != null ? mComposedText : mCommittedText;
+    queueKeyEventIfBatchEdit(key);
+    return consumed;
+  }
+
+  @Override
+  public boolean commitText(CharSequence text, int newCursorPosition) {
+    String key = text.toString();
+    if (key.equals("")) {
+      key = BackspaceKeyValue;
     }
-    key = keyValueFromString(key);
+    queueKeyEventIfBatchEdit(key);
+
+    return super.commitText(text, newCursorPosition);
+  }
+
+  @Override
+  public boolean deleteSurroundingText(int beforeLength, int afterLength) {
+    dispatchKeyEvent(BackspaceKeyValue);
+    return super.deleteSurroundingText(beforeLength, afterLength);
+  }
+
+  // Called by SwiftKey when cursor at beginning of input when there is a delete.
+  // Whereas stock Android Keyboard calls {@link InputConnection#deleteSurroundingText}
+  @Override
+  public boolean sendKeyEvent(KeyEvent event) {
+    if(event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+      dispatchKeyEvent(BackspaceKeyValue);
+    }
+    return super.sendKeyEvent(event);
+  }
+
+  private void queueKeyEventIfBatchEdit(String key) {
+    if(mIsBatchEdit) {
+      mKey = key;
+    } else {
+      dispatchKeyEvent(key);
+    }
+  }
+
+  private void dispatchKeyEvent(String key) {
+    if (key.equals(NewLineRawValue)) {
+      key = EnterKeyValue;
+    }
     mEventDispatcher.dispatchEvent(
         new ReactTextInputKeyPressEvent(
             mEditText.getId(),
             key));
-    return super.endBatchEdit();
-  }
-
-  private boolean noPreviousSelection() {
-    return mPreviousSelectionStart == mPreviousSelectionEnd;
-  }
-
-  private String keyValueFromString(final String key) {
-    String returnValue;
-    switch (key) {
-      case "": returnValue = BackspaceKeyValue;
-        break;
-      case NewLineRawValue: returnValue = EnterKeyValue;
-        break;
-      default:
-        returnValue = key;
-        break;
-    }
-    return returnValue;
   }
 }
