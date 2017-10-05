@@ -58,21 +58,49 @@ import okio.ByteString;
 @ReactModule(name = NetworkingModule.NAME)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
+  /**
+   * Allows to implement a custom fetching process for specific URIs. It is the handler's job
+   * to fetch the URI and return the JS body payload.
+   */
   public interface UriHandler {
+    /**
+     * Returns if the handler should be used for an URI.
+     */
     boolean supports(Uri uri, String responseType);
 
+    /**
+     * Fetch the URI and return the JS body payload.
+     */
     WritableMap fetch(Uri uri, Context context) throws IOException;
   }
 
+  /**
+   * Allows adding custom handling to build the {@link RequestBody} from the JS body payload.
+   */
   public interface RequestBodyHandler {
+    /**
+     * Returns if the handler should be used for a JS body payload.
+     */
     boolean supports(ReadableMap map);
 
+    /**
+     * Returns the {@link RequestBody} for the JS body payload.
+     */
     RequestBody toRequestBody(ReadableMap map, String contentType);
   }
 
+  /**
+   * Allows adding custom handling to build the JS body payload from the {@link ResponseBody}.
+   */
   public interface ResponseHandler {
+    /**
+     * Returns if the handler should be used for a response type.
+     */
     boolean supports(String responseType);
 
+    /**
+     * Returns the JS body payload for the {@link ResponseBody}.
+     */
     WritableMap toResponseData(ResponseBody body) throws IOException;
   }
 
