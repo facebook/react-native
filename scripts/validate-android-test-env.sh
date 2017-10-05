@@ -48,7 +48,7 @@ BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.
 MAJOR=`echo $BUILD_TOOLS_VERSION | sed 's/\..*//'`
 
 # Check that we have the right major version of the Android SDK.
-PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR/foo"
+PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR"
 if [ ! -e "$PLATFORM_DIR" ]; then
   echo "Error: could not find version $ANDROID_VERSION of the Android SDK."
   echo "Specifically, the directory $PLATFORM_DIR does not exist."
@@ -56,7 +56,7 @@ if [ ! -e "$PLATFORM_DIR" ]; then
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
   echo "If you are using Android SDK Tools from the command line, you may need to run:"
   echo
-  echo "  sdkmanager \"platform-tools\" \"platform-tools;android-$ANDROID_VERSION\""
+  echo "  sdkmanager \"platform-tools\" \"platform-tools;android-$MAJOR\""
   echo
   echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1
