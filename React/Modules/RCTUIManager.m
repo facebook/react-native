@@ -317,7 +317,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
   RCTExecuteOnUIManagerQueue(^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[tag];
-    RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", tag);
+    if (shadowView == nil) {
+      RCTLogWarn(@"Could not locate shadow view with tag #%@, this is probably caused by a temporary inconsistency between native views and shadow views.", tag);
+      return;
+    }
 
     shadowView.localData = localData;
     [self setNeedsLayout];
