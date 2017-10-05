@@ -12,11 +12,11 @@
 var fs = require('fs')
 var glob = require('glob');
 var mkdirp = require('mkdirp');
-var optimist = require('optimist');
 var path = require('path');
 var removeMd = require('remove-markdown');
 var extractDocs = require('./extractDocs');
 var cache = require('memory-cache');
+var optimist = require('optimist');
 var argv = optimist.argv;
 
 function splitHeader(content) {

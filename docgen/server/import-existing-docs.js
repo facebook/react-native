@@ -10,6 +10,19 @@
  */
 "use strict";
 
+/** 
+ * This is meant to be a one-time run script that checks out every version of the docs off GitHub. This includes both the Markdown-formatted guides, as well as the autodocs generated from JavaScript code.
+ * Given that the autodocs are generated from JavaScript code and stored as HTML in source control, we'll need to go back and regenerate autodocs for every single version.
+ * Once we have Markdown formatted docs, we'll need to go through these and generate all the necessary sidebar files.
+ * We'll be working with a few directories:
+ * 
+ *   - /docs - This is where the latest version of the docs will reside. 
+ *   - /website/versioned_docs - Here we will have version-XXX folders, one for each React Native version. It shall include both "guides" (regular docs already stored as a Markdown file), as well as "autodocs" (Markdown docs generated from JavaScript comments).
+ *   - /website/versioned_sidebars - We'll also have version-XXX folders here, one for each React Native version. These sidebar files will be generated based on the Markdown docs present in the corresponding versioned_docs sub-folder.
+ *   - /docgen/build - Here we will store any intermediary build files that shall not be stored in source control. These can be regenerated from source control, and include such things as original files checked out from git tags, as well as intermediary metadata files used to generate the final sidebar files.
+ * 
+ */
+
 const fm = require("front-matter");
 const fs = require("fs");
 const glob = require("glob");
@@ -20,38 +33,47 @@ const GIT_USER = process.env.GIT_USER;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME;
 const GITHUB_REPONAME = process.env.GITHUB_REPONAME;
 const remoteBranch = `https://${GIT_USER}@github.com/${GITHUB_USERNAME}/${GITHUB_REPONAME}.git`;
-const targetDir = `${GITHUB_REPONAME}-docs`;
+const localCheckoutDir = `${GITHUB_REPONAME}-docs`;
 const DOCS_DIR = `../docs`;
+const buildDir = `build/`;
 
-if (!GIT_USER) {
-  shell.echo("GIT_USER undefined.");
-  shell.exit(1);
-}
-if (!GITHUB_USERNAME) {
-  shell.echo("GITHUB_USERNAME undefined.");
-  shell.exit(1);
-}
-if (!GITHUB_REPONAME) {
-  shell.echo("GITHUB_REPONAME undefined.");
-  shell.exit(1);
+function runChecks() {
+  if (!shell.which("git")) {
+    shell.echo("Sorry, this script requires git");
+    shell.exit(1);
+  }
+  
+  if (!GIT_USER) {
+    shell.echo("GIT_USER undefined.");
+    shell.exit(1);
+  }
+  if (!GITHUB_USERNAME) {
+    shell.echo("GITHUB_USERNAME undefined.");
+    shell.exit(1);
+  }
+  if (!GITHUB_REPONAME) {
+    shell.echo("GITHUB_REPONAME undefined.");
+    shell.exit(1);
+  }
 }
 
-if (!shell.which("git")) {
-  shell.echo("Sorry, this script requires git");
-  shell.exit(1);
-}
-
+/**
+ * Remove any existing build directories and start with a clean slate.
+ */
 function prepareFilesystem() {
   shell.cd(process.cwd());
-  shell.exec(`rm -rf build/`);
-  shell.mkdir(`build`);
-  shell.cd(`build`);
-  shell.exec(`rm -rf ${targetDir}`);
-  shell.mkdir(targetDir);
+  shell.rm('-rf', buildDir);
+  shell.mkdir('-p', buildDir + localCheckoutDir);
 }
 
+/**
+ * Check out each version tag, then run node server/generate.js to get HTML files built.
+ * 
+ * Generate requires a server to be started up. Can we do this from one location?
+ */
+
 function checkOutDocs() {
-  shell.cd(targetDir);
+  shell.cd(localCheckoutDir);
 
   shell.exec(`git init`).code !== 0;
 
@@ -73,7 +95,31 @@ function checkOutDocs() {
     shell.exit(1);
   }
 
-  shell.echo(`Checked out ${targetDir}`);
+  shell.echo(`Checked out ${localCheckoutDir}`);
+  shell.cd(`../..`);
+
+  processDocs(`build/${localCheckoutDir}/docs`);
+}
+
+function checkOutVersionedDocs() {
+  shell.cd(process.cwd() + buildDir + localCheckoutDir);
+  shell.exec(`git fetch`);
+
+  const tags = shell.exec(`git tag --sort=version:refname -l 'v0.??.?' 'v0.?.?'`).toString().split('\n');
+  console.log(tags);
+  tags.forEach(function(tag) {
+    if (shell.exec(`git checkout ${tag}`).code !== 0) {
+      shell.echo("Error: git checkout failed");
+      shell.exit(1);
+    }
+    shell.echo(`Checked out ${tag}`);
+    const version = tag.substring(1);
+    const versionDir = `../../website/versioned_docs/${version}`;
+    shell.mkdir(versionDir);
+    shell.cp(`docs/*`, `${versionDir}/.`)
+    processDocs(versionDir, version);
+  })
+
   shell.cd(`../..`);
 }
 
@@ -192,11 +238,12 @@ function generateMarkdownFromMetadata(sidebarMetadata) {
   });
 }
 
-function processDocs() {
+function processDocs(workingDir, version) {
   // Generate sidebars.json
-  glob(`build/${targetDir}/docs/*.md`, function(er, files) {
+  glob(`${workingDir}/*.md`, function(er, files) {
     const sidebarsMetadata = generateDocsMetadata(files);
     const sidebars = generateSidebarsFromMetadata(sidebarsMetadata);
+    const sidebarFile = `../website/` + version ? `versioned_sidebars/${version}/` : '' + 'sidebars.json'
     fs.writeFileSync(
       `../website/sidebars.json`,
       JSON.stringify({
@@ -209,6 +256,7 @@ function processDocs() {
   });
 }
 
+runChecks();
 prepareFilesystem();
 checkOutDocs();
-processDocs();
+// checkOutVersionedDocs();
