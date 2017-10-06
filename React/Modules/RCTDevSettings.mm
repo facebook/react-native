@@ -24,28 +24,23 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
-NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
-NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
-NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
-NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
-NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingIsJSCProfilingEnabled = @"RCTJSCProfilerEnabled";
-NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
+static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
+static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
+static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
+static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
+static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
-
-#define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
+static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if ENABLE_PACKAGER_CONNECTION
 #import "RCTPackagerConnection.h"
 #endif
 
-#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper")
-
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
@@ -133,6 +128,11 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
+
 - (instancetype)init
 {
   // default behavior is to use NSUserDefaults
@@ -167,7 +167,7 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
   [self _configurePackagerConnection];
 
-#if ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it
@@ -312,23 +312,15 @@ RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
-  [self _hotLoadingSettingDidChange];
+  if (self.isHotLoadingEnabled != enabled) {
+    [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
+    [_bridge reload];
+  }
 }
 
 - (BOOL)isHotLoadingEnabled
 {
   return [[self settingForKey:kRCTDevSettingHotLoadingEnabled] boolValue];
-}
-
-- (void)_hotLoadingSettingDidChange
-{
-  BOOL hotLoadingEnabled = self.isHotLoadingAvailable && self.isHotLoadingEnabled;
-  if (RCTGetURLQueryParam(_bridge.bundleURL, @"hot").boolValue != hotLoadingEnabled) {
-    _bridge.bundleURL = RCTURLByReplacingQueryParam(_bridge.bundleURL, @"hot",
-                                                    hotLoadingEnabled ? @"true" : nil);
-    [_bridge reload];
-  }
 }
 
 RCT_EXPORT_METHOD(toggleElementInspector)
@@ -371,16 +363,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setIsJSCProfilingEnabled:(BOOL)isJSCProfilingEnabled
-{
-  [self _updateSettingWithValue:@(isJSCProfilingEnabled) forKey:kRCTDevSettingIsJSCProfilingEnabled];
-}
-
-- (BOOL)isJSCProfilingEnabled
-{
-  return [[self settingForKey:kRCTDevSettingIsJSCProfilingEnabled] boolValue];
 }
 
 - (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
@@ -445,7 +427,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
  */
 - (void)_synchronizeAllSettings
 {
-  [self _hotLoadingSettingDidChange];
   [self _liveReloadSettingDidChange];
   [self _remoteDebugSettingDidChange];
   [self _profilingSettingDidChange];

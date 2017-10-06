@@ -36,7 +36,50 @@ type DefaultProps = {
 
 /**
  * Displays a circular loading indicator.
+ *
+ * ### Example
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react'
+ * import {
+ *   ActivityIndicator,
+ *   AppRegistry,
+ *   StyleSheet,
+ *   Text,
+ *   View,
+ * } from 'react-native'
+ *
+ * class App extends Component {
+ *   render() {
+ *     return (
+ *       <View style={[styles.container, styles.horizontal]}>
+ *         <ActivityIndicator size="large" color="#0000ff" />
+ *         <ActivityIndicator size="small" color="#00ff00" />
+ *         <ActivityIndicator size="large" color="#0000ff" />
+ *         <ActivityIndicator size="small" color="#00ff00" />
+ *       </View>
+ *     )
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
+ *   container: {
+ *     flex: 1,
+ *     justifyContent: 'center'
+ *   },
+ *   horizontal: {
+ *     flexDirection: 'row',
+ *     justifyContent: 'space-around',
+ *     padding: 10
+ *   }
+ * })
+ *
+ * AppRegistry.registerComponent('App', () => App)
+ * ```
  */
+/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+ * suppresses an error when upgrading Flow's support for React. To see the
+ * error delete this comment and run Flow. */
 const ActivityIndicator = createReactClass({
   displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],

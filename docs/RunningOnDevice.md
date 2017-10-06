@@ -237,7 +237,43 @@ You can also iterate quickly on a device using the development server. You only 
 
 ![](img/DeveloperMenu.png)
 
+### Troubleshooting
+
 > If you have any issues, ensure that your Mac and device are on the same network and can reach each other. Many open wireless networks with captive portals are configured to prevent devices from reaching other devices on the network. You may use your device's Personal Hotspot feature in this case.
+
+When trying to connect to the development server you might get a [red screen with an error](docs/debugging.html#in-app-errors-and-warnings) saying:
+> Connection to [http://localhost:8081/debugger-proxy?role=client]() timed out. Are you running node proxy? If you are running on the device, check if you have the right IP address in `RCTWebSocketExecutor.m`.
+
+To solve this issue check the following points.
+
+#### 1. Wi-Fi network.
+
+Make sure your laptop and your phone are on the **same** Wi-Fi network.
+
+#### 2. IP address
+
+Make sure that the build script detected the IP address of your machine correctly (e.g. 10.0.1.123). 
+
+![](img/XcodeBuildIP.png)
+
+Open the **Report navigator** tab, select the last **Build** and search for `xip.io`. The IP address which gets embedded in the app should match your machines IP address plus the domain `.xip.io` (e.g. 10.0.1.123.xip.io)
+
+#### 3. Network/router configuration
+
+React Native uses the wildcard DNS service **xip.io** to address your device. Some routers have security features to prevent DNS Servers to resolve anything in the local IP range.
+
+Now check if you are able to resolve the xip.io address, by running `nslookup`.
+
+```bash
+$ nslookup 10.0.1.123.xip.io
+```
+
+If it doesn't resolve your local IP address either the **xip.io** service is down or more likely your router prevents it. 
+
+To still use xip.io behind your rooter:
+
+- configure your phone to use Google DNS (8.8.8.8)
+- disable the appropriate security feature in your router
 
 <block class="mac windows linux android" />
 
@@ -324,9 +360,131 @@ You can now build your app for release by tapping `⌘B` or selecting **Product*
 You have built a great app using React Native, and you are now itching to release it in the Play Store. The process is the same as any other native Android app, with some additional considerations to take into account. Follow the guide for [generating a signed APK](docs/signed-apk-android.html) to learn more.
 
 <script>
-function displayTab(type, value) {
-  var container = document.getElementsByTagName('block')[0].parentNode;
-  container.className = 'display-' + type + '-' + value + ' ' +
-    container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-}
+  function displayTab(type, value) {
+    var container = document.getElementsByTagName('block')[0].parentNode;
+    container.className = 'display-' + type + '-' + value + ' ' +
+      container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
+  }
+
+  function convertBlocks() {
+    // Convert <div>...<span><block /></span>...</div>
+    // Into <div>...<block />...</div>
+    var blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      var span = blocks[i].parentNode;
+      var container = span.parentNode;
+      container.insertBefore(block, span);
+      container.removeChild(span);
+    }
+    // Convert <div>...<block />content<block />...</div>
+    // Into <div>...<block>content</block><block />...</div>
+    blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      while (
+        block.nextSibling &&
+        block.nextSibling.tagName !== 'BLOCK'
+      ) {
+        block.appendChild(block.nextSibling);
+      }
+    }
+  }
+
+  function guessPlatformAndOS() {
+    if (!document.querySelector('block')) {
+      return;
+    }
+  
+    // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+    // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+    var foundHash = false;
+    if (
+      window.location.hash !== '' &&
+      window.location.hash !== 'content'
+    ) {
+      // content is default
+      var hashLinks = document.querySelectorAll(
+        'a.hash-link'
+      );
+      for (
+        var i = 0;
+        i < hashLinks.length && !foundHash;
+        ++i
+      ) {
+        if (hashLinks[i].hash === window.location.hash) {
+          var parent = hashLinks[i].parentElement;
+          while (parent) {
+            if (parent.tagName === 'BLOCK') {
+              // Could be more than one target os and dev platform, but just choose some sort of order
+              // of priority here.
+
+              // Dev OS
+              if (parent.className.indexOf('mac') > -1) {
+                displayTab('os', 'mac');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('linux') > -1
+              ) {
+                displayTab('os', 'linux');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('windows') > -1
+              ) {
+                displayTab('os', 'windows');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              // Target Platform
+              if (parent.className.indexOf('ios') > -1) {
+                displayTab('platform', 'ios');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('android') > -1
+              ) {
+                displayTab('platform', 'android');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              // Guide
+              if (parent.className.indexOf('native') > -1) {
+                displayTab('guide', 'native');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('quickstart') > -1
+              ) {
+                displayTab('guide', 'quickstart');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              break;
+            }
+            parent = parent.parentElement;
+          }
+        }
+      }
+    }
+
+    // Do the default if there is no matching hash
+    if (!foundHash) {
+      var isMac = navigator.platform === 'MacIntel';
+      var isWindows = navigator.platform === 'Win32';
+      displayTab('platform', isMac ? 'ios' : 'android');
+      displayTab(
+        'os',
+        isMac ? 'mac' : isWindows ? 'windows' : 'linux'
+      );
+      displayTab('guide', 'quickstart');
+      displayTab('language', 'objc');
+    }
+  }
+
+  convertBlocks();
+  guessPlatformAndOS();
 </script>

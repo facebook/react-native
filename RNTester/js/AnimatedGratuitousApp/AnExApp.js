@@ -27,9 +27,7 @@ var CIRCLE_SIZE = 80;
 var CIRCLE_MARGIN = 18;
 var NUM_CIRCLES = 30;
 
-class Circle extends React.Component {
-  state: any;
-  props: any;
+class Circle extends React.Component<any, any> {
   longTimer: number;
 
   _onLongPress: () => void;
@@ -78,7 +76,7 @@ class Circle extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     if (this.state.panResponder) {
       var handlers = this.state.panResponder.panHandlers;
       var dragStyle = {                 //  Used to position while dragging
@@ -156,10 +154,7 @@ class Circle extends React.Component {
   }
 }
 
-class AnExApp extends React.Component {
-  state: any;
-  props: any;
-
+class AnExApp extends React.Component<any, any> {
   static title = 'Animated - Gratuitous App';
   static description = 'Bunch of Animations - tap a circle to ' +
     'open a view with more animations, or longPress and drag to reorder circles.';
@@ -179,7 +174,7 @@ class AnExApp extends React.Component {
     this._onMove = this._onMove.bind(this);
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     var circles = this.state.keys.map((key, idx) => {
       if (key === this.state.activeKey) {
         return <Circle key={key + 'd'} dummy={true} />;

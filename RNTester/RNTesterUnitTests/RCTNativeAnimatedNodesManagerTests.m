@@ -266,19 +266,12 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   XCTAssertEqual(observer.calls.count, 7UL);
 }
 
-- (void)testSpringAnimation
+- (void)performSpringAnimationTestWithConfig:(NSDictionary*)config isCriticallyDamped:(BOOL)testForCriticallyDamped
 {
   [self createSimpleAnimatedView:@1000 withOpacity:0];
   [_nodesManager startAnimatingNode:@1
                             nodeTag:@1
-                             config:@{@"type": @"spring",
-                                      @"friction": @7,
-                                      @"tension": @40,
-                                      @"initialVelocity": @0,
-                                      @"toValue": @1,
-                                      @"restSpeedThreshold": @0.001,
-                                      @"restDisplacementThreshold": @0.001,
-                                      @"overshootClamping": @NO}
+                             config:config
                         endCallback:nil];
 
   BOOL wasGreaterThanOne = NO;
@@ -299,7 +292,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
     }
 
     // Verify that animation step is relatively small.
-    XCTAssertLessThan(fabs(currentValue - previousValue), 0.1);
+    XCTAssertLessThan(fabs(currentValue - previousValue), 0.12);
 
     previousValue = currentValue;
   }
@@ -308,11 +301,43 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   XCTAssertEqual(previousValue, 1.0);
 
   // Verify that value has reached some maximum value that is greater than the final value (bounce).
-  XCTAssertTrue(wasGreaterThanOne);
+  if (testForCriticallyDamped) {
+    XCTAssertFalse(wasGreaterThanOne);
+  } else {
+    XCTAssertTrue(wasGreaterThanOne);
+  }
 
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];
+}
+
+- (void)testUnderdampedSpringAnimation
+{
+  [self performSpringAnimationTestWithConfig:@{@"type": @"spring",
+                                               @"stiffness": @230.3,
+                                               @"damping": @22,
+                                               @"mass": @1,
+                                               @"initialVelocity": @0,
+                                               @"toValue": @1,
+                                               @"restSpeedThreshold": @0.001,
+                                               @"restDisplacementThreshold": @0.001,
+                                               @"overshootClamping": @NO}
+                          isCriticallyDamped:NO];
+}
+
+- (void)testCritcallyDampedSpringAnimation
+{
+  [self performSpringAnimationTestWithConfig:@{@"type": @"spring",
+                                               @"stiffness": @1000,
+                                               @"damping": @500,
+                                               @"mass": @3,
+                                               @"initialVelocity": @0,
+                                               @"toValue": @1,
+                                               @"restSpeedThreshold": @0.001,
+                                               @"restDisplacementThreshold": @0.001,
+                                               @"overshootClamping": @NO}
+                          isCriticallyDamped:YES];
 }
 
 - (void)testDecayAnimation
@@ -415,15 +440,16 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                             nodeTag:@1
                              config:@{@"type": @"spring",
                                       @"iterations": @5,
-                                      @"friction": @7,
-                                      @"tension": @40,
+                                      @"stiffness": @230.2,
+                                      @"damping": @22,
+                                      @"mass": @1,
                                       @"initialVelocity": @0,
                                       @"toValue": @1,
                                       @"restSpeedThreshold": @0.001,
                                       @"restDisplacementThreshold": @0.001,
                                       @"overshootClamping": @NO}
                         endCallback:nil];
-
+  
   BOOL didComeToRest = NO;
   CGFloat previousValue = 0;
   NSUInteger numberOfResets = 0;
@@ -433,32 +459,32 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
     [invocation getArgument:&props atIndex:4];
     currentValue = props[@"opacity"].doubleValue;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
-
+  
   // Run for 3 seconds five times.
   for (NSUInteger i = 0; i < 3 * 60 * 5; i++) {
     [_nodesManager stepAnimations:_displayLink];
-
+    
     if (!didComeToRest) {
       // Verify that animation step is relatively small.
-      XCTAssertLessThan(fabs(currentValue - previousValue), 0.1);
+      XCTAssertLessThan(fabs(currentValue - previousValue), 0.12);
     }
-
+    
     // Test to see if it reset after coming to rest
     if (didComeToRest && currentValue == 0) {
       didComeToRest = NO;
       numberOfResets++;
     }
-
+    
     // Record that the animation did come to rest when it rests on toValue.
     didComeToRest = fabs(currentValue - 1) < 0.001 && fabs(currentValue - previousValue) < 0.001;
-
+    
     previousValue = currentValue;
   }
-
+  
   // Verify that value reset 4 times after finishing a full animation and is currently resting.
   XCTAssertEqual(numberOfResets, 4u);
   XCTAssertTrue(didComeToRest);
-
+  
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
   [_uiManager verify];

@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 android_resource(
     name = "assets",
     assets = ".",

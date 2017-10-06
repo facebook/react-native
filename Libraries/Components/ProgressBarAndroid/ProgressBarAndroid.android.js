@@ -10,16 +10,14 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ViewPropTypes = require('ViewPropTypes');
-var ColorPropType = require('ColorPropType');
+const ActivityIndicator = require('ActivityIndicator');
+const ColorPropType = require('ColorPropType');
+const PropTypes = require('prop-types');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
-
-var STYLE_ATTRIBUTES = [
+const STYLE_ATTRIBUTES = [
   'Horizontal',
   'Normal',
   'Small',
@@ -29,10 +27,10 @@ var STYLE_ATTRIBUTES = [
   'LargeInverse',
 ];
 
-var indeterminateType = function(props, propName, componentName, ...rest) {
-  var checker = function() {
-    var indeterminate = props[propName];
-    var styleAttr = props.styleAttr;
+const indeterminateType = function(props, propName, componentName, ...rest) {
+  const checker = function() {
+    const indeterminate = props[propName];
+    const styleAttr = props.styleAttr;
     if (!indeterminate && styleAttr !== 'Horizontal') {
       return new Error('indeterminate=false is only valid for styleAttr=Horizontal');
     }
@@ -64,10 +62,10 @@ var indeterminateType = function(props, propName, componentName, ...rest) {
  * },
  * ```
  */
-var ProgressBarAndroid = createReactClass({
-  displayName: 'ProgressBarAndroid',
-  propTypes: {
+class ProgressBarAndroid extends ReactNative.NativeComponent {
+  static propTypes = {
     ...ViewPropTypes,
+
     /**
      * Style of the ProgressBar. One of:
      *
@@ -97,35 +95,25 @@ var ProgressBarAndroid = createReactClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
-  },
+  };
 
-  getDefaultProps: function() {
-    return {
-      styleAttr: 'Normal',
-      indeterminate: true
-    };
-  },
+  static defaultProps = {
+    styleAttr: 'Normal',
+    indeterminate: true
+  };
 
-  mixins: [NativeMethodsMixin],
-
-  componentDidMount: function() {
+  componentDidMount() {
     if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
       console.warn(
         'Circular indeterminate `ProgressBarAndroid`' +
         'is deprecated. Use `ActivityIndicator` instead.'
       );
     }
-  },
+  }
 
-  render: function() {
-    return <AndroidProgressBar {...this.props} />;
-  },
-});
-
-var AndroidProgressBar = requireNativeComponent(
-  'AndroidProgressBar',
-  ProgressBarAndroid,
-  {nativeOnly: {animating: true}},
-);
+  render() {
+    return <ActivityIndicator {...this.props} animating={true} />;
+  }
+}
 
 module.exports = ProgressBarAndroid;

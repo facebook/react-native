@@ -18,6 +18,7 @@ const int RECONNECT_DELAY_MS = 2000;
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
   RCTSRWebSocket *_webSocket;
+  dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
 }
@@ -45,14 +46,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (self = [super init]) {
     _url = url;
     _inspectorConnections = [NSMutableDictionary new];
+    _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   }
   return self;
-}
-
-- (void)sendOpenEvent:(NSString *)pageId
-{
-  NSDictionary<NSString *, id> *payload = makePageIdPayload(pageId);
-  [self sendEvent:@"open" payload:payload];
 }
 
 - (void)handleProxyMessage:(NSDictionary<NSString *, id> *)message
@@ -69,6 +65,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self handleDisconnect:payload];
   } else {
     RCTLogError(@"Unknown event: %@", event);
+  }
+}
+
+- (void)sendEventToAllConnections:(NSString *)event
+{
+  for (NSString *pageId in _inspectorConnections) {
+    [_inspectorConnections[pageId] sendMessage:event];
   }
 }
 
@@ -215,6 +218,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // timeouts, but it appears the iOS RCTSRWebSocket API doesn't have the same
   // implemented options.
   _webSocket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  [_webSocket setDelegateDispatchQueue:_jsQueue];
   _webSocket.delegate = self;
   [_webSocket open];
 }
@@ -268,7 +272,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)abort:(NSString *)message
     withCause:(NSError *)cause
 {
-  RCTLogWarn(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
 
   [self closeAllConnections];
   [self disposeWebSocket];

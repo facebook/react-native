@@ -11,10 +11,10 @@
  */
 'use strict';
 
-var SamplingProfiler = {
+const SamplingProfiler = {
   poke: function (token: number): void {
-    var error = null;
-    var result = null;
+    let error = null;
+    let result = null;
     try {
       result = global.pokeSamplingProfiler();
       if (result === null) {
@@ -27,8 +27,9 @@ var SamplingProfiler = {
         'Error occured when restarting Sampling Profiler: ' + e.toString());
       error = e.toString();
     }
-    require('NativeModules').JSCSamplingProfiler.operationComplete(
-      token, result, error);
+
+    const {JSCSamplingProfiler} = require('NativeModules');
+    JSCSamplingProfiler.operationComplete(token, result, error);
   },
 };
 

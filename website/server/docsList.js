@@ -12,6 +12,7 @@
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/Button.js',
+  '../Libraries/Components/CheckBox/CheckBox.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Lists/FlatList.js',
@@ -51,7 +52,6 @@ const components = [
 const apis = [
   '../Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js',
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Alert/Alert.js',
   '../Libraries/Alert/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',

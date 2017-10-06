@@ -68,6 +68,11 @@ public:
 
     std::function<folly::dynamic(folly::dynamic)> syncFunc;
 
+    const char *getType() {
+      assert(func || syncFunc);
+      return func ? (callbacks == 2 ? "promise" : "async") : "sync";
+    }
+
     // std::function/lambda ctors
 
     Method(std::string aname,
@@ -160,7 +165,7 @@ public:
    * Each entry in the map will be exported as a property to JS.  The
    * key is the property name, and the value can be anything.
    */
-  virtual auto getConstants() -> std::map<std::string, folly::dynamic> = 0;
+  virtual auto getConstants() -> std::map<std::string, folly::dynamic> { return {}; };
 
   /**
    * @return a list of methods this module exports to JS.

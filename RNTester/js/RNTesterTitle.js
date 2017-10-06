@@ -19,7 +19,7 @@ var {
   View,
 } = ReactNative;
 
-class RNTesterTitle extends React.Component {
+class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.container}>

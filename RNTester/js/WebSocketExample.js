@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @flow
  * @providesModule WebSocketExample
+ * @format
  */
 'use strict';
 
@@ -16,23 +16,19 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Image,
   PixelRatio,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   View,
 } = ReactNative;
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 const DEFAULT_HTTP_URL = 'http://localhost:5556/';
-const WS_EVENTS = [
-  'close',
-  'error',
-  'message',
-  'open',
-];
+const WS_EVENTS = ['close', 'error', 'message', 'open'];
 const WS_STATES = [
   /* 0 */ 'CONNECTING',
   /* 1 */ 'OPEN',
@@ -45,15 +41,11 @@ class Button extends React.Component {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
-        <View style={[styles.button, styles.disabledButton]}>
-          {label}
-        </View>
+        <View style={[styles.button, styles.disabledButton]}>{label}</View>
       );
     }
     return (
-      <TouchableOpacity
-        onPress={this.props.onPress}
-        style={styles.button}>
+      <TouchableOpacity onPress={this.props.onPress} style={styles.button}>
         {label}
       </TouchableOpacity>
     );
@@ -65,8 +57,47 @@ class Row extends React.Component {
     return (
       <View style={styles.row}>
         <Text>{this.props.label}</Text>
-        <Text>{this.props.value}</Text>
+        {this.props.value ? <Text>{this.props.value}</Text> : null}
+        {this.props.children}
       </View>
+    );
+  }
+}
+
+class WebSocketImage extends React.Component {
+  ws: ?WebSocket = null;
+  state: {blob: ?Blob} = {blob: null};
+  componentDidMount() {
+    let ws = (this.ws = new WebSocket(this.props.url));
+    ws.binaryType = 'blob';
+    ws.onmessage = event => {
+      if (event.data instanceof Blob) {
+        const blob = event.data;
+        if (this.state.blob) {
+          this.state.blob.close();
+        }
+        this.setState({blob});
+      }
+    };
+    ws.onopen = event => {
+      ws.send('getImage');
+    };
+  }
+  componentUnmount() {
+    if (this.state.blob) {
+      this.state.blob.close();
+    }
+    this.ws && this.ws.close();
+  }
+  render() {
+    if (!this.state.blob) {
+      return <View />;
+    }
+    return (
+      <Image
+        source={{uri: URL.createObjectURL(this.state.blob)}}
+        style={{width: 50, height: 50}}
+      />
     );
   }
 }
@@ -75,28 +106,28 @@ function showValue(value) {
   if (value === undefined || value === null) {
     return '(no value)';
   }
-  console.log('typeof Uint8Array', typeof Uint8Array);
-  if (typeof ArrayBuffer !== 'undefined' &&
-      typeof Uint8Array !== 'undefined' &&
-      value instanceof ArrayBuffer) {
+  if (
+    typeof ArrayBuffer !== 'undefined' &&
+    typeof Uint8Array !== 'undefined' &&
+    value instanceof ArrayBuffer
+  ) {
     return `ArrayBuffer {${String(Array.from(new Uint8Array(value)))}}`;
   }
   return value;
 }
 
 type State = {
-  url: string;
-  httpUrl: string;
-  fetchStatus: ?string;
-  socket: ?WebSocket;
-  socketState: ?number;
-  lastSocketEvent: ?string;
-  lastMessage: ?string | ?ArrayBuffer;
-  outgoingMessage: string;
+  url: string,
+  httpUrl: string,
+  fetchStatus: ?string,
+  socket: ?WebSocket,
+  socketState: ?number,
+  lastSocketEvent: ?string,
+  lastMessage: ?string | ?ArrayBuffer,
+  outgoingMessage: string,
 };
 
 class WebSocketExample extends React.Component<any, any, State> {
-
   static title = 'WebSocket';
   static description = 'WebSocket API';
 
@@ -127,10 +158,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.state.socket.close();
   };
 
-  // Ideally this would be a MessageEvent, but Flow's definition
-  // doesn't inherit from Event, so it's 'any' for now.
-  // See https://github.com/facebook/flow/issues/1654.
-  _onSocketEvent = (event: any) => {
+  _onSocketEvent = (event: MessageEvent) => {
     const state: any = {
       socketState: event.target.readyState,
       lastSocketEvent: event.type,
@@ -153,7 +181,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({
       fetchStatus: 'fetching',
     });
-    fetch(this.state.httpUrl).then((response) => {
+    fetch(this.state.httpUrl).then(response => {
       if (response.status >= 200 && response.status < 400) {
         this.setState({
           fetchStatus: 'OK',
@@ -163,9 +191,11 @@ class WebSocketExample extends React.Component<any, any, State> {
   };
 
   _sendBinary = () => {
-    if (!this.state.socket ||
-        typeof ArrayBuffer === 'undefined' ||
-        typeof Uint8Array === 'undefined') {
+    if (
+      !this.state.socket ||
+      typeof ArrayBuffer === 'undefined' ||
+      typeof Uint8Array === 'undefined'
+    ) {
       return;
     }
     const {outgoingMessage} = this.state;
@@ -180,9 +210,8 @@ class WebSocketExample extends React.Component<any, any, State> {
   render(): React.Element<any> {
     const socketState = WS_STATES[this.state.socketState || -1];
     const canConnect =
-      !this.state.socket ||
-      this.state.socket.readyState >= WebSocket.CLOSING;
-    const canSend = !!this.state.socket;
+      !this.state.socket || this.state.socket.readyState >= WebSocket.CLOSING;
+    const canSend = socketState === 'OPEN';
     return (
       <ScrollView style={styles.container}>
         <View style={styles.note}>
@@ -191,10 +220,7 @@ class WebSocketExample extends React.Component<any, any, State> {
             ./RNTester/js/websocket_test_server.js
           </Text>
         </View>
-        <Row
-          label="Current WebSocket state"
-          value={showValue(socketState)}
-        />
+        <Row label="Current WebSocket state" value={showValue(socketState)} />
         <Row
           label="Last WebSocket event"
           value={showValue(this.state.lastSocketEvent)}
@@ -203,11 +229,14 @@ class WebSocketExample extends React.Component<any, any, State> {
           label="Last message received"
           value={showValue(this.state.lastMessage)}
         />
+        <Row label="Last image received">
+          {canSend ? <WebSocketImage url={this.state.url} /> : null}
+        </Row>
         <TextInput
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Server URL..."
-          onChangeText={(url) => this.setState({url})}
+          onChangeText={url => this.setState({url})}
           value={this.state.url}
         />
         <View style={styles.buttonRow}>
@@ -226,7 +255,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Type message here..."
-          onChangeText={(outgoingMessage) => this.setState({outgoingMessage})}
+          onChangeText={outgoingMessage => this.setState({outgoingMessage})}
           value={this.state.outgoingMessage}
         />
         <View style={styles.buttonRow}>
@@ -244,14 +273,14 @@ class WebSocketExample extends React.Component<any, any, State> {
         <View style={styles.note}>
           <Text>To start the HTTP test server:</Text>
           <Text style={styles.monospace}>
-            ./RNTester/http_test_server.js
+            ./RNTester/js/http_test_server.js
           </Text>
         </View>
         <TextInput
           style={styles.textInput}
           autoCorrect={false}
           placeholder="HTTP URL..."
-          onChangeText={(httpUrl) => this.setState({httpUrl})}
+          onChangeText={httpUrl => this.setState({httpUrl})}
           value={this.state.httpUrl}
         />
         <View style={styles.buttonRow}>
@@ -263,13 +292,14 @@ class WebSocketExample extends React.Component<any, any, State> {
         </View>
         <View style={styles.note}>
           <Text>
-            {this.state.fetchStatus === 'OK' ? 'Done. Check your WS server console to see if the next WS requests include the cookie (should be "wstest=OK")' : '-'}
+            {this.state.fetchStatus === 'OK'
+              ? 'Done. Check your WS server console to see if the next WS requests include the cookie (should be "wstest=OK")'
+              : '-'}
           </Text>
         </View>
       </ScrollView>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

@@ -13,6 +13,8 @@
 
 'use strict';
 
+declare var jest: any;
+
 const React = require('React');
 const View = require('View');
 

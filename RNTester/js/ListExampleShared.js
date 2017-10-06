@@ -44,15 +44,14 @@ function genItemData(count: number, start: number = 0): Array<Item> {
 const HORIZ_WIDTH = 200;
 const ITEM_HEIGHT = 72;
 
-class ItemComponent extends React.PureComponent {
-  props: {
-    fixedHeight?: ?boolean,
-    horizontal?: ?boolean,
-    item: Item,
-    onPress: (key: string) => void,
-    onShowUnderlay?: () => void,
-    onHideUnderlay?: () => void,
-  };
+class ItemComponent extends React.PureComponent<{
+  fixedHeight?: ?boolean,
+  horizontal?: ?boolean,
+  item: Item,
+  onPress: (key: string) => void,
+  onShowUnderlay?: () => void,
+  onHideUnderlay?: () => void,
+}> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
   };
@@ -91,7 +90,7 @@ const renderStackedItem = ({item}: {item: Item}) => {
   );
 };
 
-class FooterComponent extends React.PureComponent {
+class FooterComponent extends React.PureComponent<{}> {
   render() {
     return (
       <View style={styles.headerFooterContainer}>
@@ -104,7 +103,7 @@ class FooterComponent extends React.PureComponent {
   }
 }
 
-class HeaderComponent extends React.PureComponent {
+class HeaderComponent extends React.PureComponent<{}> {
   render() {
     return (
       <View style={styles.headerFooterContainer}>
@@ -117,13 +116,13 @@ class HeaderComponent extends React.PureComponent {
   }
 }
 
-class SeparatorComponent extends React.PureComponent {
+class SeparatorComponent extends React.PureComponent<{}> {
   render() {
     return <View style={styles.separator} />;
   }
 }
 
-class ItemSeparatorComponent extends React.PureComponent {
+class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
   render() {
     const style = this.props.highlighted
       ? [styles.itemSeparator, {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'}]
@@ -132,7 +131,7 @@ class ItemSeparatorComponent extends React.PureComponent {
   }
 }
 
-class Spindicator extends React.PureComponent {
+class Spindicator extends React.PureComponent<$FlowFixMeProps> {
   render() {
     return (
       <Animated.View style={[styles.spindicator, {

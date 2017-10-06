@@ -16,7 +16,6 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
-const ReactPropTypes = PropTypes;
 
 import type { ViewProps } from 'ViewPropTypes';
 
@@ -26,7 +25,7 @@ type Props = ViewProps & {
    * Should be a React element to be rendered and applied as the
    * mask for the child element.
    */
-  maskElement: React.Element<*>,
+  maskElement: React.Element<any>,
 };
 
 /**
@@ -34,12 +33,12 @@ type Props = ViewProps & {
  *
  * ```
  * import React from 'react';
- * import { MaskedView, Text, View } from 'react-native';
+ * import { MaskedViewIOS, Text, View } from 'react-native';
  *
  * class MyMaskedView extends React.Component {
  *   render() {
  *     return (
- *       <MaskedView
+ *       <MaskedViewIOS
  *         style={{ flex: 1 }}
  *         maskElement={
  *           <View style={styles.maskContainerStyle}>
@@ -50,7 +49,7 @@ type Props = ViewProps & {
  *         }
  *       >
  *         <View style={{ flex: 1, backgroundColor: 'blue' }} />
- *       </MaskedView>
+ *       </MaskedViewIOS>
  *     );
  *   }
  * }
@@ -65,12 +64,10 @@ type Props = ViewProps & {
  * transparent pixels block that content.
  *
  */
-class MaskedViewIOS extends React.Component {
-  props: Props;
-
+class MaskedViewIOS extends React.Component<Props> {
   static propTypes = {
     ...ViewPropTypes,
-    maskElement: ReactPropTypes.element.isRequired,
+    maskElement: PropTypes.element.isRequired,
   };
 
   _hasWarnedInvalidRenderMask = false;

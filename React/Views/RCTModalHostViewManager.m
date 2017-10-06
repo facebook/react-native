@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
+#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -82,10 +83,15 @@ RCT_EXPORT_MODULE()
 
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
 {
+  dispatch_block_t completionBlock = ^{
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
+    }
+  };
   if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
+    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController dismissViewControllerAnimated:animated completion:nil];
+    [viewController dismissViewControllerAnimated:animated completion:completionBlock];
   }
 }
 
@@ -107,7 +113,12 @@ RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(presentationStyle, UIModalPresentationStyle)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(identifier, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
+
+#if TARGET_OS_TV
+RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+#endif
 
 @end

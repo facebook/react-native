@@ -112,9 +112,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   AllocationTestModule *module = [AllocationTestModule new];
   @autoreleasepool {
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:^{
-                                                return @[module];
-                                              }
+                                              moduleProvider:^{ return @[module]; }
                                                launchOptions:nil];
     XCTAssertTrue(module.isValid, @"AllocationTestModule should be valid");
     (void)bridge;
@@ -130,12 +128,10 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   @autoreleasepool {
     AllocationTestModule *module = [AllocationTestModule new];
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:^{
-                                                return @[module];
-                                              }
+                                              moduleProvider:^{ return @[module]; }
                                                launchOptions:nil];
+    XCTAssertNotNil(module, @"AllocationTestModule should have been created");
     weakModule = module;
-    XCTAssertNotNil(weakModule, @"AllocationTestModule should have been created");
     (void)bridge;
   }
 
@@ -145,11 +141,18 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
 - (void)testModuleMethodsAreDeallocated
 {
+  static RCTMethodInfo methodInfo = {
+    .objcName = "test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d",
+    .jsName = "",
+    .isSync = false
+  };
+
   __weak RCTModuleMethod *weakMethod;
   @autoreleasepool {
-    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:@"test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d" JSMethodName:@"" isSync:NO moduleClass:[AllocationTestModule class]];
-    weakMethod = method;
+    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithExportedMethod:&methodInfo
+                                                                                  moduleClass:[AllocationTestModule class]];
     XCTAssertNotNil(method, @"RCTModuleMethod should have been created");
+    weakMethod = method;
   }
 
   RCT_RUN_RUNLOOP_WHILE(weakMethod)
@@ -172,7 +175,6 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 #if !TARGET_OS_TV // userInteractionEnabled is true for Apple TV views
   XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 #endif
-
 }
 
 - (void)testUnderlyingBridgeIsDeallocated

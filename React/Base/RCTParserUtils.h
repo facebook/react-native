@@ -19,7 +19,8 @@
 RCT_EXTERN BOOL RCTReadChar(const char **input, char c);
 RCT_EXTERN BOOL RCTReadString(const char **input, const char *string);
 RCT_EXTERN void RCTSkipWhitespace(const char **input);
-RCT_EXTERN BOOL RCTParseIdentifier(const char **input, NSString **string);
+RCT_EXTERN BOOL RCTParseSelectorIdentifier(const char **input, NSString **string);
+RCT_EXTERN BOOL RCTParseArgumentIdentifier(const char **input, NSString **string);
 
 /**
  * Parse an Objective-C type into a form that can be used by RCTConvert.
