@@ -268,6 +268,10 @@ function getViewPropTypes() {
 }
 
 function renderComponent(filepath) {
+  if (!fs.existsSync(filepath)) {
+    // We're processing old versions of the docs that may be missing newer libraries.
+    return;
+  }
   try {
     const fileContent = fs.readFileSync(filepath);
     const handlers = docgen.defaultHandlers.concat([
@@ -321,7 +325,7 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   // Parse via jsdoc-api
   let jsonParsed = jsdocApi.explainSync({
     source: code,
-    configure: './jsdocs/jsdoc-conf.json'
+    configure: '../jsdocs/jsdoc-conf.json'
   });
   // Clean up jsdoc-api return
   jsonParsed = jsonParsed.filter(i => {
@@ -455,6 +459,11 @@ function getJsDocFormatType(entities) {
 }
 
 function renderAPI(filepath, type) {
+  if (!fs.existsSync(filepath)) {
+    // We're processing old versions of the docs that may be missing newer libraries.
+    return;
+  }
+
   try {
     const fileContent = fs.readFileSync(filepath).toString();
     let json = parseAPIInferred(filepath, fileContent);
@@ -484,6 +493,11 @@ function renderAPI(filepath, type) {
 }
 
 function renderStyle(filepath) {
+  if (!fs.existsSync(filepath)) {
+    // We're processing old versions of the docs that may be missing newer libraries.
+    return;
+  }
+
   const json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedObject,

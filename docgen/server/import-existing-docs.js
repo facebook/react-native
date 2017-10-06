@@ -71,7 +71,6 @@ function prepareFilesystem() {
  * 
  * Generate requires a server to be started up. Can we do this from one location?
  */
-
 function checkOutDocs() {
   shell.cd(localCheckoutDir);
 
