@@ -17,3 +17,6 @@
 
 /** Registers a weakly-held observer of the Command+R reload key command. */
 RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener);
+
+/** Triggers a reload for all current listeners. You shouldn't need to use this directly in most cases. */
+RCT_EXTERN void RCTTriggerReloadCommandListeners(void);
