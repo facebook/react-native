@@ -55,7 +55,7 @@ function generateRequestId() {
  *         />
  *         <Image
  *           style={styles.logo}
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *         />
  *       </View>
  *     );
@@ -107,6 +107,7 @@ var Image = createReactClass({
           uri: PropTypes.string,
           width: PropTypes.number,
           height: PropTypes.number,
+          headers: PropTypes.objectOf(PropTypes.string),
         }))
     ]),
     /**
@@ -270,6 +271,10 @@ var Image = createReactClass({
 
     if (this.props.src) {
       console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
+    if (this.props.children) {
+      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
     }
 
     if (source && (source.uri || Array.isArray(source))) {

@@ -2,8 +2,11 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
+
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
@@ -262,12 +265,16 @@ public class ReactInstanceManagerBuilder {
       mUIImplementationProvider = new UIImplementationProvider();
     }
 
+    // We use the name of the device and the app for debugging & metrics
+    String appName = mApplication.getPackageName();
+    String deviceName = getFriendlyDeviceName();
+
     return new ReactInstanceManager(
         mApplication,
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-            ? new JSCJavaScriptExecutorFactory()
+            ? new JSCJavaScriptExecutorFactory(appName, deviceName)
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(

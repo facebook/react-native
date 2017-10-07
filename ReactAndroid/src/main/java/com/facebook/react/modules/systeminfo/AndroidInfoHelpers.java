@@ -31,6 +31,7 @@ public class AndroidInfoHelpers {
     return getServerIpAddress(INSPECTOR_PROXY_PORT);
   }
 
+  // WARNING(festevezga): This RN helper method has been copied to another FB-only target. Any changes should be applied to both.
   public static String getFriendlyDeviceName() {
     if (isRunningOnGenymotion()) {
       // Genymotion already has a friendly name by default

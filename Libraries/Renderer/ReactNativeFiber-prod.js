@@ -1,10 +1,8 @@
 /**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @noflow
  * @providesModule ReactNativeFiber-prod
@@ -166,13 +164,9 @@ var EventPluginUtils = {
 function restoreStateOfTarget(target) {
     var internalInstance = EventPluginUtils_1.getInstanceFromNode(target);
     if (internalInstance) {
-        if ("number" == typeof internalInstance.tag) {
-            invariant(fiberHostComponent && "function" == typeof fiberHostComponent.restoreControlledState, "Fiber needs to be injected to handle a fiber target for controlled " + "events. This error is likely caused by a bug in React. Please file an issue.");
-            var props = EventPluginUtils_1.getFiberCurrentPropsFromNode(internalInstance.stateNode);
-            return void fiberHostComponent.restoreControlledState(internalInstance.stateNode, internalInstance.type, props);
-        }
-        invariant("function" == typeof internalInstance.restoreControlledState, "The internal instance must be a React host component. " + "This error is likely caused by a bug in React. Please file an issue."), 
-        internalInstance.restoreControlledState();
+        invariant(fiberHostComponent && "function" == typeof fiberHostComponent.restoreControlledState, "Fiber needs to be injected to handle a fiber target for controlled " + "events. This error is likely caused by a bug in React. Please file an issue.");
+        var props = EventPluginUtils_1.getFiberCurrentPropsFromNode(internalInstance.stateNode);
+        fiberHostComponent.restoreControlledState(internalInstance.stateNode, internalInstance.type, props);
     }
 }
 
@@ -187,18 +181,12 @@ var ReactControlledComponent = {
             if (restoreTarget = null, restoreQueue = null, restoreStateOfTarget(target), queuedTargets) for (var i = 0; i < queuedTargets.length; i++) restoreStateOfTarget(queuedTargets[i]);
         }
     }
-}, ReactControlledComponent_1 = ReactControlledComponent, stackBatchedUpdates = function(fn, a, b, c, d, e) {
-    return fn(a, b, c, d, e);
-}, fiberBatchedUpdates = function(fn, bookkeeping) {
+}, ReactControlledComponent_1 = ReactControlledComponent, fiberBatchedUpdates = function(fn, bookkeeping) {
     return fn(bookkeeping);
 };
 
-function performFiberBatchedUpdates(fn, bookkeeping) {
-    return fiberBatchedUpdates(fn, bookkeeping);
-}
-
 function batchedUpdates(fn, bookkeeping) {
-    return stackBatchedUpdates(performFiberBatchedUpdates, fn, bookkeeping);
+    return fiberBatchedUpdates(fn, bookkeeping);
 }
 
 var isNestingBatched = !1;
@@ -214,9 +202,6 @@ function batchedUpdatesWithControlledComponents(fn, bookkeeping) {
 }
 
 var ReactGenericBatchingInjection = {
-    injectStackBatchedUpdates: function(_batchedUpdates) {
-        stackBatchedUpdates = _batchedUpdates;
-    },
     injectFiberBatchedUpdates: function(_batchedUpdates) {
         fiberBatchedUpdates = _batchedUpdates;
     }
@@ -256,23 +241,8 @@ var showDialog$1 = ReactNativeFiberErrorDialog, ReactNativeFiberErrorDialog_1 = 
     REACT_PORTAL_TYPE: REACT_PORTAL_TYPE_1
 }, instanceCache = {}, instanceProps = {};
 
-function getRenderedHostOrTextFromComponent(component) {
-    for (var rendered; rendered = component._renderedComponent; ) component = rendered;
-    return component;
-}
-
-function precacheNode(inst, tag) {
-    var nativeInst = getRenderedHostOrTextFromComponent(inst);
-    instanceCache[tag] = nativeInst;
-}
-
 function precacheFiberNode(hostInst, tag) {
     instanceCache[tag] = hostInst;
-}
-
-function uncacheNode(inst) {
-    var tag = inst._rootNodeID;
-    tag && delete instanceCache[tag];
 }
 
 function uncacheFiberNode(tag) {
@@ -301,9 +271,7 @@ var ReactNativeComponentTree = {
     getInstanceFromNode: getInstanceFromTag,
     getNodeFromInstance: getTagFromInstance,
     precacheFiberNode: precacheFiberNode,
-    precacheNode: precacheNode,
     uncacheFiberNode: uncacheFiberNode,
-    uncacheNode: uncacheNode,
     getFiberCurrentPropsFromNode: getFiberCurrentPropsFromNode,
     updateFiberProps: updateFiberProps
 }, ReactNativeComponentTree_1 = ReactNativeComponentTree, commonjsGlobal = "undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof self ? self : {}, ReactFeatureFlags = {
@@ -522,16 +490,9 @@ var commitCallbacks_1 = commitCallbacks, ReactFiberUpdateQueue = {
     commitCallbacks: commitCallbacks_1
 };
 
-function getComponentName$1(instanceOrFiber) {
-    if ("function" == typeof instanceOrFiber.getName) {
-        return instanceOrFiber.getName();
-    }
-    if ("number" == typeof instanceOrFiber.tag) {
-        var fiber = instanceOrFiber, type = fiber.type;
-        if ("string" == typeof type) return type;
-        if ("function" == typeof type) return type.displayName || type.name;
-    }
-    return null;
+function getComponentName$1(fiber) {
+    var type = fiber.type;
+    return "string" == typeof type ? type : "function" == typeof type ? type.displayName || type.name : null;
 }
 
 var getComponentName_1 = getComponentName$1, ReactInstanceMap = {
@@ -717,12 +678,14 @@ function popContextProvider(fiber) {
     isContextProvider$1(fiber) && (pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber));
 }
 
-var popContextProvider_1 = popContextProvider, pushTopLevelContextObject = function(fiber, context, didChange) {
+var popContextProvider_1 = popContextProvider, popTopLevelContextObject = function(fiber) {
+    pop(didPerformWorkStackCursor, fiber), pop(contextStackCursor, fiber);
+}, pushTopLevelContextObject = function(fiber, context, didChange) {
     invariant(null == contextStackCursor.cursor, "Unexpected context found on stack. " + "This error is likely caused by a bug in React. Please file an issue."), 
     push(contextStackCursor, context, fiber), push(didPerformWorkStackCursor, didChange, fiber);
 };
 
-function processChildContext$1(fiber, parentContext, isReconciling) {
+function processChildContext$1(fiber, parentContext) {
     var instance = fiber.stateNode, childContextTypes = fiber.type.childContextTypes;
     if ("function" != typeof instance.getChildContext) return parentContext;
     var childContext = void 0;
@@ -741,7 +704,7 @@ var processChildContext_1 = processChildContext$1, pushContextProvider = functio
     var instance = workInProgress.stateNode;
     if (invariant(instance, "Expected to have an instance by this point. " + "This error is likely caused by a bug in React. Please file an issue."), 
     didChange) {
-        var mergedContext = processChildContext$1(workInProgress, previousContext, !0);
+        var mergedContext = processChildContext$1(workInProgress, previousContext);
         instance.__reactInternalMemoizedMergedChildContext = mergedContext, pop(didPerformWorkStackCursor, workInProgress), 
         pop(contextStackCursor, workInProgress), push(contextStackCursor, mergedContext, workInProgress), 
         push(didPerformWorkStackCursor, didChange, workInProgress);
@@ -765,6 +728,7 @@ var processChildContext_1 = processChildContext$1, pushContextProvider = functio
     isContextConsumer: isContextConsumer_1,
     isContextProvider: isContextProvider_1,
     popContextProvider: popContextProvider_1,
+    popTopLevelContextObject: popTopLevelContextObject,
     pushTopLevelContextObject: pushTopLevelContextObject,
     processChildContext: processChildContext_1,
     pushContextProvider: pushContextProvider,
@@ -796,7 +760,7 @@ var createWorkInProgress = function(current, renderPriority) {
     var workInProgress = current.alternate;
     return null === workInProgress ? (workInProgress = createFiber(current.tag, current.key, current.internalContextTag), 
     workInProgress.type = current.type, workInProgress.stateNode = current.stateNode, 
-    workInProgress.alternate = current, current.alternate = workInProgress) : (workInProgress.effectTag = NoWork$1, 
+    workInProgress.alternate = current, current.alternate = workInProgress) : (workInProgress.effectTag = NoEffect$1, 
     workInProgress.nextEffect = null, workInProgress.firstEffect = null, workInProgress.lastEffect = null), 
     workInProgress.pendingWorkPriority = renderPriority, workInProgress.child = current.child, 
     workInProgress.memoizedProps = current.memoizedProps, workInProgress.memoizedState = current.memoizedState, 
@@ -943,11 +907,11 @@ function coerceRef(current, element) {
     if (null !== mixedRef && "function" != typeof mixedRef) {
         if (element._owner) {
             var owner = element._owner, inst = void 0;
-            if (owner) if ("number" == typeof owner.tag) {
+            if (owner) {
                 var ownerFiber = owner;
                 invariant(ownerFiber.tag === ClassComponent$7, "Stateless function components cannot have refs."), 
                 inst = ownerFiber.stateNode;
-            } else inst = owner.getPublicInstance();
+            }
             invariant(inst, "Missing owner for string ref %s. This error is likely caused by a " + "bug in React. Please file an issue.", mixedRef);
             var stringRef = "" + mixedRef;
             if (null !== current && null !== current.ref && current.ref._stringRef === stringRef) return current.ref;
@@ -1458,10 +1422,13 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
         memoizeProps(workInProgress, instance.props), hasContext && invalidateContextProvider$1(workInProgress, !0), 
         workInProgress.child;
     }
-    function updateHostRoot(current, workInProgress, priorityLevel) {
+    function pushHostRootContext(workInProgress) {
         var root = workInProgress.stateNode;
         root.pendingContext ? pushTopLevelContextObject$1(workInProgress, root.pendingContext, root.pendingContext !== root.context) : root.context && pushTopLevelContextObject$1(workInProgress, root.context, !1), 
         pushHostContainer(workInProgress, root.containerInfo);
+    }
+    function updateHostRoot(current, workInProgress, priorityLevel) {
+        pushHostRootContext(workInProgress);
         var updateQueue = workInProgress.updateQueue;
         if (null !== updateQueue) {
             var prevState = workInProgress.memoizedState, state = beginUpdateQueue$1(current, workInProgress, updateQueue, null, prevState, null, priorityLevel);
@@ -1526,6 +1493,10 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
     }
     function bailoutOnLowPriority(current, workInProgress) {
         switch (workInProgress.tag) {
+          case HostRoot$5:
+            pushHostRootContext(workInProgress);
+            break;
+
           case ClassComponent$6:
             pushContextProvider$1(workInProgress);
             break;
@@ -1588,8 +1559,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
             break;
 
           case HostRoot$5:
-            var root = workInProgress.stateNode;
-            pushHostContainer(workInProgress, root.containerInfo);
+            pushHostRootContext(workInProgress);
             break;
 
           default:
@@ -1608,7 +1578,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
         beginWork: beginWork,
         beginFailedWork: beginFailedWork
     };
-}, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$6 = ReactTypeOfWork.HostRoot, HostComponent$6 = ReactTypeOfWork.HostComponent, HostText$4 = ReactTypeOfWork.HostText, HostPortal$5 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$3 = ReactTypeOfWork.YieldComponent, Fragment$3 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
+}, reconcileChildFibers$2 = ReactChildFiber.reconcileChildFibers, popContextProvider$2 = ReactFiberContext.popContextProvider, popTopLevelContextObject$1 = ReactFiberContext.popTopLevelContextObject, IndeterminateComponent$3 = ReactTypeOfWork.IndeterminateComponent, FunctionalComponent$3 = ReactTypeOfWork.FunctionalComponent, ClassComponent$8 = ReactTypeOfWork.ClassComponent, HostRoot$6 = ReactTypeOfWork.HostRoot, HostComponent$6 = ReactTypeOfWork.HostComponent, HostText$4 = ReactTypeOfWork.HostText, HostPortal$5 = ReactTypeOfWork.HostPortal, CoroutineComponent$3 = ReactTypeOfWork.CoroutineComponent, CoroutineHandlerPhase$1 = ReactTypeOfWork.CoroutineHandlerPhase, YieldComponent$3 = ReactTypeOfWork.YieldComponent, Fragment$3 = ReactTypeOfWork.Fragment, Placement$4 = ReactTypeOfSideEffect.Placement, Ref$2 = ReactTypeOfSideEffect.Ref, Update$2 = ReactTypeOfSideEffect.Update, OffscreenPriority$2 = ReactPriorityLevel.OffscreenPriority, ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
     var createInstance = config.createInstance, createTextInstance = config.createTextInstance, appendInitialChild = config.appendInitialChild, finalizeInitialChildren = config.finalizeInitialChildren, prepareUpdate = config.prepareUpdate, getRootHostContainer = hostContext.getRootHostContainer, popHostContext = hostContext.popHostContext, getHostContext = hostContext.getHostContext, popHostContainer = hostContext.popHostContainer, prepareToHydrateHostInstance = hydrationContext.prepareToHydrateHostInstance, prepareToHydrateHostTextInstance = hydrationContext.prepareToHydrateHostTextInstance, popHydrationState = hydrationContext.popHydrationState;
     function markUpdate(workInProgress) {
         workInProgress.effectTag |= Update$2;
@@ -1665,6 +1635,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
             return popContextProvider$2(workInProgress), null;
 
           case HostRoot$6:
+            popHostContainer(workInProgress), popTopLevelContextObject$1(workInProgress);
             var fiberRoot = workInProgress.stateNode;
             return fiberRoot.pendingContext && (fiberRoot.context = fiberRoot.pendingContext, 
             fiberRoot.pendingContext = null), null !== current && null !== current.child || (popHydrationState(workInProgress), 
@@ -1681,7 +1652,7 @@ var reconcileChildFibers$1 = ChildReconciler(!0, !0), reconcileChildFibersInPlac
                 if (!newProps) return invariant(null !== workInProgress.stateNode, "We must have new props for new mounts. This error is likely " + "caused by a bug in React. Please file an issue."), 
                 null;
                 var _currentHostContext = getHostContext();
-                if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance) && markUpdate(workInProgress); else {
+                if (popHydrationState(workInProgress)) prepareToHydrateHostInstance(workInProgress, rootContainerInstance, _currentHostContext) && markUpdate(workInProgress); else {
                     var _instance = createInstance(type, newProps, rootContainerInstance, _currentHostContext, workInProgress);
                     appendAllChildren(_instance, workInProgress), finalizeInitialChildren(_instance, type, newProps, rootContainerInstance) && markUpdate(workInProgress), 
                     workInProgress.stateNode = _instance;
@@ -2095,8 +2066,8 @@ var injectInternals_1 = injectInternals$1, onCommitRoot_1 = onCommitRoot$1, onCo
             fiber.stateNode = nextInstance, hydrationParentFiber = fiber, nextHydratableInstance = getFirstHydratableChild(nextInstance);
         }
     }
-    function prepareToHydrateHostInstance(fiber, rootContainerInstance) {
-        var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, fiber);
+    function prepareToHydrateHostInstance(fiber, rootContainerInstance, hostContext) {
+        var instance = fiber.stateNode, updatePayload = hydrateInstance(instance, fiber.type, fiber.memoizedProps, rootContainerInstance, hostContext, fiber);
         return fiber.updateQueue = updatePayload, null !== updatePayload;
     }
     function prepareToHydrateHostTextInstance(fiber) {
@@ -2516,26 +2487,13 @@ var injectInternals_1 = injectInternals$1, onCommitRoot_1 = onCommitRoot$1, onCo
         flushSync: flushSync,
         deferredUpdates: deferredUpdates
     };
-}, getContextFiber = function(arg) {
-    invariant(!1, "Missing injection for fiber getContextForSubtree");
-};
+}, addTopLevelUpdate = ReactFiberUpdateQueue.addTopLevelUpdate, findCurrentUnmaskedContext = ReactFiberContext.findCurrentUnmaskedContext, isContextProvider = ReactFiberContext.isContextProvider, processChildContext = ReactFiberContext.processChildContext, createFiberRoot = ReactFiberRoot.createFiberRoot, HostComponent = ReactTypeOfWork.HostComponent, findCurrentHostFiber = ReactFiberTreeReflection.findCurrentHostFiber, findCurrentHostFiberWithNoPortals = ReactFiberTreeReflection.findCurrentHostFiberWithNoPortals;
 
 function getContextForSubtree(parentComponent) {
     if (!parentComponent) return emptyObject;
-    var instance = ReactInstanceMap_1.get(parentComponent);
-    return "number" == typeof instance.tag ? getContextFiber(instance) : instance._processChildContext(instance._context);
+    var fiber = ReactInstanceMap_1.get(parentComponent), parentContext = findCurrentUnmaskedContext(fiber);
+    return isContextProvider(fiber) ? processChildContext(fiber, parentContext) : parentContext;
 }
-
-getContextForSubtree._injectFiber = function(fn) {
-    getContextFiber = fn;
-};
-
-var getContextForSubtree_1 = getContextForSubtree, addTopLevelUpdate = ReactFiberUpdateQueue.addTopLevelUpdate, findCurrentUnmaskedContext = ReactFiberContext.findCurrentUnmaskedContext, isContextProvider = ReactFiberContext.isContextProvider, processChildContext = ReactFiberContext.processChildContext, createFiberRoot = ReactFiberRoot.createFiberRoot, HostComponent = ReactTypeOfWork.HostComponent, findCurrentHostFiber = ReactFiberTreeReflection.findCurrentHostFiber, findCurrentHostFiberWithNoPortals = ReactFiberTreeReflection.findCurrentHostFiberWithNoPortals;
-
-getContextForSubtree_1._injectFiber(function(fiber) {
-    var parentContext = findCurrentUnmaskedContext(fiber);
-    return isContextProvider(fiber) ? processChildContext(fiber, parentContext, !1) : parentContext;
-});
 
 var ReactFiberReconciler = function(config) {
     var getPublicInstance = config.getPublicInstance, _ReactFiberScheduler = ReactFiberScheduler(config), scheduleUpdate = _ReactFiberScheduler.scheduleUpdate, getPriorityContext = _ReactFiberScheduler.getPriorityContext, batchedUpdates = _ReactFiberScheduler.batchedUpdates, unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates, flushSync = _ReactFiberScheduler.flushSync, deferredUpdates = _ReactFiberScheduler.deferredUpdates;
@@ -2551,7 +2509,7 @@ var ReactFiberReconciler = function(config) {
             return createFiberRoot(containerInfo);
         },
         updateContainer: function(element, container, parentComponent, callback) {
-            var current = container.current, context = getContextForSubtree_1(parentComponent);
+            var current = container.current, context = getContextForSubtree(parentComponent);
             null === container.context ? container.context = context : container.pendingContext = context, 
             scheduleTopLevelUpdate(current, element, callback);
         },
@@ -2882,7 +2840,7 @@ getInspectorDataForViewTag = function() {
 
 var ReactNativeFiberInspector = {
     getInspectorDataForViewTag: getInspectorDataForViewTag
-}, ReactVersion = "16.0.0-rc.1";
+}, ReactVersion = "16.0.0";
 
 function findNodeHandle(componentOrHandle) {
     if (null == componentOrHandle) return null;
@@ -3000,22 +2958,11 @@ var EventPluginHub = {
         injectEventPluginsByName: EventPluginRegistry_1.injectEventPluginsByName
     },
     getListener: function(inst, registrationName) {
-        var listener;
-        if ("number" == typeof inst.tag) {
-            var stateNode = inst.stateNode;
-            if (!stateNode) return null;
-            var props = EventPluginUtils_1.getFiberCurrentPropsFromNode(stateNode);
-            if (!props) return null;
-            if (listener = props[registrationName], shouldPreventMouseEvent(registrationName, inst.type, props)) return null;
-        } else {
-            var currentElement = inst._currentElement;
-            if ("string" == typeof currentElement || "number" == typeof currentElement) return null;
-            if (!inst._rootNodeID) return null;
-            var _props = currentElement.props;
-            if (listener = _props[registrationName], shouldPreventMouseEvent(registrationName, currentElement.type, _props)) return null;
-        }
-        return invariant(!listener || "function" == typeof listener, "Expected `%s` listener to be a function, instead got a value of `%s` type.", registrationName, typeof listener), 
-        listener;
+        var listener, stateNode = inst.stateNode;
+        if (!stateNode) return null;
+        var props = EventPluginUtils_1.getFiberCurrentPropsFromNode(stateNode);
+        return props ? (listener = props[registrationName], shouldPreventMouseEvent(registrationName, inst.type, props) ? null : (invariant(!listener || "function" == typeof listener, "Expected `%s` listener to be a function, instead got a value of `%s` type.", registrationName, typeof listener), 
+        listener)) : null;
     },
     extractEvents: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
         for (var events, plugins = EventPluginRegistry_1.plugins, i = 0; i < plugins.length; i++) {
@@ -3039,14 +2986,10 @@ var EventPluginHub = {
 }, EventPluginHub_1 = EventPluginHub, HostComponent$10 = ReactTypeOfWork.HostComponent;
 
 function getParent(inst) {
-    if (void 0 !== inst._hostParent) return inst._hostParent;
-    if ("number" == typeof inst.tag) {
-        do {
-            inst = inst.return;
-        } while (inst && inst.tag !== HostComponent$10);
-        if (inst) return inst;
-    }
-    return null;
+    do {
+        inst = inst.return;
+    } while (inst && inst.tag !== HostComponent$10);
+    return inst || null;
 }
 
 function getLowestCommonAncestor(instA, instB) {
@@ -3691,7 +3634,7 @@ var ReactNativeFiber = {
     unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
         ReactNativeFiber.unmountComponentAtNode(containerTag), UIManager.removeRootView(containerTag);
     },
-    unstable_createPortal: function(children, containerTag) {
+    createPortal: function(children, containerTag) {
         var key = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
         return ReactPortal.createPortal(children, containerTag, null, key);
     },

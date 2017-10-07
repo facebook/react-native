@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.List;
@@ -42,5 +43,15 @@ public final class FlatUIImplementationProvider extends UIImplementationProvider
         eventDispatcher,
         mMemoryImprovementEnabled,
         minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  @Override
+  public FlatUIImplementation createUIImplementation(
+      ReactApplicationContext reactContext,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    throw new UnsupportedOperationException(
+        "Lazy version of FlatUIImplementations are not supported");
   }
 }

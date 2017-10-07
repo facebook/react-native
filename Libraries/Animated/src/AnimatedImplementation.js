@@ -698,6 +698,8 @@ module.exports = {
    *
    *   - `velocity`: Initial velocity.  Required.
    *   - `deceleration`: Rate of decay.  Default 0.997.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   decay,
@@ -712,21 +714,56 @@ module.exports = {
    *   - `easing`: Easing function to define curve.
    *     Default is `Easing.inOut(Easing.ease)`.
    *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   timing,
   /**
-   * Spring animation based on Rebound and
-   * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
-   * create fluid motions as the `toValue` updates, and can be chained together.
+   * Animates a value according to an analytical spring model based on
+   * [damped harmonic oscillation](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
+   * Tracks velocity state to create fluid motions as the `toValue` updates, and
+   * can be chained together.
    *
-   * Config is an object that may have the following options. Note that you can
-   * only define bounciness/speed or tension/friction but not both:
+   * Config is an object that may have the following options.
+   *
+   * Note that you can only define one of bounciness/speed, tension/friction, or
+   * stiffness/damping/mass, but not more than one:
+   *
+   * The friction/tension or bounciness/speed options match the spring model in
+   * [Facebook Pop](https://github.com/facebook/pop), [Rebound](http://facebook.github.io/rebound/),
+   * and [Origami](http://origami.design/).
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
    *   - `speed`: Controls speed of the animation. Default 12.
    *   - `bounciness`: Controls bounciness. Default 8.
+   *
+   * Specifying stiffness/damping/mass as parameters makes `Animated.spring` use an
+   * analytical spring model based on the motion equations of a [damped harmonic
+   * oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
+   * This behavior is slightly more precise and faithful to the physics behind
+   * spring dynamics, and closely mimics the implementation in iOS's
+   * CASpringAnimation primitive.
+   *
+   *   - `stiffness`: The spring stiffness coefficient. Default 100.
+   *   - `damping`: Defines how the spring’s motion should be damped due to the forces of friction.
+   *     Default 10.
+   *   - `mass`: The mass of the object attached to the end of the spring. Default 1.
+   *
+   * Other configuration options are as follows:
+   *
+   *   - `velocity`: The initial velocity of the object attached to the spring. Default 0 (object
+   *     is at rest).
+   *   - `overshootClamping`: Boolean indiciating whether the spring should be clamped and not
+   *     bounce. Default false.
+   *   - `restDisplacementThreshold`: The threshold of displacement from rest below which the
+   *     spring should be considered at rest. Default 0.001.
+   *   - `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels
+   *     per second. Default 0.001.
+   *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
+   *   - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+   *     `InteractionManager`. Default true.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
@@ -802,12 +839,13 @@ module.exports = {
    *```javascript
    *  onScroll={Animated.event(
    *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
-   *    {listener},          // Optional async listener
+   *    {listener: (event) => console.log(event)}, // Optional async listener
    *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored
    *    {dx: this._panX},    // gestureState arg
+        {listener: (event, gestureState) => console.log(event, gestureState)}, // Optional async listener
    *  ]),
    *```
    *

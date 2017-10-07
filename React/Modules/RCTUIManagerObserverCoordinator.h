@@ -12,9 +12,11 @@
 #import <React/RCTViewManager.h>
 
 /**
- * Allows to hook into UIManager internals. This can be used to execute code at
+ * Allows hooking into UIManager internals. This can be used to execute code at
  * specific points during the view updating process.
- * All observer handler is called on UIManager queue.
+ * New observers must not be added inside observer handlers.
+ * The particular order of handler invocation is not guaranteed.
+ * All observer handlers are called on UIManager queue.
  */
 @protocol RCTUIManagerObserver <NSObject>
 
