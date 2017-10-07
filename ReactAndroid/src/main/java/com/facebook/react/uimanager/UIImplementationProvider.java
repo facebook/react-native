@@ -18,10 +18,25 @@ import java.util.List;
 public class UIImplementationProvider {
   public UIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
-      List<ViewManager> viewManagers,
+      UIManagerModule.ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     return new UIImplementation(
-        reactContext, viewManagers, eventDispatcher, minTimeLeftInFrameForNonBatchedOperationMs);
+        reactContext,
+        viewManagerResolver,
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+  
+  public UIImplementation createUIImplementation(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagerList,
+      EventDispatcher eventDispatcher,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    return new UIImplementation(
+        reactContext,
+        viewManagerList,
+        eventDispatcher,
+        minTimeLeftInFrameForNonBatchedOperationMs);
   }
 }

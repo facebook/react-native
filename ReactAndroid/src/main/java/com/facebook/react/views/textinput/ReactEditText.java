@@ -10,11 +10,9 @@
 package com.facebook.react.views.textinput;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
@@ -35,11 +33,13 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
@@ -82,7 +82,7 @@ public class ReactEditText extends EditText {
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
-  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
+  private ReactViewBackgroundManager mReactBackgroundManager;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -90,6 +90,7 @@ public class ReactEditText extends EditText {
     super(context);
     setFocusableInTouchMode(false);
 
+    mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager = (InputMethodManager)
         Assertions.assertNotNull(getContext().getSystemService(Context.INPUT_METHOD_SERVICE));
     mDefaultGravityHorizontal =
@@ -130,9 +131,7 @@ public class ReactEditText extends EditText {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mContentSizeWatcher != null) {
-      mContentSizeWatcher.onLayout();
-    }
+    onContentSizeChange();
   }
 
   @Override
@@ -367,7 +366,9 @@ public class ReactEditText extends EditText {
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
+
     getText().replace(0, length(), spannableStringBuilder);
+
     mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
@@ -445,6 +446,21 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private void onContentSizeChange() {
+    if (mContentSizeWatcher != null) {
+      mContentSizeWatcher.onLayout();
+    }
+
+    setIntrinsicContentSize();
+  }
+
+  private void setIntrinsicContentSize() {
+    ReactContext reactContext = (ReactContext) getContext();
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+    uiManager.setViewLocalData(getId(), localData);
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
@@ -577,48 +593,27 @@ public class ReactEditText extends EditText {
 
   @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
-      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
-    } else {
-      getOrCreateReactViewBackground().setColor(color);
-    }
+    mReactBackgroundManager.setBackgroundColor(color);
   }
 
   public void setBorderWidth(int position, float width) {
-    getOrCreateReactViewBackground().setBorderWidth(position, width);
+    mReactBackgroundManager.setBorderWidth(position, width);
   }
 
   public void setBorderColor(int position, float color, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+    mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
   public void setBorderRadius(float borderRadius) {
-    getOrCreateReactViewBackground().setRadius(borderRadius);
+    mReactBackgroundManager.setBorderRadius(borderRadius);
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    mReactBackgroundManager.setBorderRadius(borderRadius, position);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    getOrCreateReactViewBackground().setBorderStyle(style);
-  }
-
-  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
-    if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
-      Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
-      // drawable back as a part of LayerDrawable
-      if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
-      } else {
-        LayerDrawable layerDrawable =
-            new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
-      }
-    }
-    return mReactBackgroundDrawable;
+    mReactBackgroundManager.setBorderStyle(style);
   }
 
   /**
@@ -643,9 +638,7 @@ public class ReactEditText extends EditText {
         }
       }
 
-      if (mContentSizeWatcher != null) {
-        mContentSizeWatcher.onLayout();
-      }
+      onContentSizeChange();
     }
 
     @Override

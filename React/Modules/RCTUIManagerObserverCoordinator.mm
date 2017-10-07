@@ -9,10 +9,13 @@
 
 #import "RCTUIManagerObserverCoordinator.h"
 
+#import <mutex>
+
 #import "RCTUIManager.h"
 
 @implementation RCTUIManagerObserverCoordinator {
   NSHashTable<id<RCTUIManagerObserver>> *_observers;
+  std::mutex _mutex;
 }
 
 - (instancetype)init
@@ -26,22 +29,22 @@
 
 - (void)addObserver:(id<RCTUIManagerObserver>)observer
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self->_observers addObject:observer];
-  });
+  std::lock_guard<std::mutex> lock(_mutex);
+  [self->_observers addObject:observer];
 }
 
 - (void)removeObserver:(id<RCTUIManagerObserver>)observer
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self->_observers removeObject:observer];
-  });
+  std::lock_guard<std::mutex> lock(_mutex);
+  [self->_observers removeObject:observer];
 }
 
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillPerformLayout:(RCTUIManager *)manager
 {
+  std::lock_guard<std::mutex> lock(_mutex);
+
   for (id<RCTUIManagerObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(uiManagerWillPerformLayout:)]) {
       [observer uiManagerWillPerformLayout:manager];
@@ -51,6 +54,8 @@
 
 - (void)uiManagerDidPerformLayout:(RCTUIManager *)manager
 {
+  std::lock_guard<std::mutex> lock(_mutex);
+
   for (id<RCTUIManagerObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(uiManagerDidPerformLayout:)]) {
       [observer uiManagerDidPerformLayout:manager];
@@ -60,6 +65,8 @@
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager
 {
+  std::lock_guard<std::mutex> lock(_mutex);
+
   for (id<RCTUIManagerObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(uiManagerWillFlushUIBlocks:)]) {
       [observer uiManagerWillFlushUIBlocks:manager];

@@ -91,6 +91,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
 
+  private JavaScriptContextHolder mJavaScriptContextHolder;
+
   // C++ parts
   private final HybridData mHybridData;
   private native static HybridData initHybrid();
@@ -126,6 +128,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mNativeModuleRegistry.getJavaModules(this),
       mNativeModuleRegistry.getCxxModules());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+
+    mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -333,6 +337,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
           public void run() {
             // Kill non-UI threads from neutral third party
             // potentially expensive, so don't run on UI thread
+
+            // contextHolder is used as a lock to guard against other users of the JS VM having
+            // the VM destroyed underneath them, so notify them before we resetNative
+            mJavaScriptContextHolder.clear();
+
             mHybridData.resetNative();
             getReactQueueConfiguration().destroy();
             Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
@@ -436,7 +445,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public native void setGlobalVariable(String propName, String jsonValue);
 
   @Override
-  public native long getJavaScriptContext();
+  public JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mJavaScriptContextHolder;
+  }
+
+  private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();

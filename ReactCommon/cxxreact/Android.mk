@@ -18,10 +18,12 @@ LOCAL_SRC_FILES := \
   JSCTracing.cpp \
   JSCUtils.cpp \
   JSIndexedRAMBundle.cpp \
+	JSIndexedRAMBundleRegistry.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
   Platform.cpp \
+	RAMBundleRegistry.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
@@ -44,3 +46,4 @@ $(call import-module,folly)
 $(call import-module,jsc)
 $(call import-module,glog)
 $(call import-module,jschelpers)
+$(call import-module,privatedata)

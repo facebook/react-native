@@ -54,7 +54,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/img/logo_og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/logo-og.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
@@ -85,7 +85,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/img/logo_og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/logo-og.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
