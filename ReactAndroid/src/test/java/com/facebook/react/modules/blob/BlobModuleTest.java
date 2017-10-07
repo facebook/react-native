@@ -10,7 +10,12 @@
 package com.facebook.react.modules.blob;
 
 import android.net.Uri;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactTestHelper;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,13 +31,15 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
@@ -40,9 +47,9 @@ import static org.junit.Assert.*;
 @Config(manifest = Config.NONE)
 public class BlobModuleTest {
 
-  private byte[] bytes;
-  private String blobId;
-  private BlobModule blobModule;
+  private byte[] mBytes;
+  private String mBlobId;
+  private BlobModule mBlobModule;
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
@@ -57,58 +64,53 @@ public class BlobModuleTest {
       }
     });
 
-    bytes = new byte[120];
-    new Random().nextBytes(bytes);
-    blobId = BlobModule.store(bytes);
-    blobModule = new BlobModule(ReactTestHelper.createCatalystContextForTest());
+    mBytes = new byte[120];
+    new Random().nextBytes(mBytes);
 
-    BlobModule spy = PowerMockito.spy(blobModule);
-
-    PowerMockito.when(spy, "getBytesFromUri", Uri.class).thenReturn(bytes);
-    PowerMockito.when(spy, "getNameFromUri", Uri.class).thenReturn("test.png");
-    PowerMockito.when(spy, "getLastModifiedFromUri", Uri.class).thenReturn(1482276506);
-    PowerMockito.when(spy, "getMimeTypeFromUri", Uri.class).thenReturn("image/png");
+    mBlobModule = new BlobModule(ReactTestHelper.createCatalystContextForTest());
+    mBlobId = mBlobModule.store(mBytes);
   }
 
   @After
   public void cleanUp() {
-    BlobModule.remove(blobId);
+    mBlobModule.remove(mBlobId);
   }
 
   @Test
   public void testResolve() {
-    assertArrayEquals(bytes, BlobModule.resolve(blobId, 0, bytes.length));
-    assertArrayEquals(bytes, BlobModule.resolve(blobId, 30, bytes.length - 30));
+    assertArrayEquals(mBytes, mBlobModule.resolve(mBlobId, 0, mBytes.length));
+    byte[] expectedRange = Arrays.copyOfRange(mBytes, 30, mBytes.length);
+    assertArrayEquals(expectedRange, mBlobModule.resolve(mBlobId, 30, mBytes.length - 30));
   }
 
   @Test
   public void testResolveUri() {
     Uri uri = new Uri.Builder()
-        .appendPath(blobId)
+        .appendPath(mBlobId)
         .appendQueryParameter("offset", "0")
-        .appendQueryParameter("size", String.valueOf(bytes.length))
+        .appendQueryParameter("size", String.valueOf(mBytes.length))
         .build();
 
-    assertArrayEquals(bytes, BlobModule.resolve(uri));
+    assertArrayEquals(mBytes, mBlobModule.resolve(uri));
   }
 
   @Test
   public void testResolveMap() {
     JavaOnlyMap blob = new JavaOnlyMap();
-    blob.putString("blobId", blobId);
+    blob.putString("blobId", mBlobId);
     blob.putInt("offset", 0);
-    blob.putInt("size", bytes.length);
+    blob.putInt("size", mBytes.length);
 
-    assertArrayEquals(bytes, BlobModule.resolve(blob));
+    assertArrayEquals(mBytes, mBlobModule.resolve(blob));
   }
 
   @Test
   public void testRemove() {
-    assertNotNull(BlobModule.resolve(blobId, 0, bytes.length));
+    assertNotNull(mBlobModule.resolve(mBlobId, 0, mBytes.length));
 
-    BlobModule.remove(blobId);
+    mBlobModule.remove(mBlobId);
 
-    assertNull(BlobModule.resolve(blobId, 0, bytes.length));
+    assertNull(mBlobModule.resolve(mBlobId, 0, mBytes.length));
   }
 
   @Test
@@ -116,9 +118,9 @@ public class BlobModuleTest {
     String id = UUID.randomUUID().toString();
 
     JavaOnlyMap blobData = new JavaOnlyMap();
-    blobData.putString("blobId", blobId);
+    blobData.putString("blobId", mBlobId);
     blobData.putInt("offset", 0);
-    blobData.putInt("size", bytes.length);
+    blobData.putInt("size", mBytes.length);
     JavaOnlyMap blob = new JavaOnlyMap();
     blob.putMap("data", blobData);
     blob.putString("type", "blob");
@@ -127,79 +129,31 @@ public class BlobModuleTest {
     byte[] stringBytes = stringData.getBytes(Charset.forName("UTF-8"));
     JavaOnlyMap string = new JavaOnlyMap();
     string.putString("data", stringData);
-    string.putString("type", "blob");
+    string.putString("type", "string");
 
     JavaOnlyArray parts = new JavaOnlyArray();
     parts.pushMap(blob);
     parts.pushMap(string);
 
-    blobModule.createFromParts(parts, id);
+    mBlobModule.createFromParts(parts, id);
 
-    int resultSize = bytes.length + stringBytes.length;
+    int resultSize = mBytes.length + stringBytes.length;
 
-    byte[] result = BlobModule.resolve(id, 0, resultSize);
+    byte[] result = mBlobModule.resolve(id, 0, resultSize);
 
     ByteBuffer buffer = ByteBuffer.allocate(resultSize);
-    buffer.put(bytes);
+    buffer.put(mBytes);
     buffer.put(stringBytes);
 
     assertArrayEquals(result, buffer.array());
   }
 
   @Test
-  public void testCreateFromURI() {
-    final SimplePromise promise = new SimplePromise();
-
-    blobModule.createFromURI("content://photos/holiday-season", promise);
-
-    JavaOnlyMap map = (JavaOnlyMap) promise.getValue();
-
-    assertNotNull(map.getString("blobId"));
-    assertEquals(map.getInt("offset"), 0);
-    assertEquals(map.getInt("size"), bytes.length);
-    assertEquals(map.getString("type"), "image/png");
-    assertEquals(map.getString("name"), "test");
-    assertEquals(map.getInt("lastModified"), 1482276506);
-  }
-
-  @Test
   public void testRelease() {
-    assertNotNull(BlobModule.resolve(blobId, 0, bytes.length));
+    assertNotNull(mBlobModule.resolve(mBlobId, 0, mBytes.length));
 
-    blobModule.release(blobId);
+    mBlobModule.release(mBlobId);
 
-    assertNull(BlobModule.resolve(blobId, 0, bytes.length));
+    assertNull(mBlobModule.resolve(mBlobId, 0, mBytes.length));
   }
-
-  final static class SimplePromise implements Promise {
-    private Object mValue;
-
-    public Object getValue() {
-      return mValue;
-    }
-
-    @Override
-    public void resolve(Object value) {
-      mValue = value;
-    }
-
-    @Override
-    public void reject(String code, String message) {
-      reject(code, message, /*Throwable*/null);
-    }
-
-    @Override
-    @Deprecated
-    public void reject(String message) {}
-
-    @Override
-    public void reject(String code, Throwable e) {}
-
-    @Override
-    public void reject(Throwable e) {}
-
-    @Override
-    public void reject(String code, String message, @Nullable Throwable e) {}
-  }
-
 }

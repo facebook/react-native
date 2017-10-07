@@ -71,7 +71,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     /**
      * Fetch the URI and return the JS body payload.
      */
-    WritableMap fetch(Uri uri, Context context) throws IOException;
+    WritableMap fetch(Uri uri) throws IOException;
   }
 
   /**
@@ -257,7 +257,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Check if a handler is registered
       for (UriHandler handler : mUriHandlers) {
         if (handler.supports(uri, responseType)) {
-          WritableMap res = handler.fetch(uri, getReactApplicationContext());
+          WritableMap res = handler.fetch(uri);
           ResponseUtil.onDataReceived(eventEmitter, requestId, res);
           ResponseUtil.onRequestSuccess(eventEmitter, requestId);
           return;

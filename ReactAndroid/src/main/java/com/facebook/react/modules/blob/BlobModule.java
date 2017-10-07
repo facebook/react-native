@@ -86,19 +86,17 @@ public class BlobModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public WritableMap fetch(Uri uri, Context context) throws IOException {
-        ContentResolver resolver = context.getContentResolver();
-
-        byte[] data = getBytesFromUri(uri, resolver);
+      public WritableMap fetch(Uri uri) throws IOException {
+        byte[] data = getBytesFromUri(uri);
 
         WritableMap blob = Arguments.createMap();
         blob.putString("blobId", store(data));
         blob.putInt("offset", 0);
         blob.putInt("size", data.length);
-        blob.putString("type", getMimeTypeFromUri(uri, resolver));
+        blob.putString("type", getMimeTypeFromUri(uri));
 
         // Needed for files
-        blob.putString("name", getNameFromUri(uri, resolver));
+        blob.putString("name", getNameFromUri(uri));
         blob.putDouble("lastModified", getLastModifiedFromUri(uri));
 
         return blob;
@@ -221,8 +219,8 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
-  private static byte[] getBytesFromUri(Uri contentUri, ContentResolver resolver) throws IOException {
-    InputStream is = resolver.openInputStream(contentUri);
+  private byte[] getBytesFromUri(Uri contentUri) throws IOException {
+    InputStream is = getReactApplicationContext().getContentResolver().openInputStream(contentUri);
 
     if (is == null) {
       throw new FileNotFoundException("File not found for " + contentUri);
@@ -238,12 +236,14 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return byteBuffer.toByteArray();
   }
 
-  private static String getNameFromUri(Uri contentUri, ContentResolver resolver) {
+  private String getNameFromUri(Uri contentUri) {
     if (contentUri.getScheme().equals("file")) {
       return contentUri.getLastPathSegment();
     }
     String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
-    Cursor metaCursor = resolver.query(contentUri, projection, null, null, null);
+    Cursor metaCursor = getReactApplicationContext()
+      .getContentResolver()
+      .query(contentUri, projection, null, null, null);
     if (metaCursor != null) {
       try {
         if (metaCursor.moveToFirst()) {
@@ -256,15 +256,15 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return contentUri.getLastPathSegment();
   }
 
-  private static long getLastModifiedFromUri(Uri contentUri) {
+  private long getLastModifiedFromUri(Uri contentUri) {
     if (contentUri.getScheme().equals("file")) {
       return new File(contentUri.toString()).lastModified();
     }
     return 0;
   }
 
-  private static String getMimeTypeFromUri(Uri contentUri, ContentResolver resolver) {
-    String type = resolver.getType(contentUri);
+  private String getMimeTypeFromUri(Uri contentUri) {
+    String type = getReactApplicationContext().getContentResolver().getType(contentUri);
 
     if (type == null) {
       String ext = MimeTypeMap.getFileExtensionFromUrl(contentUri.getPath());
