@@ -124,8 +124,8 @@ class BlobManager {
   /**
    * Send a blob message to a websocket.
    */
-  static sendOverSocket(data: Blob, socketId: number): void {
-    BlobModule.sendOverSocket(data, socketId);
+  static sendOverSocket(blob: Blob, socketId: number): void {
+    BlobModule.sendOverSocket(blob.data, socketId);
   }
 }
 

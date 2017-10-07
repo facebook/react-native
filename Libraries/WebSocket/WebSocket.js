@@ -179,7 +179,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
     if (data instanceof Blob) {
       invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
-      BlobManager.sendOverSocket(data.data, this._socketId);
+      BlobManager.sendOverSocket(data, this._socketId);
       return;
     }
 
