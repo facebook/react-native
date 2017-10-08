@@ -60,16 +60,9 @@ public class TimePickerDialogFragment extends DialogFragment {
           DateFormat.is24HourFormat(activityContext));
     }
 
-    TimePickerDialog dialog = new DismissableTimePickerDialog(
-      activityContext,
-      onTimeSetListener,
-      hour,
-      minute,
-      is24hour
-    );
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       if (mode == TimePickerMode.CLOCK) {
-        dialog = new DismissableTimePickerDialog(
+        return new DismissableTimePickerDialog(
           activityContext,
           activityContext.getResources().getIdentifier(
             "ClockTimePickerDialog",
@@ -82,7 +75,7 @@ public class TimePickerDialogFragment extends DialogFragment {
           is24hour
         );
       } else if (mode == TimePickerMode.SPINNER) {
-        dialog = new DismissableTimePickerDialog(
+        return new DismissableTimePickerDialog(
           activityContext,
           activityContext.getResources().getIdentifier(
             "SpinnerTimePickerDialog",
@@ -96,7 +89,13 @@ public class TimePickerDialogFragment extends DialogFragment {
         );
       }
     }
-    return dialog;
+    return new DismissableTimePickerDialog(
+            activityContext,
+            onTimeSetListener,
+            hour,
+            minute,
+            is24hour
+    );
   }
 
   @Override
