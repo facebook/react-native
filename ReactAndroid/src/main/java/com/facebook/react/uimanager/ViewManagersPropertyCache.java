@@ -2,15 +2,7 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.view.View;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -18,6 +10,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * This class is responsible for holding view manager property setters and is used in a process of
@@ -333,8 +330,10 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
       Class<? extends ReactShadowNode> cls) {
-    if (cls == ReactShadowNode.class) {
-      return EMPTY_PROPS_MAP;
+    for (Class iface : cls.getInterfaces()) {
+      if (iface == ReactShadowNode.class) {
+        return EMPTY_PROPS_MAP;
+      }
     }
     Map<String, PropSetter> props = CLASS_PROPS_CACHE.get(cls);
     if (props != null) {

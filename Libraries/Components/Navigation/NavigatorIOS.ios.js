@@ -25,9 +25,11 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const keyMirror = require('fbjs/lib/keyMirror');
 
 var TRANSITIONER_REF = 'transitionerRef';
@@ -37,11 +39,10 @@ function getuid() {
   return __uid++;
 }
 
-class NavigatorTransitionerIOS extends React.Component {
+class NavigatorTransitionerIOS extends React.Component<$FlowFixMeProps> {
   requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
-      logError,
       cb
     );
   }
@@ -143,7 +144,8 @@ type Event = Object;
  * navigates to. `initialRoute` represents the first route in your navigator.
  *
  * ```
- * import React, { Component, PropTypes } from 'react';
+ * import PropTypes from 'prop-types';
+ * import React, { Component } from 'react';
  * import { NavigatorIOS, Text } from 'react-native';
  *
  * export default class NavigatorIOSApp extends Component {
@@ -430,6 +432,13 @@ var NavigatorIOS = createReactClass({
        */
       barTintColor: PropTypes.string,
 
+      /**
+       * The style of the navigation bar. Supported values are 'default', 'black'.
+       * Use 'black' instead of setting `barTintColor` to black. This produces
+       * a navigation bar with the native iOS style with higher translucency.
+       */
+      barStyle: PropTypes.oneOf(['default', 'black']),
+
        /**
        * The text color of the navigation bar title.
        */
@@ -470,6 +479,13 @@ var NavigatorIOS = createReactClass({
      * The default background color of the navigation bar.
      */
     barTintColor: PropTypes.string,
+
+    /**
+     * The style of the navigation bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a navigation bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
 
     /**
      * The default text color of the navigation bar title.

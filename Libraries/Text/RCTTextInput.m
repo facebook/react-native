@@ -9,11 +9,12 @@
 
 #import "RCTTextInput.h"
 
+#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 #import "RCTTextSelection.h"
@@ -29,6 +30,8 @@
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
+    _fontAttributes = [[RCTFontAttributes alloc] initWithAccessibilityManager:bridge.accessibilityManager];
+    _fontAttributes.delegate = self;
   }
 
   return self;
@@ -42,6 +45,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
   return nil;
+}
+
+- (void)setFont:(UIFont *)font
+{
+  self.backedTextInputView.font = font;
+  [self invalidateContentSize];
+}
+
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
+{
+  self.font = font;
 }
 
 #pragma mark - Properties
@@ -87,7 +101,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (eventLag == 0 && ![previousSelectedTextRange isEqual:selectedTextRange]) {
     [backedTextInput setSelectedTextRange:selectedTextRange notifyDelegate:NO];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", backedTextInput.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInput.text, (long long)eventLag);
   }
 }
 
@@ -117,16 +131,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (BOOL)textInputShouldReturn
 {
-  return _blurOnSubmit;
-}
-
-- (void)textInputDidReturn
-{
+  // We send `submit` event here, in `textInputShouldReturn`
+  // (not in `textInputDidReturn)`, because of semantic of the event:
+  // `onSubmitEditing` is called when "Submit" button
+  // (the blue key on onscreen keyboard) did pressed
+  // (no connection to any specific "submitting" process).
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
                                      text:self.backedTextInputView.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  return _blurOnSubmit;
+}
+
+- (void)textInputDidReturn
+{
+  // Does nothing.
 }
 
 - (void)textInputDidChangeSelection
@@ -316,7 +337,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)handleInputAccessoryDoneButton
 {
-  [self.backedTextInputView endEditing:YES];
+  if ([self textInputShouldReturn]) {
+    [self.backedTextInputView endEditing:YES];
+  }
 }
 
 @end

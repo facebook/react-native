@@ -33,7 +33,7 @@ export default class HelloWorldApp extends Component {
 AppRegistry.registerComponent('AwesomeProject', () => HelloWorldApp);
 ```
 
-If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `App.js`, `index.ios.js`, or `index.android.js` file to create a real app on your local machine.
+If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `App.js` file to create a real app on your local machine.
 
 ## What's going on here?
 
@@ -47,14 +47,6 @@ is a built-in component that just displays some text.
 ## Components
 
 So this code is defining `HelloWorldApp`, a new `Component`. When you're building a React Native app, you'll be making new components a lot. Anything you see on the screen is some sort of component. A component can be pretty simple - the only thing that's required is a `render` function which returns some JSX to render.
-
-<div class="banner-crna-ejected">
-  <h3>Projects With Native Code Only</h3>
-  <p>
-    In the particular example above, <code>HelloWorldApp</code> is registered with the <code>AppRegistry</code>. The <code>AppRegistry</code> just tells React Native which component is the root one for the whole application. It's included in these examples so you can paste the whole thing into your <code>index.ios.js</code> or <code>index.android.js</code> file and get it running. If you have a project from Create React Native App, this is handled for you and it's not necessary to call <code>AppRegistry</code> in your code.
-  </p>
-</div>
-
 
 ## This app doesn't do very much
 

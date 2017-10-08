@@ -43,6 +43,7 @@
 		59F60E921E661BDD0081153B /* RCTShadowTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E8E1E661BDD0081153B /* RCTShadowTextField.m */; };
 		59F60E931E661BDD0081153B /* RCTShadowTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E901E661BDD0081153B /* RCTShadowTextView.m */; };
 		59F60E941E661BDD0081153B /* RCTShadowTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E901E661BDD0081153B /* RCTShadowTextView.m */; };
+		A85C829A1F742AA20036C019 /* RCTFontAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A85C82991F742AA20036C019 /* RCTFontAttributes.m */; };
 		AF3225F91DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 		AF3225FA1DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 /* End PBXBuildFile section */
@@ -111,6 +112,9 @@
 		59F60E8E1E661BDD0081153B /* RCTShadowTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowTextField.m; sourceTree = "<group>"; };
 		59F60E8F1E661BDD0081153B /* RCTShadowTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTShadowTextView.h; sourceTree = "<group>"; };
 		59F60E901E661BDD0081153B /* RCTShadowTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowTextView.m; sourceTree = "<group>"; };
+		A85C82981F742AA20036C019 /* RCTFontAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFontAttributes.h; sourceTree = "<group>"; };
+		A85C82991F742AA20036C019 /* RCTFontAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFontAttributes.m; sourceTree = "<group>"; };
+		A85C82BA1F742D8F0036C019 /* RCTFontAttributesDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFontAttributesDelegate.h; sourceTree = "<group>"; };
 		AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Text.h"; sourceTree = "<group>"; };
 		AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Text.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -126,6 +130,9 @@
 				599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */,
 				AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */,
 				AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */,
+				A85C82981F742AA20036C019 /* RCTFontAttributes.h */,
+				A85C82991F742AA20036C019 /* RCTFontAttributes.m */,
+				A85C82BA1F742D8F0036C019 /* RCTFontAttributesDelegate.h */,
 				58B511C61A9E6C5C00147676 /* RCTRawTextManager.h */,
 				58B511C71A9E6C5C00147676 /* RCTRawTextManager.m */,
 				58B511C81A9E6C5C00147676 /* RCTShadowRawText.h */,
@@ -278,6 +285,7 @@
 				1362F1001B4D51F400E06D8C /* RCTTextField.m in Sources */,
 				59AF89AA1EDCBCC700F004B1 /* RCTUITextField.m in Sources */,
 				598F41261F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */,
+				A85C829A1F742AA20036C019 /* RCTFontAttributes.m in Sources */,
 				58B512161A9E6EFF00147676 /* RCTText.m in Sources */,
 				599DF2641F03076D0079B53E /* RCTTextInput.m in Sources */,
 				1362F1011B4D51F400E06D8C /* RCTTextFieldManager.m in Sources */,

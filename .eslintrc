@@ -64,7 +64,17 @@
 
   // General
 
-    "comma-dangle": 0,               // disallow trailing commas in object literals
+    // This must be disallowed in this repo because the minimum supported
+    // version of node is 4 which doesn't support trailing commas.
+    // Once the minimum supported version is 8 or greater this can be changed
+    "comma-dangle": [2, {            // disallow trailing commas in object literals
+        "arrays": "ignore",
+        "objects": "ignore",
+        "imports": "ignore",
+        "exports": "ignore",
+        "functions": "never"
+    }],
+
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
     "no-const-assign": 2,            // disallow assignment to const-declared variables
@@ -222,7 +232,7 @@
     "react/jsx-boolean-value": 0,
     "react/jsx-no-comment-textnodes": 1,
     "react/jsx-no-duplicate-props": 2,
-    "react/jsx-no-undef": 1,
+    "react/jsx-no-undef": 2,
     "react/jsx-sort-props": 0,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,

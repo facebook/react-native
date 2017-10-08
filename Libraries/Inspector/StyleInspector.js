@@ -16,7 +16,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-class StyleInspector extends React.Component {
+class StyleInspector extends React.Component<$FlowFixMeProps> {
   render() {
     if (!this.props.style) {
       return <Text style={styles.noStyle}>No style</Text>;

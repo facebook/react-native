@@ -32,7 +32,7 @@ function roundKilo(value: number): number {
   return Math.round(value / 1000);
 }
 
-class ProgressBar extends React.Component {
+class ProgressBar extends React.Component<$FlowFixMeProps> {
   render() {
     if (Platform.OS === 'android') {
       return (
@@ -51,7 +51,7 @@ class ProgressBar extends React.Component {
   }
 }
 
-class XHRExampleDownload extends React.Component {
+class XHRExampleDownload extends React.Component<{}, Object> {
   state: Object = {
     downloading: false,
     // set by onreadystatechange

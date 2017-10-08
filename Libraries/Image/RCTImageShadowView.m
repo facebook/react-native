@@ -13,13 +13,14 @@
 
 @implementation RCTImageShadowView
 
-- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
+- (BOOL)isYogaLeafNode
 {
-  RCTLogWarn(@"Using <Image> with children is deprecated "
-             "and will be an error in the near future. "
-             "Please reconsider the layout or use <ImageBackground> instead.");
+  return YES;
+}
 
-  [super insertReactSubview:subview atIndex:atIndex];
+- (BOOL)canHaveSubviews
+{
+  return NO;
 }
 
 @end

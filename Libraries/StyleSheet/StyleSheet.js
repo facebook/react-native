@@ -11,17 +11,19 @@
  */
 'use strict';
 
-var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('PixelRatio');
+const ReactNativePropRegistry = require('ReactNativePropRegistry');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const StyleSheetValidation = require('StyleSheetValidation');
 
-var flatten = require('flattenStyle');
+const flatten = require('flattenStyle');
 
 export type Styles = {[key: string]: Object};
 export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
+export type StyleValue = {[key: string]: Object} | number | false | null;
+export type StyleProp = StyleValue | Array<StyleValue>;
 
-var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
@@ -41,7 +43,7 @@ const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // Th
  * Create a new StyleSheet:
  *
  * ```
- * var styles = StyleSheet.create({
+ * const styles = StyleSheet.create({
  *   container: {
  *     borderRadius: 4,
  *     borderWidth: 0.5,
@@ -135,7 +137,7 @@ module.exports = {
    *
    * Example:
    * ```
-   * var styles = StyleSheet.create({
+   * const styles = StyleSheet.create({
    *   listItem: {
    *     flex: 1,
    *     fontSize: 16,
@@ -196,9 +198,9 @@ module.exports = {
    */
   create<S: Styles>(obj: S): StyleSheet<S> {
     const result: StyleSheet<S> = {};
-    for (var key in obj) {
+    for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
-      result[key] = ReactNativePropRegistry.register(obj[key]);
+      result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);
     }
     return result;
   },

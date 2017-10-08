@@ -66,7 +66,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 static void RCTPrint(YGNodeRef node)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
-  printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
+  printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
 }
 
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)    \
@@ -204,8 +204,13 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
   }};
 
-  if (!CGRectEqualToRect(frame, _frame)) {
+  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
+  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
+  UIUserInterfaceLayoutDirection updatedLayoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
+
+  if (!CGRectEqualToRect(frame, _frame) || _layoutDirection != updatedLayoutDirection) {
     _frame = frame;
+    _layoutDirection = updatedLayoutDirection;
     [viewsWithNewFrame addObject:self];
   }
 
@@ -374,7 +379,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (BOOL)canHaveSubviews
 {
-  return NO;
+  return YES;
 }
 
 - (BOOL)isYogaLeafNode
@@ -415,7 +420,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
-  RCTAssert(!self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
+  RCTAssert(self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
 
   [_reactSubviews insertObject:subview atIndex:atIndex];
   if (![self isYogaLeafNode]) {
@@ -489,14 +494,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   NSMutableString *description = [NSMutableString string];
   [self addRecursiveDescriptionToString:description atLevel:0];
   return description;
-}
-
-// Layout Direction
-
-- (UIUserInterfaceLayoutDirection)effectiveLayoutDirection {
-  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
-  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
-  return YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
 }
 
 // Margin

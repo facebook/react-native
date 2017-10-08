@@ -32,13 +32,17 @@ function saveAssets(
 
   const filesToCopy = Object.create(null); // Map src -> dest
   assets
-    .forEach(asset =>
-      filterPlatformAssetScales(platform, asset.scales).forEach((scale, idx) => {
+    .forEach(asset => {
+      const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
+      asset.scales.forEach((scale, idx) => {
+        if (!validScales.has(scale)) {
+          return;
+        }
         const src = asset.files[idx];
         const dest = path.join(assetsDest, getAssetDestPath(asset, scale));
         filesToCopy[src] = dest;
       })
-    );
+    });
 
   return copyAll(filesToCopy);
 }

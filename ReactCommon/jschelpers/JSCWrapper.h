@@ -103,6 +103,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSObjectIsFunction);
   JSC_WRAPPER_METHOD(JSObjectMake);
   JSC_WRAPPER_METHOD(JSObjectMakeArray);
+  JSC_WRAPPER_METHOD(JSObjectMakeDate);
   JSC_WRAPPER_METHOD(JSObjectMakeError);
   JSC_WRAPPER_METHOD(JSObjectMakeFunctionWithCallback);
   JSC_WRAPPER_METHOD(JSObjectSetPrivate);

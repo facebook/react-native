@@ -35,7 +35,7 @@ function library(argv, config, args) {
   }
 
   if (fs.existsSync(libraryDest)) {
-    return Promise.reject(`Library already exists in ${libraryDest}`);
+    return Promise.reject(new Error(`Library already exists in ${libraryDest}`));
   }
 
   walk(source).forEach(f => {

@@ -46,14 +46,9 @@ double ReadableNativeMap::getDoubleKey(const std::string& key) {
 }
 
 jint ReadableNativeMap::getIntKey(const std::string& key) {
-  auto integer = getMapValue(key).getInt();
-  jint javaint = static_cast<jint>(integer);
-  if (integer != javaint) {
-    throwNewJavaException(
-      exceptions::gUnexpectedNativeTypeExceptionClass,
-      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
-  }
-  return javaint;
+  const folly::dynamic& val = getMapValue(key);
+  int64_t integer = convertDynamicIfIntegral(val);
+  return makeJIntOrThrow(integer);
 }
 
 local_ref<jstring> ReadableNativeMap::getStringKey(const std::string& key) {
@@ -144,6 +139,30 @@ void ReadableNativeMapKeySetIterator::registerNatives() {
       makeNativeMethod("nextKey", ReadableNativeMapKeySetIterator::nextKey),
       makeNativeMethod("initHybrid", ReadableNativeMapKeySetIterator::initHybrid),
     });
+}
+
+jint makeJIntOrThrow(int64_t integer) {
+  jint javaint = static_cast<jint>(integer);
+  if (integer != javaint) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+  }
+  return javaint;
+}
+
+int64_t convertDynamicIfIntegral(const folly::dynamic& val) {
+  if (val.isInt()) {
+    return val.getInt();
+  }
+  double dbl = val.getDouble();
+  int64_t result = static_cast<int64_t>(dbl);
+  if (dbl != result) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Tried to read an int, but got a non-integral double: %f", dbl);
+  }
+  return result;
 }
 
 }  // namespace react

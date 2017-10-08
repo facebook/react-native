@@ -61,6 +61,9 @@ export type ViewPagerScrollState = $Enum<{
  *
  * var styles = {
  *   ...
+ *   viewPager: {
+ *     flex: 1
+ *   },
  *   pageStyle: {
  *     alignItems: 'center',
  *     padding: 20,
@@ -68,18 +71,16 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    peekEnabled?: boolean,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**

@@ -11,7 +11,6 @@ package com.facebook.react.animated;
 
 import android.util.SparseArray;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -59,7 +58,7 @@ import javax.annotation.Nullable;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
-  private final Map<String, Map<String, String>> mCustomEventTypes;
+  private final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
@@ -68,8 +67,7 @@ import javax.annotation.Nullable;
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
     uiManager.getEventDispatcher().addListener(this);
-    Object customEventTypes = Assertions.assertNotNull(uiManager.getConstants()).get("customDirectEventTypes");
-    mCustomEventTypes = (Map<String, Map<String, String>>) customEventTypes;
+    mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
   }
 
   /*package*/ @Nullable AnimatedNode getNodeById(int id) {
@@ -363,20 +361,25 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void onEventDispatch(Event event) {
-    // Only support events dispatched from the UI thread.
-    if (!UiThreadUtil.isOnUiThread()) {
-      return;
+  public void onEventDispatch(final Event event) {
+    // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
+    // UI thread.
+    if (UiThreadUtil.isOnUiThread()) {
+      handleEvent(event);
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          handleEvent(event);
+        }
+      });
     }
+  }
 
+  private void handleEvent(Event event) {
     if (!mEventDrivers.isEmpty()) {
       // If the event has a different name in native convert it to it's JS name.
-      String eventName = event.getEventName();
-      Map<String, String> customEventType = mCustomEventTypes.get(eventName);
-      if (customEventType != null) {
-        eventName = customEventType.get("registrationName");
-      }
-
+      String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {

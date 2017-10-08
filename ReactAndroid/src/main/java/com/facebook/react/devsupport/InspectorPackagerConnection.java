@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import android.os.AsyncTask;
@@ -47,12 +48,11 @@ public class InspectorPackagerConnection {
     mConnection.close();
   }
 
-  public void sendOpenEvent(String pageId) {
-    try {
-      JSONObject payload = makePageIdPayload(pageId);
-      sendEvent("open", payload);
-    } catch (JSONException e) {
-      FLog.e(TAG, "Failed to open page", e);
+  public void sendEventToAllConnections(String event) {
+    for (Map.Entry<String, Inspector.LocalConnection> inspectorConnectionEntry :
+        mInspectorConnections.entrySet()) {
+      Inspector.LocalConnection inspectorConnection = inspectorConnectionEntry.getValue();
+      inspectorConnection.sendMessage(event);
     }
   }
 
