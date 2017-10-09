@@ -48,10 +48,11 @@ try {
   const CLI_PACKAGE = path.join(ROOT, 'react-native-cli', 'react-native-cli-*.tgz');
   cd('..');
 
+  // can skip cli install for non sudo mode
   if (!argv['skip-cli-install']) {
-    if (exec(`sudo npm install -g ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally.');
-      echo('Run with --skip-cli-install to skip this step');
+    if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
+      echo('Could not install react-native-cli globally, please run in su mode');
+      echo('Or with --skip-cli-install to skip this step');
       exitCode = 1;
       throw Error(exitCode);
     }
