@@ -681,6 +681,13 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   YGNodeMarkDirty(_yogaNode);
 }
 
+// Local Data
+
+- (void)setLocalData:(__unused NSObject *)localData
+{
+  // Do nothing by default.
+}
+
 // Flex
 
 - (void)setFlexBasis:(YGValue)value

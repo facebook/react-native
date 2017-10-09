@@ -68,7 +68,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Use `-[RCTUIManager setLocalData:forView:]` to set this property
  * (to provide local/environmental data for a shadow view) from the main thread.
  */
-@property (nonatomic, strong) NSObject *localData;
+- (void)setLocalData:(NSObject *)localData;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
