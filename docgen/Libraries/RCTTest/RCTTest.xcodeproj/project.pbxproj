@@ -1,0 +1,443 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2D3B5F2D1D9B0F2800451313 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
+		2D3B5F2E1D9B0F2B00451313 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
+		2D3B5F2F1D9B0F2E00451313 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
+		2D3B5F301D9B0F3D00451313 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
+		2D3B5F311D9B0F4200451313 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
+		2D3B5F321D9B0F4500451313 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
+		3D3030281DF82A6300D6DDAE /* RCTTestRunner.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
+		3D30302A1DF82A8300D6DDAE /* RCTTestRunner.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
+		3DED3AA21DE6FC3400336DD7 /* RCTTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		3DED3AA41DE6FC4C00336DD7 /* RCTTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		585135371AB3C56F00882537 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
+		585135381AB3C57000882537 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
+		58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
+		58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
+		58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
+		9913A84B1BBE833400D70E66 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3D3030271DF8299E00D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTTest;
+			dstSubfolderSpec = 16;
+			files = (
+				3D3030281DF82A6300D6DDAE /* RCTTestRunner.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3030291DF82A6E00D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTTest;
+			dstSubfolderSpec = 16;
+			files = (
+				3D30302A1DF82A8300D6DDAE /* RCTTestRunner.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTTest-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		580C376F1AB104AF0015E709 /* libRCTTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTTest.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		585135331AB3C56F00882537 /* RCTTestModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestModule.h; sourceTree = "<group>"; };
+		585135341AB3C56F00882537 /* RCTTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestModule.m; sourceTree = "<group>"; };
+		585135351AB3C56F00882537 /* RCTTestRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestRunner.h; sourceTree = "<group>"; };
+		585135361AB3C56F00882537 /* RCTTestRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestRunner.m; sourceTree = "<group>"; };
+		58E64FE41AB964CD007446E2 /* FBSnapshotTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBSnapshotTestCase.h; sourceTree = "<group>"; };
+		58E64FE51AB964CD007446E2 /* FBSnapshotTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBSnapshotTestCase.m; sourceTree = "<group>"; };
+		58E64FE61AB964CD007446E2 /* FBSnapshotTestController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBSnapshotTestController.h; sourceTree = "<group>"; };
+		58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBSnapshotTestController.m; sourceTree = "<group>"; };
+		58E64FE81AB964CD007446E2 /* UIImage+Compare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Compare.h"; sourceTree = "<group>"; };
+		58E64FE91AB964CD007446E2 /* UIImage+Compare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Compare.m"; sourceTree = "<group>"; };
+		58E64FEA1AB964CD007446E2 /* UIImage+Diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Diff.h"; sourceTree = "<group>"; };
+		58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Diff.m"; sourceTree = "<group>"; };
+		9913A8491BBE833400D70E66 /* RCTSnapshotManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSnapshotManager.h; sourceTree = "<group>"; };
+		9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSnapshotManager.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2D2A286B1D9B047700D4039D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		580C376C1AB104AF0015E709 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		580C37661AB104AF0015E709 = {
+			isa = PBXGroup;
+			children = (
+				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
+				9913A8491BBE833400D70E66 /* RCTSnapshotManager.h */,
+				9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */,
+				585135331AB3C56F00882537 /* RCTTestModule.h */,
+				585135341AB3C56F00882537 /* RCTTestModule.m */,
+				585135351AB3C56F00882537 /* RCTTestRunner.h */,
+				585135361AB3C56F00882537 /* RCTTestRunner.m */,
+				580C37701AB104AF0015E709 /* Products */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		580C37701AB104AF0015E709 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				580C376F1AB104AF0015E709 /* libRCTTest.a */,
+				2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */ = {
+			isa = PBXGroup;
+			children = (
+				58E64FE41AB964CD007446E2 /* FBSnapshotTestCase.h */,
+				58E64FE51AB964CD007446E2 /* FBSnapshotTestCase.m */,
+				58E64FE61AB964CD007446E2 /* FBSnapshotTestController.h */,
+				58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */,
+				58E64FE81AB964CD007446E2 /* UIImage+Compare.h */,
+				58E64FE91AB964CD007446E2 /* UIImage+Compare.m */,
+				58E64FEA1AB964CD007446E2 /* UIImage+Diff.h */,
+				58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */,
+			);
+			path = FBSnapshotTestCase;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3DED3AA11DE6FC2200336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3AA21DE6FC3400336DD7 /* RCTTestRunner.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3DED3AA31DE6FC4700336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3AA41DE6FC4C00336DD7 /* RCTTestRunner.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2D2A286D1D9B047700D4039D /* RCTTest-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D2A28761D9B047700D4039D /* Build configuration list for PBXNativeTarget "RCTTest-tvOS" */;
+			buildPhases = (
+				3DED3AA31DE6FC4700336DD7 /* Headers */,
+				3D3030291DF82A6E00D6DDAE /* Copy Headers */,
+				2D2A286A1D9B047700D4039D /* Sources */,
+				2D2A286B1D9B047700D4039D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTTest-tvOS";
+			productName = "RCTTest-tvOS";
+			productReference = 2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		580C376E1AB104AF0015E709 /* RCTTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 580C37831AB104AF0015E709 /* Build configuration list for PBXNativeTarget "RCTTest" */;
+			buildPhases = (
+				3DED3AA11DE6FC2200336DD7 /* Headers */,
+				3D3030271DF8299E00D6DDAE /* Copy Headers */,
+				580C376B1AB104AF0015E709 /* Sources */,
+				580C376C1AB104AF0015E709 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RCTTest;
+			productName = RCTTest;
+			productReference = 580C376F1AB104AF0015E709 /* libRCTTest.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		580C37671AB104AF0015E709 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					2D2A286D1D9B047700D4039D = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
+					580C376E1AB104AF0015E709 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 580C376A1AB104AF0015E709 /* Build configuration list for PBXProject "RCTTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 580C37661AB104AF0015E709;
+			productRefGroup = 580C37701AB104AF0015E709 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				580C376E1AB104AF0015E709 /* RCTTest */,
+				2D2A286D1D9B047700D4039D /* RCTTest-tvOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D2A286A1D9B047700D4039D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D3B5F311D9B0F4200451313 /* UIImage+Compare.m in Sources */,
+				2D3B5F2F1D9B0F2E00451313 /* RCTTestRunner.m in Sources */,
+				2D3B5F321D9B0F4500451313 /* UIImage+Diff.m in Sources */,
+				2D3B5F301D9B0F3D00451313 /* FBSnapshotTestController.m in Sources */,
+				2D3B5F2D1D9B0F2800451313 /* RCTSnapshotManager.m in Sources */,
+				2D3B5F2E1D9B0F2B00451313 /* RCTTestModule.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		580C376B1AB104AF0015E709 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */,
+				9913A84B1BBE833400D70E66 /* RCTSnapshotManager.m in Sources */,
+				585135371AB3C56F00882537 /* RCTTestModule.m in Sources */,
+				58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */,
+				58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */,
+				585135381AB3C57000882537 /* RCTTestRunner.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2D2A28741D9B047700D4039D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		2D2A28751D9B047700D4039D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
+		580C37811AB104AF0015E709 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
+			};
+			name = Debug;
+		};
+		580C37821AB104AF0015E709 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
+			};
+			name = Release;
+		};
+		580C37841AB104AF0015E709 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+			};
+			name = Debug;
+		};
+		580C37851AB104AF0015E709 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-framework",
+					XCTest,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D2A28761D9B047700D4039D /* Build configuration list for PBXNativeTarget "RCTTest-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D2A28741D9B047700D4039D /* Debug */,
+				2D2A28751D9B047700D4039D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		580C376A1AB104AF0015E709 /* Build configuration list for PBXProject "RCTTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				580C37811AB104AF0015E709 /* Debug */,
+				580C37821AB104AF0015E709 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		580C37831AB104AF0015E709 /* Build configuration list for PBXNativeTarget "RCTTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				580C37841AB104AF0015E709 /* Debug */,
+				580C37851AB104AF0015E709 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 580C37671AB104AF0015E709 /* Project object */;
+}

@@ -1,0 +1,514 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTImageView.m */; };
+		1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */; };
+		1304D5B21AA8C50D0002E2BE /* RCTGIFImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */; };
+		134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
+		139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
+		13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
+		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
+		2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
+		2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
+		2D3B5F1D1D9B0D1300451313 /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
+		2D3B5F1E1D9B0D1300451313 /* RCTGIFImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */; };
+		2D3B5F1F1D9B0D1300451313 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTImageView.m */; };
+		2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */; };
+		2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
+		2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
+		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
+		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */; };
+		3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */; };
+		3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */; };
+		3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */; };
+		3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD34C251D4B8FE900268922 /* RCTImageCache.h */; };
+		3DED3A8D1DE6F79800336DD7 /* RCTImageEditingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 354631661B69857700AA0B86 /* RCTImageEditingManager.h */; };
+		3DED3A8E1DE6F79800336DD7 /* RCTImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */; };
+		3DED3A8F1DE6F79800336DD7 /* RCTImageStoreManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */; };
+		3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3DED3A911DE6F79800336DD7 /* RCTImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A71AA8C4A30002E2BE /* RCTImageView.h */; };
+		3DED3A921DE6F79800336DD7 /* RCTImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */; };
+		3DED3A931DE6F79800336DD7 /* RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */; };
+		3DED3A941DE6F79800336DD7 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
+		3DED3A961DE6F7A400336DD7 /* RCTGIFImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */; };
+		3DED3A971DE6F7A400336DD7 /* RCTImageBlurUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */; };
+		3DED3A981DE6F7A400336DD7 /* RCTImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD34C251D4B8FE900268922 /* RCTImageCache.h */; };
+		3DED3A991DE6F7A400336DD7 /* RCTImageEditingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 354631661B69857700AA0B86 /* RCTImageEditingManager.h */; };
+		3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */; };
+		3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */; };
+		3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A71AA8C4A30002E2BE /* RCTImageView.h */; };
+		3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */; };
+		3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */; };
+		3DED3AA01DE6F7A400336DD7 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
+		59AB092A1EDE5DD1009F97B5 /* RCTImageShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */; };
+		59AB092B1EDE5DD1009F97B5 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */; };
+		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
+		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3D302E171DF8225500D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTImage;
+			dstSubfolderSpec = 16;
+			files = (
+				3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D302F201DF8268700D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTImage;
+			dstSubfolderSpec = 16;
+			files = (
+				3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1304D5A71AA8C4A30002E2BE /* RCTImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageView.h; sourceTree = "<group>"; };
+		1304D5A81AA8C4A30002E2BE /* RCTImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageView.m; sourceTree = "<group>"; };
+		1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageViewManager.h; sourceTree = "<group>"; };
+		1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageViewManager.m; sourceTree = "<group>"; };
+		1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTGIFImageDecoder.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGIFImageDecoder.m; sourceTree = "<group>"; };
+		134B00A01B54232B00EC8DFB /* RCTImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageUtils.h; sourceTree = "<group>"; };
+		134B00A11B54232B00EC8DFB /* RCTImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtils.m; sourceTree = "<group>"; };
+		139A38831C4D587C00862840 /* RCTResizeMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTResizeMode.m; sourceTree = "<group>"; };
+		13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTLocalAssetImageLoader.h; sourceTree = "<group>"; };
+		13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLocalAssetImageLoader.m; sourceTree = "<group>"; };
+		143879371AAD32A300F088A5 /* RCTImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoader.m; sourceTree = "<group>"; };
+		2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTImage-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageStoreManager.m; sourceTree = "<group>"; };
+		354631661B69857700AA0B86 /* RCTImageEditingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTImageEditingManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		354631671B69857700AA0B86 /* RCTImageEditingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageEditingManager.m; sourceTree = "<group>"; };
+		3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoader.h; sourceTree = "<group>"; };
+		3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageStoreManager.h; sourceTree = "<group>"; };
+		3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTResizeMode.h; sourceTree = "<group>"; };
+		3D5FA68C1DE4BA290058FD77 /* libRCTNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTNetwork.a; path = "../Network/build/Debug-iphoneos/libRCTNetwork.a"; sourceTree = "<group>"; };
+		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageShadowView.h; sourceTree = "<group>"; };
+		59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageShadowView.m; sourceTree = "<group>"; };
+		CCD34C251D4B8FE900268922 /* RCTImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTImageCache.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		CCD34C261D4B8FE900268922 /* RCTImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageCache.m; sourceTree = "<group>"; };
+		EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTImageBlurUtils.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageBlurUtils.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3D5FA68B1DE4BA290058FD77 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3D5FA68C1DE4BA290058FD77 /* libRCTNetwork.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		58B511541A9E6B3D00147676 = {
+			isa = PBXGroup;
+			children = (
+				3D5FA68B1DE4BA290058FD77 /* Frameworks */,
+				58B5115E1A9E6B3D00147676 /* Products */,
+				1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */,
+				1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */,
+				EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */,
+				EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */,
+				CCD34C251D4B8FE900268922 /* RCTImageCache.h */,
+				CCD34C261D4B8FE900268922 /* RCTImageCache.m */,
+				354631661B69857700AA0B86 /* RCTImageEditingManager.h */,
+				354631671B69857700AA0B86 /* RCTImageEditingManager.m */,
+				3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */,
+				143879371AAD32A300F088A5 /* RCTImageLoader.m */,
+				59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */,
+				59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */,
+				3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */,
+				35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */,
+				134B00A01B54232B00EC8DFB /* RCTImageUtils.h */,
+				134B00A11B54232B00EC8DFB /* RCTImageUtils.m */,
+				1304D5A71AA8C4A30002E2BE /* RCTImageView.h */,
+				1304D5A81AA8C4A30002E2BE /* RCTImageView.m */,
+				1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */,
+				1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */,
+				13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */,
+				13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */,
+				3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */,
+				139A38831C4D587C00862840 /* RCTResizeMode.m */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		58B5115E1A9E6B3D00147676 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58B5115D1A9E6B3D00147676 /* libRCTImage.a */,
+				2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3DED3A891DE6F78800336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */,
+				3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */,
+				3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */,
+				3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */,
+				3DED3A8D1DE6F79800336DD7 /* RCTImageEditingManager.h in Headers */,
+				3DED3A8E1DE6F79800336DD7 /* RCTImageLoader.h in Headers */,
+				3DED3A8F1DE6F79800336DD7 /* RCTImageStoreManager.h in Headers */,
+				59AB092A1EDE5DD1009F97B5 /* RCTImageShadowView.h in Headers */,
+				3DED3A911DE6F79800336DD7 /* RCTImageView.h in Headers */,
+				3DED3A921DE6F79800336DD7 /* RCTImageViewManager.h in Headers */,
+				3DED3A931DE6F79800336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
+				3DED3A941DE6F79800336DD7 /* RCTResizeMode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3DED3A951DE6F79D00336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3A961DE6F7A400336DD7 /* RCTGIFImageDecoder.h in Headers */,
+				3DED3A971DE6F7A400336DD7 /* RCTImageBlurUtils.h in Headers */,
+				3DED3A981DE6F7A400336DD7 /* RCTImageCache.h in Headers */,
+				3DED3A991DE6F7A400336DD7 /* RCTImageEditingManager.h in Headers */,
+				3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */,
+				3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */,
+				3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */,
+				3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */,
+				3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */,
+				3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */,
+				3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
+				3DED3AA01DE6F7A400336DD7 /* RCTResizeMode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2D2A28391D9B042B00D4039D /* RCTImage-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */;
+			buildPhases = (
+				3DED3A951DE6F79D00336DD7 /* Headers */,
+				3D302F201DF8268700D6DDAE /* Copy Headers */,
+				2D2A28361D9B042B00D4039D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTImage-tvOS";
+			productName = "RCTImage-tvOS";
+			productReference = 2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		58B5115C1A9E6B3D00147676 /* RCTImage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTImage" */;
+			buildPhases = (
+				3DED3A891DE6F78800336DD7 /* Headers */,
+				3D302E171DF8225500D6DDAE /* Copy Headers */,
+				58B511591A9E6B3D00147676 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RCTImage;
+			productName = RCTNetworkImage;
+			productReference = 58B5115D1A9E6B3D00147676 /* libRCTImage.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58B511551A9E6B3D00147676 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0810;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					2D2A28391D9B042B00D4039D = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
+					58B5115C1A9E6B3D00147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 58B511581A9E6B3D00147676 /* Build configuration list for PBXProject "RCTImage" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 58B511541A9E6B3D00147676;
+			productRefGroup = 58B5115E1A9E6B3D00147676 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58B5115C1A9E6B3D00147676 /* RCTImage */,
+				2D2A28391D9B042B00D4039D /* RCTImage-tvOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D2A28361D9B042B00D4039D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */,
+				2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */,
+				2D3B5F1D1D9B0D1300451313 /* RCTLocalAssetImageLoader.m in Sources */,
+				2D3B5F1F1D9B0D1300451313 /* RCTImageEditingManager.m in Sources */,
+				2D3B5F1E1D9B0D1300451313 /* RCTGIFImageDecoder.m in Sources */,
+				2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */,
+				2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */,
+				2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */,
+				3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */,
+				2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */,
+				2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */,
+				2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58B511591A9E6B3D00147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */,
+				1304D5AC1AA8C4A30002E2BE /* RCTImageViewManager.m in Sources */,
+				1304D5B21AA8C50D0002E2BE /* RCTGIFImageDecoder.m in Sources */,
+				143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */,
+				354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */,
+				139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */,
+				1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */,
+				EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */,
+				59AB092B1EDE5DD1009F97B5 /* RCTImageShadowView.m in Sources */,
+				13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */,
+				134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */,
+				CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2D2A28401D9B042B00D4039D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		2D2A28411D9B042B00D4039D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
+		58B5116F1A9E6B3D00147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
+			};
+			name = Debug;
+		};
+		58B511701A9E6B3D00147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
+			};
+			name = Release;
+		};
+		58B511721A9E6B3D00147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTImage;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+			};
+			name = Debug;
+		};
+		58B511731A9E6B3D00147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTImage;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D2A28401D9B042B00D4039D /* Debug */,
+				2D2A28411D9B042B00D4039D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511581A9E6B3D00147676 /* Build configuration list for PBXProject "RCTImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B5116F1A9E6B3D00147676 /* Debug */,
+				58B511701A9E6B3D00147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTImage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511721A9E6B3D00147676 /* Debug */,
+				58B511731A9E6B3D00147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58B511551A9E6B3D00147676 /* Project object */;
+}

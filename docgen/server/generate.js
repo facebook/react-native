@@ -18,7 +18,7 @@ const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 const shell = require('shelljs');
 
-const convert = require('./convert.js');
+// const convert = require('./convert.js');
 const slugify = require('../core/slugify');
 
 const AUTODOCS_PREFIX = 'autogen_';
@@ -37,8 +37,8 @@ const SIDEBAR_DIR = 'versioned_sidebars';
 const { JSDOM } = jsdom;
 
 // Start up a server. Don't forget to close the connection when done.
-const server = require('./server.js');
-server.noconvert = true;
+// const server = require('./server.js');
+// server.noconvert = true;
 
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
@@ -54,7 +54,7 @@ function runChecks() {
     shell.echo('Sorry, this script requires git');
     shell.exit(1);
   }
-  
+
   if (!GIT_USER) {
     shell.echo('GIT_USER undefined.');
     shell.exit(1);
@@ -75,9 +75,9 @@ function cleanFiles() {
 
 /**
  * Generates documentation for a given file.
- * 
- * @param {*} file 
- * @param {*} options 
+ *
+ * @param {*} file
+ * @param {*} options
  */
 function generateAutodocForFile(file, options) {
   if (file.match(/src\/react-native\/js/)) {
@@ -101,11 +101,13 @@ function generateAutodocForFile(file, options) {
       throw new Error('Network response was not ok.');
     })
     .then(body => {
-      const dom = new JSDOM(body);      
-      const markdown = generateMarkdownFromDOM(dom);
-      const metadata = fm(markdown);
+      const dom = new JSDOM(body);
 
-      const pathToOutputFile = pathToOutputDir.append(`${AUTODOCS_PREFIX}${metadata.attributes.id}.${MARKDOWN_EXTENSION}`);
+
+      const markdown = generateMarkdownFromDOM(dom);
+      const frontmatter = fm(markdown);
+
+      const pathToOutputFile = pathToOutputDir.append(`${AUTODOCS_PREFIX}${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
 
       return fs.outputFile(pathToOutputFile.toString(), markdown);
     })
@@ -117,13 +119,19 @@ function generateAutodocForFile(file, options) {
 
 /**
  * Generates Markdown documentation. Uses the convert script to extract docs from source files.
+ *
+ * STATUS FRIDAY 6:
+ * Checking out tags and runnign autodocs for each tag not working out.
+ * Lets instead check out thw tags and parse out the docs from the existing html, much easier. No need to re-generate when they already exist.
+ * we can use filename as key
+ *
+ * we can then copy ecisting md files from there. solves a lot ofg issues
  */
 function generateAutodocs(options = { version: 'next' }) {
   console.log(`Generating Markdown files from JavaScript sources for version ${options.version}.`);
   convert({extractDocs: true});
-  
   let queue = Promise.resolve();
-  
+
   return Promise.resolve().then(function() {
     return glob('src/**/*.js');
   }).then(function(files) {
@@ -133,7 +141,7 @@ function generateAutodocs(options = { version: 'next' }) {
         return generateAutodocForFile(file, options);
       });
     });
-  
+
     return p;
   }).then(function() {
     console.log(`Generated Markdown files from JavaScript sources for version ${options.version}.`);
@@ -143,21 +151,21 @@ function generateAutodocs(options = { version: 'next' }) {
   });
 }
 
-// TODO: I think we have a sync/async problem where we checked out everything before trying to process docs
+// Check out gh-pages branch
 function checkOutDocs() {
   const pathToGitCheckout = filepath.create(BUILD_DIR, CHECKOUT_DIR);
   const p = Promise.resolve();
   return p
     .then(() => {
-      fs.ensureDir(pathToGitCheckout.toString());
-    })
+      return fs.ensureDir(pathToGitCheckout.toString());
+  })
     .then(() => {
+      shell.cd(process.cwd());
+      shell.cd(BUILD_DIR);
+      shell.cd(CHECKOUT_DIR);
       return fs.exists(pathToGitCheckout.append(`.git`).toString())
     }).then(gitCheckoutExists => {
       if (!gitCheckoutExists) {
-        shell.cd(process.cwd());
-        shell.cd(BUILD_DIR);
-        shell.cd(CHECKOUT_DIR);
         shell.exec(`git init`).code !== 0;
 
         if (shell.exec(`git remote add origin ${remoteBranch}`).code !== 0) {
@@ -167,35 +175,59 @@ function checkOutDocs() {
       return;
     })
     .then(() => {
-      shell.exec(`git config core.sparsecheckout true`).code !== 0;
-      shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
-      shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
-      
+      // shell.exec(`git config core.sparsecheckout true`).code !== 0;
+      // shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
+      // shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
       if (shell.exec(`git fetch`).code !== 0) {
         throw new Error('Error: git fetch failed');
       }
 
-      const tags = shell.exec(`git tag --sort=version:refname -l 'v0.??.?' 'v0.?.?'`).toString().split('\n');
-      tags.forEach(function(tag) {
-        if (shell.exec(`git checkout ${tag}`).code !== 0) {
-          throw new Error('Error: git checkout failed');
-        }
-        shell.echo(`Checked out ${tag}`);
-        const version = tag.substring(1);
-        // const versionDir = `../../website/versioned_docs/${version}`;
-        // shell.mkdir(versionDir);
-        // shell.cp(`docs/*`, `${versionDir}/.`)
-        // processDocs(versionDir, version);
-        return generateAutodocs({ version });
+      if (shell.exec(`git checkout gh-pages`).code !== 0) {
+        throw new Error('Error: git checkout failed');
+      }
+
+      return glob('releases/**/*.html');
+    }).then(files => {
+      let seq = Promise.resolve();
+      files.forEach(function(file) {
+        seq = seq.then(() => {
+          return extractMarkdownFromHTMLDocs(file);
+        }).then((res) => {
+          console.log(res);
+          const { frontmatter, markdown } = res;
+          console.log(`Received ${frontmatter.attributes.id}`);
+          // TODO: We are all good up to here! Let's write to disk
+        })
       })
+      return;
     })
 }
 
+function extractComponentNameFromFilename(file) {
+  const re = new RegExp('([A-Za-z-]*).html');
+  return file.match(re)[1];
+}
+
+
+function extractMarkdownFromHTMLDocs(file) {
+  if (file.indexOf("404") !== -1) {
+    return { frontmatter: {attributes: { id: '404', permalink: '404.html'}}, markdown: '' };
+  }
+  console.log(`Processing ${file}`);
+  return JSDOM.fromFile(filepath.create(file).toString())
+  .then((dom) => {
+    const body = bodyContentFromDOM(dom);
+    const componentName = extractComponentNameFromFilename(file);
+    const markdown = generateMarkdownFileWithComponentNameAndBody(componentName, body);
+    const frontmatter = fm(markdown);
+    return { frontmatter, markdown };
+  })
+}
 
 // DOM FORMATTING FUNCS
 
 function bodyContentFromDOM(dom) {
-  const el = dom.window.document.querySelector('#componentContent');
+  const el = dom.window.document.querySelector('.inner-content');
   if (el) {
     return el.innerHTML;
   } else {
@@ -204,9 +236,16 @@ function bodyContentFromDOM(dom) {
 }
 
 function componentNameFromDOM(dom) {
-  const el = dom.window.document.querySelector('title');
+  // we have tried title, h1 here. it all varies across versions.
+  const el = dom.window.document.querySelector('h1');
   if (el) {
-    return el.innerHTML;
+    let componentName = el.innerHTML;
+    const re = new RegExp('docs/([A-Za-z]*)(.html)');
+    const parsedTitle = el.innerHTML.match(re);
+    if (parsedTitle) {
+      componentName = parsedTitle[1];
+    }
+    return componentName;
   } else {
     return 'Component';
   }
@@ -223,8 +262,8 @@ function componentCategoryFromDOM(dom) {
 
 /**
  * Generates a markdown formatted file, including frontmatter.
- * 
- * @param {*} dom 
+ *
+ * @param {*} dom
  */
 function generateMarkdownFromDOM(dom) {
   const body = bodyContentFromDOM(dom);
@@ -238,7 +277,6 @@ function generateMarkdownFromDOM(dom) {
   if (componentCategory) {
     category = componentCategory;
   }
-  const metadata = { id: slug, category: category };
   const markdown = [
     '---',
     'id: ' + slug,
@@ -256,6 +294,21 @@ function generateMarkdownFromDOM(dom) {
   return markdown;
 }
 
+function generateMarkdownFileWithComponentNameAndBody(componentName, body) {
+  const slug = slugify(componentName);
+  return [
+    '---',
+    'id: ' + slug,
+    'title: ' + componentName,
+    '---',
+    body
+  ]
+    .filter(function(line) {
+      return line;
+    })
+    .join('\n');
+}
+
 function generateMetatadaFile(categories) {
   const categoriesMetadataFile = `${BUILD_DIR}/sidebar-metadata.json`;
   return fs.outputFile(categoriesMetadataFile, JSON.stringify(categories));
@@ -269,14 +322,19 @@ if (argv.clean) {
 
 if (argv.autodocs) {
   runChecks();
-  checkOutDocs()
-    .finally(function() {
-      server.close();
-    }).catch(function(e) {
-      console.error(e);
-      process.exit(1);
-    });
-  
+  checkOutDocs();
 }
+
+/**
+ * Check out gh-pages branch, cd releases/
+ * For each version,
+ * For each HTML,
+ * Parse out jsdom
+ * Get body contents
+ * Generate frontmatter
+ * Save into versioned_docs
+ * Then finally generate sidebar files for each version
+ *
+ */
 
 module.exports = generateAutodocs;

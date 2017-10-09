@@ -106,6 +106,10 @@ function execute(options) {
   };
 
   function handleMarkdown(content, filename) {
+    if (!content) {
+      console.log(`Empty content for ${filename}`);
+      return;
+    }
     if (content.slice(0, 3) !== '---') {
       return;
     }
@@ -137,12 +141,7 @@ function execute(options) {
     // Rendering docs can take up to 8 seconds. We wait until /docs/ are
     // requested before doing so, then we store the results in memory to
     // speed up subsequent requests.
-    var extractedDocs = cache.get('extractedDocs');
-    if (!extractedDocs) {
-      extractedDocs = extractDocs();
-      cache.put('extractedDocs', extractedDocs);
-    }
-    extractedDocs.forEach(function(content) {
+    extractDocs().forEach(function(content) {
       handleMarkdown(content, null);
     });
   }
@@ -158,14 +157,14 @@ function execute(options) {
       metadatas.config[key] = process.env[key];
     });
 
-  fs.writeFileSync(
-    'core/metadata.js',
-    '/**\n' +
-    ' * @generated\n' +
-    ' * @providesModule Metadata\n' +
-    ' */\n' +
-    'module.exports = ' + JSON.stringify(metadatas, null, 2) + ';'
-  );
+  // fs.writeFileSync(
+  //   'core/metadata.js',
+  //   '/**\n' +
+  //   ' * @generated\n' +
+  //   ' * @providesModule Metadata\n' +
+  //   ' */\n' +
+  //   'module.exports = ' + JSON.stringify(metadatas, null, 2) + ';'
+  // );
 }
 
 if (argv.convert) {
