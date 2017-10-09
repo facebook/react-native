@@ -377,7 +377,7 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
-    
+
     /**
      * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.
@@ -398,6 +398,12 @@ class WebView extends React.Component {
        */
       viewManager: PropTypes.object,
     }),
+
+    /**
+     * Text zoom of the page in percent, used on Android only. The default is 100.
+     * @platform android
+     */
+    textZoom: PropTypes.number,
   };
 
   static defaultProps = {

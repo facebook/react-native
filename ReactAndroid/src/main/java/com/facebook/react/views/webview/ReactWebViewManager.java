@@ -540,6 +540,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
+  @ReactProp(name = "textZoom")
+  public void setTextZoom(WebView view, int textZoom) {
+    view.getSettings().setTextZoom(textZoom);
+  }
+
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, WebView view) {
     // Do not register default touch emitter and let WebView implementation handle touches

@@ -232,6 +232,12 @@ class WebView extends React.Component {
      * @platform android
      */
     urlPrefixesForDefaultIntent: PropTypes.arrayOf(PropTypes.string),
+
+    /**
+     * Text zoom of the page in percent, used on Android only. The default is 100.
+     * @platform android
+     */
+    textZoom: PropTypes.number,
   };
 
   static defaultProps = {
@@ -318,6 +324,7 @@ class WebView extends React.Component {
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
         urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}
+        textZoom={this.props.textZoom}
         {...nativeConfig.props}
       />;
 
