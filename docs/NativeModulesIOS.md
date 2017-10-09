@@ -439,7 +439,7 @@ class CalendarManager: NSObject {
     // Date is ready to use!
   }
   
-  override func constantsToExport() -> [String: Any]! {
+  func constantsToExport() -> [String: Any]! {
     return ["someKey": "someValue"]
   }
 
@@ -468,4 +468,4 @@ For those of you new to Swift and Objective-C, whenever you [mix the two languag
 #import <React/RCTBridgeModule.h>
 ```
 
-You can also use `RCT_EXTERN_REMAP_MODULE` and `RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h).
+You can also use `RCT_EXTERN_REMAP_MODULE` and `_RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h).
