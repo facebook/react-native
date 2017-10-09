@@ -340,14 +340,14 @@ var styles = StyleSheet.create({
     paddingBottom: 300,
   },
   default: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
     padding: 4,
   },
   multiline: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
