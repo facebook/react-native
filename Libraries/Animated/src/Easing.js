@@ -162,11 +162,6 @@ class Easing {
    * times.
    *
    * http://easings.net/#easeInElastic
-   *
-   * Wolfram Plots:
-   *
-   * - http://tiny.cc/elastic_b_1 (bounciness = 1, default)
-   * - http://tiny.cc/elastic_b_3 (bounciness = 3)
    */
   static elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;
