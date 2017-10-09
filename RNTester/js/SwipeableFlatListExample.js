@@ -74,9 +74,7 @@ const SwipeableFlatListExample = createReactClass({
       <View style={styles.row}>
         <Image style={styles.rowIcon} source={item.icon} />
         <View style={styles.rowData}>
-          <Text style={styles.rowDataText}>
-            {item.data}
-          </Text>
+          <Text style={styles.rowDataText}>{item.data}</Text>
         </View>
       </View>
     );
