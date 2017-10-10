@@ -124,5 +124,7 @@ exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) 
   const packageInstance = userConfig.packageInstance ||
     `new ${packageClassName}()`;
 
-  return { sourceDir, folder, manifest, packageImportPath, packageInstance };
+  const buildPatch = userConfig.buildPatch;
+
+  return { sourceDir, folder, manifest, packageImportPath, packageInstance, buildPatch };
 };
