@@ -13,10 +13,16 @@
 
 #if RCT_DEV // Only supported in dev mode
 
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^RCTReloadPackagerMethodBlock)(id);
+
 @interface RCTReloadPackagerMethod : NSObject <RCTPackagerClientMethod>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithReloadCommand:(RCTReloadPackagerMethodBlock)block callbackQueue:(dispatch_queue_t)callbackQueue;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

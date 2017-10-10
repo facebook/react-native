@@ -27,7 +27,7 @@ type DefaultProps = {
 };
 
 /**
- * Renders a boolean input.
+ * Renders a boolean input (Android only).
  *
  * This is a controlled component that requires an `onValueChange` callback that
  * updates the `value` prop in order for the component to reflect user actions.

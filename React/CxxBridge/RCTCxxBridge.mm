@@ -328,9 +328,14 @@ struct RCTInstanceCallback : public InstanceCallback {
       BOOL useCustomJSC =
         [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
         [self.delegate shouldBridgeUseCustomJSC:self];
+      // We use the name of the device and the app for debugging & metrics
+      NSString *deviceName = [[UIDevice currentDevice] name];
+      NSString *appName = [[NSBundle mainBundle] bundleIdentifier];
       // The arg is a cache dir.  It's not used with standard JSC.
       executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
         ("OwnerIdentity", "ReactNative")
+        ("AppIdentity", [(appName ?: @"unknown") UTF8String])
+        ("DeviceIdentity", [(deviceName ?: @"unknown") UTF8String])
         ("UseCustomJSC", (bool)useCustomJSC)
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
@@ -1185,8 +1190,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        std::string baseDirectoryPath = sourceUrlStr.stringByDeletingLastPathComponent.UTF8String;
-        auto registry = std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), baseDirectoryPath);
+        auto registry = std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), sourceUrlStr.UTF8String);
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }

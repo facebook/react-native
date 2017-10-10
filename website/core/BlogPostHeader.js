@@ -24,18 +24,18 @@ class BlogPostHeader extends React.Component {
     }
 
     var title = post.title;
-    var href = "/react-native/blog/" + post.path;
+    var href = '/react-native/blog/' + post.path;
     if (this.props.excerpt) {
       title = <a href={href}>{post.title}</a>;
       hero = <a href={href}>{hero}</a>;
     }
 
     if (post.youtubeVideoId) {
-      var embedURL = "https://www.youtube.com/embed/" + post.youtubeVideoId;
+      var embedURL = 'https://www.youtube.com/embed/' + post.youtubeVideoId;
       hero = <div className="video-container youtube">
                <iframe id="ytplayer" type="text/html" width="650" height="345"
         src={embedURL}
-        frameBorder="0"></iframe>
+        frameBorder="0" />
               </div>;
     }
 

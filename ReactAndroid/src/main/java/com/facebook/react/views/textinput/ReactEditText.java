@@ -33,6 +33,8 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -129,9 +131,7 @@ public class ReactEditText extends EditText {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mContentSizeWatcher != null) {
-      mContentSizeWatcher.onLayout();
-    }
+    onContentSizeChange();
   }
 
   @Override
@@ -366,7 +366,9 @@ public class ReactEditText extends EditText {
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
+
     getText().replace(0, length(), spannableStringBuilder);
+
     mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
@@ -444,6 +446,21 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private void onContentSizeChange() {
+    if (mContentSizeWatcher != null) {
+      mContentSizeWatcher.onLayout();
+    }
+
+    setIntrinsicContentSize();
+  }
+
+  private void setIntrinsicContentSize() {
+    ReactContext reactContext = (ReactContext) getContext();
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+    uiManager.setViewLocalData(getId(), localData);
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
@@ -621,9 +638,7 @@ public class ReactEditText extends EditText {
         }
       }
 
-      if (mContentSizeWatcher != null) {
-        mContentSizeWatcher.onLayout();
-      }
+      onContentSizeChange();
     }
 
     @Override

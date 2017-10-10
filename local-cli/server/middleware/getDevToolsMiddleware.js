@@ -14,8 +14,8 @@ const launchChrome = require('../util/launchChrome');
 
 const {exec} = require('child_process');
 
-function launchChromeDevTools(port) {
-  var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
+function launchChromeDevTools(port, args = '') {
+  var debuggerURL = 'http://localhost:' + port + '/debugger-ui' + args;
   console.log('Launching Dev Tools...');
   launchChrome(debuggerURL);
 }
@@ -25,7 +25,10 @@ function escapePath(pathname) {
   return '"' + pathname + '"';
 }
 
-function launchDevTools({port, projectRoots}, isChromeConnected) {
+function launchDevTools(
+  {port, projectRoots, useDeltaBundler},
+  isChromeConnected,
+) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
@@ -39,7 +42,7 @@ function launchDevTools({port, projectRoots}, isChromeConnected) {
     });
   } else if (!isChromeConnected()) {
     // Dev tools are not yet open; we need to open a session
-    launchChromeDevTools(port);
+    launchChromeDevTools(port, useDeltaBundler ? '#useDeltaBundler' : '');
   }
 }
 

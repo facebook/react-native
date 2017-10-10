@@ -55,7 +55,7 @@ function generateRequestId() {
  *         />
  *         <Image
  *           style={styles.logo}
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *         />
  *       </View>
  *     );
@@ -107,6 +107,7 @@ var Image = createReactClass({
           uri: PropTypes.string,
           width: PropTypes.number,
           height: PropTypes.number,
+          headers: PropTypes.objectOf(PropTypes.string),
         }))
     ]),
     /**
