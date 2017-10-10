@@ -283,7 +283,7 @@ var ScrollResponderMixin = {
 
   scrollResponderHandleScroll: function(e: Event) {
     this.state.observedScrollSinceBecomingResponder = true;
-    this.props.onScroll && this.props.onScroll(e);
+    e.nativeEvent.contentOffset && this.props.onScroll && this.props.onScroll(e);
   },
 
   /**
