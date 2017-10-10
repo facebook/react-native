@@ -187,11 +187,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-export type Props<SectionT> = {
-  ...$Exact<RequiredProps<SectionT>>,
-  ...$Exact<OptionalProps<SectionT>>,
-  ...$Exact<VirtualizedSectionListProps<SectionT>>,
-};
+export type Props<SectionT> = RequiredProps<SectionT> &
+  OptionalProps<SectionT> &
+  VirtualizedSectionListProps<SectionT>;
+
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
