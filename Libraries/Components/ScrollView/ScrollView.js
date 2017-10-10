@@ -447,7 +447,8 @@ const ScrollView = createReactClass({
   },
 
   componentWillMount: function() {
-    this._scrollAnimatedValue = new Animated.Value(0);
+    this._scrollAnimatedValue = new Animated.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
+    this._scrollAnimatedValue.setOffset(this.props.contentInset ? this.props.contentInset.top : 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
   },
