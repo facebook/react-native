@@ -9,7 +9,7 @@
  * @providesModule TextInputTestModule
  */
 
-"use strict";
+'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
@@ -94,7 +94,7 @@ class TextInputTestApp extends React.Component {
           style={styles.textInputHeight}
           autoCorrect={true}
           autoFocus={true}
-          keyboardType='numeric'
+          keyboardType="numeric"
           multiline={true}
           secureTextEntry={true}
           defaultValue="This is text"
@@ -102,13 +102,13 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           style={styles.textInput}
-          autoCapitalize='sentences'
+          autoCapitalize="sentences"
           autoCorrect={false}
           autoFocus={false}
-          keyboardType='default'
+          keyboardType="default"
           multiline={false}
           secureTextEntry={false}
-          placeholder='1234'
+          placeholder="1234"
           testID="textInput2"
         />
         <TextInput

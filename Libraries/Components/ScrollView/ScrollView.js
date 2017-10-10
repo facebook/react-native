@@ -284,7 +284,7 @@ const ScrollView = createReactClass({
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
-     * Note that the view can be always be scrolled by calling `scrollTo`.
+     * Note that the view can always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -614,7 +614,7 @@ const ScrollView = createReactClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console-disallow
+        console.log( // eslint-disable-line no-console
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +
@@ -912,7 +912,6 @@ if (Platform.OS === 'android') {
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
-  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 

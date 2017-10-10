@@ -11,7 +11,6 @@ package com.facebook.react.views.switchview;
 
 import android.content.Context;
 import android.support.v7.widget.SwitchCompat;
-import android.widget.Switch;
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
@@ -29,7 +28,7 @@ import android.widget.Switch;
 
   @Override
   public void setChecked(boolean checked) {
-    if (mAllowChange) {
+    if (mAllowChange && isChecked() != checked) {
       mAllowChange = false;
       super.setChecked(checked);
     }

@@ -9,13 +9,11 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.util.Collection;
-
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import java.util.Collection;
+import javax.annotation.Nullable;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an
@@ -93,6 +91,10 @@ public interface CatalystInstance
 
   /**
    * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   *
+   * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
+   * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
+   * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  long getJavaScriptContext();
+  JavaScriptContextHolder getJavaScriptContextHolder();
 }

@@ -4,6 +4,7 @@ android_library(
     name = "systeminfo",
     srcs = [
         "AndroidInfoModule.java",
+        "ReactNativeVersion.java",
     ],
     exported_deps = [
         ":systeminfo-moduleless",

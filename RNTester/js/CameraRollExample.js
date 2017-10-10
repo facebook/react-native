@@ -48,16 +48,12 @@ class CameraRollExample extends React.Component<
           onValueChange={this._onSwitchChange}
           value={this.state.bigImages}
         />
-        <Text>
-          {(this.state.bigImages ? 'Big' : 'Small') + ' Images'}
-        </Text>
+        <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
         <Slider
           value={this.state.sliderValue}
           onValueChange={this._onSliderChange}
         />
-        <Text>
-          {'Group Type: ' + this.state.groupTypes}
-        </Text>
+        <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
           ref={ref => {
             this._cameraRollView = ref;
@@ -93,18 +89,10 @@ class CameraRollExample extends React.Component<
         <View style={styles.row}>
           <Image source={asset.node.image} style={imageStyle} />
           <View style={styles.info}>
-            <Text style={styles.url}>
-              {asset.node.image.uri}
-            </Text>
-            <Text>
-              {locationStr}
-            </Text>
-            <Text>
-              {asset.node.group_name}
-            </Text>
-            <Text>
-              {new Date(asset.node.timestamp).toString()}
-            </Text>
+            <Text style={styles.url}>{asset.node.image.uri}</Text>
+            <Text>{locationStr}</Text>
+            <Text>{asset.node.group_name}</Text>
+            <Text>{new Date(asset.node.timestamp).toString()}</Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -231,6 +231,27 @@ class TextExample extends React.Component<{}> {
         <RNTesterBlock title="Nested">
           <Text onPress={() => console.log('1st')}>
             (Normal text,
+            <Text style={{color: 'red', fontWeight: 'bold'}}>
+              (R)red
+              <Text style={{color: 'green', fontWeight: 'normal'}}>
+                (G)green
+                <Text style={{color: 'blue', fontWeight: 'bold'}}>
+                  (B)blue
+                  <Text style={{color: 'cyan', fontWeight: 'normal'}}>
+                    (C)cyan
+                    <Text style={{color: 'magenta', fontWeight: 'bold'}}>
+                      (M)magenta
+                      <Text style={{color: 'yellow', fontWeight: 'normal'}}>
+                        (Y)yellow
+                        <Text style={{color: 'black', fontWeight: 'bold'}}>
+                          (K)black
+                        </Text>
+                      </Text>
+                    </Text>
+                  </Text>
+                </Text>
+              </Text>
+            </Text>
             <Text style={{fontWeight: 'bold'}} onPress={() => console.log('2nd')}>
               (and bold
               <Text style={{fontStyle: 'italic', fontSize: 11, color: '#527fe4'}} onPress={() => console.log('3rd')}>

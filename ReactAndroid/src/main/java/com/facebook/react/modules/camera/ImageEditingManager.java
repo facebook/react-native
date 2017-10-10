@@ -28,8 +28,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -298,17 +300,17 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
      */
     private Bitmap crop(BitmapFactory.Options outOptions) throws IOException {
       InputStream inputStream = openBitmapInputStream();
+      // Effeciently crops image without loading full resolution into memory
+      // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
+      BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
       try {
-        // This can use a lot of memory
-        Bitmap fullResolutionBitmap = BitmapFactory.decodeStream(inputStream, null, outOptions);
-        if (fullResolutionBitmap == null) {
-          throw new IOException("Cannot decode bitmap: " + mUri);
-        }
-        return Bitmap.createBitmap(fullResolutionBitmap, mX, mY, mWidth, mHeight);
+        Rect rect = new Rect(mX, mY, mX + mWidth, mY + mHeight);
+        return decoder.decodeRegion(rect, outOptions);
       } finally {
         if (inputStream != null) {
           inputStream.close();
         }
+        decoder.recycle();
       }
     }
 

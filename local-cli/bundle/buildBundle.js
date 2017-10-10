@@ -46,13 +46,16 @@ const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults').p
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro-bundler';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.54 was deployed. To see the error delete this
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
      * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
     output.save(bundle, args, log)
   ).then(() => bundle);
 }
@@ -125,6 +128,7 @@ function buildBundle(
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(terminal),
+      runBeforeMainModule: config.runBeforeMainModule,
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,

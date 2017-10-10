@@ -82,7 +82,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *   return [RCTLinkingManager application:application openURL:url options:options];
  * }
  * ```
- * 
+ *
  * If you're targeting iOS 8.x or older, you can use the following code instead:
  *
  * ```

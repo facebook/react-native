@@ -15,6 +15,7 @@
 const MetroListView = require('MetroListView');
 const Platform = require('Platform');
 const React = require('React');
+const ScrollView = require('ScrollView');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
@@ -22,7 +23,7 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 
 type Item = any;
 
-type SectionBase<SectionItemT> = {
+export type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
@@ -186,10 +187,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedSectionListProps<SectionT>;
-
+export type Props<SectionT> = {
+  ...$Exact<RequiredProps<SectionT>>,
+  ...$Exact<OptionalProps<SectionT>>,
+  ...$Exact<VirtualizedSectionListProps<SectionT>>,
+};
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
@@ -302,7 +304,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder() {
+  getScrollResponder(): ?ScrollView {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollResponder();

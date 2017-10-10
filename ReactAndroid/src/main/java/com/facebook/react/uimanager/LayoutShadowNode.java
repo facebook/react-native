@@ -2,13 +2,11 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableType;
-
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDisplay;
@@ -18,19 +16,18 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import javax.annotation.Nullable;
 
 /**
- * Supply setters for base view layout properties such as width, height, flex properties,
- * borders, etc.
+ * Supply setters for base view layout properties such as width, height, flex properties, borders,
+ * etc.
  *
- * Checking for isVirtual everywhere is a hack to get around the fact that some virtual nodes still
- * have layout properties set on them in JS: for example, a component that returns a <Text> may
- * or may not be embedded in a parent text. There are better solutions that should probably be
+ * <p>Checking for isVirtual everywhere is a hack to get around the fact that some virtual nodes
+ * still have layout properties set on them in JS: for example, a component that returns a <Text>
+ * may or may not be embedded in a parent text. There are better solutions that should probably be
  * explored, namely using the VirtualText class in JS and setting the correct set of validAttributes
  */
-public class LayoutShadowNode extends ReactShadowNode {
+public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   /**
    * A Mutable version of com.facebook.yoga.YogaValue

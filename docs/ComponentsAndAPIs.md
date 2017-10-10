@@ -1,5 +1,5 @@
 ---
-id: components
+id: components-and-apis
 title: Components and APIs
 layout: docs
 category: Guides

@@ -186,12 +186,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
 {
   NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
-  NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
+  NSString *lineInfo = [NSString stringWithFormat:@"%@:%lld",
                         fileName,
-                        stackFrame.lineNumber];
+                        (long long)stackFrame.lineNumber];
 
   if (stackFrame.column != 0) {
-    lineInfo = [lineInfo stringByAppendingFormat:@":%zd", stackFrame.column];
+    lineInfo = [lineInfo stringByAppendingFormat:@":%lld", (long long)stackFrame.column];
   }
   return lineInfo;
 }
@@ -255,7 +255,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     cell.selectedBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.2];
   }
 
-  cell.textLabel.text = stackFrame.methodName;
+  cell.textLabel.text = stackFrame.methodName ?: @"(unnamed method)";
   if (stackFrame.file) {
     cell.detailTextLabel.text = [self formatFrameSource:stackFrame];
   } else {
@@ -375,7 +375,7 @@ RCT_EXPORT_MODULE()
 
 - (void)showErrorMessage:(NSString *)message
 {
-  [self showErrorMessage:message withStack:nil isUpdate:NO];
+  [self showErrorMessage:message withParsedStack:nil isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details
@@ -383,36 +383,42 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:message withDetails:details stack:nil];
 }
 
-- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details stack:(NSArray<id> *)stack {
+- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details stack:(NSArray<RCTJSStackFrame *> *)stack {
   NSString *combinedMessage = message;
   if (details) {
     combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
   }
-  [self showErrorMessage:combinedMessage withStack:stack isUpdate:NO];
+  [self showErrorMessage:combinedMessage withParsedStack:stack isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
 {
   NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
-  [self showErrorMessage:message withStack:stack isUpdate:NO];
+  [self showErrorMessage:message withParsedStack:stack isUpdate:NO];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self showErrorMessage:message withStack:stack isUpdate:NO];
+  [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:NO];
 }
 
-- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-  [self showErrorMessage:message withStack:stack isUpdate:YES];
+  [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:YES];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<id> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
 {
-  if (![[stack firstObject] isKindOfClass:[RCTJSStackFrame class]]) {
-    stack = [RCTJSStackFrame stackFramesWithDictionaries:stack];
-  }
+  [self showErrorMessage:message withParsedStack:stack isUpdate:NO];
+}
 
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
+{
+  [self showErrorMessage:message withParsedStack:stack isUpdate:YES];
+}
+
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
+{
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_window) {
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -441,7 +447,8 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  if (![_bridge.bundleURL.scheme hasPrefix:@"http"]) {
+  NSURL *const bundleURL = _overrideBundleURL ?: _bridge.bundleURL;
+  if (![bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
     return;
   }
@@ -449,7 +456,7 @@ RCT_EXPORT_METHOD(dismiss)
   NSData *stackFrameJSON = [RCTJSONStringify([stackFrame toDictionary], NULL) dataUsingEncoding:NSUTF8StringEncoding];
   NSString *postLength = [NSString stringWithFormat:@"%tu", stackFrameJSON.length];
   NSMutableURLRequest *request = [NSMutableURLRequest new];
-  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:_bridge.bundleURL];
+  request.URL = [NSURL URLWithString:@"/open-stack-frame" relativeToURL:bundleURL];
   request.HTTPMethod = @"POST";
   request.HTTPBody = stackFrameJSON;
   [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -460,7 +467,11 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
 {
-  [_bridge reload];
+  if (_overrideReloadAction) {
+    _overrideReloadAction();
+  } else {
+    [_bridge reload];
+  }
   [self dismiss];
 }
 
@@ -487,6 +498,8 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack {}
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate {}
 - (void)dismiss {}
 

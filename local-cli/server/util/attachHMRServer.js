@@ -67,7 +67,7 @@ type HMROptions<TModule> = {
 };
 
 type Moduleish = {
-  getName(): Promise<string>,
+  getName(): string,
   isAsset(): boolean,
   isJSON(): boolean,
   path: string,
@@ -135,7 +135,7 @@ function attachHMRServer<TModule: Moduleish>(
       name?: string,
       deps: Array<string>,
     }> = await Promise.all(response.dependencies.map(async (dep: TModule) => {
-      const depName = await dep.getName();
+      const depName = dep.getName();
 
       if (dep.isAsset() || dep.isJSON()) {
         return {path: dep.path, deps: []};
@@ -189,6 +189,12 @@ function attachHMRServer<TModule: Moduleish>(
         Array.from(dependents).map(getModuleId);
     }
 
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
+     * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
     return {
       dependenciesCache,
       dependenciesModulesCache,

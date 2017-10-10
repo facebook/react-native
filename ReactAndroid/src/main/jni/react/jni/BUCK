@@ -52,7 +52,7 @@ cxx_library(
         "//native/third-party/android-ndk:android",
         "xplat//folly:molly",
         "//xplat/fbgloginit:fbgloginit",
-        "//xplat/fbsystrace:fbsystrace",
+        "xplat//fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         FBJNI_TARGET,
