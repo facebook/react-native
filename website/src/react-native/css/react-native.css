@@ -1013,7 +1013,6 @@ h2 {
   text-rendering: optimizelegibility; }
 
 .docs-prevnext {
-  min-width: 320px;
   max-width: 640px;
   margin: 40px auto;
   padding-bottom: 20px; }
@@ -1764,6 +1763,13 @@ input#algolia-doc-search:focus {
   margin: 2px;
 }
 
+@supports (display:grid) {
+  .component-grid {
+    display: grid;
+    grid-gap: 22px;
+  }
+}
+
 @media only screen and (min-device-width: 768px) {
   .component-grid {
     width: 768px;
@@ -1776,6 +1782,17 @@ input#algolia-doc-search:focus {
     height: 150px;
     margin: 0 22px 22px auto;
     vertical-align: top;
+  }
+
+  @supports (display:grid) {
+    .component-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .component {
+      width: auto;
+      height: auto;
+      margin: 0;
+    }
   }
 }
 
@@ -2029,6 +2046,15 @@ article li {
 
 .btn:hover {
   text-decoration: none !important; }
+
+@media screen and (max-width: 373px) {
+  .hero .buttons-unit .button {
+    margin-bottom: 4px; }
+
+  .docs-prevnext .btn {
+    margin-bottom: 4px;
+    display: block;
+    float: none; } }
 
 .video-container {
   border-radius: 4px;

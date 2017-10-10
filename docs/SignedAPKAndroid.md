@@ -26,7 +26,7 @@ _Note: Remember to keep your keystore file private and never commit it to versio
 ### Setting up gradle variables
 
 1. Place the `my-release-key.keystore` file under the `android/app` directory in your project folder.
-2. Edit the file `~/.gradle/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
+2. Edit the file `~/.gradle/gradle.properties` or `android/gradle.properties` and add the following (replace `*****` with the correct keystore password, alias and key password),
 
 ```
 MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
@@ -96,6 +96,23 @@ $ react-native run-android --variant=release
 Note that `--variant=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your framework and JavaScript code is bundled in the APK's assets.
+
+### Split APKs by ABI to reduce file size
+
+By default, the generated APK has the native code for both x86 and ARMv7a CPU architectures. This makes it easier to share APKs that run on almost all Android devices. However, this has the downside that there will be some unused native code on any device, leading to unnecessarily bigger APKs.
+
+You can create an APK for each CPU by changing the following line in android/app/build.gradle:
+``` diff
+- def enableSeparateBuildPerCPUArchitecture = false
++ def enableSeparateBuildPerCPUArchitecture = true
+```
+
+Upload both these files to markets which support device targetting, such as [Google Play](https://developer.android.com/google/play/publishing/multiple-apks.html) and [Amazon AppStore](https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html) and the users will automatically get the appropriate APK. If you want to upload to other markets such as [APKFiles](https://www.apkfiles.com/), which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.
+
+``` diff
+- universalApk false  // If true, also generate a universal APK
++ universalApk true  // If true, also generate a universal APK
+```
 
 ### Enabling Proguard to reduce the size of the APK (optional)
 

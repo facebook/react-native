@@ -20,8 +20,7 @@ var {
   View,
 } = ReactNative;
 
-class XHRExampleOnTimeOut extends React.Component {
-  state: any;
+class XHRExampleOnTimeOut extends React.Component<any, any> {
   xhr: XMLHttpRequest;
 
   constructor(props: any) {

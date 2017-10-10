@@ -88,6 +88,16 @@ function tryRunAdbReverse(packagerPort, device) {
   }
 }
 
+function getPackageNameWithSuffix(appId, appIdSuffix, packageName) {
+  if (appId) {
+    return appId;
+  } else if (appIdSuffix) {
+    return packageName + '.' + appIdSuffix;
+  }
+
+  return packageName;
+}
+
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
@@ -100,7 +110,7 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-  const packageNameWithSuffix = args.appIdSuffix ? packageName + '.' + args.appIdSuffix : packageName;
+  const packageNameWithSuffix = getPackageNameWithSuffix(args.appId, args.appIdSuffix, packageName);
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
@@ -253,24 +263,24 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
 }
 
 function startServerInNewWindow() {
-  const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
+  const terminal = process.env.REACT_TERMINAL;
 
   if (process.platform === 'darwin') {
-    if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+    if (terminal) {
+      return child_process.spawnSync('open', ['-a', terminal, launchPackagerScript], procConfig);
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
     procConfig.detached = true;
-    if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
+    if (terminal){
+      return child_process.spawn(terminal, ['-e', 'sh ' + launchPackagerScript], procConfig);
     }
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
 
@@ -302,6 +312,10 @@ module.exports = {
     command: '--appFolder [string]',
     description: 'Specify a different application folder name for the android source.',
     default: 'app',
+  }, {
+    command: '--appId [string]',
+    description: 'Specify an applicationId to launch after build.',
+    default: '',
   }, {
     command: '--appIdSuffix [string]',
     description: 'Specify an applicationIdSuffix to launch after build.',

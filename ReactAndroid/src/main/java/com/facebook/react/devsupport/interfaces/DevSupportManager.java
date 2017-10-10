@@ -52,4 +52,5 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
       final File outputFile);
   @Nullable String getLastErrorTitle();
   @Nullable StackFrame[] getLastErrorStack();
+  void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 }

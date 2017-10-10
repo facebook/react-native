@@ -24,7 +24,7 @@ var PickerItemIOS = PickerIOS.Item;
 var STORAGE_KEY = '@AsyncStorageExample:key';
 var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 
-class BasicStorageExample extends React.Component {
+class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     selectedValue: COLORS[0],
     messages: [],

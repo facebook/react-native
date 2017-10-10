@@ -34,7 +34,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('InitializeCore')
+  .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
@@ -275,6 +275,15 @@ const mockNativeModules = {
       Constants: {},
     },
   },
+  BlobModule: {
+    BLOB_URI_SCHEME: 'content',
+    BLOB_URI_HOST: null,
+    enableBlobSupport: jest.fn(),
+    disableBlobSupport: jest.fn(),
+    createFromParts: jest.fn(),
+    sendBlob: jest.fn(),
+    release: jest.fn(),
+  },
   WebSocketModule: {
     connect: jest.fn(),
     send: jest.fn(),
@@ -304,9 +313,13 @@ jest
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
 
-  return viewName => props => React.createElement(
-    viewName,
-    props,
-    props.children,
-  );
+  return viewName => class extends React.Component {
+    render() {
+      return React.createElement(
+        viewName,
+        this.props,
+        this.props.children,
+      );
+    }
+  };
 });

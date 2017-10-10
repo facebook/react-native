@@ -107,7 +107,7 @@ class Dimensions {
     handler: Function
   ) {
     invariant(
-      'change' === type,
+      type === 'change',
       'Trying to subscribe to unknown event: "%s"', type
     );
     eventEmitter.addListener(type, handler);
@@ -121,7 +121,7 @@ class Dimensions {
     handler: Function
   ) {
     invariant(
-      'change' === type,
+      type === 'change',
       'Trying to remove listener for unknown event: "%s"', type
     );
     eventEmitter.removeListener(type, handler);
