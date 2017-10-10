@@ -52,7 +52,7 @@ const viewConfig = {
  *
  * In the following example, the nested title and body text will inherit the
  * `fontFamily` from `styles.baseText`, but the title provides its own
- * additional styles.  The title and body willstack on top of each other on
+ * additional styles. The title and body will stack on top of each other on
  * account of the literal newlines:
  *
  * ```ReactNativeWebPlayer
