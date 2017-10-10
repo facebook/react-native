@@ -138,7 +138,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *
  * AppRegistry.registerComponent('App', () => App)
  * ```
- * 
+ *
  */
 
 var TouchableHighlight = createReactClass({

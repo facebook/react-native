@@ -100,7 +100,7 @@ function guessEditor() {
           return [COMMON_EDITORS[processName]];
         }
       }
-    } catch(error) {
+    } catch (error) {
       // Ignore...
     }
   }

@@ -1,7 +1,7 @@
 module.exports = function makeBuildPatch(name) {
   const installPattern = new RegExp(
     `\\s{4}(compile)(\\(|\\s)(project)\\(\\\':${name}\\\'\\)(\\)|\\s)`
-  )
+  );
 
   return {
     installPattern,
