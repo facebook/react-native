@@ -1534,28 +1534,6 @@ static UIView *_jsResponder;
 
 @end
 
-@implementation RCTUIManager (Deprecated)
-
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(__unused RCTRootViewSizeFlexibility)sizeFlexibility
-{
-  RCTLogWarn(@"Calling of `[-RCTUIManager registerRootView:withSizeFlexibility:]` which is deprecated.");
-  [self registerRootView:rootView];
-}
-
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
-{
-  RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
-  [self setSize:frame.size forView:view];
-}
-
-RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
-{
-  RCTLogWarn(@"`getContentSizeMultiplier` is deprecated. Instead, use `PixelRatio.getFontScale()` and listen to the `didUpdateDimensions` event.");
-  callback(@[@(_bridge.accessibilityManager.multiplier)]);
-}
-
-@end
-
 @implementation RCTBridge (RCTUIManager)
 
 - (RCTUIManager *)uiManager
