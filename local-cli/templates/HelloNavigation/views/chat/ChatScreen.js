@@ -84,7 +84,7 @@ export default class ChatScreen extends Component {
         messages: messages,
         dataSource: prevState.dataSource.cloneWithRows(messages),
         myMessage: '',
-      }
+      };
     });
     this.textInput.clear();
   }

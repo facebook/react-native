@@ -284,7 +284,7 @@ const ScrollView = createReactClass({
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
-     * Note that the view can be always be scrolled by calling `scrollTo`.
+     * Note that the view can always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -912,7 +912,6 @@ if (Platform.OS === 'android') {
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
-  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 

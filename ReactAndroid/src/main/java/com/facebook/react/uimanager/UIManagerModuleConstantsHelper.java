@@ -24,9 +24,6 @@ import javax.annotation.Nullable;
  */
 /* package */ class UIManagerModuleConstantsHelper {
 
-  /* package */ static final String CUSTOM_BUBBLING_EVENTS_KEY = "customBubblingEventTypes";
-  /* package */ static final String CUSTOM_DIRECT_EVENTS_KEY = "customDirectEventTypes";
-
   /**
    * Generates a lazy discovery enabled version of {@link UIManagerModule} constants. It only
    * contains a list of view manager names, so that JS side is aware of the managers there are.
@@ -53,22 +50,27 @@ import javax.annotation.Nullable;
    * {@link UIManagerModuleConstants}.
    * TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(List<ViewManager> viewManagers) {
+  /* package */ static Map<String, Object> createConstants(
+        List<ViewManager> viewManagers,
+        @Nullable Map<String, Object> allBubblingEventTypes,
+        @Nullable Map<String, Object> allDirectEventTypes) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
 
     // Generic/default event types:
     // All view managers are capable of dispatching these events.
-    // They will be automatically registered for each view type.
+    // They will be automatically registered with React Fiber.
     Map genericBubblingEventTypes = UIManagerModuleConstants.getBubblingEventTypeConstants();
     Map genericDirectEventTypes = UIManagerModuleConstants.getDirectEventTypeConstants();
 
     // Cumulative event types:
     // View manager specific event types are collected as views are loaded.
     // This information is used later when events are dispatched.
-    Map allBubblingEventTypes = MapBuilder.newHashMap();
-    allBubblingEventTypes.putAll(genericBubblingEventTypes);
-    Map allDirectEventTypes = MapBuilder.newHashMap();
-    allDirectEventTypes.putAll(genericDirectEventTypes);
+    if (allBubblingEventTypes != null) {
+      allBubblingEventTypes.putAll(genericBubblingEventTypes);
+    }
+    if (allDirectEventTypes != null) {
+      allDirectEventTypes.putAll(genericDirectEventTypes);
+    }
 
     for (ViewManager viewManager : viewManagers) {
       final String viewManagerName = viewManager.getName();
@@ -81,8 +83,8 @@ import javax.annotation.Nullable;
       try {
         Map viewManagerConstants = createConstantsForViewManager(
             viewManager,
-            genericBubblingEventTypes,
-            genericDirectEventTypes,
+            null,
+            null,
             allBubblingEventTypes,
             allDirectEventTypes);
         if (!viewManagerConstants.isEmpty()) {
@@ -93,41 +95,39 @@ import javax.annotation.Nullable;
       }
     }
 
-    // Used by https://fburl.com/6nskr82o
-    constants.put(CUSTOM_BUBBLING_EVENTS_KEY, allBubblingEventTypes);
-    constants.put(CUSTOM_DIRECT_EVENTS_KEY, allDirectEventTypes);
+    constants.put("genericBubblingEventTypes", genericBubblingEventTypes);
+    constants.put("genericDirectEventTypes", genericDirectEventTypes);
     return constants;
   }
 
   /* package */ static Map<String, Object> createConstantsForViewManager(
       ViewManager viewManager,
-      Map defaultBubblingEvents,
-      Map defaultDirectEvents,
+      @Nullable Map defaultBubblingEvents,
+      @Nullable Map defaultDirectEvents,
       @Nullable Map cumulativeBubblingEventTypes,
       @Nullable Map cumulativeDirectEventTypes) {
+    final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
+    final String DIRECT_EVENTS_KEY = "directEventTypes";
+
     Map<String, Object> viewManagerConstants = MapBuilder.newHashMap();
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
-      if (cumulativeBubblingEventTypes != null) {
-        recursiveMerge(cumulativeBubblingEventTypes, viewManagerBubblingEvents);
-      }
+      recursiveMerge(cumulativeBubblingEventTypes, viewManagerBubblingEvents);
       recursiveMerge(viewManagerBubblingEvents, defaultBubblingEvents);
-    } else {
-      viewManagerBubblingEvents = defaultBubblingEvents;
+      viewManagerConstants.put(BUBBLING_EVENTS_KEY, viewManagerBubblingEvents);
+    } else if (defaultBubblingEvents != null) {
+      viewManagerConstants.put(BUBBLING_EVENTS_KEY, defaultBubblingEvents);
     }
-    viewManagerConstants.put("bubblingEventTypes", viewManagerBubblingEvents);
 
     Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
     if (viewManagerDirectEvents != null) {
-      if (cumulativeDirectEventTypes != null) {
-        recursiveMerge(cumulativeDirectEventTypes, viewManagerBubblingEvents);
-      }
+      recursiveMerge(cumulativeDirectEventTypes, viewManagerDirectEvents);
       recursiveMerge(viewManagerDirectEvents, defaultDirectEvents);
-    } else {
-      viewManagerDirectEvents = defaultDirectEvents;
+      viewManagerConstants.put(DIRECT_EVENTS_KEY, viewManagerDirectEvents);
+    } else if (defaultDirectEvents != null) {
+      viewManagerConstants.put(DIRECT_EVENTS_KEY, defaultDirectEvents);
     }
-    viewManagerConstants.put("directEventTypes", viewManagerDirectEvents);
 
     Map customViewConstants = viewManager.getExportedViewConstants();
     if (customViewConstants != null) {
@@ -148,7 +148,11 @@ import javax.annotation.Nullable;
   /**
    * Merges {@param source} map into {@param dest} map recursively
    */
-  private static void recursiveMerge(Map dest, Map source) {
+  private static void recursiveMerge(@Nullable Map dest, @Nullable Map source) {
+    if (dest == null || source == null || source.isEmpty()) {
+      return;
+    }
+
     for (Object key : source.keySet()) {
       Object sourceValue = source.get(key);
       Object destValue = dest.get(key);

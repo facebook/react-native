@@ -106,17 +106,22 @@ function sprintf(format, ...args) {
   return format.replace(/%s/g, match => args[index++]);
 }
 
-function updateWarningMap(format, ...args): void {
+function updateWarningMap(...args): void {
   if (console.disableYellowBox) {
     return;
   }
 
-  format = String(format);
-  const argCount = (format.match(/%s/g) || []).length;
-  const warning = [
-    sprintf(format, ...args.slice(0, argCount)),
-    ...args.slice(argCount).map(stringifySafe),
-  ].join(' ');
+  let warning;
+  if (typeof args[0] === 'string') {
+    const [format, ...formatArgs] = args;
+    const argCount = (format.match(/%s/g) || []).length;
+    warning = [
+      sprintf(format, ...formatArgs.slice(0, argCount).map(stringifySafe)),
+      ...formatArgs.slice(argCount).map(stringifySafe),
+    ].join(' ');
+  } else {
+    warning = args.map(stringifySafe).join(' ');
+  }
 
   if (warning.startsWith('(ADVICE)')) {
     return;

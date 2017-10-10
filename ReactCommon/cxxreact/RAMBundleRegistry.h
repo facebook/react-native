@@ -28,6 +28,7 @@ public:
   JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
   virtual ~RAMBundleRegistry() {};
 protected:
+  std::string jsBundlesDir(std::string entryFile);
   virtual std::unique_ptr<JSModulesUnbundle> bundleById(uint32_t index) const {
     throw std::runtime_error("Please, override this method in a subclass to support multiple RAM bundles.");
   }

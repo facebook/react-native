@@ -142,7 +142,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.0.0-rc.3"
+    "react": "16.0.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -207,12 +207,12 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.54.0",
+    "flow-bin": "^0.56.0",
     "jest": "^21",
     "mock-fs": "^4.4.1",
-    "prettier": "1.7.3",
-    "react": "16.0.0-rc.3",
-    "react-test-renderer": "16.0.0-rc.3",
+    "prettier": "1.7.0",
+    "react": "16.0.0",
+    "react-test-renderer": "16.0.0",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }

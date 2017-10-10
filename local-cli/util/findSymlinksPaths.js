@@ -27,8 +27,8 @@ module.exports = function findSymlinksPaths(lookupFolder, ignoredRoots) {
       const index = visited.indexOf(symlink);
       if (index !== -1) {
         throw Error(
-          `Infinite symlink recursion detected:\n  ` +
-            visited.slice(index).join(`\n  `)
+          'Infinite symlink recursion detected:\n  ' +
+            visited.slice(index).join('\n  ')
         );
       }
 

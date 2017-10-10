@@ -32,6 +32,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -114,6 +115,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private int mBatchId = 0;
 
+  // Defines if events were already exported to JS. We do not send them more
+  // than once as they are stored and mixed in with Fiber for every ViewManager
+  // on JS side.
+  private boolean mEventsWereSentToJS = false;
+
   public UIManagerModule(
       ReactApplicationContext reactContext,
       ViewManagerResolver viewManagerResolver,
@@ -142,10 +148,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mModuleConstants = createConstants(viewManagersList);
-    mCustomDirectEvents =
-        (Map<String, Object>) mModuleConstants.get(
-            UIManagerModuleConstantsHelper.CUSTOM_DIRECT_EVENTS_KEY);
+    mCustomDirectEvents = MapBuilder.newHashMap();
+    mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mUIImplementation =
         uiImplementationProvider.createUIImplementation(
             reactContext,
@@ -214,11 +218,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
   }
 
-  private static Map<String, Object> createConstants(List<ViewManager> viewManagers) {
+  private static Map<String, Object> createConstants(
+      List<ViewManager> viewManagers,
+      @Nullable Map<String, Object> customBubblingEvents,
+      @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
-      return UIManagerModuleConstantsHelper.createConstants(viewManagers);
+      return UIManagerModuleConstantsHelper.createConstants(
+          viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -242,11 +250,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Map<String, Object> viewManagerConstants =
           UIManagerModuleConstantsHelper.createConstantsForViewManager(
               targetView,
-              UIManagerModuleConstants.getBubblingEventTypeConstants(),
-              UIManagerModuleConstants.getDirectEventTypeConstants(),
+              mEventsWereSentToJS ? null : UIManagerModuleConstants.getBubblingEventTypeConstants(),
+              mEventsWereSentToJS ? null : UIManagerModuleConstants.getDirectEventTypeConstants(),
               null,
               mCustomDirectEvents);
-      return viewManagerConstants != null ? Arguments.makeNativeMap(viewManagerConstants) : null;
+      if (viewManagerConstants != null) {
+        mEventsWereSentToJS = true;
+        return Arguments.makeNativeMap(viewManagerConstants);
+      }
+      return null;
     } finally {
       SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

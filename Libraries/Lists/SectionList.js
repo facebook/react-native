@@ -23,7 +23,7 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 
 type Item = any;
 
-type SectionBase<SectionItemT> = {
+export type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
@@ -187,10 +187,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-export type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedSectionListProps<SectionT>;
-
+export type Props<SectionT> = {
+  ...$Exact<RequiredProps<SectionT>>,
+  ...$Exact<OptionalProps<SectionT>>,
+  ...$Exact<VirtualizedSectionListProps<SectionT>>,
+};
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',

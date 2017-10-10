@@ -52,6 +52,61 @@ function requireNativeComponent(
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): React$ComponentType<any> | string {
+  function attachBubblingEventTypes(viewConfig) {
+    if (UIManager.genericBubblingEventTypes) {
+      viewConfig.bubblingEventTypes = merge(
+        viewConfig.bubblingEventTypes,
+        UIManager.genericBubblingEventTypes,
+      );
+      // As genericBubblingEventTypes do not change over time, and there's
+      // merge of all the events happening in Fiber, we need to pass
+      // genericBubblingEventTypes to Fiber only once. Therefore, we can delete
+      // it and forget about it.
+      delete UIManager.genericBubblingEventTypes;
+    }
+  }
+
+  function attachDirectEventTypes(viewConfig) {
+    if (UIManager.genericDirectEventTypes) {
+      viewConfig.directEventTypes = merge(
+        viewConfig.directEventTypes,
+        UIManager.genericDirectEventTypes,
+      );
+      // As genericDirectEventTypes do not change over time, and there's merge
+      // of all the events happening in Fiber, we need to pass genericDirectEventTypes
+      // to Fiber only once. Therefore, we can delete it and forget about it.
+      delete UIManager.genericDirectEventTypes;
+    }
+  }
+
+  function merge(destination: ?Object, source: ?Object): ?Object {
+    if (!source) {
+      return destination;
+    }
+    if (!destination) {
+      return source;
+    }
+
+    for (const key in source) {
+      if (!source.hasOwnProperty(key)) {
+        continue;
+      }
+
+      var sourceValue = source[key];
+      if (destination.hasOwnProperty(key)) {
+        const destinationValue = destination[key];
+        if (
+          typeof sourceValue === 'object' &&
+          typeof destinationValue === 'object'
+        ) {
+          sourceValue = merge(destinationValue, sourceValue);
+        }
+      }
+      destination[key] = sourceValue;
+    }
+    return destination;
+  }
+
   // Don't load the ViewConfig from UIManager until it's needed for rendering.
   // Lazy-loading this can help avoid Prepack deopts.
   function getViewConfig() {
@@ -128,6 +183,9 @@ function requireNativeComponent(
           extraConfig && extraConfig.nativeOnly,
         );
     }
+
+    attachBubblingEventTypes(viewConfig);
+    attachDirectEventTypes(viewConfig);
 
     // Register this view's event types with the ReactNative renderer.
     // This enables view managers to be initialized lazily, improving perf,

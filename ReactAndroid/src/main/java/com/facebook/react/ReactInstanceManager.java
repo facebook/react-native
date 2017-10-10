@@ -149,7 +149,7 @@ public class ReactInstanceManager {
       Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
-  // Identifies whether the insance manager destroy function is in process,
+  // Identifies whether the instance manager destroy function is in process,
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
   private final UIImplementationProvider mUIImplementationProvider;

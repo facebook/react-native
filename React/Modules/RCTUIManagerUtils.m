@@ -13,6 +13,8 @@
 
 char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 
+static BOOL pseudoUIManagerQueueFlag = NO;
+
 dispatch_queue_t RCTGetUIManagerQueue(void)
 {
   static dispatch_queue_t shadowQueue;
@@ -39,9 +41,18 @@ BOOL RCTIsUIManagerQueue()
   return dispatch_get_specific(queueKey) == queueKey;
 }
 
+BOOL RCTIsPseudoUIManagerQueue()
+{
+  if (RCTIsMainQueue()) {
+    return pseudoUIManagerQueueFlag;
+  }
+
+  return NO;
+}
+
 void RCTExecuteOnUIManagerQueue(dispatch_block_t block)
 {
-  if (RCTIsUIManagerQueue()) {
+  if (RCTIsUIManagerQueue() || RCTIsPseudoUIManagerQueue()) {
     block();
   } else {
     dispatch_async(RCTGetUIManagerQueue(), ^{
@@ -52,11 +63,33 @@ void RCTExecuteOnUIManagerQueue(dispatch_block_t block)
 
 void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block)
 {
-  if (RCTIsUIManagerQueue()) {
+  if (RCTIsUIManagerQueue() || RCTIsPseudoUIManagerQueue()) {
     block();
   } else {
-    dispatch_sync(RCTGetUIManagerQueue(), ^{
+    if (RCTIsMainQueue()) {
+      dispatch_semaphore_t mainQueueBlockingSemaphore = dispatch_semaphore_create(0);
+      dispatch_semaphore_t uiManagerQueueBlockingSemaphore = dispatch_semaphore_create(0);
+
+      // Dispatching block which blocks UI Manager queue.
+      dispatch_async(RCTGetUIManagerQueue(), ^{
+        // Initiating `block` execution on main queue.
+        dispatch_semaphore_signal(mainQueueBlockingSemaphore);
+        // Waiting for finishing `block`.
+        dispatch_semaphore_wait(uiManagerQueueBlockingSemaphore, DISPATCH_TIME_FOREVER);
+      });
+
+      // Waiting for block on UIManager queue.
+      dispatch_semaphore_wait(mainQueueBlockingSemaphore, DISPATCH_TIME_FOREVER);
+      pseudoUIManagerQueueFlag = YES;
+      // `block` execution while UIManager queue is blocked by semaphore.
       block();
-    });
+      pseudoUIManagerQueueFlag = NO;
+      // Signalling UIManager block.
+      dispatch_semaphore_signal(uiManagerQueueBlockingSemaphore);
+    } else {
+      dispatch_sync(RCTGetUIManagerQueue(), ^{
+        block();
+      });
+    }
   }
 }
