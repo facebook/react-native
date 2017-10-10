@@ -102,8 +102,7 @@ const stylesWithPermalink = [
   '../Libraries/StyleSheet/TransformPropTypes.js',
   '../Libraries/Components/View/ShadowPropTypesIOS.js',
   '../Libraries/Components/View/ViewPropTypes.js',
-  ...stylesForEmbed,
-];
+].concat(stylesForEmbed);
 
 const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';
 
