@@ -763,19 +763,3 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 }
 
 @end
-
-@implementation RCTShadowView (Deprecated)
-
-- (YGNodeRef)cssNode
-{
-  RCTLogWarn(@"Calling deprecated `[-RCTShadowView cssNode]`.");
-  return _yogaNode;
-}
-
-- (BOOL)isCSSLeafNode
-{
-  RCTLogWarn(@"Calling deprecated `[-RCTShadowView isCSSLeafNode]`.");
-  return self.isYogaLeafNode;
-}
-
-@end

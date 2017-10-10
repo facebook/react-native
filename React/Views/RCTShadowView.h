@@ -280,13 +280,3 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
 
 @end
-
-@interface RCTShadowView (Deprecated)
-
-@property (nonatomic, assign, readonly) YGNodeRef cssNode
-__deprecated_msg("Use `yogaNode` instead.");
-
-- (BOOL)isCSSLeafNode
-__deprecated_msg("Use `isYogaLeafNode` instead.");
-
-@end
