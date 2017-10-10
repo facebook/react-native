@@ -313,9 +313,13 @@ jest
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
 
-  return viewName => props => React.createElement(
-    viewName,
-    props,
-    props.children,
-  );
+  return viewName => class extends React.Component {
+    render() {
+      return React.createElement(
+        viewName,
+        this.props,
+        this.props.children,
+      );
+    }
+  };
 });
