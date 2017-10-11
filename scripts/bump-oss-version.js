@@ -15,7 +15,7 @@
  * After changing the files it makes a commit and tags it.
  * All you have to do is push changes to remote and CI will make a new build.
  */
-
+const fs = require('fs');
 const {
   cat,
   echo,
@@ -58,30 +58,39 @@ if (!match) {
 }
 let [, major, minor, patch, prerelease] = match;
 
-cat('scripts/versiontemplates/ReactNativeVersion.java.template')
-  .replace('${major}', major)
-  .replace('${minor}', minor)
-  .replace('${patch}', patch)
-  .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null')
-  .to('ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java');
+fs.writeFileSync(
+  'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+  cat('scripts/versiontemplates/ReactNativeVersion.java.template')
+    .replace('${major}', major)
+    .replace('${minor}', minor)
+    .replace('${patch}', patch)
+    .replace('${prerelease}', prerelease !== undefined ? `"${prerelease}"` : 'null'),
+  'utf-8'
+);
 
-cat('scripts/versiontemplates/RCTVersion.h.template')
-  .replace('${major}', `@(${major})`)
-  .replace('${minor}', `@(${minor})`)
-  .replace('${patch}', `@(${patch})`)
-  .replace('${prerelease}', prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]')
-  .to('React/Base/RCTVersion.h');
+fs.writeFileSync(
+  'React/Base/RCTVersion.h',
+  cat('scripts/versiontemplates/RCTVersion.h.template')
+    .replace('${major}', `@(${major})`)
+    .replace('${minor}', `@(${minor})`)
+    .replace('${patch}', `@(${patch})`)
+    .replace('${prerelease}', prerelease !== undefined ? `@"${prerelease}"` : '[NSNull null]'),
+  'utf-8'
+);
 
-cat('scripts/versiontemplates/ReactNativeVersion.js.template')
-  .replace('${major}', major)
-  .replace('${minor}', minor)
-  .replace('${patch}', patch)
-  .replace('${prerelease}', prerelease !== undefined ? `'${prerelease}'` : 'null')
-  .to('Libraries/Core/ReactNativeVersion.js');
+fs.writeFileSync(
+  'Libraries/Core/ReactNativeVersion.js',
+  cat('scripts/versiontemplates/ReactNativeVersion.js.template')
+    .replace('${major}', major)
+    .replace('${minor}', minor)
+    .replace('${patch}', patch)
+    .replace('${prerelease}', prerelease !== undefined ? `'${prerelease}'` : 'null'),
+  'utf-8'
+);
 
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
-JSON.stringify(packageJson, null, 2).to('package.json');
+fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // - change ReactAndroid/gradle.properties
 if (sed('-i', /^VERSION_NAME=.*/, `VERSION_NAME=${version}`, 'ReactAndroid/gradle.properties').code) {
