@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require.requireActual('fs');
 const path = require('path');
 
 const manifest = fs.readFileSync(path.join(__dirname, './files/AndroidManifest.xml'));
