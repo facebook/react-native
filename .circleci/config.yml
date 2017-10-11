@@ -167,6 +167,8 @@ jobs:
 
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
+
+              node ./scripts/publish-npm.js
             else
               echo "Skipping deploy."
             fi
