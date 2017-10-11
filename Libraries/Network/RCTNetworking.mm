@@ -408,7 +408,7 @@ RCT_EXPORT_MODULE()
       NSData *newCarryData = [currentCarryData subdataWithRange:NSMakeRange(encodedResponseLength, currentCarryData.length - encodedResponseLength)];
       [inputCarryData setData:newCarryData];
     } else {
-      [inputCarryData setData:nil];
+      [inputCarryData setLength:0];
     }
   }
 
