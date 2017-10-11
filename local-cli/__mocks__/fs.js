@@ -94,6 +94,9 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
   if (isDirNode(node)) {
     throw new Error('Error readFileSync a dir: ' + filepath);
   }
+  if (Buffer.isBuffer(node) && typeof encoding !== 'undefined') {
+    return node.toString();
+  }
   return node;
 });
 
@@ -133,7 +136,12 @@ function fsError(code, message) {
 }
 
 function isDirNode(node) {
-  return node && typeof node === 'object' && node.SYMLINK == null;
+  return (
+    node &&
+    typeof node === 'object' &&
+    node.SYMLINK == null &&
+    Buffer.isBuffer(node) === false
+  );
 }
 
 function readlinkSync(filepath) {
