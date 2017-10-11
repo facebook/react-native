@@ -29,6 +29,20 @@ var ActionSheetIOS = {
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
+   *
+   * Minimal example:
+   * 
+   * ```
+   * ActionSheetIOS.showActionSheetWithOptions({
+   *   options: ['Remove', 'Cancel'],
+   *   destructiveButtonIndex: 1,
+   *   cancelButtonIndex: 0,
+   * },
+   * (buttonIndex) => {
+   *   if (buttonIndex === 1) { // destructive action }
+   * });
+   * ```
+   *
    */
   showActionSheetWithOptions(options: Object, callback: Function) {
     invariant(

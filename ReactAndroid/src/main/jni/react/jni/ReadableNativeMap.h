@@ -55,5 +55,8 @@ struct ReadableNativeMapKeySetIterator : jni::HybridClass<ReadableNativeMapKeySe
   const folly::dynamic& map_;
 };
 
+jint makeJIntOrThrow(int64_t integer);
+int64_t convertDynamicIfIntegral(const folly::dynamic&);
+
 } // namespace react
 } // namespace facebook

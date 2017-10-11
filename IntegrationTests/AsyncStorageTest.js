@@ -155,7 +155,7 @@ function testOptimizedMultiGet() {
   let keys = batch.map(([key, value]) => key);
   AsyncStorage.multiSet(batch, (err1) => {
     // yes, twice on purpose
-    ;[1, 2].forEach((i) => {
+    [1, 2].forEach((i) => {
       expectAsyncNoError(`${i} testOptimizedMultiGet/multiSet`, err1);
       AsyncStorage.multiGet(keys, (err2, result) => {
         expectAsyncNoError(`${i} testOptimizedMultiGet/multiGet`, err2);

@@ -10,12 +10,12 @@
 namespace facebook {
 namespace react {
 
-std::unique_ptr<JSModulesUnbundle> JSIndexedRAMBundleRegistry::bundleById(uint32_t index) const {
-  return folly::make_unique<JSIndexedRAMBundle>(bundlePathById(index).c_str());
-}
+JSIndexedRAMBundleRegistry::JSIndexedRAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle, const std::string& entryFile):
+    RAMBundleRegistry(std::move(mainBundle)), m_baseDirectoryPath(jsBundlesDir(entryFile)) {}
 
-std::string JSIndexedRAMBundleRegistry::bundlePathById(uint32_t index) const {
-  return m_baseDirectoryPath + "/js-bundles/" + toString(index) + ".jsbundle";
+std::unique_ptr<JSModulesUnbundle> JSIndexedRAMBundleRegistry::bundleById(uint32_t index) const {
+  std::string bundlePathById = m_baseDirectoryPath + toString(index) + ".jsbundle";
+  return folly::make_unique<JSIndexedRAMBundle>(bundlePathById.c_str());
 }
 
 }  // namespace react

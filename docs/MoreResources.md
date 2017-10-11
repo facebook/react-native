@@ -4,7 +4,7 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: components
+next: components-and-apis
 previous: network
 ---
 

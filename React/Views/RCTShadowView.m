@@ -681,6 +681,13 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   YGNodeMarkDirty(_yogaNode);
 }
 
+// Local Data
+
+- (void)setLocalData:(__unused NSObject *)localData
+{
+  // Do nothing by default.
+}
+
 // Flex
 
 - (void)setFlexBasis:(YGValue)value
@@ -753,22 +760,6 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
   _recomputeMargin = NO;
   _recomputePadding = NO;
   _recomputeBorder = NO;
-}
-
-@end
-
-@implementation RCTShadowView (Deprecated)
-
-- (YGNodeRef)cssNode
-{
-  RCTLogWarn(@"Calling deprecated `[-RCTShadowView cssNode]`.");
-  return _yogaNode;
-}
-
-- (BOOL)isCSSLeafNode
-{
-  RCTLogWarn(@"Calling deprecated `[-RCTShadowView isCSSLeafNode]`.");
-  return self.isYogaLeafNode;
 }
 
 @end

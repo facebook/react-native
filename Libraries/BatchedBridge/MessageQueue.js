@@ -11,8 +11,6 @@
  * @format
  */
 
-/*eslint no-bitwise: 0*/
-
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
@@ -26,7 +24,7 @@ export type SpyData = {
   type: number,
   module: ?string,
   method: string | number,
-  args: any,
+  args: any[],
 };
 
 const TO_JS = 0;
@@ -37,6 +35,7 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
+// eslint-disable-next-line no-bitwise
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
@@ -46,17 +45,17 @@ let JSTimers = null;
 
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
-  _queue: [Array<number>, Array<number>, Array<any>, number];
-  _successCallbacks: Array<?Function>;
-  _failureCallbacks: Array<?Function>;
+  _queue: [number[], number[], any[], number];
+  _successCallbacks: (?Function)[];
+  _failureCallbacks: (?Function)[];
   _callID: number;
   _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
 
-  _debugInfo: Object;
-  _remoteModuleTable: Object;
-  _remoteMethodTable: Object;
+  _debugInfo: {[number]: [number, number]};
+  _remoteModuleTable: {[number]: string};
+  _remoteMethodTable: {[number]: string[]};
 
   __spy: ?(data: SpyData) => void;
 
@@ -107,11 +106,7 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(
-    module: string,
-    method: string,
-    args: Array<any>,
-  ) {
+  callFunctionReturnFlushedQueue(module: string, method: string, args: any[]) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
@@ -122,7 +117,7 @@ class MessageQueue {
   callFunctionReturnResultAndFlushedQueue(
     module: string,
     method: string,
-    args: Array<any>,
+    args: any[],
   ) {
     let result;
     this.__guard(() => {
@@ -132,7 +127,7 @@ class MessageQueue {
     return [result, this.flushedQueue()];
   }
 
-  invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
+  invokeCallbackAndReturnFlushedQueue(cbID: number, args: any[]) {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
     });
@@ -178,7 +173,7 @@ class MessageQueue {
   enqueueNativeCall(
     moduleID: number,
     methodID: number,
-    params: Array<any>,
+    params: any[],
     onFail: ?Function,
     onSucc: ?Function,
   ) {
@@ -191,7 +186,9 @@ class MessageQueue {
       }
       // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       // to indicate fail (0) or success (1)
+      // eslint-disable-next-line no-bitwise
       onFail && params.push(this._callID << 1);
+      // eslint-disable-next-line no-bitwise
       onSucc && params.push((this._callID << 1) | 1);
       this._successCallbacks[this._callID] = onSucc;
       this._failureCallbacks[this._callID] = onFail;
@@ -248,7 +245,7 @@ class MessageQueue {
     }
   }
 
-  createDebugLookup(moduleID: number, name: string, methods: Array<string>) {
+  createDebugLookup(moduleID: number, name: string, methods: string[]) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
       this._remoteMethodTable[moduleID] = methods;
@@ -279,7 +276,7 @@ class MessageQueue {
     Systrace.endEvent();
   }
 
-  __callFunction(module: string, method: string, args: Array<any>) {
+  __callFunction(module: string, method: string, args: any[]): any {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
@@ -304,16 +301,18 @@ class MessageQueue {
     return result;
   }
 
-  __invokeCallback(cbID: number, args: Array<any>) {
+  __invokeCallback(cbID: number, args: any[]) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
 
     // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
+    // eslint-disable-next-line no-bitwise
     const callID = cbID >>> 1;
-    const callback =
-      cbID & 1
-        ? this._successCallbacks[callID]
-        : this._failureCallbacks[callID];
+    // eslint-disable-next-line no-bitwise
+    const isSuccess = cbID & 1;
+    const callback = isSuccess
+      ? this._successCallbacks[callID]
+      : this._failureCallbacks[callID];
 
     if (__DEV__) {
       const debug = this._debugInfo[callID];
@@ -344,7 +343,7 @@ class MessageQueue {
     }
 
     this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
-    callback.apply(null, args);
+    callback(...args);
 
     if (__DEV__) {
       Systrace.endEvent();
