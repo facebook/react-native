@@ -46,10 +46,10 @@ describe('ios::findProject', () => {
     mockFS({
       ios: {
         Pods: projects.flat,
-        DemoApp: projects.flat.ios,
+        UnitApp: projects.flat.ios,
       },
     });
-    expect(findProject('')).toBe('ios/DemoApp/demoProject.xcodeproj');
+    expect(findProject('')).toBe('ios/UnitApp/unitProject.xcodeproj');
   });
 
   it('ignores xcodeproj from example folders', () => {

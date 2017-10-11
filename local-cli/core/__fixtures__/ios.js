@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 exports.valid = {
-  'demoProject.xcodeproj': {
+  'unitProject.xcodeproj': {
     'project.pbxproj': fs.readFileSync(path.join(__dirname, './files/project.pbxproj')),
   },
 };
