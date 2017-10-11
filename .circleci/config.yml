@@ -103,7 +103,7 @@ jobs:
               npm install github@0.2.4
               cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
             else 
-              echo "Skipping code analyzis."
+              echo "Skipping code analysis."
             fi
 
   test-node-6:
