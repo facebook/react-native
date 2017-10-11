@@ -49,6 +49,7 @@ import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
@@ -185,6 +186,7 @@ public class DevSupportManagerImpl implements
       enableOnCreate,
       null,
       null,
+      null,
       minNumShakes);
   }
 
@@ -194,12 +196,13 @@ public class DevSupportManagerImpl implements
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
+      @Nullable PackagerConnectionSettings packagerConnectionSettings,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes) {
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
-    mDevSettings = new DevInternalSettings(applicationContext, this);
+    mDevSettings = new DevInternalSettings(applicationContext, packagerConnectionSettings, this);
     mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
     mBundleDownloadListener = devBundleDownloadListener;
 

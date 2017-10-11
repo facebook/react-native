@@ -17,6 +17,7 @@ import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
   private boolean mDelayViewManagerClassLoadsEnabled;
+  private @Nullable PackagerConnectionSettings mPackagerConnectionSettings;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
@@ -210,6 +212,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setPackagerConnectionSettings(
+    @Nullable PackagerConnectionSettings packagerConnectionSettings) {
+    mPackagerConnectionSettings = packagerConnectionSettings;
+    return this;
+  }
+
   public ReactInstanceManagerBuilder setDevBundleDownloadListener(
     @Nullable DevBundleDownloadListener listener) {
     mDevBundleDownloadListener = listener;
@@ -297,6 +305,7 @@ public class ReactInstanceManagerBuilder {
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
         mDelayViewManagerClassLoadsEnabled,
+        mPackagerConnectionSettings,
         mDevBundleDownloadListener,
         mUseSeparateUIBackgroundThread,
         mMinNumShakes,

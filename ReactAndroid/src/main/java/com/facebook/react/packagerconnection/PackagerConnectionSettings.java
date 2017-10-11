@@ -26,13 +26,25 @@ public class PackagerConnectionSettings {
 
   private final SharedPreferences mPreferences;
   private final String mPackageName;
+  private final String mDebugServerHost;
+  private final String mInspectorServerHost;
 
   public PackagerConnectionSettings(Context applicationContext) {
+    this(applicationContext, null, null);
+  }
+
+  public PackagerConnectionSettings(Context applicationContext, String debugServerHost, String inspectorServerHost) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
+    mDebugServerHost = debugServerHost;
+    mInspectorServerHost = inspectorServerHost;
   }
 
   public String getDebugServerHost() {
+    if (mDebugServerHost != null) {
+      return mDebugServerHost;
+    }
+
     // Check host setting first. If empty try to detect emulator type and use default
     // hostname for those
     String hostFromSettings = mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
@@ -54,6 +66,10 @@ public class PackagerConnectionSettings {
   }
 
   public String getInspectorServerHost() {
+    if (mInspectorServerHost != null) {
+      return mInspectorServerHost;
+    }
+
     return AndroidInfoHelpers.getInspectorProxyHost();
   }
 

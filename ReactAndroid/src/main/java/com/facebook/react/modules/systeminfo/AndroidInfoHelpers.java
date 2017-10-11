@@ -12,8 +12,8 @@ public class AndroidInfoHelpers {
   public static final String GENYMOTION_LOCALHOST = "10.0.3.2";
   public static final String DEVICE_LOCALHOST = "localhost";
 
-  private static final int DEBUG_SERVER_HOST_PORT = 8081;
-  private static final int INSPECTOR_PROXY_PORT = 8082;
+  public static final int DEBUG_SERVER_HOST_PORT = 8081;
+  public static final int INSPECTOR_PROXY_PORT = 8082;
 
   private static boolean isRunningOnGenymotion() {
     return Build.FINGERPRINT.contains("vbox");
@@ -41,7 +41,7 @@ public class AndroidInfoHelpers {
     }
   }
 
-  private static String getServerIpAddress(int port) {
+  public static String getServerIpAddress(int port) {
     // Since genymotion runs in vbox it use different hostname to refer to adb host.
     // We detect whether app runs on genymotion and replace js bundle server hostname accordingly
 

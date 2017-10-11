@@ -44,11 +44,14 @@ public class DevInternalSettings implements
 
   public DevInternalSettings(
       Context applicationContext,
+      @Nullable PackagerConnectionSettings packagerConnectionSettings,
       Listener listener) {
     mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
-    mPackagerConnectionSettings = new PackagerConnectionSettings(applicationContext);
+    mPackagerConnectionSettings = packagerConnectionSettings == null
+      ? new PackagerConnectionSettings(applicationContext)
+      : packagerConnectionSettings;
   }
 
   public PackagerConnectionSettings getPackagerConnectionSettings() {
