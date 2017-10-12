@@ -26,7 +26,7 @@ if (addsDocs || editsDocs) {
   message(`${title} - <i>${idea}</i>`);
 
   // Add the Documentation label via bot, as @facebook-open-source-bot does not have write privileges on the repo.
-  markdown('@facebook-github-bot label Documentation');
+  // markdown('@facebook-github-bot label Documentation');
 }
 
 const isBlogFile = path => includes(path, 'blog/');
@@ -53,7 +53,7 @@ if (editsBlogPost) {
 // Fails if the description is too short.
 if (danger.github.pr.body.length < 10) {
   fail(':grey_question: This pull request needs a description.');
-  markdown('@facebook-github-bot label Needs more information');
+  // markdown('@facebook-github-bot label Needs more information');
 }
 
 // Warns if the PR title contains [WIP]
@@ -83,23 +83,23 @@ if (!includesTestPlan && gettingStartedChanged) {
   const title = ':clipboard: Test Plan';
   const idea = 'This PR appears to be missing a Test Plan.';
   warn(`${title} - <i>${idea}</i>`);
-  markdown('@facebook-github-bot label Needs more information');
+  // markdown('@facebook-github-bot label Needs more information');
 }
 // Doc edits rarely require a test plan. We'll trust the reviewer to push back if one is needed.
 if (!includesTestPlan && !editsDocs) {
   const title = ':clipboard: Test Plan';
   const idea = 'This PR appears to be missing a Test Plan.';
   warn(`${title} - <i>${idea}</i>`);
-  markdown('@facebook-github-bot label Needs more information');
+  // markdown('@facebook-github-bot label Needs more information');
 }
 
 // Tags PRs that have been submitted by a core contributor.
 // TODO: Switch to using an actual MAINTAINERS file.
 const taskforce = fs.readFileSync('../bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
-if (isSubmittedByTaskforce) {
-  markdown('@facebook-github-bot label Core Team');
-}
+// if (isSubmittedByTaskforce) {
+  // markdown('@facebook-github-bot label Core Team');
+// }
 
 // Tags big PRs
 var bigPRThreshold = 600;
@@ -108,14 +108,14 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.github.pr.additions + danger.github.pr.deletions} lines.`;
   warn(`${title} - <i>${idea}</i>`);
 
-  markdown('@facebook-github-bot large-pr');  
+  // markdown('@facebook-github-bot large-pr');  
 }
 if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
   const title = ':exclamation: Big PR';
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.git.modified_files + danger.git.added_files + danger.git.deleted_files} files.`;
   warn(`${title} - <i>${idea}</i>`);
 
-  markdown('@facebook-github-bot large-pr');  
+  // markdown('@facebook-github-bot large-pr');  
 }
 
 // Warns if the bots whitelist file is updated.
