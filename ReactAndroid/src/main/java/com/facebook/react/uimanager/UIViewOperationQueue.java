@@ -758,6 +758,10 @@ public class UIViewOperationQueue {
     mOperations.add(new UIBlockOperation(block));
   }
 
+  public void prependUIBlock(UIBlock block) {
+    mOperations.add(0, new UIBlockOperation(block));
+  }
+
   /* package */ void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
