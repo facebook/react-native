@@ -1,6 +1,6 @@
 # App template for new React Native apps
 
-This is a simple React Native app template which demonstrates a few basics concepts such as navigation between a few screens, FlaLists, and handling text input.
+This is a simple React Native app template which demonstrates a few basics concepts such as navigation between a few screens, FlatLists, and handling text input.
 
 <img src="https://cloud.githubusercontent.com/assets/346214/22697898/ced66f52-ed4a-11e6-9b90-df6daef43199.gif" alt="Android Example" height="800" style="float: left"/>
 
