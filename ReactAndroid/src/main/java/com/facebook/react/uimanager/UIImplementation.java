@@ -243,8 +243,10 @@ public class UIImplementation {
     ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(tag);
 
     if (shadowNode == null) {
-      throw new IllegalViewOperationException(
-          "Trying to set local data for view with unknown tag: " + tag);
+      FLog.w(
+        ReactConstants.TAG,
+        "Attempt to set local data for view with unknown tag: " + tag);
+      return;
     }
 
     shadowNode.setLocalData(data);
