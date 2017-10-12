@@ -273,7 +273,7 @@ jobs:
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             sudo apt-get install -y nodejs
       - run:
-          name: Install Dependencies
+          name: Install Node Dependencies
           command: |
             npm config set spin=false
             npm config set progress=false
