@@ -90,7 +90,7 @@ if [ -n "$(which csrutil)" ]; then
       echo "See https://our.intern.facebook.com/intern/dex/installing-java-8/ for instructions on installing Java 8 on FB laptops."
     else
       echo "Check out http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html ."
-      echo $"Be sure that you set JAVA_HOME and PATH correctly in your .bashrc or equivalent. Example:"
+      echo "Be sure that you set JAVA_HOME and PATH correctly in your .bashrc or equivalent. Example:"
       echo
       echo "  export JAVA_HOME=path/to/java"
       echo "  export PATH=\$PATH:\$JAVA_HOME/bin"
