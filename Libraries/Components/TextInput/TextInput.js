@@ -533,7 +533,17 @@ const TextInput = createReactClass({
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * Note that not all Text styles are supported,
+     * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
+     *
+     * - `borderLeftWidth`
+     * - `borderTopWidth`
+     * - `borderRightWidth`
+     * - `borderBottomWidth`
+     * - `borderTopLeftRadius`
+     * - `borderTopRightRadius`
+     * - `borderBottomRightRadius`
+     * - `borderBottomLeftRadius`
+     *
      * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
      * for more detail.
      *
