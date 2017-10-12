@@ -5,7 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/native-components-ios.html
 banner: ejected
-next: linking-libraries-ios
+next: custom-webview-ios
 previous: native-modules-ios
 ---
 
@@ -67,10 +67,10 @@ import MapView from './MapView.js';
 
 render() {
   return <MapView style={{ flex: 1 }} />;
-} 
+}
 ```
 
-Make sure to use `RNTMap` here. We want to require the manager here, which will expose the view of our manager for use in Javascript. 
+Make sure to use `RNTMap` here. We want to require the manager here, which will expose the view of our manager for use in Javascript.
 
 **Note:** When rendering, don't forget to stretch the view, otherwise you'll be staring at a blank screen.
 
@@ -97,8 +97,8 @@ Now to actually disable zooming, we set the property in JS:
 
 ```javascript
 // MyApp.js
-<MapView 
-  zoomEnabled={false} 
+<MapView
+  zoomEnabled={false}
   style={{ flex: 1 }}
 />;
 ```
@@ -119,7 +119,7 @@ class MapView extends React.Component {
 
 MapView.propTypes = {
   /**
-   * A Boolean value that determines whether the user may use pinch 
+   * A Boolean value that determines whether the user may use pinch
    * gestures to zoom in and out of the map.
    */
   zoomEnabled: PropTypes.bool,
@@ -196,7 +196,7 @@ To finish up support for the `region` prop, we need to document it in `propTypes
 
 MapView.propTypes = {
   /**
-   * A Boolean value that determines whether the user may use pinch 
+   * A Boolean value that determines whether the user may use pinch
    * gestures to zoom in and out of the map.
    */
   zoomEnabled: PropTypes.bool,
@@ -233,8 +233,8 @@ render() {
     longitudeDelta: 0.1,
   };
   return (
-    <MapView 
-      region={region} 
+    <MapView
+      region={region}
       zoomEnabled={false}
       style={{ flex: 1 }}
     />
@@ -244,7 +244,7 @@ render() {
 
 Here you can see that the shape of the region is explicit in the JS documentation - ideally we could codegen some of this stuff, but that's not happening yet.
 
-Sometimes your native component will have some special properties that you don't want to them to be part of the API for the associated React component. For example, `Switch` has a custom `onChange` handler for the raw native event, and exposes an `onValueChange` handler property that is invoked with just the boolean value rather than the raw event. Since you don't want these native only properties to be part of the API, you don't want to put them in `propTypes`, but if you don't you'll get an error. The solution is simply to add them to the `nativeOnly` option, e.g.
+Sometimes your native component will have some special properties that you don't want to be part of the API for the associated React component. For example, `Switch` has a custom `onChange` handler for the raw native event, and exposes an `onValueChange` handler property that is invoked with just the boolean value rather than the raw event. Since you don't want these native only properties to be part of the API, you don't want to put them in `propTypes`, but if you don't you'll get an error. The solution is simply to add them to the `nativeOnly` option, e.g.
 
 ```javascript
 var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
@@ -256,7 +256,7 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?
 
-Until now we've just returned a `MKMapView` instance from our manager's `-(UIView *)view` method. We can't add new properties to `MKMapView` so we have to create a new subclass from `MKMapView` which we use for our View. We can then add a `onRegionChange` callback on this subclass: 
+Until now we've just returned a `MKMapView` instance from our manager's `-(UIView *)view` method. We can't add new properties to `MKMapView` so we have to create a new subclass from `MKMapView` which we use for our View. We can then add a `onRegionChange` callback on this subclass:
 
 ```objectivec
 // RNTMapView.h
@@ -344,15 +344,15 @@ class MapView extends React.Component {
     if (!this.props.onRegionChange) {
       return;
     }
-    
-    // process raw event... 
+
+    // process raw event...
     this.props.onRegionChange(event.nativeEvent);
   }
   render() {
     return (
-      <RNTMap 
-        {...this.props} 
-        onRegionChange={this._onRegionChange} 
+      <RNTMap
+        {...this.props}
+        onRegionChange={this._onRegionChange}
       />
     );
   }
@@ -381,8 +381,8 @@ class MyApp extends React.Component {
     };
     return (
       <MapView
-        region={region} 
-        zoomEnabled={false} 
+        region={region}
+        zoomEnabled={false}
         onRegionChange={this.onRegionChange}
       />
     );
@@ -443,4 +443,4 @@ The `RCTDatePickerIOSConsts` constants are exported from native by grabbing the 
 }
 ```
 
-This guide covered many of the aspects of bridging over custom native components, but there is even more you might need to consider, such as custom hooks for inserting and laying out subviews. If you want to go even deeper, check out the [source code](https://github.com/facebook/react-native/blob/master/React/Views) of some of the implemented components. 
+This guide covered many of the aspects of bridging over custom native components, but there is even more you might need to consider, such as custom hooks for inserting and laying out subviews. If you want to go even deeper, check out the [source code](https://github.com/facebook/react-native/blob/master/React/Views) of some of the implemented components.

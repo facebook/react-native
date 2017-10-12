@@ -9,8 +9,8 @@ const projectConfig = {
 
 describe('android::isInstalled', () => {
   it('should return true when project is already in build.gradle', () => {
-    expect(isInstalled(projectConfig, 'test')).toBeTruthy()
-    expect(isInstalled(projectConfig, 'test2')).toBeTruthy()
+    expect(isInstalled(projectConfig, 'test')).toBeTruthy();
+    expect(isInstalled(projectConfig, 'test2')).toBeTruthy();
   });
 
   it('should return false when project is not in build.gradle', () =>

@@ -17,7 +17,7 @@ const path = require('path');
 import type {PackagerAsset} from '../../Libraries/Image/AssetRegistry';
 
 function getAssetDestPathAndroid(asset: PackagerAsset, scale: number): string {
-  const androidFolder = assetPathUtils.getAndroidDrawableFolderName(asset, scale);
+  const androidFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
   const fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
   return path.join(androidFolder, fileName + '.' + asset.type);
 }
