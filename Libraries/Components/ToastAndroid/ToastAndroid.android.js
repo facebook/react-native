@@ -24,6 +24,9 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * There is also a function `showWithGravity` to specify the layout gravity. May be
  * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
  *
+ * There is also a function `showWithColor` to specify background color. May be
+ * String backgroundColor "#000000", "#ffffff".
+ *
  * The 'showWithGravityAndOffset' function adds on the ability to specify offset
  * These offset values will translate to pixels.
  *
@@ -31,6 +34,7 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * ```javascript
  * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
  * ToastAndroid.showWithGravity('All Your Base Are Belong To Us', ToastAndroid.SHORT, ToastAndroid.CENTER);
+ * ToastAndroid.showWithColor('Customizable Toast Message', ToastAndroid.SHORT, "#4c4cc7");
  * ToastAndroid.showWithGravityAndOffset('A wild toast appeared!', ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
  * ```
  */
@@ -59,6 +63,14 @@ var ToastAndroid = {
     gravity: number,
   ): void {
     RCTToastAndroid.showWithGravity(message, duration, gravity);
+  },
+
+  showWithColor: function (
+    message: string,
+    duration: number,
+    backgroundColor: string,
+  ): void {
+    RCTToastAndroid.showWithColor(message, duration, backgroundColor);
   },
 
   showWithGravityAndOffset: function (
