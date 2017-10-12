@@ -385,18 +385,16 @@ jobs:
             else
               echo "Skipping dependency installation."            
             fi
-# Run Danger
-- save-cache: *save-cache-analysis
+      - save-cache: *save-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              cd danger &&DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
             else
               echo "Skipping pull request analysis."            
             fi
           when: always
-# Run eslint          
       - run:
           name: Analyze Code
           command: |
