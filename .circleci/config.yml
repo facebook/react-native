@@ -95,16 +95,6 @@ jobs:
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
-# eslint - doesn't run on non-PR builds
-      - run:
-          name: Analyze Code
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              npm install github@0.2.4
-              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
-            else 
-              echo "Skipping code analysis."
-            fi
 
   test-node-6:
     <<: *defaults
@@ -129,7 +119,7 @@ jobs:
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
-          
+
   test-website:
     <<: *defaults
     docker:
@@ -168,7 +158,6 @@ jobs:
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
             else
@@ -346,6 +335,30 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
+# Only runs on pull request builds.
+  analyze-pull-request:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install --no-package-lock
+# Run eslint against this pull request.
+      - run: npm install github@0.2.4
+      - run:
+          name: Analyze Code
+          command: |
+            cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+# Run Danger against this pull request.
+      - restore-cache: *restore-cache-danger
+      - run: cd danger && npm install --no-package-lock
+      - save-cache: *save-cache-danger
+      - run:
+          name: Analyze Pull Request
+          command: |
+            cd danger
+            DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
@@ -366,6 +379,14 @@ workflows:
               only:
                 - /.*-stable/
                 - master
+  analyze:
+    jobs:
+      - analyze-pull-request
+    branches:
+      ignore:
+        - master
+        - gh-pages
+        - /.*-stable/
   test_android:
     jobs:
       - build-js-bundle:
