@@ -50,8 +50,12 @@ const invariant = require('fbjs/lib/invariant');
  *
  * class AppStateExample extends Component {
  *
- *   state = {
- *     appState: AppState.currentState
+ *   constructor(props) {
+ *     super(props);
+ *  
+ *     this.state = {
+ *       appState: AppState.currentState
+ *     };
  *   }
  *
  *   componentDidMount() {
