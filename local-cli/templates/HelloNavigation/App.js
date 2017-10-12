@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This is an example React Native app demonstrates ListViews, text input and
  * navigation between a few screens.
