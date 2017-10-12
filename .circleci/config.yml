@@ -385,7 +385,8 @@ jobs:
             else
               echo "Skipping dependency installation."            
             fi
-      - save-cache: *save-cache-analysis
+# Run Danger
+- save-cache: *save-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
@@ -395,6 +396,7 @@ jobs:
               echo "Skipping pull request analysis."            
             fi
           when: always
+# Run eslint          
       - run:
           name: Analyze Code
           command: |
