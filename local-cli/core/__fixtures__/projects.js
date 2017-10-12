@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const android = require('./android');
 const ios = require('./ios');
 

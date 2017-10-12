@@ -200,7 +200,6 @@
     "eslint-plugin-react": "^7.2.1",
     "flow-bin": "^0.56.0",
     "jest": "^21",
-    "mock-fs": "^4.4.1",
     "prettier": "1.7.0",
     "react": "16.0.0",
     "react-test-renderer": "16.0.0",
