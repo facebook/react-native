@@ -19,15 +19,16 @@ aliases:
       - website/node_modules
     key: v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
 
-  - &restore-cache-danger
+  - &restore-cache-analysis
     keys:
-      - v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - v1-danger-dependencies-{{ .Branch }}-
-  - &save-cache-danger
+      - v1-analysis-dependencies-{{ .Branch }}-
+  - &save-cache-analysis
     paths:
       - danger/node_modules
-    key: v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - node_modules
+    key: v1-analysis-dependencies-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
 
   - &restore-cache-android-packages
     keys:
@@ -90,21 +91,16 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
+      - run: 
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install --no-package-lock
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
-# eslint - doesn't run on non-PR builds
-      - run:
-          name: Analyze Code
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              npm install github@0.2.4
-              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
-            else 
-              echo "Skipping code analysis."
-            fi
 
   test-node-6:
     <<: *defaults
@@ -112,7 +108,12 @@ jobs:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - run: npm install
+      - run: 
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
@@ -124,12 +125,17 @@ jobs:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - run: npm install
+      - run: 
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install            
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
-          
+
   test-website:
     <<: *defaults
     docker:
@@ -140,6 +146,8 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
+            npm config set spin=false
+            npm config set progress=false
             npm install --no-package-lock
       - run:
           name: Test Website
@@ -160,6 +168,8 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
+            npm config set spin=false
+            npm config set progress=false
             npm install --no-package-lock
       - run:
           name: Build and Deploy Static Website
@@ -168,7 +178,6 @@ jobs:
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
             else
@@ -181,7 +190,12 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
+      - run:
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install --no-package-lock
       - run:
           name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
@@ -258,7 +272,12 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             sudo apt-get install -y nodejs
-      - run: npm install
+      - run:
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install --no-package-lock
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
@@ -346,6 +365,70 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
+  analyze-pull-request:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-cache-analysis
+      - run:
+          name: Install Dependencies
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              npm config set spin=false
+              npm config set progress=false
+              npm install --no-package-lock
+              npm install github@0.2.4
+              cd danger
+              npm install --no-package-lock
+            else
+              echo "Skipping dependency installation."            
+            fi
+      - save-cache: *save-cache-analysis
+      - run:
+          name: Analyze Pull Request
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cd danger &&DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+            else
+              echo "Skipping pull request analysis."            
+            fi
+          when: always
+      - run:
+          name: Analyze Code
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+            else
+              echo "Skipping code analysis."            
+            fi
+
+  publish-npm:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            npm config set spin=false
+            npm config set progress=false
+            npm install --no-package-lock
+      - run:
+        name: Publish React Native Package
+        command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+              git config --global user.email "reactjs-bot@users.noreply.github.com"
+              git config --global user.name "Website Deployment Script"
+              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+              node ./scripts/publish-npm.js
+            else
+              echo "Skipping publication."            
+            fi
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
@@ -366,6 +449,21 @@ workflows:
               only:
                 - /.*-stable/
                 - master
+  deploy:
+    jobs:
+      - publish-npm
+    branches:
+      only:
+        - /.*-stable/
+        - master
+  analyze:
+    jobs:
+      - analyze-pull-request
+    branches:
+      ignore:
+        - master
+        - gh-pages
+        - /.*-stable/
   test_android:
     jobs:
       - build-js-bundle:
