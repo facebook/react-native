@@ -472,7 +472,11 @@ workflows:
                 - /.*-stable/
   deploy:
     jobs:
+      - hold:
+          type: approval
       - publish-npm:
+          requires: 
+            - hold
           filters:
             branches:
               only:
