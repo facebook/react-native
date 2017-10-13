@@ -1,23 +1,25 @@
 'use strict';
 
+jest.mock('fs');
+
 const findPodspecName = require('../../ios/findPodspecName');
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const projects = require('../../__fixtures__/projects');
 const ios = require('../../__fixtures__/ios');
 
 describe('ios::findPodspecName', () => {
   it('returns null if there is not podspec file', () => {
-    mockFS(projects.flat);
+    fs.__setMockFilesystem(projects.flat);
     expect(findPodspecName('')).toBeNull();
   });
 
   it('returns podspec name if only one exists', () => {
-    mockFS(ios.pod);
-    expect(findPodspecName('')).toBe('TestPod');
+    fs.__setMockFilesystem(ios.pod);
+    expect(findPodspecName('/')).toBe('TestPod');
   });
 
   it('returns podspec name that match packet directory', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       user: {
         PacketName: {
           'Another.podspec': 'empty',
@@ -25,11 +27,11 @@ describe('ios::findPodspecName', () => {
         }
       }
     });
-    expect(findPodspecName('user/PacketName')).toBe('PacketName');
+    expect(findPodspecName('/user/PacketName')).toBe('PacketName');
   });
 
   it('returns first podspec name if not match in directory', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       user: {
         packet: {
           'Another.podspec': 'empty',
@@ -37,11 +39,7 @@ describe('ios::findPodspecName', () => {
         }
       }
     });
-    expect(findPodspecName('user/packet')).toBe('Another');
-  });
-
-  afterEach(() => {
-    mockFS.restore();
+    expect(findPodspecName('/user/packet')).toBe('Another');
   });
 
 });
