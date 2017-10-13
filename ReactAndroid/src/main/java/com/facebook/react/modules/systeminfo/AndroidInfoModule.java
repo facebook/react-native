@@ -38,6 +38,7 @@ public class AndroidInfoModule extends BaseJavaModule {
     constants.put("Version", Build.VERSION.SDK_INT);
     constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
+    constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     return constants;
   }
 }

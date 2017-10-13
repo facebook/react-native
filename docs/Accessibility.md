@@ -4,8 +4,8 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: timers
-previous: debugging
+next: improvingux
+previous: animations
 ---
 
 ## Native App Accessibility (iOS and Android)
@@ -173,7 +173,7 @@ In the above example we've created a custom radio button that now behaves like a
 
 ## Testing VoiceOver Support (iOS)
 
-To enable VoiceOver, go to the Settings app on your iOS device. Tap General, then Accessibility. There you will find many tools that people use to use to make their devices more usable, such as bolder text, increased contrast, and VoiceOver.
+To enable VoiceOver, go to the Settings app on your iOS device. Tap General, then Accessibility. There you will find many tools that people use to make their devices more usable, such as bolder text, increased contrast, and VoiceOver.
 
 To enable VoiceOver, tap on VoiceOver under "Vision" and toggle the switch that appears at the top.
 

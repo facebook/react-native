@@ -1,31 +1,43 @@
-jest.autoMockOff();
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
+ */
+
+'use strict';
+
+jest.mock('fs');
 
 const findAssets = require('../findAssets');
-const mockFs = require('mock-fs');
 const dependencies = require('../__fixtures__/dependencies');
-const isArray = (arg) =>
-  Object.prototype.toString.call(arg) === '[object Array]';
+const fs = require('fs');
 
 describe('findAssets', () => {
-
-  beforeEach(() => mockFs({ testDir: dependencies.withAssets }));
-
-  it('should return an array of all files in given folders', () => {
-    const assets = findAssets('testDir', ['fonts', 'images']);
-
-    expect(isArray(assets)).toBeTruthy();
-    expect(assets.length).toEqual(3);
+  beforeEach(() => {
+    fs.__setMockFilesystem({testDir: dependencies.withAssets});
   });
 
-  it('should prepend assets paths with the folder path', () => {
-    const assets = findAssets('testDir', ['fonts', 'images']);
+  it('returns an array of all files in given folders', () => {
+    const assets = findAssets('/testDir', ['fonts', 'images']);
 
-    assets.forEach(assetPath => expect(assetPath).toContain('testDir'));
+    expect(Array.isArray(assets)).toBeTruthy();
+    expect(assets).toHaveLength(3);
   });
 
-  it('should return an empty array if given assets are null', () => {
-    expect(findAssets('testDir', null).length).toEqual(0);
+  it('prepends assets paths with the folder path', () => {
+    const assets = findAssets('/testDir', ['fonts', 'images']);
+
+    assets.forEach(assetPath => {
+      expect(assetPath).toContain('testDir');
+    });
   });
 
-  afterEach(mockFs.restore);
+  it('returns an empty array if given assets are null', () => {
+    expect(findAssets('/testDir', null)).toHaveLength(0);
+  });
 });

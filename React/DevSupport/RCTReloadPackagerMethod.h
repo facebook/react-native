@@ -7,15 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTBridge.h>
 #import <React/RCTPackagerClient.h>
+
+@class RCTBridge;
 
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTReloadPackagerMethod : NSObject<RCTPackagerClientMethod>
+NS_ASSUME_NONNULL_BEGIN
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+typedef void (^RCTReloadPackagerMethodBlock)(id);
+
+@interface RCTReloadPackagerMethod : NSObject <RCTPackagerClientMethod>
+
+- (instancetype)initWithReloadCommand:(RCTReloadPackagerMethodBlock)block callbackQueue:(dispatch_queue_t)callbackQueue;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

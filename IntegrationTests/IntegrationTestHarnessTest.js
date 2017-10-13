@@ -11,8 +11,12 @@
  */
 'use strict';
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   Text,
@@ -20,15 +24,13 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-class IntegrationTestHarnessTest extends React.Component {
-  props: {
-    shouldThrow?: boolean,
-    waitOneFrame?: boolean,
-  };
-
+class IntegrationTestHarnessTest extends React.Component<{
+  shouldThrow?: boolean,
+  waitOneFrame?: boolean,
+}, $FlowFixMeState> {
   static propTypes = {
-    shouldThrow: React.PropTypes.bool,
-    waitOneFrame: React.PropTypes.bool,
+    shouldThrow: PropTypes.bool,
+    waitOneFrame: PropTypes.bool,
   };
 
   state = {
@@ -61,7 +63,11 @@ class IntegrationTestHarnessTest extends React.Component {
     return (
       <View style={{backgroundColor: 'white', padding: 40}}>
         <Text>
-          {this.constructor.displayName + ': '}
+          {
+            /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
+             * comment suppresses an error found when Flow v0.54 was deployed.
+             * To see the error delete this comment and run Flow. */
+            this.constructor.displayName + ': '}
           {this.state.done ? 'Done' : 'Testing...'}
         </Text>
       </View>

@@ -48,11 +48,10 @@ try {
   const CLI_PACKAGE = path.join(ROOT, 'react-native-cli', 'react-native-cli-*.tgz');
   cd('..');
 
-  // can skip cli install for non sudo mode
   if (!argv['skip-cli-install']) {
-    if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally, please run in su mode');
-      echo('Or with --skip-cli-install to skip this step');
+    if (exec(`sudo npm install -g ${CLI_PACKAGE}`).code) {
+      echo('Could not install react-native-cli globally.');
+      echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -125,12 +124,9 @@ try {
     }
 
     echo(`Starting packager server, ${SERVER_PID}`);
-    const packagerEnv = Object.create(process.env);
-    packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    const packagerProcess = spawn('npm', ['start'], {
-      // stdio: 'inherit',
-      env: packagerEnv
+    const packagerProcess = spawn('npm', ['start', '--', '--max-workers 1'], {
+      env: process.env
     });
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
@@ -170,7 +166,7 @@ try {
     SERVER_PID = packagerProcess.pid;
     exec('sleep 15s');
     // prepare cache to reduce chances of possible red screen "Can't fibd variable __fbBatchedBridge..."
-    exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios&dev=true)');
+    exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)');
     echo(`Starting packager server, ${SERVER_PID}`);
     echo('Executing ' + iosTestType + ' e2e test');
     if (tryExecNTimes(
@@ -193,12 +189,12 @@ try {
 
   if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+    if (exec('react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js').code) {
       echo('Could not build Android bundle');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+    if (exec('react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js').code) {
       echo('Could not build iOS bundle');
       exitCode = 1;
       throw Error(exitCode);

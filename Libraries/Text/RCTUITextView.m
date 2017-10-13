@@ -9,11 +9,16 @@
 
 #import "RCTUITextView.h"
 
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
+#import "RCTBackedTextInputDelegateAdapter.h"
+
 @implementation RCTUITextView
 {
-  BOOL _jsRequestingFirstResponder;
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
+  RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
 
 static UIFont *defaultPlaceholderFont()
@@ -21,7 +26,7 @@ static UIFont *defaultPlaceholderFont()
   return [UIFont systemFontOfSize:17];
 }
 
-static UIColor *defaultPlaceholderTextColor()
+static UIColor *defaultPlaceholderColor()
 {
   // Default placeholder color from UITextField.
   return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
@@ -36,10 +41,12 @@ static UIColor *defaultPlaceholderTextColor()
                                                object:self];
 
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
-    _placeholderView.hidden = YES;
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
+    _placeholderView.textColor = defaultPlaceholderColor();
     [self addSubview:_placeholderView];
+
+    _textInputDelegateAdapter = [[RCTBackedTextViewDelegateAdapter alloc] initWithTextView:self];
   }
 
   return self;
@@ -50,50 +57,43 @@ static UIColor *defaultPlaceholderTextColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSString *)accessibilityLabel
+{
+  NSMutableString *accessibilityLabel = [NSMutableString new];
+  
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
+  if (superAccessibilityLabel.length > 0) {
+    [accessibilityLabel appendString:superAccessibilityLabel];
+  }
+  
+  if (self.placeholder.length > 0 && self.text.length == 0) {
+    if (accessibilityLabel.length > 0) {
+      [accessibilityLabel appendString:@" "];
+    }
+    [accessibilityLabel appendString:self.placeholder];
+  }
+  
+  return accessibilityLabel;
+}
+
 #pragma mark - Properties
 
-- (void)setPlaceholderText:(NSString *)placeholderText
+- (void)setPlaceholder:(NSString *)placeholder
 {
-  _placeholderText = placeholderText;
-  [self invalidatePlaceholder];
+  _placeholder = placeholder;
+  _placeholderView.text = _placeholder;
 }
 
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+- (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
-  _placeholderTextColor = placeholderTextColor;
-  [self invalidatePlaceholder];
+  _placeholderColor = placeholderColor;
+  _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
 }
-
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholder];
-}
-
-#pragma mark - UIResponder
-
-- (void)reactWillMakeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  _jsRequestingFirstResponder = NO;
-}
-
-- (void)didMoveToWindow
-{
-  if (_jsRequestingFirstResponder) {
-    [self becomeFirstResponder];
-    [self reactDidMakeFirstResponder];
-  }
+  [self invalidatePlaceholderVisibility];
 }
 
 #pragma mark - Overrides
@@ -101,7 +101,13 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-  [self invalidatePlaceholder];
+  _placeholderView.font = font ?: defaultPlaceholderFont();
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment
+{
+  [super setTextAlignment:textAlignment];
+  _placeholderView.textAlignment = textAlignment;
 }
 
 - (void)setText:(NSString *)text
@@ -114,6 +120,19 @@ static UIColor *defaultPlaceholderTextColor()
 {
   [super setAttributedText:attributedText];
   [self textDidChange];
+}
+
+#pragma mark - Overrides
+
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
+{
+  if (!notifyDelegate) {
+    // We have to notify an adapter that following selection change was initiated programmatically,
+    // so the adapter must not generate a notification for it.
+    [_textInputDelegateAdapter skipNextTextInputDidChangeSelectionEventWithTextRange:selectedTextRange];
+  }
+
+  [super setSelectedTextRange:selectedTextRange];
 }
 
 - (void)paste:(id)sender
@@ -131,6 +150,36 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Layout
 
+- (CGFloat)preferredMaxLayoutWidth
+{
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return _preferredMaxLayoutWidth ?: self.placeholderSize.width;
+}
+
+- (CGSize)placeholderSize
+{
+  UIEdgeInsets textContainerInset = self.textContainerInset;
+  NSString *placeholder = self.placeholder ?: @"";
+  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
+  placeholderSize.width += textContainerInset.left + textContainerInset.right;
+  placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
+  // Returning size DOES contain `textContainerInset` (aka `padding`; as `sizeThatFits:` does).
+  return placeholderSize;
+}
+
+- (CGSize)contentSize
+{
+  CGSize contentSize = super.contentSize;
+  CGSize placeholderSize = self.placeholderSize;
+  // When a text input is empty, it actually displays a placehoder.
+  // So, we have to consider `placeholderSize` as a minimum `contentSize`.
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return CGSizeMake(
+    MAX(contentSize.width, placeholderSize.width),
+    MAX(contentSize.height, placeholderSize.height));
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -141,7 +190,22 @@ static UIColor *defaultPlaceholderTextColor()
   _placeholderView.frame = textFrame;
 }
 
+- (CGSize)intrinsicContentSize
+{
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, INFINITY)];
+}
+
 - (CGSize)sizeThatFits:(CGSize)size
+{
+  // Returned fitting size depends on text size and placeholder size.
+  CGSize textSize = [self fixedSizeThatFits:size];
+  CGSize placeholderSize = self.placeholderSize;
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
+}
+
+- (CGSize)fixedSizeThatFits:(CGSize)size
 {
   // UITextView on iOS 8 has a bug that automatically scrolls to the top
   // when calling `sizeThatFits:`. Use a copy so that self is not screwed up.
@@ -168,22 +232,10 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholder
+- (void)invalidatePlaceholderVisibility
 {
-  BOOL wasVisible = !_placeholderView.isHidden;
-  BOOL isVisible = _placeholderText.length != 0 && self.text.length == 0;
-
-  if (wasVisible != isVisible) {
-    _placeholderView.hidden = !isVisible;
-  }
-
-  if (isVisible) {
-    _placeholderView.font = self.font ?: defaultPlaceholderFont();
-    _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
-    _placeholderView.textAlignment = self.textAlignment;
-    _placeholderView.text = _placeholderText;
-    [self setNeedsLayout];
-  }
+  BOOL isVisible = _placeholder.length != 0 && self.text.length == 0;
+  _placeholderView.hidden = !isVisible;
 }
 
 @end

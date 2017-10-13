@@ -8,9 +8,6 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import android.net.Uri;
@@ -18,9 +15,7 @@ import android.net.Uri;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
+import okio.ByteString;
 
 import org.json.JSONObject;
 
@@ -32,10 +27,10 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
   private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?device=%s&app=%s&context=%s";
   private static final int PROTOCOL_VERSION = 2;
 
-  public class Responder {
+  private class ResponderImpl implements Responder {
     private Object mId;
 
-    public Responder(Object id) {
+    public ResponderImpl(Object id) {
       mId = id;
     }
 
@@ -45,7 +40,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
         message.put("version", PROTOCOL_VERSION);
         message.put("id", mId);
         message.put("result", result);
-        mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message.toString()));
+        mWebSocket.sendMessage(message.toString());
       } catch (Exception e) {
         FLog.e(TAG, "Responding failed", e);
       }
@@ -57,30 +52,10 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
         message.put("version", PROTOCOL_VERSION);
         message.put("id", mId);
         message.put("error", error);
-        mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message.toString()));
+        mWebSocket.sendMessage(message.toString());
       } catch (Exception e) {
         FLog.e(TAG, "Responding with error failed", e);
       }
-    }
-  }
-
-  public interface RequestHandler {
-    public void onRequest(@Nullable Object params, Responder responder);
-    public void onNotification(@Nullable Object params);
-  }
-
-  public static abstract class NotificationOnlyHandler implements RequestHandler {
-    final public void onRequest(@Nullable Object params, Responder responder) {
-      responder.error("Request is not supported");
-      FLog.e(TAG, "Request is not supported");
-    }
-    abstract public void onNotification(@Nullable Object params);
-  }
-
-  public static abstract class RequestOnlyHandler implements RequestHandler {
-    abstract public void onRequest(@Nullable Object params, Responder responder);
-    final public void onNotification(@Nullable Object params) {
-      FLog.e(TAG, "Notification is not supported");
     }
   }
 
@@ -99,7 +74,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       .appendQueryParameter("clientid", clientId);
     String url = builder.build().toString();
 
-    mWebSocket = new ReconnectingWebSocket(url, this);
+    mWebSocket = new ReconnectingWebSocket(url, this, null);
     mRequestHandlers = requestHandlers;
   }
 
@@ -112,16 +87,9 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
   }
 
   @Override
-  public void onMessage(ResponseBody response) {
-    if (response.contentType() != WebSocket.TEXT) {
-      FLog.w(
-        TAG,
-        "Websocket received message with payload of unexpected type " + response.contentType());
-      return;
-    }
-
+  public void onMessage(String text) {
     try {
-      JSONObject message = new JSONObject(response.string());
+      JSONObject message = new JSONObject(text);
 
       int version = message.optInt("version");
       String method = message.optString("method");
@@ -149,18 +117,21 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       if (id == null) {
         handler.onNotification(params);
       } else {
-        handler.onRequest(params, new Responder(id));
+        handler.onRequest(params, new ResponderImpl(id));
       }
     } catch (Exception e) {
       FLog.e(TAG, "Handling the message failed", e);
-    } finally {
-      response.close();
     }
+  }
+
+  @Override
+  public void onMessage(ByteString bytes) {
+    FLog.w(TAG, "Websocket received message with payload of unexpected type binary");
   }
 
   private void abortOnMessage(Object id, String reason) {
     if (id != null) {
-      (new Responder(id)).error(reason);
+      (new ResponderImpl(id)).error(reason);
     }
 
     FLog.e(TAG, "Handling the message failed with reason: " + reason);

@@ -48,13 +48,6 @@
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 
 /**
- * z-index, used to override sibling order in didUpdateReactSubviews. This is
- * inherited from UIView+React, but we override it here to reduce the boxing
- * and associated object overheads.
- */
-@property (nonatomic, assign) NSInteger reactZIndex;
-
-/**
  * This is an optimization used to improve performance
  * for large scrolling views with many subviews, such as a
  * list or table. If set to YES, any clipped subviews will

@@ -4,8 +4,8 @@ title: Animations
 layout: docs
 category: Guides
 permalink: docs/animations.html
-next: navigation
-previous: handling-touches
+next: accessibility
+previous: images
 ---
 
 Animations are very important to create a great user experience.
@@ -26,34 +26,33 @@ The [`Animated`](docs/animated.html) API is designed to make it very easy to con
 
 For example, a container view that fades in when it is mounted may look like this:
 
-```javascript
-// FadeInView.js
-import React, { Component } from 'react';
-import {
-  Animated,
-} from 'react-native';
+```SnackPlayer
+import React from 'react';
+import { Animated, Text, View } from 'react-native';
 
-class FadeInView extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      fadeAnim: new Animated.Value(0),          // Initial value for opacity: 0
-    };
+class FadeInView extends React.Component {
+  state = {
+    fadeAnim: new Animated.Value(0),  // Initial value for opacity: 0
   }
+
   componentDidMount() {
-    Animated.timing(                            // Animate over time
-      this.state.fadeAnim,                      // The animated value to drive
+    Animated.timing(                  // Animate over time
+      this.state.fadeAnim,            // The animated value to drive
       {
-        toValue: 1,                             // Animate to opacity: 1, or fully opaque
+        toValue: 1,                   // Animate to opacity: 1 (opaque)
+        duration: 10000,              // Make it take a while
       }
-    ).start();                                  // Starts the animation
+    ).start();                        // Starts the animation
   }
+
   render() {
+    let { fadeAnim } = this.state;
+
     return (
-      <Animated.View                            // Special animatable View
+      <Animated.View                 // Special animatable View
         style={{
           ...this.props.style,
-          opacity: this.state.fadeAnim,          // Bind opacity to animated value
+          opacity: fadeAnim,         // Bind opacity to animated value
         }}
       >
         {this.props.children}
@@ -62,22 +61,19 @@ class FadeInView extends Component {
   }
 }
 
-module.exports = FadeInView;
-```
-
-You can then use your `FadeInView` in place of a `View` in your components, like so:
-
-```javascript
-render() {
-  return (
-    <FadeInView style={{width: 250, height: 50, backgroundColor: 'powderblue'}}>
-      <Text style={{fontSize: 28, textAlign: 'center', margin: 10}}>Fading in</Text>
-    </FadeInView>
-  )
+// You can then use your `FadeInView` in place of a `View` in your components:
+export default class App extends React.Component {
+  render() {
+    return (
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <FadeInView style={{width: 250, height: 50, backgroundColor: 'powderblue'}}>
+          <Text style={{fontSize: 28, textAlign: 'center', margin: 10}}>Fading in</Text>
+        </FadeInView>
+      </View>
+    )
+  }
 }
 ```
-
-![FadeInView](img/AnimatedFadeInView.gif)
 
 Let's break down what's happening here.
 In the `FadeInView` constructor, a new `Animated.Value` called `fadeAnim` is initialized as part of `state`.
@@ -110,7 +106,7 @@ Animated.timing(
   this.state.xPosition,
   {
     toValue: 100,
-    easing: Easing.back,
+    easing: Easing.back(),
     duration: 2000,
   }                              
 ).start();  
@@ -352,24 +348,41 @@ the animation will always run a frame behind the gesture due to the async nature
 </Animated.ScrollView>
 ```
 
-You can see the native driver in action by running the [UIExplorer sample app](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/),
+You can see the native driver in action by running the [RNTester app](https://github.com/facebook/react-native/blob/master/RNTester/),
 then loading the Native Animated Example.
-You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/NativeAnimationsExample.js) to learn how these examples were produced.
+You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js) to learn how these examples were produced.
 
 #### Caveats
 
 Not everything you can do with `Animated` is currently supported by the native driver.
 The main limitation is that you can only animate non-layout properties:
-things like `transform`, `opacity` and `backgroundColor` will work, but flexbox and position properties will not.
+things like `transform` and `opacity` will work, but flexbox and position properties will not.
 When using `Animated.event`, it will only work with direct events and not bubbling events.
 This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
 
+### Bear in mind
+
+While using transform styles such as `rotateY`, `rotateX`, and others ensure the transform style `perspective` is in place.
+At this time some animations may not render on Android without it. Example below.
+
+```javascript
+<Animated.View
+  style={{
+    transform: [
+      { scale: this.state.scale },
+      { rotateY: this.state.rotateY },
+      { perspective: 1000 } // without this line this Animation will not render on Android while working fine on iOS
+    ]
+  }}
+/>
+```
+
 ### Additional examples
 
-The UIExplorer sample app has various examples of `Animated` in use:
+The RNTester app has various examples of `Animated` in use:
 
-- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp)
-- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/NativeAnimationsExample.js)
+- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/RNTester/js/AnimatedGratuitousApp)
+- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js)
 
 ## `LayoutAnimation` API
 
@@ -393,22 +406,29 @@ Note that in order to get this to work on **Android** you need to set the follow
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 ```
 
-![](img/LayoutAnimationExample.gif)
+```SnackPlayer
+import React from 'react';
+import {
+  NativeModules,
+  LayoutAnimation,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-```javascript
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { w: 100, h: 100 };
-    this._onPress = this._onPress.bind(this);
-  }
+const { UIManager } = NativeModules;
 
-  componentWillMount() {
-    // Animate creation
-    LayoutAnimation.spring();
-  }
+UIManager.setLayoutAnimationEnabledExperimental &&
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 
-  _onPress() {
+export default class App extends React.Component {
+  state = {
+    w: 100,
+    h: 100,
+  };
+
+  _onPress = () => {
     // Animate the update
     LayoutAnimation.spring();
     this.setState({w: this.state.w + 15, h: this.state.h + 15})
@@ -427,8 +447,30 @@ class App extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  box: {
+    width: 200,
+    height: 200,
+    backgroundColor: 'red',
+  },
+  button: {
+    backgroundColor: 'black',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    marginTop: 15,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
 ```
-[Run this example](https://rnplay.org/apps/uaQrGQ)
 
 This example uses a preset value, you can customize the animations as
 you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/LayoutAnimation/LayoutAnimation.js)
@@ -447,7 +489,7 @@ manage frame updates for you.
 
 ### `setNativeProps`
 
-As mentioned [in the Direction Manipulation section](docs/direct-manipulation.html),
+As mentioned [in the Direct Manipulation section](docs/direct-manipulation.html),
 `setNativeProps` allows us to modify properties of native-backed
 components (components that are actually backed by native views, unlike
 composite components) directly, without having to `setState` and
@@ -457,45 +499,12 @@ We could use this in the Rebound example to update the scale - this
 might be helpful if the component that we are updating is deeply nested
 and hasn't been optimized with `shouldComponentUpdate`.
 
-```javascript
-// Back inside of the App component, replace the scrollSpring listener
-// in componentWillMount with this:
-this._scrollSpring.addListener({
-  onSpringUpdate: () => {
-    if (!this._photo) { return }
-    var v = this._scrollSpring.getCurrentValue();
-    var newProps = {style: {transform: [{scaleX: v}, {scaleY: v}]}};
-    this._photo.setNativeProps(newProps);
-  },
-});
-
-// Lastly, we update the render function to no longer pass in the
-// transform via style (avoid clashes when re-rendering) and to set the
-// photo ref
-render() {
-  return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPressIn={this._onPressIn} onPressOut={this._onPressOut}>
-        <Image ref={component => this._photo = component}
-               source={{uri: "img/ReboundExample.png"}}
-               style={{width: 250, height: 200}} />
-      </TouchableWithoutFeedback>
-    </View>
-  );
-}
-```
-[Run this example](https://rnplay.org/apps/fUqjAg)
-
-It would not make sense to use `setNativeProps` with react-tween-state
-because the updated tween values are set on the state automatically by
-the library - Rebound on the other hand gives us an updated value for
-each frame with the `onSpringUpdate` function.
-
-If you find your animations with dropping frames (performing below 60
-frames per second), look into using `setNativeProps` or
-`shouldComponentUpdate` to optimize them. You may also want to defer any
-computationally intensive work until after animations are complete,
-using the
-[InteractionManager](docs/interactionmanager.html). You
-can monitor the frame rate by using the In-App Developer Menu "FPS
-Monitor" tool.
+If you find your animations with dropping frames (performing below 60 frames
+per second), look into using `setNativeProps` or `shouldComponentUpdate` to
+optimize them. Or you could run the animations on the UI thread rather than
+the JavaScript thread [with the useNativeDriver
+option](http://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html).
+You may also want to defer any computationally intensive work until after
+animations are complete, using the
+[InteractionManager](docs/interactionmanager.html). You can monitor the
+frame rate by using the In-App Developer Menu "FPS Monitor" tool.

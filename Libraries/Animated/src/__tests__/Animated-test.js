@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var Animated = require('Animated');
 describe('Animated tests', () => {
   beforeEach(() => {
@@ -111,11 +109,6 @@ describe('Animated tests', () => {
 
 
     it('stops animation when detached', () => {
-      // jest environment doesn't have cancelAnimationFrame :(
-      if (!global.cancelAnimationFrame) {
-        global.cancelAnimationFrame = jest.fn();
-      }
-
       var anim = new Animated.Value(0);
       var callback = jest.fn();
 
@@ -142,11 +135,23 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when a spring stops', () => {
+    it('send toValue when an underdamped spring stops', () => {
       var anim = new Animated.Value(0);
       var listener = jest.fn();
       anim.addListener(listener);
       Animated.spring(anim, {toValue: 15}).start();
+      jest.runAllTimers();
+      var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      expect(lastValue).not.toBe(15);
+      expect(lastValue).toBeCloseTo(15);
+      expect(anim.__getValue()).toBe(15);
+    });
+
+    it('send toValue when a critically damped spring stops', () => {
+      var anim = new Animated.Value(0);
+      var listener = jest.fn();
+      anim.addListener(listener);
+      Animated.spring(anim, {stiffness: 8000, damping: 2000, toValue: 15}).start();
       jest.runAllTimers();
       var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
       expect(lastValue).not.toBe(15);

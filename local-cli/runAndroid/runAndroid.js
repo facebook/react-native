@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const findReactNativeScripts = require('../util/findReactNativeScripts');
 const isString = require('lodash/isString');
 const path = require('path');
 const Promise = require('promise');
@@ -27,7 +28,16 @@ function checkAndroid(root) {
  */
 function runAndroid(argv, config, args) {
   if (!checkAndroid(args.root)) {
-    console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    const reactNativeScriptsPath = findReactNativeScripts();
+    if (reactNativeScriptsPath) {
+      child_process.spawnSync(
+        reactNativeScriptsPath,
+        ['android'].concat(process.argv.slice(1)),
+        {stdio: 'inherit'}
+      );
+    } else {
+      console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+    }
     return;
   }
 
@@ -56,10 +66,10 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+function tryRunAdbReverse(packagerPort, device) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+    const adbArgs = ['reverse', `tcp:${packagerPort}`, `tcp:${packagerPort}`];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -78,6 +88,16 @@ function tryRunAdbReverse(device) {
   }
 }
 
+function getPackageNameWithSuffix(appId, appIdSuffix, packageName) {
+  if (appId) {
+    return appId;
+  } else if (appIdSuffix) {
+    return packageName + '.' + appIdSuffix;
+  }
+
+  return packageName;
+}
+
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
@@ -86,28 +106,30 @@ function buildAndRun(args) {
     : './gradlew';
 
   const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+      `${args.appFolder}/src/main/AndroidManifest.xml`,
       'utf8'
     ).match(/package="(.+?)"/)[1];
+
+  const packageNameWithSuffix = getPackageNameWithSuffix(args.appId, args.appIdSuffix, packageName);
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageName, adbPath);
+        runOnSpecificDevice(args, cmd, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    runOnAllDevices(args, cmd, packageName, adbPath);
+    runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath);
   }
 }
 
-function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
+function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, adbPath) {
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
       buildApk(gradlew);
-      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
+      installAndLaunchOnDevice(args, args.deviceId, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
       console.log('Choose one of the following:');
@@ -133,7 +155,7 @@ function buildApk(gradlew) {
 
 function tryInstallAppOnDevice(args, device) {
   try {
-    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const pathToApk = `${args.appFolder}/build/outputs/apk/${args.appFolder}-debug.apk`;
     const adbPath = getAdbPath();
     const adbArgs = ['-s', device, 'install', pathToApk];
     console.log(chalk.bold(
@@ -150,9 +172,9 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
+function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -164,13 +186,13 @@ function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   }
 }
 
-function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
-  tryRunAdbReverse(selectedDevice);
+function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
+  tryRunAdbReverse(args.port, selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
+  tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
 
-function runOnAllDevices(args, cmd, packageName, adbPath){
+function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath){
   try {
     const gradleArgs = [];
     if (args.variant) {
@@ -214,15 +236,15 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     const devices = adb.getDevices();
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-        tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
+        tryRunAdbReverse(args.port, device);
+        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
       try {
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
         const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+          'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
         ];
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -241,31 +263,31 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
 }
 
 function startServerInNewWindow() {
-  const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
-  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
-  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
-  const procConfig = {cwd: packagerDir};
+  const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
+  const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
+  const procConfig = {cwd: scriptsDir};
+  const terminal = process.env.REACT_TERMINAL;
 
   if (process.platform === 'darwin') {
-    if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+    if (terminal) {
+      return child_process.spawnSync('open', ['-a', terminal, launchPackagerScript], procConfig);
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
   } else if (process.platform === 'linux') {
     procConfig.detached = true;
-    if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
+    if (terminal){
+      return child_process.spawn(terminal, ['-e', 'sh ' + launchPackagerScript], procConfig);
     }
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
 
   } else if (/^win/.test(process.platform)) {
     procConfig.detached = true;
     procConfig.stdio = 'ignore';
-    return child_process.spawn('cmd.exe', ['/C', 'start', launchPackagerScript], procConfig);
+    return child_process.spawn('cmd.exe', ['/C', launchPackagerScript], procConfig);
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
@@ -287,6 +309,18 @@ module.exports = {
   }, {
     command: '--variant [string]',
   }, {
+    command: '--appFolder [string]',
+    description: 'Specify a different application folder name for the android source.',
+    default: 'app',
+  }, {
+    command: '--appId [string]',
+    description: 'Specify an applicationId to launch after build.',
+    default: '',
+  }, {
+    command: '--appIdSuffix [string]',
+    description: 'Specify an applicationIdSuffix to launch after build.',
+    default: '',
+  }, {
     command: '--main-activity [string]',
     description: 'Name of the activity to start',
     default: 'MainActivity',
@@ -297,5 +331,9 @@ module.exports = {
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
+  }, {
+    command: '--port [number]',
+    default: 8081,
+    parse: (val: string) => Number(val),
   }],
 };

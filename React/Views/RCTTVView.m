@@ -57,7 +57,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
-- (void)handleSelect:(UIGestureRecognizer *)r
+- (void)handleSelect:(__unused UIGestureRecognizer *)r
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
                                                       object:@{@"eventType":@"select",@"tag":self.reactTag}];

@@ -63,6 +63,9 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
     RCTLogWarn(@"[RCTConvert CATransform3D:] has deprecated a matrix as input. Pass an array of configs (which can contain a matrix key) instead.");
     return [self CATransform3DFromMatrix:json];
   }
+
+  CGFloat zeroScaleThreshold = FLT_EPSILON;
+
   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
     if (transformConfig.count != 1) {
       RCTLogConvertError(json, @"a CATransform3D. You must specify exactly one property per transform object.");
@@ -90,15 +93,18 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
       transform = CATransform3DRotate(transform, rotate, 0, 0, 1);
 
     } else if ([property isEqualToString:@"scale"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, scale, 1);
 
     } else if ([property isEqualToString:@"scaleX"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, 1, 1);
 
     } else if ([property isEqualToString:@"scaleY"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, 1, scale, 1);
 
     } else if ([property isEqualToString:@"translate"]) {

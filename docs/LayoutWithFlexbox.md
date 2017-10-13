@@ -22,7 +22,7 @@ Adding `flexDirection` to a component's `style` determines the **primary axis** 
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class FlexDirectionBasics extends Component {
+export default class FlexDirectionBasics extends Component {
   render() {
     return (
       // Try setting `flexDirection` to `column`.
@@ -35,6 +35,7 @@ class FlexDirectionBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
 ```
 
@@ -46,7 +47,7 @@ Adding `justifyContent` to a component's style determines the **distribution** o
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class JustifyContentBasics extends Component {
+export default class JustifyContentBasics extends Component {
   render() {
     return (
       // Try setting `justifyContent` to `center`.
@@ -64,6 +65,7 @@ class JustifyContentBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
 ```
 
@@ -71,13 +73,13 @@ AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
 
 Adding `alignItems` to a component's style determines the **alignment** of children along the **secondary axis** (if the primary axis is `row`, then the secondary is `column`, and vice versa). Should children be aligned at the start, the center, the end, or stretched to fill? Available options are `flex-start`, `center`, `flex-end`, and `stretch`.
 
-> For `stretch` to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting `alignItems: stretch` does nothing until the `width: 50` is removed from the children.
+> For `stretch` to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting `alignItems: stretch` does nothing until the `height: 50` is removed from the children.
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AlignItemsBasics extends Component {
+export default class AlignItemsBasics extends Component {
   render() {
     return (
       // Try setting `alignItems` to 'flex-start'
@@ -97,6 +99,7 @@ class AlignItemsBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 ```
 

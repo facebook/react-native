@@ -14,9 +14,11 @@ package com.facebook.react.flat;
  */
 public final class RCTRawTextManager extends VirtualViewManager<RCTRawText> {
 
+  /* package */ static final String REACT_CLASS = "RCTRawText";
+
   @Override
   public String getName() {
-    return "RCTRawText";
+    return REACT_CLASS;
   }
 
   @Override

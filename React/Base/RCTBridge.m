@@ -14,6 +14,10 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#if RCT_ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
+#endif
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -25,6 +29,10 @@ NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillS
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
+NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -169,7 +177,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions
 {
   return [self initWithDelegate:nil
@@ -180,7 +188,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                  moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
@@ -190,8 +198,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _launchOptions = [launchOptions copy];
 
     [self setUp];
-
-    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -205,15 +211,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * RCTAssertMainQueue();
    */
   [self invalidate];
-}
-
-- (void)bindKeys
-{
-  RCTAssertMainQueue();
-
-#if TARGET_IPHONE_SIMULATOR
-  RCTRegisterReloadCommandListener(self);
-#endif
 }
 
 - (void)didReceiveReloadCommand
@@ -262,6 +259,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
+  #if RCT_ENABLE_INSPECTOR
+  // Disable debugger to resume the JsVM & avoid thread locks while reloading
+  [RCTInspectorDevServerHelper disableDebugger];
+  #endif
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
+
   /**
    * Any thread
    */
@@ -276,6 +280,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self reload];
 }
 
+- (Class)bridgeClass
+{
+  // In order to facilitate switching between bridges with only build
+  // file changes, this uses reflection to check which bridges are
+  // available.  This is a short-term hack until RCTBatchedBridge is
+  // removed.
+
+  Class batchedBridgeClass = objc_lookUpClass("RCTBatchedBridge");
+  Class cxxBridgeClass = objc_lookUpClass("RCTCxxBridge");
+
+  Class implClass = nil;
+
+  if ([self.delegate respondsToSelector:@selector(shouldBridgeUseCxxBridge:)]) {
+    if ([self.delegate shouldBridgeUseCxxBridge:self]) {
+      implClass = cxxBridgeClass;
+    } else {
+      implClass = batchedBridgeClass;
+    }
+  } else if (cxxBridgeClass != nil) {
+    implClass = cxxBridgeClass;
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
+  }
+
+  RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
+  return implClass;
+}
+
 - (void)setUp
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
@@ -283,6 +315,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _performanceLogger = [RCTPerformanceLogger new];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
+
+  Class bridgeClass = self.bridgeClass;
+
+  #if RCT_DEV
+  RCTExecuteOnMainQueue(^{
+    RCTRegisterReloadCommandListener(self);
+  });
+  #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
@@ -294,15 +334,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  [self createBatchedBridge];
+  self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)createBatchedBridge
-{
-  self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
 - (BOOL)isLoading
@@ -332,6 +367,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
+{
+  [self.batchedBridge registerAdditionalModuleClasses:modules];
+}
+
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
   NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
@@ -358,5 +398,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
+@end
+
+@implementation RCTBridge (JavaScriptCore)
+
+- (JSContext *)jsContext
+{
+  return [self.batchedBridge jsContext];
+}
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.batchedBridge jsContextRef];
+}
 
 @end

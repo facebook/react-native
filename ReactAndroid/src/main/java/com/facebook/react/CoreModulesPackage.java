@@ -9,49 +9,44 @@
 
 package com.facebook.react;
 
-import javax.inject.Provider;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import com.facebook.react.bridge.JavaScriptModule;
-import com.facebook.react.bridge.ModuleSpec;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.devsupport.HMRClient;
-import com.facebook.react.devsupport.JSCHeapCapture;
-import com.facebook.react.devsupport.JSCSamplingProfiler;
-import com.facebook.react.module.annotations.ReactModuleList;
-import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.core.ExceptionsManagerModule;
-import com.facebook.react.modules.core.JSTimersExecution;
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
-import com.facebook.react.modules.core.Timing;
-import com.facebook.react.modules.debug.AnimationsDebugModule;
-import com.facebook.react.modules.debug.SourceCodeModule;
-import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.modules.appregistry.AppRegistry;
-import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.systrace.Systrace;
-
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
 
+import com.facebook.react.bridge.ModuleSpec;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.devsupport.JSCHeapCapture;
+import com.facebook.react.devsupport.JSCSamplingProfiler;
+import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.ExceptionsManagerModule;
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
+import com.facebook.react.modules.core.Timing;
+import com.facebook.react.modules.debug.AnimationsDebugModule;
+import com.facebook.react.modules.debug.SourceCodeModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
+import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.systrace.Systrace;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.inject.Provider;
 /**
+ * This module should be removed following the completion of an experiment into splitting this into
+ * three modules to allow for more light-weight instantiations of the bridge without UIManager
+ * The core modules are now in BridgeCorePackage
+ * The debug modules are now in DebugCorePackage
+ * The UI manager is in ReactNativeCorePackage
+ *
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
@@ -68,7 +63,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
     UIManagerModule.class,
     DeviceInfoModule.class,
     // Debug only
-    DebugComponentOwnershipModule.class,
     JSCHeapCapture.class,
     JSCSamplingProfiler.class,
   }
@@ -79,16 +73,19 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final UIImplementationProvider mUIImplementationProvider;
   private final boolean mLazyViewManagersEnabled;
+  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
   CoreModulesPackage(
-    ReactInstanceManager reactInstanceManager,
-    DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-    UIImplementationProvider uiImplementationProvider,
-    boolean lazyViewManagersEnabled) {
+      ReactInstanceManager reactInstanceManager,
+      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      UIImplementationProvider uiImplementationProvider,
+      boolean lazyViewManagersEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
+    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
   }
 
   @Override
@@ -163,13 +160,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
 
     if (ReactBuildConfig.DEBUG) {
       moduleSpecList.add(
-        new ModuleSpec(DebugComponentOwnershipModule.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new DebugComponentOwnershipModule(reactContext);
-          }
-        }));
-      moduleSpecList.add(
         new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
           @Override
           public NativeModule get() {
@@ -189,48 +179,39 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
   }
 
   @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    List<Class<? extends JavaScriptModule>> jsModules = new ArrayList<>(Arrays.asList(
-        DeviceEventManagerModule.RCTDeviceEventEmitter.class,
-        JSTimersExecution.class,
-        RCTEventEmitter.class,
-        RCTNativeAppEventEmitter.class,
-        AppRegistry.class,
-        com.facebook.react.bridge.Systrace.class,
-        HMRClient.class));
-
-    if (ReactBuildConfig.DEBUG) {
-      jsModules.add(DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
-      jsModules.add(JSCHeapCapture.HeapCapture.class);
-      jsModules.add(JSCSamplingProfiler.SamplingProfiler.class);
-    }
-
-    return jsModules;
-  }
-
-  @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    ReactMarker.logMarker(
-      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_START);
     // This has to be done via reflection or we break open source.
-    ReactModuleInfoProvider reactModuleInfoProvider =
-      LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
-    ReactMarker.logMarker(
-      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_END);
-    return reactModuleInfoProvider;
+    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 
-  private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+  private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
-      List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
-        reactContext);
-      return new UIManagerModule(
-        reactContext,
-        viewManagersList,
-        mUIImplementationProvider,
-        mLazyViewManagersEnabled);
+      if (mLazyViewManagersEnabled) {
+        UIManagerModule.ViewManagerResolver resolver = new UIManagerModule.ViewManagerResolver() {
+          @Override
+          public @Nullable ViewManager getViewManager(String viewManagerName) {
+            return mReactInstanceManager.createViewManager(viewManagerName);
+          }
+          @Override
+          public List<String> getViewManagerNames() {
+            return mReactInstanceManager.getViewManagerNames();
+          }
+        };
+
+        return new UIManagerModule(
+            reactContext,
+            resolver,
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      } else {
+        return new UIManagerModule(
+            reactContext,
+            mReactInstanceManager.createAllViewManagers(reactContext),
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

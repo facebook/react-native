@@ -8,6 +8,9 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTDefines.h>
+
+@protocol RCTPackagerClientMethod;
 
 /**
  * An abstraction for a key-value store to manage RCTDevSettings behavior.
@@ -41,12 +44,6 @@
  * Whether the bridge is connected to a remote JS executor.
  */
 @property (nonatomic, assign) BOOL isDebuggingRemotely;
-
-/**
- * Alternate name for the websocket executor, if not the generic term "remote".
- * TODO t16297016: this seems to be unused, remove?
- */
-@property (nonatomic, readonly) NSString *websocketExecutorName;
 
 /*
  * Whether shaking will show RCTDevMenu. The menu is enabled by default if RCT_DEV=1, but
@@ -95,10 +92,11 @@
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
-/**
- * Whether JSC profiling is enabled.
- */
-@property (nonatomic, assign) BOOL isJSCProfilingEnabled;
+#if RCT_DEV
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name;
+
+#endif
 
 @end
 

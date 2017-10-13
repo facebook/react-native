@@ -14,6 +14,8 @@
 const InteractionManager = require('InteractionManager');
 const React = require('React');
 
+const PropTypes = require('prop-types');
+
 const infoLog = require('infoLog');
 
 const DEBUG = false;
@@ -97,7 +99,7 @@ type DefaultProps = {
 type State = {
   doIncrementalRender: boolean,
 };
-class Incremental extends React.Component<DefaultProps, Props, State> {
+class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;
   context: Context;
@@ -110,8 +112,8 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
   };
 
   static contextTypes = {
-    incrementalGroup: React.PropTypes.object,
-    incrementalGroupEnabled: React.PropTypes.bool,
+    incrementalGroup: PropTypes.object,
+    incrementalGroupEnabled: PropTypes.bool,
   };
 
   constructor(props: Props, context: Context) {
@@ -152,7 +154,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     }).done();
   }
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {

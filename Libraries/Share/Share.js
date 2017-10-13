@@ -12,15 +12,17 @@
 'use strict';
 
 const Platform = require('Platform');
+
+const invariant = require('fbjs/lib/invariant');
+const processColor = require('processColor');
+
 const {
   ActionSheetManager,
   ShareModule
 } = require('NativeModules');
-const invariant = require('fbjs/lib/invariant');
-const processColor = require('processColor');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
-type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
+type Options = { dialogTitle?: string, excludedActivityTypes?: Array<string>, tintColor?: string };
 
 class Share {
 

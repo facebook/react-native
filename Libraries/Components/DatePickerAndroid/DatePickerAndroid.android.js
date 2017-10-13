@@ -52,7 +52,7 @@ class DatePickerAndroid {
    *
    *   - `date` (`Date` object or timestamp in milliseconds) - date to show by default
    *   - `minDate` (`Date` or timestamp in milliseconds) - minimum date that can be selected
-   *   - `maxDate` (`Date` object or timestamp in milliseconds) - minimum date that can be selected
+   *   - `maxDate` (`Date` object or timestamp in milliseconds) - maximum date that can be selected
    *   - `mode` (`enum('calendar', 'spinner', 'default')`) - To set the date-picker mode to calendar/spinner/default
    *     - 'calendar': Show a date picker in calendar mode.
    *     - 'spinner': Show a date picker in spinner mode.

@@ -2,15 +2,18 @@
 id: troubleshooting
 title: Troubleshooting
 layout: docs
-category: Quick Start
+category: Guides
 permalink: docs/troubleshooting.html
+next: native-modules-ios
+previous: upgrading
 ---
+
 
 These are some common issues you may run into while setting up React Native. If you encounter something that is not listed here, try [searching for the issue in GitHub](https://github.com/facebook/react-native/issues/).
 
 ### Port already in use
 
-The React Native packager runs on port 8081. If another process is already using that port (such as McAfee Antivirus on Windows), you can either terminate that process, or change the port that the packager uses.
+The React Native packager runs on port 8081. If another process is already using that port, you can either terminate that process, or change the port that the packager uses.
 
 #### Terminating a process on port 8081
 
@@ -36,7 +39,7 @@ You can configure the packager to use a port other than 8081 by using the `port`
 $ react-native start --port=8088
 ```
 
-You will also need to update your applications to load the JavaScript bundle from the new port. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu), then go to **Dev Settings** → **Debug server host for device** and replace 8081 with your port of choice.
+You will also need to update your applications to load the JavaScript bundle from the new port. If running on device from Xcode, you can do this by updating occurrences of `8081` to your chosen port in the `node_modules/react-native/React/React.xcodeproj/project.pbxproj` file.
 
 ### NPM locking error
 

@@ -3,7 +3,6 @@ FROM containership/android-base:latest
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-ENV REACT_NATIVE_MAX_WORKERS=1
 
 # add ReactAndroid directory
 ADD .buckconfig /app/.buckconfig
@@ -33,7 +32,7 @@ ADD build.gradle /app/build.gradle
 ADD react.gradle /app/react.gradle
 
 # run gradle downloads
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
 # compile native libs with Gradle script, we need bridge for unit and integration tests
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1

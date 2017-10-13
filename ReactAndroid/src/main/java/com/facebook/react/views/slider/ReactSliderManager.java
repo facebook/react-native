@@ -9,16 +9,13 @@
 
 package com.facebook.react.views.slider;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -30,7 +27,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 
 import java.util.Map;
 
@@ -58,7 +55,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
     @Override
     public long measure(
-        YogaNodeAPI node,
+        YogaNode node,
         float width,
         YogaMeasureMode widthMode,
         float height,
@@ -163,22 +160,22 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "minimumTrackTintColor", customType = "Color")
   public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
+    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
     if (color == null) {
-      background.clearColorFilter();
+      progress.clearColorFilter();
     } else {
-      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 
   @ReactProp(name = "maximumTrackTintColor", customType = "Color")
   public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
+    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
     if (color == null) {
-      progress.clearColorFilter();
+      background.clearColorFilter();
     } else {
-      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 

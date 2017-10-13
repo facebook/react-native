@@ -16,19 +16,27 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 
 type Props = {
-  children?: React.Element<*>,
-  scrollAnimatedValue: Animated.Value,
+  children?: React.Element<any>,
+  nextHeaderLayoutY: ?number,
   onLayout: (event: Object) => void,
+  scrollAnimatedValue: Animated.Value,
 };
 
-class ScrollViewStickyHeader extends React.Component {
-  props: Props;
-  state = {
-    measured: false,
-    layoutY: 0,
-    layoutHeight: 0,
-    nextHeaderLayoutY: (null: ?number),
-  };
+class ScrollViewStickyHeader extends React.Component<Props, {
+  measured: boolean,
+  layoutY: number,
+  layoutHeight: number,
+  nextHeaderLayoutY: ?number,
+}> {
+  constructor(props: Props, context: Object) {
+    super(props, context);
+    this.state = {
+      measured: false,
+      layoutY: 0,
+      layoutHeight: 0,
+      nextHeaderLayoutY: props.nextHeaderLayoutY,
+    };
+  }
 
   setNextHeaderY(y: number) {
     this.setState({ nextHeaderLayoutY: y });
@@ -50,8 +58,9 @@ class ScrollViewStickyHeader extends React.Component {
 
   render() {
     const {measured, layoutHeight, layoutY, nextHeaderLayoutY} = this.state;
+    const inputRange: Array<number> = [-1, 0];
+    const outputRange: Array<number> = [0, 0];
 
-    let translateY;
     if (measured) {
       // The interpolation looks like:
       // - Negative scroll: no translation
@@ -63,24 +72,24 @@ class ScrollViewStickyHeader extends React.Component {
       // header to continue scrolling up and make room for the next sticky header.
       // In the case that there is no next header just translate equally to
       // scroll indefinetly.
-      const inputRange = [-1, 0, layoutY];
-      const outputRange: Array<number> = [0, 0, 0];
-      if (nextHeaderLayoutY != null) {
-        const collisionPoint = nextHeaderLayoutY - layoutHeight;
+      inputRange.push(layoutY);
+      outputRange.push(0);
+      // Sometimes headers jump around so we make sure we don't violate the monotonic inputRange
+      // condition.
+      const collisionPoint = (nextHeaderLayoutY || 0) - layoutHeight;
+      if (collisionPoint >= layoutY) {
         inputRange.push(collisionPoint, collisionPoint + 1);
         outputRange.push(collisionPoint - layoutY, collisionPoint - layoutY);
       } else {
         inputRange.push(layoutY + 1);
         outputRange.push(1);
       }
-      translateY = this.props.scrollAnimatedValue.interpolate({
-        inputRange,
-        outputRange,
-      });
-    } else {
-      translateY = 0;
     }
 
+    const translateY = this.props.scrollAnimatedValue.interpolate({
+      inputRange,
+      outputRange,
+    });
     const child = React.Children.only(this.props.children);
 
     return (

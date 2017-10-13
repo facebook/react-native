@@ -12,7 +12,7 @@
 
 #import <React/RCTDefines.h>
 #import <React/RCTJavaScriptExecutor.h>
-#include <cxxreact/Executor.h>
+#import <cxxreact/JSExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -25,7 +25,6 @@ public:
     std::shared_ptr<MessageQueueThread> jsQueue) override;
 
 private:
-  NSURL *m_url;
   id<RCTJavaScriptExecutor> m_jse;
   RCTJavaScriptCompleteBlock m_errorBlock;
 };

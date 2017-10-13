@@ -16,12 +16,12 @@
  * `console.error` as a failure callback - it's not properly bound.  If passes an
  * `Error` object, it will print the message and stack.
  */
-var logError = function() {
-  if (arguments.length === 1 && arguments[0] instanceof Error) {
-    var err = arguments[0];
+var logError = function(...args: $ReadOnlyArray<mixed>) {
+  if (args.length === 1 && args[0] instanceof Error) {
+    var err = args[0];
     console.error('Error: "' + err.message + '".  Stack:\n' + err.stack);
   } else {
-    console.error.apply(console, arguments);
+    console.error.apply(console, args);
   }
 };
 

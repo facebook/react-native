@@ -22,6 +22,7 @@ const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
+  connectionChange: string,
   change: string,
 }>;
 
@@ -58,19 +59,23 @@ type ConnectivityStateAndroid = $Enum<{
 
 const _subscriptions = new Map();
 
-let _isConnected;
+let _isConnectedDeprecated;
 if (Platform.OS === 'ios') {
-  _isConnected = function(
+  _isConnectedDeprecated = function(
     reachability: ReachabilityStateIOS,
   ): bool {
     return reachability !== 'none' && reachability !== 'unknown';
   };
 } else if (Platform.OS === 'android') {
-  _isConnected = function(
+  _isConnectedDeprecated = function(
       connectionType: ConnectivityStateAndroid,
     ): bool {
     return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
   };
+}
+
+function _isConnected(connection) {
+  return connection.type !== 'none' && connection.type !== 'unknown';
 }
 
 const _isConnectedSubscriptions = new Map();
@@ -79,30 +84,44 @@ const _isConnectedSubscriptions = new Map();
  * NetInfo exposes info about online/offline status
  *
  * ```
- * NetInfo.fetch().done((reach) => {
- *   console.log('Initial: ' + reach);
+ * NetInfo.getConnectionInfo().then((connectionInfo) => {
+ *   console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
  * });
- * function handleFirstConnectivityChange(reach) {
- *   console.log('First change: ' + reach);
+ * function handleFirstConnectivityChange(connectionInfo) {
+ *   console.log('First change, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
  *   NetInfo.removeEventListener(
- *     'change',
+ *     'connectionChange',
  *     handleFirstConnectivityChange
  *   );
  * }
  * NetInfo.addEventListener(
- *   'change',
+ *   'connectionChange',
  *   handleFirstConnectivityChange
  * );
  * ```
  *
- * ### IOS
+ * ### ConnectionType enum
  *
- * Asynchronously determine if the device is online and on a cellular network.
+ * `ConnectionType` describes the type of connection the device is using to communicate with the network.
  *
+ * Cross platform values for `ConnectionType`:
  * - `none` - device is offline
  * - `wifi` - device is online and connected via wifi, or is the iOS simulator
- * - `cell` - device is connected via Edge, 3G, WiMax, or LTE
+ * - `cellular` - device is connected via Edge, 3G, WiMax, or LTE
  * - `unknown` - error case and the network status is unknown
+ *
+ * Android-only values for `ConnectionType`:
+ * - `bluetooth` - device is connected via Bluetooth
+ * - `ethernet` - device is connected via Ethernet
+ * - `wimax` - device is connected via WiMAX
+ *
+ * ### EffectiveConnectionType enum
+ *
+ * Cross platform values for `EffectiveConnectionType`:
+ * - `2g`
+ * - `3g`
+ * - `4g`
+ * - `unknown`
  *
  * ### Android
  *
@@ -110,25 +129,6 @@ const _isConnectedSubscriptions = new Map();
  * app's `AndroidManifest.xml`:
  *
  * `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
- * Asynchronously determine if the device is connected and details about that connection.
- *
- * Android Connectivity Types.
- *
- * - `NONE` - device is offline
- * - `BLUETOOTH` - The Bluetooth data connection.
- * - `DUMMY` -  Dummy data connection.
- * - `ETHERNET` - The Ethernet data connection.
- * - `MOBILE` - The Mobile data connection.
- * - `MOBILE_DUN` - A DUN-specific Mobile data connection.
- * - `MOBILE_HIPRI` - A High Priority Mobile data connection.
- * - `MOBILE_MMS` - An MMS-specific Mobile data connection.
- * - `MOBILE_SUPL` -  A SUPL-specific Mobile data connection.
- * - `VPN` -  A virtual network using one or more native bearers. Requires API Level 21
- * - `WIFI` - The WIFI data connection.
- * - `WIMAX` -  The WiMAX data connection.
- * - `UNKNOWN` - Unknown data connection.
- *
- * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
  *
  * ### isConnectionExpensive
  *
@@ -167,22 +167,77 @@ const _isConnectedSubscriptions = new Map();
  *   handleFirstConnectivityChange
  * );
  * ```
+ *
+ * ### Connectivity Types (deprecated)
+ *
+ * The following connectivity types are deprecated. They're used by the deprecated APIs `fetch` and the `change` event.
+ *
+ * iOS connectivity types (deprecated):
+ * - `none` - device is offline
+ * - `wifi` - device is online and connected via wifi, or is the iOS simulator
+ * - `cell` - device is connected via Edge, 3G, WiMax, or LTE
+ * - `unknown` - error case and the network status is unknown
+ *
+ * Android connectivity types (deprecated).
+ * - `NONE` - device is offline
+ * - `BLUETOOTH` - The Bluetooth data connection.
+ * - `DUMMY` -  Dummy data connection.
+ * - `ETHERNET` - The Ethernet data connection.
+ * - `MOBILE` - The Mobile data connection.
+ * - `MOBILE_DUN` - A DUN-specific Mobile data connection.
+ * - `MOBILE_HIPRI` - A High Priority Mobile data connection.
+ * - `MOBILE_MMS` - An MMS-specific Mobile data connection.
+ * - `MOBILE_SUPL` -  A SUPL-specific Mobile data connection.
+ * - `VPN` -  A virtual network using one or more native bearers. Requires API Level 21
+ * - `WIFI` - The WIFI data connection.
+ * - `WIMAX` -  The WiMAX data connection.
+ * - `UNKNOWN` - Unknown data connection.
+ *
+ * The rest of the connectivity types are hidden by the Android API, but can be used if necessary.
  */
 const NetInfo = {
   /**
-   * Invokes the listener whenever network status changes.
-   * The listener receives one of the connectivity types listed above.
+   * Adds an event handler. Supported events:
+   *
+   * - `connectionChange`: Fires when the network status changes. The argument to the event
+   *   handler is an object with keys:
+   *   - `type`: A `ConnectionType` (listed above)
+   *   - `effectiveType`: An `EffectiveConnectionType` (listed above)
+   * - `change`: This event is deprecated. Listen to `connectionChange` instead. Fires when
+   *   the network status changes. The argument to the event handler is one of the deprecated
+   *   connectivity types listed above.
    */
   addEventListener(
     eventName: ChangeEventName,
     handler: Function
   ): {remove: () => void} {
-    const listener = NetInfoEventEmitter.addListener(
-      DEVICE_CONNECTIVITY_EVENT,
-      (appStateData) => {
-        handler(appStateData.network_info);
-      }
-    );
+    let listener;
+    if (eventName === 'connectionChange') {
+      listener = NetInfoEventEmitter.addListener(
+        DEVICE_CONNECTIVITY_EVENT,
+        (appStateData) => {
+          handler({
+            type: appStateData.connectionType,
+            effectiveType: appStateData.effectiveConnectionType
+          });
+        }
+      );
+    } else if (eventName === 'change') {
+      console.warn('NetInfo\'s "change" event is deprecated. Listen to the "connectionChange" event instead.');
+
+      listener = NetInfoEventEmitter.addListener(
+        DEVICE_CONNECTIVITY_EVENT,
+        (appStateData) => {
+          handler(appStateData.network_info);
+        }
+      );
+    } else {
+      console.warn('Trying to subscribe to unknown event: "' + eventName + '"');
+      return {
+        remove: () => {}
+      };
+    }
+
     _subscriptions.set(handler, listener);
     return {
       remove: () => NetInfo.removeEventListener(eventName, handler)
@@ -205,11 +260,26 @@ const NetInfo = {
   },
 
   /**
-   * Returns a promise that resolves with one of the connectivity types listed
-   * above.
+   * This function is deprecated. Use `getConnectionInfo` instead. Returns a promise that
+   * resolves with one of the deprecated connectivity types listed above.
    */
   fetch(): Promise<any> {
+    console.warn('NetInfo.fetch() is deprecated. Use NetInfo.getConnectionInfo() instead.');
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
+  },
+
+  /**
+   * Returns a promise that resolves to an object with `type` and `effectiveType` keys
+   * whose values are a `ConnectionType` and an `EffectiveConnectionType`, (described above),
+   * respectively.
+   */
+  getConnectionInfo(): Promise<any> {
+    return RCTNetInfo.getCurrentConnectivity().then(resp => {
+      return {
+        type: resp.connectionType,
+        effectiveType: resp.effectiveConnectionType,
+      };
+    });
   },
 
   /**
@@ -224,7 +294,11 @@ const NetInfo = {
       handler: Function
     ): {remove: () => void} {
       const listener = (connection) => {
-        handler(_isConnected(connection));
+        if (eventName === 'change') {
+          handler(_isConnectedDeprecated(connection));
+        } else if (eventName === 'connectionChange') {
+          handler(_isConnected(connection));
+        }
       };
       _isConnectedSubscriptions.set(handler, listener);
       NetInfo.addEventListener(
@@ -252,9 +326,7 @@ const NetInfo = {
     },
 
     fetch(): Promise<any> {
-      return NetInfo.fetch().then(
-        (connection) => _isConnected(connection)
-      );
+      return NetInfo.getConnectionInfo().then(_isConnected);
     },
   },
 

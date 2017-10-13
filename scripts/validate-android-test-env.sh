@@ -10,7 +10,7 @@
 # Check that Buck is working.
 if [ -z "$(which buck)" ]; then
   echo "You need to install Buck."
-  echo "See https://buckbuild.com/setup/install.htm for instructions."
+  echo "See https://buckbuild.com/setup/install.html for instructions."
   exit 1
 fi
 
@@ -18,7 +18,7 @@ if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
 
   if [ -d "/opt/facebook" ]; then
-    SUGGESTED="ff27d5270ecaa92727cd5a19954e62298fa78f09"
+    SUGGESTED="b9b76a3a5a086eb440a26d1db9b0731875975099"
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
     echo "the open source version of Buck forbids that."
@@ -54,6 +54,11 @@ if [ ! -e "$PLATFORM_DIR" ]; then
   echo "Specifically, the directory $PLATFORM_DIR does not exist."
   echo "You probably need to specify the right version using the SDK Manager from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "If you are using Android SDK Tools from the command line, you may need to run:"
+  echo
+  echo "  sdkmanager \"platform-tools\" \"platform-tools;android-$MAJOR\""
+  echo
+  echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1
 fi
 
@@ -64,6 +69,11 @@ if [ ! -e "$BT_DIR" ]; then
   echo "Specifically, the directory $BT_DIR does not exist."
   echo "You probably need to explicitly install the correct version of the Android SDK Build Tools from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "If you are using Android SDK Tools from the command line, you may need to run:"
+  echo
+  echo "  sdkmanager \"platform-tools\" \"build-tools;android-$BUILD_TOOLS_VERSION\""
+  echo
+  echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1
 fi
 
@@ -80,7 +90,11 @@ if [ -n "$(which csrutil)" ]; then
       echo "See https://our.intern.facebook.com/intern/dex/installing-java-8/ for instructions on installing Java 8 on FB laptops."
     else
       echo "Check out http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html ."
-      echo "Be sure that you set JAVA_HOME and PATH correctly."
+      echo "Be sure that you set JAVA_HOME and PATH correctly in your .bashrc or equivalent. Example:"
+      echo
+      echo "  export JAVA_HOME=path/to/java"
+      echo "  export PATH=\$PATH:\$JAVA_HOME/bin"
+      echo
     fi
     echo "After installing Java, run 'buck kill' and 'buck clean'."
     exit 1

@@ -29,6 +29,8 @@
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
 		3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
 		3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */; };
+		3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */; };
 		3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */; };
 		3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */; };
 		3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD34C251D4B8FE900268922 /* RCTImageCache.h */; };
@@ -51,6 +53,8 @@
 		3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */; };
 		3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */; };
 		3DED3AA01DE6F7A400336DD7 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
+		59AB092A1EDE5DD1009F97B5 /* RCTImageShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */; };
+		59AB092B1EDE5DD1009F97B5 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */; };
 		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
 		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 /* End PBXBuildFile section */
@@ -102,6 +106,8 @@
 		3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTResizeMode.h; sourceTree = "<group>"; };
 		3D5FA68C1DE4BA290058FD77 /* libRCTNetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTNetwork.a; path = "../Network/build/Debug-iphoneos/libRCTNetwork.a"; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageShadowView.h; sourceTree = "<group>"; };
+		59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageShadowView.m; sourceTree = "<group>"; };
 		CCD34C251D4B8FE900268922 /* RCTImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTImageCache.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		CCD34C261D4B8FE900268922 /* RCTImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageCache.m; sourceTree = "<group>"; };
 		EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTImageBlurUtils.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -120,6 +126,8 @@
 		58B511541A9E6B3D00147676 = {
 			isa = PBXGroup;
 			children = (
+				3D5FA68B1DE4BA290058FD77 /* Frameworks */,
+				58B5115E1A9E6B3D00147676 /* Products */,
 				1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */,
 				1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */,
 				EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */,
@@ -130,6 +138,8 @@
 				354631671B69857700AA0B86 /* RCTImageEditingManager.m */,
 				3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */,
 				143879371AAD32A300F088A5 /* RCTImageLoader.m */,
+				59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */,
+				59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */,
 				3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */,
 				35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */,
 				134B00A01B54232B00EC8DFB /* RCTImageUtils.h */,
@@ -142,12 +152,11 @@
 				13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */,
 				3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */,
 				139A38831C4D587C00862840 /* RCTResizeMode.m */,
-				58B5115E1A9E6B3D00147676 /* Products */,
-				3D5FA68B1DE4BA290058FD77 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			usesTabs = 0;
 		};
 		58B5115E1A9E6B3D00147676 /* Products */ = {
 			isa = PBXGroup;
@@ -172,6 +181,7 @@
 				3DED3A8D1DE6F79800336DD7 /* RCTImageEditingManager.h in Headers */,
 				3DED3A8E1DE6F79800336DD7 /* RCTImageLoader.h in Headers */,
 				3DED3A8F1DE6F79800336DD7 /* RCTImageStoreManager.h in Headers */,
+				59AB092A1EDE5DD1009F97B5 /* RCTImageShadowView.h in Headers */,
 				3DED3A911DE6F79800336DD7 /* RCTImageView.h in Headers */,
 				3DED3A921DE6F79800336DD7 /* RCTImageViewManager.h in Headers */,
 				3DED3A931DE6F79800336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
@@ -190,6 +200,7 @@
 				3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */,
 				3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */,
 				3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */,
+				3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */,
 				3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */,
 				3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */,
 				3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
@@ -283,6 +294,7 @@
 				2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */,
 				2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */,
 				2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */,
+				3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */,
 				2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */,
 				2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */,
 				2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */,
@@ -301,6 +313,7 @@
 				139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */,
 				1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */,
 				EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */,
+				59AB092B1EDE5DD1009F97B5 /* RCTImageShadowView.m in Sources */,
 				13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */,
 				134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */,
 				CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */,
@@ -317,7 +330,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -336,7 +348,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -361,6 +372,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -412,6 +424,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -445,10 +458,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/UIExplorer-gjaibsjtheitasdxdtcvxxqavkvy/Build/Products/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
@@ -460,10 +470,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/UIExplorer-gjaibsjtheitasdxdtcvxxqavkvy/Build/Products/Debug-iphoneos",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;

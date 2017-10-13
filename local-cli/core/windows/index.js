@@ -17,15 +17,15 @@ const generateGUID = require('./generateGUID');
 
 const relativeProjectPath = (fullProjPath) => {
   const windowsPath = fullProjPath
-                  .substring(fullProjPath.lastIndexOf("node_modules") - 1, fullProjPath.length)
+                  .substring(fullProjPath.lastIndexOf('node_modules') - 1, fullProjPath.length)
                   .replace(/\//g, '\\');
 
   return '..' + windowsPath;
-}
+};
 
 const getProjectName = (fullProjPath) => {
   return fullProjPath.split('/').slice(-1)[0].replace(/\.csproj/i, '');
-}
+};
 
 /**
  * Gets windows project config by analyzing given folder and taking some
@@ -41,7 +41,7 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
 
   // expects solutions to be named the same as project folders
   const solutionPath = path.join(folder, csSolution);
-  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
+  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf('.sln'));
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
   const mainPage = path.join(sourceDir, 'MainPage.cs');
@@ -70,7 +70,7 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
   }
 
   // expects solutions to be named the same as project folders
-  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
+  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf('.sln'));
   const src = userConfig.sourceDir || windowsAppFolder;
 
   if (!src) {

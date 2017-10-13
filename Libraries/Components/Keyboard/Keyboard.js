@@ -38,7 +38,7 @@ type KeyboardEventListener = (e: KeyboardEventData) => void;
 
 // The following object exists for documentation purposes
 // Actual work happens in
-// https://github.com/facebook/react-native/blob/master/Libraries/EventEmitter/NativeEventEmitter.js
+// https://github.com/facebook/react-native/blob/master/Libraries/vendor/emitter/NativeEventEmitter.js
 
 /**
  * `Keyboard` module to control keyboard events.
@@ -99,6 +99,11 @@ let Keyboard = {
    * - `keyboardWillChangeFrame`
    * - `keyboardDidChangeFrame`
    *
+   * Note that if you set `android:windowSoftInputMode` to `adjustResize`  or `adjustNothing`,
+   * only `keyboardDidShow` and `keyboardDidHide` events will be available on Android.
+   * `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android
+   * since there is no native corresponding event.
+   *
    * @param {function} callback function to be called when the event fires.
    */
   addListener(eventName: KeyboardEventName, callback: KeyboardEventListener) {
@@ -137,4 +142,3 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 
 module.exports = Keyboard;
-
