@@ -85,7 +85,7 @@ defaults: &defaults
 
 version: 2
 jobs:
-  test-node-8:
+  test-javascript-node-8:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -102,7 +102,7 @@ jobs:
           npm run lint
           npm run flow -- check
 
-  test-node-6:
+  test-javascript-node-6:
     <<: *defaults
     docker:
       - image: circleci/node:6.11.0
@@ -119,7 +119,7 @@ jobs:
           npm run lint
           npm run flow -- check
 
-  test-node-4:
+  test-javascript-node-4:
     <<: *defaults
     docker:
       - image: circleci/node:4.8.4
@@ -436,10 +436,19 @@ workflows:
   version: 2
   test_node:
     jobs:
-      - test-node-8
-      - test-node-6
+      - test-javascript-node-8
+      - test-javascript-node-6
 # Node 4 tests are already failing on Circle 1.0
-#      - test-node-4
+#      - test-javascript-node-4
+  test_android:
+    jobs:
+      - build-js-bundle:
+          filters:
+            branches:
+              ignore: gh-pages
+      - test-android:
+          requires:
+            - build-js-bundle
   website:
     jobs:
       - test-website
@@ -451,27 +460,20 @@ workflows:
               only:
                 - /.*-stable/
                 - master
-  deploy:
-    jobs:
-      - publish-npm
-    branches:
-      only:
-        - /.*-stable/
-        - master
   analyze:
     jobs:
-      - analyze-pull-request
-    branches:
-      ignore:
-        - master
-        - gh-pages
-        - /.*-stable/
-  test_android:
-    jobs:
-      - build-js-bundle:
+      - analyze-pull-request:
           filters:
             branches:
-              ignore: gh-pages
-      - test-android:
-          requires:
-            - build-js-bundle
+              ignore:
+                - master
+                - gh-pages
+                - /.*-stable/
+  deploy:
+    jobs:
+      - publish-npm:
+          filters:
+            branches:
+              only:
+                - /.*-stable/
+                - master
