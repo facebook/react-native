@@ -83,13 +83,13 @@ aliases:
       - ~/watchman
     key: v1-watchman-v4.9.0
 
-  - &install_node_dependencies
+  - &install-node-dependencies
     |
       npm config set spin=false
       npm config set progress=false
       npm install --no-package-lock
 
-  - &run_node_tests
+  - &run-node-tests
     | 
       npm test -- --maxWorkers=2
       npm run lint
@@ -108,10 +108,10 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
-      - run: *run_node_tests
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
 
   # Runs unit tests on Node 6
   test-node-6:
@@ -120,10 +120,10 @@ jobs:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
-      - run: *run_node_tests
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
 
   # Runs unit tests on Node 4
   test-node-4:
@@ -132,10 +132,10 @@ jobs:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
-      - run: *run_node_tests
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
 
   # Runs unit tests on iOS devices
   test-objc-ios:
@@ -147,9 +147,9 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run: ./scripts/objc-test-ios.sh
 
   # Runs unit tests on tvOS devices
@@ -162,9 +162,9 @@ jobs:
         - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run: ./scripts/objc-test-tvos.sh
 
   # Runs end to end tests
@@ -177,9 +177,9 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
 
   # Checks podspec
@@ -189,9 +189,9 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run: ./scripts/process-podspecs.sh
           
   test-website:
@@ -245,9 +245,9 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run:
           name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
@@ -324,9 +324,9 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             sudo apt-get install -y nodejs
-      - restore-cache: *restore_node_cache
-      - run: *install_node_dependencies
-      - save-cache: *save_node_cache
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
