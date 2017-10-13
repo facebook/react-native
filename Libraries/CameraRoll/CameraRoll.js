@@ -126,7 +126,7 @@ class CameraRoll {
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
    */
-  static saveImageWithTag(tag: string): Promise<Object> {
+  static saveImageWithTag(tag: string): Promise<string> {
     console.warn(
       '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
@@ -150,7 +150,7 @@ class CameraRoll {
   static saveToCameraRoll(
     tag: string,
     type?: 'photo' | 'video',
-  ): Promise<Object> {
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
@@ -217,6 +217,43 @@ class CameraRoll {
    *      - `has_next_page`: {boolean}
    *      - `start_cursor`: {boolean}
    *      - `end_cursor`: {boolean}
+   *
+   * Loading images:
+   * ```
+   * _handleButtonPress = () => {
+   *    CameraRoll.getPhotos({
+   *        first: 20,
+   *        assetType: 'All',
+   *      })
+   *      .then(r => {
+   *        this.setState({ photos: r.edges });
+   *      })
+   *      .catch((err) => {
+   *         //Error Loading Images
+   *      });
+   *    };
+   * render() {
+   *  return (
+   *    <View>
+   *      <Button title="Load Images" onPress={this._handleButtonPress} />
+   *      <ScrollView>
+   *        {this.state.photos.map((p, i) => {
+   *        return (
+   *          <Image
+   *            key={i}
+   *            style={{
+   *              width: 300,
+   *              height: 100,
+   *            }}
+   *            source={{ uri: p.node.image.uri }}
+   *          />
+   *        );
+   *      })}
+   *      </ScrollView>
+   *    </View>
+   *  );
+   * }
+   * ```
    */
   static getPhotos(params) {
     if (__DEV__) {

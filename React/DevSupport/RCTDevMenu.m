@@ -9,6 +9,7 @@
 
 #import "RCTDevMenu.h"
 
+#import "RCTBridge+Private.h"
 #import "RCTDevSettings.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -259,7 +260,11 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", [_bridge class]];
+  NSString *desc = _bridge.bridgeDescription;
+  if (desc.length == 0) {
+    desc = NSStringFromClass([_bridge class]);
+  }
+  NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", desc];
   // On larger devices we don't have an anchor point for the action sheet
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
   _actionSheet = [UIAlertController alertControllerWithTitle:title

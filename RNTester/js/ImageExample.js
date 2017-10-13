@@ -197,7 +197,7 @@ var MultipleSourcesExample = createReactClass({
             source={[
               {uri: 'https://facebook.github.io/react/img/logo_small.png', width: 38, height: 38},
               {uri: 'https://facebook.github.io/react/img/logo_small_2x.png', width: 76, height: 76},
-              {uri: 'https://facebook.github.io/react/img/logo_og.png', width: 400, height: 400}
+              {uri: 'https://facebook.github.io/react/logo-og.png', width: 400, height: 400}
             ]}
           />
         </View>
@@ -237,7 +237,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+          source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
           style={styles.base}
         />
       );
@@ -271,7 +271,7 @@ exports.examples = [
     title: 'Error Handler',
     render: function() {
       return (
-        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/logo-og.png'}} />
       );
     },
     platform: 'ios',
@@ -439,7 +439,22 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting',
+    title: 'Nesting content inside <Image> component',
+    render: function() {
+      return (
+        <View style={{width: 60, height: 60}}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}/>
+          <Text style={styles.nestedText}>
+            React
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
     render: function() {
       return (
         <ImageBackground
@@ -712,7 +727,7 @@ exports.examples = [
   },
 ];
 
-var fullImage = {uri: 'https://facebook.github.io/react/img/logo_og.png'};
+var fullImage = {uri: 'https://facebook.github.io/react/logo-og.png'};
 var smallImage = {uri: 'https://facebook.github.io/react/img/logo_small_2x.png'};
 
 var styles = StyleSheet.create({

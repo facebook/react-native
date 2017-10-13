@@ -24,7 +24,7 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * There is also a function `showWithGravity` to specify the layout gravity. May be
  * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
  *
- * The 'showWithGravityWithOffset' function adds on the ability to specify offset
+ * The 'showWithGravityAndOffset' function adds on the ability to specify offset
  * These offset values will translate to pixels.
  *
  * Basic usage:

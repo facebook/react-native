@@ -29,24 +29,28 @@
 ### Environment
 
 <!--
-  Please fill in all the relevant fields by running these commands in terminal.
+  In your terminal run `react-native info` and paste its contents here. Next, specify your target platform, like this:
+
+  Environment:
+    OS:  macOS Sierra 10.12.6
+    Node:  8.4.0
+    Yarn:  0.27.5
+    npm:  5.4.0
+    Watchman:  4.7.0
+    Xcode:  Xcode 8.3.3 Build version 8E3004b
+    Android Studio:  2.3 AI-162.4069837
+
+  Packages: (wanted => installed)
+    react-native: 0.48.1 => 0.48.1
+    react: 16.0.0-alpha.12 => 16.0.0-alpha.12
+
+  Target Platform: iOS (10.3)
+
+  ***Make sure you are on v0.48.0 or greater of react-native, otherwise you may get this error:
+
+  Unrecognized command 'info'
+  Run react-native --help to see list of all available commands
 -->
-
-1. `react-native -v`:
-2. `node -v`:
-3. `npm -v`:
-4. `yarn --version`<!-- (if you use Yarn) -->:
-
-Then, specify:
-
-<!-- (What platform are you building for? Choose any from iOS, Android, AppleTV.) -->
-- Target Platform:
-
-<!-- Which operating system are you using? Specify macOS, Windows, or Linux, along with specific release versions -->
-- Development Operating System:
-
-<!-- Include any additional relevant information. Are you using Xcode or Android Studio to build native code? Is the issue specific to a particular iOS or Android SDK? -->
-- Build tools:
 
 ### Steps to Reproduce
 

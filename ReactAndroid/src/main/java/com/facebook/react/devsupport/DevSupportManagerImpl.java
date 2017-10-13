@@ -9,21 +9,6 @@
 
 package com.facebook.react.devsupport;
 
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -36,16 +21,20 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.view.WindowManager;
+import android.util.Pair;
 import android.widget.Toast;
-
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
@@ -56,12 +45,24 @@ import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -136,6 +137,7 @@ public class DevSupportManagerImpl implements
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
+  private @Nullable List<ErrorCustomizer> mErrorCustomizers;
 
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
@@ -289,6 +291,29 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
+  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer){
+    if (mErrorCustomizers == null){
+      mErrorCustomizers = new ArrayList<>();
+    }
+    mErrorCustomizers.add(errorCustomizer);
+  }
+
+  private Pair<String, StackFrame[]> processErrorCustomizers(
+      Pair<String, StackFrame[]> errorInfo) {
+    if (mErrorCustomizers == null) {
+      return errorInfo;
+    } else {
+      for (ErrorCustomizer errorCustomizer : mErrorCustomizers) {
+        Pair<String, StackFrame[]> result = errorCustomizer.customizeErrorInfo(errorInfo);
+        if (result != null) {
+          errorInfo = result;
+        }
+      }
+      return errorInfo;
+    }
+  }
+
+  @Override
   public void updateJSError(
       final String message,
       final ReadableArray details,
@@ -306,7 +331,9 @@ public class DevSupportManagerImpl implements
               return;
             }
             StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
-            mRedBoxDialog.setExceptionDetails(message, stack);
+            Pair<String, StackFrame[]> errorInfo =
+                processErrorCustomizers(Pair.create(message, stack));
+            mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
             updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
             // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
@@ -337,14 +364,15 @@ public class DevSupportManagerImpl implements
           public void run() {
             if (mRedBoxDialog == null) {
               mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-              mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+              mRedBoxDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
               // show the first and most actionable one.
               return;
             }
-            mRedBoxDialog.setExceptionDetails(message, stack);
+            Pair<String, StackFrame[]> errorInfo = processErrorCustomizers(Pair.create(message, stack));
+            mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
             updateLastErrorInfo(message, stack, errorCookie, errorType);
             // Only report native errors here. JS errors are reported
             // inside {@link #updateJSError} after source mapping.
@@ -466,7 +494,7 @@ public class DevSupportManagerImpl implements
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    mDevOptionsDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
 
@@ -625,6 +653,7 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void handleReloadJS() {
+
     UiThreadUtil.assertOnUiThread();
 
     ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
@@ -635,10 +664,14 @@ public class DevSupportManagerImpl implements
     }
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
       mDevLoadingViewController.showForRemoteJSEnabled();
       mDevLoadingViewVisible = true;
       reloadJSInProxyMode();
     } else {
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
       String bundleURL =
         mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
       reloadJSFromServer(bundleURL);
@@ -709,10 +742,12 @@ public class DevSupportManagerImpl implements
           return;
         }
         try {
-          long jsContext = mCurrentContext.getJavaScriptContext();
-          Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
-          RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext);
-          handler.onRequest(null, responder);
+          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
+          synchronized (jsContext) {
+            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
+            handler.onRequest(null, responder);
+          }
         } catch (Exception e) {
           // Module not present
         }
@@ -825,6 +860,8 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
+    final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
+
     mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
@@ -838,7 +875,7 @@ public class DevSupportManagerImpl implements
                 new Runnable() {
                   @Override
                   public void run() {
-                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END);
+                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
                     mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
                   }
                 });
@@ -877,7 +914,8 @@ public class DevSupportManagerImpl implements
           }
         },
         mJSBundleTempFile,
-        bundleURL);
+        bundleURL,
+        bundleInfo);
   }
 
   @Override

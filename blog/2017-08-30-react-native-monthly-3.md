@@ -34,7 +34,7 @@ Here are the notes from each team:
 
 - Released support for installing npm packages on [Snack](https://snack.expo.io). Usual Expo restrictions apply -- packages can't depend on custom native APIs that aren't already included in Expo. We are also working on supporting multiple files and uploading assets in Snack. [Satyajit](https://github.com/satya164) will talk about Snack at [React Native Europe](https://react-native.eu/).
 - Released SDK20 with camera, payments, secure storage, magnetometer, pause/resume fs downloads, and improved splash/loading screen.
-- Continuing to work with [Krzysztof](https://github.com/kmagiera/react-native-gesture-handler) on [react-native-gesture-handler](https://github.com/kmagiera/react-native-gesture-handler). Please give it a try, rebuild some gesture that you have previously built using PanResponder or native gesture recognizers and let us know what issues you encounter.
+- Continuing to work with [Krzysztof](https://github.com/kmagiera) on [react-native-gesture-handler](https://github.com/kmagiera/react-native-gesture-handler). Please give it a try, rebuild some gesture that you have previously built using PanResponder or native gesture recognizers and let us know what issues you encounter.
 - Experimenting with JSC debugging protocol, working on a bunch of feature requests on [Canny](https://expo.canny.io/feature-requests).
 
 ### Facebook
@@ -46,14 +46,14 @@ Here are the notes from each team:
 ### Microsoft
 
 - The new Skype app is built on top of React Native in order to facilitate sharing as much code between platforms as possible. The React Native-based Skype app is currently available in the iOS and Android app stores.
-- While building the Skype app on React Native, we send pull requests to React Native in order to address bugs and missing features that we come across. So far, we've gotten about 70 pull requests merged.
-- React Native enabled us to power both the iOS and Android Skype apps from the same codebase. We also want to use that codebase to power the Skype web app. To help us achieve that goal, we built and open sourced a thin layer on top of React/React Native called ReactXP. ReactXP provides a set of cross platform components that get mapped to React Native when targeting iOS/Android and to react-dom when targeting the web. ReactXP's goals are similar to another open source library called React Native for Web. There's a brief description of how the approaches of these libraries differ in the ReactXP FAQ.
+- While building the Skype app on React Native, we send pull requests to React Native in order to address bugs and missing features that we come across. So far, we've gotten about [70 pull requests merged](https://github.com/facebook/react-native/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3Arigdern%20).
+- React Native enabled us to power both the iOS and Android Skype apps from the same codebase. We also want to use that codebase to power the Skype web app. To help us achieve that goal, we built and open sourced a thin layer on top of React/React Native called [ReactXP](https://microsoft.github.io/reactxp/blog/2017/04/06/introducing-reactxp.html). ReactXP provides a set of cross platform components that get mapped to React Native when targeting iOS/Android and to react-dom when targeting the web. ReactXP's goals are similar to another open source library called React Native for Web. There's a brief description of how the approaches of these libraries differ in the [ReactXP FAQ](https://microsoft.github.io/reactxp/docs/faq.html).
 
 ### Shoutem
 
-- We are continuing are efforts on improving and simplifying the developer experience when building apps using Shoutem.
+- We are continuing our efforts on improving and simplifying the developer experience when building apps using [Shoutem](https://shoutem.github.io/).
 - Started migrating all our apps to react-navigation, but we ended postponing this until a more stable version is released, or one of the native navigation solutions becomes stable.
-- Updating all our extensions and most of our open source libraries (animation, theme, ui) to React Native 0.47.1.
+- Updating all our [extensions](https://github.com/shoutem/extensions) and most of our open source libraries ([animation](https://github.com/shoutem/animation), [theme](https://github.com/shoutem/theme), [ui](https://github.com/shoutem/ui)) to React Native 0.47.1.
 
 ## Next session
 

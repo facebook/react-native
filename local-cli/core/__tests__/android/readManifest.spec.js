@@ -11,14 +11,16 @@
 
 'use strict';
 
+jest.mock('fs');
+
 const findManifest = require('../../android/findManifest');
 const readManifest = require('../../android/readManifest');
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::readManifest', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
       nested: {
         android: {
@@ -29,19 +31,15 @@ describe('android::readManifest', () => {
   });
 
   it('returns manifest content if file exists in the folder', () => {
-    const manifestPath = findManifest('nested');
+    const manifestPath = findManifest('/nested');
     expect(readManifest(manifestPath)).not.toBeNull();
     expect(typeof readManifest(manifestPath)).toBe('object');
   });
 
   it('throws an error if there is no manifest in the folder', () => {
-    const fakeManifestPath = findManifest('empty');
+    const fakeManifestPath = findManifest('/empty');
     expect(() => {
       readManifest(fakeManifestPath);
     }).toThrow();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
   });
 });

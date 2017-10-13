@@ -26,7 +26,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -49,7 +49,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -67,8 +67,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "xplat//folly:molly",
         ":module",
-        "//xplat/folly:molly",
     ],
 )
 
@@ -80,6 +80,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "JSCExecutor.h",
     "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
+    "JSIndexedRAMBundleRegistry.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
     "MethodCall.h",
@@ -87,6 +88,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeModule.h",
     "NativeToJsBridge.h",
     "Platform.h",
+    "RAMBundleRegistry.h",
     "RecoverableError.h",
     "SharedProxyCxxModule.h",
     "SystraceSection.h",
@@ -139,8 +141,8 @@ rn_xplat_cxx_library(
     deps = [
         ":module",
         ":jsbigstring",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:molly",
+        "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("microprofiler:microprofiler"),
     ] + JSC_DEPS,

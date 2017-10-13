@@ -30,7 +30,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
       // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
       return (UIViewAnimationOptions)(_currentKeyboardAnimationCurve << 16);
     default:
-      RCTLogError(@"Unsupported animation type %zd", type);
+      RCTLogError(@"Unsupported animation type %lld", (long long)type);
       return UIViewAnimationOptionCurveEaseInOut;
   }
 }

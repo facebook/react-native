@@ -22,10 +22,6 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-#if !defined(RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) && defined(RCT_DEBUG)
-#define RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD 0.020 // seconds
-#endif
-
 typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @implementation RCTMethodArgument
@@ -497,12 +493,12 @@ RCT_EXTERN_C_END
       expectedCount -= 2;
     }
 
-    RCTLogError(@"%@.%s was called with %zd arguments but expects %zd arguments. "
+    RCTLogError(@"%@.%s was called with %lld arguments but expects %lld arguments. "
                 @"If you haven\'t changed this method yourself, this usually means that "
                 @"your versions of the native code and JavaScript code are out of sync. "
                 @"Updating both should make this error go away.",
                 RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName,
-                actualCount, expectedCount);
+                (long long)actualCount, (long long)expectedCount);
     return nil;
   }
 #endif
@@ -526,9 +522,13 @@ RCT_EXTERN_C_END
     [_invocation invokeWithTarget:module];
     CFTimeInterval duration = CACurrentMediaTime() - start;
     if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
-      RCTLogWarn(@"mainThreadWatchdog: invocation of %@ blocked the main thread for %dms. Consider spending less time on the main thread to keep the app's UI responsive.",
+      RCTLogWarn(
+                 @"Main Thread Watchdog: Invocation of %@ blocked the main thread for %dms. "
+                 "Consider using background-threaded modules and asynchronous calls "
+                 "to spend less time on the main thread and keep the app's UI responsive.",
                  [self methodName],
-                 (int)(duration * 1000));
+                 (int)(duration * 1000)
+                 );
     }
   } else {
     [_invocation invokeWithTarget:module];

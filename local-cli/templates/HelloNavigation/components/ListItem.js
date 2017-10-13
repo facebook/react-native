@@ -28,7 +28,7 @@ const Touchable = ({onPress, children}) => {
       </TouchableHighlight>
     );
   }
-}
+};
 
 const ListItem = ({label, onPress}) => (
   <Touchable onPress={onPress}>

@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
 banner: ejected
 next: running-on-simulator-ios
-previous: native-components-ios
+previous: custom-webview-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support

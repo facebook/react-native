@@ -162,7 +162,7 @@ function unlink(args, config) {
       );
       throw err;
     });
-};
+}
 
 module.exports = {
   func: unlink,

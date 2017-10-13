@@ -25,6 +25,11 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
+NS_ENUM(NSInteger) {
+  RCTSourceFilesChangedCountNotBuiltByBundler = -2,
+  RCTSourceFilesChangedCountRebuiltFromScratch = -1,
+};
+
 @interface RCTLoadingProgress : NSObject
 
 @property (nonatomic, copy) NSString *status;
@@ -54,6 +59,15 @@ NS_ENUM(NSInteger) {
  *  - self.length is the length of the entire bundle file (header + contents)
  */
 @property (nonatomic, readonly) NSUInteger length;
+
+/**
+ * Returns number of files changed when building this bundle:
+ *
+ *  - RCTSourceFilesChangedCountNotBuiltByBundler if the source wasn't built by the bundler (e.g. read from disk)
+ *  - RCTSourceFilesChangedCountRebuiltFromScratch if the source was rebuilt from scratch by the bundler
+ *  - Otherwise, the number of files changed when incrementally rebuilding the source
+ */
+@property (nonatomic, readonly) NSInteger filesChangedCount;
 
 @end
 

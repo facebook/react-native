@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+    return 2;
 }
 
 - (id<RCTImageCache>)imageCache
@@ -314,7 +314,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
         // Add missing png extension
         if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-            mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
+            mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
         }
         request = mutableRequest;
     }
