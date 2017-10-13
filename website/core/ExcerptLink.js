@@ -15,10 +15,10 @@ var React = require('React');
 
 class ExcerptLink extends React.Component {
   render() {
-    var cta = "Read more";
+    var cta = 'Read more';
 
-    if (this.props.category === "videos") {
-      cta = "Watch video";
+    if (this.props.category === 'videos') {
+      cta = 'Watch video';
     }
 
     return (

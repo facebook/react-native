@@ -63,7 +63,7 @@ public class CatalystNativeJavaToJSArgumentsTestCase extends ReactIntegrationTes
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
     final UIManagerModule mUIManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

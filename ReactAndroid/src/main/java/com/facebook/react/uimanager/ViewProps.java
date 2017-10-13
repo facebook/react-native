@@ -9,10 +9,10 @@
 
 package com.facebook.react.uimanager;
 
+import android.graphics.Color;
+import com.facebook.react.bridge.ReadableMap;
 import java.util.Arrays;
 import java.util.HashSet;
-
-import com.facebook.react.bridge.ReadableMap;
 
 /**
  * Keys for props that need to be shared across multiple classes.
@@ -90,6 +90,7 @@ public class ViewProps {
   public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";
   public static final String TEXT_BREAK_STRATEGY = "textBreakStrategy";
+  public static final String OPACITY = "opacity";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
   public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
@@ -104,6 +105,11 @@ public class ViewProps {
   public static final String BORDER_TOP_RIGHT_RADIUS = "borderTopRightRadius";
   public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
   public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
+  public static final String BORDER_COLOR = "borderColor";
+  public static final String BORDER_LEFT_COLOR = "borderLeftColor";
+  public static final String BORDER_RIGHT_COLOR = "borderRightColor";
+  public static final String BORDER_TOP_COLOR = "borderTopColor";
+  public static final String BORDER_BOTTOM_COLOR = "borderBottomColor";
   public static final int[] BORDER_SPACING_TYPES = {
       Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
@@ -164,14 +170,59 @@ public class ViewProps {
             PADDING_TOP,
             PADDING_BOTTOM));
 
+  public static boolean sIsOptimizationsEnabled;
+
   public static boolean isLayoutOnly(ReadableMap map, String prop) {
     if (LAYOUT_ONLY_PROPS.contains(prop)) {
       return true;
     } else if (POINTER_EVENTS.equals(prop)) {
       String value = map.getString(prop);
       return "auto".equals(value) || "box-none".equals(value);
-    } else {
-      return false;
     }
+
+    if (sIsOptimizationsEnabled) {
+      switch (prop) {
+        case OPACITY:
+          return map.getDouble(OPACITY) == 1d; // Ignore if explicitly set to default opacity.
+        case BACKGROUND_COLOR:
+          return map.getInt(BACKGROUND_COLOR) == Color.TRANSPARENT;
+        case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
+          if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+            return false;
+          }
+          if (map.hasKey(BORDER_WIDTH) && map.getDouble(BORDER_WIDTH) != 0d) {
+            return false;
+          }
+          return true;
+        case BORDER_COLOR:
+          return map.getInt(BORDER_COLOR) == Color.TRANSPARENT;
+        case BORDER_LEFT_COLOR:
+          return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
+        case BORDER_RIGHT_COLOR:
+          return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
+        case BORDER_TOP_COLOR:
+          return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
+        case BORDER_BOTTOM_COLOR:
+          return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
+        case BORDER_WIDTH:
+          return map.getDouble(BORDER_WIDTH) == 0d;
+        case BORDER_LEFT_WIDTH:
+          return map.getDouble(BORDER_LEFT_WIDTH) == 0d;
+        case BORDER_TOP_WIDTH:
+          return map.getDouble(BORDER_TOP_WIDTH) == 0d;
+        case BORDER_RIGHT_WIDTH:
+          return map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
+        case BORDER_BOTTOM_WIDTH:
+          return map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
+        case "onLayout":
+          return true;
+        case "overflow": // We do nothing with this right now.
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    return false;
   }
 }

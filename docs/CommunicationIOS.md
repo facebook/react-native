@@ -39,7 +39,6 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
 ```
 
 ```
-'use strict';
 
 import React from 'react';
 import {

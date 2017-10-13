@@ -57,7 +57,7 @@ With this update, when you allow RTL layout for your app:
     ```java
     // in MainActivity.java
   	I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
-  	sharedI18nUtilInstance.setAllowRTL(context, true);
+  	sharedI18nUtilInstance.allowRTL(context, true);
     ```
 
 3. For Android, you need add `android:supportsRtl="true"` to the [`<application>`](http://developer.android.com/guide/topics/manifest/application-element.html) element in `AndroidManifest.xml` file.

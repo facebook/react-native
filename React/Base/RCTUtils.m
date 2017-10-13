@@ -412,7 +412,7 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%zd", error.domain.uppercaseString, error.code];
+  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%lld", error.domain.uppercaseString, (long long)error.code];
   return RCTJSErrorFromCodeMessageAndNSError(codeWithDomain,
                                              error.localizedDescription,
                                              error);
@@ -602,7 +602,7 @@ NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
     // Not a file path
     return nil;
   }
-  NSString *path = URL.path;
+  NSString *path = [NSString stringWithUTF8String:[URL fileSystemRepresentation]];
   NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
   if (![path hasPrefix:bundlePath]) {
     // Not a bundle-relative file
@@ -678,11 +678,13 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 
   if (!image) {
     // Attempt to load from the file system
-    NSString *filePath = imageURL.path;
-    if (filePath.pathExtension.length == 0) {
-      filePath = [filePath stringByAppendingPathExtension:@"png"];
+    NSData *fileData;
+    if (imageURL.pathExtension.length == 0) {
+      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
+    } else {
+      fileData = [NSData dataWithContentsOfURL:imageURL];
     }
-    image = [UIImage imageWithContentsOfFile:filePath];
+    image = [UIImage imageWithData:fileData];
   }
 
   if (!image && !bundle) {

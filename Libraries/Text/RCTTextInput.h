@@ -12,12 +12,14 @@
 #import <React/RCTView.h>
 
 #import "RCTBackedTextInputViewProtocol.h"
+#import "RCTFontAttributes.h"
+#import "RCTFontAttributesDelegate.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
 @class RCTTextSelection;
 
-@interface RCTTextInput : RCTView {
+@interface RCTTextInput : RCTView <RCTFontAttributesDelegate> {
 @protected
   RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
@@ -41,11 +43,15 @@
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
+@property (nonatomic, readonly, strong) RCTFontAttributes *fontAttributes;
+
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, copy) RCTTextSelection *selection;
+
+- (void)setFont:(UIFont *)font;
 
 - (void)invalidateContentSize;
 

@@ -23,14 +23,23 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInputState = require('TextInputState');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const onlyMultiline = {
@@ -219,6 +228,11 @@ const TextInput = createReactClass({
      */
     autoGrow: PropTypes.bool,
     /**
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
      * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
@@ -231,6 +245,25 @@ const TextInput = createReactClass({
      * - `numeric`
      * - `email-address`
      * - `phone-pad`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
+     * - `ascii-capable`
+     * - `numbers-and-punctuation`
+     * - `url`
+     * - `number-pad`
+     * - `name-phone-pad`
+     * - `decimal-pad`
+     * - `twitter`
+     * - `web-search`
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `visible-password`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
@@ -247,6 +280,8 @@ const TextInput = createReactClass({
       'decimal-pad',
       'twitter',
       'web-search',
+      // Android-only
+      'visible-password',
     ]),
     /**
      * Determines the color of the keyboard.
@@ -416,7 +451,7 @@ const TextInput = createReactClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.node,
+    placeholder: PropTypes.string,
     /**
      * The text color of the placeholder string.
      */
@@ -513,6 +548,13 @@ const TextInput = createReactClass({
 
     /**
      * If defined, the provided image resource will be rendered on the left.
+     * The image resource must be inside `/android/app/src/main/res/drawable` and referenced
+     * like
+     * ```
+     * <TextInput
+     *  inlineImageLeft='search_icon'
+     * />
+     * ```
      * @platform android
      */
     inlineImageLeft: PropTypes.string,
@@ -550,7 +592,11 @@ const TextInput = createReactClass({
      */
     caretHidden: PropTypes.bool,
   },
-
+  getDefaultProps(): Object {
+    return {
+      allowFontScaling: true,
+    };
+  },
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -688,7 +734,7 @@ const TextInput = createReactClass({
         'Cannot specify both value and children.'
       );
       if (childCount >= 1) {
-        children = <Text style={props.style}>{children}</Text>;
+        children = <Text style={props.style} allowFontScaling={props.allowFontScaling}>{children}</Text>;
       }
       if (props.inputView) {
         children = [children, props.inputView];
@@ -733,10 +779,12 @@ const TextInput = createReactClass({
       props.style = [props.style, {height: this.state.layoutHeight}];
     }
     props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
+        props.autoCapitalize || 'sentences'
+      ];
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
@@ -897,9 +945,9 @@ const TextInput = createReactClass({
   },
 
   _onTextInput: function(event: Event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onTextInput && this.props.onTextInput(event);
   },
 

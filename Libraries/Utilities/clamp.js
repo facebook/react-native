@@ -12,8 +12,8 @@
 'use strict';
 
 /**
- * @param {number} value
  * @param {number} min
+ * @param {number} value
  * @param {number} max
  * @return {number}
  */

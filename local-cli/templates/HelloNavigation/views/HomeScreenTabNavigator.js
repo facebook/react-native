@@ -1,5 +1,3 @@
-'use strict';
-
 import { TabNavigator } from 'react-navigation';
 
 import ChatListScreen from './chat/ChatListScreen';

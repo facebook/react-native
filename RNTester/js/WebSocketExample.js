@@ -38,16 +38,10 @@ const WS_STATES = [
 
 class Button extends React.Component {
   render(): React.Element<any> {
-    const label = (
-      <Text style={styles.buttonLabel}>
-        {this.props.label}
-      </Text>
-    );
+    const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
-        <View style={[styles.button, styles.disabledButton]}>
-          {label}
-        </View>
+        <View style={[styles.button, styles.disabledButton]}>{label}</View>
       );
     }
     return (
@@ -62,14 +56,8 @@ class Row extends React.Component {
   render(): React.Element<any> {
     return (
       <View style={styles.row}>
-        <Text>
-          {this.props.label}
-        </Text>
-        {this.props.value
-          ? <Text>
-              {this.props.value}
-            </Text>
-          : null}
+        <Text>{this.props.label}</Text>
+        {this.props.value ? <Text>{this.props.value}</Text> : null}
         {this.props.children}
       </View>
     );

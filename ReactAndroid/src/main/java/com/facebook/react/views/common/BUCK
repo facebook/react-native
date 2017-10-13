@@ -1,0 +1,14 @@
+include_defs("//ReactAndroid/DEFS")
+
+android_library(
+    name = "common",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
+)
