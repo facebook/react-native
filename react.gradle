@@ -13,6 +13,7 @@ def elvisFile(thing) {
 
 def reactRoot = elvisFile(config.root) ?: file("../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
+def bundleCommand = config.bundleCommand ?: "bundle"
 
 void runBefore(String dependentTaskName, Task task) {
     Task dependentTask = tasks.findByPath(dependentTaskName);
@@ -80,10 +81,10 @@ gradle.projectsEvaluated {
                 def devEnabled = !(config."devDisabledIn${targetName}"
                     || targetName.toLowerCase().contains("release"))
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, "${bundleCommand}", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
                 } else {
-                    commandLine(*nodeExecutableAndArgs, cliPath, "bundle", "--platform", "android", "--dev", "${devEnabled}",
+                    commandLine(*nodeExecutableAndArgs, cliPath, "${bundleCommand}", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
                 }
 
