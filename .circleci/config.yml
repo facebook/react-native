@@ -136,6 +136,9 @@ jobs:
     <<: *defaults
     macos:
       xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
       - run: *install_node_dependencies
@@ -146,6 +149,9 @@ jobs:
     <<: *defaults
     macos:
       xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
       - checkout
       - run: *install_node_dependencies
@@ -156,6 +162,9 @@ jobs:
     <<: *defaults
     macos:
       xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
       - run: *install_node_dependencies
@@ -169,12 +178,7 @@ jobs:
     steps:
       - checkout
       - run: *install_node_dependencies
-      - run: |
-          if [ "$CI_PULL_REQUEST" ]; then
-            ./scripts/process-podspecs.sh
-          else
-            echo "Skipping testing podspec."
-          fi
+      - run: ./scripts/process-podspecs.sh
           
   test-website:
     <<: *defaults
@@ -429,5 +433,5 @@ workflows:
     jobs:
       - test-objc-ios
       - test-objc-tvos
-      - test-objc-e2e
       - test-podspec
+      - test-objc-e2e
