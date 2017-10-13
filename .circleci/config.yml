@@ -85,7 +85,7 @@ defaults: &defaults
 
 version: 2
 jobs:
-  test-javascript-node-8:
+  test-js-node-8:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -102,7 +102,7 @@ jobs:
           npm run lint
           npm run flow -- check
 
-  test-javascript-node-6:
+  test-js-node-6:
     <<: *defaults
     docker:
       - image: circleci/node:6.11.0
@@ -119,7 +119,7 @@ jobs:
           npm run lint
           npm run flow -- check
 
-  test-javascript-node-4:
+  test-js-node-4:
     <<: *defaults
     docker:
       - image: circleci/node:4.8.4
@@ -436,10 +436,11 @@ workflows:
   version: 2
   test_node:
     jobs:
-      - test-javascript-node-8
-      - test-javascript-node-6
+      - test-js-node-8
+      - test-js-node-6
 # Node 4 tests are already failing on Circle 1.0
-#      - test-javascript-node-4
+#     - test-js-node-4
+
   test_android:
     jobs:
       - build-js-bundle:
