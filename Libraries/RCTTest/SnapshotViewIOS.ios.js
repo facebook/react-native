@@ -22,12 +22,10 @@ const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-class SnapshotViewIOS extends React.Component {
-  props: {
-    onSnapshotReady?: Function,
-    testIdentifier?: string,
-  };
-
+class SnapshotViewIOS extends React.Component<{
+  onSnapshotReady?: Function,
+  testIdentifier?: string,
+}> {
   // $FlowFixMe(>=0.41.0)
   static propTypes = {
     ...ViewPropTypes,

@@ -48,7 +48,7 @@ function getTypeHintsFromDocBlock(node, docBlocksByLine) {
     }, {});
 
     var param;
-    while(param = paramRe.exec(comments.value)) {
+    while (param = paramRe.exec(comments.value)) {
 
       if (!param[1]) {
         continue;
@@ -80,7 +80,7 @@ function getTypeHintsFromDocBlock(node, docBlocksByLine) {
   var returnType = returnRe.exec(comments.value);
   if (returnType && returnType[1]) {
     throw new Error(util.format('Lines: %s-%s: Your @return declaration in' +
-      ' function %s is incorrectly written as @returns. Remove the trailing'+
+      ' function %s is incorrectly written as @returns. Remove the trailing' +
       ' \'s\'.',
       comments.loc.start.line, comments.loc.end.line, functionName));
   }
@@ -107,7 +107,7 @@ function getTypeHintFromInline(node, commentsByLine) {
  */
 function parseComments(programNode, state) {
   programNode.comments.forEach(function(c) {
-    if (c.type !== 'Block') return;
+    if (c.type !== 'Block') {return;}
 
     var comments;
     if (c.loc.start.line === c.loc.end.line &&
@@ -156,8 +156,8 @@ function normalizeTypeHintParams(node, state, typeHints) {
       if (typeHint[1]) {
         preCond.push([
           typeHint[0],
-          '\''+ type.parseAndNormalize(typeHint[1], typeHint[0], node) +'\'',
-          '\''+ typeHint[0] +'\''
+          '\'' + type.parseAndNormalize(typeHint[1], typeHint[0], node) + '\'',
+          '\'' + typeHint[0] + '\''
         ]);
       }
     });

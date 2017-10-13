@@ -9,13 +9,11 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.util.Collection;
-
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import java.util.Collection;
+import javax.annotation.Nullable;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an
@@ -26,6 +24,9 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 public interface CatalystInstance
     extends MemoryPressureListener, JSInstance {
   void runJSBundle();
+
+  // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
+  boolean hasRunJSBundle();
 
   /**
    * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
@@ -66,6 +67,12 @@ public interface CatalystInstance
   Collection<NativeModule> getNativeModules();
 
   /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
+
+  /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
    * defined as there being some non-zero number of calls to JS that haven't resolved via a
@@ -79,15 +86,15 @@ public interface CatalystInstance
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
 
-  boolean supportsProfiling();
-  void startProfiler(String title);
-  void stopProfiler(String title, String filename);
-
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
 
   /**
    * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   *
+   * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
+   * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
+   * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  long getJavaScriptContext();
+  JavaScriptContextHolder getJavaScriptContextHolder();
 }

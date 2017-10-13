@@ -16,56 +16,13 @@
 #import <React/RCTViewManager.h>
 
 /**
- * UIManager queue
- */
-RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
-
-/**
- * Default name for the UIManager queue
- */
-RCT_EXTERN char *const RCTUIManagerQueueName;
-
-/**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
  * next render cycle will pick up updated views and layout appropriately.
  */
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
 
-/**
- * Posted whenever a new root view is registered with RCTUIManager. The userInfo property
- * will contain a RCTUIManagerRootViewKey with the registered root view.
- */
-RCT_EXTERN NSString *const RCTUIManagerDidRegisterRootViewNotification;
-
-/**
- * Posted whenever a root view is removed from the RCTUIManager. The userInfo property
- * will contain a RCTUIManagerRootViewKey with the removed root view.
- */
-RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
-
-/**
- * Key for the root view property in the above notifications
- */
-RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
-
-@class RCTUIManager;
-
-/**
- * Allows to hook into UIManager internals. This can be used to execute code at
- * specific points during the view updating process.
- */
-@protocol RCTUIManagerObserver <NSObject>
-
-/**
- * Called before flushing UI blocks at the end of a batch. Note that this won't
- * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
- * This is called from the UIManager queue. Can be used to add UI operations in that batch.
- */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
-
-@end
-
-@protocol RCTScrollableProtocol;
+@class RCTLayoutAnimationGroup;
+@class RCTUIManagerObserverCoordinator;
 
 /**
  * The RCTUIManager is the module responsible for updating the view hierarchy.
@@ -88,6 +45,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
 
 /**
+ * Gets the shadow view associated with a reactTag.
+ */
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag;
+
+/**
  * Set the available size (`availableSize` property) for a root view.
  * This might be used in response to changes in external layout constraints.
  * This value will be directly trasmitted to layout engine and defines how big viewport is;
@@ -95,6 +57,17 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
  */
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView;
+
+/**
+ * Sets local data for a shadow view corresponded with given view.
+ * In some cases we need a way to specify some environmental data to shadow view
+ * to improve layout (or do something similar), so `localData` serves these needs.
+ * For example, any stateful embedded native views may benefit from this.
+ * Have in mind that this data is not supposed to interfere with the state of
+ * the shadow view.
+ * Please respect one-directional data flow of React.
+ */
+- (void)setLocalData:(NSObject *)localData forView:(UIView *)view;
 
 /**
  * Set the size of a view. This might be in response to a screen rotation
@@ -117,6 +90,13 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
 
 /**
+ * Sets up layout animation which will perform on next layout pass.
+ * The animation will affect only one next layout pass.
+ * Must be called on the main queue.
+ */
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup;
+
+/**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute
  * view logic after all currently queued view updates have completed.
  */
@@ -127,17 +107,6 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic before all currently queued view updates have completed.
  */
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block;
-
-/**
- * Add a UIManagerObserver. See the RCTUIManagerObserver protocol for more info. This
- * method can be called safely from any queue.
- */
-- (void)addUIManagerObserver:(id<RCTUIManagerObserver>)observer;
-
-/**
- * Remove a UIManagerObserver. This method can be called safely from any queue.
- */
-- (void)removeUIManagerObserver:(id<RCTUIManagerObserver>)observer;
 
 /**
  * Used by native animated module to bypass the process of updating the values through the shadow
@@ -158,6 +127,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  *
  */
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
+
+/**
+ * Finds a view that is tagged with nativeID as its nativeID prop
+ * with the associated rootTag root tag view hierarchy. Returns the
+ * view if found, nil otherwise.
+ *
+ * @param nativeID the id reference to native component relative to root view.
+ * @param rootTag the react tag of root view hierarchy from which to find the view.
+ */
+- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag;
 
 /**
  * The view that is currently first responder, according to the JS context.
@@ -181,25 +160,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  */
 - (void)setNeedsLayout;
 
-@end
-
-@interface RCTUIManager (Deprecated)
-
 /**
- * This method is deprecated and will be removed in next releases.
- * Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.
- * Only frames with `origin` equals {0, 0} are supported.
+ * Dedicated object for subscribing for UIManager events.
+ * See `RCTUIManagerObserver` protocol for more details.
  */
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
-__deprecated_msg("Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.");
-
-
-/**
- * This method is deprecated and will be removed in next releases.
- * Use `registerRootView:` instead. There is no need to specify `sizeFlexibility` anymore.
- */
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
-__deprecated_msg("Use `registerRootView:` instead.");
+@property (atomic, retain, readonly) RCTUIManagerObserverCoordinator *observerCoordinator;
 
 @end
 

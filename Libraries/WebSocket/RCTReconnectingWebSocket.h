@@ -15,7 +15,11 @@
 
 @protocol RCTWebSocketProtocolDelegate
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket;
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message;
+
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
 
 @end
 
@@ -23,6 +27,8 @@
 
 - (instancetype)initWithURL:(NSURL *)url;
 @property (nonatomic, weak) id<RCTWebSocketProtocolDelegate> delegate;
+/** @brief Must be set before -start to have effect */
+@property (nonatomic, strong) dispatch_queue_t delegateDispatchQueue;
 - (void)send:(id)data;
 - (void)start;
 - (void)stop;

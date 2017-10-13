@@ -21,7 +21,13 @@ var UIManager = require('UIManager');
 
 var invariant = require('fbjs/lib/invariant');
 var nullthrows = require('fbjs/lib/nullthrows');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var performanceNow = require('fbjs/lib/performanceNow');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var warning = require('fbjs/lib/warning');
 
 var { ScrollViewManager } = require('NativeModules');
@@ -466,6 +472,17 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Displays the scroll indicators momentarily.
+   */
+  scrollResponderFlashScrollIndicators: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      []
+    );
+  },
+
+  /**
    * This method should be used as the callback to onFocus in a TextInputs'
    * parent view. Note that any module using this mixin needs to return
    * the parent view's ref in getScrollViewRef() in order to use this method.
@@ -531,7 +548,7 @@ var ScrollResponderMixin = {
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',
       `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
-      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? 'always' : 'never'}"' instead`
     );
 
     this.keyboardWillOpenTo = null;

@@ -7,27 +7,21 @@
 #include <map>
 #include <vector>
 
-#include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
-#include <cxxreact/JSModulesUnbundle.h>
-#include <cxxreact/MessageQueueThread.h>
-#include <cxxreact/MethodCall.h>
-#include <cxxreact/NativeModule.h>
-#include <folly/dynamic.h>
-#include <jschelpers/Value.h>
+#include <cxxreact/JSExecutor.h>
 
 namespace folly {
-
 struct dynamic;
-
 }
 
 namespace facebook {
 namespace react {
 
-class ModuleRegistry;
-class JsToNativeBridge;
 struct InstanceCallback;
+class JsToNativeBridge;
+class MessageQueueThread;
+class ModuleRegistry;
+class RAMBundleRegistry;
 
 // This class manages calls from native code to JS.  It also manages
 // executors and their threads.  All functions here can be called from
@@ -91,27 +85,25 @@ public:
   }
 
   /**
-   * Starts the JS application.  If unbundle is non-null, then it is
+   * Starts the JS application.  If bundleRegistry is non-null, then it is
    * used to fetch JavaScript modules as individual scripts.
    * Otherwise, the script is assumed to include all the modules.
    */
   void loadApplication(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
   void loadApplicationSync(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
 
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
-  bool supportsProfiling();
-  void startProfiler(const std::string& title);
-  void stopProfiler(const std::string& title, const std::string& filename);
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
   /**
    * Synchronously tears down the bridge and the main executor.

@@ -16,6 +16,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
 import com.facebook.react.R;
 import com.facebook.react.ReactInstanceManager;
@@ -27,10 +28,10 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.cxxbridge.CatalystInstanceImpl;
-import com.facebook.react.cxxbridge.JSBundleLoader;
-import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
-import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.bridge.CatalystInstanceImpl;
+import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.modules.core.ReactChoreographer;
 
 import com.android.internal.util.Predicate;
@@ -39,8 +40,6 @@ public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {
     private static class ReactInstanceEasyBuilderImpl implements ReactInstanceEasyBuilder {
 
-      private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
-        new JavaScriptModuleRegistry.Builder();
       private NativeModuleRegistryBuilder mNativeModuleRegistryBuilder;
 
       private @Nullable Context mContext;
@@ -59,13 +58,8 @@ public class ReactTestHelper {
             null,
             false);
         }
+        Assertions.assertNotNull(nativeModule);
         mNativeModuleRegistryBuilder.addNativeModule(nativeModule);
-        return this;
-      }
-
-      @Override
-      public ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass) {
-        mJSModuleRegistryBuilder.add(moduleInterfaceClass);
         return this;
       }
 
@@ -79,7 +73,7 @@ public class ReactTestHelper {
         }
         JavaScriptExecutor executor = null;
         try {
-          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+          executor = new JSCJavaScriptExecutorFactory("ReactTestHelperApp", "ReactTestHelperDevice").create();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
@@ -87,10 +81,10 @@ public class ReactTestHelper {
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
           .setJSExecutor(executor)
           .setRegistry(mNativeModuleRegistryBuilder.build())
-          .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createAssetLoader(
-                               mContext,
-                               "assets://AndroidTestBundle.js"))
+              mContext,
+              "assets://AndroidTestBundle.js",
+              false/* Asynchronous */))
           .setNativeModuleCallExceptionHandler(
             new NativeModuleCallExceptionHandler() {
                 @Override
@@ -137,12 +131,6 @@ public class ReactTestHelper {
         @Override
         public ReactTestFactory.ReactInstanceEasyBuilder addNativeModule(NativeModule module) {
           builder.addNativeModule(module);
-          return this;
-        }
-
-        @Override
-        public ReactTestFactory.ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass) {
-          builder.addJSModule(moduleInterfaceClass);
           return this;
         }
 

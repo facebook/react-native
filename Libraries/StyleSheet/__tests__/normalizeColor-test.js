@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.unmock('normalizeColor');
-
 var normalizeColor = require('normalizeColor');
 
 describe('normalizeColor', function() {

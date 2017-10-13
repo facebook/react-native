@@ -9,10 +9,6 @@
  */
 'use strict';
 
-// const MessageQueueTestConfig = require('MessageQueueTestConfig');
-jest.unmock('MessageQueue');
-jest.unmock('defineLazyObjectProperty');
-
 let MessageQueue;
 let MessageQueueTestModule;
 let queue;
@@ -69,19 +65,49 @@ describe('MessageQueue', function() {
   it('should call the stored callback', () => {
     let done = false;
     queue.enqueueNativeCall(0, 1, [], () => {}, () => { done = true; });
-    queue.__invokeCallback(1);
+    queue.__invokeCallback(1, []);
     expect(done).toEqual(true);
   });
 
   it('should throw when calling the same callback twice', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(1)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(1, [])).toThrow();
   });
 
   it('should throw when calling both success and failure callback', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(0)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(0, [])).toThrow();
+  });
+
+  it('should throw when calling with unknown module', () => {
+    const unknownModule = 'UnknownModule', unknownMethod = 'UnknownMethod';
+    expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
+      `Module ${unknownModule} is not a registered callable module (calling ${unknownMethod})`,
+    );
+  });
+
+  it('should return lazily registered module', () => {
+    const dummyModule = {}, name = 'modulesName';
+    queue.registerLazyCallableModule(name, () => dummyModule);
+
+    expect(queue.getCallableModule(name)).toEqual(dummyModule);
+  });
+
+  it('should not initialize lazily registered module before it was used for the first time', () => {
+    const dummyModule = {}, name = 'modulesName';
+    const factory = jest.fn(() => dummyModule);
+    queue.registerLazyCallableModule(name, factory);
+    expect(factory).not.toHaveBeenCalled();
+  });
+
+  it('should initialize lazily registered module only once', () => {
+    const dummyModule = {}, name = 'modulesName';
+    const factory = jest.fn(() => dummyModule);
+    queue.registerLazyCallableModule(name, factory);
+    queue.getCallableModule(name);
+    queue.getCallableModule(name);
+    expect(factory).toHaveBeenCalledTimes(1);
   });
 });

@@ -6,11 +6,7 @@
   },
   "dependencies": {
     "babel-core": "^6.6.4",
-    "babel-plugin-external-helpers": "^6.5.0",
-    "babel-polyfill": "^6.6.1",
-    "babel-preset-react-native": "~1.6.0",
-    "babel-register": "^6.6.0",
-    "babel-types": "^6.6.4",
+    "babel-plugin-transform-flow-strip-types": "^6.21.0",
     "bluebird": "^2.9.21",
     "connect": "2.8.3",
     "deep-assign": "^2.0.0",
@@ -25,11 +21,12 @@
     "optimist": "0.6.0",
     "prop-types": "^15.5.8",
     "react": "~0.13.0",
-    "react-docgen": "3.0.0-beta2",
+    "react-docgen": "3.0.0-beta5",
     "react-page-middleware": "0.4.1",
     "remove-markdown": "^0.1.0",
     "request": "^2.69.0",
-    "semver-compare": "^1.0.0"
+    "semver-compare": "^1.0.0",
+    "shelljs": "^0.7.8"
   },
   "devDependencies": {
     "jest": "^15.1.1"

@@ -27,18 +27,39 @@ std::string normalizeName(std::string name) {
 
 }
 
-ModuleRegistry::ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules)
-    : modules_(std::move(modules)) {}
+ModuleRegistry::ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules, ModuleNotFoundCallback callback)
+    : modules_{std::move(modules)}, moduleNotFoundCallback_{callback} {}
+
+void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
+  for (; index < modules_.size(); index++ ) {
+    std::string name = normalizeName(modules_[index]->getName());
+    modulesByName_[name] = index;
+  }
+}
 
 void ModuleRegistry::registerModules(std::vector<std::unique_ptr<NativeModule>> modules) {
-  // TODO: consider relaxing this restriction
-  CHECK(modulesByName_.empty()) << "Can only register additional modules before NativeModules have been accessed";
-
-  if (modules_.empty()) {
+  if (modules_.empty() && unknownModules_.empty()) {
     modules_ = std::move(modules);
   } else {
-    modules_.reserve(modules_.size() + modules.size());
+    size_t modulesSize = modules_.size();
+    size_t addModulesSize = modules.size();
+    bool addToNames = !modulesByName_.empty();
+    modules_.reserve(modulesSize + addModulesSize);
     std::move(modules.begin(), modules.end(), std::back_inserter(modules_));
+    if (!unknownModules_.empty()) {
+      for (size_t index = modulesSize; index < modulesSize + addModulesSize; index++) {
+        std::string name = normalizeName(modules_[index]->getName());
+        auto it = unknownModules_.find(name);
+        if (it != unknownModules_.end()) {
+          throw std::runtime_error(
+            folly::to<std::string>("module ", name, " was required without being registered and is now being registered."));
+        } else if (addToNames) {
+          modulesByName_[name] = index;
+        }
+      }
+    } else if (addToNames) {
+      updateModuleNamesFromIndex(modulesSize);
+    }
   }
 }
 
@@ -53,7 +74,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
-  SystraceSection s("getConfig", "module", name);
+  SystraceSection s("ModuleRegistry::getConfig", "module", name);
 
   // Initialize modulesByName_
   if (modulesByName_.empty() && !modules_.empty()) {
@@ -61,23 +82,33 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
   }
 
   auto it = modulesByName_.find(name);
-  if (it == modulesByName_.end()) {
-    return nullptr;
-  }
 
-  CHECK(it->second < modules_.size());
-  NativeModule* module = modules_[it->second].get();
+  if (it == modulesByName_.end()) {
+    if (unknownModules_.find(name) != unknownModules_.end()) {
+      return nullptr;
+    }
+    if (!moduleNotFoundCallback_ ||
+        !moduleNotFoundCallback_(name) ||
+        (it = modulesByName_.find(name)) == modulesByName_.end()) {
+      unknownModules_.insert(name);
+      return nullptr;
+    }
+  }
+  size_t index = it->second;
+
+  CHECK(index < modules_.size());
+  NativeModule *module = modules_[index].get();
 
   // string name, object constants, array methodNames (methodId is index), [array promiseMethodIds], [array syncMethodIds]
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s("getConstants");
+    SystraceSection s_("getConstants");
     config.push_back(module->getConstants());
   }
 
   {
-    SystraceSection s("getMethods");
+    SystraceSection s_("getMethods");
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;
@@ -109,7 +140,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
     // no constants or methods
     return nullptr;
   } else {
-    return ModuleConfig({it->second, config});
+    return ModuleConfig{index, config};
   }
 }
 
@@ -118,14 +149,7 @@ void ModuleRegistry::callNativeMethod(unsigned int moduleId, unsigned int method
     throw std::runtime_error(
       folly::to<std::string>("moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
   }
-
-#ifdef WITH_FBSYSTRACE
-  if (callId != -1) {
-    fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
-  }
-#endif
-
-  modules_[moduleId]->invoke(methodId, std::move(params));
+  modules_[moduleId]->invoke(methodId, std::move(params), callId);
 }
 
 MethodCallResult ModuleRegistry::callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {

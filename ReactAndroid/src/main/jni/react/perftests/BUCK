@@ -1,0 +1,20 @@
+include_defs("//ReactAndroid/DEFS")
+
+cxx_library(
+    name = "perftests",
+    srcs = ["OnLoad.cpp"],
+    compiler_flags = [
+        "-fexceptions",
+        "-std=c++1y",
+    ],
+    soname = "libnativereactperftests.$(ext)",
+    visibility = [
+        "//instrumentation_tests/com/facebook/react/...",
+    ],
+    deps = [
+        "xplat//folly:molly",
+        "//native:base",
+        "//native/fb:fb",
+        react_native_xplat_target("cxxreact:module"),
+    ],
+)

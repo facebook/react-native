@@ -31,10 +31,12 @@
 
 // Use for methods were access to a JSContextRef is impractical. The first bool param
 // will be dropped before the JSC method is invoked.
-#define __jsc_bool_wrapper(method, useCustomJSC, ...) \
-  (useCustomJSC ?                                     \
-    facebook::react::customJSCWrapper() :             \
-    facebook::react::systemJSCWrapper()               \
+#define __jsc_ensure_bool(field) \
+  static_assert(std::is_same<typename std::decay<decltype(field)>::type, bool>::value, "useCustomJSC must be bool");
+#define __jsc_bool_wrapper(method, useCustomJSC, ...)    \
+  ([]{ __jsc_ensure_bool(useCustomJSC) }, useCustomJSC ? \
+    facebook::react::customJSCWrapper() :                \
+    facebook::react::systemJSCWrapper()                  \
   )->method(__VA_ARGS__)
 
 // Used for wrapping properties
@@ -75,8 +77,9 @@ jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
+#define JSC_FBJSContextStartGCTimers(...) __jsc_wrapper(FBJSContextStartGCTimers, __VA_ARGS__)
 
-jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup)
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup FBJSContextStartGCTimers)
 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
@@ -142,10 +145,12 @@ jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 #define JSC_JSObjectIsFunction(...) __jsc_wrapper(JSObjectIsFunction, __VA_ARGS__)
 #define JSC_JSObjectMake(...) __jsc_wrapper(JSObjectMake, __VA_ARGS__)
 #define JSC_JSObjectMakeArray(...) __jsc_wrapper(JSObjectMakeArray, __VA_ARGS__)
+#define JSC_JSObjectMakeDate(...) __jsc_wrapper(JSObjectMakeDate, __VA_ARGS__)
 #define JSC_JSObjectMakeError(...) __jsc_wrapper(JSObjectMakeError, __VA_ARGS__)
 #define JSC_JSObjectMakeFunctionWithCallback(...) __jsc_wrapper(JSObjectMakeFunctionWithCallback, __VA_ARGS__)
 #define JSC_JSObjectSetPrivate(...) __jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__)
 #define JSC_JSObjectSetProperty(...) __jsc_wrapper(JSObjectSetProperty, __VA_ARGS__)
+#define JSC_JSObjectSetPropertyAtIndex(...) __jsc_wrapper(JSObjectSetPropertyAtIndex, __VA_ARGS__)
 
 jsc_poison(JSObjectCallAsConstructor JSObjectCallAsFunction JSObjectDeleteProperty
            JSObjectGetPrivate JSObjectGetProperty JSObjectGetPropertyAtIndex
@@ -183,7 +188,8 @@ jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
 #define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-jsc_poison(JSInspectorGetInstance)
+// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSInspectorGetInstance)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)

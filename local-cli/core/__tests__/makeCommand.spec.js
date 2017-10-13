@@ -1,35 +1,48 @@
-var spawnError = false;
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
+ */
+
+'use strict';
+
+let spawnError = false;
 
 jest.setMock('child_process', {
   spawn: () => ({
-    on: (ev, cb) => cb(spawnError),
+    on: (event, cb) => cb(spawnError),
   }),
 });
-jest.dontMock('../makeCommand');
 
 const makeCommand = require('../makeCommand');
 
 describe('makeCommand', () => {
   const command = makeCommand('echo');
 
-  it('should generate a function around shell command', () => {
+  it('generates a function around shell command', () => {
     expect(typeof command).toBe('function');
   });
 
-  it('should throw an error if there\'s no callback provided', () => {
+  it('throws an error if there is no callback provided', () => {
     expect(command).toThrow();
   });
 
-  it('should invoke a callback after command execution', () => {
-    const spy = jest.genMockFunction();
+  it('invokes a callback after command execution', () => {
+    const spy = jest.fn();
     command(spy);
-
-    expect(spy.mock.calls.length).toBe(1);
+    expect(spy.mock.calls).toHaveLength(1);
   });
 
-  it('should throw an error if spawn ended up with error', () => {
+  it('throws an error if spawn ended up with error', () => {
     spawnError = true;
-    const cb = jest.genMockFunction();
-    expect(() => command(cb)).toThrow();
+    const cb = jest.fn();
+    expect(() => {
+      command(cb);
+    }).toThrow();
   });
 });

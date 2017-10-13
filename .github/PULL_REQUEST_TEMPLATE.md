@@ -1,4 +1,5 @@
-Thanks for submitting a PR! Please read these instructions carefully:
+<!--
+Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
 
 - [x] Explain the **motivation** for making this change.
 - [x] Provide a **test plan** demonstrating that the code is solid.
@@ -15,10 +16,16 @@ What existing problem does the pull request solve?
 -------------------------------------------------------------
 
  .  
+=======
+Help us understand your motivation by explaining why you decided to make this change.
 
-## Test Plan (required)
+You can learn more about contributing to React Native here: http://facebook.github.io/react-native/docs/contributing.html
 
-A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website. See [What is a Test Plan?][1] to learn more.  
+Happy contributing!
+
+-->
+
+(Write your motivation here.)
 
 If you have added code that should be tested, add tests.
 -----------------------------------------------------------------
@@ -26,19 +33,7 @@ Ans:
 # **->testing video is here. text size is 10,20 and 30.
 [IMG_1944.MOV.zip](https://github.com/facebook/react-native/files/981039/IMG_1944.MOV.zip)**
 --------------------------------------------------------------------
+=======
+## Test Plan
 
-## Next Steps
-
-Sign the [CLA][2], if you haven't already.
-
-Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
-
-Make sure all **tests pass** on both [Travis][3] and [Circle CI][4]. PRs that break tests are unlikely to be merged.
-
-For more info, see the ["Pull Requests"][5] section of our "Contributing" guidelines.
-
-[1]: https://medium.com/@martinkonicek/what-is-a-test-plan-8bfc840ec171#.y9lcuqqi9
-[2]: https://code.facebook.com/cla
-[3]: https://travis-ci.org/facebook/react-native
-[4]: http://circleci.com/gh/facebook/react-native
-[5]: https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#pull-requests
+(Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!)

@@ -16,7 +16,7 @@ const getDevServer = require('getDevServer');
 const {SourceCode} = require('NativeModules');
 
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
-let fetch; 
+let fetch;
 
 import type {StackFrame} from 'parseErrorStack';
 
@@ -25,13 +25,13 @@ function isSourcedFromDisk(sourcePath: string): boolean {
 }
 
 async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<StackFrame>> {
-  // RN currently lazy loads whatwg-fetch using a custom fetch module, which, 
+  // RN currently lazy loads whatwg-fetch using a custom fetch module, which,
   // when called for the first time, requires and re-exports 'whatwg-fetch'.
-  // However, when a dependency of the project tries to require whatwg-fetch 
-  // either directly or indirectly, whatwg-fetch is required before 
+  // However, when a dependency of the project tries to require whatwg-fetch
+  // either directly or indirectly, whatwg-fetch is required before
   // RN can lazy load whatwg-fetch. As whatwg-fetch checks
-  // for a fetch polyfill before loading, it will in turn try to load 
-  // RN's fetch module, which immediately tries to import whatwg-fetch AGAIN. 
+  // for a fetch polyfill before loading, it will in turn try to load
+  // RN's fetch module, which immediately tries to import whatwg-fetch AGAIN.
   // This causes a circular require which results in RN's fetch module
   // exporting fetch as 'undefined'.
   // The fix below postpones trying to load fetch until the first call to symbolicateStackTrace.

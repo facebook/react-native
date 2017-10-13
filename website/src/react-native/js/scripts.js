@@ -11,7 +11,6 @@
 
 (function() {
   'use strict';
-
   // Not on browser
   if (typeof document === 'undefined') {
     return;
@@ -28,11 +27,15 @@
         .addEventListener('click', toggleTarget);
     }
 
-    var webPlayerList = document.querySelectorAll('.web-player');
+    var webPlayerList = document.querySelectorAll(
+      '.web-player'
+    );
 
     // Either show interactive or static code block, depending on desktop or mobile
     for (var i = 0; i < webPlayerList.length; ++i) {
-      webPlayerList[i].classList.add(mobile ? 'mobile' : 'desktop');
+      webPlayerList[i].classList.add(
+        mobile ? 'mobile' : 'desktop'
+      );
 
       if (!mobile) {
         // Determine location to look up required assets
@@ -41,14 +44,18 @@
         );
 
         // Set iframe src. Do this dynamically so the iframe never loads on mobile.
-        var iframe = webPlayerList[i].querySelector('iframe');
+        var iframe = webPlayerList[i].querySelector(
+          'iframe'
+        );
         iframe.src = iframe.getAttribute('data-src') +
           '&assetRoot=' +
           assetRoot;
       }
     }
 
-    var snackPlayerList = document.querySelectorAll('.snack-player');
+    var snackPlayerList = document.querySelectorAll(
+      '.snack-player'
+    );
 
     // Either show interactive or static code block, depending on desktop or mobile
     for (var i = 0; i < snackPlayerList.length; ++i) {
@@ -68,25 +75,36 @@
       }
     }
 
-    var backdrop = document.querySelector('.modal-backdrop');
+    var backdrop = document.querySelector(
+      '.modal-backdrop'
+    );
     if (!backdrop) {
       return;
     }
 
-    var modalButtonOpenList = document.querySelectorAll('.modal-button-open');
-    var modalButtonClose = document.querySelector('.modal-button-close');
+    var modalButtonOpenList = document.querySelectorAll(
+      '.modal-button-open'
+    );
+    var modalButtonClose = document.querySelector(
+      '.modal-button-close'
+    );
 
     backdrop.addEventListener('click', hideModal);
     modalButtonClose.addEventListener('click', hideModal);
 
     // Bind event to NodeList items
     for (var i = 0; i < modalButtonOpenList.length; ++i) {
-      modalButtonOpenList[i].addEventListener('click', showModal);
+      modalButtonOpenList[i].addEventListener(
+        'click',
+        showModal
+      );
     }
   }
 
   function showModal(e) {
-    var backdrop = document.querySelector('.modal-backdrop');
+    var backdrop = document.querySelector(
+      '.modal-backdrop'
+    );
     if (!backdrop) {
       return;
     }
@@ -98,7 +116,9 @@
   }
 
   function hideModal(e) {
-    var backdrop = document.querySelector('.modal-backdrop');
+    var backdrop = document.querySelector(
+      '.modal-backdrop'
+    );
     if (!backdrop) {
       return;
     }
@@ -121,7 +141,8 @@
       if (toggledTarget === target) {
         toggledTarget.classList.toggle('in');
       } else {
-        toggledTarget && toggledTarget.classList.remove('in');
+        toggledTarget &&
+          toggledTarget.classList.remove('in');
         target.classList.add('in');
       }
 

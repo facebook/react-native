@@ -16,6 +16,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
@@ -114,12 +115,18 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityViewIsModal, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
+
+// Acessibility related properties
+RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
+RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifier, NSString)
+
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
-RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
@@ -220,8 +227,6 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
     }
   }
 }
-RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
@@ -255,6 +260,7 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
+RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
