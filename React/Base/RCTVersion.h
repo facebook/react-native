@@ -12,6 +12,6 @@
 #define REACT_NATIVE_VERSION @{ \
   @"major": @(0), \
   @"minor": @(49), \
-  @"patch": @(3), \
+  @"patch": @(4), \
   @"prerelease": [NSNull null], \
 }
