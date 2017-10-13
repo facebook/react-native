@@ -1,7 +1,6 @@
 <!--
 Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
 
-- [x] Explain the **motivation** for making this change.
 - [x] Provide a **test plan** demonstrating that the code is solid.
 - [x] Match the **code formatting** of the rest of the codebase.
 - [x] Target the `master` branch, NOT a "stable" branch.
