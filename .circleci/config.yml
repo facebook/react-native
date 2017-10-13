@@ -129,6 +129,50 @@ jobs:
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
+
+  # Runs unit tests on iOS devices
+  test-objc-ios:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: npm install
+      - run: ./scripts/objc-test-ios.sh
+
+  # Runs unit tests on tvOS devices
+  test-objc-tvos:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: npm install
+      - run: ./scripts/objc-test-tvos.sh
+
+  # Runs end to end tests
+  test-objc-e2e:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: npm install
+      - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+  # Checks podspec
+  test-podspec:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - run: npm install
+      - run: |
+        if [ -n "$CIRCLE_PR_NUMBER" ]; then
+          gem install cocoapods
+          ./scripts/process-podspecs.sh
+        fi
           
   test-website:
     <<: *defaults
@@ -349,12 +393,14 @@ jobs:
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
+  
   test_node:
     jobs:
       - test-node-8
       - test-node-6
 # Node 4 tests are already failing on Circle 1.0
 #      - test-node-4
+
   website:
     jobs:
       - test-website
@@ -366,6 +412,7 @@ workflows:
               only:
                 - /.*-stable/
                 - master
+
   test_android:
     jobs:
       - build-js-bundle:
@@ -375,3 +422,10 @@ workflows:
       - test-android:
           requires:
             - build-js-bundle
+
+  test_ios:
+    jobs:
+      - test-objc-ios
+      - test-objc-tvos
+      - test-objc-e2e
+      - test-podspec
