@@ -11,7 +11,6 @@ package com.facebook.react.animated;
 
 import android.util.SparseArray;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -59,7 +58,7 @@ import javax.annotation.Nullable;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
-  private final Map<String, Map<String, String>> mCustomEventTypes;
+  private final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
@@ -68,8 +67,7 @@ import javax.annotation.Nullable;
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
     uiManager.getEventDispatcher().addListener(this);
-    Object customEventTypes = Assertions.assertNotNull(uiManager.getConstants()).get("customDirectEventTypes");
-    mCustomEventTypes = (Map<String, Map<String, String>>) customEventTypes;
+    mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
   }
 
   /*package*/ @Nullable AnimatedNode getNodeById(int id) {
@@ -92,7 +90,7 @@ import javax.annotation.Nullable;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this);
+      node = new PropsAnimatedNode(config, this, mUIImplementation);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
@@ -289,11 +287,7 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != -1) {
-      throw new JSApplicationIllegalArgumentException("Animated node " + animatedNodeTag + " is " +
-        "already attached to a view");
-    }
-    propsAnimatedNode.mConnectedViewTag = viewTag;
+    propsAnimatedNode.connectToView(viewTag);
     mUpdatedNodes.put(animatedNodeTag, node);
   }
 
@@ -308,11 +302,24 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != viewTag) {
-      throw new JSApplicationIllegalArgumentException("Attempting to disconnect view that has " +
-        "not been connected with the given animated node");
+    propsAnimatedNode.disconnectFromView(viewTag);
+  }
+
+  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
+    AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
+    // Restoring default values needs to happen before UIManager operations so it is
+    // possible the node hasn't been created yet if it is being connected and
+    // disconnected in the same batch. In that case we don't need to restore
+    // default values since it will never actually update the view.
+    if (node == null) {
+      return;
     }
-    propsAnimatedNode.mConnectedViewTag = -1;
+    if (!(node instanceof PropsAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
+        "of type " + PropsAnimatedNode.class.getName());
+    }
+    PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
+    propsAnimatedNode.restoreDefaultValues();
   }
 
   public void addAnimatedEventToView(int viewTag, String eventName, ReadableMap eventMapping) {
@@ -363,20 +370,25 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void onEventDispatch(Event event) {
-    // Only support events dispatched from the UI thread.
-    if (!UiThreadUtil.isOnUiThread()) {
-      return;
+  public void onEventDispatch(final Event event) {
+    // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
+    // UI thread.
+    if (UiThreadUtil.isOnUiThread()) {
+      handleEvent(event);
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          handleEvent(event);
+        }
+      });
     }
+  }
 
+  private void handleEvent(Event event) {
     if (!mEventDrivers.isEmpty()) {
       // If the event has a different name in native convert it to it's JS name.
-      String eventName = event.getEventName();
-      Map<String, String> customEventType = mCustomEventTypes.get(eventName);
-      if (customEventType != null) {
-        eventName = customEventType.get("registrationName");
-      }
-
+      String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {
@@ -513,7 +525,7 @@ import javax.annotation.Nullable;
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
         try {
-          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+          ((PropsAnimatedNode) nextNode).updateView();
         } catch (IllegalViewOperationException e) {
             // An exception is thrown if the view hasn't been created yet. This can happen because views are
             // created in batches. If this particular view didn't make it into a batch yet, the view won't

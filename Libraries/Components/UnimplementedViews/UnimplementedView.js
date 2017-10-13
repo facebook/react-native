@@ -19,7 +19,7 @@ const StyleSheet = require('StyleSheet');
  * Common implementation for a simple stubbed view. Simply applies the view's styles to the inner
  * View component and renders its children.
  */
-class UnimplementedView extends React.Component {
+class UnimplementedView extends React.Component<$FlowFixMeProps> {
   setNativeProps() {
     // Do nothing.
     // This method is required in order to use this view as a Touchable* child.

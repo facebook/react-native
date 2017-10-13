@@ -145,21 +145,19 @@ function createStackEntry(props: any): any {
  * set by the static API will get overriden by the one set by the component in
  * the next render.
  *
- * ### Constants
+ * ### Constants
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component {
-  props: {
-    hidden?: boolean,
-    animated?: boolean,
-    backgroundColor?: string,
-    translucent?: boolean,
-    barStyle?: 'default' | 'light-content' | 'dark-content',
-    networkActivityIndicatorVisible?: boolean,
-    showHideTransition?: 'fade' | 'slide',
-  };
-
+class StatusBar extends React.Component<{
+  hidden?: boolean,
+  animated?: boolean,
+  backgroundColor?: string,
+  translucent?: boolean,
+  barStyle?: 'default' | 'light-content' | 'dark-content',
+  networkActivityIndicatorVisible?: boolean,
+  showHideTransition?: 'fade' | 'slide',
+}> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
@@ -410,7 +408,7 @@ class StatusBar extends React.Component {
     });
   };
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     return null;
   }
 }

@@ -19,7 +19,7 @@ var {
   View,
 } = ReactNative;
 
-class ExampleBox extends React.Component {
+class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     log: [],
   };
@@ -46,6 +46,9 @@ class ExampleBox extends React.Component {
         <View
           onTouchEndCapture={this.handleTouchCapture}
           onTouchStart={this.flushReactChanges}>
+          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+            * comment suppresses an error when upgrading Flow's support for
+            * React. To see the error delete this comment and run Flow. */}
           <this.props.Component onLog={this.handleLog} />
         </View>
         <View
@@ -59,7 +62,7 @@ class ExampleBox extends React.Component {
   }
 }
 
-class NoneExample extends React.Component {
+class NoneExample extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View
@@ -92,7 +95,7 @@ class NoneExample extends React.Component {
  * Special demo text that makes itself untouchable so that it doesn't destroy
  * the experiment and confuse the output.
  */
-class DemoText extends React.Component {
+class DemoText extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View pointerEvents="none">
@@ -105,7 +108,7 @@ class DemoText extends React.Component {
   }
 }
 
-class BoxNoneExample extends React.Component {
+class BoxNoneExample extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View
@@ -142,7 +145,7 @@ class BoxNoneExample extends React.Component {
   }
 }
 
-class BoxOnlyExample extends React.Component {
+class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View
@@ -180,7 +183,7 @@ class BoxOnlyExample extends React.Component {
 }
 
 type ExampleClass = {
-  Component: ReactClass<any>,
+  Component: React.ComponentType<any>,
   title: string,
   description: string,
 };

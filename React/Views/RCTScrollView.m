@@ -156,6 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
 @property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
+@property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
 @end
@@ -174,6 +175,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
+
+    #if !TARGET_OS_TV
+    _pinchGestureEnabled = YES;
+    #endif
   }
   return self;
 }
@@ -310,15 +315,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIEdgeInsets contentInset = self.contentInset;
   CGSize contentSize = self.contentSize;
-  CGSize fullContentSize = CGSizeMake(
-    contentSize.width + contentInset.left + contentInset.right,
-    contentSize.height + contentInset.top + contentInset.bottom);
-
-  CGSize boundsSize = self.bounds.size;
-
-  self.contentOffset = CGPointMake(
-    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
-    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
+  
+  // If contentSize has not been measured yet we can't check bounds.
+  if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
+    self.contentOffset = originalOffset;
+  } else {
+    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    CGSize boundsSize = self.bounds.size;
+    self.contentOffset = CGPointMake(
+      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
+      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+  }
 }
 
 #if !TARGET_OS_TV
@@ -329,6 +336,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   _rctRefreshControl = refreshControl;
   [self addSubview:_rctRefreshControl];
+}
+
+- (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
+{
+  self.pinchGestureRecognizer.enabled = pinchGestureEnabled;
+  _pinchGestureEnabled = pinchGestureEnabled;
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
+  // in the setter gets overriden when the view loads.
+  self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV
 

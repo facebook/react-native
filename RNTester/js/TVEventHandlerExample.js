@@ -31,11 +31,9 @@ exports.examples = [{
   render() {return <TVEventHandlerView/>;}
 }];
 
-class TVEventHandlerView extends React.Component {
-  state: {
-    lastEventType: string
-  }
-
+class TVEventHandlerView extends React.Component<$FlowFixMeProps, {
+  lastEventType: string
+}> {
   constructor(props) {
     super(props);
     this.state = {
@@ -50,7 +48,7 @@ class TVEventHandlerView extends React.Component {
     this._tvEventHandler.enable(this, function(cmp, evt) {
       cmp.setState({
         lastEventType: evt.eventType
-      })
+      });
     });
   }
 

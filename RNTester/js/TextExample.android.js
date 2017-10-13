@@ -22,7 +22,7 @@ var {
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
 
-class Entity extends React.Component {
+class Entity extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -32,7 +32,7 @@ class Entity extends React.Component {
   }
 }
 
-class AttributeToggler extends React.Component {
+class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -69,7 +69,7 @@ class AttributeToggler extends React.Component {
   }
 }
 
-class TextExample extends React.Component {
+class TextExample extends React.Component<{}> {
   static title = '<Text>';
   static description = 'Base component for rendering styled text.';
 
@@ -231,6 +231,27 @@ class TextExample extends React.Component {
         <RNTesterBlock title="Nested">
           <Text onPress={() => console.log('1st')}>
             (Normal text,
+            <Text style={{color: 'red', fontWeight: 'bold'}}>
+              (R)red
+              <Text style={{color: 'green', fontWeight: 'normal'}}>
+                (G)green
+                <Text style={{color: 'blue', fontWeight: 'bold'}}>
+                  (B)blue
+                  <Text style={{color: 'cyan', fontWeight: 'normal'}}>
+                    (C)cyan
+                    <Text style={{color: 'magenta', fontWeight: 'bold'}}>
+                      (M)magenta
+                      <Text style={{color: 'yellow', fontWeight: 'normal'}}>
+                        (Y)yellow
+                        <Text style={{color: 'black', fontWeight: 'bold'}}>
+                          (K)black
+                        </Text>
+                      </Text>
+                    </Text>
+                  </Text>
+                </Text>
+              </Text>
+            </Text>
             <Text style={{fontWeight: 'bold'}} onPress={() => console.log('2nd')}>
               (and bold
               <Text style={{fontStyle: 'italic', fontSize: 11, color: '#527fe4'}} onPress={() => console.log('3rd')}>

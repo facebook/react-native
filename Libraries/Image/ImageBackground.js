@@ -33,7 +33,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *         source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>
@@ -45,7 +45,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  * AppRegistry.registerComponent('DisplayAnImageBackground', () => DisplayAnImageBackground);
  * ```
  */
-class ImageBackground extends React.Component {
+class ImageBackground extends React.Component<$FlowFixMeProps> {
   setNativeProps(props: Object) {
     // Work-around flow
     const viewRef = this._viewRef;

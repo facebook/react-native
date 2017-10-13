@@ -34,7 +34,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('InitializeCore')
+  .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
@@ -67,6 +67,44 @@ jest
       return new ListViewDataSource(this._dataBlob);
     };
     return DataSource;
+  })
+  .mock('AnimatedImplementation', () => {
+    const AnimatedImplementation = require.requireActual('AnimatedImplementation');
+    const oldCreate = AnimatedImplementation.createAnimatedComponent;
+    AnimatedImplementation.createAnimatedComponent = function(Component) {
+      const Wrapped = oldCreate(Component);
+      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
+      return Wrapped;
+    };
+    return AnimatedImplementation;
+  })
+  .mock('ReactNative', () => {
+    const ReactNative = require.requireActual('ReactNative');
+    const NativeMethodsMixin =
+      ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativeMethodsMixin;
+    [
+      'measure',
+      'measureInWindow',
+      'measureLayout',
+      'setNativeProps',
+      'focus',
+      'blur',
+    ].forEach((key) => {
+      let warned = false;
+      NativeMethodsMixin[key] = function() {
+        if (warned) {
+          return;
+        }
+        warned = true;
+        console.warn(
+          'Calling .' + key + '() in the test renderer environment is not ' +
+            'supported. Instead, mock out your components that use ' +
+            'findNodeHandle with replacements that don\'t rely on the ' +
+            'native environment.',
+        );
+      };
+    });
+    return ReactNative;
   })
   .mock('ensureComponentIsNative', () => () => true);
 
@@ -237,6 +275,15 @@ const mockNativeModules = {
       Constants: {},
     },
   },
+  BlobModule: {
+    BLOB_URI_SCHEME: 'content',
+    BLOB_URI_HOST: null,
+    enableBlobSupport: jest.fn(),
+    disableBlobSupport: jest.fn(),
+    createFromParts: jest.fn(),
+    sendBlob: jest.fn(),
+    release: jest.fn(),
+  },
   WebSocketModule: {
     connect: jest.fn(),
     send: jest.fn(),
@@ -266,9 +313,13 @@ jest
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
 
-  return viewName => props => React.createElement(
-    viewName,
-    props,
-    props.children,
-  );
+  return viewName => class extends React.Component {
+    render() {
+      return React.createElement(
+        viewName,
+        this.props,
+        this.props.children,
+      );
+    }
+  };
 });

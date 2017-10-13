@@ -47,8 +47,8 @@ function createStrictShapeTypeChecker(
         invariant(
           false,
           `Invalid props.${propName} key \`${key}\` supplied to \`${componentName}\`.` +
-            `\nBad object: ` + JSON.stringify(props[propName], null, '  ') +
-            `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+            '\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
         );
       }
       var error = checker(propValue, key, componentName, location, ...rest);
@@ -56,7 +56,7 @@ function createStrictShapeTypeChecker(
         invariant(
           false,
           error.message +
-            `\nBad object: ` + JSON.stringify(props[propName], null, '  ')
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ')
         );
       }
     }

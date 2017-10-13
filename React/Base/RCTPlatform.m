@@ -12,8 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTUtils.h"
-
-@implementation RCTPlatform
+#import "RCTVersion.h"
 
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {
@@ -30,7 +29,14 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
+@implementation RCTPlatform
+
 RCT_EXPORT_MODULE(PlatformConstants)
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
@@ -41,6 +47,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
     @"isTesting": @(RCTRunningInTestEnvironment()),
+    @"reactNativeVersion": REACT_NATIVE_VERSION,
   };
 }
 

@@ -14,7 +14,7 @@ React Native supports a few keyboard shortcuts in the iOS Simulator. They are de
 
 ## Accessing the In-App Developer Menu
 
-You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the `⌘D` keyboard shortcut when your app is running in the iOS Simulator, or `⌘M` when running in an Android emulator.
+You can access the developer menu by shaking your device or by selecting "Shake Gesture" inside the Hardware menu in the iOS Simulator. You can also use the `⌘D` keyboard shortcut when your app is running in the iOS Simulator, or `⌘M` when running in an Android emulator. Alternatively for Android, you can run the command `adb shell input keyevent 82` to open the dev menu (82 being the Menu key code).
 
 ![](img/DeveloperMenu.png)
 
@@ -165,43 +165,73 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
-1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
+Follow this guide to enable Stetho for Debug mode:
+
+1. In `android/app/build.gradle`, add these lines in the `dependencies` section:
 
    ```gradle
-   compile 'com.facebook.stetho:stetho:1.3.1'
-   compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports:
+> The above will configure Stetho v1.5.0. You can check at http://facebook.github.io/stetho/ if a newer version is available.
 
-   ```java
-   import com.facebook.react.modules.network.ReactCookieJarContainer;
-   import com.facebook.stetho.Stetho;
-   import okhttp3.OkHttpClient;
-   import com.facebook.react.modules.network.OkHttpClientProvider;
-   import com.facebook.stetho.okhttp3.StethoInterceptor;
-   import java.util.concurrent.TimeUnit;
-   ```
+2. Create the following Java classes to wrap the Stetho call, one for release and one for debug:
+   
+    ```java
+    // android/app/src/release/java/com/{yourAppName}/StethoWrapper.java
+    
+    public class StethoWrapper {
 
-3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
-   ```java
-   public void onCreate() {
-         super.onCreate();
-         Stetho.initializeWithDefaults(this);
-         OkHttpClient client = new OkHttpClient.Builder()
-         .connectTimeout(0, TimeUnit.MILLISECONDS)
-         .readTimeout(0, TimeUnit.MILLISECONDS)
-         .writeTimeout(0, TimeUnit.MILLISECONDS)
-         .cookieJar(new ReactCookieJarContainer())
-         .addNetworkInterceptor(new StethoInterceptor())
-         .build();
-         OkHttpClientProvider.replaceOkHttpClient(client);
-   }
-   ```
+        public static void initialize(Context context) {
+            // NO_OP
+        }
 
-4. Run  ```react-native run-android ```
+        public static void addInterceptor() {
+            // NO_OP
+        }
+    }
+    ```
 
-5. In a new Chrome tab, open: ```chrome://inspect```, then click on 'Inspect device' (the one followed by "Powered by Stetho").
+    ```java
+    // android/app/src/debug/java/com/{yourAppName}/StethoWrapper.java
+
+    public class StethoWrapper {
+        public static void initialize(Context context) {
+          Stetho.initializeWithDefaults(context);
+        }
+
+        public static void addInterceptor() {
+          OkHttpClient client = OkHttpClientProvider.getOkHttpClient()
+                 .newBuilder()
+                 .addNetworkInterceptor(new StethoInterceptor())
+                 .build();
+          
+          OkHttpClientProvider.replaceOkHttpClient(client);
+        }
+    }
+    ```
+
+3. Open `android/app/src/main/java/com/{yourAppName}/MainApplication.java` and replace the original `onCreate` function:
+
+```java
+  public void onCreate() {
+      super.onCreate();
+
+      if (BuildConfig.DEBUG) {      
+          StethoWrapper.initialize(this);
+          StethoWrapper.addInterceptor();
+      }
+
+      SoLoader.init(this, /* native exopackage */ false);
+    }
+```
+
+4. Open the project in Android Studio and resolve any dependency issues. The IDE should guide you through this steps after hovering your pointer over the red lines.
+
+5. Run `react-native run-android`.
+
+6. In a new Chrome tab, open: `chrome://inspect`, then click on the 'Inspect device' item next to "Powered by Stetho".
 
 ## Debugging native code
 
