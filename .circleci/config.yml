@@ -4,6 +4,7 @@ aliases:
       - v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
       - v1-dependencies-{{ .Branch }}-
+
   - &save-cache
     paths:
       - node_modules
@@ -14,6 +15,7 @@ aliases:
       - v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
       # Fallback in case checksum fails
       - v1-website-dependencies-{{ .Branch }}-
+
   - &save-cache-website
     paths:
       - website/node_modules
@@ -24,6 +26,7 @@ aliases:
       - v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
       - v1-danger-dependencies-{{ .Branch }}-
+
   - &save-cache-danger
     paths:
       - danger/node_modules
@@ -48,6 +51,7 @@ aliases:
   - &restore-cache-ndk
     keys:
       - v1-android-ndk-r10e-32-64
+
   - &save-cache-ndk
     paths:
       - /opt/ndk
@@ -79,6 +83,13 @@ aliases:
       - ~/watchman
     key: v1-watchman-v4.9.0
 
+  - &install_node_dependencies
+    |
+      npm config set spin=false
+      npm config set progress=false
+      npm install --no-package-lock
+
+
 defaults: &defaults
   working_directory: ~/react-native
 
@@ -90,7 +101,7 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
+      - run: *install_node_dependencies
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
@@ -112,7 +123,7 @@ jobs:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
@@ -124,7 +135,7 @@ jobs:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: |
           npm test -- --maxWorkers=2
           npm run lint
@@ -137,7 +148,7 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: ./scripts/objc-test-ios.sh
 
   # Runs unit tests on tvOS devices
@@ -147,7 +158,7 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: ./scripts/objc-test-tvos.sh
 
   # Runs end to end tests
@@ -157,7 +168,7 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
 
   # Checks podspec
@@ -167,12 +178,11 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - run: npm install
+      - run: *install_node_dependencies
       - run: |
-        if [ -n "$CIRCLE_PR_NUMBER" ]; then
-          gem install cocoapods
-          ./scripts/process-podspecs.sh
-        fi
+          if [ -n "$CIRCLE_PR_NUMBER" ]; then
+            gem install cocoapods && ./scripts/process-podspecs.sh
+          fi
           
   test-website:
     <<: *defaults
@@ -225,7 +235,7 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
+      - run: *install_node_dependencies
       - run:
           name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
@@ -302,7 +312,7 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             sudo apt-get install -y nodejs
-      - run: npm install
+      - run: *install_node_dependencies
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
