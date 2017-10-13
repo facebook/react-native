@@ -85,9 +85,7 @@ aliases:
 
   - &install-node-dependencies
     |
-      npm config set spin=false
-      npm config set progress=false
-      npm install --no-package-lock
+      npm install --no-package-lock --no-spin --no-progress
 
   - &run-node-tests
     | 
@@ -102,7 +100,7 @@ version: 2
 jobs:
 
   # Runs unit tests on Node 8
-  test-node-8:
+  test-js-node-8:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -114,7 +112,7 @@ jobs:
       - run: *run-node-tests
 
   # Runs unit tests on Node 6
-  test-node-6:
+  test-js-node-6:
     <<: *defaults
     docker:
       - image: circleci/node:6.11.0
@@ -126,7 +124,7 @@ jobs:
       - run: *run-node-tests
 
   # Runs unit tests on Node 4
-  test-node-4:
+  test-js-node-4:
     <<: *defaults
     docker:
       - image: circleci/node:4.8.4
@@ -327,6 +325,7 @@ jobs:
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
+# TODO: Install and use watchman to speed up builds
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
@@ -390,11 +389,11 @@ jobs:
       - run:
           name: Build and Install Test APK
           command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-# Failing test is expected
+# TODO: Uncomment, test was already failing on Circle 1.0
 #      - run:
 #          name: Run Installed APK with Tests
 #          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
-# Should be disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
+# TODO: Should be disabled, pending on https://our.intern.facebook.com/intern/tasks?t=16912142
 #       - run:
 #          name: Run Android End to End Tests
 #           command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
@@ -406,7 +405,7 @@ jobs:
             mkdir -p ~/junit/
             find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
-# TODO circle does not understand Buck's report, maybe need to transform xml slightly
+# TODO: Circle does not understand Buck's report, maybe need to transform xml slightly
 #           find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/junit/ \;
           when: always
       - store_test_results:
@@ -420,10 +419,10 @@ workflows:
   
   test_node:
     jobs:
-      - test-node-8
-      - test-node-6
-# Node 4 tests are already failing on Circle 1.0
-#      - test-node-4
+      - test-js-node-8
+      - test-js-node-6
+# TODO: Node 4 tests are already failing on Circle 1.0
+#      - test-js-node-4
 
   website:
     jobs:
@@ -451,5 +450,6 @@ workflows:
     jobs:
       - test-objc-ios
       - test-objc-tvos
-      - test-podspec
+# TODO: Podspec tests are already failing on Travis
+#      - test-podspec
       - test-objc-e2e
