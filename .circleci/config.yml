@@ -89,7 +89,7 @@ aliases:
       npm config set progress=false
       npm install --no-package-lock
 
-  - &run_javascript_tests
+  - &run_node_tests
     | 
       npm test -- --maxWorkers=2
       npm run lint
