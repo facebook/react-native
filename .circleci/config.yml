@@ -1,42 +1,42 @@
 aliases:
   - &restore-node-cache
     keys:
-      - v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ .Branch }}-
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-
 
   - &save-node-cache
     paths:
       - node_modules
-    key: v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
 
   - &restore-cache-website
     keys:
-      - v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
       # Fallback in case checksum fails
-      - v1-website-dependencies-{{ .Branch }}-
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-
 
   - &save-cache-website
     paths:
       - website/node_modules
-    key: v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+    key: v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
 
   - &restore-cache-danger
     keys:
-      - v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - v1-danger-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - v1-danger-dependencies-{{ .Branch }}-
+      - v1-danger-dependencies-{{ arch }}-{{ .Branch }}-
 
   - &save-cache-danger
     paths:
       - danger/node_modules
-    key: v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+    key: v1-danger-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "danger/package.json" }}
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v1-android-sdkmanager-packages-
+      - v1-android-sdkmanager-packages-{{ arch }}-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk/system-images/android-23
@@ -46,42 +46,42 @@ aliases:
       - /opt/android/sdk/platforms/android-19
       - /opt/android/sdk/build-tools/23.0.1
       - /opt/android/sdk/add-ons/addon-google_apis-google-23
-    key: v1-android-sdkmanager-packages-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v1-android-ndk-r10e-32-64
+      - v1-android-ndk-{{ arch }}-r10e-32-64
 
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v1-android-ndk-r10e-32-64
+    key: v1-android-ndk-{{ arch }}-r10e-32-64
 
   - &restore-cache-buck-downloads
     keys:
-      - v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - v1-buck-downloads-{{ .Branch }}-
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-
   - &save-cache-buck-downloads
     paths:
      - "ReactAndroid/build/downloads"
-    key: v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
-      - v1-buck-v2017.09.04.02
+      - v1-buck-{{ arch }}-v2017.09.04.02
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v1-buck-v2017.09.04.02
+    key: v1-buck-{{ arch }}-v2017.09.04.02
 
   - &restore-cache-watchman
     keys:
-      - v1-watchman-v4.9.0
+      - v1-watchman-{{ arch }}-v4.9.0
   - &save-cache-watchman
     paths:
       - ~/watchman
-    key: v1-watchman-v4.9.0
+    key: v1-watchman-{{ arch }}-v4.9.0
 
   - &install-node-dependencies
     |
