@@ -106,16 +106,6 @@ jobs:
           npm test -- --maxWorkers=2
           npm run lint
           npm run flow -- check
-# eslint - doesn't run on non-PR builds
-      - run:
-          name: Analyze Code
-          command: |
-            if [ "$CIRCLE_PR_NUMBER" ]; then
-              npm install github@0.2.4
-              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
-            else 
-              echo "Skipping code analysis."
-            fi
 
   test-node-6:
     <<: *defaults
@@ -180,7 +170,7 @@ jobs:
       - checkout
       - run: *install_node_dependencies
       - run: |
-          if [ "$CIRCLE_PR_NUMBER" ]; then
+          if [ "$CI_PULL_REQUEST" ]; then
             gem install cocoapods && ./scripts/process-podspecs.sh
           else
             echo "Skipping testing podspec."
