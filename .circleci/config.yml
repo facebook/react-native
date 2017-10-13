@@ -180,9 +180,7 @@ jobs:
       - checkout
       - run: *install_node_dependencies
       - run: |
-          if [ -n "$CIRCLE_PR_NUMBER" ]; then
-            gem install cocoapods && ./scripts/process-podspecs.sh
-          fi
+          gem install cocoapods && ./scripts/process-podspecs.sh
           
   test-website:
     <<: *defaults
