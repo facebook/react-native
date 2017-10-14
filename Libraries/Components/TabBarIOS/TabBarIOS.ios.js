@@ -32,7 +32,7 @@ class TabBarIOS extends React.Component<ViewProps & {
   barStyle?: 'default' | 'black',
   translucent?: boolean,
   itemPositioning?: 'fill' | 'center' | 'auto',
-  children: React.Element<any> | React.Element<any>[],
+  children: React.Node,
 }> {
   static Item = TabBarItemIOS;
 
