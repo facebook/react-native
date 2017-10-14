@@ -38,12 +38,12 @@ internet connectivity.</p><div class="prism language-javascript">NetInfo<span cl
 <span class="token keyword">function</span> <span class="token function">handleFirstConnectivityChange</span><span class="token punctuation">(</span>isConnected<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&#x27;Then, is &#x27;</span> <span class="token operator">+</span> <span class="token punctuation">(</span>isConnected <span class="token operator">?</span> <span class="token string">&#x27;online&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;offline&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   NetInfo<span class="token punctuation">.</span>isConnected<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span>
-    <span class="token string">&#x27;change&#x27;</span><span class="token punctuation">,</span>
+    <span class="token string">&#x27;connectionChange&#x27;</span><span class="token punctuation">,</span>
     handleFirstConnectivityChange
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 NetInfo<span class="token punctuation">.</span>isConnected<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
-  <span class="token string">&#x27;change&#x27;</span><span class="token punctuation">,</span>
+  <span class="token string">&#x27;connectionChange&#x27;</span><span class="token punctuation">,</span>
   handleFirstConnectivityChange
 <span class="token punctuation">)</span><span class="token punctuation">;</span></div><h3><a class="anchor" name="connectivity-types-deprecated"></a>Connectivity Types (deprecated) <a class="hash-link" href="docs/netinfo.html#connectivity-types-deprecated">#</a></h3><p>The following connectivity types are deprecated. They&#x27;re used by the deprecated APIs <code>fetch</code> and the <code>change</code> event.</p><p>iOS connectivity types (deprecated):
 - <code>none</code> - device is offline
