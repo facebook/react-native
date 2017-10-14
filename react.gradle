@@ -5,6 +5,7 @@ def config = project.hasProperty("react") ? project.react : [];
 def cliPath = config.cliPath ?: "node_modules/react-native/local-cli/cli.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
+def bundleCommand = config.bundleCommand ?: "bundle"
 
 // because elvis operator
 def elvisFile(thing) {
@@ -13,6 +14,7 @@ def elvisFile(thing) {
 
 def reactRoot = elvisFile(config.root) ?: file("../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
+def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
 void runBefore(String dependentTaskName, Task task) {
     Task dependentTask = tasks.findByPath(dependentTaskName);
@@ -79,12 +81,21 @@ gradle.projectsEvaluated {
                 // Set up dev mode
                 def devEnabled = !(config."devDisabledIn${targetName}"
                     || targetName.toLowerCase().contains("release"))
+
+                def extraArgs = extraPackagerArgs;
+
+                if (bundleConfig) {
+                  extraArgs = extraArgs.clone()
+                  extraArgs.add("--config");
+                  extraArgs.add(bundleConfig);
+                }
+
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
+                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
                 } else {
-                    commandLine(*nodeExecutableAndArgs, cliPath, "bundle", "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
+                    commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
                 }
 
                 enabled config."bundleIn${targetName}" ||
