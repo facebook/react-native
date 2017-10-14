@@ -458,7 +458,7 @@ const TextInput = createReactClass({
     placeholderTextColor: ColorPropType,
     /**
      * If `true`, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. The default value is `false`.
+     * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
      */
     secureTextEntry: PropTypes.bool,
     /**
