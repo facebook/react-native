@@ -29,7 +29,21 @@ function getAndroidAssetSuffix(scale: number): string {
   throw new Error('no such scale');
 }
 
-function getAndroidDrawableFolderName(asset: PackagerAsset, scale: number) {
+// See https://developer.android.com/guide/topics/resources/drawable-resource.html
+const drawableFileTypes = new Set([
+  'gif',
+  'jpeg',
+  'jpg',
+  'png',
+  'svg',
+  'webp',
+  'xml',
+]);
+
+function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
+  if (!drawableFileTypes.has(asset.type)) {
+    return 'raw';
+  }
   var suffix = getAndroidAssetSuffix(scale);
   if (!suffix) {
     throw new Error(
@@ -60,7 +74,7 @@ function getBasePath(asset: PackagerAsset) {
 
 module.exports = {
   getAndroidAssetSuffix: getAndroidAssetSuffix,
-  getAndroidDrawableFolderName: getAndroidDrawableFolderName,
+  getAndroidResourceFolderName: getAndroidResourceFolderName,
   getAndroidResourceIdentifier: getAndroidResourceIdentifier,
   getBasePath: getBasePath
 };

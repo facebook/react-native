@@ -222,6 +222,26 @@ BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require(
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
 
+global.fetchBundle = function(
+  bundleId: number,
+  callback: (?Error) => void,
+) {
+  const {BundleFetcher} = require('NativeModules');
+  if (!BundleFetcher) {
+    throw new Error('BundleFetcher is missing');
+  }
+
+  BundleFetcher.fetchBundle(bundleId, (errorObject: ?{message: string, code: string}) => {
+    if (errorObject) {
+      const error = new Error(errorObject.message);
+      (error: any).code = errorObject.code;
+      callback(error);
+    }
+
+    callback(null);
+  });
+};
+
 // Set up devtools
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
