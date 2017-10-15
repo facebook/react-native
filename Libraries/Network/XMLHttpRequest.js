@@ -341,6 +341,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     } else {
       this._response += responseText;
     }
+    // fixing progress always being 0
+    progress = (progress === 0)? this._response.length : progress;
 
     XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.dataReceived(
       requestId,
