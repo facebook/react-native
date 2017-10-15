@@ -80,7 +80,8 @@ public class NativeModuleRegistryBuilder {
         }
 
         String name = moduleHolder.getName();
-        putModuleTypeAndHolderToModuleMaps(type, name, moduleHolder);
+        boolean canOverride = moduleHolder.getCanOverrideExistingModule();
+        putModuleTypeAndHolderToModuleMaps(type, name, canOverride, moduleHolder);
       }
     } else {
       FLog.d(
@@ -102,11 +103,20 @@ public class NativeModuleRegistryBuilder {
     }
   }
 
+  public void addNativeModule(NativeModule nativeModule) {
+    String name = nativeModule.getName();
+    Class<? extends NativeModule> type = nativeModule.getClass();
+    boolean canOverride = nativeModule.canOverrideExistingModule();
+
+    putModuleTypeAndHolderToModuleMaps(type, name, canOverride, new ModuleHolder(nativeModule));
+  }
+
   private void putModuleTypeAndHolderToModuleMaps(Class<? extends NativeModule> type, String underName,
+                                                  boolean canOverrideExistingModule,
                                                   ModuleHolder moduleHolder) throws IllegalStateException {
     if (namesToType.containsKey(underName)) {
       Class<? extends NativeModule> existingNativeModule = namesToType.get(underName);
-      if (!moduleHolder.getCanOverrideExistingModule()) {
+      if (!canOverrideExistingModule) {
         throw new IllegalStateException("Native module " + type.getSimpleName() +
           " tried to override " + existingNativeModule.getSimpleName() + " for module name " +
           underName + ". Check the getPackages() method in MainApplications.java, it might be " +
@@ -119,12 +129,6 @@ public class NativeModuleRegistryBuilder {
 
     namesToType.put(underName, type);
     mModules.put(type, moduleHolder);
-  }
-
-  public void addNativeModule(NativeModule nativeModule) {
-    String name = nativeModule.getName();
-    Class<? extends NativeModule> type = nativeModule.getClass();
-    putModuleTypeAndHolderToModuleMaps(type, name, new ModuleHolder(nativeModule));
   }
 
   public NativeModuleRegistry build() {
