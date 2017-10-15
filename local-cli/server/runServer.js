@@ -56,7 +56,7 @@ const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro-bundler';
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -97,6 +97,10 @@ function runServer(
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
+    .use(
+      '/debugger-ui',
+      connect.static(path.join(__dirname, 'util', 'debugger-ui')),
+    )
     .use(
       getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
     )
@@ -190,6 +194,7 @@ function getPackagerServer(args, config, reporter) {
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
+    runBeforeMainModule: config.runBeforeMainModule,
     reporter,
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),

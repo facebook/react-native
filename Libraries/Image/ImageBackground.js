@@ -33,7 +33,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *         source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>
@@ -58,9 +58,6 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
   _viewRef: ?NativeMethodsMixinType = null;
 
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this._viewRef = ref;
   };
 

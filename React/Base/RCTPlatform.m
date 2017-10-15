@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTUtils.h"
+#import "RCTVersion.h"
 
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {
@@ -46,6 +47,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
     @"isTesting": @(RCTRunningInTestEnvironment()),
+    @"reactNativeVersion": REACT_NATIVE_VERSION,
   };
 }
 

@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.inject.Provider;
 
 /**
@@ -77,18 +78,36 @@ public class ReactNativeCorePackage extends LazyReactPackage {
     return reactModuleInfoProvider;
   }
 
-  private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+  private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
-      List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
-        reactContext);
-      return new UIManagerModule(
-          reactContext,
-          viewManagersList,
-          mUIImplementationProvider,
-          mLazyViewManagersEnabled,
-          mMinTimeLeftInFrameForNonBatchedOperationMs);
+      if (mLazyViewManagersEnabled) {
+        UIManagerModule.ViewManagerResolver viewManagerResolver =
+            new UIManagerModule.ViewManagerResolver() {
+              @Override
+              public @Nullable ViewManager getViewManager(String viewManagerName) {
+                return mReactInstanceManager.createViewManager(viewManagerName);
+              }
+
+              @Override
+              public List<String> getViewManagerNames() {
+                return mReactInstanceManager.getViewManagerNames();
+              }
+            };
+
+        return new UIManagerModule(
+            reactContext,
+            viewManagerResolver,
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      } else {
+        return new UIManagerModule(
+            reactContext,
+            mReactInstanceManager.createAllViewManagers(reactContext),
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

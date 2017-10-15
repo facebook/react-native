@@ -6,7 +6,7 @@ category: Guides (Android)
 permalink: docs/headless-js-android.html
 banner: ejected
 next: signed-apk-android
-previous: native-components-android
+previous: custom-webview-android
 ---
 
 Headless JS is a way to run tasks in JavaScript while your app is in the background. It can be used, for example, to sync fresh data, handle push notifications, or play music.
@@ -43,7 +43,9 @@ public class MyTaskService extends HeadlessJsTaskService {
       return new HeadlessJsTaskConfig(
           "SomeTaskName",
           Arguments.fromBundle(extras),
-          5000);
+          5000, // timeout for the task
+          false // optional: defines whether or not  the task is allowed in foreground. Default is false
+        );
     }
     return null;
   }

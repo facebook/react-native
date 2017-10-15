@@ -29,10 +29,16 @@ declare class Promise<+R> {
   static resolve<T>(object?: Promise<T> | T): Promise<T>;
   static reject<T>(error?: any): Promise<T>;
 
-  static all<Elem, T:Iterable<Elem>>(promises: T): Promise<$TupleMap<T, typeof $await>>;
+  static all<T: Iterable<mixed>>(promises: T): Promise<$TupleMap<T, typeof $await>>;
   static race<T>(promises: Array<Promise<T>>): Promise<T>;
 
   // Non-standard APIs
+
+  // See https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/__forks__/Promise.native.js#L21
+  finally<U>(
+    onFinally?: ?(value: any) => Promise<U> | U
+  ): Promise<U>;
+
   done<U>(
     onFulfill?: ?(value: R) => mixed,
     onReject?: ?(error: any) => mixed

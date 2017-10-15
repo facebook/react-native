@@ -228,6 +228,11 @@ const TextInput = createReactClass({
      */
     autoGrow: PropTypes.bool,
     /**
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
      * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
@@ -240,6 +245,25 @@ const TextInput = createReactClass({
      * - `numeric`
      * - `email-address`
      * - `phone-pad`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
+     * - `ascii-capable`
+     * - `numbers-and-punctuation`
+     * - `url`
+     * - `number-pad`
+     * - `name-phone-pad`
+     * - `decimal-pad`
+     * - `twitter`
+     * - `web-search`
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `visible-password`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
@@ -256,6 +280,8 @@ const TextInput = createReactClass({
       'decimal-pad',
       'twitter',
       'web-search',
+      // Android-only
+      'visible-password',
     ]),
     /**
      * Determines the color of the keyboard.
@@ -425,14 +451,14 @@ const TextInput = createReactClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.node,
+    placeholder: PropTypes.string,
     /**
      * The text color of the placeholder string.
      */
     placeholderTextColor: ColorPropType,
     /**
      * If `true`, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. The default value is `false`.
+     * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
      */
     secureTextEntry: PropTypes.bool,
     /**
@@ -507,7 +533,17 @@ const TextInput = createReactClass({
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * Note that not all Text styles are supported,
+     * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
+     *
+     * - `borderLeftWidth`
+     * - `borderTopWidth`
+     * - `borderRightWidth`
+     * - `borderBottomWidth`
+     * - `borderTopLeftRadius`
+     * - `borderTopRightRadius`
+     * - `borderBottomRightRadius`
+     * - `borderBottomLeftRadius`
+     *
      * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
      * for more detail.
      *
@@ -566,7 +602,11 @@ const TextInput = createReactClass({
      */
     caretHidden: PropTypes.bool,
   },
-
+  getDefaultProps(): Object {
+    return {
+      allowFontScaling: true,
+    };
+  },
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -704,7 +744,7 @@ const TextInput = createReactClass({
         'Cannot specify both value and children.'
       );
       if (childCount >= 1) {
-        children = <Text style={props.style}>{children}</Text>;
+        children = <Text style={props.style} allowFontScaling={props.allowFontScaling}>{children}</Text>;
       }
       if (props.inputView) {
         children = [children, props.inputView];
@@ -749,7 +789,9 @@ const TextInput = createReactClass({
       props.style = [props.style, {height: this.state.layoutHeight}];
     }
     props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
+        props.autoCapitalize || 'sentences'
+      ];
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
