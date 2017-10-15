@@ -10,7 +10,7 @@ previous: style
 
 A component's height and width determine its size on the screen.
 
-#### Fixed Dimensions
+## Fixed Dimensions
 
 The simplest way to set the dimensions of a component is by adding a fixed `width` and `height` to style. All dimensions in React Native are unitless, and represent density-independent pixels.
 
@@ -36,7 +36,7 @@ AppRegistry.registerComponent('AwesomeProject', () => FixedDimensionsBasics);
 
 Setting dimensions this way is common for components that should always render at exactly the same size, regardless of screen dimensions.
 
-#### Flex Dimensions
+## Flex Dimensions
 
 Use `flex` in a component's style to have the component expand and shrink dynamically based on available space. Normally you will use `flex: 1`, which tells a component to fill all available space, shared evenly amongst each other component with the same parent. The larger the `flex` given, the higher the ratio of space a component will take compared to its siblings.
 
