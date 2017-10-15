@@ -99,16 +99,15 @@ If you're only fixing a bug, it's fine to submit a pull request right away but w
 
 Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
 
-**Before submitting a pull request**, please make sure the following is done:
+Please make sure the following is done when submitting a pull request:
 
 1. Fork [the repository](https://github.com/facebook/react-native) and create your branch from `master`.
 2. Add the copyright notice to the top of any new files you've added.
-3. Describe your [**test plan**](/react-native/docs/contributing.html#test-plan) in your commit.
-4. Ensure [**tests pass**](/react-native/docs/contributing.html#contrinuous-integration-tests) on both Travis and Circle CI.
-5. Make sure your code lints (`npm run lint`).
-6. If you haven't already, [sign the CLA](https://code.facebook.com/cla).
+3. Describe your [**test plan**](/react-native/docs/contributing.html#test-plan) in your pull request description. Make sure to [test your changes](/react-native/docs/testing.html)!
+4. Make sure your code lints (`npm run lint`).
+5. If you haven't already, [sign the CLA](https://code.facebook.com/cla).
 
-All pull requests should be opened against the `master` branch.
+All pull requests should be opened against the `master` branch. After opening your pull request, ensure [**all tests pass**](/react-native/docs/contributing.html#contrinuous-integration-tests) on Circle CI. If a test fails and you believe it is unrelated to your change, leave a comment on the pull request explaining why.
 
 > **Note:** It is not necessary to keep clicking `Merge master to your branch` on the PR page. You would want to merge master if there are conflicts or tests are failing. The Facebook-GitHub-Bot ultimately squashes all commits to a single one before merging your PR.
 
@@ -124,9 +123,8 @@ See [What is a Test Plan?](https://medium.com/@martinkonicek/what-is-a-test-plan
 
 #### Continuous integration tests
 
-Make sure all **tests pass** on both [Travis][travis] and [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](/react-native/docs/testing.html).
+Make sure all **tests pass** on [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](/react-native/docs/testing.html).
 
-[travis]: https://travis-ci.org/facebook/react-native
 [circle]: http://circleci.com/gh/facebook/react-native
 
 #### Breaking changes
