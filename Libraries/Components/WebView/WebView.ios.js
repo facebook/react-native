@@ -241,6 +241,7 @@ class WebView extends React.Component {
     /**
      * The amount by which the web view content is inset from the edges of
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+     * @platform ios
      */
     contentInset: EdgeInsetsPropType,
     /**
@@ -376,7 +377,7 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
-    
+
     /**
      * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.

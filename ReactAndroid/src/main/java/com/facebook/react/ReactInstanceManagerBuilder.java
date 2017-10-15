@@ -6,7 +6,6 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 
 import android.app.Activity;
 import android.app.Application;
-import android.net.Uri;
 import android.os.Build;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -266,8 +265,9 @@ public class ReactInstanceManagerBuilder {
       mUIImplementationProvider = new UIImplementationProvider();
     }
 
-    String appName = Uri.encode(mApplication.getPackageName());
-    String deviceName = Uri.encode(getFriendlyDeviceName());
+    // We use the name of the device and the app for debugging & metrics
+    String appName = mApplication.getPackageName();
+    String deviceName = getFriendlyDeviceName();
 
     return new ReactInstanceManager(
         mApplication,

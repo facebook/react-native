@@ -340,14 +340,14 @@ var styles = StyleSheet.create({
     paddingBottom: 300,
   },
   default: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
     padding: 4,
   },
   multiline: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
@@ -610,12 +610,12 @@ exports.examples = [
         <View>
           <TextInput
             style={styles.default}
-            selectionColor={"green"}
+            selectionColor={'green'}
             defaultValue="Highlight me"
           />
           <TextInput
             style={styles.default}
-            selectionColor={"rgba(86, 76, 205, 1)"}
+            selectionColor={'rgba(86, 76, 205, 1)'}
             defaultValue="Highlight me"
           />
         </View>
@@ -872,7 +872,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

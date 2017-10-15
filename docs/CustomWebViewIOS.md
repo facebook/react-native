@@ -151,6 +151,7 @@ To use your custom web view, you'll need to create a class for it. Your class mu
 To get your native component, you must use `requireNativeComponent`: the same as for regular custom components. However, you must pass in an extra third argument, `WebView.extraNativeComponentConfig`. This third argument contains prop types that are only required for native code.
 
 ```js
+
 import React, { Component, PropTypes } from 'react';
 import { WebView, requireNativeComponent, NativeModules } from 'react-native';
 const { CustomWebViewManager } = NativeModules; 
@@ -176,6 +177,7 @@ const RCTCustomWebView = requireNativeComponent(
   CustomWebView,
   WebView.extraNativeComponentConfig
 );
+
 ```
 
 If you want to add custom props to your native component, you can use `nativeConfig.props` on the web view. For iOS, you should also set the `nativeConfig.viewManager` prop with your custom WebView ViewManager as in the example above.

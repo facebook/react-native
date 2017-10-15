@@ -17,6 +17,7 @@
 #include <folly/Exception.h>
 #include <folly/json.h>
 #include <folly/Memory.h>
+#include <folly/String.h>
 #include <glog/logging.h>
 #include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JSCHelpers.h>
@@ -295,10 +296,13 @@ namespace facebook {
 #endif //defined(__ANDROID__)
       }
 
+      std::string escapedOwner = folly::uriEscape<std::string>(owner, folly::UriEscapeMode::QUERY);
+      std::string escapedApp = folly::uriEscape<std::string>(app, folly::UriEscapeMode::QUERY);
+      std::string escapedDevice = folly::uriEscape<std::string>(device, folly::UriEscapeMode::QUERY);
       std::string msg = folly::to<std::string>(
-        "GET /autoattach?title=", owner,
-        "&app=" , app,
-        "&device=" , device,
+        "GET /autoattach?title=", escapedOwner,
+        "&app=" , escapedApp,
+        "&device=" , escapedDevice,
         " HTTP/1.1\r\n\r\n");
       auto send_resp = ::send(socket_desc, msg.c_str(), msg.length(), 0);
       if (send_resp < 0) {

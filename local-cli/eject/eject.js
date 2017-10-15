@@ -38,11 +38,11 @@ function eject() {
   let appConfig = null;
   try {
     appConfig = require(path.resolve('app.json'));
-  } catch(e) {
+  } catch (e) {
     console.error(
-      `Eject requires an \`app.json\` config file to be located at ` +
+      'Eject requires an `app.json` config file to be located at ' +
       `${path.resolve('app.json')}, and it must at least specify a \`name\` for the project ` +
-      `name, and a \`displayName\` for the app's home screen label.`
+      'name, and a `displayName` for the app\'s home screen label.'
     );
     process.exit(1);
   }
@@ -50,16 +50,16 @@ function eject() {
   const appName = appConfig.name;
   if (!appName) {
     console.error(
-      `App \`name\` must be defined in the \`app.json\` config file to define the project name. `+
-      `It must not contain any spaces or dashes.`
+      'App `name` must be defined in the `app.json` config file to define the project name. ' +
+      'It must not contain any spaces or dashes.'
     );
     process.exit(1);
   }
   const displayName = appConfig.displayName;
   if (!displayName) {
     console.error(
-      `App \`displayName\` must be defined in the \`app.json\` config file, to define the label ` +
-      `of the app on the home screen.`
+      'App `displayName` must be defined in the `app.json` config file, to define the label ' +
+      'of the app on the home screen.'
     );
     process.exit(1);
   }

@@ -168,26 +168,6 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 
 @end
 
-@interface RCTUIManager (Deprecated)
-
-/**
- * This method is deprecated and will be removed in next releases.
- * Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.
- * Only frames with `origin` equals {0, 0} are supported.
- */
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
-__deprecated_msg("Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.");
-
-
-/**
- * This method is deprecated and will be removed in next releases.
- * Use `registerRootView:` instead. There is no need to specify `sizeFlexibility` anymore.
- */
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
-__deprecated_msg("Use `registerRootView:` instead.");
-
-@end
-
 /**
  * This category makes the current RCTUIManager instance available via the
  * RCTBridge, which is useful for RCTBridgeModules or RCTViewManagers that

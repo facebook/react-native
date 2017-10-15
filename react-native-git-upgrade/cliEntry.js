@@ -59,7 +59,7 @@ function exec(command, logOutput) {
 stderr: ${stderr}
 stdout: ${stdout}`));
     });
-  })
+  });
 }
 
 function parseJsonFile(path, useYarn) {
@@ -93,7 +93,7 @@ function readPackageFiles(useYarn) {
     reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
     reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
     pak: parseJsonFile(pakPath)
-  }
+  };
 }
 
 function parseInformationJsonOutput(jsonOutput, requestedVersion) {
@@ -105,7 +105,7 @@ function parseInformationJsonOutput(jsonOutput, requestedVersion) {
 
     assert(semver.valid(newVersion));
 
-    return {newVersion, newReactVersionRange}
+    return {newVersion, newReactVersionRange};
   } catch (err) {
     throw new Error(
       'The specified version of React Native ' + requestedVersion + ' doesn\'t exist.\n' +
@@ -147,7 +147,7 @@ function generateTemplates(generatorDir, appName, verbose) {
     // Try requiring the index.js (entry-point of Yeoman generators)
     fs.accessSync(yeomanGeneratorEntryPoint);
     return runYeomanGenerators(generatorDir, appName, verbose);
-  } catch(err) {
+  } catch (err) {
     return runCopyAndReplace(generatorDir, appName);
   }
 }
@@ -280,7 +280,7 @@ async function run(requestedVersion, cliArgs) {
     log.info('Commit current project sources');
     await exec('git commit -m "Project snapshot"', verbose);
 
-    log.info ('Create a tag before updating sources');
+    log.info('Create a tag before updating sources');
     await exec('git tag project-snapshot', verbose);
     projectBackupCreated = true;
 

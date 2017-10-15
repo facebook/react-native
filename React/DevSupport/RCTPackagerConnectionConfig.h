@@ -11,6 +11,8 @@
 
 #if RCT_DEV // Only supported in dev mode
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTPackagerClientMethod;
 
 @protocol RCTPackagerConnectionConfig
@@ -19,5 +21,7 @@
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, id<RCTPackagerClientMethod>> *defaultPackagerMethods;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

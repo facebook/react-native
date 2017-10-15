@@ -13,16 +13,11 @@ namespace react {
 
 class RN_EXPORT JSIndexedRAMBundleRegistry: public RAMBundleRegistry {
 public:
-  JSIndexedRAMBundleRegistry(
-    std::unique_ptr<JSModulesUnbundle> mainBundle,
-    std::string baseDirectoryPath):
-  RAMBundleRegistry(std::move(mainBundle)), m_baseDirectoryPath(baseDirectoryPath) {}
+  JSIndexedRAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle, const std::string& baseDirectoryPath);
 
 protected:
   virtual std::unique_ptr<JSModulesUnbundle> bundleById(uint32_t index) const override;
 private:
-  std::string bundlePathById(uint32_t index) const;
-
   std::string m_baseDirectoryPath;
 };
 

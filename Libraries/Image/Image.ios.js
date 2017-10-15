@@ -53,7 +53,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *         />
  *         <Image
  *           style={{width: 50, height: 50}}
- *           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
  *         />
  *         <Image
  *           style={{width: 66, height: 58}}

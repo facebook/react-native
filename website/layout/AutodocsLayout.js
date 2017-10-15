@@ -561,7 +561,7 @@ class APIDoc extends React.Component {
         </div>
       </span>
     );
-  };
+  }
 
   renderMainDescription(content) {
     if (content.docblock) {
@@ -655,7 +655,7 @@ class Method extends React.Component {
         </div>
       );
     });
-  };
+  }
 
   renderMethodParameters(params) {
     if (!params || !params.length) {

@@ -86,6 +86,11 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
            };
 }
 
+- (void)dealloc
+{
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
 - (void)invalidate
 {
   RCTExecuteOnMainQueue(^{
