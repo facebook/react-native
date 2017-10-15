@@ -548,7 +548,7 @@ var ScrollResponderMixin = {
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',
       `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
-      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? 'always' : 'never'}"' instead`
     );
 
     this.keyboardWillOpenTo = null;

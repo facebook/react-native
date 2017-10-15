@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+    return 2;
 }
 
 - (id<RCTImageCache>)imageCache

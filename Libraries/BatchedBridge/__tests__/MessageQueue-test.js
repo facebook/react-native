@@ -65,20 +65,20 @@ describe('MessageQueue', function() {
   it('should call the stored callback', () => {
     let done = false;
     queue.enqueueNativeCall(0, 1, [], () => {}, () => { done = true; });
-    queue.__invokeCallback(1);
+    queue.__invokeCallback(1, []);
     expect(done).toEqual(true);
   });
 
   it('should throw when calling the same callback twice', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(1)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(1, [])).toThrow();
   });
 
   it('should throw when calling both success and failure callback', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(0)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(0, [])).toThrow();
   });
 
   it('should throw when calling with unknown module', () => {

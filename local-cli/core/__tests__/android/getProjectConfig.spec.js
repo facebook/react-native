@@ -11,13 +11,15 @@
 
 'use strict';
 
+jest.mock('fs');
+
 const getProjectConfig = require('../../android').projectConfig;
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::getProjectConfig', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
       nested: {
         android: {
@@ -38,7 +40,7 @@ describe('android::getProjectConfig', () => {
 
   it("returns `null` if manifest file hasn't been found", () => {
     const userConfig = {};
-    const folder = 'noManifest';
+    const folder = '/noManifest';
 
     expect(getProjectConfig(folder, userConfig)).toBeNull();
   });
@@ -46,7 +48,7 @@ describe('android::getProjectConfig', () => {
   describe('returns an object with android project configuration for', () => {
     it('nested structure', () => {
       const userConfig = {};
-      const folder = 'nested';
+      const folder = '/nested';
 
       expect(getProjectConfig(folder, userConfig)).not.toBeNull();
       expect(typeof getProjectConfig(folder, userConfig)).toBe('object');
@@ -54,7 +56,7 @@ describe('android::getProjectConfig', () => {
 
     it('flat structure', () => {
       const userConfig = {};
-      const folder = 'flat';
+      const folder = '/flat';
 
       expect(getProjectConfig(folder, userConfig)).not.toBeNull();
       expect(typeof getProjectConfig(folder, userConfig)).toBe('object');
@@ -64,7 +66,7 @@ describe('android::getProjectConfig', () => {
       const userConfig = {
         manifestPath: 'src/main/AndroidManifest.xml',
       };
-      const folder = 'multiple';
+      const folder = '/multiple';
 
       expect(getProjectConfig(folder, userConfig)).not.toBeNull();
       expect(typeof getProjectConfig(folder, userConfig)).toBe('object');
@@ -73,12 +75,8 @@ describe('android::getProjectConfig', () => {
 
   it('should return `null` if android project was not found', () => {
     const userConfig = {};
-    const folder = 'empty';
+    const folder = '/empty';
 
     expect(getProjectConfig(folder, userConfig)).toBeNull();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
   });
 });
