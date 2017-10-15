@@ -149,7 +149,7 @@
     "base64-js": "^1.1.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
-    "connect": "^2.8.3",
+    "connect": "^3.6.5",
     "create-react-class": "^15.5.2",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
