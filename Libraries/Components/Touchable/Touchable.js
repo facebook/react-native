@@ -317,7 +317,7 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  */
 var TouchableMixin = {
   componentDidMount: function() {
-    if (!Platform.isTVOS) {
+    if (!Platform.isTV) {
       return;
     }
 
