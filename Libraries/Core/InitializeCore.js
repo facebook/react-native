@@ -150,7 +150,7 @@ if (PlatformConstants) {
   console.warn(
     'React Native `PlatformConstants` not defined.\n\n' +
     `${PlatformMissingModuleMessage} ${PlatformProblemPersistsMessage}`
-  )
+  );
 }
 
 
