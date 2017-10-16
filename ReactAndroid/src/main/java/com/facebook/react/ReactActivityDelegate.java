@@ -16,6 +16,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.views.androidtv.ReactAndroidTVViewManager;
 
 import javax.annotation.Nullable;
 
@@ -54,7 +55,7 @@ public class ReactActivityDelegate {
   }
 
   protected ReactRootView createRootView() {
-    return new ReactRootView(getContext());
+    return new ReactAndroidTVViewManager(getContext());
   }
 
   /**
