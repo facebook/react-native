@@ -80,6 +80,11 @@ public class ReactActivityDelegate {
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
+  private boolean canHandleIntent(Intent intent) {
+    PackageManager packageManager = getContext().getPackageManager();
+    return intent.resolveActivity(packageManager) != null;
+  }
+
   protected void loadApp(String appKey) {
     if (mReactRootView != null) {
       throw new IllegalStateException("Cannot loadApp while app is already running.");
