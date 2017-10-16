@@ -495,19 +495,19 @@ workflows:
   
   test_node:
     jobs:
-      - test-js-node-8
+      - test-js-node-8:
           filters: *filter-ignore-gh-pages
-      - test-js-node-6
+      - test-js-node-6:
           filters: *filter-ignore-gh-pages
       
 # TODO: Re-enable. Node 4 tests are already failing on Circle 1.0
-#      - test-js-node-4
+#      - test-js-node-4:
 #          filters: *filter-ignore-gh-pages
 
 
   test_android:
     jobs:
-      - build-js-bundle
+      - build-js-bundle:
           filters: *filter-ignore-gh-pages
       - test-android:
           requires:
@@ -515,19 +515,19 @@ workflows:
 
   test_ios:
     jobs:
-      - test-objc-ios
+      - test-objc-ios:
           filters: *filter-ignore-gh-pages
-      - test-objc-tvos
+      - test-objc-tvos:
           filters: *filter-ignore-gh-pages
-      - test-objc-e2e
+      - test-objc-e2e:
           filters: *filter-ignore-gh-pages
 # TODO: Re-enable. Podspec tests are already failing on Travis
-#      - test-podspec
+#      - test-podspec:
 #          filters: *filter-ignore-gh-pages
 
   website:
     jobs:
-      - test-website
+      - test-website:
           filters: *filter-ignore-gh-pages
       - deploy-website:
           requires:
