@@ -1,23 +1,18 @@
 package com.facebook.react.views.androidtv;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-public class ReactAndroidTVViewManager extends ReactRootView {
+public class ReactAndroidTVRootViewHelper {
 
   private static final List<Integer> PRESS_KEY_EVENTS = Arrays.asList(
     KeyEvent.KEYCODE_DPAD_CENTER,
@@ -32,68 +27,59 @@ public class ReactAndroidTVViewManager extends ReactRootView {
     KeyEvent.KEYCODE_DPAD_RIGHT
   );
 
-  private
-  @Nullable ReactInstanceManager mReactInstanceManager;
-
   private View mLastFocusedView = null;
 
-  public ReactAndroidTVViewManager(Context context) {
-    super(context);
+  private ReactRootView mReactRootView;
+
+  public ReactAndroidTVRootViewHelper(ReactRootView mReactRootView) {
+    this.mReactRootView = mReactRootView;
   }
 
-  @Override
-  public boolean dispatchKeyEvent(KeyEvent ev) {
+  public void handleKeyEvent(KeyEvent ev, RCTDeviceEventEmitter emitter) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
-    View targetView = getFocusedView(this);
+    View targetView = getFocusedView(mReactRootView);
     if (targetView != null) {
       if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
-        handlePlayPauseEvent();
+        handlePlayPauseEvent(emitter);
       } else if (PRESS_KEY_EVENTS.contains(eventKeyCode) && eventKeyAction == KeyEvent.ACTION_UP) {
-        handleSelectEvent(targetView);
+        handleSelectEvent(targetView, emitter);
       } else if (NAVIGATION_KEY_EVENTS.contains(eventKeyCode)) {
-        handleFocusChangeEvent(targetView);
+        handleFocusChangeEvent(targetView, emitter);
       }
     }
-    return super.dispatchKeyEvent(ev);
   }
 
-  private void handlePlayPauseEvent() {
-    dispatchEvent("playPause");
+  private void handlePlayPauseEvent(RCTDeviceEventEmitter emitter) {
+    dispatchEvent("playPause", emitter);
   }
 
-  private void handleSelectEvent(View targetView) {
-    dispatchEvent("select", targetView);
+  private void handleSelectEvent(View targetView, RCTDeviceEventEmitter emitter) {
+    dispatchEvent("select", targetView, emitter);
   }
 
-  private void handleFocusChangeEvent(View targetView) {
+  private void handleFocusChangeEvent(View targetView, RCTDeviceEventEmitter emitter) {
     if (mLastFocusedView == targetView) {
       return;
     }
     if (mLastFocusedView != null) {
-      dispatchEvent("blur", mLastFocusedView);
+      dispatchEvent("blur", mLastFocusedView, emitter);
     }
     mLastFocusedView = targetView;
-    dispatchEvent("focus", targetView);
+    dispatchEvent("focus", targetView, emitter);
   }
 
-  private void dispatchEvent(String eventType) {
-    dispatchEvent(eventType, null);
+  private void dispatchEvent(String eventType, RCTDeviceEventEmitter emitter) {
+    dispatchEvent(eventType, null, emitter);
   }
 
-  private void dispatchEvent(String eventType, View targetView) {
+  private void dispatchEvent(String eventType, View targetView, RCTDeviceEventEmitter emitter) {
     WritableMap event = new WritableNativeMap();
     event.putString("eventType", eventType);
     if (targetView != null) {
       event.putInt("tag", targetView.getId());
     }
-    getEmitter().emit("onTVNavEvent", event);
-  }
-
-  private DeviceEventManagerModule.RCTDeviceEventEmitter getEmitter() {
-    return mReactInstanceManager
-      .getCurrentReactContext()
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    emitter.emit("onTVNavEvent", event);
   }
 
   private View getFocusedView(ViewGroup viewGroup) {
@@ -112,21 +98,4 @@ public class ReactAndroidTVViewManager extends ReactRootView {
     }
     return null;
   }
-
-  @Override
-  public void startReactApplication(
-    ReactInstanceManager reactInstanceManager,
-    String moduleName,
-    @Nullable Bundle initialProperties
-  ) {
-    super.startReactApplication(reactInstanceManager, moduleName, initialProperties);
-    mReactInstanceManager = reactInstanceManager;
-  }
-
-  @Override
-  public void unmountReactApplication() {
-    mReactInstanceManager = null;
-    super.unmountReactApplication();
-  }
-
 }
