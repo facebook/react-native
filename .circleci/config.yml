@@ -511,7 +511,7 @@ workflows:
           filters: *filter-ignore-gh-pages
       - test-android:
           requires:
-            - build-js-bundle                
+            - build-js-bundle
 
   test_ios:
     jobs:
