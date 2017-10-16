@@ -117,6 +117,14 @@ if (!global.__fbDisableExceptionsManager) {
 }
 
 const {PlatformConstants} = require('NativeModules');
+const PlatformMissingModuleMessage =
+  'Check the documentation for your platform and ensure it supports the ' +
+  'the version of React Native defined in your `package.json`.';
+const PlatformProblemPersistsMessage =
+  'If the problem persists try clearing the watchman and packager caches with ' +
+  '`watchman watch-del-all && react-native start --reset-cache`.';
+
+
 if (PlatformConstants) {
   const formatVersion = version =>
     `${version.major}.${version.minor}.${version.patch}` +
@@ -124,17 +132,27 @@ if (PlatformConstants) {
 
   const ReactNativeVersion = require('ReactNativeVersion');
   const nativeVersion = PlatformConstants.reactNativeVersion;
-  if (ReactNativeVersion.version.major !== nativeVersion.major ||
+  if (nativeVersion === undefined) {
+    console.warn(
+      `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
+      'Native version: undefined\n\n' +
+      `${PlatformMissingModuleMessage} ${PlatformProblemPersistsMessage}`
+    );
+  } else if (ReactNativeVersion.version.major !== nativeVersion.major ||
       ReactNativeVersion.version.minor !== nativeVersion.minor) {
     throw new Error(
       `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
       `Native version: ${formatVersion(nativeVersion)}\n\n` +
-      'Make sure that you have rebuilt the native code. If the problem persists ' +
-      'try clearing the watchman and packager caches with `watchman watch-del-all ' +
-      '&& react-native start --reset-cache`.'
+      `Make sure that you have rebuilt the native code. ${PlatformProblemPersistsMessage}`
     );
   }
+} else {
+  console.warn(
+    'React Native `PlatformConstants` not defined.\n\n' +
+    `${PlatformMissingModuleMessage} ${PlatformProblemPersistsMessage}`
+  );
 }
+
 
 // Set up collections
 const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
