@@ -2,9 +2,15 @@
 
 package com.facebook.react.modules.systeminfo;
 
+import android.app.UiModeManager;
+import android.content.res.Configuration;
+import android.os.Build;
+
+import com.facebook.react.bridge.ReactContext;
+
 import java.util.Locale;
 
-import android.os.Build;
+import static android.content.Context.UI_MODE_SERVICE;
 
 public class AndroidInfoHelpers {
 
@@ -55,5 +61,10 @@ public class AndroidInfoHelpers {
     }
 
     return String.format(Locale.US, "%s:%d", ipAddress, port);
+  }
+
+  public static boolean isRunningOnTV(ReactContext reactContext) {
+    UiModeManager uiModeManager = (UiModeManager) reactContext.getSystemService(UI_MODE_SERVICE);
+    return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
   }
 }
