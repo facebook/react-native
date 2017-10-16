@@ -28,6 +28,16 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
+ * if resourceName or extension are nil, "main" and "jsbundle" will be
+ * used, respectively.
+ */
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                   fallbackResource:(NSString *)resourceName
+                  fallbackExtension:(NSString *)extension;
+
+/**
+ * Returns the jsBundleURL for a given bundle entrypoint and
+ * the fallback offline JS bundle if the packager is not running.
  */
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                    fallbackResource:(NSString *)resourceName;
