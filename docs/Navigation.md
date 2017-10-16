@@ -27,6 +27,13 @@ The first step is to install in your project:
 npm install --save react-navigation
 ```
 
+Or you can use yarn to install the package in your project :
+
+```
+yarn add react-navigation
+```
+Make sure to use the same package manager, when you first install the react native project to prevent lost package.
+
 Then you can quickly create an app with a home screen and a profile screen:
 
 ```
