@@ -20,7 +20,7 @@ var {
   View,
 } = ReactNative;
 
-class SliderExample extends React.Component {
+class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
     value: 0,
   };
@@ -43,7 +43,7 @@ class SliderExample extends React.Component {
   }
 }
 
-class SlidingCompleteExample extends React.Component {
+class SlidingCompleteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     slideCompletionValue: 0,
     slideCompletionCount: 0,

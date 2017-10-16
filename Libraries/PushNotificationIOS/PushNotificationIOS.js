@@ -26,6 +26,8 @@ const NOTIF_RESPONSE_EVENT = 'notificationResponseReceived';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 const DEVICE_WILLSHOW_NOTIF_EVENT = 'willPresentNotification';
 
+export type ContentAvailable = 1 | null | void;
+
 export type FetchResult = {
   NewData: string,
   NoData: string,
@@ -158,14 +160,15 @@ class PushNotificationIOS {
   _alert: string | Object;
   _sound: string;
   _category: string;
+  _contentAvailable: ContentAvailable;
   _badgeCount: number;
   _notificationId: string;
   _threadId: string;
   _trigger: Object;
   _isRemote: boolean;
-  _remoteNotificationCompleteCalllbackCalled: boolean;
   _showForegroundCompleteCallbackCalled: boolean;
   _responseCompleteCallbackCalled: boolean;
+  _remoteNotificationCompleteCallbackCalled: boolean;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
@@ -213,6 +216,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
+   * - `alertTitle` : The text displayed as the title of the notification alert.
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
@@ -254,7 +258,7 @@ class PushNotificationIOS {
    * - `userInfo`  : An optional object containing additional notification data.
    * - `thread-id`  : The thread identifier of this notification, if has one.
    */
-  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
+  static getDeliveredNotifications(callback: (notifications: Array<Object>) => void): void {
     RCTPushNotificationManager.getDeliveredNotifications(callback);
   }
 
@@ -263,7 +267,7 @@ class PushNotificationIOS {
    *
    * @param identifiers Array of notification identifiers
    */
-  static removeDeliveredNotifications(identifiers: [string]): void {
+  static removeDeliveredNotifications(identifiers: Array<string>): void {
     RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
   }
 
@@ -490,7 +494,7 @@ class PushNotificationIOS {
    */
   constructor(nativeNotif: Object) {
     this._data = {};
-    this._remoteNotificationCompleteCalllbackCalled = false;
+    this._remoteNotificationCompleteCallbackCalled = false;
     this._showForegroundCompleteCallbackCalled = false;
     this._responseCompleteCallbackCalled = false;
     this._isRemote = nativeNotif.remote;
@@ -516,6 +520,7 @@ class PushNotificationIOS {
           // Make sure we don't overwrite existing value
           this._notificationId = notifVal.notificationId || this.notificationId;
           this._data = {...this._data, ...notifVal.userInfo};
+          this._contentAvailable = notifVal['content-available'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -566,10 +571,10 @@ class PushNotificationIOS {
    * be throttled, to read more about it see the above documentation link.
    */
   finish(fetchResult: FetchResult) {
-    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
+    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
       return;
     }
-    this._remoteNotificationCompleteCalllbackCalled = true;
+    this._remoteNotificationCompleteCallbackCalled = true;
 
     RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
   }
@@ -622,6 +627,13 @@ class PushNotificationIOS {
    */
   getAlert(): ?string | ?Object {
     return this._alert;
+  }
+
+  /**
+   * Gets the content-available number from the `aps` object
+   */
+  getContentAvailable(): ContentAvailable {
+    return this._contentAvailable;
   }
 
   /**

@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/platform-specific-code.html
 next: navigation
-previous: components
+previous: components-and-apis
 ---
 
 When building a cross-platform app, you'll want to re-use as much code as possible. Scenarios may arise where it makes sense for the code to be different, for example you may want to implement separate visual components for iOS and Android.
@@ -74,6 +74,19 @@ import { Platform } from 'react-native';
 
 if (Platform.Version === 25) {
   console.log('Running on Nougat!');
+}
+```
+
+### Detecting the iOS version
+
+On iOS, the `Version` is a result of `-[UIDevice systemVersion]`, which is a string with the current version of the operating system. An example of the system version is "10.3". For example, to detect the major version number on iOS:
+
+```javascript
+import { Platform } from 'react-native';
+
+const majorVersionIOS = parseInt(Platform.Version, 10);
+if (majorVersionIOS <= 9) {
+  console.log('Work around a change in behavior'); 
 }
 ```
 

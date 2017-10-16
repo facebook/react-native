@@ -4,7 +4,7 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: components
+next: components-and-apis
 previous: network
 ---
 
@@ -18,21 +18,31 @@ One common question is how to handle the "state" of your React Native applicatio
 
 If you're looking for a library that does a specific thing, check out [Awesome React Native](http://www.awesome-react-native.com/), a curated list of components that also has demos, articles, and other stuff.
 
-## Example Apps
+## Examples
 
-There are some [example apps on GitHub](https://github.com/ReactNativeNews/React-Native-Apps). You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
+Try out apps from the [Showcase](https://facebook.github.io/react-native/showcase.html) to see what React Native is capable of! There are also some [example apps on GitHub](https://github.com/ReactNativeNews/React-Native-Apps). You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
 
 The folks who built the app for Facebook's F8 conference in 2016 also [open-sourced the code](https://github.com/fbsamples/f8app) and wrote up a [detailed series of tutorials](http://makeitopen.com/tutorials/building-the-f8-app/planning/). This is useful if you want a more in-depth example that's more realistic than most sample apps out there.
 
+## Extending React Native
+
+- Looking for a component? [JS.coach](https://js.coach/react-native)
+- Fellow developers write and publish React Native modules to npm and open source them on GitHub.
+- Making modules helps grow the React Native ecosystem and community. We recommend writing modules for your use cases and sharing them on npm.
+- Read the guides on Native Modules ([iOS](https://facebook.github.io/react-native/docs/native-modules-ios.html), [Android](https://facebook.github.io/react-native/docs/native-modules-android.html)) and Native UI Components ([iOS](https://facebook.github.io/react-native/docs/native-components-ios.html), [Android](https://facebook.github.io/react-native/docs/native-components-android.html)) if you are interested in extending native functionality.
+
+
 ## Development Tools
 
-[Nuclide](https://nuclide.io/) is the IDE that Facebook uses internally for React Native development. The killer feature of Nuclide is its debugging ability. It also has great inline Flow support.
+[Nuclide](https://nuclide.io/) is the IDE that Facebook uses internally for JavaScript development. The killer feature of Nuclide is its debugging ability. It also has great inline Flow support. [VS Code](https://code.visualstudio.com/) is another IDE that is popular with JavaScript developers.
 
 [Ignite](https://github.com/infinitered/ignite) is a starter kit that uses Redux and a few different common UI libraries. It has a CLI to generate apps, components, and containers. If you like all of the individual tech choices, Ignite could be perfect for you.
 
 [CodePush](https://microsoft.github.io/code-push/) is a service from Microsoft that makes it easy to deploy live updates to your React Native app. If you don't like going through the app store process to deploy little tweaks, and you also don't like setting up your own backend, give CodePush a try.
 
 [Expo](https://docs.expo.io) is a development environment plus application that focuses on letting you build React Native apps in the Expo development environment, without ever touching Xcode or Android Studio. If you wish React Native was even more JavaScripty and webby, check out Expo.
+
+The [React Developer Tools](docs/debugging.html#react-developer-tools) are great for debugging React and React Native apps.
 
 ## Where React Native People Hang Out
 

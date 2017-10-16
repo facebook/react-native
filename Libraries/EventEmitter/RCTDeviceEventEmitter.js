@@ -16,6 +16,20 @@ const EventSubscriptionVendor = require('EventSubscriptionVendor');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
+function checkNativeEventModule(eventType: ?string) {
+  if (eventType) {
+    if (eventType.lastIndexOf('statusBar', 0) === 0) {
+      throw new Error('`' + eventType + '` event should be registered via the StatusBarIOS module');
+    }
+    if (eventType.lastIndexOf('keyboard', 0) === 0) {
+      throw new Error('`' + eventType + '` event should be registered via the Keyboard module');
+    }
+    if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
+      throw new Error('`' + eventType + '` event should be registered via the AppState module');
+    }
+  }
+}
+
 /**
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
  * adding all event listeners directly to RCTDeviceEventEmitter.
@@ -30,34 +44,19 @@ class RCTDeviceEventEmitter extends EventEmitter {
     this.sharedSubscriber = sharedSubscriber;
   }
 
-  _nativeEventModule(eventType: ?string) {
-    if (eventType) {
-      if (eventType.lastIndexOf('statusBar', 0) === 0) {
-        console.warn('`%s` event should be registered via the StatusBarIOS module', eventType);
-        return require('StatusBarIOS');
-      }
-      if (eventType.lastIndexOf('keyboard', 0) === 0) {
-        console.warn('`%s` event should be registered via the Keyboard module', eventType);
-        return require('Keyboard');
-      }
-      if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
-        console.warn('`%s` event should be registered via the AppState module', eventType);
-        return require('AppState');
-      }
-    }
-    return null;
-  }
 
   addListener(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
-    const eventModule = this._nativeEventModule(eventType);
-    return eventModule ? eventModule.addListener(eventType, listener, context)
-                       : super.addListener(eventType, listener, context);
+    if (__DEV__) {
+      checkNativeEventModule(eventType);
+    }
+    return super.addListener(eventType, listener, context);
   }
 
   removeAllListeners(eventType: ?string) {
-    const eventModule = this._nativeEventModule(eventType);
-    (eventModule && eventType) ? eventModule.removeAllListeners(eventType)
-                               : super.removeAllListeners(eventType);
+    if (__DEV__) {
+      checkNativeEventModule(eventType);
+    }
+    super.removeAllListeners(eventType);
   }
 
   removeSubscription(subscription: EmitterSubscription) {

@@ -21,6 +21,7 @@ import javax.lang.model.util.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Stream;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ReactModuleSpecProcessor extends AbstractProcessor {
 
+  private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);
   private static final TypeName MAP_TYPE = ParameterizedTypeName.get(
     Map.class,
     Class.class,
@@ -88,6 +90,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
 
       TypeElement typeElement = (TypeElement) reactModuleListElement;
       ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+
       if (reactModuleList == null) {
         continue;
       }
@@ -144,7 +147,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     throws ReactModuleSpecException {
     CodeBlock.Builder builder = CodeBlock.builder();
     if (nativeModules == null || nativeModules.isEmpty()) {
-      builder.addStatement("return Collections.emptyMap()");
+      builder.addStatement("return $T.emptyMap()", COLLECTIONS_TYPE);
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 

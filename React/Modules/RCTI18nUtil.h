@@ -17,11 +17,12 @@
  */
 @interface RCTI18nUtil : NSObject
 
++ (instancetype)sharedInstance;
+
 - (BOOL)isRTL;
 - (BOOL)isRTLAllowed;
 - (void)allowRTL:(BOOL)value;
 - (BOOL)isRTLForced;
 - (void)forceRTL:(BOOL)value;
-+ (id)sharedInstance;
 
 @end

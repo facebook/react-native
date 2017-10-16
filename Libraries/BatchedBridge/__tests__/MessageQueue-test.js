@@ -9,9 +9,6 @@
  */
 'use strict';
 
-// const MessageQueueTestConfig = require('MessageQueueTestConfig');
-jest.disableAutomock();
-
 let MessageQueue;
 let MessageQueueTestModule;
 let queue;
@@ -68,20 +65,20 @@ describe('MessageQueue', function() {
   it('should call the stored callback', () => {
     let done = false;
     queue.enqueueNativeCall(0, 1, [], () => {}, () => { done = true; });
-    queue.__invokeCallback(1);
+    queue.__invokeCallback(1, []);
     expect(done).toEqual(true);
   });
 
   it('should throw when calling the same callback twice', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(1)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(1, [])).toThrow();
   });
 
   it('should throw when calling both success and failure callback', () => {
     queue.enqueueNativeCall(0, 1, [], () => {}, () => {});
-    queue.__invokeCallback(1);
-    expect(() => queue.__invokeCallback(0)).toThrow();
+    queue.__invokeCallback(1, []);
+    expect(() => queue.__invokeCallback(0, [])).toThrow();
   });
 
   it('should throw when calling with unknown module', () => {
@@ -94,7 +91,8 @@ describe('MessageQueue', function() {
   it('should return lazily registered module', () => {
     const dummyModule = {}, name = 'modulesName';
     queue.registerLazyCallableModule(name, () => dummyModule);
-    expect(queue._getCallableModule(name)).toEqual(dummyModule);
+
+    expect(queue.getCallableModule(name)).toEqual(dummyModule);
   });
 
   it('should not initialize lazily registered module before it was used for the first time', () => {
@@ -108,8 +106,8 @@ describe('MessageQueue', function() {
     const dummyModule = {}, name = 'modulesName';
     const factory = jest.fn(() => dummyModule);
     queue.registerLazyCallableModule(name, factory);
-    queue._getCallableModule(name);
-    queue._getCallableModule(name);
+    queue.getCallableModule(name);
+    queue.getCallableModule(name);
     expect(factory).toHaveBeenCalledTimes(1);
   });
 });

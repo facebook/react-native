@@ -26,6 +26,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ButtonExample'),
   },
   {
+    key: 'CheckBoxExample',
+    module: require('./CheckBoxExample'),
+  },
+  {
     key: 'FlatListExample',
     module: require('./FlatListExample'),
   },
@@ -80,6 +84,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample')
   },
   {
     key: 'SwipeableListViewExample',

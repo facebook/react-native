@@ -64,4 +64,12 @@ public class ARTSurfaceViewManager extends
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
     root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
   }
+
+  @Override
+  public void setBackgroundColor(ARTSurfaceView view, int backgroundColor) {
+    // As of Android N TextureView does not support calling setBackground on it.
+    // It will also throw an exception when target SDK is set to N or higher.
+
+    // Setting the background color for this view is handled in the shadow node.
+  }
 }

@@ -11,8 +11,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const React = require('React');
 const ReactTestRenderer = require('react-test-renderer');
 

@@ -9,9 +9,18 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.os.Build;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -22,11 +31,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Locale;
-
-import javax.annotation.Nullable;
+import static android.Manifest.permission.SYSTEM_ALERT_WINDOW;
 
 /**
  * Controller to display loading messages on top of the screen. All methods are thread safe.
@@ -52,7 +57,7 @@ public class DevLoadingViewController {
   }
 
   public void showMessage(final String message, final int color, final int backgroundColor) {
-    if (!sEnabled) {
+    if (!sEnabled || !isWindowPermissionGranted()) {
       return;
     }
 
@@ -138,7 +143,7 @@ public class DevLoadingViewController {
       WindowManager.LayoutParams params = new WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+        WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
         PixelFormat.TRANSLUCENT);
       params.gravity = Gravity.TOP;
@@ -147,5 +152,11 @@ public class DevLoadingViewController {
       mWindowManager.removeView(mDevLoadingView);
     }
     mIsVisible = visible;
+  }
+
+  private boolean isWindowPermissionGranted() {
+    return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+      Settings.canDrawOverlays(mContext) ||
+      PackageManager.PERMISSION_GRANTED == mContext.checkSelfPermission(SYSTEM_ALERT_WINDOW);
   }
 }

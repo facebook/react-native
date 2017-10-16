@@ -51,7 +51,7 @@ That is my proper element.
 `;
 
 
-class XHRExampleBinaryUpload extends React.Component {
+class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
 
   static handlePostTestServerUpload(xhr: XMLHttpRequest) {
     if (xhr.status !== 200) {

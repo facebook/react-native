@@ -18,6 +18,33 @@
 namespace facebook {
 namespace react {
 
+/* static */
+Object Object::makeDate(JSContextRef ctx, Object::TimeType time) {
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+
+  JSValueRef arguments[1];
+  arguments[0] = JSC_JSValueMakeNumber(
+    ctx,
+    duration_cast<milliseconds>(time.time_since_epoch()).count());
+
+  JSValueRef exn;
+  auto result = JSC_JSObjectMakeDate(ctx, 1, arguments, &exn);
+  if (!result) {
+    throw JSException(ctx, exn, "Failed to create Date");
+  }
+  return Object(ctx, result);
+}
+
+Object Object::makeArray(JSContextRef ctx, JSValueRef* elements, unsigned length) {
+  JSValueRef exn;
+  auto arr = JSC_JSObjectMakeArray(ctx, length, elements, &exn);
+  if (!arr) {
+    throw JSException(ctx, exn, "Failed to create an Array");
+  }
+  return Object(ctx, arr);
+}
+
 Value::Value(JSContextRef context, JSValueRef value)
   : m_context(context), m_value(value) {}
 
@@ -28,6 +55,7 @@ JSContextRef Value::context() const {
   return m_context;
 }
 
+/* static */
 std::string Value::toJSONString(unsigned indent) const {
   JSValueRef exn;
   auto stringToAdopt = JSC_JSValueCreateJSONString(m_context, m_value, indent, &exn);
@@ -140,15 +168,27 @@ String Value::toString() const {
   return String::adopt(context(), jsStr);
 }
 
-Value Value::makeError(JSContextRef ctx, const char *error)
+Value Value::makeError(JSContextRef ctx, const char *error, const char *stack)
 {
-  JSValueRef exn;
-  JSValueRef args[] = { Value(ctx, String(ctx, error)) };
-  JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
-  if (!errorObj) {
-    throw JSException(ctx, exn, "Exception making error");
+  auto errorMsg = Value(ctx, String(ctx, error));
+  JSValueRef args[] = {errorMsg};
+  if (stack) {
+    // Using this instead of JSObjectMakeError to actually get a stack property.
+    // MakeError only sets it stack when returning from the invoked function, so we
+    // can't extend it here.
+    auto errorConstructor = Object::getGlobalObject(ctx).getProperty("Error").asObject();
+    auto jsError = errorConstructor.callAsConstructor({errorMsg});
+    auto fullStack = std::string(stack) + jsError.getProperty("stack").toString().str();
+    jsError.setProperty("stack", String(ctx, fullStack.c_str()));
+    return jsError;
+  } else {
+    JSValueRef exn;
+    JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
+    if (!errorObj) {
+      throw JSException(ctx, exn, "Exception making error");
+    }
+    return Value(ctx, errorObj);
   }
-  return Value(ctx, errorObj);
 }
 
 Object::operator Value() const {

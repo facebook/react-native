@@ -9,13 +9,12 @@
 
 'use strict';
 
-jest.autoMockOff();
 jest.mock('fs');
 
 let plistPath = null;
 jest.mock('../../ios/getPlistPath', () => () => plistPath);
 
-const { readFileSync } = require.requireActual('fs')
+const { readFileSync } = require.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');

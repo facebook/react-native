@@ -11,15 +11,15 @@
 
 'use strict';
 
-jest.autoMockOff();
+jest.mock('fs');
 
+const fs = require('fs');
 const findAndroidAppFolder = require('../../android/findAndroidAppFolder');
-const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::findAndroidAppFolder', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
       nested: {
         android: {
@@ -33,15 +33,11 @@ describe('android::findAndroidAppFolder', () => {
   });
 
   it('returns an android app folder if it exists in the given folder', () => {
-    expect(findAndroidAppFolder('flat')).toBe('android');
-    expect(findAndroidAppFolder('nested')).toBe('android/app');
+    expect(findAndroidAppFolder('/flat')).toBe('android');
+    expect(findAndroidAppFolder('/nested')).toBe('android/app');
   });
 
   it('returns `null` if there is no android app folder', () => {
-    expect(findAndroidAppFolder('empty')).toBeNull();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
+    expect(findAndroidAppFolder('/empty')).toBeNull();
   });
 });

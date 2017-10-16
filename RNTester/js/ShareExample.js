@@ -31,11 +31,10 @@ exports.examples = [{
   }
 }];
 
-class ShareMessageExample extends React.Component {
+class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;
-  state: any;
 
   constructor(props) {
     super(props);
@@ -104,7 +103,6 @@ class ShareMessageExample extends React.Component {
       this.setState({result: 'dismissed'});
     }
   }
-
 }
 
 

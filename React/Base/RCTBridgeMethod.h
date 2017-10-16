@@ -30,7 +30,7 @@ static inline const char *RCTFunctionDescriptorFromType(RCTFunctionType type) {
 
 @protocol RCTBridgeMethod <NSObject>
 
-@property (nonatomic, copy, readonly) NSString *JSMethodName;
+@property (nonatomic, readonly) const char *JSMethodName;
 @property (nonatomic, readonly) RCTFunctionType functionType;
 
 - (id)invokeWithBridge:(RCTBridge *)bridge

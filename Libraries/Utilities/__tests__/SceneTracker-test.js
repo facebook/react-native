@@ -9,8 +9,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const SceneTracker = require('SceneTracker');
 
 describe('setActiveScene', function() {

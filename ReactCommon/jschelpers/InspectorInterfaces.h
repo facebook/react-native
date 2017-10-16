@@ -9,9 +9,11 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
+
 #include <JavaScriptCore/JSBase.h>
 
 namespace facebook {
@@ -29,7 +31,7 @@ struct InspectorPage {
 
 class IRemoteConnection : public IDestructible {
 public:
-  virtual ~IRemoteConnection() = 0;
+  __attribute__((visibility("default"))) virtual ~IRemoteConnection() = 0;
   virtual void onMessage(std::string message) = 0;
   virtual void onDisconnect() = 0;
 };
@@ -44,7 +46,7 @@ public:
 // Note: not destructible!
 class IInspector {
 public:
-  virtual void registerGlobalContext(std::string title, JSGlobalContextRef ctx) = 0;
+  virtual void registerGlobalContext(const std::string& title, const std::function<bool()> &checkIsInspectedRemote, JSGlobalContextRef ctx) = 0;
   virtual void unregisterGlobalContext(JSGlobalContextRef ctx) = 0;
 
   virtual std::vector<InspectorPage> getPages() const = 0;

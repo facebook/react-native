@@ -28,7 +28,7 @@ public class ReactMarker {
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
     synchronized(sListeners) {
-      if (sListeners.indexOf(listener) == -1) {
+      if (!sListeners.contains(listener)) {
         sListeners.add(listener);
       }
     }
@@ -81,7 +81,7 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag) {
-    logMarker(name, null, 0);
+    logMarker(name, tag, 0);
   }
 
   @DoNotStrip

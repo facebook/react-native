@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.disableAutomock()
+jest
   .dontMock('../getAssetDestPathAndroid')
   .dontMock('../assetPathUtils');
 
@@ -57,5 +57,17 @@ describe('getAssetDestPathAndroid', () => {
     expect(
       getAssetDestPathAndroid(asset, 1).startsWith('assets_')
     ).toBeFalsy();
+  });
+
+  it('should put non-drawable resources to `raw/`', () => {
+    const asset = {
+      name: 'video',
+      type: 'mp4',
+      httpServerLocation: '/assets/app/test',
+    };
+
+    expect(getAssetDestPathAndroid(asset, 1)).toBe(
+      'raw/app_test_video.mp4'
+    );
   });
 });

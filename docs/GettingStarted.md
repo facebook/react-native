@@ -1,5 +1,5 @@
 ---
-id: quick-start-getting-started
+id: getting-started
 title: Getting Started
 layout: docs
 category: The Basics
@@ -144,7 +144,7 @@ to the [Tutorial](docs/tutorial.html).
 
 Create React Native App makes it really easy to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for building projects with native code to learn how to install Xcode and set up your Android development environment.
 
-Once you've set these up, you can launch your app on on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
+Once you've set these up, you can launch your app on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
 
 ### Caveats
 
@@ -238,12 +238,10 @@ We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org
 
 React Native also requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), as well as Python 2. Both can be installed using Chocolatey.
 
-Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following commands:
+Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following command:
 
 ```powershell
-choco install nodejs.install
-choco install python2
-choco install jdk8
+choco install -y nodejs.install python2 jdk8
 ```
 
 If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
@@ -585,12 +583,12 @@ Now that you have successfully run the app, let's modify it.
 
 <block class="native mac ios" />
 
-- Open `index.ios.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Hit `⌘R` in your iOS Simulator to reload the app and see your changes!
 
 <block class="native mac android" />
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
+- Open `index.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native windows linux android" />
@@ -599,8 +597,8 @@ Now that you have successfully run the app, let's modify it.
 
 Now that you have successfully run the app, let's modify it.
 
-- Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
+- Open `index.js` in your text editor of choice and edit some lines.
+- Press the `R` key twice or select `Reload` from the Developer Menu (`Ctrl + M`) to see your changes!
 
 <block class="native mac ios android" />
 
@@ -640,12 +638,133 @@ to the [Tutorial](docs/tutorial.html).
 If you're curious to learn more about React Native, continue on
 to the [Tutorial](docs/tutorial.html).
 
-
 <script>
-function displayTab(type, value) {
-  var container = document.getElementsByTagName('block')[0].parentNode;
-  container.className = 'display-' + type + '-' + value + ' ' +
-    container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  event && event.preventDefault();
-}
+  function displayTab(type, value) {
+    var container = document.getElementsByTagName('block')[0].parentNode;
+    container.className = 'display-' + type + '-' + value + ' ' +
+      container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
+    event && event.preventDefault();
+  }
+
+  function convertBlocks() {
+    // Convert <div>...<span><block /></span>...</div>
+    // Into <div>...<block />...</div>
+    var blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      var span = blocks[i].parentNode;
+      var container = span.parentNode;
+      container.insertBefore(block, span);
+      container.removeChild(span);
+    }
+    // Convert <div>...<block />content<block />...</div>
+    // Into <div>...<block>content</block><block />...</div>
+    blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      while (
+        block.nextSibling &&
+        block.nextSibling.tagName !== 'BLOCK'
+      ) {
+        block.appendChild(block.nextSibling);
+      }
+    }
+  }
+
+  function guessPlatformAndOS() {
+    if (!document.querySelector('block')) {
+      return;
+    }
+  
+    // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+    // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+    var foundHash = false;
+    if (
+      window.location.hash !== '' &&
+      window.location.hash !== 'content'
+    ) {
+      // content is default
+      var hashLinks = document.querySelectorAll(
+        'a.hash-link'
+      );
+      for (
+        var i = 0;
+        i < hashLinks.length && !foundHash;
+        ++i
+      ) {
+        if (hashLinks[i].hash === window.location.hash) {
+          var parent = hashLinks[i].parentElement;
+          while (parent) {
+            if (parent.tagName === 'BLOCK') {
+              // Could be more than one target os and dev platform, but just choose some sort of order
+              // of priority here.
+
+              // Dev OS
+              if (parent.className.indexOf('mac') > -1) {
+                displayTab('os', 'mac');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('linux') > -1
+              ) {
+                displayTab('os', 'linux');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('windows') > -1
+              ) {
+                displayTab('os', 'windows');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              // Target Platform
+              if (parent.className.indexOf('ios') > -1) {
+                displayTab('platform', 'ios');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('android') > -1
+              ) {
+                displayTab('platform', 'android');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              // Guide
+              if (parent.className.indexOf('native') > -1) {
+                displayTab('guide', 'native');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('quickstart') > -1
+              ) {
+                displayTab('guide', 'quickstart');
+                foundHash = true;
+              } else {
+                break;
+              }
+
+              break;
+            }
+            parent = parent.parentElement;
+          }
+        }
+      }
+    }
+
+    // Do the default if there is no matching hash
+    if (!foundHash) {
+      var isMac = navigator.platform === 'MacIntel';
+      var isWindows = navigator.platform === 'Win32';
+      displayTab('platform', isMac ? 'ios' : 'android');
+      displayTab(
+        'os',
+        isMac ? 'mac' : isWindows ? 'windows' : 'linux'
+      );
+      displayTab('guide', 'quickstart');
+      displayTab('language', 'objc');
+    }
+  }
+
+  convertBlocks();
+  guessPlatformAndOS();
 </script>

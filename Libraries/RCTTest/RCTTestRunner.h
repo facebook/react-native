@@ -15,16 +15,17 @@
 #define FB_REFERENCE_IMAGE_DIR ""
 #endif
 
-#define RCT_RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
+#define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                          \
+{                                                                                                 \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                      \
+  NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
+  while ((CONDITION)) {                                                                           \
+    [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) {                                                    \
+      XCTFail(@"Runloop timed out before condition was met");                                     \
+      break;                                                                                      \
+    }                                                                                             \
+  }                                                                                               \
 }
 
 /**
@@ -48,6 +49,10 @@
  * otherwise, the UI will be compared to the existing snapshot.
  */
 @property (nonatomic, assign) BOOL recordMode;
+
+@property (nonatomic, assign, readwrite) BOOL useBundler;
+
+@property (nonatomic, assign, readwrite) BOOL useJSDebugger;
 
 @property (nonatomic, copy) NSString *testSuffix;
 

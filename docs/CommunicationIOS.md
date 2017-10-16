@@ -39,7 +39,6 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
 ```
 
 ```
-'use strict';
 
 import React from 'react';
 import {
@@ -212,7 +211,7 @@ Let's look at an example.
 
 In the example we have a `FlexibleSizeExampleView` view that holds a root view. We create the root view, initialize it and set the delegate. The delegate will handle size updates. Then, we set the root view's size flexibility to `RCTRootViewSizeFlexibilityHeight`, which means that `rootViewDidChangeIntrinsicSize:` method will be called every time the React Native content changes its height. Finally, we set the root view's width and position. Note that we set there height as well, but it has no effect as we made the height RN-dependent.
 
-You can checkout full source code of the exmaple [here](https://github.com/facebook/react-native/blob/master/RNTester/RNTester/NativeExampleViews/FlexibleSizeExampleView.m).
+You can checkout full source code of the example [here](https://github.com/facebook/react-native/blob/master/RNTester/RNTester/NativeExampleViews/FlexibleSizeExampleView.m).
 
 It's fine to change root view's size flexibility mode dynamically. Changing flexibility mode of a root view will schedule a layout recalculation and the delegate `rootViewDidChangeIntrinsicSize:` method will be called once the content size is known.
 

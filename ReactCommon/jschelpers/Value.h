@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <sstream>
 #include <unordered_map>
@@ -11,13 +12,14 @@
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
-
-namespace facebook {
-namespace react {
+#include <privatedata/PrivateDataBase.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
+
+namespace facebook {
+namespace react {
 
 class Value;
 
@@ -149,6 +151,8 @@ private:
 // heap-allocated, since otherwise you may end up with an invalid reference.
 class Object : public noncopyable {
 public:
+  using TimeType = std::chrono::time_point<std::chrono::system_clock>;
+
   Object(JSContextRef context, JSObjectRef obj) :
     m_context(context),
     m_obj(obj)
@@ -208,13 +212,16 @@ public:
     }
   }
 
+  RN_EXPORT static Object makeArray(JSContextRef ctx, JSValueRef* elements, unsigned length);
+  RN_EXPORT static Object makeDate(JSContextRef ctx, TimeType time);
+
   template<typename ReturnType>
   ReturnType* getPrivate() const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
-    return static_cast<ReturnType*>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
+    return PrivateDataBase::cast<ReturnType>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
   }
 
-  void setPrivate(void* data) const {
+  void setPrivate(PrivateDataBase* data) const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
     JSC_JSObjectSetPrivate(isCustomJSC, m_obj, data);
   }
@@ -315,7 +322,9 @@ public:
 
   RN_EXPORT String toString() const;
 
-  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error);
+  // Create an error, optionally adding an additional number of lines to the stack.
+  // Stack must be empty or newline terminated.
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error, const char *stack = nullptr);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
@@ -327,6 +336,14 @@ public:
 
   static Value makeNull(JSContextRef ctx) {
     return Value(ctx, JSC_JSValueMakeNull(ctx));
+  }
+
+  static Value makeBoolean(JSContextRef ctx, bool value) {
+    return Value(ctx, JSC_JSValueMakeBoolean(ctx, value));
+  }
+
+  static Value makeString(JSContextRef ctx, const char* utf8) {
+    return Value(ctx, String(ctx, utf8));
   }
 
   RN_EXPORT std::string toJSONString(unsigned indent = 0) const;

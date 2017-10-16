@@ -12,7 +12,7 @@
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const Platform = require('Platform');
+const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
@@ -22,11 +22,6 @@ const {
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
-var TVViewPropTypes = {};
-if (Platform.isTVOS) {
-  TVViewPropTypes = require('TVViewPropTypes');
-}
-
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
@@ -35,6 +30,19 @@ import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
+export type ViewLayout = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+}
+
+export type ViewLayoutEvent = {
+  nativeEvent: {
+    layout: ViewLayout,
+  }
+}
 
 // There's no easy way to create a different type if(Platform.isTVOS):
 // so we must include TVViewProps
@@ -50,6 +58,7 @@ export type ViewProps = {
   onMagicTap?: Function,
   testID?: string,
   nativeID?: string,
+  onLayout?: (event: ViewLayoutEvent) => void,
   onResponderGrant?: Function,
   onResponderMove?: Function,
   onResponderReject?: Function,
@@ -71,7 +80,7 @@ export type ViewProps = {
 } & TVViewProps;
 
 module.exports = {
-  ...TVViewPropTypes,
+  ...PlatformViewPropTypes,
 
   /**
    * When `true`, indicates that the view is an accessibility element. By default,
@@ -218,8 +227,6 @@ module.exports = {
    * Used to locate this view from native classes.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
-   *
-   * @platform android
    */
   nativeID: PropTypes.string,
 

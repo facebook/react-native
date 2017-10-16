@@ -1,32 +1,46 @@
-Thanks for submitting a PR! Please read these instructions carefully:
+<!--
+Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
 
-- [ ] Explain the **motivation** for making this change.
-- [ ] Provide a **test plan** demonstrating that the code is solid.
-- [ ] Match the **code formatting** of the rest of the codebase.
-- [ ] Target the `master` branch, NOT a "stable" branch.
+Help us understand your motivation by explaining why you decided to make this change.
 
-## Motivation (required)
+You can learn more about contributing to React Native here: http://facebook.github.io/react-native/docs/contributing.html
 
-What existing problem does the pull request solve?
+Happy contributing!
 
-## Test Plan (required)
+-->
 
-A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website. See [What is a Test Plan?][1] to learn more.  
+## Motivation
 
-If you have added code that should be tested, add tests.
+(Write your motivation here.)
 
-## Next Steps
+## Test Plan
 
-Sign the [CLA][2], if you haven't already.
+(Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!)
 
-Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
+## Release Notes
+<!--
+Help reviewers and the release process by writing your own release notes
 
-Make sure all **tests pass** on both [Travis][3] and [Circle CI][4]. PRs that break tests are unlikely to be merged.
+**INTERNAL and MINOR tagged notes will not be included in the next version's final release notes.**
 
-For more info, see the ["Pull Requests"][5] section of our "Contributing" guidelines.
+  CATEGORY
+[----------]        TYPE
+[ CLI      ]   [-------------]      LOCATION
+[ DOCS     ]   [ BREAKING    ]   [-------------]
+[ GENERAl  ]   [ BUGFIX      ]   [-{Component}-]
+[ INTERNAL ]   [ ENHANCEMENT ]   [ {File}      ]
+[ IOS      ]   [ FEATURE     ]   [ {Directory} ]   |-----------|
+[ ANDROID  ]   [ MINOR       ]   [ {Framework} ] - | {Message} |
+[----------]   [-------------]   [-------------]   |-----------|
 
-[1]: https://medium.com/@martinkonicek/what-is-a-test-plan-8bfc840ec171#.y9lcuqqi9
-[2]: https://code.facebook.com/cla
-[3]: https://travis-ci.org/facebook/react-native
-[4]: http://circleci.com/gh/facebook/react-native
-[5]: https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#pull-requests
+[CATEGORY] [TYPE] [LOCATION] - MESSAGE
+
+ EXAMPLES:
+
+ [IOS] [BREAKING] [FlatList] - Change a thing that breaks other things
+ [ANDROID] [BUGFIX] [TextInput] - Did a thing to TextInput
+ [CLI] [FEATURE] [local-cli/info/info.js] - CLI easier to do things with
+ [DOCS] [BUGFIX] [GettingStarted.md] - Accidentally a thing/word
+ [GENERAL] [ENHANCEMENT] [Yoga] - Added new yoga thing/position
+ [INTERNAL] [FEATURE] [./scripts] - Added thing to script that nobody will see
+-->

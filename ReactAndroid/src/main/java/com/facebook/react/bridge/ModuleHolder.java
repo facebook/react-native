@@ -2,21 +2,21 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.inject.Provider;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.systrace.SystraceMessage;
-
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.systrace.SystraceMessage;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.inject.Provider;
 
 /**
  * Holder to enable us to lazy create native modules.
@@ -31,6 +31,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 public class ModuleHolder {
 
   private static final AtomicInteger sInstanceKeyCounter = new AtomicInteger(1);
+
+  private final int mInstanceKey = sInstanceKeyCounter.getAndIncrement();
 
   private final String mName;
   private final boolean mCanOverrideExistingModule;
@@ -60,6 +62,8 @@ public class ModuleHolder {
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
     mHasConstants = true;
     mModule = nativeModule;
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
   }
 
   /*
@@ -149,11 +153,12 @@ public class ModuleHolder {
 
   private NativeModule create() {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
-    int instanceKey = sInstanceKeyCounter.getAndIncrement();
-    ReactMarker.logMarker(CREATE_MODULE_START, mName, instanceKey);
+    ReactMarker.logMarker(CREATE_MODULE_START, mName, mInstanceKey);
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
       .arg("name", mName)
       .flush();
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
     NativeModule module;
     try {
       module = assertNotNull(mProvider).get();
@@ -169,7 +174,7 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      ReactMarker.logMarker(CREATE_MODULE_END, instanceKey);
+      ReactMarker.logMarker(CREATE_MODULE_END, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;
@@ -179,7 +184,7 @@ public class ModuleHolder {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.initialize")
       .arg("name", mName)
       .flush();
-    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName);
+    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName, mInstanceKey);
     try {
       boolean shouldInitialize = false;
       // Check to see if another thread is initializing the object, if not claim the responsibility
@@ -198,7 +203,7 @@ public class ModuleHolder {
         }
       }
     } finally {
-      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END);
+      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }

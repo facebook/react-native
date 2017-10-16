@@ -16,6 +16,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
@@ -113,6 +114,8 @@ RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
+
+RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
 
 // Acessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
@@ -257,6 +260,7 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
+RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties

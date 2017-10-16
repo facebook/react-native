@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.disableAutomock()
+jest
   .dontMock('../filterPlatformAssetScales')
   .dontMock('../assetPathUtils');
 

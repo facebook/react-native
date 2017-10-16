@@ -9,26 +9,21 @@
 
 package com.facebook.react.views.image;
 
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.Toast;
-
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -61,6 +56,10 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.yoga.YogaConstants;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -83,9 +82,34 @@ public class ReactImageView extends GenericDraweeView {
    * Because the postprocessor uses a modified bitmap, that would just get cropped in
    * 'cover' mode, so we fall back to Fresco's normal implementation.
    */
+  private static final Matrix sMatrix = new Matrix();
+  private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
+
+    void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
+      mScaleType.getTransform(
+            sMatrix,
+            new Rect(0, 0, source.getWidth(), source.getHeight()),
+            source.getWidth(),
+            source.getHeight(),
+            0.0f,
+            0.0f);
+        sMatrix.invert(sInverse);
+
+        mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
+        mappedRadii[1] = mappedRadii[0];
+
+        mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
+        mappedRadii[3] = mappedRadii[2];
+
+        mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
+        mappedRadii[5] = mappedRadii[4];
+
+        mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
+        mappedRadii[7] = mappedRadii[6];
+    }
 
     @Override
     public void process(Bitmap output, Bitmap source) {
@@ -104,11 +128,15 @@ public class ReactImageView extends GenericDraweeView {
       paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       Canvas canvas = new Canvas(output);
 
+      float[] radii = new float[8];
+
+      getRadii(source, sComputedCornerRadii, radii);
+
       Path pathForBorderRadius = new Path();
 
       pathForBorderRadius.addRoundRect(
           new RectF(0, 0, source.getWidth(), source.getHeight()),
-          sComputedCornerRadii,
+          radii,
           Path.Direction.CW);
 
       canvas.drawPath(pathForBorderRadius, paint);
@@ -132,6 +160,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
+  private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
@@ -147,11 +176,13 @@ public class ReactImageView extends GenericDraweeView {
   public ReactImageView(
       Context context,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable GlobalImageLoadListener globalImageLoadListener,
       @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
+    mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
     mSources = new LinkedList<>();
   }
@@ -384,6 +415,10 @@ public class ReactImageView extends GenericDraweeView {
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
 
     ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+
+    if (mGlobalImageLoadListener != null) {
+      mGlobalImageLoadListener.onLoadAttempt(mImageSource.getUri());
+    }
 
     // This builder is reused
     mDraweeControllerBuilder.reset();

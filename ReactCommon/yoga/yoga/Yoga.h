@@ -112,7 +112,7 @@ WIN_EXPORT bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                               const float lastComputedHeight,
                                               const float marginRow,
                                               const float marginColumn,
-                                              YGConfigRef config);
+                                              const YGConfigRef config);
 
 WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode);
 
@@ -215,6 +215,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Bottom);
 YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
+YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if

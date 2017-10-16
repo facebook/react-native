@@ -23,7 +23,7 @@ class ModuleHolder : public jni::JavaClass<ModuleHolder> {
   xplat::module::CxxModule::Provider getProvider() const;
 };
 
-std::unique_ptr<ModuleRegistry> buildModuleRegistry(
+std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   std::weak_ptr<Instance> winstance,
   jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
   jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
