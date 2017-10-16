@@ -68,3 +68,23 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
+
+# com.facebook.react.uimanager.UIProp
+
+-keep class com.facebook.react.uimanager.UIProp { *; }
+-keep class sun.misc.Unsafe { *; }
+
+# RN 0.41+
+# https://github.com/facebook/react-native/issues/11891
+# -dontwarn com.facebook.fbui.textlayoutbuilder.proxy.StaticLayoutProxy
+# This library uses a non-public Android constructor within StaticLayout.
+# See libs/proxy/src/main/java/com/facebook/fbui/textlayoutbuilder/proxy for details.
+-dontwarn android.text.StaticLayout
+
+# https://github.com/facebook/react-native/issues/6624
+-keep class com.facebook.react.bridge.ModuleRegistryHolder { *; }
+-keep class com.facebook.react.bridge.CatalystInstanceImpl { *; }
+-keep class com.facebook.react.bridge.JavaScriptExecutor { *; }
+-keep class com.facebook.react.bridge.queue.NativeRunnable { *; }
+-keep class com.facebook.react.bridge.ExecutorToken { *; }
+-keep class com.facebook.react.bridge.ReadableType { *; }
