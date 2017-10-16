@@ -10,7 +10,7 @@ const ios = require('../../__fixtures__/ios');
 describe('ios::findPodfilePath', () => {
   it('returns null if there is no Podfile', () => {
     fs.__setMockFilesystem(ios.valid);
-    expect(findPodfilePath('')).toBeNull()
+    expect(findPodfilePath('')).toBeNull();
   });
 
   it('returns Podfile path if it exists', () => {

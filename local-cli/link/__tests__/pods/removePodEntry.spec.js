@@ -31,5 +31,5 @@ describe('pods::removePodEntry', () => {
 
 function readTestPodFile(fileName) {
   const podfileLines = readPodfile(path.join(PODFILES_PATH, fileName));
-  return { podfileContent: podfileLines.join('\n'), podLinesCount: podfileLines.length }
+  return { podfileContent: podfileLines.join('\n'), podLinesCount: podfileLines.length };
 }

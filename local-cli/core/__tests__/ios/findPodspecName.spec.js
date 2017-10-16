@@ -41,5 +41,4 @@ describe('ios::findPodspecName', () => {
     });
     expect(findPodspecName('/user/packet')).toBe('Another');
   });
-
 });

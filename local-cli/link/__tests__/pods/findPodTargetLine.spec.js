@@ -21,5 +21,4 @@ describe('pods::findPodTargetLine', () => {
     const podfile = readPodfile(path.join(PODFILES_PATH, 'PodfileSimple'));
     expect(findPodTargetLine(podfile, 'Testing')).toBe(4);
   });
-
 });
