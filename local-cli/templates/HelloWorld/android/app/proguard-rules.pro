@@ -82,9 +82,9 @@
 -dontwarn android.text.StaticLayout
 
 # https://github.com/facebook/react-native/issues/6624
--keep class com.facebook.react.cxxbridge.ModuleRegistryHolder { *; }
--keep class com.facebook.react.cxxbridge.CatalystInstanceImpl { *; }
--keep class com.facebook.react.cxxbridge.JavaScriptExecutor { *; }
+-keep class com.facebook.react.bridge.ModuleRegistryHolder { *; }
+-keep class com.facebook.react.bridge.CatalystInstanceImpl { *; }
+-keep class com.facebook.react.bridge.JavaScriptExecutor { *; }
 -keep class com.facebook.react.bridge.queue.NativeRunnable { *; }
 -keep class com.facebook.react.bridge.ExecutorToken { *; }
 -keep class com.facebook.react.bridge.ReadableType { *; }
