@@ -26,8 +26,8 @@ add-label Needs Response from Author
 close
 
 @facebook-github-bot no-template
-comment Hey, thanks for reporting this issue! It looks like your description is missing some necessary information, or the list of reproduction steps is not complete. Can you please add all the details specified in the [Issue Template](https://raw.githubusercontent.com/facebook/react-native/master/.github/ISSUE_TEMPLATE.md)? This is necessary for people to be able to understand and reproduce the issue being reported. I am going to close this, but feel free to open a new issue with the additional information provided. Thanks! See ["What to Expect from Maintainers"](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues) to learn more.
-add-label Needs more information
+comment Hey, thanks for reporting this issue! It looks like your description is missing some necessary information, or the list of reproduction steps is not complete. Can you please add all the details specified in the [Issue Template](https://raw.githubusercontent.com/facebook/react-native/master/.github/ISSUE_TEMPLATE.md)? This is necessary for people to be able to understand and reproduce the issue being reported. I am going to close this, but feel free to open a new issue with the additional information provided and someone will take a look. See ["What to Expect from Maintainers"](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues) to learn more.
+add-label Missing required information from template
 close
 
 @facebook-github-bot close
