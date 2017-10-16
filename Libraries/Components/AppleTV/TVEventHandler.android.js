@@ -11,10 +11,35 @@
  */
 'use strict';
 
-function TVEventHandler() {}
+const React = require('React');
+const NativeEventEmitter = require('NativeEventEmitter');
 
-TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {};
+function TVEventHandler() {
+  this.__nativeTVNavigationEventListener = null;
+  this.__nativeTVNavigationEventEmitter = null;
+}
 
-TVEventHandler.prototype.disable = function() {};
+TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {
+  this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(null);
+  this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
+    'onTVNavEvent',
+    (data) => {
+      if (callback) {
+        callback(component, data);
+      }
+    }
+  );
+};
+
+TVEventHandler.prototype.disable = function() {
+  if (this.__nativeTVNavigationEventListener) {
+    this.__nativeTVNavigationEventListener.remove();
+    delete this.__nativeTVNavigationEventListener;
+  }
+  if (this.__nativeTVNavigationEventEmitter) {
+    delete this.__nativeTVNavigationEventEmitter;
+  }
+};
 
 module.exports = TVEventHandler;
+
