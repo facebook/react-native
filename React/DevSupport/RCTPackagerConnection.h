@@ -13,19 +13,31 @@
 
 #if RCT_DEV
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class RCTBridge;
 @protocol RCTPackagerClientMethod;
 @protocol RCTPackagerConnectionConfig;
 
 /**
- * Encapsulates connection to React Native packager
+ * Encapsulates connection to React Native packager.
+ * Dispatches messages from websocket to message handlers that must implement
+ * <RCTPackagerClientMethod> protocol.
+ * Message dispatch is performed on the main queue, unless message handler
+ * provides its own queue by overriding "methodQueue" method.
  */
 @interface RCTPackagerConnection : NSObject
+
++ (void)checkDefaultConnectionWithCallback:(void (^)(BOOL isRunning))callback
+                                     queue:(dispatch_queue_t)queue;
 
 + (instancetype)connectionForBridge:(RCTBridge *)bridge;
 - (instancetype)initWithConfig:(id<RCTPackagerConnectionConfig>)config;
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name;
+- (void)stop;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

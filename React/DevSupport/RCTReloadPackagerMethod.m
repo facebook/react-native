@@ -9,20 +9,20 @@
 
 #import "RCTReloadPackagerMethod.h"
 
-#import <objc/runtime.h>
-
 #import "RCTBridge.h"
 
 #if RCT_DEV // Only supported in dev mode
 
 @implementation RCTReloadPackagerMethod {
-  __weak RCTBridge *_bridge;
+  RCTReloadPackagerMethodBlock _block;
+  dispatch_queue_t _callbackQueue;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithReloadCommand:(RCTReloadPackagerMethodBlock)block callbackQueue:(dispatch_queue_t)callbackQueue
 {
   if (self = [super init]) {
-    _bridge = bridge;
+    _block = [block copy];
+    _callbackQueue = callbackQueue;
   }
   return self;
 }
@@ -34,10 +34,12 @@
 
 - (void)handleNotification:(id)params
 {
-  if (![params isEqual:[NSNull null]] && [params[@"debug"] boolValue]) {
-    _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-  }
-  [_bridge reload];
+  _block(params);
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _callbackQueue;
 }
 
 @end

@@ -68,7 +68,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Use `-[RCTUIManager setLocalData:forView:]` to set this property
  * (to provide local/environmental data for a shadow view) from the main thread.
  */
-@property (nonatomic, strong) NSObject *localData;
+- (void)setLocalData:(NSObject *)localData;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -84,9 +84,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
- * Computed layout direction for the view backed to Yoga node value.
+ * Computed layout direction of the view.
  */
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
 
 /**
  * Position and dimensions.
@@ -277,15 +278,5 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
-
-@end
-
-@interface RCTShadowView (Deprecated)
-
-@property (nonatomic, assign, readonly) YGNodeRef cssNode
-__deprecated_msg("Use `yogaNode` instead.");
-
-- (BOOL)isCSSLeafNode
-__deprecated_msg("Use `isYogaLeafNode` instead.");
 
 @end

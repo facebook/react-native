@@ -47,7 +47,7 @@ class BlogPageLayout extends React.Component {
               .map((post) => {
                 return (
                   <BlogPostExcerpt post={post} />
-                )
+                );
               })
             }
             <div className="docs-prevnext">
