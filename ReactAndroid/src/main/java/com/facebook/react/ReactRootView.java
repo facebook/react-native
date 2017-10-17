@@ -468,6 +468,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     mRootViewTag = rootViewTag;
   }
 
+  @Nullable
+  public ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
+  }
+
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
     private final int mMinKeyboardHeightDetected;
