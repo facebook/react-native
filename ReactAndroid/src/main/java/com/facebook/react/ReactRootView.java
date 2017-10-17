@@ -229,7 +229,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     mAndroidTVRootViewHelper.handleKeyEvent(ev, eventEmitter);
-    return super.dispatchKeyEvent(ev);
+    return true;
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
