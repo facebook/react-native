@@ -20,7 +20,7 @@ global.Promise = require.requireActual('promise');
 global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
 
 global.requestAnimationFrame = function(callback) {
-  setTimeout(callback, 0);
+  return setTimeout(callback, 0);
 };
 global.cancelAnimationFrame = function(id) {
   clearTimeout(id);

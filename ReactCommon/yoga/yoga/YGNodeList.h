@@ -26,8 +26,11 @@ void YGNodeListFree(const YGNodeListRef list);
 uint32_t YGNodeListCount(const YGNodeListRef list);
 void YGNodeListAdd(YGNodeListRef *listp, const YGNodeRef node);
 void YGNodeListInsert(YGNodeListRef *listp, const YGNodeRef node, const uint32_t index);
+void YGNodeListReplace(const YGNodeListRef list, const uint32_t index, const YGNodeRef newNode);
+void YGNodeListRemoveAll(const YGNodeListRef list);
 YGNodeRef YGNodeListRemove(const YGNodeListRef list, const uint32_t index);
 YGNodeRef YGNodeListDelete(const YGNodeListRef list, const YGNodeRef node);
 YGNodeRef YGNodeListGet(const YGNodeListRef list, const uint32_t index);
+YGNodeListRef YGNodeListClone(YGNodeListRef list);
 
 YG_EXTERN_C_END
