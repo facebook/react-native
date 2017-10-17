@@ -31,14 +31,14 @@ public class ReactAndroidTVRootViewHelper {
 
   private ReactRootView mReactRootView;
 
-  public ReactAndroidTVRootViewHelper(ReactRootView mReactRootView) {
-    this.mReactRootView = mReactRootView;
+  public ReactAndroidTVRootViewHelper(ReactRootView reactRootView) {
+    mReactRootView = reactRootView;
   }
 
   public void handleKeyEvent(KeyEvent ev, RCTDeviceEventEmitter emitter) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
-    View targetView = getFocusedView(mReactRootView);
+    View targetView = findFocusedView(mReactRootView);
     if (targetView != null) {
       if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
         handlePlayPauseEvent(emitter);
@@ -82,7 +82,7 @@ public class ReactAndroidTVRootViewHelper {
     emitter.emit("onTVNavEvent", event);
   }
 
-  private View getFocusedView(ViewGroup viewGroup) {
+  private View findFocusedView(ViewGroup viewGroup) {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
       View view = viewGroup.getChildAt(i);
@@ -90,7 +90,7 @@ public class ReactAndroidTVRootViewHelper {
         return view;
       }
       if (view instanceof ViewGroup) {
-        View nestedView = getFocusedView((ViewGroup) view);
+        View nestedView = findFocusedView((ViewGroup) view);
         if (nestedView != null) {
           return nestedView;
         }
