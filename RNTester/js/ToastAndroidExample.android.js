@@ -82,6 +82,30 @@ class ToastExample extends React.Component<{}, $FlowFixMeState> {
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
+        <RNTesterBlock title="Toast with red background color">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithColor(
+                'This is a toast with red background color',
+                ToastAndroid.SHORT,
+                "#ff0000"
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+        <RNTesterBlock title="Toast with blue background color">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithColor(
+                'This is a toast with blue background color',
+                ToastAndroid.SHORT,
+                "#0000ff"
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
         <RNTesterBlock title="Toast with x offset">
           <TouchableWithoutFeedback
             onPress={() =>
