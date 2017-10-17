@@ -158,7 +158,7 @@ var TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: Event) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    if (!Platform.isTV) {
+    if (this.pressInLocation) {
       this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
     }
   },
