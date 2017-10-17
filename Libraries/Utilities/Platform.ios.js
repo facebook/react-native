@@ -29,7 +29,7 @@ const Platform = {
     return constants ? constants.interfaceIdiom === 'tv' : false;
   },
   get isTV() {
-    return Platform.isTVOS();
+    return Platform.isTVOS;
   },
   get isTesting(): boolean {
     const constants = NativeModules.PlatformConstants;
