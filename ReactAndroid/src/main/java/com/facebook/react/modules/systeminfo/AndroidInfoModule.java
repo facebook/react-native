@@ -14,7 +14,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -33,15 +32,12 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
 
   private static final String IS_TESTING = "IS_TESTING";
 
-  private ReactContext mReactContext;
-
   public AndroidInfoModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.mReactContext = reactContext;
   }
 
   private String uiMode() {
-    UiModeManager uiModeManager = (UiModeManager) mReactContext.getSystemService(UI_MODE_SERVICE);
+    UiModeManager uiModeManager = (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
     switch (uiModeManager.getCurrentModeType()) {
       case Configuration.UI_MODE_TYPE_TELEVISION:
         return "tv";
