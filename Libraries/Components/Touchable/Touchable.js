@@ -331,7 +331,7 @@ var TouchableMixin = {
         } else if (evt.eventType === 'blur') {
           cmp.touchableHandleActivePressOut && cmp.touchableHandleActivePressOut(evt);
         } else if (evt.eventType === 'select') {
-          cmp.touchableHandlePress && cmp.touchableHandlePress(evt);
+          cmp.touchableHandlePress && !cmp.props.disabled && cmp.touchableHandlePress(evt);
         }
       }
     });
