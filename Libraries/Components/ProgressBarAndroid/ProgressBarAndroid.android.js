@@ -17,8 +17,6 @@ const React = require('React');
 const ReactNative = require('ReactNative');
 const ViewPropTypes = require('ViewPropTypes');
 
-const requireNativeComponent = require('requireNativeComponent');
-
 const STYLE_ATTRIBUTES = [
   'Horizontal',
   'Normal',
@@ -81,10 +79,6 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
      */
     styleAttr: PropTypes.oneOf(STYLE_ATTRIBUTES),
     /**
-     * Whether to show the ProgressBar (true, the default) or hide it (false).
-     */
-    animating: PropTypes.bool,
-    /**
      * If the progress bar will show indeterminate progress. Note that this
      * can only be false if styleAttr is Horizontal.
      */
@@ -105,8 +99,7 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
 
   static defaultProps = {
     styleAttr: 'Normal',
-    indeterminate: true,
-    animating: true,
+    indeterminate: true
   };
 
   componentDidMount() {
@@ -119,18 +112,8 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
   }
 
   render() {
-    return <AndroidProgressBar {...this.props} />;
+    return <ActivityIndicator {...this.props} animating={true} />;
   }
 }
-
-const AndroidProgressBar = requireNativeComponent(
-  'AndroidProgressBar',
-  ProgressBarAndroid,
-  {
-    nativeOnly: {
-      animating: true,
-    },
-  }
-);
 
 module.exports = ProgressBarAndroid;
