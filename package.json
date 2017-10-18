@@ -178,7 +178,7 @@
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^2.5.0",
     "react-timer-mixin": "^0.13.2",
-    "regenerator-runtime": "^0.9.5",
+    "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
     "shell-quote": "1.6.1",

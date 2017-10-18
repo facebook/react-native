@@ -1,0 +1,30 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+
+target 'none' do
+  pod 'React',
+    :path => "../node_modules/react-native",
+    :subspecs => [
+      "Core",
+      "ART",
+      "RCTActionSheet",
+      "RCTAnimation",
+      "RCTCameraRoll",
+      "RCTGeolocation",
+      "RCTImage",
+      "RCTNetwork",
+      "RCTText",
+      "RCTVibration",
+      "RCTWebSocket",
+      "DevSupport",
+      "BatchedBridge"
+    ]
+
+  pod 'Yoga',
+    :path => "../node_modules/react-native/ReactCommon/yoga" 
+  
+  # test should point to this line
+  post_install do |installer|
+      
+  end
+end
