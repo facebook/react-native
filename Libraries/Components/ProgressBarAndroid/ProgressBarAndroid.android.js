@@ -109,15 +109,6 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
     animating: true,
   };
 
-  componentDidMount() {
-    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
-      console.warn(
-        'Circular indeterminate `ProgressBarAndroid`' +
-        'is deprecated. Use `ActivityIndicator` instead.'
-      );
-    }
-  }
-
   render() {
     return <AndroidProgressBar {...this.props} />;
   }
