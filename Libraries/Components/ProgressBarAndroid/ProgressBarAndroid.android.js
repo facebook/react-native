@@ -10,12 +10,13 @@
  */
 'use strict';
 
-const ActivityIndicator = require('ActivityIndicator');
 const ColorPropType = require('ColorPropType');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ViewPropTypes = require('ViewPropTypes');
+
+const requireNativeComponent = require('requireNativeComponent');
 
 const STYLE_ATTRIBUTES = [
   'Horizontal',
@@ -79,6 +80,10 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
      */
     styleAttr: PropTypes.oneOf(STYLE_ATTRIBUTES),
     /**
+     * Whether to show the ProgressBar (true, the default) or hide it (false).
+     */
+    animating: PropTypes.bool,
+    /**
      * If the progress bar will show indeterminate progress. Note that this
      * can only be false if styleAttr is Horizontal.
      */
@@ -99,21 +104,23 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
 
   static defaultProps = {
     styleAttr: 'Normal',
-    indeterminate: true
+    indeterminate: true,
+    animating: true,
   };
 
-  componentDidMount() {
-    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
-      console.warn(
-        'Circular indeterminate `ProgressBarAndroid`' +
-        'is deprecated. Use `ActivityIndicator` instead.'
-      );
-    }
-  }
-
   render() {
-    return <ActivityIndicator {...this.props} animating={true} />;
+    return <AndroidProgressBar {...this.props} />;
   }
 }
+
+const AndroidProgressBar = requireNativeComponent(
+  'AndroidProgressBar',
+  ProgressBarAndroid,
+  {
+    nativeOnly: {
+      animating: true,
+    },
+  }
+);
 
 module.exports = ProgressBarAndroid;
