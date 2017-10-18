@@ -285,7 +285,6 @@ const viewConfig = {
  *
  */
 
-// $FlowFixMe(>=0.41.0)
 const Text = createReactClass({
   displayName: 'Text',
   propTypes: {
