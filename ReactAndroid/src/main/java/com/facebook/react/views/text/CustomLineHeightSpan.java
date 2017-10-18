@@ -54,7 +54,9 @@ public class CustomLineHeightSpan implements LineHeightSpan {
     }
 
     fm.top += delta;
-    fm.ascent = Math.max(fm.top, fm.ascent - delta);
+    if(delta > 0) {
+      fm.ascent = Math.max(fm.top, fm.ascent - delta);
+    }
 
   }
 }

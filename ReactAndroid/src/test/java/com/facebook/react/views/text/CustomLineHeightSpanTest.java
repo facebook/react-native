@@ -13,6 +13,21 @@ import org.robolectric.RobolectricTestRunner;
 public class CustomLineHeightSpanTest {
 
   @Test
+  public void shouldIncreaseTop() {
+    CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(21);
+    Paint.FontMetricsInt fm = new Paint.FontMetricsInt();
+    fm.top = -10;
+    fm.ascent = -5;
+    fm.descent = 5;
+    fm.bottom = 10;
+    customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
+    assertThat(fm.top).isEqualTo(-11);
+    assertThat(fm.ascent).isEqualTo(-5);
+    assertThat(fm.descent).isEqualTo(5);
+    assertThat(fm.bottom).isEqualTo(10);
+  }
+
+  @Test
   public void shouldReduceTopFirst() {
     CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(19);
     Paint.FontMetricsInt fm = new Paint.FontMetricsInt();
