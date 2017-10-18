@@ -25,6 +25,10 @@ module.exports = [
     parse: (val) => val === 'false' ? false : true,
     default: true,
   }, {
+    command: '--minify [boolean]',
+    description: 'Enable or disables minification, overriding "--dev"',
+    parse: (val) => val === 'false' ? false : true
+  }, {
     command: '--bundle-output <string>',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
   }, {
