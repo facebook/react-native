@@ -34,7 +34,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
-import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
 /**
@@ -625,23 +624,54 @@ public class ReactViewGroup extends ViewGroup implements
             float top = 0f;
             float right = getWidth();
             float bottom = getHeight();
-            if (mReactBackgroundDrawable.getFullBorderWidth() != 0f) {
-              float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
+            final float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
+
+            if (borderWidth != 0f) {
               left += borderWidth;
               top += borderWidth;
               right -= borderWidth;
               bottom -= borderWidth;
             }
-            float radius = mReactBackgroundDrawable.getRadius();
 
-            if (!YogaConstants.isUndefined(radius) && radius > 0.5f) {
+            final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
+            final float topLeftBorderRadius =
+                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
+            final float topRightBorderRadius =
+                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
+            final float bottomLeftBorderRadius =
+                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
+            final float bottomRightBorderRadius =
+                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
+
+            if (topLeftBorderRadius > 0
+                || topRightBorderRadius > 0
+                || bottomRightBorderRadius > 0
+                || bottomLeftBorderRadius > 0) {
               if (mPath == null) {
                 mPath = new Path();
               }
+
               mPath.rewind();
               mPath.addRoundRect(
-                  new RectF(left, top, right, bottom), radius, radius, Path.Direction.CW);
+                  new RectF(left, top, right, bottom),
+                  new float[] {
+                    Math.max(topLeftBorderRadius - borderWidth, 0),
+                    Math.max(topLeftBorderRadius - borderWidth, 0),
+                    Math.max(topRightBorderRadius - borderWidth, 0),
+                    Math.max(topRightBorderRadius - borderWidth, 0),
+                    Math.max(bottomRightBorderRadius - borderWidth, 0),
+                    Math.max(bottomRightBorderRadius - borderWidth, 0),
+                    Math.max(bottomLeftBorderRadius - borderWidth, 0),
+                    Math.max(bottomLeftBorderRadius - borderWidth, 0),
+                  },
+                  Path.Direction.CW);
               canvas.clipPath(mPath);
+            } else {
+              canvas.clipRect(new RectF(left, top, right, bottom));
             }
           }
           break;

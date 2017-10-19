@@ -98,6 +98,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   private @Nullable float[] mBorderCornerRadii;
 
+  public enum BorderRadiusLocation {
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT
+  }
+
   @Override
   public void draw(Canvas canvas) {
     updatePathEffect();
@@ -228,8 +235,23 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
   }
 
-  public float getRadius() {
-    return mBorderRadius;
+  public float getFullBorderRadius() {
+    return YogaConstants.isUndefined(mBorderRadius) ? 0 : mBorderRadius;
+  }
+
+  public float getBorderRadiusOrDefaultTo(
+      final float defaultValue, final BorderRadiusLocation location) {
+    if (mBorderCornerRadii == null) {
+      return defaultValue;
+    }
+
+    final float radius = mBorderCornerRadii[location.ordinal()];
+
+    if (YogaConstants.isUndefined(radius)) {
+      return defaultValue;
+    }
+
+    return radius;
   }
 
   public void setColor(int color) {
@@ -283,11 +305,15 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
 
-    float defaultBorderRadius = !YogaConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
-    float topLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
-    float topRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
-    float bottomRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
-    float bottomLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+    final float borderRadius = getFullBorderRadius();
+    final float topLeftRadius =
+        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_LEFT);
+    final float topRightRadius =
+        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_RIGHT);
+    final float bottomLeftRadius =
+        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_LEFT);
+    final float bottomRightRadius =
+        getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
