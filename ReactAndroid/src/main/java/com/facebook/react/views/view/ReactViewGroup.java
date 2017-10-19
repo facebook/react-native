@@ -33,6 +33,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import javax.annotation.Nullable;
 
@@ -624,13 +625,25 @@ public class ReactViewGroup extends ViewGroup implements
             float top = 0f;
             float right = getWidth();
             float bottom = getHeight();
-            final float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
 
-            if (borderWidth != 0f) {
-              left += borderWidth;
-              top += borderWidth;
-              right -= borderWidth;
-              bottom -= borderWidth;
+            final float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
+            final float borderTopWidth =
+                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
+            final float borderBottomWidth =
+                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
+            final float borderLeftWidth =
+                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
+            final float borderRightWidth =
+                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
+
+            if (borderTopWidth > 0
+                || borderLeftWidth > 0
+                || borderBottomWidth > 0
+                || borderRightWidth > 0) {
+              left += borderLeftWidth;
+              top += borderTopWidth;
+              right -= borderRightWidth;
+              bottom -= borderBottomWidth;
             }
 
             final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
@@ -659,14 +672,14 @@ public class ReactViewGroup extends ViewGroup implements
               mPath.addRoundRect(
                   new RectF(left, top, right, bottom),
                   new float[] {
-                    Math.max(topLeftBorderRadius - borderWidth, 0),
-                    Math.max(topLeftBorderRadius - borderWidth, 0),
-                    Math.max(topRightBorderRadius - borderWidth, 0),
-                    Math.max(topRightBorderRadius - borderWidth, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth, 0),
+                    Math.max(topLeftBorderRadius - borderLeftWidth, 0),
+                    Math.max(topLeftBorderRadius - borderTopWidth, 0),
+                    Math.max(topRightBorderRadius - borderRightWidth, 0),
+                    Math.max(topRightBorderRadius - borderTopWidth, 0),
+                    Math.max(bottomRightBorderRadius - borderRightWidth, 0),
+                    Math.max(bottomRightBorderRadius - borderBottomWidth, 0),
+                    Math.max(bottomLeftBorderRadius - borderLeftWidth, 0),
+                    Math.max(bottomLeftBorderRadius - borderBottomWidth, 0),
                   },
                   Path.Direction.CW);
               canvas.clipPath(mPath);

@@ -19,6 +19,7 @@ import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -30,15 +31,15 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 /**
- * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports
- * drawing background color and borders (including rounded borders) by providing a react friendly
- * API (setter for each of those properties).
+ * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports drawing
+ * background color and borders (including rounded borders) by providing a react friendly API
+ * (setter for each of those properties).
  *
- * The implementation tries to allocate as few objects as possible depending on which properties are
- * set. E.g. for views with rounded background/borders we allocate {@code mPathForBorderRadius} and
- * {@code mTempRectForBorderRadius}. In case when view have a rectangular borders we allocate
- * {@code mBorderWidthResult} and similar. When only background color is set we won't allocate any
- * extra/unnecessary objects.
+ * <p>The implementation tries to allocate as few objects as possible depending on which properties
+ * are set. E.g. for views with rounded background/borders we allocate {@code
+ * mInnerClipPathForBorderRadius} and {@code mInnerClipTempRectForBorderRadius}. In case when view
+ * have a rectangular borders we allocate {@code mBorderWidthResult} and similar. When only
+ * background color is set we won't allocate any extra/unnecessary objects.
  */
 public class ReactViewBackgroundDrawable extends Drawable {
 
@@ -83,10 +84,12 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   /* Used for rounded border and rounded background */
   private @Nullable PathEffect mPathEffectForBorderStyle;
-  private @Nullable Path mPathForBorderRadius;
+  private @Nullable Path mInnerClipPathForBorderRadius;
+  private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
-  private @Nullable RectF mTempRectForBorderRadius;
+  private @Nullable RectF mInnerClipTempRectForBorderRadius;
+  private @Nullable RectF mOuterClipTempRectForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadiusOutline;
   private boolean mNeedUpdatePathForBorderRadius = false;
   private float mBorderRadius = YogaConstants.UNDEFINED;
@@ -169,8 +172,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
     if (!FloatUtil.floatsEqual(mBorderWidth.getRaw(position), width)) {
       mBorderWidth.set(position, width);
-      if (position == Spacing.ALL) {
-        mNeedUpdatePathForBorderRadius = true;
+      switch (position) {
+        case Spacing.ALL:
+        case Spacing.LEFT:
+        case Spacing.BOTTOM:
+        case Spacing.RIGHT:
+        case Spacing.TOP:
+          mNeedUpdatePathForBorderRadius = true;
       }
       invalidateSelf();
     }
@@ -266,44 +274,87 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
     updatePath();
+    canvas.save();
+
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);
-      canvas.drawPath(mPathForBorderRadius, mPaint);
+      canvas.drawPath(mInnerClipPathForBorderRadius, mPaint);
     }
-    // maybe draw borders?
-    float fullBorderWidth = getFullBorderWidth();
-    if (fullBorderWidth > 0) {
+
+    final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
+    final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
+    final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
+    final float borderLeftWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
+    final float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
+
+    if (borderTopWidth > 0
+        || borderBottomWidth > 0
+        || borderLeftWidth > 0
+        || borderRightWidth > 0) {
       int borderColor = getFullBorderColor();
       mPaint.setColor(ColorUtil.multiplyColorAlpha(borderColor, mAlpha));
-      mPaint.setStyle(Paint.Style.STROKE);
-      mPaint.setStrokeWidth(fullBorderWidth);
-      canvas.drawPath(mPathForBorderRadius, mPaint);
+      mPaint.setStyle(Paint.Style.FILL);
+
+      // Draw border
+      canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
+      canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
+      canvas.drawRect(getBounds(), mPaint);
     }
+
+    canvas.restore();
   }
 
   private void updatePath() {
     if (!mNeedUpdatePathForBorderRadius) {
       return;
     }
+
     mNeedUpdatePathForBorderRadius = false;
-    if (mPathForBorderRadius == null) {
-      mPathForBorderRadius = new Path();
-      mTempRectForBorderRadius = new RectF();
+
+    if (mInnerClipPathForBorderRadius == null) {
+      mInnerClipPathForBorderRadius = new Path();
+    }
+
+    if (mOuterClipPathForBorderRadius == null) {
+      mOuterClipPathForBorderRadius = new Path();
+    }
+
+    if (mPathForBorderRadiusOutline == null) {
       mPathForBorderRadiusOutline = new Path();
+    }
+
+    if (mInnerClipTempRectForBorderRadius == null) {
+      mInnerClipTempRectForBorderRadius = new RectF();
+    }
+
+    if (mOuterClipTempRectForBorderRadius == null) {
+      mOuterClipTempRectForBorderRadius = new RectF();
+    }
+
+    if (mTempRectForBorderRadiusOutline == null) {
       mTempRectForBorderRadiusOutline = new RectF();
     }
 
-    mPathForBorderRadius.reset();
+    mInnerClipPathForBorderRadius.reset();
+    mOuterClipPathForBorderRadius.reset();
     mPathForBorderRadiusOutline.reset();
 
-    mTempRectForBorderRadius.set(getBounds());
+    mInnerClipTempRectForBorderRadius.set(getBounds());
+    mOuterClipTempRectForBorderRadius.set(getBounds());
     mTempRectForBorderRadiusOutline.set(getBounds());
-    float fullBorderWidth = getFullBorderWidth();
-    if (fullBorderWidth > 0) {
-      mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
-    }
+
+    final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
+    final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
+    final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
+    final float borderLeftWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
+    final float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
+
+    mInnerClipTempRectForBorderRadius.top += borderTopWidth;
+    mInnerClipTempRectForBorderRadius.bottom -= borderBottomWidth;
+    mInnerClipTempRectForBorderRadius.left += borderLeftWidth;
+    mInnerClipTempRectForBorderRadius.right -= borderRightWidth;
 
     final float borderRadius = getFullBorderRadius();
     final float topLeftRadius =
@@ -315,8 +366,22 @@ public class ReactViewBackgroundDrawable extends Drawable {
     final float bottomRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
-    mPathForBorderRadius.addRoundRect(
-        mTempRectForBorderRadius,
+    mInnerClipPathForBorderRadius.addRoundRect(
+        mInnerClipTempRectForBorderRadius,
+        new float[] {
+          Math.max(topLeftRadius - borderLeftWidth, 0),
+          Math.max(topLeftRadius - borderTopWidth, 0),
+          Math.max(topRightRadius - borderRightWidth, 0),
+          Math.max(topRightRadius - borderTopWidth, 0),
+          Math.max(bottomRightRadius - borderRightWidth, 0),
+          Math.max(bottomRightRadius - borderBottomWidth, 0),
+          Math.max(bottomLeftRadius - borderLeftWidth, 0),
+          Math.max(bottomLeftRadius - borderBottomWidth, 0),
+        },
+        Path.Direction.CW);
+
+    mOuterClipPathForBorderRadius.addRoundRect(
+        mOuterClipTempRectForBorderRadius,
         new float[] {
           topLeftRadius,
           topLeftRadius,
@@ -328,6 +393,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
           bottomLeftRadius
         },
         Path.Direction.CW);
+
 
     float extraRadiusForOutline = 0;
 
@@ -348,6 +414,20 @@ public class ReactViewBackgroundDrawable extends Drawable {
         bottomLeftRadius + extraRadiusForOutline
       },
       Path.Direction.CW);
+  }
+
+  public float getBorderWidthOrDefaultTo(final float defaultValue, final int spacingType) {
+    if (mBorderWidth == null) {
+      return defaultValue;
+    }
+
+    final float width = mBorderWidth.getRaw(spacingType);
+
+    if (YogaConstants.isUndefined(width)) {
+      return defaultValue;
+    }
+
+    return width;
   }
 
   /**
