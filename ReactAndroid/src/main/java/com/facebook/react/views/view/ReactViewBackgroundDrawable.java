@@ -841,6 +841,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
         final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int borderStart = getBorderWidth(Spacing.START);
         int borderEnd = getBorderWidth(Spacing.END);
+        int colorStart = getBorderColor(Spacing.START);
+        int colorEnd = getBorderColor(Spacing.END);
 
         if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
           if (borderStart < 0) {
@@ -851,14 +853,34 @@ public class ReactViewBackgroundDrawable extends Drawable {
             borderEnd = borderRight;
           }
 
+          if (!isBorderColorDefined(Spacing.START)) {
+            colorStart = colorLeft;
+          }
+
+          if (!isBorderColorDefined(Spacing.END)) {
+            colorEnd = colorRight;
+          }
+
           final int directionAwareBorderLeft = isRTL ? borderEnd : borderStart;
           final int directionAwareBorderRight = isRTL ? borderStart : borderEnd;
 
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
           borderLeft = directionAwareBorderLeft;
           borderRight = directionAwareBorderRight;
+          colorLeft = directionAwareColorLeft;
+          colorRight = directionAwareColorRight;
         } else {
           final int directionAwareBorderLeft = isRTL ? borderEnd : borderStart;
           final int directionAwareBorderRight = isRTL ? borderStart : borderEnd;
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
+          final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
+          final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
+          final boolean isDirectionAwareColorLeftDefined = isRTL ? isColorEndDefined : isColorStartDefined;
+          final boolean isDirectionAwareColorRightDefined = isRTL ? isColorStartDefined : isColorEndDefined;
 
           if (directionAwareBorderLeft >= 0) {
             borderLeft = directionAwareBorderLeft;
@@ -866,6 +888,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
           if (directionAwareBorderRight >= 0) {
             borderRight = directionAwareBorderRight;
+          }
+
+          if (isDirectionAwareColorLeftDefined) {
+            colorLeft = directionAwareColorLeft;
+          }
+
+          if (isDirectionAwareColorRightDefined) {
+            colorRight = directionAwareColorRight;
           }
         }
       }
@@ -1020,6 +1050,12 @@ public class ReactViewBackgroundDrawable extends Drawable {
     int alphaComponent = 0xFF000000 & ((int)alpha) << 24;
 
     return rgbComponent | alphaComponent;
+  }
+
+  private boolean isBorderColorDefined(int position) {
+    final float rgb = mBorderRGB != null ? mBorderRGB.get(position) : YogaConstants.UNDEFINED;
+    final float alpha = mBorderAlpha != null ? mBorderAlpha.get(position) : YogaConstants.UNDEFINED;
+    return !YogaConstants.isUndefined(rgb) && !YogaConstants.isUndefined(alpha);
   }
 
   private int getBorderColor(int position) {

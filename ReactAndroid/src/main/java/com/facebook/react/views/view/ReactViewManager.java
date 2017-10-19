@@ -158,7 +158,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       ViewProps.BORDER_LEFT_COLOR,
       ViewProps.BORDER_RIGHT_COLOR,
       ViewProps.BORDER_TOP_COLOR,
-      ViewProps.BORDER_BOTTOM_COLOR
+      ViewProps.BORDER_BOTTOM_COLOR,
+      ViewProps.BORDER_START_COLOR,
+      ViewProps.BORDER_END_COLOR
     },
     customType = "Color"
   )

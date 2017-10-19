@@ -118,6 +118,9 @@ public class ViewProps {
   public static final String BORDER_RIGHT_COLOR = "borderRightColor";
   public static final String BORDER_TOP_COLOR = "borderTopColor";
   public static final String BORDER_BOTTOM_COLOR = "borderBottomColor";
+  public static final String BORDER_START_COLOR = "borderStartColor";
+  public static final String BORDER_END_COLOR = "borderEndColor";
+
   public static final int[] BORDER_SPACING_TYPES = {
     Spacing.ALL,
     Spacing.START,
