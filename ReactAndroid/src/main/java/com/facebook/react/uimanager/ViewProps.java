@@ -60,6 +60,8 @@ public class ViewProps {
   public static final String RIGHT = "right";
   public static final String TOP = "top";
   public static final String WIDTH = "width";
+  public static final String START = "start";
+  public static final String END = "end";
 
   public static final String MIN_WIDTH = "minWidth";
   public static final String MAX_WIDTH = "maxWidth";
@@ -118,57 +120,60 @@ public class ViewProps {
       Spacing.BOTTOM
   };
   public static final int[] POSITION_SPACING_TYPES = {
-      Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
+    Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
 
-  private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(
-      Arrays.asList(
-            ALIGN_SELF,
-            ALIGN_ITEMS,
-            COLLAPSABLE,
-            FLEX,
-            FLEX_BASIS,
-            FLEX_DIRECTION,
-            FLEX_GROW,
-            FLEX_SHRINK,
-            FLEX_WRAP,
-            JUSTIFY_CONTENT,
-            OVERFLOW,
-            ALIGN_CONTENT,
-            DISPLAY,
+  private static final HashSet<String> LAYOUT_ONLY_PROPS =
+      new HashSet<>(
+          Arrays.asList(
+              ALIGN_SELF,
+              ALIGN_ITEMS,
+              COLLAPSABLE,
+              FLEX,
+              FLEX_BASIS,
+              FLEX_DIRECTION,
+              FLEX_GROW,
+              FLEX_SHRINK,
+              FLEX_WRAP,
+              JUSTIFY_CONTENT,
+              OVERFLOW,
+              ALIGN_CONTENT,
+              DISPLAY,
 
-            /* position */
-            POSITION,
-            RIGHT,
-            TOP,
-            BOTTOM,
-            LEFT,
+              /* position */
+              POSITION,
+              RIGHT,
+              TOP,
+              BOTTOM,
+              LEFT,
+              START,
+              END,
 
-            /* dimensions */
-            WIDTH,
-            HEIGHT,
-            MIN_WIDTH,
-            MAX_WIDTH,
-            MIN_HEIGHT,
-            MAX_HEIGHT,
+              /* dimensions */
+              WIDTH,
+              HEIGHT,
+              MIN_WIDTH,
+              MAX_WIDTH,
+              MIN_HEIGHT,
+              MAX_HEIGHT,
 
-            /* margins */
-            MARGIN,
-            MARGIN_VERTICAL,
-            MARGIN_HORIZONTAL,
-            MARGIN_LEFT,
-            MARGIN_RIGHT,
-            MARGIN_TOP,
-            MARGIN_BOTTOM,
+              /* margins */
+              MARGIN,
+              MARGIN_VERTICAL,
+              MARGIN_HORIZONTAL,
+              MARGIN_LEFT,
+              MARGIN_RIGHT,
+              MARGIN_TOP,
+              MARGIN_BOTTOM,
 
-            /* paddings */
-            PADDING,
-            PADDING_VERTICAL,
-            PADDING_HORIZONTAL,
-            PADDING_LEFT,
-            PADDING_RIGHT,
-            PADDING_TOP,
-            PADDING_BOTTOM));
+              /* paddings */
+              PADDING,
+              PADDING_VERTICAL,
+              PADDING_HORIZONTAL,
+              PADDING_LEFT,
+              PADDING_RIGHT,
+              PADDING_TOP,
+              PADDING_BOTTOM));
 
   public static boolean sIsOptimizationsEnabled;
 

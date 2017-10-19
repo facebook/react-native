@@ -5,6 +5,7 @@ package com.facebook.react.uimanager;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaAlign;
@@ -623,25 +624,48 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     setBorder(ViewProps.BORDER_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(borderWidth));
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
+      ViewProps.START,
+      ViewProps.END,
       ViewProps.LEFT,
       ViewProps.RIGHT,
       ViewProps.TOP,
       ViewProps.BOTTOM,
-  })
+    }
+  )
   public void setPositionValues(int index, Dynamic position) {
     if (isVirtual()) {
       return;
+    }
+
+    final int[] POSITION_SPACING_TYPES = {
+      Spacing.START, Spacing.END, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
+    };
+
+    int spacingType = POSITION_SPACING_TYPES[index];
+
+    if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
+      switch (spacingType) {
+        case Spacing.LEFT:
+          spacingType = Spacing.START;
+          break;
+        case Spacing.RIGHT:
+          spacingType = Spacing.END;
+          break;
+        default:
+          break;
+      }
     }
 
     mTempYogaValue.setFromDynamic(position);
     switch (mTempYogaValue.unit) {
       case POINT:
       case UNDEFINED:
-        setPosition(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        setPosition(spacingType, mTempYogaValue.value);
         break;
       case PERCENT:
-        setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        setPositionPercent(spacingType, mTempYogaValue.value);
         break;
     }
 
