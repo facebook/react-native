@@ -122,8 +122,17 @@ static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT],
 }
 
 static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeStart);
-  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeEnd);
+  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_START], YGNodeStyleSetMargin, node, YGEdgeStart);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_END], YGNodeStyleSetMargin, node, YGEdgeEnd);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeLeft);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeRight);
+  } else {
+    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    RCT_SET_YGVALUE_AUTO(start, YGNodeStyleSetMargin, node, YGEdgeStart);
+    RCT_SET_YGVALUE_AUTO(end, YGNodeStyleSetMargin, node, YGEdgeEnd);
+  }
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_TOP], YGNodeStyleSetMargin, node, YGEdgeTop);
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_BOTTOM], YGNodeStyleSetMargin, node, YGEdgeBottom);
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetMargin, node, YGEdgeHorizontal);
@@ -537,6 +546,8 @@ RCT_MARGIN_PROPERTY(Top, TOP)
 RCT_MARGIN_PROPERTY(Left, LEFT)
 RCT_MARGIN_PROPERTY(Bottom, BOTTOM)
 RCT_MARGIN_PROPERTY(Right, RIGHT)
+RCT_MARGIN_PROPERTY(Start, START)
+RCT_MARGIN_PROPERTY(End, END)
 
 // Padding
 

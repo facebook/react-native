@@ -251,6 +251,24 @@ var LayoutPropTypes = {
     ReactPropTypes.string,
   ]),
 
+  /**
+   * When direction is `ltr`, `marginStart` is equivalent to `marginLeft`.
+   * When direction is `rtl`, `marginStart` is equivalent to `marginRight`.
+   */
+  marginStart: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When direction is `ltr`, `marginEnd` is equivalent to `marginRight`.
+   * When direction is `rtl`, `marginEnd` is equivalent to `marginLeft`.
+   */
+  marginEnd: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
   /** Setting `padding` has the same effect as setting each of
    *  `paddingTop`, `paddingBottom`, `paddingLeft`, and `paddingRight`.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/padding

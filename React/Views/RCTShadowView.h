@@ -135,6 +135,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue marginLeft;
 @property (nonatomic, assign) YGValue marginBottom;
 @property (nonatomic, assign) YGValue marginRight;
+@property (nonatomic, assign) YGValue marginStart;
+@property (nonatomic, assign) YGValue marginEnd;
 
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
