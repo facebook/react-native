@@ -9,6 +9,7 @@
 
 package com.facebook.react.views.view;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -23,7 +24,9 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.View;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.yoga.YogaConstants;
@@ -105,12 +108,17 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private int mAlpha = 255;
 
   private @Nullable float[] mBorderCornerRadii;
+  private final Context mContext;
 
   public enum BorderRadiusLocation {
     TOP_LEFT,
     TOP_RIGHT,
     BOTTOM_RIGHT,
     BOTTOM_LEFT
+  }
+
+  public ReactViewBackgroundDrawable(Context context) {
+    mContext = context;
   }
 
   @Override
@@ -810,9 +818,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawRect(getBounds(), mPaint);
     }
+
     // maybe draw borders?
-    if (getBorderWidth(Spacing.LEFT) > 0 || getBorderWidth(Spacing.TOP) > 0 ||
-        getBorderWidth(Spacing.RIGHT) > 0 || getBorderWidth(Spacing.BOTTOM) > 0) {
+    if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            && (getBorderWidth(Spacing.START) > 0 || getBorderWidth(Spacing.END) > 0))
+        || getBorderWidth(Spacing.LEFT) > 0
+        || getBorderWidth(Spacing.TOP) > 0
+        || getBorderWidth(Spacing.RIGHT) > 0
+        || getBorderWidth(Spacing.BOTTOM) > 0) {
       Rect bounds = getBounds();
 
       int borderLeft = getBorderWidth(Spacing.LEFT);
@@ -823,6 +836,39 @@ public class ReactViewBackgroundDrawable extends Drawable {
       int colorTop = getBorderColor(Spacing.TOP);
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        int borderStart = getBorderWidth(Spacing.START);
+        int borderEnd = getBorderWidth(Spacing.END);
+
+        if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+          if (borderStart < 0) {
+            borderStart = borderLeft;
+          }
+
+          if (borderEnd < 0) {
+            borderEnd = borderRight;
+          }
+
+          final int directionAwareBorderLeft = isRTL ? borderEnd : borderStart;
+          final int directionAwareBorderRight = isRTL ? borderStart : borderEnd;
+
+          borderLeft = directionAwareBorderLeft;
+          borderRight = directionAwareBorderRight;
+        } else {
+          final int directionAwareBorderLeft = isRTL ? borderEnd : borderStart;
+          final int directionAwareBorderRight = isRTL ? borderStart : borderEnd;
+
+          if (directionAwareBorderLeft >= 0) {
+            borderLeft = directionAwareBorderLeft;
+          }
+
+          if (directionAwareBorderRight >= 0) {
+            borderRight = directionAwareBorderRight;
+          }
+        }
+      }
 
       int left = bounds.left;
       int top = bounds.top;
@@ -961,7 +1007,12 @@ public class ReactViewBackgroundDrawable extends Drawable {
   }
 
   private int getBorderWidth(int position) {
-    return mBorderWidth != null ? Math.round(mBorderWidth.get(position)) : 0;
+    if (mBorderWidth == null) {
+      return 0;
+    }
+
+    final float width = mBorderWidth.get(position);
+    return YogaConstants.isUndefined(width) ? -1 : Math.round(width);
   }
 
   private static int colorFromAlphaAndRGBComponents(float alpha, float rgb) {

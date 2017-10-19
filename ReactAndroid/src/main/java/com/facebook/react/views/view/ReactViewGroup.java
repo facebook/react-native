@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -105,10 +106,10 @@ public class ReactViewGroup extends ViewGroup implements
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
+  private int mLayoutDirection;
 
   public ReactViewGroup(Context context) {
     super(context);
-
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -124,6 +125,15 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     // No-op since UIManagerModule handles actually laying out children.
+  }
+
+  @Override
+  public void onRtlPropertiesChanged(int layoutDirection) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mReactBackgroundDrawable != null) {
+        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
+      }
+    }
   }
 
   @Override
@@ -565,7 +575,7 @@ public class ReactViewGroup extends ViewGroup implements
 
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
     if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable(getContext());
       Drawable backgroundDrawable = getBackground();
       updateBackgroundDrawable(
           null); // required so that drawable callback is cleared before we add the
@@ -576,6 +586,14 @@ public class ReactViewGroup extends ViewGroup implements
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
         updateBackgroundDrawable(layerDrawable);
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        mLayoutDirection =
+            I18nUtil.getInstance().isRTL(getContext())
+                ? LAYOUT_DIRECTION_RTL
+                : LAYOUT_DIRECTION_LTR;
+        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
       }
     }
     return mReactBackgroundDrawable;

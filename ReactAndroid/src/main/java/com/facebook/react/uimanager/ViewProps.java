@@ -103,6 +103,8 @@ public class ViewProps {
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
+  public static final String BORDER_START_WIDTH = "borderStartWidth";
+  public static final String BORDER_END_WIDTH = "borderEndWidth";
   public static final String BORDER_TOP_WIDTH = "borderTopWidth";
   public static final String BORDER_RIGHT_WIDTH = "borderRightWidth";
   public static final String BORDER_BOTTOM_WIDTH = "borderBottomWidth";
@@ -117,7 +119,13 @@ public class ViewProps {
   public static final String BORDER_TOP_COLOR = "borderTopColor";
   public static final String BORDER_BOTTOM_COLOR = "borderBottomColor";
   public static final int[] BORDER_SPACING_TYPES = {
-      Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
+    Spacing.ALL,
+    Spacing.START,
+    Spacing.END,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.LEFT,
+    Spacing.RIGHT
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
     Spacing.ALL,

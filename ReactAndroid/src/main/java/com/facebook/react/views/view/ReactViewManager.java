@@ -42,7 +42,13 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
   private static final int[] SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL,
+    Spacing.LEFT,
+    Spacing.RIGHT,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.START,
+    Spacing.END,
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
@@ -127,13 +133,18 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_START_WIDTH,
+      ViewProps.BORDER_END_WIDTH,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);

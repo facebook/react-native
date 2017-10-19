@@ -624,18 +624,24 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     padding.recycle();
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_START_WIDTH,
+      ViewProps.BORDER_END_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderWidths(int index, float borderWidth) {
     if (isVirtual()) {
       return;
     }
-    setBorder(ViewProps.BORDER_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(borderWidth));
+    int spacingType = maybeTransformLeftRightToStartEnd(ViewProps.BORDER_SPACING_TYPES[index]);
+    setBorder(spacingType, PixelUtil.toPixelFromDIP(borderWidth));
   }
 
   @ReactPropGroup(
