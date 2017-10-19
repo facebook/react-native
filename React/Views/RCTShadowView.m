@@ -26,6 +26,8 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_TOP,
   META_PROP_RIGHT,
   META_PROP_BOTTOM,
+  META_PROP_START,
+  META_PROP_END,
   META_PROP_HORIZONTAL,
   META_PROP_VERTICAL,
   META_PROP_ALL,
@@ -121,8 +123,17 @@ static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], 
 }
 
 static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_LEFT].value);
-  YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_RIGHT].value);
+  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+    YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_START].value);
+    YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_END].value);
+    YGNodeStyleSetBorder(node, YGEdgeLeft, metaProps[META_PROP_LEFT].value);
+    YGNodeStyleSetBorder(node, YGEdgeRight, metaProps[META_PROP_RIGHT].value);
+  } else {
+    const float start = YGFloatIsUndefined(metaProps[META_PROP_START].value) ? metaProps[META_PROP_LEFT].value : metaProps[META_PROP_START].value;
+    const float end = YGFloatIsUndefined(metaProps[META_PROP_END].value) ? metaProps[META_PROP_RIGHT].value : metaProps[META_PROP_END].value;
+    YGNodeStyleSetBorder(node, YGEdgeStart, start);
+    YGNodeStyleSetBorder(node, YGEdgeEnd, end);
+  }
   YGNodeStyleSetBorder(node, YGEdgeTop, metaProps[META_PROP_TOP].value);
   YGNodeStyleSetBorder(node, YGEdgeBottom, metaProps[META_PROP_BOTTOM].value);
   YGNodeStyleSetBorder(node, YGEdgeHorizontal, metaProps[META_PROP_HORIZONTAL].value);
@@ -557,6 +568,8 @@ RCT_BORDER_PROPERTY(Top, TOP)
 RCT_BORDER_PROPERTY(Left, LEFT)
 RCT_BORDER_PROPERTY(Bottom, BOTTOM)
 RCT_BORDER_PROPERTY(Right, RIGHT)
+RCT_BORDER_PROPERTY(Start, START)
+RCT_BORDER_PROPERTY(End, END)
 
 // Dimensions
 #define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \

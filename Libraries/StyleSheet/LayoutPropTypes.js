@@ -325,6 +325,18 @@ var LayoutPropTypes = {
    */
   borderTopWidth: ReactPropTypes.number,
 
+  /**
+   * When direction is `ltr`, `borderStartWidth` is equivalent to `borderLeftWidth`.
+   * When direction is `rtl`, `borderStartWidth` is equivalent to `borderRightWidth`.
+   */
+  borderStartWidth: ReactPropTypes.number,
+
+  /**
+   * When direction is `ltr`, `borderEndWidth` is equivalent to `borderRightWidth`.
+   * When direction is `rtl`, `borderEndWidth` is equivalent to `borderLeftWidth`.
+   */
+  borderEndWidth: ReactPropTypes.number,
+
   /** `borderRightWidth` works like `border-right-width` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-right-width
    * for more details.

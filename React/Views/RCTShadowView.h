@@ -122,6 +122,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float borderLeftWidth;
 @property (nonatomic, assign) float borderBottomWidth;
 @property (nonatomic, assign) float borderRightWidth;
+@property (nonatomic, assign) float borderStartWidth;
+@property (nonatomic, assign) float borderEndWidth;
 
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
