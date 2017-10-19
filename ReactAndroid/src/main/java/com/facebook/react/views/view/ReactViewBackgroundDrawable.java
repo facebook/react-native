@@ -310,10 +310,48 @@ public class ReactViewBackgroundDrawable extends Drawable {
       canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
       canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
 
-      final int colorLeft = getBorderColor(Spacing.LEFT);
-      final int colorTop = getBorderColor(Spacing.TOP);
-      final int colorRight = getBorderColor(Spacing.RIGHT);
-      final int colorBottom = getBorderColor(Spacing.BOTTOM);
+      int colorLeft = getBorderColor(Spacing.LEFT);
+      int colorTop = getBorderColor(Spacing.TOP);
+      int colorRight = getBorderColor(Spacing.RIGHT);
+      int colorBottom = getBorderColor(Spacing.BOTTOM);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        int colorStart = getBorderColor(Spacing.START);
+        int colorEnd = getBorderColor(Spacing.END);
+
+        if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+          if (!isBorderColorDefined(Spacing.START)) {
+            colorStart = colorLeft;
+          }
+
+          if (!isBorderColorDefined(Spacing.END)) {
+            colorEnd = colorRight;
+          }
+
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
+          colorLeft = directionAwareColorLeft;
+          colorRight = directionAwareColorRight;
+        } else {
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
+          final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
+          final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
+          final boolean isDirectionAwareColorLeftDefined = isRTL ? isColorEndDefined : isColorStartDefined;
+          final boolean isDirectionAwareColorRightDefined = isRTL ? isColorStartDefined : isColorEndDefined;
+
+          if (isDirectionAwareColorLeftDefined) {
+            colorLeft = directionAwareColorLeft;
+          }
+
+          if (isDirectionAwareColorRightDefined) {
+            colorRight = directionAwareColorRight;
+          }
+        }
+      }
 
       final float left = mOuterClipTempRectForBorderRadius.left;
       final float right = mOuterClipTempRectForBorderRadius.right;
