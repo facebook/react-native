@@ -103,8 +103,17 @@ switch (ygvalue.unit) {                            \
 }
 
 static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeStart);
-  RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeEnd);
+  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+    RCT_SET_YGVALUE(metaProps[META_PROP_START], YGNodeStyleSetPadding, node, YGEdgeStart);
+    RCT_SET_YGVALUE(metaProps[META_PROP_END], YGNodeStyleSetPadding, node, YGEdgeEnd);
+    RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeLeft);
+    RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeRight);
+  } else {
+    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    RCT_SET_YGVALUE(start, YGNodeStyleSetPadding, node, YGEdgeStart);
+    RCT_SET_YGVALUE(end, YGNodeStyleSetPadding, node, YGEdgeEnd);
+  }
   RCT_SET_YGVALUE(metaProps[META_PROP_TOP], YGNodeStyleSetPadding, node, YGEdgeTop);
   RCT_SET_YGVALUE(metaProps[META_PROP_BOTTOM], YGNodeStyleSetPadding, node, YGEdgeBottom);
   RCT_SET_YGVALUE(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetPadding, node, YGEdgeHorizontal);
@@ -549,6 +558,8 @@ RCT_PADDING_PROPERTY(Top, TOP)
 RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
+RCT_PADDING_PROPERTY(Start, START)
+RCT_PADDING_PROPERTY(End, END)
 
 // Border
 

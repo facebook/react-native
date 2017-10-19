@@ -313,6 +313,24 @@ var LayoutPropTypes = {
     ReactPropTypes.string,
   ]),
 
+  /**
+   * When direction is `ltr`, `paddingStart` is equivalent to `paddingLeft`.
+   * When direction is `rtl`, `paddingStart` is equivalent to `paddingRight`.
+   */
+  paddingStart: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When direction is `ltr`, `paddingEnd` is equivalent to `paddingRight`.
+   * When direction is `rtl`, `paddingEnd` is equivalent to `paddingLeft`.
+   */
+  paddingEnd: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
   /** `borderWidth` works like `border-width` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-width
    * for more details.

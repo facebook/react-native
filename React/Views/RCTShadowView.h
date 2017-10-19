@@ -146,6 +146,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue paddingLeft;
 @property (nonatomic, assign) YGValue paddingBottom;
 @property (nonatomic, assign) YGValue paddingRight;
+@property (nonatomic, assign) YGValue paddingStart;
+@property (nonatomic, assign) YGValue paddingEnd;
 
 /**
  * Flexbox properties. All zero/disabled by default
