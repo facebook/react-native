@@ -114,7 +114,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     TOP_LEFT,
     TOP_RIGHT,
     BOTTOM_RIGHT,
-    BOTTOM_LEFT
+    BOTTOM_LEFT,
+    TOP_START,
+    TOP_END,
+    BOTTOM_START,
+    BOTTOM_END
   }
 
   public ReactViewBackgroundDrawable(Context context) {
@@ -260,6 +264,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   public float getFullBorderRadius() {
     return YogaConstants.isUndefined(mBorderRadius) ? 0 : mBorderRadius;
+  }
+
+  public float getBorderRadius(final BorderRadiusLocation location) {
+    return getBorderRadiusOrDefaultTo(YogaConstants.UNDEFINED, location);
   }
 
   public float getBorderRadiusOrDefaultTo(
@@ -470,13 +478,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mBorderCornerRadii != null) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-      float topStartRadius = mBorderCornerRadii[4];
-      float topEndRadius = mBorderCornerRadii[5];
-      float bottomStartRadius = mBorderCornerRadii[6];
-      float bottomEndRadius = mBorderCornerRadii[7];
-
+      float topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START);
+      float topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END);
+      float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
+      float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
+      
       if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
         if (YogaConstants.isUndefined(topStartRadius)) {
           topStartRadius = topLeftRadius;

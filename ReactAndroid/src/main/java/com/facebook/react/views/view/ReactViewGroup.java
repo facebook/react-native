@@ -34,8 +34,8 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
-import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
 /**
@@ -644,39 +644,104 @@ public class ReactViewGroup extends ViewGroup implements
             float right = getWidth();
             float bottom = getHeight();
 
-            final float borderWidth = mReactBackgroundDrawable.getFullBorderWidth();
-            final float borderTopWidth =
-                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
-            final float borderBottomWidth =
-                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
-            final float borderLeftWidth =
-                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
-            final float borderRightWidth =
-                mReactBackgroundDrawable.getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
+            final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
-            if (borderTopWidth > 0
-                || borderLeftWidth > 0
-                || borderBottomWidth > 0
-                || borderRightWidth > 0) {
-              left += borderLeftWidth;
-              top += borderTopWidth;
-              right -= borderRightWidth;
-              bottom -= borderBottomWidth;
+            if (borderWidth.top > 0
+                || borderWidth.left > 0
+                || borderWidth.bottom > 0
+                || borderWidth.right > 0) {
+              left += borderWidth.left;
+              top += borderWidth.top;
+              right -= borderWidth.right;
+              bottom -= borderWidth.bottom;
             }
 
             final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
-            final float topLeftBorderRadius =
+            float topLeftBorderRadius =
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
-            final float topRightBorderRadius =
+            float topRightBorderRadius =
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
-            final float bottomLeftBorderRadius =
+            float bottomLeftBorderRadius =
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
-            final float bottomRightBorderRadius =
+            float bottomRightBorderRadius =
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+              final boolean isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL;
+              float topStartBorderRadius =
+                  mReactBackgroundDrawable.getBorderRadius(
+                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_START);
+              float topEndBorderRadius =
+                  mReactBackgroundDrawable.getBorderRadius(
+                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_END);
+              float bottomStartBorderRadius =
+                  mReactBackgroundDrawable.getBorderRadius(
+                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_START);
+              float bottomEndBorderRadius =
+                  mReactBackgroundDrawable.getBorderRadius(
+                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
+
+              if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getContext())) {
+                if (YogaConstants.isUndefined(topStartBorderRadius)) {
+                  topStartBorderRadius = topLeftBorderRadius;
+                }
+
+                if (YogaConstants.isUndefined(topEndBorderRadius)) {
+                  topEndBorderRadius = topRightBorderRadius;
+                }
+
+                if (YogaConstants.isUndefined(bottomStartBorderRadius)) {
+                  bottomStartBorderRadius = bottomLeftBorderRadius;
+                }
+
+                if (YogaConstants.isUndefined(bottomEndBorderRadius)) {
+                  bottomEndBorderRadius = bottomRightBorderRadius;
+                }
+
+                final float directionAwareTopLeftRadius =
+                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                final float directionAwareTopRightRadius =
+                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                final float directionAwareBottomLeftRadius =
+                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                final float directionAwareBottomRightRadius =
+                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+
+                topLeftBorderRadius = directionAwareTopLeftRadius;
+                topRightBorderRadius = directionAwareTopRightRadius;
+                bottomLeftBorderRadius = directionAwareBottomLeftRadius;
+                bottomRightBorderRadius = directionAwareBottomRightRadius;
+              } else {
+                final float directionAwareTopLeftRadius =
+                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                final float directionAwareTopRightRadius =
+                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                final float directionAwareBottomLeftRadius =
+                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                final float directionAwareBottomRightRadius =
+                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+
+                if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
+                  topLeftBorderRadius = directionAwareTopLeftRadius;
+                }
+
+                if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
+                  topRightBorderRadius = directionAwareTopRightRadius;
+                }
+
+                if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
+                  bottomLeftBorderRadius = directionAwareBottomLeftRadius;
+                }
+
+                if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
+                  bottomRightBorderRadius = directionAwareBottomRightRadius;
+                }
+              }
+            }
 
             if (topLeftBorderRadius > 0
                 || topRightBorderRadius > 0
@@ -690,14 +755,14 @@ public class ReactViewGroup extends ViewGroup implements
               mPath.addRoundRect(
                   new RectF(left, top, right, bottom),
                   new float[] {
-                    Math.max(topLeftBorderRadius - borderLeftWidth, 0),
-                    Math.max(topLeftBorderRadius - borderTopWidth, 0),
-                    Math.max(topRightBorderRadius - borderRightWidth, 0),
-                    Math.max(topRightBorderRadius - borderTopWidth, 0),
-                    Math.max(bottomRightBorderRadius - borderRightWidth, 0),
-                    Math.max(bottomRightBorderRadius - borderBottomWidth, 0),
-                    Math.max(bottomLeftBorderRadius - borderLeftWidth, 0),
-                    Math.max(bottomLeftBorderRadius - borderBottomWidth, 0),
+                    Math.max(topLeftBorderRadius - borderWidth.left, 0),
+                    Math.max(topLeftBorderRadius - borderWidth.top, 0),
+                    Math.max(topRightBorderRadius - borderWidth.right, 0),
+                    Math.max(topRightBorderRadius - borderWidth.top, 0),
+                    Math.max(bottomRightBorderRadius - borderWidth.right, 0),
+                    Math.max(bottomRightBorderRadius - borderWidth.bottom, 0),
+                    Math.max(bottomLeftBorderRadius - borderWidth.left, 0),
+                    Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
                   },
                   Path.Direction.CW);
               canvas.clipPath(mPath);
