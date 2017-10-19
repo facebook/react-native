@@ -582,28 +582,47 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     margin.recycle();
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.PADDING,
       ViewProps.PADDING_VERTICAL,
       ViewProps.PADDING_HORIZONTAL,
-      ViewProps.PADDING_LEFT,
-      ViewProps.PADDING_RIGHT,
+      ViewProps.PADDING_START,
+      ViewProps.PADDING_END,
       ViewProps.PADDING_TOP,
       ViewProps.PADDING_BOTTOM,
-  })
+      ViewProps.PADDING_LEFT,
+      ViewProps.PADDING_RIGHT,
+    }
+  )
   public void setPaddings(int index, Dynamic padding) {
     if (isVirtual()) {
       return;
+    }
+
+    int spacingType = ViewProps.PADDING_MARGIN_SPACING_TYPES[index];
+
+    if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
+      switch (spacingType) {
+        case Spacing.LEFT:
+          spacingType = Spacing.START;
+          break;
+        case Spacing.RIGHT:
+          spacingType = Spacing.END;
+          break;
+        default:
+          break;
+      }
     }
 
     mTempYogaValue.setFromDynamic(padding);
     switch (mTempYogaValue.unit) {
       case POINT:
       case UNDEFINED:
-        setPadding(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        setPadding(spacingType, mTempYogaValue.value);
         break;
       case PERCENT:
-        setPaddingPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        setPaddingPercent(spacingType, mTempYogaValue.value);
         break;
     }
 

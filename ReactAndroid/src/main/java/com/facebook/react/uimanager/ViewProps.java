@@ -55,6 +55,8 @@ public class ViewProps {
   public static final String PADDING_RIGHT = "paddingRight";
   public static final String PADDING_TOP = "paddingTop";
   public static final String PADDING_BOTTOM = "paddingBottom";
+  public static final String PADDING_START = "paddingStart";
+  public static final String PADDING_END = "paddingEnd";
 
   public static final String POSITION = "position";
   public static final String RIGHT = "right";
@@ -116,8 +118,15 @@ public class ViewProps {
       Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.START, Spacing.END, Spacing.TOP,
-      Spacing.BOTTOM
+    Spacing.ALL,
+    Spacing.VERTICAL,
+    Spacing.HORIZONTAL,
+    Spacing.START,
+    Spacing.END,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.LEFT,
+    Spacing.RIGHT,
   };
   public static final int[] POSITION_SPACING_TYPES = {
     Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
@@ -173,7 +182,10 @@ public class ViewProps {
               PADDING_LEFT,
               PADDING_RIGHT,
               PADDING_TOP,
-              PADDING_BOTTOM));
+              PADDING_BOTTOM,
+              PADDING_START,
+              PADDING_END));
+
 
   public static boolean sIsOptimizationsEnabled;
 
