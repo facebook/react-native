@@ -226,10 +226,41 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidTVRootViewHelper.handleKeyEvent(ev, eventEmitter);
+    mAndroidTVRootViewHelper.handleKeyEvent(ev, getDeviceEventEmitter());
     return super.dispatchKeyEvent(ev);
+  }
+
+  @Override
+  protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to handle focus changed event as the catalyst instance has not been attached");
+      super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+      return;
+    }
+    mAndroidTVRootViewHelper.clearFocus(getDeviceEventEmitter());
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+  }
+
+  @Override
+  public void requestChildFocus(View child, View focused) {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to handle child focus changed event as the catalyst instance has not been attached");
+      super.requestChildFocus(child, focused);
+      return;
+    }
+    mAndroidTVRootViewHelper.onFocusChanged(focused, getDeviceEventEmitter());
+    super.requestChildFocus(child, focused);
+  }
+
+  private DeviceEventManagerModule.RCTDeviceEventEmitter getDeviceEventEmitter() {
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    return reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {

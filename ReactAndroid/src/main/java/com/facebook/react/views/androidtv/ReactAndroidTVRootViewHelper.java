@@ -20,14 +20,7 @@ public class ReactAndroidTVRootViewHelper {
     KeyEvent.KEYCODE_SPACE
   );
 
-  private static final List<Integer> NAVIGATION_KEY_EVENTS = Arrays.asList(
-    KeyEvent.KEYCODE_DPAD_DOWN,
-    KeyEvent.KEYCODE_DPAD_LEFT,
-    KeyEvent.KEYCODE_DPAD_UP,
-    KeyEvent.KEYCODE_DPAD_RIGHT
-  );
-
-  private View mLastFocusedView = null;
+  private int mLastFocusedViewId = View.NO_ID;
 
   private ReactRootView mReactRootView;
 
@@ -44,10 +37,26 @@ public class ReactAndroidTVRootViewHelper {
         handlePlayPauseEvent(emitter);
       } else if (PRESS_KEY_EVENTS.contains(eventKeyCode) && eventKeyAction == KeyEvent.ACTION_UP) {
         handleSelectEvent(targetView, emitter);
-      } else if (NAVIGATION_KEY_EVENTS.contains(eventKeyCode)) {
-        handleFocusChangeEvent(targetView, emitter);
       }
     }
+  }
+
+  public void onFocusChanged(View newFocusedView, RCTDeviceEventEmitter emitter) {
+    if (mLastFocusedViewId == newFocusedView.getId()) {
+      return;
+    }
+    if (mLastFocusedViewId != View.NO_ID) {
+      dispatchEvent("blur", mLastFocusedViewId, emitter);
+    }
+    mLastFocusedViewId = newFocusedView.getId();
+    dispatchEvent("focus", newFocusedView.getId(), emitter);
+  }
+
+  public void clearFocus(RCTDeviceEventEmitter emitter) {
+    if (mLastFocusedViewId != View.NO_ID) {
+      dispatchEvent("blur", mLastFocusedViewId, emitter);
+    }
+    mLastFocusedViewId = View.NO_ID;
   }
 
   private void handlePlayPauseEvent(RCTDeviceEventEmitter emitter) {
@@ -55,29 +64,18 @@ public class ReactAndroidTVRootViewHelper {
   }
 
   private void handleSelectEvent(View targetView, RCTDeviceEventEmitter emitter) {
-    dispatchEvent("select", targetView, emitter);
-  }
-
-  private void handleFocusChangeEvent(View targetView, RCTDeviceEventEmitter emitter) {
-    if (mLastFocusedView == targetView) {
-      return;
-    }
-    if (mLastFocusedView != null) {
-      dispatchEvent("blur", mLastFocusedView, emitter);
-    }
-    mLastFocusedView = targetView;
-    dispatchEvent("focus", targetView, emitter);
+    dispatchEvent("select", targetView.getId(), emitter);
   }
 
   private void dispatchEvent(String eventType, RCTDeviceEventEmitter emitter) {
-    dispatchEvent(eventType, null, emitter);
+    dispatchEvent(eventType, View.NO_ID, emitter);
   }
 
-  private void dispatchEvent(String eventType, View targetView, RCTDeviceEventEmitter emitter) {
+  private void dispatchEvent(String eventType, int targetViewId, RCTDeviceEventEmitter emitter) {
     WritableMap event = new WritableNativeMap();
     event.putString("eventType", eventType);
-    if (targetView != null) {
-      event.putInt("tag", targetView.getId());
+    if (targetViewId != View.NO_ID) {
+      event.putInt("tag", targetViewId);
     }
     emitter.emit("onTVNavEvent", event);
   }
