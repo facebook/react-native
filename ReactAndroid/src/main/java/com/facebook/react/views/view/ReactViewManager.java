@@ -58,13 +58,20 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
       ViewProps.BORDER_TOP_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_START_RADIUS,
+      ViewProps.BORDER_TOP_END_RADIUS,
+      ViewProps.BORDER_BOTTOM_START_RADIUS,
+      ViewProps.BORDER_BOTTOM_END_RADIUS,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);

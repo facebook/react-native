@@ -245,7 +245,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   public void setRadius(float radius, int position) {
     if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[4];
+      mBorderCornerRadii = new float[8];
       Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
     }
 
@@ -429,15 +429,71 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mInnerClipTempRectForBorderRadius.right -= borderRightWidth;
 
     final float borderRadius = getFullBorderRadius();
-    final float topLeftRadius =
+    float topLeftRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_LEFT);
-    final float topRightRadius =
+    float topRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_RIGHT);
-    final float bottomLeftRadius =
+    float bottomLeftRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_LEFT);
-    final float bottomRightRadius =
+    float bottomRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mBorderCornerRadii != null) {
+      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      float topStartRadius = mBorderCornerRadii[4];
+      float topEndRadius = mBorderCornerRadii[5];
+      float bottomStartRadius = mBorderCornerRadii[6];
+      float bottomEndRadius = mBorderCornerRadii[7];
+
+      if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+        if (YogaConstants.isUndefined(topStartRadius)) {
+          topStartRadius = topLeftRadius;
+        }
+
+        if (YogaConstants.isUndefined(topEndRadius)) {
+          topEndRadius = topRightRadius;
+        }
+
+        if (YogaConstants.isUndefined(bottomStartRadius)) {
+          bottomStartRadius = bottomLeftRadius;
+        }
+
+        if (YogaConstants.isUndefined(bottomEndRadius)) {
+          bottomEndRadius = bottomRightRadius;
+        }
+
+        final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
+        final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
+        final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
+        final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+
+        topLeftRadius = directionAwareTopLeftRadius;
+        topRightRadius = directionAwareTopRightRadius;
+        bottomLeftRadius = directionAwareBottomLeftRadius;
+        bottomRightRadius = directionAwareBottomRightRadius;
+      } else {
+        final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
+        final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
+        final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
+        final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+
+        if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
+          topLeftRadius = directionAwareTopLeftRadius;
+        }
+
+        if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
+          topRightRadius = directionAwareTopRightRadius;
+        }
+
+        if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
+          bottomLeftRadius = directionAwareBottomLeftRadius;
+        }
+
+        if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
+          bottomRightRadius = directionAwareBottomRightRadius;
+        }
+      }
+    }
 
     final float innerTopLeftRadiusX = Math.max(topLeftRadius - borderLeftWidth, 0);
     final float innerTopLeftRadiusY = Math.max(topLeftRadius - borderTopWidth, 0);
@@ -475,7 +531,6 @@ public class ReactViewBackgroundDrawable extends Drawable {
           bottomLeftRadius
         },
         Path.Direction.CW);
-
 
     float extraRadiusForOutline = 0;
 
