@@ -97,6 +97,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue left;
 @property (nonatomic, assign) YGValue bottom;
 @property (nonatomic, assign) YGValue right;
+@property (nonatomic, assign) YGValue start;
+@property (nonatomic, assign) YGValue end;
 
 @property (nonatomic, assign) YGValue width;
 @property (nonatomic, assign) YGValue height;

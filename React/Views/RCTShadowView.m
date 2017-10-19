@@ -14,6 +14,7 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+#import "RCTI18nUtil.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -600,10 +601,35 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
   return YGNodeStyleGetPosition(_yogaNode, edge);                   \
 }
 
+
 RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
-RCT_POSITION_PROPERTY(Right, right, YGEdgeEnd)
 RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
-RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
+RCT_POSITION_PROPERTY(Start, start, YGEdgeStart)
+RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
+
+- (void)setLeft:(YGValue)value
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeStart : YGEdgeLeft;
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
+  [self dirtyText];
+}
+- (YGValue)left
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeStart : YGEdgeLeft;
+  return YGNodeStyleGetPosition(_yogaNode, edge);
+}
+
+- (void)setRight:(YGValue)value
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeEnd : YGEdgeRight;
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
+  [self dirtyText];
+}
+- (YGValue)right
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeEnd : YGEdgeRight;
+  return YGNodeStyleGetPosition(_yogaNode, edge);
+}
 
 // Size
 

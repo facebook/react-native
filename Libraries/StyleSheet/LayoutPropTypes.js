@@ -59,6 +59,28 @@ var LayoutPropTypes = {
     ReactPropTypes.string,
   ]),
 
+  /**
+   * When the direction is `ltr`, `start` is equivalent to `left`.
+   * When the direction is `rtl`, `start` is equivalent to `right`.
+   *
+   * This style takes precedence over the `left`, `right`, and `end` styles.
+   */
+  start: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When the direction is `ltr`, `end` is equivalent to `right`.
+   * When the direction is `rtl`, `end` is equivalent to `left`.
+   *
+   * This style takes precedence over the `left` and `right` styles.
+   */
+  end: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
   /** `top` is the number of logical pixels to offset the top edge of
    *  this component.
    *
