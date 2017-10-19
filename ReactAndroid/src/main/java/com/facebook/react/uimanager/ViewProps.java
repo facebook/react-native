@@ -47,6 +47,8 @@ public class ViewProps {
   public static final String MARGIN_RIGHT = "marginRight";
   public static final String MARGIN_TOP = "marginTop";
   public static final String MARGIN_BOTTOM = "marginBottom";
+  public static final String MARGIN_START = "marginStart";
+  public static final String MARGIN_END = "marginEnd";
 
   public static final String PADDING = "padding";
   public static final String PADDING_VERTICAL = "paddingVertical";
@@ -174,6 +176,8 @@ public class ViewProps {
               MARGIN_RIGHT,
               MARGIN_TOP,
               MARGIN_BOTTOM,
+              MARGIN_START,
+              MARGIN_END,
 
               /* paddings */
               PADDING,

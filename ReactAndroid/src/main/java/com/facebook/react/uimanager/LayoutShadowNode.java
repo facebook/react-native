@@ -551,31 +551,38 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.MARGIN,
       ViewProps.MARGIN_VERTICAL,
       ViewProps.MARGIN_HORIZONTAL,
-      ViewProps.MARGIN_LEFT,
-      ViewProps.MARGIN_RIGHT,
+      ViewProps.MARGIN_START,
+      ViewProps.MARGIN_END,
       ViewProps.MARGIN_TOP,
       ViewProps.MARGIN_BOTTOM,
-  })
+      ViewProps.MARGIN_LEFT,
+      ViewProps.MARGIN_RIGHT,
+    }
+  )
   public void setMargins(int index, Dynamic margin) {
     if (isVirtual()) {
       return;
     }
 
+    int spacingType =
+        maybeTransformLeftRightToStartEnd(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
+
     mTempYogaValue.setFromDynamic(margin);
     switch (mTempYogaValue.unit) {
       case POINT:
       case UNDEFINED:
-        setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        setMargin(spacingType, mTempYogaValue.value);
         break;
       case AUTO:
-        setMarginAuto(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
+        setMarginAuto(spacingType);
         break;
       case PERCENT:
-        setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        setMarginPercent(spacingType, mTempYogaValue.value);
         break;
     }
 
@@ -600,20 +607,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
       return;
     }
 
-    int spacingType = ViewProps.PADDING_MARGIN_SPACING_TYPES[index];
-
-    if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
-      switch (spacingType) {
-        case Spacing.LEFT:
-          spacingType = Spacing.START;
-          break;
-        case Spacing.RIGHT:
-          spacingType = Spacing.END;
-          break;
-        default:
-          break;
-      }
-    }
+    int spacingType =
+        maybeTransformLeftRightToStartEnd(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
 
     mTempYogaValue.setFromDynamic(padding);
     switch (mTempYogaValue.unit) {
@@ -662,20 +657,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
       Spacing.START, Spacing.END, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
     };
 
-    int spacingType = POSITION_SPACING_TYPES[index];
-
-    if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
-      switch (spacingType) {
-        case Spacing.LEFT:
-          spacingType = Spacing.START;
-          break;
-        case Spacing.RIGHT:
-          spacingType = Spacing.END;
-          break;
-        default:
-          break;
-      }
-    }
+    int spacingType = maybeTransformLeftRightToStartEnd(POSITION_SPACING_TYPES[index]);
 
     mTempYogaValue.setFromDynamic(position);
     switch (mTempYogaValue.unit) {
@@ -689,6 +671,21 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     position.recycle();
+  }
+
+  private int maybeTransformLeftRightToStartEnd(int spacingType) {
+    if (!I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
+      return spacingType;
+    }
+
+    switch (spacingType) {
+      case Spacing.LEFT:
+        return Spacing.START;
+      case Spacing.RIGHT:
+        return Spacing.END;
+      default:
+        return spacingType;
+    }
   }
 
   @ReactProp(name = ViewProps.POSITION)
