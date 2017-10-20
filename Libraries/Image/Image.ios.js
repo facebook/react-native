@@ -108,19 +108,34 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
  *
  * ```
+ * // use getFrescoComponent to lock your components to the version used by react-native
+ * def getFrescoVersion() {
+ *    String reactGradle = file('../../node_modules/react-native/ReactAndroid/build.gradle').text
+ *    // use the default of the latest version
+ *    def version = '+'
+ *    reactGradle.eachLine {
+ *        if (it =~ /'com.facebook.fresco:fresco:.*'/) {
+ *            version = it.find(/(?<='com.facebook.fresco:fresco:).*(?=')/)
+ *        }
+ *    }
+ *    return version;
+ * }
+ *
+ * def frescoVersion = getFrescoVersion()
+ *
  * dependencies {
  *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
- *   compile 'com.facebook.fresco:animated-base-support:1.3.0'
+ *   compile 'com.facebook.fresco:animated-base-support:'+frescoVersion
  *
  *   // For animated GIF support
- *   compile 'com.facebook.fresco:animated-gif:1.3.0'
+ *   compile 'com.facebook.fresco:animated-gif:'+frescoVersion
  *
  *   // For WebP support, including animated WebP
- *   compile 'com.facebook.fresco:animated-webp:1.3.0'
- *   compile 'com.facebook.fresco:webpsupport:1.3.0'
+ *   compile 'com.facebook.fresco:animated-webp:'+frescoVersion
+ *   compile 'com.facebook.fresco:webpsupport:'+frescoVersion
  *
  *   // For WebP support, without animations
- *   compile 'com.facebook.fresco:webpsupport:1.3.0'
+ *   compile 'com.facebook.fresco:webpsupport:'+frescoVersion
  * }
  * ```
  *
