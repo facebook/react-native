@@ -16,7 +16,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
-import com.facebook.react.views.androidtv.ReactAndroidTVRootViewHelper;
 
 import javax.annotation.Nullable;
 
@@ -133,6 +132,14 @@ public class ReactActivityDelegate {
     }
   }
 
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+      event.startTracking();
+      return true;
+    }
+    return false;
+  }
+
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -143,6 +150,16 @@ public class ReactActivityDelegate {
         .didDoubleTapR(keyCode, getPlainActivity().getCurrentFocus());
       if (didDoubleTapR) {
         getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
+      if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
         return true;
       }
     }
