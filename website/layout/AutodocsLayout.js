@@ -707,7 +707,7 @@ class Method extends React.Component {
           </span> || ''}
           {this.props.name}
           <span className="methodType">
-            ({(this.props.params && this.props.params.length && this.props.params
+            ({(this.props.params && (this.props.params.length !== 0) && this.props.params
               .map((param) => {
                 var res = param.name;
                 res += param.optional ? '?' : '';
