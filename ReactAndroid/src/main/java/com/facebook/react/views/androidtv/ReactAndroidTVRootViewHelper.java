@@ -34,9 +34,9 @@ public class ReactAndroidTVRootViewHelper {
     View targetView = findFocusedView(mReactRootView);
     if (targetView != null) {
       if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
-        handlePlayPauseEvent(emitter);
+        dispatchEvent("playPause", emitter);
       } else if (PRESS_KEY_EVENTS.contains(eventKeyCode) && eventKeyAction == KeyEvent.ACTION_UP) {
-        handleSelectEvent(targetView, emitter);
+        dispatchEvent("select", targetView.getId(), emitter);
       }
     }
   }
@@ -57,14 +57,6 @@ public class ReactAndroidTVRootViewHelper {
       dispatchEvent("blur", mLastFocusedViewId, emitter);
     }
     mLastFocusedViewId = View.NO_ID;
-  }
-
-  private void handlePlayPauseEvent(RCTDeviceEventEmitter emitter) {
-    dispatchEvent("playPause", emitter);
-  }
-
-  private void handleSelectEvent(View targetView, RCTDeviceEventEmitter emitter) {
-    dispatchEvent("select", targetView.getId(), emitter);
   }
 
   private void dispatchEvent(String eventType, RCTDeviceEventEmitter emitter) {
