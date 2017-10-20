@@ -36,6 +36,9 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     super(reactContext);
   }
 
+  /**
+   * See: https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
+   */
   private String uiMode() {
     UiModeManager uiModeManager = (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
     switch (uiModeManager.getCurrentModeType()) {

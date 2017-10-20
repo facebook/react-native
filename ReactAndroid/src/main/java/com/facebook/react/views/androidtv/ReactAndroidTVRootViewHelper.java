@@ -12,14 +12,25 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Responsible for dispatching events specific for Android TV to support D-PAD navigation/selection.
+ * This is similar to AppleTV implementation and uses the same emitter events.
+ */
 public class ReactAndroidTVRootViewHelper {
 
+  /**
+   * Android TV remote control sends a DPAD_CENTER event when clicking on a focused item.
+   * We add ENTER and SPACE to facilitate navigating on Android TV emulator.
+   */
   private static final List<Integer> PRESS_KEY_EVENTS = Arrays.asList(
     KeyEvent.KEYCODE_DPAD_CENTER,
     KeyEvent.KEYCODE_ENTER,
     KeyEvent.KEYCODE_SPACE
   );
 
+  /**
+   * We keep reference to the last focused view id so that we can send a blur event when focus changes.
+   */
   private int mLastFocusedViewId = View.NO_ID;
 
   private ReactRootView mReactRootView;
@@ -28,6 +39,10 @@ public class ReactAndroidTVRootViewHelper {
     mReactRootView = reactRootView;
   }
 
+  /**
+   * Called from {@link ReactRootView}.
+   * This is the main place the Android TV remote key events are handled.
+   */
   public void handleKeyEvent(KeyEvent ev, RCTDeviceEventEmitter emitter) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
@@ -41,6 +56,9 @@ public class ReactAndroidTVRootViewHelper {
     }
   }
 
+  /**
+   * Called from {@link ReactRootView} when focused view changes.
+   */
   public void onFocusChanged(View newFocusedView, RCTDeviceEventEmitter emitter) {
     if (mLastFocusedViewId == newFocusedView.getId()) {
       return;
@@ -52,6 +70,9 @@ public class ReactAndroidTVRootViewHelper {
     dispatchEvent("focus", newFocusedView.getId(), emitter);
   }
 
+  /**
+   * Called from {@link ReactRootView} when the whole view hierarchy looses focus.
+   */
   public void clearFocus(RCTDeviceEventEmitter emitter) {
     if (mLastFocusedViewId != View.NO_ID) {
       dispatchEvent("blur", mLastFocusedViewId, emitter);
