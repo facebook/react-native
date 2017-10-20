@@ -79,9 +79,16 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-if (options._.length === 0 && (options.v || options.version)) {
-  printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
-}
+var REACT_PACKAGE_JSON_PATH = function() {
+  return path.resolve(
+    process.cwd(),
+    'node_modules',
+    'react',
+    'package.json'
+  );
+};
+
+checkForVersionArgument(options);
 
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
@@ -324,12 +331,34 @@ function checkNodeVersion() {
   }
 }
 
-function printVersionsAndExit(reactNativePackageJsonPath) {
-  console.log('react-native-cli: ' + require('./package.json').version);
-  try {
-    console.log('react-native: ' + require(reactNativePackageJsonPath).version);
-  } catch (e) {
-    console.log('react-native: n/a - not inside a React Native project directory');
-  }
-  process.exit();
+
+function checkForVersionArgument(options) {
+  if (options._.length === 0 && (options.v || options.version)) {
+    console.log('react-native-cli: ' + require('./package.json').version);
+    var packageJson, reactNativeVersion, reactVersion, requiredReactVersion;
+    try {
+      packageJson = require(REACT_NATIVE_PACKAGE_JSON_PATH());
+      reactNativeVersion = packageJson.version;
+      requiredReactVersion = packageJson.peerDependencies.react;
+      console.log('react-native: ' + reactNativeVersion);
+    } catch (e) {
+      console.log('react-native: n/a - Not inside a React Native project directory.');
+    }
+
+    var reactHint;
+    try {
+      packageJson = require(REACT_PACKAGE_JSON_PATH());
+      reactHint = packageJson.version;
+      if (requiredReactVersion && !semver.satisfies(reactHint, requiredReactVersion)) {
+        reactHint += ' - Mismatched version. Run `npm i -S react@' + requiredReactVersion + '`';
+      }
+      console.log('react: ' + reactHint);
+    } catch (e) {
+      reactHint =  '- Not inside a React Native project directory.';
+      if (requiredReactVersion) {
+        reactHint = '- Run `npm i -S react@' + requiredReactVersion + '`';
+      }
+      console.log('react: n/a ' + reactHint);
+    }
+    process.exit();
 }
