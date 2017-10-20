@@ -532,10 +532,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
+
+    // clear previous keyboard types
+    int flagsToUnset = InputType.TYPE_CLASS_TEXT |
+            InputType.TYPE_CLASS_DATETIME |
+            InputType.TYPE_CLASS_NUMBER |
+            InputType.TYPE_CLASS_PHONE;
+
+    // unset type specific flags
+    if ((view.getStagedInputType() & InputType.TYPE_CLASS_TEXT) != 0) {
+      flagsToUnset |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+    } else if ((view.getStagedInputType() & InputType.TYPE_CLASS_NUMBER) != 0) {
+      flagsToUnset |= INPUT_TYPE_KEYBOARD_NUMBERED;
+    }
+
     updateStagedInputTypeFlag(
         view,
-        INPUT_TYPE_KEYBOARD_NUMBERED | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
-            InputType.TYPE_CLASS_TEXT,
+        flagsToUnset,
         flagsToSet);
     checkPasswordType(view);
   }
