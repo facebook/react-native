@@ -464,6 +464,7 @@ var ListView = createReactClass({
           }
           totalIndex++;
         }
+        dataSource.dirtySectionCleaned(sectionIdx);
       }
 
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
@@ -506,6 +507,8 @@ var ListView = createReactClass({
             totalIndex++;
           }
         }
+        dataSource.dirtyRowCleaned(sectionIdx, rowIdx);
+
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
         }

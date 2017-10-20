@@ -332,6 +332,27 @@ class ListViewDataSource {
   }
 
   /**
+    * Mark dirty section as clean to prevent unnecessary re-rendering.
+    */
+  dirtySectionCleaned(sectionIndex: number): void {
+    if (this._dirtySections.length > sectionIndex) {
+      this._dirtySections[sectionIndex] = false;
+    }
+  }
+
+  /**
+    * Mark dirty row as clean to prevent unnecessary re-rendering.
+    */
+  dirtyRowCleaned(sectionIndex: number, rowIndex: number): void {
+    if (this._dirtyRows.length > sectionIndex) {
+      const section = this._dirtyRows[sectionIndex];
+      if (section.length > rowIndex) {
+        this._dirtyRows[sectionIndex][rowIndex] = false;
+      }
+    }
+  }
+
+  /**
    * Private members and methods.
    */
 
