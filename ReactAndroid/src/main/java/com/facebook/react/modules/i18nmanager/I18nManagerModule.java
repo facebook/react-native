@@ -45,6 +45,7 @@ public class I18nManagerModule extends ContextBaseJavaModule {
 
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put("isRTL", sharedI18nUtilInstance.isRTL(context));
+    constants.put("doesRTLFlipLeftAndRightStyles", sharedI18nUtilInstance.doesRTLFlipLeftAndRightStyles(context));
     constants.put("localeIdentifier", locale.toString());
     return constants;
   }
@@ -57,5 +58,10 @@ public class I18nManagerModule extends ContextBaseJavaModule {
   @ReactMethod
   public void forceRTL(boolean value) {
     sharedI18nUtilInstance.forceRTL(getContext(), value);
+  }
+
+  @ReactMethod
+  public void makeRTLFlipLeftAndRightStyles(boolean value) {
+    sharedI18nUtilInstance.makeRTLFlipLeftAndRightStyles(getContext(), value);
   }
 }

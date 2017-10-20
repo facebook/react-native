@@ -651,7 +651,7 @@ namespace facebook {
     void JSCExecutor::loadModule(uint32_t bundleId, uint32_t moduleId) {
       auto module = m_bundleRegistry->getModule(bundleId, moduleId);
       auto sourceUrl = String::createExpectingAscii(m_context, module.name);
-      auto source = String::createExpectingAscii(m_context, module.code);
+      auto source = adoptString(std::unique_ptr<JSBigString>(new JSBigStdString(module.code)));
       evaluateScript(m_context, source, sourceUrl);
     }
 

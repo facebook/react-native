@@ -41,7 +41,7 @@ function _defineCheckVersionTests() {
   });
 
   it('passes when all the versions are zero', () => {
-    jest.dontMock('ReactNativeVersion');
+    _mockJsVersion(0, 0, 0);
     _mockNativeVersion(0, 0, 0);
 
     const ReactNativeVersion = require('ReactNativeVersion');

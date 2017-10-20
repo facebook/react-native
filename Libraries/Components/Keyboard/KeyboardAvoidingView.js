@@ -46,7 +46,6 @@ const viewRef = 'VIEW';
  * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
-// $FlowFixMe(>=0.41.0)
 const KeyboardAvoidingView = createReactClass({
   displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],

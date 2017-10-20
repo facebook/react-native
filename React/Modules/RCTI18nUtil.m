@@ -19,6 +19,7 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedInstance = [self new];
+    [sharedInstance makeRTLFlipLeftAndRightStyles: true];
   });
   
   return sharedInstance;
@@ -75,6 +76,17 @@
 - (void)forceRTL:(BOOL)rtlStatus
 {
   [[NSUserDefaults standardUserDefaults] setBool:rtlStatus forKey:@"RCTI18nUtil_forceRTL"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)doesRTLFlipLeftAndRightStyles
+{
+  return [[NSUserDefaults standardUserDefaults] boolForKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
+}
+
+- (void)makeRTLFlipLeftAndRightStyles:(BOOL)value
+{
+  [[NSUserDefaults standardUserDefaults] setBool:value forKey:@"RCTI18nUtil_makeRTLFlipLeftAndRightStyles"];
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
