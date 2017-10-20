@@ -293,6 +293,11 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  Platform: {
+    OS: 'ios',
+    Version: () => '',
+    select: (obj) => obj.ios
+  },
 };
 
 Object.keys(mockNativeModules).forEach(module => {
