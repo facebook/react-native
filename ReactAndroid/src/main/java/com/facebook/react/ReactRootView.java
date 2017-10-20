@@ -226,7 +226,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
-    mAndroidTVRootViewHelper.handleKeyEvent(ev, getDeviceEventEmitter());
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    mAndroidTVRootViewHelper.handleKeyEvent(ev, emitter);
     return super.dispatchKeyEvent(ev);
   }
 
@@ -240,7 +242,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
       return;
     }
-    mAndroidTVRootViewHelper.clearFocus(getDeviceEventEmitter());
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    mAndroidTVRootViewHelper.clearFocus(emitter);
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
 
@@ -254,13 +258,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       super.requestChildFocus(child, focused);
       return;
     }
-    mAndroidTVRootViewHelper.onFocusChanged(focused, getDeviceEventEmitter());
-    super.requestChildFocus(child, focused);
-  }
-
-  private DeviceEventManagerModule.RCTDeviceEventEmitter getDeviceEventEmitter() {
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    return reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    mAndroidTVRootViewHelper.onFocusChanged(focused, emitter);
+    super.requestChildFocus(child, focused);
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
