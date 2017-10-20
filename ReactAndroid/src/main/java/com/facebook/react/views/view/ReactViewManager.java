@@ -73,6 +73,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     defaultFloat = YogaConstants.UNDEFINED
   )
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
+      borderRadius = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
@@ -153,9 +157,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     defaultFloat = YogaConstants.UNDEFINED
   )
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
+    if (!YogaConstants.isUndefined(width) && width < 0) {
+      width = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
+
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
