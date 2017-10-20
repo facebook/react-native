@@ -43,8 +43,8 @@ type KeyboardChangeEvent = {
 const viewRef = 'VIEW';
 
 /**
- * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
- * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
+ * This is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
+ * It can automatically adjust either its height, position or bottom padding based on the position of the keyboard.
  */
 const KeyboardAvoidingView = createReactClass({
   displayName: 'KeyboardAvoidingView',
@@ -52,6 +52,10 @@ const KeyboardAvoidingView = createReactClass({
 
   propTypes: {
     ...ViewPropTypes,
+    /**
+     * Specify how the `KeyboardAvoidingView` will react to the presence of
+     * the keyboard. Will it adjust its height, position or bottom padding?
+     */
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
 
     /**
@@ -61,7 +65,7 @@ const KeyboardAvoidingView = createReactClass({
 
     /**
      * This is the distance between the top of the user screen and the react native view,
-     * may be non-zero in some use cases.
+     * may be non-zero in some use cases. The default value is 0.
      */
     keyboardVerticalOffset: PropTypes.number.isRequired,
   },
