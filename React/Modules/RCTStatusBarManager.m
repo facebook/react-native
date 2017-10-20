@@ -49,8 +49,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"statusBarFrameDidChange",
-           @"statusBarFrameWillChange"];
+  return @[@"statusBarFrameDidChange"];
 }
 
 #if !TARGET_OS_TV
@@ -58,8 +57,7 @@ RCT_EXPORT_MODULE()
 - (void)startObserving
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-  [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
 }
 
 - (void)stopObserving
@@ -72,35 +70,29 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
+static NSDictionary *RCTExportedFrame()
 {
-  CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
-  NSDictionary *event = @{
-    @"frame": @{
-      @"x": @(frame.origin.x),
-      @"y": @(frame.origin.y),
-      @"width": @(frame.size.width),
-      @"height": @(frame.size.height),
-    },
-  };
-  [self sendEventWithName:eventName body:event];
+  // The In-Call Status Bar pushes the root view down instead of increasing the size of the StatusBar area
+  // that needs to be accounted for in JS. We can fix that by subtracting the y value of the root view
+  // from the StatusBar's height.
+  CGRect rootFrame = RCTPresentedViewController().view.frame;
+  CGRect statusBarFrame = RCTSharedApplication().statusBarFrame;
+  return @{
+           @"top": @(rootFrame.origin.y),
+           @"height": @(statusBarFrame.size.height - rootFrame.origin.y),
+           };
 }
 
-- (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
+- (void)applicationDidChangeStatusBarFrame
 {
-  [self emitEvent:@"statusBarFrameDidChange" forNotification:notification];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self sendEventWithName:@"statusBarFrameDidChange" body:RCTExportedFrame()];
+  });
 }
 
-- (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
+RCT_EXPORT_METHOD(getCurrentFrame:(RCTPromiseResolveBlock)resolve rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
-}
-
-RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
-{
-  callback(@[@{
-    @"height": @(RCTSharedApplication().statusBarFrame.size.height),
-  }]);
+  resolve(RCTExportedFrame());
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle

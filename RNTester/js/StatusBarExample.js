@@ -382,6 +382,40 @@ class StatusBarStaticAndroidExample extends React.Component<{}> {
   }
 }
 
+class StatusBarFrameExample extends React.Component<{}, {frame: Object}> {
+  state = {
+    frame: {},
+  };
+
+  componentDidMount() {
+    StatusBar.addEventListener('statusBarFrameDidChange', this._handleFrameChange);
+    StatusBar.getCurrentFrame()
+      .then((frame) => {
+        this.setState({
+          frame,
+        });
+      });
+  }
+
+  componentWillUnmount() {
+    StatusBar.removeEventListener('statusBarFrameDidChange', this._handleFrameChange);
+  }
+
+  _handleFrameChange = (frame) => {
+    this.setState({
+      frame,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>{JSON.stringify(this.state.frame)}</Text>
+      </View>
+    );
+  }
+}
+
 const examples = [{
   title: 'StatusBar hidden',
   render() {
@@ -424,7 +458,7 @@ const examples = [{
   },
   platform: 'android',
 }, {
-  title: 'StatusBar dimensions',
+  title: 'StatusBar dimension constants',
   render() {
     return (
       <View>
@@ -433,6 +467,11 @@ const examples = [{
     );
   },
   platform: 'android',
+}, {
+  title: 'StatusBar dimensions',
+  render() {
+    return <StatusBarFrameExample />;
+  }
 }];
 
 exports.examples = examples;
