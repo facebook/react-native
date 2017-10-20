@@ -25,7 +25,7 @@ Building apps for mobile platforms is nuanced, there are many little details tha
 
 ## Configure text inputs
 
-Entering text on touch phone is a challange - small screen, software keyboard. But based on what kind of data you need, you can make it easier by properly configuring the text inputs:
+Entering text on touch phone is a challenge - small screen, software keyboard. But based on what kind of data you need, you can make it easier by properly configuring the text inputs:
 
 * Focus the first field automatically
 * Use placeholder text as an example of expected data format
