@@ -183,11 +183,11 @@ var ScrollResponderMixin = {
    */
   scrollResponderHandleStartShouldSetResponder: function(e: Event): boolean {
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    
+
     if (this.props.onStartShouldSetResponder) {
       return this.props.onStartShouldSetResponder(e);
     }
-    
+
     if (this.props.keyboardShouldPersistTaps === 'handled' &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput) {
