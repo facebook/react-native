@@ -41,6 +41,13 @@
   *** get*();
 }
 
+-keep class com.facebook.react.uimanager.UIProp { *; }
+-keep class com.facebook.react.bridge.CatalystInstanceImpl { *; }
+-keep class com.facebook.react.bridge.JavaScriptExecutor { *; }
+-keep class com.facebook.react.bridge.queue.NativeRunnable { *; }
+-keep class com.facebook.react.bridge.ExecutorToken { *; }
+-keep class com.facebook.react.bridge.ReadableType { *; }
+
 -keep class * extends com.facebook.react.bridge.JavaScriptModule { *; }
 -keep class * extends com.facebook.react.bridge.NativeModule { *; }
 -keepclassmembers,includedescriptorclasses class * { native <methods>; }
