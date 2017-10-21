@@ -19,7 +19,7 @@ const NativeModules = require('NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
-let _customSourceTransformer, _serverURL, _bundleSourcePath;
+let _customSourceTransformer, _serverURL, _bundleSourceURL;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
@@ -36,28 +36,28 @@ function getDevServerURL(): ?string {
   return _serverURL;
 }
 
-function getBundleSourcePath(): ?string {
-  if (_bundleSourcePath === undefined) {
+function getBundleSourceURL(): ?string {
+  if (_bundleSourceURL === undefined) {
     const scriptURL = NativeModules.SourceCode.scriptURL;
     if (!scriptURL) {
       // scriptURL is falsy, we have nothing to go on here
-      _bundleSourcePath = null;
-      return _bundleSourcePath;
+      _bundleSourceURL = null;
+      return _bundleSourceURL;
     }
     if (scriptURL.startsWith('assets://')) {
-      // running from within assets, no offline path to use
-      _bundleSourcePath = null;
-      return _bundleSourcePath;
+      // android: running from within assets, no offline path to use
+      _bundleSourceURL = null;
+      return _bundleSourceURL;
     }
-    if (scriptURL.startsWith('file://')) {
-      // cut off the protocol
-      _bundleSourcePath = scriptURL.substring(7, scriptURL.lastIndexOf('/') + 1);
-    } else {
-      _bundleSourcePath = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    _bundleSourceURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    if (!scriptURL.startsWith('file://')) {
+      // Add file protocol in case we have an absolute file path and not a URL.
+      // This shouldn't really be necessary. scriptURL should be a URL.
+      _bundleSourceURL = 'file://' + _bundleSourceURL;
     }
   }
 
-  return _bundleSourcePath;
+  return _bundleSourceURL;
 }
 
 function setCustomSourceTransformer(
@@ -80,7 +80,7 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return null;
   }
 
-  const resolver = new AssetSourceResolver(getDevServerURL(), getBundleSourcePath(), asset);
+  const resolver = new AssetSourceResolver(getDevServerURL(), getBundleSourceURL(), asset);
   if (_customSourceTransformer) {
     return _customSourceTransformer(resolver);
   }

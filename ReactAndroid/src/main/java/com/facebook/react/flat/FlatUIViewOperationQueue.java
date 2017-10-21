@@ -9,14 +9,9 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -25,6 +20,8 @@ import com.facebook.react.uimanager.NoSuchNativeViewException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.TouchTargetHelper;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * FlatUIViewOperationQueue extends {@link UIViewOperationQueue} to add
@@ -399,8 +396,9 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
   public FlatUIViewOperationQueue(
       ReactApplicationContext reactContext,
-      FlatNativeViewHierarchyManager nativeViewHierarchyManager) {
-    super(reactContext, nativeViewHierarchyManager);
+      FlatNativeViewHierarchyManager nativeViewHierarchyManager,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    super(reactContext, nativeViewHierarchyManager, minTimeLeftInFrameForNonBatchedOperationMs);
 
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
   }

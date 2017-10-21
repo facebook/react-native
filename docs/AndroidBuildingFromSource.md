@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
 banner: ejected
-next: contributing
+next: communication-android
 previous: android-ui-performance
 ---
 
@@ -55,7 +55,7 @@ ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10e
 3. Windows (64-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86_64.zip
 4. Windows (32-bit) - http://dl.google.com/android/repository/android-ndk-r10e-windows-x86.zip
 
-You can find further instructions on the [official page](http://developer.android.com/ndk/downloads/index.html).
+You can find further instructions on the [official page](https://developer.android.com/ndk/index.html).
 
 ## Building the source
 

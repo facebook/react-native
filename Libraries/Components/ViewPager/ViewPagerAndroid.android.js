@@ -37,7 +37,7 @@ export type ViewPagerScrollState = $Enum<{
  *
  * It is important all children are `<View>`s and not composite components.
  * You can set style properties like `padding` or `backgroundColor` for each
- * child.
+ * child. It is also important that each child have a `key` prop.
  *
  * Example:
  *
@@ -47,10 +47,10 @@ export type ViewPagerScrollState = $Enum<{
  *     <ViewPagerAndroid
  *       style={styles.viewPager}
  *       initialPage={0}>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="1">
  *         <Text>First page</Text>
  *       </View>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="2">
  *         <Text>Second page</Text>
  *       </View>
  *     </ViewPagerAndroid>
@@ -61,6 +61,9 @@ export type ViewPagerScrollState = $Enum<{
  *
  * var styles = {
  *   ...
+ *   viewPager: {
+ *     flex: 1
+ *   },
  *   pageStyle: {
  *     alignItems: 'center',
  *     padding: 20,
@@ -68,18 +71,16 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    peekEnabled?: boolean,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**

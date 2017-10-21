@@ -19,7 +19,7 @@ var resolveBoxStyle = require('resolveBoxStyle');
 
 var flattenStyle = require('flattenStyle');
 
-class ElementBox extends React.Component {
+class ElementBox extends React.Component<$FlowFixMeProps> {
   render() {
     var style = flattenStyle(this.props.style) || {};
     var margin = resolveBoxStyle('margin', style);

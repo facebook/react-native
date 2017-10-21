@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -410,6 +411,46 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       width = photos.getInt(widthIndex);
       height = photos.getInt(heightIndex);
     }
+
+    if (assetType != null
+        && assetType.equals("Videos")
+        && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+      try {
+        AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+
+        try {
+          if (width <= 0 || height <= 0) {
+            width =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+          }
+          int timeInMillisec =
+              Integer.parseInt(
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+          int playableDuration = timeInMillisec / 1000;
+          image.putInt("playableDuration", playableDuration);
+        } catch (NumberFormatException e) {
+          FLog.e(
+              ReactConstants.TAG,
+              "Number format exception occurred while trying to fetch video metadata for "
+                  + photoUri.toString(),
+              e);
+          return false;
+        } finally {
+          retriever.release();
+          photoDescriptor.close();
+        }
+      } catch (IOException e) {
+        FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
+        return false;
+      }
+    }
+
     if (width <= 0 || height <= 0) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
@@ -418,10 +459,9 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         // dimensions instead.
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
-        photoDescriptor.close();
-
         width = options.outWidth;
         height = options.outHeight;
+        photoDescriptor.close();
       } catch (IOException e) {
         FLog.e(ReactConstants.TAG, "Could not get width/height for " + photoUri.toString(), e);
         return false;

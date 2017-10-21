@@ -20,7 +20,7 @@ var {
   StyleSheet,
 } = ReactNative;
 
-class WithLabel extends React.Component {
+class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.labelContainer}>
@@ -33,7 +33,7 @@ class WithLabel extends React.Component {
   }
 }
 
-class TextEventsExample extends React.Component {
+class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
@@ -91,9 +91,7 @@ class TextEventsExample extends React.Component {
   }
 }
 
-class RewriteExample extends React.Component {
-  state: any;
-
+class RewriteExample extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -122,9 +120,7 @@ class RewriteExample extends React.Component {
   }
 }
 
-class RewriteExampleInvalidCharacters extends React.Component {
-  state: any;
-
+class RewriteExampleInvalidCharacters extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -145,9 +141,7 @@ class RewriteExampleInvalidCharacters extends React.Component {
   }
 }
 
-class TokenizedTextExample extends React.Component {
-  state: any;
-
+class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -201,7 +195,7 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-class BlurOnSubmitExample extends React.Component {
+class BlurOnSubmitExample extends React.Component<{}> {
   focusNextField = (nextField) => {
     this.refs[nextField].focus();
   };
@@ -264,9 +258,7 @@ type SelectionExampleState = {
   value: string;
 };
 
-class SelectionExample extends React.Component {
-  state: SelectionExampleState;
-
+class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExampleState> {
   _textInput: any;
 
   constructor(props) {
@@ -348,14 +340,14 @@ var styles = StyleSheet.create({
     paddingBottom: 300,
   },
   default: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
     padding: 4,
   },
   multiline: {
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
     flex: 1,
     fontSize: 13,
@@ -618,12 +610,12 @@ exports.examples = [
         <View>
           <TextInput
             style={styles.default}
-            selectionColor={"green"}
+            selectionColor={'green'}
             defaultValue="Highlight me"
           />
           <TextInput
             style={styles.default}
-            selectionColor={"rgba(86, 76, 205, 1)"}
+            selectionColor={'rgba(86, 76, 205, 1)'}
             defaultValue="Highlight me"
           />
         </View>
@@ -880,7 +872,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

@@ -10,16 +10,15 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ViewPropTypes = require('ViewPropTypes');
-var ColorPropType = require('ColorPropType');
+const ColorPropType = require('ColorPropType');
+const PropTypes = require('prop-types');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-var STYLE_ATTRIBUTES = [
+const STYLE_ATTRIBUTES = [
   'Horizontal',
   'Normal',
   'Small',
@@ -29,10 +28,10 @@ var STYLE_ATTRIBUTES = [
   'LargeInverse',
 ];
 
-var indeterminateType = function(props, propName, componentName, ...rest) {
-  var checker = function() {
-    var indeterminate = props[propName];
-    var styleAttr = props.styleAttr;
+const indeterminateType = function(props, propName, componentName, ...rest) {
+  const checker = function() {
+    const indeterminate = props[propName];
+    const styleAttr = props.styleAttr;
     if (!indeterminate && styleAttr !== 'Horizontal') {
       return new Error('indeterminate=false is only valid for styleAttr=Horizontal');
     }
@@ -64,10 +63,10 @@ var indeterminateType = function(props, propName, componentName, ...rest) {
  * },
  * ```
  */
-var ProgressBarAndroid = createReactClass({
-  displayName: 'ProgressBarAndroid',
-  propTypes: {
+class ProgressBarAndroid extends ReactNative.NativeComponent {
+  static propTypes = {
     ...ViewPropTypes,
+
     /**
      * Style of the ProgressBar. One of:
      *
@@ -80,6 +79,10 @@ var ProgressBarAndroid = createReactClass({
      * - LargeInverse
      */
     styleAttr: PropTypes.oneOf(STYLE_ATTRIBUTES),
+    /**
+     * Whether to show the ProgressBar (true, the default) or hide it (false).
+     */
+    animating: PropTypes.bool,
     /**
      * If the progress bar will show indeterminate progress. Note that this
      * can only be false if styleAttr is Horizontal.
@@ -97,35 +100,27 @@ var ProgressBarAndroid = createReactClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
-  },
+  };
 
-  getDefaultProps: function() {
-    return {
-      styleAttr: 'Normal',
-      indeterminate: true
-    };
-  },
+  static defaultProps = {
+    styleAttr: 'Normal',
+    indeterminate: true,
+    animating: true,
+  };
 
-  mixins: [NativeMethodsMixin],
-
-  componentDidMount: function() {
-    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
-      console.warn(
-        'Circular indeterminate `ProgressBarAndroid`' +
-        'is deprecated. Use `ActivityIndicator` instead.'
-      );
-    }
-  },
-
-  render: function() {
+  render() {
     return <AndroidProgressBar {...this.props} />;
-  },
-});
+  }
+}
 
-var AndroidProgressBar = requireNativeComponent(
+const AndroidProgressBar = requireNativeComponent(
   'AndroidProgressBar',
   ProgressBarAndroid,
-  {nativeOnly: {animating: true}},
+  {
+    nativeOnly: {
+      animating: true,
+    },
+  }
 );
 
 module.exports = ProgressBarAndroid;

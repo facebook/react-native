@@ -95,11 +95,6 @@ if (global.__RCTProfileIsProfiling) {
   Systrace.setEnabled(true);
 }
 
-if (__DEV__ && global.performance === undefined) {
-  const Systrace = require('Systrace');
-  global.performance = Systrace.getUserTimingPolyfill();
-}
-
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
@@ -110,9 +105,9 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console-disallow */
+      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console-disallow */
+      /* eslint-enable no-console */
       throw e;
     }
   };
@@ -120,6 +115,10 @@ if (!global.__fbDisableExceptionsManager) {
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
+
+// Check for compatibility between the JS and native code
+const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
+ReactNativeVersionCheck.checkVersions();
 
 // Set up collections
 const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
@@ -140,6 +139,9 @@ polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
   require('regenerator-runtime/runtime');
   return global.regeneratorRuntime;
 });
@@ -204,6 +206,26 @@ BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require(
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
 
+global.fetchBundle = function(
+  bundleId: number,
+  callback: (?Error) => void,
+) {
+  const {BundleFetcher} = require('NativeModules');
+  if (!BundleFetcher) {
+    throw new Error('BundleFetcher is missing');
+  }
+
+  BundleFetcher.fetchBundle(bundleId, (errorObject: ?{message: string, code: string}) => {
+    if (errorObject) {
+      const error = new Error(errorObject.message);
+      (error: any).code = errorObject.code;
+      callback(error);
+    }
+
+    callback(null);
+  });
+};
+
 // Set up devtools
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
@@ -217,6 +239,12 @@ if (__DEV__) {
 
     // Set up inspector
     const JSInspector = require('JSInspector');
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
+     * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
     JSInspector.registerAgent(require('NetworkAgent'));
   }
 }

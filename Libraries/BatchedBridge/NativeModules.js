@@ -82,7 +82,13 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
     };
   } else if (type === 'sync') {
     fn = function(...args: Array<any>) {
-      return BatchedBridge.callSyncHook(moduleID, methodID, args);
+      if (__DEV__) {
+        invariant(global.nativeCallSyncHook, 'Calling synchronous methods on native ' +
+          'modules is not supported in Chrome.\n\n Consider providing alternative ' +
+          'methods to expose this method in debug mode, e.g. by exposing constants ' +
+          'ahead-of-time.');
+      }
+      return global.nativeCallSyncHook(moduleID, methodID, args);
     };
   } else {
     fn = function(...args: Array<any>) {

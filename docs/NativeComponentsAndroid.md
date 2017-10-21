@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-components-android.html
 banner: ejected
-next: headless-js-android
+next: custom-webview-android
 previous: native-modules-android
 ---
 
@@ -67,7 +67,7 @@ Except from `name`, `@ReactProp` annotation may take following optional argument
 
 Setter declaration requirements for methods annotated with `@ReactPropGroup` are different than for `@ReactProp`, please refer to the `@ReactPropGroup` annotation class docs for more information about it.
 
-**IMPORTANT!** in ReactJS updating the property value will result in setter method call. Note that one of the ways we can update component is by removing properties that has been set before. In that case setter method will be called as well to notify view manager that property has changed. In that case "default" value will be provided (for primitive types "default" can value can be specified using `defaultBoolean`, `defaultFloat`, etc. arguments of `@ReactProp` annotation, for complex types setter will be called with value set to `null`).
+**IMPORTANT!** in ReactJS updating the property value will result in setter method call. Note that one of the ways we can update component is by removing properties that have been set before. In that case setter method will be called as well to notify view manager that property has changed. In that case "default" value will be provided (for primitive types "default" can value can be specified using `defaultBoolean`, `defaultFloat`, etc. arguments of `@ReactProp` annotation, for complex types setter will be called with value set to `null`).
 
 ```java
   @ReactProp(name = "src")
@@ -144,7 +144,24 @@ class MyCustomView extends View {
 }
 ```
 
-The event name `topChange` maps to the `onChange` callback prop in JavaScript (mappings are in `UIManagerModuleConstants.java`). This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
+To map the `topChange` event name to the `onChange` callback prop in JavaScript, register it by overriding the `getExportedCustomBubblingEventTypeConstants` method in your `ViewManager`:
+
+```java
+public class ReactImageManager extends SimpleViewManager<MyCustomView> {
+    ...
+    public Map getExportedCustomBubblingEventTypeConstants() {
+        return MapBuilder.builder()
+            .put(
+                "topChange",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onChange")))
+                    .build();
+    }
+}
+```
+
+This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
 
 ```js
 // MyCustomView.js

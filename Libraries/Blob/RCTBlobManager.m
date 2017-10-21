@@ -32,6 +32,11 @@ RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{

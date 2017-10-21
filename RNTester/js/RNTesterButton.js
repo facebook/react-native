@@ -20,9 +20,7 @@ var {
   TouchableHighlight,
 } = ReactNative;
 
-class RNTesterButton extends React.Component {
-  props: {onPress?: Function};
-
+class RNTesterButton extends React.Component<{onPress?: Function}> {
   static propTypes = {
     onPress: PropTypes.func,
   };
