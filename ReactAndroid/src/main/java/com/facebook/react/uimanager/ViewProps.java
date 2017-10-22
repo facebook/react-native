@@ -47,6 +47,8 @@ public class ViewProps {
   public static final String MARGIN_RIGHT = "marginRight";
   public static final String MARGIN_TOP = "marginTop";
   public static final String MARGIN_BOTTOM = "marginBottom";
+  public static final String MARGIN_START = "marginStart";
+  public static final String MARGIN_END = "marginEnd";
 
   public static final String PADDING = "padding";
   public static final String PADDING_VERTICAL = "paddingVertical";
@@ -55,11 +57,15 @@ public class ViewProps {
   public static final String PADDING_RIGHT = "paddingRight";
   public static final String PADDING_TOP = "paddingTop";
   public static final String PADDING_BOTTOM = "paddingBottom";
+  public static final String PADDING_START = "paddingStart";
+  public static final String PADDING_END = "paddingEnd";
 
   public static final String POSITION = "position";
   public static final String RIGHT = "right";
   public static final String TOP = "top";
   public static final String WIDTH = "width";
+  public static final String START = "start";
+  public static final String END = "end";
 
   public static final String MIN_WIDTH = "minWidth";
   public static final String MAX_WIDTH = "maxWidth";
@@ -97,6 +103,8 @@ public class ViewProps {
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
+  public static final String BORDER_START_WIDTH = "borderStartWidth";
+  public static final String BORDER_END_WIDTH = "borderEndWidth";
   public static final String BORDER_TOP_WIDTH = "borderTopWidth";
   public static final String BORDER_RIGHT_WIDTH = "borderRightWidth";
   public static final String BORDER_BOTTOM_WIDTH = "borderBottomWidth";
@@ -110,65 +118,93 @@ public class ViewProps {
   public static final String BORDER_RIGHT_COLOR = "borderRightColor";
   public static final String BORDER_TOP_COLOR = "borderTopColor";
   public static final String BORDER_BOTTOM_COLOR = "borderBottomColor";
+  public static final String BORDER_TOP_START_RADIUS = "borderTopStartRadius";
+  public static final String BORDER_TOP_END_RADIUS = "borderTopEndRadius";
+  public static final String BORDER_BOTTOM_START_RADIUS = "borderBottomStartRadius";
+  public static final String BORDER_BOTTOM_END_RADIUS = "borderBottomEndRadius";
+  public static final String BORDER_START_COLOR = "borderStartColor";
+  public static final String BORDER_END_COLOR = "borderEndColor";
+
   public static final int[] BORDER_SPACING_TYPES = {
-      Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
+    Spacing.ALL,
+    Spacing.START,
+    Spacing.END,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.LEFT,
+    Spacing.RIGHT
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.START, Spacing.END, Spacing.TOP,
-      Spacing.BOTTOM
+    Spacing.ALL,
+    Spacing.VERTICAL,
+    Spacing.HORIZONTAL,
+    Spacing.START,
+    Spacing.END,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.LEFT,
+    Spacing.RIGHT,
   };
   public static final int[] POSITION_SPACING_TYPES = {
-      Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
+    Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
 
-  private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(
-      Arrays.asList(
-            ALIGN_SELF,
-            ALIGN_ITEMS,
-            COLLAPSABLE,
-            FLEX,
-            FLEX_BASIS,
-            FLEX_DIRECTION,
-            FLEX_GROW,
-            FLEX_SHRINK,
-            FLEX_WRAP,
-            JUSTIFY_CONTENT,
-            OVERFLOW,
-            ALIGN_CONTENT,
-            DISPLAY,
+  private static final HashSet<String> LAYOUT_ONLY_PROPS =
+      new HashSet<>(
+          Arrays.asList(
+              ALIGN_SELF,
+              ALIGN_ITEMS,
+              COLLAPSABLE,
+              FLEX,
+              FLEX_BASIS,
+              FLEX_DIRECTION,
+              FLEX_GROW,
+              FLEX_SHRINK,
+              FLEX_WRAP,
+              JUSTIFY_CONTENT,
+              OVERFLOW,
+              ALIGN_CONTENT,
+              DISPLAY,
 
-            /* position */
-            POSITION,
-            RIGHT,
-            TOP,
-            BOTTOM,
-            LEFT,
+              /* position */
+              POSITION,
+              RIGHT,
+              TOP,
+              BOTTOM,
+              LEFT,
+              START,
+              END,
 
-            /* dimensions */
-            WIDTH,
-            HEIGHT,
-            MIN_WIDTH,
-            MAX_WIDTH,
-            MIN_HEIGHT,
-            MAX_HEIGHT,
+              /* dimensions */
+              WIDTH,
+              HEIGHT,
+              MIN_WIDTH,
+              MAX_WIDTH,
+              MIN_HEIGHT,
+              MAX_HEIGHT,
 
-            /* margins */
-            MARGIN,
-            MARGIN_VERTICAL,
-            MARGIN_HORIZONTAL,
-            MARGIN_LEFT,
-            MARGIN_RIGHT,
-            MARGIN_TOP,
-            MARGIN_BOTTOM,
+              /* margins */
+              MARGIN,
+              MARGIN_VERTICAL,
+              MARGIN_HORIZONTAL,
+              MARGIN_LEFT,
+              MARGIN_RIGHT,
+              MARGIN_TOP,
+              MARGIN_BOTTOM,
+              MARGIN_START,
+              MARGIN_END,
 
-            /* paddings */
-            PADDING,
-            PADDING_VERTICAL,
-            PADDING_HORIZONTAL,
-            PADDING_LEFT,
-            PADDING_RIGHT,
-            PADDING_TOP,
-            PADDING_BOTTOM));
+              /* paddings */
+              PADDING,
+              PADDING_VERTICAL,
+              PADDING_HORIZONTAL,
+              PADDING_LEFT,
+              PADDING_RIGHT,
+              PADDING_TOP,
+              PADDING_BOTTOM,
+              PADDING_START,
+              PADDING_END));
+
 
   public static boolean sIsOptimizationsEnabled;
 

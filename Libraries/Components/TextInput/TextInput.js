@@ -181,7 +181,6 @@ const DataDetectorTypes = [
  *
  */
 
-// $FlowFixMe(>=0.41.0)
 const TextInput = createReactClass({
   displayName: 'TextInput',
   statics: {

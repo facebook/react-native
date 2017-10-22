@@ -64,4 +64,4 @@ We have a list of [beginner friendly issues](https://github.com/facebook/react-n
 
 React Native is [BSD licensed](./LICENSE). We also provide an additional [patent grant](./PATENTS).
 
-React documentation is [Creative Commons licensed](./LICENSE-docs).
+React Native documentation is [Creative Commons licensed](./LICENSE-docs).

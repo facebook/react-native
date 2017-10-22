@@ -39,7 +39,6 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -245,7 +244,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       return null;
     }
 
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "constants for ViewManager")
+    SystraceMessage.beginSection(
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
         .arg("ViewManager", targetView.getName())
         .arg("Lazy", true)
         .flush();
@@ -263,7 +263,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       }
       return null;
     } finally {
-      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }
 
