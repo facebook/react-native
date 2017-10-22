@@ -29,10 +29,16 @@ RCT_EXPORT_METHOD(forceRTL:(BOOL)value)
   [[RCTI18nUtil sharedInstance] forceRTL:value];
 }
 
+RCT_EXPORT_METHOD(makeRTLFlipLeftAndRightStyles:(BOOL)value)
+{
+  [[RCTI18nUtil sharedInstance] makeRTLFlipLeftAndRightStyles:value];
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{
-    @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL])
+    @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL]),
+    @"doesRTLFlipLeftAndRightStyles": @([[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles])
   };
 }
 

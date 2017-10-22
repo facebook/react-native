@@ -29,7 +29,6 @@ type Event = Object;
 /**
  * A component used to select a single value from a range of values.
  */
-// $FlowFixMe(>=0.41.0)
 var Slider = createReactClass({
   displayName: 'Slider',
   mixins: [NativeMethodsMixin],
