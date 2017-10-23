@@ -17,54 +17,50 @@
 // and non objects. It's not spec-compliant. It's a perf optimization.
 // This is only needed for iOS 8 and current Android JSC.
 
-Object.assign = function(target, sources) {
-  if (__DEV__) {
-    if (target == null) {
-      throw new TypeError('Object.assign target cannot be null or undefined');
-    }
-    if (typeof target !== 'object' && typeof target !== 'function') {
-      throw new TypeError(
-        'In this environment the target of assign MUST be an object. ' +
-        'This error is a performance optimization and not spec compliant.'
-      );
-    }
-  }
-
-  for (var nextIndex = 1; nextIndex < arguments.length; nextIndex++) {
-    var nextSource = arguments[nextIndex];
-    if (nextSource == null) {
-      continue;
-    }
-
+if (!(Object.assign instanceof Function)) {
+  Object.assign = function(target, sources) {
     if (__DEV__) {
-      if (typeof nextSource !== 'object' &&
-          typeof nextSource !== 'function') {
+      if (target == null) {
+        throw new TypeError('Object.assign target cannot be null or undefined');
+      }
+      if (typeof target !== 'object' && typeof target !== 'function') {
         throw new TypeError(
-          'In this environment the sources for assign MUST be an object. ' +
+          'In this environment the target of assign MUST be an object. ' +
           'This error is a performance optimization and not spec compliant.'
         );
       }
     }
 
-    // We don't currently support accessors nor proxies. Therefore this
-    // copy cannot throw. If we ever supported this then we must handle
-    // exceptions and side-effects.
+    for (var nextIndex = 1; nextIndex < arguments.length; nextIndex++) {
+      var nextSource = arguments[nextIndex];
+      if (nextSource == null) {
+        continue;
+      }
 
-    for (var key in nextSource) {
       if (__DEV__) {
-        var hasOwnProperty = Object.prototype.hasOwnProperty;
-        if (!hasOwnProperty.call(nextSource, key)) {
+        if (typeof nextSource !== 'object' &&
+            typeof nextSource !== 'function') {
           throw new TypeError(
-            'One of the sources for assign has an enumerable key on the ' +
-            'prototype chain. Are you trying to assign a prototype property? ' +
-            'We don\'t allow it, as this is an edge case that we do not support. ' +
+            'In this environment the sources for assign MUST be an object. ' +
             'This error is a performance optimization and not spec compliant.'
           );
         }
       }
-      target[key] = nextSource[key];
-    }
-  }
 
-  return target;
-};
+      // We don't currently support accessors nor proxies. Therefore this
+      // copy cannot throw. If we ever supported this then we must handle
+      // exceptions and side-effects.
+
+      // It isn't nice to force ideologies, so let's be nice here...
+      // Revamped to NOT slowly walk the entire prototype chain
+      
+      var keys = Object.keys(nextSource);
+      for (var i = 0, il = keys.length; i < il; i++) {
+        var key = keys[i];
+        target[key] = nextSource[key];
+      }
+    }
+
+    return target;
+  };
+}
