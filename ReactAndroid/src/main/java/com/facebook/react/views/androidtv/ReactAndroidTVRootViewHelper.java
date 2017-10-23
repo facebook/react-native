@@ -59,6 +59,10 @@ public class ReactAndroidTVRootViewHelper {
     if (targetView != null) {
       if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
         dispatchEvent("playPause", emitter);
+      } else if (KeyEvent.KEYCODE_MEDIA_REWIND == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
+        dispatchEvent("rewind", emitter);
+      } else if (KeyEvent.KEYCODE_MEDIA_FAST_FORWARD == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
+        dispatchEvent("fastForward", emitter);
       } else if (PRESS_KEY_EVENTS.contains(eventKeyCode) && eventKeyAction == KeyEvent.ACTION_UP) {
         dispatchEvent("select", targetView.getId(), emitter);
       }

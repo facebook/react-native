@@ -212,6 +212,10 @@ class Game2048 extends React.Component {
 
 ```
 
+<block class="android">
+
+Additionally, `rewind` and `fastForward` events are sent after pressing the corresponding remote control button.
+
 <block class="ios" />
 
 - *Dev Menu support*: On the simulator, cmd-D will bring up the developer menu, just like on iOS.  To bring it up on a real Apple TV device, make a long press on the play/pause button on the remote.  (Please do not shake the Apple TV device, that will not work :) )
