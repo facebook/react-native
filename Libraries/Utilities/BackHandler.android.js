@@ -23,9 +23,9 @@ type BackPressEventName = $Enum<{
 var _backPressSubscriptions = new Set();
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
-  var backPressSubscriptions = new Set(_backPressSubscriptions);
   var invokeDefault = true;
-  var subscriptions = [...backPressSubscriptions].reverse();
+  var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+
   for (var i = 0; i < subscriptions.length; ++i) {
     if (subscriptions[i]()) {
       invokeDefault = false;
