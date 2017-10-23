@@ -296,7 +296,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (_messagingEnabled) {
     #if RCT_DEV
     // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+    NSString *testPostMessageNative =
+    @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage') || "
+    "String(window.originalPostMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
     BOOL postMessageIsNative = [
       [webView stringByEvaluatingJavaScriptFromString:testPostMessageNative]
       isEqualToString:@"true"
@@ -305,31 +307,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
     }
     #endif
-    NSString *source = [NSString stringWithFormat:
-      @"(function() {"
-        "window.originalPostMessage = window.postMessage;"
-
-        "var messageQueue = [];"
-        "var messagePending = false;"
-
-        "function processQueue() {"
-          "if (!messageQueue.length || messagePending) return;"
-          "messagePending = true;"
-          "window.location = '%@://%@?' + encodeURIComponent(messageQueue.shift());"
-        "}"
-
-        "window.postMessage = function(data) {"
-          "messageQueue.push(String(data));"
-          "processQueue();"
-        "};"
-
-        "document.addEventListener('message:received', function(e) {"
-          "messagePending = false;"
-          "processQueue();"
-        "});"
-      "})();", RCTJSNavigationScheme, kPostMessageHost
+    NSString* didSetOriginalPostMessage = @"window.originalPostMessage != undefined";
+    BOOL isOriginalPostMessageSet = [
+         [webView stringByEvaluatingJavaScriptFromString:didSetOriginalPostMessage]
+         isEqualToString:@"true"
     ];
-    [webView stringByEvaluatingJavaScriptFromString:source];
+    if (!isOriginalPostMessageSet) {
+        NSString *source = [NSString stringWithFormat:
+          @"(function() {"
+            "window.originalPostMessage = window.postMessage;"
+
+            "var messageQueue = [];"
+            "var messagePending = false;"
+
+            "function processQueue() {"
+              "if (!messageQueue.length || messagePending) return;"
+              "messagePending = true;"
+              "window.location = '%@://%@?' + encodeURIComponent(messageQueue.shift());"
+            "}"
+
+            "window.postMessage = function(data) {"
+              "messageQueue.push(String(data));"
+              "processQueue();"
+            "};"
+
+            "document.addEventListener('message:received', function(e) {"
+              "messagePending = false;"
+              "processQueue();"
+            "});"
+          "})();", RCTJSNavigationScheme, kPostMessageHost
+        ];
+        [webView stringByEvaluatingJavaScriptFromString:source];
+    }
   }
   if (_injectedJavaScript != nil) {
     NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
