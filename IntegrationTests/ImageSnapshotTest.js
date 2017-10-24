@@ -33,6 +33,7 @@ class ImageSnapshotTest extends React.Component<{}> {
   render() {
     return (
       <Image
+        style={{position: 'absolute'}}
         source={require('./blue_square.png')}
         defaultSource={require('./red_square.png')}
         onLoad={() => TestModule.verifySnapshot(this.done)} />

@@ -635,6 +635,27 @@ exports.examples = [
     },
   },
   {
+    title: 'Intrinsic Content Size',
+    description: 'Images have intrinsic content size which respects ' +
+      'to the first `source` image size.',
+    render: function() {
+      return (
+        <View>
+          <Text>Plain static image without explicitly set size</Text>
+          <Image
+            source={require('./uie_thumb_big.png')}
+            style={{alignSelf: 'center'}}
+          />
+          <Text>Plain network image without explicitly set size</Text>
+          <Image
+            source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+          />
+        </View>
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'MultipleSourcesExample',
     description:
       'The `source` prop allows passing in an array of uris, so that native to choose which image ' +

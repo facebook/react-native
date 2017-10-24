@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTImageSource.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
@@ -80,6 +81,8 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
+
+  CGSize _intrinsicContentSize;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -106,6 +109,16 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
+
+- (CGSize)intrinsicContentSize
+{
+  return _intrinsicContentSize;
+}
+
+- (void)updateIntrinsicContentSize
+{
+  [_bridge.uiManager setIntrinsicContentSize:self.intrinsicContentSize forView:self];
+}
 
 - (void)updateWithImage:(UIImage *)image
 {
@@ -176,6 +189,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (![imageSources isEqual:_imageSources]) {
     _imageSources = [imageSources copy];
+
+    // If the first image source contains image size, use it to set up `_intrinsicContentSize`.
+    // Otherwise we will update `_intrinsicContentSize` right after we have dowloaded image.
+    // `_intrinsicContentSize` defaults to `{0, 0}` if `_imageSources` is empty.
+    _intrinsicContentSize = _imageSources.firstObject.size;
+
+    [self updateIntrinsicContentSize];
     _needsReload = YES;
   }
 }
@@ -232,11 +252,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (RCTImageSource *)imageSourceForSize:(CGSize)size
 {
-  if (![self hasMultipleSources]) {
+  // If we have less than two sources of if we don't have intrinsic content size,
+  // we have to return the first source.
+  if (![self hasMultipleSources] ||
+      CGSizeEqualToSize(_intrinsicContentSize, CGSizeZero)) {
     return _imageSources.firstObject;
   }
 
-  // Need to wait for layout pass before deciding.
+  // Corner case for empty size.
   if (CGSizeEqualToSize(size, CGSizeZero)) {
     return nil;
   }
@@ -283,7 +306,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTImageSource *source = [self imageSourceForSize:self.frame.size];
   _pendingImageSource = source;
 
-  if (source && self.frame.size.width > 0 && self.frame.size.height > 0) {
+  if (source) {
     if (_onLoadStart) {
       _onLoadStart(nil);
     }
@@ -331,6 +354,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source partial:(BOOL)isPartialLoad
 {
+  // Can be called from any queue.
+
   if (![source isEqual:_pendingImageSource]) {
     // Bail out if source has changed since we started loading
     return;
@@ -347,8 +372,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
+    RCTAssertMainQueue();
+
     if (!isPartialLoad) {
       self->_imageSource = source;
+
+      if (CGSizeEqualToSize(self->_intrinsicContentSize, CGSizeZero) && [source isEqual:self->_imageSources.firstObject]) {
+        // If we just downloaded an image from the first source and if we don't have `_intrinsicContentSize` yet,
+        // use actual image size as `_intrinsicContentSize`.
+        self->_intrinsicContentSize = image.size;
+        [self updateIntrinsicContentSize];
+      }
+
       self->_pendingImageSource = nil;
     }
 

@@ -352,13 +352,11 @@ const Image = createReactClass({
     const source = resolveAssetSource(this.props.source) || { uri: undefined, width: undefined, height: undefined };
 
     let sources;
-    let style;
+    let style = flattenStyle([styles.base, this.props.style]) || {};
     if (Array.isArray(source)) {
-      style = flattenStyle([styles.base, this.props.style]) || {};
       sources = source;
     } else {
-      const {width, height, uri} = source;
-      style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+      const {uri} = source;
       sources = [source];
 
       if (uri === '') {
