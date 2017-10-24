@@ -173,7 +173,6 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
           PermissionAwareActivity activity = (PermissionAwareActivity) args[1];
           for (int j = 0; j < permissionsToCheck.size(); j++) {
             String permission = permissionsToCheck.get(j);
-
             if (results.length > 0 && results[j] == PackageManager.PERMISSION_GRANTED) {
               grantedPermissions.putString(permission, GRANTED);
             } else {
