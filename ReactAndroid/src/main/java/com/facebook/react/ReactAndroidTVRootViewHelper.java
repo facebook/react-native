@@ -7,13 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.androidtv;
+package com.facebook.react;
 
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;

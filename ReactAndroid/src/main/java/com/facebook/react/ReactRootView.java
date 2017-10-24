@@ -50,7 +50,6 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.androidtv.ReactAndroidTVRootViewHelper;
 import com.facebook.systrace.Systrace;
 import javax.annotation.Nullable;
 
