@@ -1,0 +1,9 @@
+include_defs("//ReactAndroid/DEFS")
+
+android_library(
+    name = "androidtv",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+)
