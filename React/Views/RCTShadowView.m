@@ -103,7 +103,7 @@ switch (ygvalue.unit) {                            \
 }
 
 static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCT_SET_YGVALUE(metaProps[META_PROP_START], YGNodeStyleSetPadding, node, YGEdgeStart);
     RCT_SET_YGVALUE(metaProps[META_PROP_END], YGNodeStyleSetPadding, node, YGEdgeEnd);
     RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeLeft);
@@ -122,7 +122,7 @@ static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT],
 }
 
 static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_START], YGNodeStyleSetMargin, node, YGEdgeStart);
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_END], YGNodeStyleSetMargin, node, YGEdgeEnd);
     RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeLeft);
@@ -141,7 +141,7 @@ static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], 
 }
 
 static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  if (![[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles]) {
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
     YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_START].value);
     YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_END].value);
     YGNodeStyleSetBorder(node, YGEdgeLeft, metaProps[META_PROP_LEFT].value);
@@ -644,25 +644,25 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 
 - (void)setLeft:(YGValue)value
 {
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeStart : YGEdgeLeft;
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
   [self dirtyText];
 }
 - (YGValue)left
 {
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeStart : YGEdgeLeft;
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
   return YGNodeStyleGetPosition(_yogaNode, edge);
 }
 
 - (void)setRight:(YGValue)value
 {
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeEnd : YGEdgeRight;
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
   [self dirtyText];
 }
 - (YGValue)right
 {
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doesRTLFlipLeftAndRightStyles] ? YGEdgeEnd : YGEdgeRight;
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
   return YGNodeStyleGetPosition(_yogaNode, edge);
 }
 

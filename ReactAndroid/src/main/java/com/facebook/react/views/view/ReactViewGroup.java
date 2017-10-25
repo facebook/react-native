@@ -685,7 +685,7 @@ public class ReactViewGroup extends ViewGroup implements
                   mReactBackgroundDrawable.getBorderRadius(
                       ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
 
-              if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getContext())) {
+              if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(getContext())) {
                 if (YogaConstants.isUndefined(topStartBorderRadius)) {
                   topStartBorderRadius = topLeftBorderRadius;
                 }

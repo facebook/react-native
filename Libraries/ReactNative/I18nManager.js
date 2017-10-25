@@ -14,18 +14,18 @@
 
 type I18nManagerStatus = {
   isRTL: boolean,
-  doesRTLFlipLeftAndRightStyles: boolean,
+  doLeftAndRightSwapInRTL: boolean,
   allowRTL: (allowRTL: boolean) => {},
   forceRTL: (forceRTL: boolean) => {},
-  makeRTLFlipLeftAndRightStyles: (flipStyles: boolean) => {},
+  swapLeftAndRightInRTL: (flipStyles: boolean) => {},
 };
 
 const I18nManager: I18nManagerStatus = require('NativeModules').I18nManager || {
   isRTL: false,
-  doesRTLFlipLeftAndRightStyles: true,
+  doLeftAndRightSwapInRTL: true,
   allowRTL: () => {},
   forceRTL: () => {},
-  makeRTLFlipLeftAndRightStyles: () => {},
+  swapLeftAndRightInRTL: () => {},
 };
 
 module.exports = I18nManager;

@@ -11,10 +11,8 @@ package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.ViewCompat;
-
 import java.util.Locale;
 
 public class I18nUtil {
@@ -67,11 +65,11 @@ public class I18nUtil {
     setPref(context, KEY_FOR_PREFS_ALLOWRTL, allowRTL);
   }
 
-  public boolean doesRTLFlipLeftAndRightStyles(Context context) {
+  public boolean doLeftAndRightSwapInRTL(Context context) {
     return isPrefSet(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, true);
   }
 
-  public void makeRTLFlipLeftAndRightStyles(Context context, boolean flip) {
+  public void swapLeftAndRightInRTL(Context context, boolean flip) {
     setPref(context, KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES, flip);
   }
 

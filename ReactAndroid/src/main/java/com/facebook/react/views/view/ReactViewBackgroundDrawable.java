@@ -328,7 +328,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
-        if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
           if (!isBorderColorDefined(Spacing.START)) {
             colorStart = colorLeft;
           }
@@ -485,7 +485,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
       float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
       float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
       
-      if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
         if (YogaConstants.isUndefined(topStartRadius)) {
           topStartRadius = topLeftRadius;
         }
@@ -935,7 +935,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
-        if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
           if (!isBorderColorDefined(Spacing.START)) {
             colorStart = colorLeft;
           }
@@ -1145,7 +1145,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
       float borderStartWidth = mBorderWidth.getRaw(Spacing.START);
       float borderEndWidth = mBorderWidth.getRaw(Spacing.END);
 
-      if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(mContext)) {
+      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
         if (YogaConstants.isUndefined(borderStartWidth)) {
           borderStartWidth = borderLeftWidth;
         }
