@@ -20,6 +20,10 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.osVersion;
   },
+  get isTablet() {
+    const constants = NativeModules.PlatformConstants;
+    return constants ? constants.interfaceIdiom === 'pad' : false;
+  },
   get isPad() {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'pad' : false;
