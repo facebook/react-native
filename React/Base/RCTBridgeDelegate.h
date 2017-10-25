@@ -41,20 +41,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * Customize how bridge native modules are initialized.
- *
- * By default all modules are created lazily except those that have constants to export
- * or require main thread initialization. If you want to limit the set of native
- * modules that this should be considered for, implement this method.
- *
- * Return nil to whitelist all modules found. Modules passed in extraModulesForBridge:
- * are automatically whitelisted.
- *
- * @experimental
- */
-- (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.

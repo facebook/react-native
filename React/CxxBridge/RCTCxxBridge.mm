@@ -522,17 +522,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
-  RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (moduleData) {
-#if RCT_DEV
-    if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-      NSArray *whitelisted = [self.delegate whitelistedModulesForBridge:self];
-      RCTAssert(!whitelisted || [whitelisted containsObject:[moduleData moduleClass]],
-                @"Required config for %@, which was not whitelisted", moduleName);
-    }
-#endif
-  }
-  return moduleData.config;
+  return _moduleDataByName[moduleName].config;
 }
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
@@ -695,11 +685,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge prepareModulesWithDispatch]", nil);
 
-  NSArray<Class> *whitelistedModules = nil;
-  if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-    whitelistedModules = [self.delegate whitelistedModulesForBridge:self];
-  }
-
   BOOL initializeImmediately = NO;
   if (dispatchGroup == NULL) {
     // If no dispatchGroup is passed in, we must prepare everything immediately.
@@ -712,10 +697,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_performanceLogger setValue:0 forTag:RCTPLNativeModuleMainThread];
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (whitelistedModules && ![whitelistedModules containsObject:[moduleData moduleClass]]) {
-      continue;
-    }
-
     if (moduleData.requiresMainQueueSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
@@ -745,12 +726,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   [_performanceLogger setValue:_modulesInitializedOnMainQueue forTag:RCTPLNativeModuleMainThreadUsesCount];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)whitelistedModulesDidChange
-{
-  RCTAssertMainQueue();
-  [self _prepareModulesWithDispatchGroup:NULL];
 }
 
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module

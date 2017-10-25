@@ -246,17 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
-  RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (moduleData) {
-#if RCT_DEV
-    if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-      NSArray *whitelisted = [self.delegate whitelistedModulesForBridge:self];
-      RCTAssert(!whitelisted || [whitelisted containsObject:[moduleData moduleClass]],
-                @"Required config for %@, which was not whitelisted", moduleName);
-    }
-#endif
-  }
-  return moduleData.config;
+  return _moduleDataByName[moduleName].config;
 }
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -399,11 +389,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge prepareModulesWithDispatch]", nil);
 
-  NSArray<Class> *whitelistedModules = nil;
-  if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-    whitelistedModules = [self.delegate whitelistedModulesForBridge:self];
-  }
-
   BOOL initializeImmediately = NO;
   if (dispatchGroup == NULL) {
     // If no dispatchGroup is passed in, we must prepare everything immediately.
@@ -414,10 +399,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   // Set up modules that require main thread init or constants export
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (whitelistedModules && ![whitelistedModules containsObject:[moduleData moduleClass]]) {
-      continue;
-    }
-
     if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
@@ -448,12 +429,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [_performanceLogger setValue:_modulesInitializedOnMainQueue forTag:RCTPLNativeModuleMainThreadUsesCount];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)whitelistedModulesDidChange
-{
-  RCTAssertMainQueue();
-  [self prepareModulesWithDispatchGroup:NULL];
 }
 
 - (void)setUpExecutor
