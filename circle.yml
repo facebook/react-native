@@ -34,15 +34,12 @@ dependencies:
     - npm install
     # for eslint bot
     - npm install github@0.2.4
-    # for website, danger
     - cd website && npm install
-    - cd danger && npm install
   cache_directories:
     - "ReactAndroid/build/downloads"
     - "/home/ubuntu/buck"
     - "website/node_modules"
     - "node_modules"
-    - "danger/node_modules"
 
 test:
   pre:
@@ -53,7 +50,6 @@ test:
 
   override:
     # Run Danger against PRs. This GitHub token grants public_repo access scope. The associated account has no privileged access to the React Native repo. The token must be split in this manner to avoid revocation by GitHub.
-    - cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
     # eslint bot. This GitHub token grants public_repo access scope. The token must be split in this manner to avoid revocation by GitHub.
     - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
     - npm run lint
