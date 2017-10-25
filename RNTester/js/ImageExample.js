@@ -635,18 +635,6 @@ exports.examples = [
     },
   },
   {
-    title: 'Intrinsic Content Size',
-    description: 'Images have intrinsic content size which respects ' +
-      'to the first `source` image size.',
-    render: function() {
-      return (
-        <View>
-          <Image source={require('./uie_thumb_big.png')} style={{alignSelf: 'center'}} />
-        </View>
-      );
-    },
-  },
-  {
     title: 'MultipleSourcesExample',
     description:
       'The `source` prop allows passing in an array of uris, so that native to choose which image ' +

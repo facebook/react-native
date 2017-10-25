@@ -13,7 +13,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTImageSource.h>
-#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
@@ -108,22 +107,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (CGSize)intrinsicContentSize
-{
-  // The first `imageSource` defines intrinsic content size.
-  RCTImageSource *imageSource = _imageSources.firstObject;
-  if (!imageSource) {
-    return CGSizeZero;
-  }
-
-  return imageSource.size;
-}
-
-- (void)updateIntrinsicContentSize
-{
-  [_bridge.uiManager setIntrinsicContentSize:self.intrinsicContentSize forView:self];
-}
-
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
@@ -193,7 +176,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (![imageSources isEqual:_imageSources]) {
     _imageSources = [imageSources copy];
-    [self updateIntrinsicContentSize];
     _needsReload = YES;
   }
 }
