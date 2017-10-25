@@ -641,19 +641,10 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <Text>Plain static image without explicitly set size</Text>
-          <Image
-            source={require('./uie_thumb_big.png')}
-            style={{alignSelf: 'center'}}
-          />
-          <Text>Plain network image without explicitly set size</Text>
-          <Image
-            source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
-          />
+          <Image source={require('./uie_thumb_big.png')} style={{alignSelf: 'center'}} />
         </View>
       );
     },
-    platform: 'ios',
   },
   {
     title: 'MultipleSourcesExample',
