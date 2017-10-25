@@ -10,6 +10,28 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
 
+# Print commands before executing them (useful for troubleshooting)
+set -x
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+
+# Update plist and add ip.txt resource so that physical device can connect to bundler
+if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
+  PLISTBUDDY='/usr/libexec/PlistBuddy'
+  PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
+  IP=$(ipconfig getifaddr en0)
+  if [ -z "$IP" ]; then
+    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
+  fi
+
+  if [ -z ${DISABLE_XIP+x} ]; then
+    IP="$IP.xip.io"
+  fi
+
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+  echo "$IP" > "$DEST/ip.txt"
+fi
+
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping."
   exit 0;
@@ -89,27 +111,6 @@ nodejs_not_found()
 }
 
 type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
-
-# Print commands before executing them (useful for troubleshooting)
-set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
-
-if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
-  PLISTBUDDY='/usr/libexec/PlistBuddy'
-  PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
-  IP=$(ipconfig getifaddr en0)
-  if [ -z "$IP" ]; then
-    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
-  fi
-
-  if [ -z ${DISABLE_XIP+x} ]; then
-    IP="$IP.xip.io"
-  fi
-
-  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
-  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
-  echo "$IP" > "$DEST/ip.txt"
-fi
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
