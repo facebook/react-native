@@ -64,16 +64,6 @@
 - (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
 
 /**
- * When initializing native modules that require main thread initialization, the bridge
- * will default to dispatch module creation blocks asynchrously. If we're blockingly
- * waiting on the main thread to finish bridge creation on the main thread, this will
- * deadlock. Override this method to initialize modules synchronously instead.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.

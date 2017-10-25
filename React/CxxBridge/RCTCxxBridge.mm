@@ -725,8 +725,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     // We better be on the right thread too.
     RCTAssertMainQueue();
     initializeImmediately = YES;
-  } else if ([self.delegate respondsToSelector:@selector(shouldBridgeInitializeNativeModulesSynchronously:)]) {
-    initializeImmediately = [self.delegate shouldBridgeInitializeNativeModulesSynchronously:self];
   }
 
   // Set up modules that require main thread init or constants export
