@@ -55,15 +55,6 @@
 - (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * When loading initial JavaScript, do so synchronously when the bridge is created iff
- * this returns true.  Otherwise, the JS will be fetched on a network thread, and
- * executed on the JS thread.  Currently used only by C++ bridge.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.

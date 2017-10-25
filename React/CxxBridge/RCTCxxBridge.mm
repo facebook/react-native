@@ -359,49 +359,30 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   }];
 
-  // Optional load and execute JS source synchronously
-  // TODO #10487027: should this be async on reload?
-  if (!self.executorClass &&
-      [self.delegate respondsToSelector:@selector(shouldBridgeLoadJavaScriptSynchronously:)] &&
-      [self.delegate shouldBridgeLoadJavaScriptSynchronously:_parentBridge]) {
-    NSError *error;
-    const int32_t bcVersion = systemJSCWrapper()->JSBytecodeFileFormatVersion;
-    NSData *sourceCode = [RCTJavaScriptLoader attemptSynchronousLoadOfBundleAtURL:self.bundleURL
-                                                                 runtimeBCVersion:bcVersion
-                                                                     sourceLength:NULL
-                                                                            error:&error];
-
+  // Load the source asynchronously, then store it for later execution.
+  dispatch_group_enter(prepareBridge);
+  __block NSData *sourceCode;
+  [self loadSource:^(NSError *error, RCTSource *source) {
     if (error) {
-      [self handleError:error];
-    } else {
-      [self executeSourceCode:sourceCode sync:YES];
+      [weakSelf handleError:error];
     }
-  } else {
-    // Load the source asynchronously, then store it for later execution.
-    dispatch_group_enter(prepareBridge);
-    __block NSData *sourceCode;
-    [self loadSource:^(NSError *error, RCTSource *source) {
-      if (error) {
-        [weakSelf handleError:error];
-      }
 
-      sourceCode = source.data;
-      dispatch_group_leave(prepareBridge);
-    } onProgress:^(RCTLoadingProgress *progressData) {
+    sourceCode = source.data;
+    dispatch_group_leave(prepareBridge);
+  } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-      RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
-      [loadingView updateProgress:progressData];
+    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+    [loadingView updateProgress:progressData];
 #endif
-    }];
+  }];
 
-    // Wait for both the modules and source code to have finished loading
-    dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-      RCTCxxBridge *strongSelf = weakSelf;
-      if (sourceCode && strongSelf.loading) {
-        [strongSelf executeSourceCode:sourceCode sync:NO];
-      }
-    });
-  }
+  // Wait for both the modules and source code to have finished loading
+  dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+    RCTCxxBridge *strongSelf = weakSelf;
+    if (sourceCode && strongSelf.loading) {
+      [strongSelf executeSourceCode:sourceCode sync:NO];
+    }
+  });
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
