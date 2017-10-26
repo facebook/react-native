@@ -32,6 +32,7 @@ NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNot
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -249,11 +250,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
   return [self.batchedBridge moduleIsInitialized:moduleClass];
-}
-
-- (void)whitelistedModulesDidChange
-{
-  [self.batchedBridge whitelistedModulesDidChange];
 }
 
 - (void)reload

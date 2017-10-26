@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifdef __cplusplus
+
 #include <memory>
 
 #import <Foundation/Foundation.h>
@@ -24,11 +26,16 @@
 
 @end
 
-namespace RCT {
-  template <typename T, typename P>
-  RCTManagedPointer *managedPointer(P initializer)
-  {
-    auto ptr = std::shared_ptr<void>(new T((NSDictionary *)initializer));
-    return [[RCTManagedPointer alloc] initWithPointer:std::move(ptr)];
-  }
+namespace facebook {
+namespace react {
+
+template <typename T, typename P>
+RCTManagedPointer *managedPointer(P initializer)
+{
+  auto ptr = std::shared_ptr<void>(new T(initializer));
+  return [[RCTManagedPointer alloc] initWithPointer:std::move(ptr)];
 }
+
+} }
+
+#endif

@@ -63,6 +63,12 @@ RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
 
 /**
+ * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification
+ * userInfo dictionary.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will
@@ -154,17 +160,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * to be instantiated if it hasn't been already.
  */
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
-
-/**
- * Call when your delegate's `whitelistedModulesForBridge:` value has changed.
- * In response to this, the bridge will immediately instantiate any (whitelisted)
- * native modules that require main thread initialization. Modules that do not require
- * main thread initialization will still be created lazily.
- *
- * This method must be called on the main thread, as any pending native modules
- * will be initialized immediately.
- */
-- (void)whitelistedModulesDidChange;
 
 /**
  * All registered bridge module classes.

@@ -37,6 +37,7 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +101,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_SIZE, 21.0),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     AbsoluteSizeSpan sizeSpan = getSingleSpan(
         (TextView) rootView.getChildAt(0), AbsoluteSizeSpan.class);
@@ -114,7 +115,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -129,7 +130,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "500"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -144,7 +145,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_STYLE, "italic"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -159,7 +160,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold", ViewProps.FONT_STYLE, "italic"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -174,7 +175,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "normal"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -188,7 +189,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "200"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -202,7 +203,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_STYLE, "normal"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -216,7 +217,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -232,7 +233,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_WEIGHT, "bold"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -248,7 +249,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_STYLE, "italic"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -267,7 +268,7 @@ public class ReactTextTest {
             ViewProps.FONT_FAMILY, "sans-serif",
             ViewProps.FONT_WEIGHT, "500",
             ViewProps.FONT_STYLE, "italic"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -283,7 +284,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     TextView textView = (TextView) rootView.getChildAt(0);
     Spanned text = (Spanned) textView.getText();
@@ -301,7 +302,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "line-through"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     TextView textView = (TextView) rootView.getChildAt(0);
     Spanned text = (Spanned) textView.getText();
@@ -320,7 +321,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline line-through"),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     UnderlineSpan underlineSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), UnderlineSpan.class);
@@ -337,7 +338,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.BACKGROUND_COLOR, Color.BLUE),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     Drawable backgroundDrawable = ((TextView) rootView.getChildAt(0)).getBackground();
     assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
@@ -353,7 +354,7 @@ public class ReactTextTest {
     ReactRootView rootView = createText(
         uiManager,
         JavaOnlyMap.of(ViewProps.NUMBER_OF_LINES, 2),
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     TextView textView = (TextView) rootView.getChildAt(0);
     assertThat(textView.getText().toString()).isEqualTo("test text");
@@ -429,7 +430,7 @@ public class ReactTextTest {
             new ReactRawTextManager(),
         });
     UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

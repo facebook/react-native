@@ -12,11 +12,9 @@
 		13526A521F362F7F0008EF00 /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13526A511F362F7F0008EF00 /* libfishhook.a */; };
 		2D3B5F3D1D9B165B00451313 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */; };
 		2D3B5F3E1D9B165B00451313 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
-		2D3B5F3F1D9B165B00451313 /* RCTWebSocketObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */; };
 		2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		2DC5E5281F3A6CFD000EE84B /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */; };
 		3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
-		3DB9106F1C74B1ED00838BBE /* RCTWebSocketObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */; };
 		3DBE0D141F3B185A0099AA32 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE0D121F3B185A0099AA32 /* fishhook.c */; };
 		3DBE0D151F3B185A0099AA32 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE0D121F3B185A0099AA32 /* fishhook.c */; };
 		3DBE0D801F3B1AF00099AA32 /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DBE0D131F3B185A0099AA32 /* fishhook.h */; };
@@ -76,8 +74,6 @@
 		3C86DF461ADF2C930047B81A /* libRCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketModule.h; sourceTree = "<group>"; };
 		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; tabWidth = 2; };
-		3DB9106D1C74B1ED00838BBE /* RCTWebSocketObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketObserver.h; sourceTree = "<group>"; };
-		3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketObserver.m; sourceTree = "<group>"; };
 		3DBE0D001F3B181A0099AA32 /* libfishhook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfishhook.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfishhook-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DBE0D121F3B185A0099AA32 /* fishhook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fishhook.c; path = ../fishhook/fishhook.c; sourceTree = "<group>"; };
@@ -126,8 +122,6 @@
 				1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */,
 				1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */,
 				1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */,
-				3DB9106D1C74B1ED00838BBE /* RCTWebSocketObserver.h */,
-				3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */,
 				3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */,
 				3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
@@ -265,7 +259,6 @@
 				2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */,
 				A12E9E2F1E5DEC550029001B /* RCTReconnectingWebSocket.m in Sources */,
 				2D3B5F3D1D9B165B00451313 /* RCTSRWebSocket.m in Sources */,
-				2D3B5F3F1D9B165B00451313 /* RCTWebSocketObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,7 +270,6 @@
 				3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */,
 				A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */,
 				1338BBE11B04ACC80064A9C9 /* RCTWebSocketExecutor.m in Sources */,
-				3DB9106F1C74B1ED00838BBE /* RCTWebSocketObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

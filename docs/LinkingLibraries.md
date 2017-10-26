@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
 banner: ejected
 next: running-on-simulator-ios
-previous: native-components-ios
+previous: custom-webview-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support
@@ -35,8 +35,8 @@ Install a library with native dependencies:
 $ npm install <library-with-native-dependencies> --save
 ```
 
-**Note:** _`--save` or `--save-dev` flag is very important for this step. React Native will link
-your libs based on `dependencies` and `devDependencies` in your `package.json` file._
+> ***Note:*** `--save` or `--save-dev` flag is very important for this step. React Native will link
+your libs based on `dependencies` and `devDependencies` in your `package.json` file.
 
 #### Step 2
 
@@ -46,6 +46,10 @@ $ react-native link
 ```
 
 Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
+
+> ***Note:*** If your iOS project is using CocoaPods (contains `Podfile`) and linked library has `podspec` file,
+then `react-native link` will link library using Podfile. To support non-trivial Podfiles 
+add `# Add new pods below this line` comment to places where you expect pods to be added.
 
 ### Manual linking
 

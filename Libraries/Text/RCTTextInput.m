@@ -9,17 +9,19 @@
 
 #import "RCTTextInput.h"
 
+#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTUtils.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 #import "RCTTextSelection.h"
 
 @implementation RCTTextInput {
   CGSize _previousContentSize;
+  BOOL _hasInputAccesoryView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -29,6 +31,8 @@
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
+    _fontAttributes = [[RCTFontAttributes alloc] initWithAccessibilityManager:bridge.accessibilityManager];
+    _fontAttributes.delegate = self;
   }
 
   return self;
@@ -42,6 +46,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
   return nil;
+}
+
+- (void)setFont:(UIFont *)font
+{
+  self.backedTextInputView.font = font;
+  [self invalidateContentSize];
+}
+
+- (void)fontAttributesDidChangeWithFont:(UIFont *)font
+{
+  self.font = font;
 }
 
 #pragma mark - Properties
@@ -87,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (eventLag == 0 && ![previousSelectedTextRange isEqual:selectedTextRange]) {
     [backedTextInput setSelectedTextRange:selectedTextRange notifyDelegate:NO];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", backedTextInput.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInput.text, (long long)eventLag);
   }
 }
 
@@ -290,11 +305,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     ) &&
     textInputView.returnKeyType == UIReturnKeyDone;
 
-  BOOL hasInputAccesoryView = textInputView.inputAccessoryView != nil;
-
-  if (hasInputAccesoryView == shouldHaveInputAccesoryView) {
+  if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;
   }
+
+  _hasInputAccesoryView = shouldHaveInputAccesoryView;
 
   if (shouldHaveInputAccesoryView) {
     UIToolbar *toolbarView = [[UIToolbar alloc] init];

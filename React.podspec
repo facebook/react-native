@@ -137,11 +137,6 @@ Pod::Spec.new do |s|
     ss.source_files         = "Libraries/ActionSheetIOS/*.{h,m}"
   end
 
-  s.subspec "RCTAdSupport" do |ss|
-    ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/AdSupport/*.{h,m}"
-  end
-
   s.subspec "RCTAnimation" do |ss|
     ss.dependency             "React/Core"
     ss.source_files         = "Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h,m}"
@@ -204,6 +199,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "fishhook" do |ss|
+    ss.header_dir           = "fishhook"
     ss.source_files         = "Libraries/fishhook/*.{h,c}"
   end
 

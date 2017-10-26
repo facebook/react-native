@@ -9,17 +9,10 @@
 
 package com.facebook.react.views.view;
 
-import javax.annotation.Nullable;
-
-import java.util.Locale;
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
-
-import com.facebook.yoga.YogaConstants;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -34,6 +27,10 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View manager for AndroidViews (plain React Views).
@@ -45,7 +42,13 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
   private static final int[] SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL,
+    Spacing.LEFT,
+    Spacing.RIGHT,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.START,
+    Spacing.END,
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
@@ -55,14 +58,25 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
       ViewProps.BORDER_TOP_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_START_RADIUS,
+      ViewProps.BORDER_TOP_END_RADIUS,
+      ViewProps.BORDER_BOTTOM_START_RADIUS,
+      ViewProps.BORDER_BOTTOM_END_RADIUS,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
+      borderRadius = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
@@ -130,23 +144,42 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_START_WIDTH,
+      ViewProps.BORDER_END_WIDTH,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
+    if (!YogaConstants.isUndefined(width) && width < 0) {
+      width = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
+
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
-  @ReactPropGroup(names = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  }, customType = "Color")
+  @ReactPropGroup(
+    names = {
+      ViewProps.BORDER_COLOR,
+      ViewProps.BORDER_LEFT_COLOR,
+      ViewProps.BORDER_RIGHT_COLOR,
+      ViewProps.BORDER_TOP_COLOR,
+      ViewProps.BORDER_BOTTOM_COLOR,
+      ViewProps.BORDER_START_COLOR,
+      ViewProps.BORDER_END_COLOR
+    },
+    customType = "Color"
+  )
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
     float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
@@ -157,6 +190,11 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setCollapsable(ReactViewGroup view, boolean collapsable) {
     // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
     // handled in NativeViewHierarchyOptimizer
+  }
+
+  @ReactProp(name = ViewProps.OVERFLOW)
+  public void setOverflow(ReactViewGroup view, String overflow) {
+    view.setOverflow(overflow);
   }
 
   @Override

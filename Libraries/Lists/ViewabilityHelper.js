@@ -22,6 +22,14 @@ export type ViewToken = {
   section?: any,
 };
 
+export type ViewabilityConfigCallbackPair = {
+  viewabilityConfig: ViewabilityConfig,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
+
 export type ViewabilityConfig = {|
   /**
    * Minimum amount of time (in milliseconds) that an item must be physically viewable before the
@@ -104,8 +112,7 @@ class ViewabilityHelper {
       : itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-        itemVisiblePercentThreshold !=
-          null !==
+        (itemVisiblePercentThreshold != null) !==
           (viewAreaCoveragePercentThreshold != null),
       'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
@@ -217,6 +224,13 @@ class ViewabilityHelper {
   }
 
   /**
+   * clean-up cached _viewableIndices to evaluate changed items on next update
+   */
+  resetViewableIndices() {
+    this._viewableIndices = [];
+  }
+
+  /**
    * Records that an interaction has happened even if there has been no scroll.
    */
   recordInteraction() {
@@ -256,6 +270,7 @@ class ViewabilityHelper {
       onViewableItemsChanged({
         viewableItems: Array.from(nextItems.values()),
         changed,
+        viewabilityConfig: this._config,
       });
     }
   }

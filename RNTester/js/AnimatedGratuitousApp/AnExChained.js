@@ -73,7 +73,7 @@ class AnExChained extends React.Component<Object, any> {
             <Animated.Image
               {...handlers}
               key={i}
-              source={{uri: CHAIN_IMGS[j]}}
+              source={CHAIN_IMGS[j]}
               style={[styles.sticker, {
                 transform: this.state.stickers[j].getTranslateTransform(), // simple conversion
               }]}
@@ -100,11 +100,11 @@ var styles = StyleSheet.create({
 });
 
 var CHAIN_IMGS = [
-  'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xpf1/t39.1997-6/p160x160/10574705_1529175770666007_724328156_n.png',
-  'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/p160x160/851575_392309884199657_1917957497_n.png',
-  'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-xfa1/t39.1997-6/p160x160/851567_555288911225630_1628791128_n.png',
-  'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xfa1/t39.1997-6/p160x160/851583_531111513625557_903469595_n.png',
-  'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xpa1/t39.1997-6/p160x160/851577_510515972354399_2147096990_n.png',
+  require('../hawk.png'),
+  require('../bunny.png'),
+  require('../relay.png'),
+  require('../hawk.png'),
+  require('../bunny.png')
 ];
 
 module.exports = AnExChained;

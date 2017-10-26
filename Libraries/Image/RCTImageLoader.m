@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+    return 2;
 }
 
 - (id<RCTImageCache>)imageCache
@@ -314,7 +314,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
         // Add missing png extension
         if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-            mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
+            mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
         }
         request = mutableRequest;
     }
@@ -716,10 +716,30 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         CGSize size;
         if ([imageOrData isKindOfClass:[NSData class]]) {
             NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-            size = (CGSize){
-                [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-            };
+
+            NSInteger imageOrientation = [meta[(id)kCGImagePropertyOrientation] integerValue];
+            switch (imageOrientation) {
+                case kCGImagePropertyOrientationLeft:
+                case kCGImagePropertyOrientationRight:
+                case kCGImagePropertyOrientationLeftMirrored:
+                case kCGImagePropertyOrientationRightMirrored:
+                    // swap width and height
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                    };
+                    break;
+                case kCGImagePropertyOrientationUp:
+                case kCGImagePropertyOrientationDown:
+                case kCGImagePropertyOrientationUpMirrored:
+                case kCGImagePropertyOrientationDownMirrored:
+                default:
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                    };
+                    break;
+            }
         } else {
             UIImage *image = imageOrData;
             size = (CGSize){

@@ -35,7 +35,7 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.views.text.ReactRawTextManager;
-import com.facebook.react.views.text.ReactTextShadowNode;
+import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
@@ -134,7 +134,7 @@ public class UIManagerModuleTest {
     uiManager.updateView(
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "New text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "New text"));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -672,7 +672,7 @@ public class UIManagerModuleTest {
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
         rootTag,
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, text, "collapsable", false));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, text, "collapsable", false));
 
     uiManager.manageChildren(
         textTag,
@@ -816,7 +816,7 @@ public class UIManagerModuleTest {
         new ReactTextViewManager(),
         new ReactRawTextManager());
     UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }
