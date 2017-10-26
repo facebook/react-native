@@ -9,10 +9,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <React/RCTValueAnimatedNode.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
-#import "RCTValueAnimatedNode.h"
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
