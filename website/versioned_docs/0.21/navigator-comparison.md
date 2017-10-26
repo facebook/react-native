@@ -1,0 +1,19 @@
+---
+id: navigator-comparison
+title: navigator-comparison
+---
+<a id="content"></a><table width="100%"><tbody><tr><td><h1><a class="anchor" name="navigator-comparison"></a>Navigator Comparison <a class="hash-link" href="undefined#navigator-comparison">#</a></h1></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/docs/NavigatorComparison.md">Edit on GitHub</a></td></tr></tbody></table><div><p>The differences between <a href="docs/navigator.html" target="_blank">Navigator</a>
+and <a href="docs/navigatorios.html" target="_blank">NavigatorIOS</a> are a common
+source of confusion for newcomers.</p><p>Both <code>Navigator</code> and <code>NavigatorIOS</code> are components that allow you to
+manage the navigation in your app between various "scenes" (another word
+for screens). They manage a route stack and allow you to pop, push, and
+replace states. In this way, <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history" target="_blank">they are similar to the html5 history
+API</a>.
+The primary distinction between the two is that <code>NavigatorIOS</code> leverages
+the iOS
+<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/" target="_blank">UINavigationController</a>
+class, and <code>Navigator</code> re-implements that functionality entirely in
+JavaScript as a React component. A corollary of this is that <code>Navigator</code>
+will be compatible with Android and iOS, whereas <code>NavigatorIOS</code> will
+only work on the one platform. Below is an itemized list of differences
+between the two.</p><h2><a class="anchor" name="navigator"></a>Navigator <a class="hash-link" href="docs/navigator-comparison.html#navigator">#</a></h2><ul><li>Extensive API makes it completely customizable from JavaScript.</li><li>Under active development from the React Native team.</li><li>Written in JavaScript.</li><li>Works on iOS and Android.</li><li>Includes a simple navigation bar component similar to the default <code>NavigatorIOS</code> bar: <code>Navigator.NavigationBar</code>, and another with breadcrumbs called <code>Navigator.BreadcrumbNavigationBar</code>. See the UIExplorer demo to try them out and see how to use them.<ul><li>Currently animations are good and improving, but they are still less refined than Apple's, which you get from <code>NavigatorIOS</code>.</li></ul></li><li>You can provide your own navigation bar by passing it through the <code>navigationBar</code> prop.</li></ul><h2><a class="anchor" name="navigatorios"></a>NavigatorIOS <a class="hash-link" href="docs/navigator-comparison.html#navigatorios">#</a></h2><ul><li>Small, limited API makes it much less customizable than <code>Navigator</code> in its current form.</li><li>Development belongs to open-source community - not used by the React Native team on their apps.<ul><li>A result of this is that there is currently a backlog of unresolved bugs, nobody who uses this has stepped up to take ownership for it yet.</li></ul></li><li>Wraps UIKit, so it works exactly the same as it would on another native app. Lives in Objective-C and JavaScript.<ul><li>Consequently, you get the animations and behavior that Apple has developed.</li></ul></li><li>iOS only.</li><li>Includes a navigation bar by default; this navigation bar is not a React Native view component and the style can only be slightly modified.</li></ul><p>For most non-trivial apps, you will want to use <code>Navigator</code> - it won't be long before you run into issues when trying to do anything complex with <code>NavigatorIOS</code>.</p></div><div class="docs-prevnext"><a class="docs-next" href="known-issues.html#content">Next →</a></div>

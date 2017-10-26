@@ -227,7 +227,7 @@ function checkOutDocs() {
         if (sidebarMetadata.hasOwnProperty(version)) {
           var sidebar = sidebarMetadata[version];
           
-          const pathToSidebarFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, version, `sidebars.json`);
+          const pathToSidebarFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, `version-${version}-sidebar.json`);
           console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
           seq = seq.then(() => {
             return fs.outputFile(pathToSidebarFile.toString(), JSON.stringify(sidebar));        
@@ -235,6 +235,15 @@ function checkOutDocs() {
         }
       }
       return seq;
+    }).then(() => {
+      filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR);
+      const versions = Object.keys(sidebarMetadata); 
+
+      const pathToVersionsFile = filepath.create(CWD, BUILD_DIR, `versions.json`);
+      return fs.outputFile(pathToVersionsFile.toString(), JSON.stringify(versions));        
+      
+      for (var version in sidebarMetadata) {
+      }
     });
 }
 
@@ -259,7 +268,9 @@ function extractMarkdownFromHTMLDocs(file) {
   .then((dom) => {
     const body = bodyContentFromDOM(dom);
     const componentName = extractComponentNameFromFilename(file);
-    const markdown = generateMarkdownFileWithComponentNameAndBody(componentName, body);
+    const version = extractDocVersionFromFilename(file);
+    
+    const markdown = generateMarkdown(componentName, body, version);
     const frontmatter = fm(markdown);
     return { frontmatter, markdown };
   })
@@ -327,19 +338,29 @@ function generateMarkdownFromDOM(dom) {
   return markdown;
 }
 
-function generateMarkdownFileWithComponentNameAndBody(componentName, body) {
+function generateMarkdown(componentName, body, version) {
   const slug = slugify(componentName);
-  return [
+
+  let markdown = [
     '---',
     'id: ' + slug,
     'title: ' + componentName,
     '---',
     body
-  ]
-    .filter(function(line) {
-      return line;
-    })
-    .join('\n');
+  ];
+  if (version) {
+    markdown = [
+      '---',
+      'id: version-' + version + '-' + slug,
+      'title: ' + componentName,
+      'original_id: ' + slug,
+      '---',
+      body
+    ];
+  }
+  return markdown.filter(function(line) {
+    return line;
+  }).join('\n');
 }
 
 function generateMetatadaFile(categories) {
