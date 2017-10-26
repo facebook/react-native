@@ -13,7 +13,6 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
-
 @interface RCTNativeAnimatedNodesManager : NSObject
 
 - (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager;
