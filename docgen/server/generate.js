@@ -21,6 +21,8 @@ const shell = require('shelljs');
 // const convert = require('./convert.js');
 const slugify = require('../core/slugify');
 
+const CWD = process.cwd();
+
 const AUTODOCS_PREFIX = 'autogen_';
 const MARKDOWN_EXTENSION = 'md';
 
@@ -154,13 +156,15 @@ function generateAutodocs(options = { version: 'next' }) {
 // Check out gh-pages branch
 function checkOutDocs() {
   const pathToGitCheckout = filepath.create(BUILD_DIR, CHECKOUT_DIR);
+
+  let sidebarMetadata = {};
   const p = Promise.resolve();
   return p
     .then(() => {
       return fs.ensureDir(pathToGitCheckout.toString());
-  })
+    })
     .then(() => {
-      shell.cd(process.cwd());
+      shell.cd(CWD);
       shell.cd(BUILD_DIR);
       shell.cd(CHECKOUT_DIR);
       return fs.exists(pathToGitCheckout.append(`.git`).toString())
@@ -193,15 +197,52 @@ function checkOutDocs() {
         seq = seq.then(() => {
           return extractMarkdownFromHTMLDocs(file);
         }).then((res) => {
-          console.log(res);
+          // console.log(res);
           const { frontmatter, markdown } = res;
-          console.log(`Received ${frontmatter.attributes.id}`);
-          // TODO: We are all good up to here! Let's write to disk
+          const version = extractDocVersionFromFilename(file);
+
+          const pathToOutputFile = filepath.create(CWD, BUILD_DIR, DOCS_DIR, version, `${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
+
+          if (sidebarMetadata[version] === undefined) {
+            sidebarMetadata[version] = { "docs": { "APIs": [] } };
+          }
+
+          if (frontmatter.attributes.id !== "404") {
+            sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.id);
+            return fs.outputFile(pathToOutputFile.toString(), markdown);
+          }
+
+          return;
         })
-      })
-      return;
-    })
+      });
+      return seq;
+    }).then(() => {
+      console.log(sidebarMetadata)
+      const pathToSidebarMetadataFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, `sidebars-metadata.json`);
+      return fs.outputFile(pathToSidebarMetadataFile.toString(), JSON.stringify(sidebarMetadata));
+    }).then(() => {
+      let seq = Promise.resolve();
+      filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR);
+      for (var version in sidebarMetadata) {
+        if (sidebarMetadata.hasOwnProperty(version)) {
+          var sidebar = sidebarMetadata[version];
+          
+          const pathToSidebarFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, version, `sidebars.json`);
+          console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
+          seq = seq.then(() => {
+            return fs.outputFile(pathToSidebarFile.toString(), JSON.stringify(sidebar));        
+          });           
+        }
+      }
+      return seq;
+    });
 }
+
+function extractDocVersionFromFilename(file) {
+  const re = new RegExp('\/([0-9]*[.]?[0-9]*)');
+  return file.match(re)[1];
+}
+
 
 function extractComponentNameFromFilename(file) {
   const re = new RegExp('([A-Za-z-]*).html');
@@ -213,7 +254,7 @@ function extractMarkdownFromHTMLDocs(file) {
   if (file.indexOf("404") !== -1) {
     return { frontmatter: {attributes: { id: '404', permalink: '404.html'}}, markdown: '' };
   }
-  console.log(`Processing ${file}`);
+  // console.log(`Processing ${file}`);
   return JSDOM.fromFile(filepath.create(file).toString())
   .then((dom) => {
     const body = bodyContentFromDOM(dom);
@@ -236,7 +277,6 @@ function bodyContentFromDOM(dom) {
 }
 
 function componentNameFromDOM(dom) {
-  // we have tried title, h1 here. it all varies across versions.
   const el = dom.window.document.querySelector('h1');
   if (el) {
     let componentName = el.innerHTML;
@@ -272,17 +312,10 @@ function generateMarkdownFromDOM(dom) {
   }
   const componentName = componentNameFromDOM(dom);
   const slug = slugify(componentName);
-  let category = 'Components';
-  const componentCategory = componentCategoryFromDOM(dom);
-  if (componentCategory) {
-    category = componentCategory;
-  }
   const markdown = [
     '---',
     'id: ' + slug,
     'title: ' + componentName,
-    // 'category: ' + category,
-    // 'permalink: docs/' + slug + '.html',
     '---',
     body
   ]
