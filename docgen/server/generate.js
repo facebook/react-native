@@ -109,7 +109,7 @@ function generateAutodocForFile(file, options) {
       const markdown = generateMarkdownFromDOM(dom);
       const frontmatter = fm(markdown);
 
-      const pathToOutputFile = pathToOutputDir.append(`${AUTODOCS_PREFIX}${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
+      const pathToOutputFile = pathToOutputDir.append(`${AUTODOCS_PREFIX}${frontmatter.attributes.original_id}.${MARKDOWN_EXTENSION}`);
 
       return fs.outputFile(pathToOutputFile.toString(), markdown);
     })
@@ -201,14 +201,18 @@ function checkOutDocs() {
           const { frontmatter, markdown } = res;
           const version = extractDocVersionFromFilename(file);
 
-          const pathToOutputFile = filepath.create(CWD, BUILD_DIR, DOCS_DIR, version, `${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
+          if (!version) {
+            return;
+          }
+
+          const pathToOutputFile = filepath.create(CWD, '..', 'website', DOCS_DIR, version, `${frontmatter.attributes.original_id}.${MARKDOWN_EXTENSION}`);
 
           if (sidebarMetadata[version] === undefined) {
             sidebarMetadata[version] = { "docs": { "APIs": [] } };
           }
 
-          if (frontmatter.attributes.id !== "404") {
-            sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.id);
+          if (frontmatter.attributes.original_id !== "404" && frontmatter.attributes.original_id !== "index") {
+            sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.original_id);
             return fs.outputFile(pathToOutputFile.toString(), markdown);
           }
 
@@ -222,7 +226,7 @@ function checkOutDocs() {
       return fs.outputFile(pathToSidebarMetadataFile.toString(), JSON.stringify(sidebarMetadata));
     }).then(() => {
       let seq = Promise.resolve();
-      filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR);
+      filepath.create(CWD, '..', 'website', SIDEBAR_DIR);
       for (var version in sidebarMetadata) {
         if (sidebarMetadata.hasOwnProperty(version)) {
           var sidebar = sidebarMetadata[version];
@@ -261,7 +265,7 @@ function extractComponentNameFromFilename(file) {
 
 function extractMarkdownFromHTMLDocs(file) {
   if (file.indexOf("404") !== -1) {
-    return { frontmatter: {attributes: { id: '404', permalink: '404.html'}}, markdown: '' };
+    return { frontmatter: {attributes: { original_id: '404', id: '404', permalink: '404.html'}}, markdown: '' };
   }
   // console.log(`Processing ${file}`);
   return JSDOM.fromFile(filepath.create(file).toString())
@@ -269,7 +273,6 @@ function extractMarkdownFromHTMLDocs(file) {
     const body = bodyContentFromDOM(dom);
     const componentName = extractComponentNameFromFilename(file);
     const version = extractDocVersionFromFilename(file);
-    
     const markdown = generateMarkdown(componentName, body, version);
     const frontmatter = fm(markdown);
     return { frontmatter, markdown };

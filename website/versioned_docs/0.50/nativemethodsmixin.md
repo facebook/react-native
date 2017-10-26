@@ -1,4 +1,0 @@
----
-id: nativemethodsmixin
-title: nativemethodsmixin
----

@@ -1,4 +1,0 @@
----
-id: index
-title: index
----
