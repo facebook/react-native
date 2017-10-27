@@ -1,5 +1,5 @@
 ---
-id: version-0.50-accessibility
+id: accessibility
 title: accessibility
 original_id: accessibility
 ---

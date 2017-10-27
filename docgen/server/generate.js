@@ -211,7 +211,7 @@ function checkOutDocs() {
           const pathToOutputFile = filepath.create(CWD, '..', 'website', DOCS_DIR, version, `${frontmatter.attributes.original_id}.${MARKDOWN_EXTENSION}`);
 
           if (sidebarMetadata[version] === undefined) {
-            sidebarMetadata[version] = { "docs": { "APIs": [] } };
+            sidebarMetadata[version] = [];
           }
 
           if (frontmatter.attributes.original_id !== "404" 
@@ -221,10 +221,12 @@ function checkOutDocs() {
             && frontmatter.attributes.original_id !== "showcase" 
             && frontmatter.attributes.original_id !== "support" 
             && frontmatter.attributes.original_id !== "versions") {
-            sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.original_id);
+            sidebarMetadata[version].push(frontmatter.attributes.id);
             return fs.outputFile(pathToOutputFile.toString(), markdown);
           }
 
+          // Couple things: we need docs/ to have a copy of 0.50 or next, without the versioned ids
+          // Plus I think we are having trouble loading docs that existing in older versions but got deleted. That' the next thing
           return;
         });
       });
@@ -238,17 +240,14 @@ function checkOutDocs() {
       filepath.create(CWD, '..', 'website', SIDEBAR_DIR);
       for (const version in sidebarMetadata) {
         if (sidebarMetadata.hasOwnProperty(version)) {
-          // TODO: Problem: this series of promises is just wiritng the same version over and over. Figure out jhow to serialize this correctly.
-          // seq = seq.then(function() {
-            const sidebar = sidebarMetadata[version];
-            
-            const pathToSidebarFile = filepath.create(CWD, '..', 'website', SIDEBAR_DIR, `version-${version}-sidebars.json`);
-            console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
+          const documents = sidebarMetadata[version];
+          let sidebar = {};
+          sidebar[`version-${version}-docs`] = { "APIs": documents };
 
-            fs.outputFileSync(pathToSidebarFile.toString(), JSON.stringify(sidebar));
-          // });           
+          const pathToSidebarFile = filepath.create(CWD, '..', 'website', SIDEBAR_DIR, `version-${version}-sidebars.json`);
+          console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
 
-          // TODO: All done! The problem is that the latest version, 0.50, doesn't match our docs folder yet.
+          fs.outputFileSync(pathToSidebarFile.toString(), JSON.stringify(sidebar));
         }
       }
       return;
