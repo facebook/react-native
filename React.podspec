@@ -145,6 +145,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTBlob" do |ss|
     ss.dependency             "React/Core"
+    ss.dependency             "React/RCTWebSocket"
     ss.source_files         = "Libraries/Blob/*.{h,m}"
     ss.preserve_paths       = "Libraries/Blob/*.js"
   end
@@ -193,7 +194,6 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTWebSocket" do |ss|
     ss.dependency             "React/Core"
-    ss.dependency             "React/RCTBlob"
     ss.dependency             "React/fishhook"
     ss.source_files         = "Libraries/WebSocket/*.{h,m}"
   end
