@@ -515,8 +515,7 @@ exports.examples = [
           <TextInput
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
-            style={styles.singleLine}>
-          </TextInput>
+            style={styles.singleLine} />
         </View>
       );
     }
@@ -746,7 +745,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

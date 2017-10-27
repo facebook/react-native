@@ -40,6 +40,7 @@
 		59AF89AB1EDCBCC700F004B1 /* RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AF89A91EDCBCC700F004B1 /* RCTUITextField.m */; };
 		59B125C91E6E4E15004E2A67 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59B125C81E6E4E15004E2A67 /* RCTUITextView.m */; };
 		59B125CA1E6E4E15004E2A67 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59B125C81E6E4E15004E2A67 /* RCTUITextView.m */; };
+		59E8C5CC1F8833D100204F5E /* RCTFontAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A85C82991F742AA20036C019 /* RCTFontAttributes.m */; };
 		59F60E911E661BDD0081153B /* RCTShadowTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E8E1E661BDD0081153B /* RCTShadowTextField.m */; };
 		59F60E921E661BDD0081153B /* RCTShadowTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E8E1E661BDD0081153B /* RCTShadowTextField.m */; };
 		59F60E931E661BDD0081153B /* RCTShadowTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F60E901E661BDD0081153B /* RCTShadowTextView.m */; };
@@ -262,7 +263,7 @@
 				2D3B5F3B1D9B106F00451313 /* RCTTextView.m in Sources */,
 				59AF89AB1EDCBCC700F004B1 /* RCTUITextField.m in Sources */,
 				598F41271F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */,
-				2DEAB2901F84BA4300FC6B42 /* RCTFontAttributes.m in Sources */,
+				59E8C5CC1F8833D100204F5E /* RCTFontAttributes.m in Sources */,
 				2D3B5F3A1D9B106F00451313 /* RCTTextFieldManager.m in Sources */,
 				599DF2651F03076D0079B53E /* RCTTextInput.m in Sources */,
 				2D3B5F341D9B103100451313 /* RCTRawTextManager.m in Sources */,

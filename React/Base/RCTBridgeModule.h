@@ -171,7 +171,11 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * is currently not supported.
  */
 #define RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(method) \
-  RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, method)
+  RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(id, method)
+
+#define RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(returnType, method) \
+  RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, returnType, method)
+
 
 /**
  * Similar to RCT_EXPORT_METHOD but lets you set the JS name of the exported
@@ -193,9 +197,9 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  *   executeQuery:(NSString *)query parameters:(NSDictionary *)parameters)
  * { ... }
  */
-#define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, method) \
+#define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (id)method;
+  - (returnType)method;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically

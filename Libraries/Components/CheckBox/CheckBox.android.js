@@ -27,7 +27,7 @@ type DefaultProps = {
 };
 
 /**
- * Renders a boolean input.
+ * Renders a boolean input (Android only).
  *
  * This is a controlled component that requires an `onValueChange` callback that
  * updates the `value` prop in order for the component to reflect user actions.
@@ -37,7 +37,6 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
 let CheckBox = createReactClass({
   displayName: 'CheckBox',
   propTypes: {

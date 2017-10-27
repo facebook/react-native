@@ -284,7 +284,7 @@ const ScrollView = createReactClass({
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
-     * Note that the view can be always be scrolled by calling `scrollTo`.
+     * Note that the view can always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -331,7 +331,6 @@ const ScrollView = createReactClass({
      * with `horizontal={true}`.
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
-    style: StyleSheetPropType(ViewStylePropTypes),
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
@@ -447,7 +446,8 @@ const ScrollView = createReactClass({
   },
 
   componentWillMount: function() {
-    this._scrollAnimatedValue = new Animated.Value(0);
+    this._scrollAnimatedValue = new Animated.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
+    this._scrollAnimatedValue.setOffset(this.props.contentInset ? this.props.contentInset.top : 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
   },
@@ -659,10 +659,11 @@ const ScrollView = createReactClass({
     } else if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
+        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
       } else {
         ScrollViewClass = AndroidScrollView;
+        ScrollContentContainerViewClass = View;
       }
-      ScrollContentContainerViewClass = View;
     }
 
     invariant(
@@ -803,6 +804,7 @@ const ScrollView = createReactClass({
       onTouchEnd: this.scrollResponderHandleTouchEnd,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchStart: this.scrollResponderHandleTouchStart,
+      onTouchCancel: this.scrollResponderHandleTouchCancel,
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
@@ -879,6 +881,7 @@ const styles = StyleSheet.create({
 
 let nativeOnlyProps,
   AndroidScrollView,
+  AndroidHorizontalScrollContentView,
   AndroidHorizontalScrollView,
   RCTScrollView,
   RCTScrollContentView;
@@ -897,6 +900,9 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollView',
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
+  );
+  AndroidHorizontalScrollContentView = requireNativeComponent(
+    'AndroidHorizontalScrollContentView'
   );
 } else if (Platform.OS === 'ios') {
   nativeOnlyProps = {
