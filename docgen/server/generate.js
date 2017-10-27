@@ -198,6 +198,9 @@ function checkOutDocs() {
           return extractMarkdownFromHTMLDocs(file);
         }).then((res) => {
           // console.log(res);
+          if (res.markdown === undefined) {
+            return;
+          }
           const { frontmatter, markdown } = res;
           const version = extractDocVersionFromFilename(file);
 
@@ -211,13 +214,19 @@ function checkOutDocs() {
             sidebarMetadata[version] = { "docs": { "APIs": [] } };
           }
 
-          if (frontmatter.attributes.original_id !== "404" && frontmatter.attributes.original_id !== "index") {
+          if (frontmatter.attributes.original_id !== "404" 
+            && frontmatter.attributes.original_id !== "index" 
+            && frontmatter.attributes.original_id !== "help" 
+            && frontmatter.attributes.original_id !== "users" 
+            && frontmatter.attributes.original_id !== "showcase" 
+            && frontmatter.attributes.original_id !== "support" 
+            && frontmatter.attributes.original_id !== "versions") {
             sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.original_id);
-            return fs.outputFile(pathToOutputFile.toString(), markdown);
+            return fs.outputFile(pathToOutputFile.toString(), markdown).then(() => {return;}).catch((e) => {console.error(e)});
           }
 
           return;
-        })
+        });
       });
       return seq;
     }).then(() => {
@@ -229,12 +238,14 @@ function checkOutDocs() {
       filepath.create(CWD, '..', 'website', SIDEBAR_DIR);
       for (var version in sidebarMetadata) {
         if (sidebarMetadata.hasOwnProperty(version)) {
-          var sidebar = sidebarMetadata[version];
-          
-          const pathToSidebarFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, `version-${version}-sidebar.json`);
-          console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
+          // TODO: Problem: this series of promises is just wiritng the same version over and over. Figure out jhow to serialize this correctly.
           seq = seq.then(() => {
-            return fs.outputFile(pathToSidebarFile.toString(), JSON.stringify(sidebar));        
+            var sidebar = sidebarMetadata[version];
+            
+            const pathToSidebarFile = filepath.create(CWD, '..', 'website', SIDEBAR_DIR, `version-${version}-sidebars.json`);
+            console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
+
+            return fs.outputFile(pathToSidebarFile.toString(), JSON.stringify(sidebar));
           });           
         }
       }
@@ -244,10 +255,7 @@ function checkOutDocs() {
       const versions = Object.keys(sidebarMetadata); 
 
       const pathToVersionsFile = filepath.create(CWD, BUILD_DIR, `versions.json`);
-      return fs.outputFile(pathToVersionsFile.toString(), JSON.stringify(versions));        
-      
-      for (var version in sidebarMetadata) {
-      }
+      return fs.outputFile(pathToVersionsFile.toString(), JSON.stringify(versions.reverse()));
     });
 }
 
@@ -265,12 +273,16 @@ function extractComponentNameFromFilename(file) {
 
 function extractMarkdownFromHTMLDocs(file) {
   if (file.indexOf("404") !== -1) {
-    return { frontmatter: {attributes: { original_id: '404', id: '404', permalink: '404.html'}}, markdown: '' };
+    return { };
   }
   // console.log(`Processing ${file}`);
   return JSDOM.fromFile(filepath.create(file).toString())
   .then((dom) => {
     const body = bodyContentFromDOM(dom);
+
+    if (!body) {
+      return {};
+    }
     const componentName = extractComponentNameFromFilename(file);
     const version = extractDocVersionFromFilename(file);
     const markdown = generateMarkdown(componentName, body, version);

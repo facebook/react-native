@@ -5,5 +5,8 @@
     "publish-gh-pages": "docusaurus-publish",
     "version": "docusaurus-version",
     "examples": "docusaurus-examples"
+  },
+  "dependencies": {
+    "docusaurus": "file:../../docusaurus"
   }
 }
