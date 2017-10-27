@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
                               "React/Cxx*/*",
                               "React/Base/RCTBatchedBridge.mm",
                               "React/Executors/*"
-    ss.ios.exclude_files    = "React/**/RCTTVView.*"
+    ss.ios.exclude_files    = "React/**/RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
                               "React/Views/RCTDatePicker*",
                               "React/Views/RCTPicker*",
@@ -90,7 +90,7 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTVView.{h, m}"
+    ss.source_files         = "React/**/RCTTV*.{h, m}"
   end
 
   s.subspec "jschelpers_legacy" do |ss|
