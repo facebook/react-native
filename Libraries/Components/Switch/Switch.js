@@ -102,7 +102,7 @@ var Switch = createReactClass({
   render: function() {
     var props = {...this.props};
     props.onStartShouldSetResponder = () => true;
-    props.onResponderTerminationRequest = () => false;
+    props.onResponderTerminationRequest = () => true;
     if (Platform.OS === 'android') {
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
