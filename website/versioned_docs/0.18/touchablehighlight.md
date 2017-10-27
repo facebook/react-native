@@ -1,0 +1,22 @@
+---
+id: version-0.18-touchablehighlight
+title: touchablehighlight
+original_id: touchablehighlight
+---
+<a id="content"></a><h1>TouchableHighlight</h1><div><div><p>A wrapper for making views respond properly to touches.
+On press down, the opacity of the wrapped view is decreased, which allows
+the underlay color to show through, darkening or tinting the view.  The
+underlay comes from adding a view to the view hierarchy, which can sometimes
+cause unwanted visual artifacts if not used correctly, for example if the
+backgroundColor of the wrapped view isn't explicitly set to an opaque color.</p><p>Example:</p><div class="prism language-javascript">renderButton<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPressButton<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+      &lt;Image
+        style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
+        source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">'image!myButton'</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span></div><blockquote><p><strong>NOTE</strong>: TouchableHighlight supports only one child</p><p>If you wish to have several child components, wrap them in a View.</p></blockquote></div><h3><a class="anchor" name="props"></a><a class="edit-github" href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/TouchableHighlight.js">Edit on GitHub</a>Props <a class="hash-link" href="#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="touchablewithoutfeedback"></a><a href="touchablewithoutfeedback.html#props">TouchableWithoutFeedback props...</a> <a class="hash-link" href="#touchablewithoutfeedback">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="activeopacity"></a>activeOpacity <span class="propType">number</span> <a class="hash-link" href="#activeopacity">#</a></h4><div><p>Determines what the opacity of the wrapped view should be when touch is
+active.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onhideunderlay"></a>onHideUnderlay <span class="propType">function</span> <a class="hash-link" href="#onhideunderlay">#</a></h4><div><p>Called immediately after the underlay is hidden</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onshowunderlay"></a>onShowUnderlay <span class="propType">function</span> <a class="hash-link" href="#onshowunderlay">#</a></h4><div><p>Called immediately after the underlay is shown</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="style"></a>style <span class="propType"><a href="view.html#style">View#style</a></span> <a class="hash-link" href="#style">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="underlaycolor"></a>underlayColor <span class="propType">ColorPropType</span> <a class="hash-link" href="#underlaycolor">#</a></h4><div><p>The color of the underlay that will show through when the touch is
+active.</p></div></div></div></div><div class="docs-prevnext"><a class="docs-next" href="touchablenativefeedback.html#content">Next →</a></div>

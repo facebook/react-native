@@ -1,0 +1,11 @@
+---
+id: version-0.46-adsupportios
+title: adsupportios
+original_id: adsupportios
+---
+<a id="content"></a><h1><a class="anchor" name="adsupportios"></a>AdSupportIOS <a class="hash-link" href="docs/adsupportios.html#adsupportios">#</a></h1><div><div><p><code>AdSupport</code> provides access to the "advertising identifier". If you link this library
+in your project, you may need to justify your use for this identifier when submitting
+your application to the App Store.</p><p>In order to use <code>AdSupport</code> in your project, you must link the <code>RCTAdSupport</code> library.
+In Xcode, you can manually add the <code>RCTAdSupport.m</code> and <code>RCTAdSupport.h</code> files from
+<code>node_modules/react-native/Libraries/AdSupport/</code> to the <code>Libraries/React/Base/</code> folder
+of your current project.</p><p>You can refer to <a href="docs/linking-libraries-ios.html" target="_blank">Linking</a> for help.</p></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/adsupportios.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="getadvertisingid"></a><span class="methodType">static </span>getAdvertisingId<span class="methodType">(onSuccess, onFailure)</span> <a class="hash-link" href="docs/adsupportios.html#getadvertisingid">#</a></h4></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="getadvertisingtrackingenabled"></a><span class="methodType">static </span>getAdvertisingTrackingEnabled<span class="methodType">(onSuccess, onFailure)</span> <a class="hash-link" href="docs/adsupportios.html#getadvertisingtrackingenabled">#</a></h4></div></div></span></div><p class="edit-page-block"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/AdSupport/AdSupportIOS.js">Improve this page</a> by sending a pull request!</p><div class="docs-prevnext"><a class="docs-prev" href="docs/actionsheetios.html#content">← Prev</a><a class="docs-next" href="docs/alert.html#content">Next →</a></div>

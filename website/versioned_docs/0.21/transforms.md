@@ -1,0 +1,6 @@
+---
+id: version-0.21-transforms
+title: transforms
+original_id: transforms
+---
+<a id="content"></a><table width="100%"><tbody><tr><td><h1><a class="anchor" name="transforms"></a>Transforms <a class="hash-link" href="undefined#transforms">#</a></h1></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/StyleSheet/TransformPropTypes.js">Edit on GitHub</a></td></tr></tbody></table><div><noscript></noscript><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="undefined#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="transform"></a>transform <span class="propType">[{perspective: number}, {rotate: string}, {rotateX: string}, {rotateY: string}, {rotateZ: string}, {scale: number}, {scaleX: number}, {scaleY: number}, {translateX: number}, {translateY: number}, {skewX: string}, {skewY: string}]</span> <a class="hash-link" href="undefined#transform">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="transformmatrix"></a>transformMatrix <span class="propType">TransformMatrixPropType</span> <a class="hash-link" href="undefined#transformmatrix">#</a></h4></div></div></div><div class="docs-prevnext"><a class="docs-next" href="shadowproptypesios.html#content">Next →</a></div>

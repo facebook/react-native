@@ -1,0 +1,6 @@
+---
+id: version-0.48-vibration
+title: vibration
+original_id: vibration
+---
+<a id="content"></a><h1><a class="anchor" name="vibration"></a>Vibration <a class="hash-link" href="docs/vibration.html#vibration">#</a></h1><div><div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/vibration.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="vibrate"></a><span class="methodType">static </span>vibrate<span class="methodType">(pattern, repeat)</span> <a class="hash-link" href="docs/vibration.html#vibrate">#</a></h4></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="cancel"></a><span class="methodType">static </span>cancel<span class="methodType">()</span> <a class="hash-link" href="docs/vibration.html#cancel">#</a></h4><div><p>Stop vibration</p></div></div></div></span></div><p class="edit-page-block"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/Vibration/Vibration.js">Improve this page</a> by sending a pull request!</p><div class="docs-prevnext"><a class="docs-prev" href="docs/toastandroid.html#content">← Prev</a><a class="docs-next" href="docs/vibrationios.html#content">Next →</a></div>

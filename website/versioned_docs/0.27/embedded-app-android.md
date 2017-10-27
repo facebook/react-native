@@ -1,0 +1,105 @@
+---
+id: version-0.27-embedded-app-android
+title: embedded-app-android
+original_id: embedded-app-android
+---
+<a id="content"></a><table width="100%"><tbody><tr><td><h1><a class="anchor" name="integrating-with-existing-apps"></a>Integrating with Existing Apps <a class="hash-link" href="docs/embedded-app-android.html#integrating-with-existing-apps">#</a></h1></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/0.27-stable/docs/EmbeddedAppAndroid.md">Edit on GitHub</a></td></tr></tbody></table><div><p>Since React makes no assumptions about the rest of your technology stack, it's easily embeddable within an existing non-React Native app.</p><h2><a class="anchor" name="requirements"></a>Requirements <a class="hash-link" href="docs/embedded-app-android.html#requirements">#</a></h2><ul><li>an existing, gradle-based Android app</li><li>Node.js, see Getting Started for setup instructions</li></ul><h2><a class="anchor" name="prepare-your-app"></a>Prepare your app <a class="hash-link" href="docs/embedded-app-android.html#prepare-your-app">#</a></h2><p>In your app's <code>build.gradle</code> file add the React Native dependency:</p><div class="prism language-javascript">compile <span class="token string">"com.facebook.react:react-native:+"</span> <span class="token comment" spellcheck="true"> // From node_modules</span></div><p>In your project's <code>build.gradle</code> file add an entry for the local React Native maven directory:</p><div class="prism language-javascript">allprojects <span class="token punctuation">{</span>
+    repositories <span class="token punctuation">{</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+        maven <span class="token punctuation">{</span>
+           <span class="token comment" spellcheck="true"> // All of React Native (JS, Android binaries) is installed from npm
+</span>            url <span class="token string">"$projectDir/node_modules/react-native/android"</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span></div><p>Next, make sure you have the Internet permission in your <code>AndroidManifest.xml</code>:</p><div class="prism language-javascript">&lt;uses<span class="token operator">-</span>permission android<span class="token punctuation">:</span>name<span class="token operator">=</span><span class="token string">"android.permission.INTERNET"</span> <span class="token operator">/</span><span class="token operator">&gt;</span></div><p>This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.</p><h2><a class="anchor" name="add-native-code"></a>Add native code <a class="hash-link" href="docs/embedded-app-android.html#add-native-code">#</a></h2><p>You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an <code>Activity</code> that creates a <code>ReactRootView</code>, starts a React application inside it and sets it as the main content view.</p><div class="prism language-javascript">public class <span class="token class-name">MyReactActivity</span> extends <span class="token class-name">Activity</span> implements <span class="token class-name">DefaultHardwareBackBtnHandler</span> <span class="token punctuation">{</span>
+    private ReactRootView mReactRootView<span class="token punctuation">;</span>
+    private ReactInstanceManager mReactInstanceManager<span class="token punctuation">;</span>
+
+    @Override
+    protected void <span class="token function">onCreate<span class="token punctuation">(</span></span>Bundle savedInstanceState<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        super<span class="token punctuation">.</span><span class="token function">onCreate<span class="token punctuation">(</span></span>savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        mReactRootView <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ReactRootView</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mReactInstanceManager <span class="token operator">=</span> ReactInstanceManager<span class="token punctuation">.</span><span class="token function">builder<span class="token punctuation">(</span></span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setApplication<span class="token punctuation">(</span></span><span class="token function">getApplication<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setBundleAssetName<span class="token punctuation">(</span></span><span class="token string">"index.android.bundle"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setJSMainModuleName<span class="token punctuation">(</span></span><span class="token string">"index.android"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addPackage<span class="token punctuation">(</span></span><span class="token keyword">new</span> <span class="token class-name">MainReactPackage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setUseDeveloperSupport<span class="token punctuation">(</span></span>BuildConfig<span class="token punctuation">.</span>DEBUG<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setInitialLifecycleState<span class="token punctuation">(</span></span>LifecycleState<span class="token punctuation">.</span>RESUMED<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mReactRootView<span class="token punctuation">.</span><span class="token function">startReactApplication<span class="token punctuation">(</span></span>mReactInstanceManager<span class="token punctuation">,</span> <span class="token string">"MyAwesomeApp"</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token function">setContentView<span class="token punctuation">(</span></span>mReactRootView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    @Override
+    public void <span class="token function">invokeDefaultOnBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        super<span class="token punctuation">.</span><span class="token function">onBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p>Next, we need to pass some activity lifecycle callbacks down to the <code>ReactInstanceManager</code>:</p><div class="prism language-javascript">@Override
+protected void <span class="token function">onPause<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    super<span class="token punctuation">.</span><span class="token function">onPause<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mReactInstanceManager <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">onPause<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+@Override
+protected void <span class="token function">onResume<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    super<span class="token punctuation">.</span><span class="token function">onResume<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mReactInstanceManager <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">onResume<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p>We also need to pass back button events to React Native:</p><div class="prism language-javascript">@Override
+ public void <span class="token function">onBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mReactInstanceManager <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">onBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        super<span class="token punctuation">.</span><span class="token function">onBackPressed<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p> This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle a back press, your <code>invokeDefaultOnBackPressed</code> method will be called. By default this simply finishes your <code>Activity</code>.
+Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button:</p><div class="prism language-javascript">@Override
+public boolean <span class="token function">onKeyUp<span class="token punctuation">(</span></span>int keyCode<span class="token punctuation">,</span> KeyEvent event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>keyCode <span class="token operator">==</span> KeyEvent<span class="token punctuation">.</span>KEYCODE_MENU &amp;&amp; mReactInstanceManager <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">showDevOptionsDialog<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> super<span class="token punctuation">.</span><span class="token function">onKeyUp<span class="token punctuation">(</span></span>keyCode<span class="token punctuation">,</span> event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></div><p>That's it, your activity is ready to run some JavaScript code.</p><h2><a class="anchor" name="add-js-to-your-app"></a>Add JS to your app <a class="hash-link" href="docs/embedded-app-android.html#add-js-to-your-app">#</a></h2><p>In your app's root folder, run:</p><div class="prism language-javascript">$ npm init
+$ npm install <span class="token operator">--</span>save react<span class="token operator">-</span>native
+$ curl <span class="token operator">-</span>o <span class="token punctuation">.</span>flowconfig https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>raw<span class="token punctuation">.</span>githubusercontent<span class="token punctuation">.</span>com<span class="token operator">/</span>facebook<span class="token operator">/</span>react<span class="token operator">-</span>native<span class="token regex">/master/</span><span class="token punctuation">.</span>flowconfig</div><p>This creates a node module for your app and adds the <code>react-native</code> npm dependency. Now open the newly created <code>package.json</code> file and add this under <code>scripts</code>:</p><div class="prism language-javascript"><span class="token string">"start"</span><span class="token punctuation">:</span> <span class="token string">"node node_modules/react-native/local-cli/cli.js start"</span></div><p>Copy &amp; paste the following code to <code>index.android.js</code> in your root folder — it's a barebones React Native app:</p><div class="prism language-javascript"><span class="token string">'use strict'</span><span class="token punctuation">;</span>
+
+import React from <span class="token string">'react'</span><span class="token punctuation">;</span>
+import <span class="token punctuation">{</span>
+  AppRegistry<span class="token punctuation">,</span>
+  StyleSheet<span class="token punctuation">,</span>
+  Text<span class="token punctuation">,</span>
+  View
+<span class="token punctuation">}</span> from <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+
+class <span class="token class-name">MyAwesomeApp</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>hello<span class="token punctuation">}</span><span class="token operator">&gt;</span>Hello<span class="token punctuation">,</span> World&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    justifyContent<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  hello<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    fontSize<span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+    textAlign<span class="token punctuation">:</span> <span class="token string">'center'</span><span class="token punctuation">,</span>
+    margin<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent<span class="token punctuation">(</span></span><span class="token string">'MyAwesomeApp'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> MyAwesomeApp<span class="token punctuation">)</span><span class="token punctuation">;</span></div><h2><a class="anchor" name="run-your-app"></a>Run your app <a class="hash-link" href="docs/embedded-app-android.html#run-your-app">#</a></h2><p>To run your app, you need to first start the development server. To do this, simply run the following command in your root folder:</p><div class="prism language-javascript">$ npm start</div><p>Now build and run your Android app as normal (e.g. <code>./gradlew installDebug</code>). Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:</p><p><img src="img/EmbeddedAppAndroid.png" alt="Screenshot"></p><h2><a class="anchor" name="sharing-a-reactinstance-across-multiple-activities-fragments-in-your-app"></a>Sharing a ReactInstance across multiple Activities / Fragments in your app <a class="hash-link" href="docs/embedded-app-android.html#sharing-a-reactinstance-across-multiple-activities-fragments-in-your-app">#</a></h2><p>You can have multiple Activities or Fragments that use the same <code>ReactInstanceManager</code>. You'll want to make your own "ReactFragment" or "ReactActivity" and have a singleton "holder" that holds a <code>ReactInstanceManager</code>. When you need the <code>ReactInstanceManager</code> / hook up the <code>ReactInstanceManager</code> to the lifecycle of those Activities or Fragments, use the one provided by the singleton.</p></div><div class="docs-prevnext"><a class="docs-next" href="docs/signed-apk-android.html#content">Next →</a></div><div class="survey"><div class="survey-image"></div><p>We are planning improvements to the React Native documentation. Your responses to this short survey will go a long way in helping us provide valuable content. Thank you!</p><center><a class="button" href="https://www.facebook.com/survey?oid=681969738611332">Take Survey</a></center></div>

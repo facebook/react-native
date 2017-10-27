@@ -1,0 +1,25 @@
+---
+id: version-0.45-timepickerandroid
+title: timepickerandroid
+original_id: timepickerandroid
+---
+<a id="content"></a><h1><a class="anchor" name="timepickerandroid"></a>TimePickerAndroid <a class="hash-link" href="docs/timepickerandroid.html#timepickerandroid">#</a></h1><div><div><p>Opens the standard Android time picker dialog.</p><h3><a class="anchor" name="example"></a>Example <a class="hash-link" href="docs/timepickerandroid.html#example">#</a></h3><div class="prism language-javascript"><span class="token keyword">try</span> <span class="token punctuation">{</span>
+  const <span class="token punctuation">{</span>action<span class="token punctuation">,</span> hour<span class="token punctuation">,</span> minute<span class="token punctuation">}</span> <span class="token operator">=</span> await TimePickerAndroid<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+    hour<span class="token punctuation">:</span> <span class="token number">14</span><span class="token punctuation">,</span>
+    minute<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    is24Hour<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><span class="token comment" spellcheck="true"> // Will display '2 PM'
+</span>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>action <span class="token operator">!</span><span class="token operator">==</span> TimePickerAndroid<span class="token punctuation">.</span>dismissedAction<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // Selected hour (0-23), minute (0-59)
+</span>  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>code<span class="token punctuation">,</span> message<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">warn<span class="token punctuation">(</span></span><span class="token string">'Cannot open time picker'</span><span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/timepickerandroid.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="open"></a><span class="methodType">static </span>open<span class="methodType">(options)</span> <a class="hash-link" href="docs/timepickerandroid.html#open">#</a></h4><div><p>Opens the standard Android time picker dialog.</p><p>The available keys for the <code>options</code> object are:
+  <em> <code>hour</code> (0-23) - the hour to show, defaults to the current time
+  </em> <code>minute</code> (0-59) - the minute to show, defaults to the current time
+  * <code>is24Hour</code> (boolean) - If <code>true</code>, the picker uses the 24-hour format. If <code>false</code>,
+    the picker shows an AM/PM chooser. If undefined, the default for the current locale
+    is used.</p><p>Returns a Promise which will be invoked an object containing <code>action</code>, <code>hour</code> (0-23),
+<code>minute</code> (0-59) if the user picked a time. If the user dismissed the dialog, the Promise will
+still be resolved with action being <code>TimePickerAndroid.dismissedAction</code> and all the other keys
+being undefined. <strong>Always</strong> check whether the <code>action</code> before reading the values.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="timesetaction"></a><span class="methodType">static </span>timeSetAction<span class="methodType">()</span> <a class="hash-link" href="docs/timepickerandroid.html#timesetaction">#</a></h4><div><p>A time has been selected.</p></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="dismissedaction"></a><span class="methodType">static </span>dismissedAction<span class="methodType">()</span> <a class="hash-link" href="docs/timepickerandroid.html#dismissedaction">#</a></h4><div><p>The dialog has been dismissed.</p></div></div></div></span></div><p class="edit-page-block">You can <a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js">edit the content above on GitHub</a> and send us a pull request!</p><div class="docs-prevnext"><a class="docs-prev" href="docs/systrace.html#content">← Prev</a><a class="docs-next" href="docs/toastandroid.html#content">Next →</a></div>

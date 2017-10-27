@@ -1,0 +1,87 @@
+---
+id: version-0.48-navigation
+title: navigation
+original_id: navigation
+---
+<a id="content"></a><h1><a class="anchor" name="navigating-between-screens"></a>Navigating Between Screens <a class="hash-link" href="docs/navigation.html#navigating-between-screens">#</a></h1><div><p>Mobile apps are rarely made up of a single screen. Managing the presentation of, and transition between, multiple screens is typically handled by what is known as a navigator.</p><p>This guide covers the various navigation components available in React Native.
+If you are just getting started with navigation, you will probably want to use <a href="docs/navigation.html#react-navigation" target="_blank">React Navigation</a>. React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as <a href="https://reactnavigation.org/docs/guides/redux" target="_blank">redux</a>.</p><p>If you're only targeting iOS, you may want to also check out <a href="docs/navigation.html#navigatorios" target="_blank">NavigatorIOS</a> as a way of providing a native look and feel with minimal configuration, as it provides a wrapper around the native <code>UINavigationController</code> class. This component will not work on Android, however.</p><p>If you'd like to achieve a native look and feel on both iOS and Android, or you're integrating React Native into an app that already manages navigation natively, the following libraries provide native navigation on both platforms: <a href="http://airbnb.io/native-navigation/" target="_blank">native-navigation</a>, <a href="https://github.com/wix/react-native-navigation" target="_blank">react-native-navigation</a>.</p><h2><a class="anchor" name="react-navigation"></a>React Navigation <a class="hash-link" href="docs/navigation.html#react-navigation">#</a></h2><p>The community solution to navigation is a standalone library that allows developers to set up the screens of an app with just a few lines of code.</p><p>The first step is to install in your project:</p><div class="prism language-javascript">npm install <span class="token operator">--</span>save react<span class="token operator">-</span>navigation</div><p>Then you can quickly create an app with a home screen and a profile screen:</p><div class="prism language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span>
+  StackNavigator<span class="token punctuation">,</span>
+<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-navigation'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> App <span class="token operator">=</span> <span class="token function">StackNavigator</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  Home<span class="token punctuation">:</span> <span class="token punctuation">{</span> screen<span class="token punctuation">:</span> HomeScreen <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  Profile<span class="token punctuation">:</span> <span class="token punctuation">{</span> screen<span class="token punctuation">:</span> ProfileScreen <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>Each screen component can set navigation options such as the header title. It can use action creators on the <code>navigation</code> prop to link to other screens:</p><div class="prism language-javascript"><span class="token keyword">class</span> <span class="token class-name">HomeScreen</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> navigationOptions <span class="token operator">=</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">'Welcome'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> navigate <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigation<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>Button
+        title<span class="token operator">=</span><span class="token string">"Go to Jane's profile"</span>
+        onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+          <span class="token function">navigate</span><span class="token punctuation">(</span><span class="token string">'Profile'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> name<span class="token punctuation">:</span> <span class="token string">'Jane'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p>React Navigation routers make it easy to override navigation logic or integrate it into redux. Because routers can be nested inside each other, developers can override navigation logic for one area of the app without making widespread changes.</p><p>The views in React Navigation use native components and the <a href="docs/animated.html" target="_blank"><code>Animated</code></a> library to deliver 60fps animations that are run on the native thread. Plus, the animations and gestures can be easily customized.</p><p>For a complete intro to React Navigation, follow the <a href="https://reactnavigation.org/docs/intro/" target="_blank">React Navigation Getting Started Guide</a>, or browse other docs such as the <a href="https://reactnavigation.org/docs/navigators/" target="_blank">Intro to Navigators</a>.</p><h2><a class="anchor" name="navigatorios"></a>NavigatorIOS <a class="hash-link" href="docs/navigation.html#navigatorios">#</a></h2><p><code>NavigatorIOS</code> looks and feels just like <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/" target="_blank"><code>UINavigationController</code></a>, because it is actually built on top of it.</p><p><img src="img/NavigationStack-NavigatorIOS.gif" alt=""></p><div class="prism language-javascript"><span class="token operator">&lt;</span>NavigatorIOS
+  initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+    component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
+    title<span class="token punctuation">:</span> <span class="token string">'My Initial Scene'</span><span class="token punctuation">,</span>
+    passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span> myProp<span class="token punctuation">:</span> <span class="token string">'foo'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token operator">/</span><span class="token operator">&gt;</span></div><p>Like other navigation systems, <code>NavigatorIOS</code> uses routes to represent screens, with some important differences. The actual component that will be rendered can be specified using the <code>component</code> key in the route, and any props that should be passed to this component can be specified in <code>passProps</code>. A "navigator" object is automatically passed as a prop to the component, allowing you to call <code>push</code> and <code>pop</code> as needed.</p><p>As <code>NavigatorIOS</code> leverages native UIKit navigation, it will automatically render a navigation bar with a back button and title.</p><div class="prism language-javascript"><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> PropTypes <span class="token keyword">from</span> <span class="token string">'prop-types'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button<span class="token punctuation">,</span> NavigatorIOS<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> View <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">NavigatorIOSApp</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>NavigatorIOS
+        initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+          component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
+          title<span class="token punctuation">:</span> <span class="token string">'My Initial Scene'</span><span class="token punctuation">,</span>
+          passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>index<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">}</span>
+        style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">MyScene</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+    route<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span><span class="token function">shape</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      title<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">.</span>isRequired
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    navigator<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>object<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_onForward <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onForward<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">_onForward</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> nextIndex <span class="token operator">=</span> <span class="token operator">++</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>index<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
+      title<span class="token punctuation">:</span> <span class="token string">'Scene '</span> <span class="token operator">+</span> nextIndex<span class="token punctuation">,</span>
+      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>index<span class="token punctuation">:</span> nextIndex<span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>View<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>Text<span class="token operator">&gt;</span>Current Scene<span class="token punctuation">:</span> <span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>title <span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        <span class="token operator">&lt;</span>Button
+          onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onForward<span class="token punctuation">}</span>
+          title<span class="token operator">=</span><span class="token string">"Tap me to load the next scene"</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><p>Check out the <a href="docs/navigatorios.html" target="_blank"><code>NavigatorIOS</code> reference docs</a> to learn more about this component.</p></div><div class="docs-prevnext"><a class="docs-prev btn" href="docs/platform-specific-code.html#content">← Previous</a><a class="docs-next btn" href="docs/images.html#content">Continue Reading →</a></div><p class="edit-page-block"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/docs/Navigation.md">Improve this page</a> by sending a pull request!</p>
