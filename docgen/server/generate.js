@@ -222,7 +222,7 @@ function checkOutDocs() {
             && frontmatter.attributes.original_id !== "support" 
             && frontmatter.attributes.original_id !== "versions") {
             sidebarMetadata[version]["docs"]["APIs"].push(frontmatter.attributes.original_id);
-            return fs.outputFile(pathToOutputFile.toString(), markdown).then(() => {return;}).catch((e) => {console.error(e)});
+            return fs.outputFile(pathToOutputFile.toString(), markdown);
           }
 
           return;
@@ -236,20 +236,22 @@ function checkOutDocs() {
     }).then(() => {
       let seq = Promise.resolve();
       filepath.create(CWD, '..', 'website', SIDEBAR_DIR);
-      for (var version in sidebarMetadata) {
+      for (const version in sidebarMetadata) {
         if (sidebarMetadata.hasOwnProperty(version)) {
           // TODO: Problem: this series of promises is just wiritng the same version over and over. Figure out jhow to serialize this correctly.
-          seq = seq.then(() => {
-            var sidebar = sidebarMetadata[version];
+          // seq = seq.then(function() {
+            const sidebar = sidebarMetadata[version];
             
             const pathToSidebarFile = filepath.create(CWD, '..', 'website', SIDEBAR_DIR, `version-${version}-sidebars.json`);
             console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
 
-            return fs.outputFile(pathToSidebarFile.toString(), JSON.stringify(sidebar));
-          });           
+            fs.outputFileSync(pathToSidebarFile.toString(), JSON.stringify(sidebar));
+          // });           
+
+          // TODO: All done! The problem is that the latest version, 0.50, doesn't match our docs folder yet.
         }
       }
-      return seq;
+      return;
     }).then(() => {
       filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR);
       const versions = Object.keys(sidebarMetadata); 
