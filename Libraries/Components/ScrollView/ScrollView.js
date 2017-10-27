@@ -659,10 +659,11 @@ const ScrollView = createReactClass({
     } else if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
+        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
       } else {
         ScrollViewClass = AndroidScrollView;
+        ScrollContentContainerViewClass = View;
       }
-      ScrollContentContainerViewClass = View;
     }
 
     invariant(
@@ -880,6 +881,7 @@ const styles = StyleSheet.create({
 
 let nativeOnlyProps,
   AndroidScrollView,
+  AndroidHorizontalScrollContentView,
   AndroidHorizontalScrollView,
   RCTScrollView,
   RCTScrollContentView;
@@ -898,6 +900,9 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollView',
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
+  );
+  AndroidHorizontalScrollContentView = requireNativeComponent(
+    'AndroidHorizontalScrollContentView'
   );
 } else if (Platform.OS === 'ios') {
   nativeOnlyProps = {
