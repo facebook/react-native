@@ -14,42 +14,6 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Templates released as part of react-native in local-cli/templates.
- */
-const builtInTemplates = {
-  navigation: 'HelloNavigation',
-};
-
-function listTemplatesAndExit(newProjectName, options) {
-  if (options.template === true) {
-    // Just listing templates using 'react-native init --template'.
-    // Not creating a new app.
-    // Print available templates and exit.
-    const templateKeys = Object.keys(builtInTemplates);
-    if (templateKeys.length === 0) {
-      // Just a guard, should never happen as long builtInTemplates
-      // above is defined correctly :)
-      console.log(
-        'There are no templates available besides ' +
-        'the default "Hello World" one.'
-      );
-    } else {
-      console.log(
-        'The available templates are:\n' +
-        templateKeys.join('\n') +
-        '\nYou can use these to create an app based on a template, for example: ' +
-        'you could run: ' +
-        'react-native init ' + newProjectName + ' --template ' + templateKeys[0]
-      );
-    }
-    // Exit 'react-native init'
-    return true;
-  }
-  // Continue 'react-native init'
-  return false;
-}
-
-/**
  * @param destPath Create the new project at this path.
  * @param newProjectName For example 'AwesomeApp'.
  * @param template Template to use, for example 'navigation'.
@@ -199,6 +163,5 @@ function installTemplateDependencies(templatePath, yarnVersion) {
 }
 
 module.exports = {
-  listTemplatesAndExit,
   createProjectFromTemplate,
 };
