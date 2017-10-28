@@ -534,12 +534,6 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
-SEL RCTConvertSelectorForType(NSString *type)
-{
-  const char *input = type.UTF8String;
-  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
-}
-
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(UIColor)
