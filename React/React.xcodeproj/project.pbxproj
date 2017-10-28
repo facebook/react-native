@@ -263,8 +263,7 @@
 		27595AD61E575C7800CCE2B1 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D21E03699D0018521A /* Platform.h */; };
 		27595AD71E575C7800CCE2B1 /* SampleCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D41E03699D0018521A /* SampleCxxModule.h */; };
 		27595AD81E575C7800CCE2B1 /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D51E03699D0018521A /* SystraceSection.h */; };
-		2D1D839A1F7462FF00615550 /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		2D1D839B1F74634F00615550 /* RAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
+		2D16E68E1FA4FD3900B85C8A /* RCTTVNavigationEventEmitter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D0B842D1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h */; };
 		2D1D83CD1F74E2CE00615550 /* libprivatedata-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9936F32F1F5F2E5B0010BF04 /* libprivatedata-tvOS.a */; };
 		2D1D83CE1F74E2DA00615550 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D621EBD27B9005632C8 /* libdouble-conversion.a */; };
 		2D1D83EF1F74E76C00615550 /* RCTModalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91076A871F743AB00081B4FA /* RCTModalManager.m */; };
@@ -1285,6 +1284,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				2D16E68E1FA4FD3900B85C8A /* RCTTVNavigationEventEmitter.h in Copy Headers */,
 				59500D481F71C67600B122B7 /* RCTUIManagerUtils.h in Copy Headers */,
 				3D0E37901F1CC5E100DCAC9F /* RCTWebSocketModule.h in Copy Headers */,
 				5960C1BF1F0804F50066FD5B /* RCTLayoutAnimation.h in Copy Headers */,
