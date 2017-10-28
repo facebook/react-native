@@ -72,7 +72,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // The image source that's being loaded from the network
   RCTImageSource *_pendingImageSource;
 
-  // Size of the image loaded / being loaded, so we can determine when to issue a reload to accomodate a changing size.
+  // Size of the image loaded / being loaded, so we can determine when to issue a reload to accommodate a changing size.
   CGSize _targetSize;
 
   // A block that can be invoked to cancel the most recent call to -reloadImage, if any
