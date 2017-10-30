@@ -126,8 +126,10 @@ if (!global.__fbDisableExceptionsManager) {
 }
 
 // Check for compatibility between the JS and native code
-const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
-ReactNativeVersionCheck.checkVersions();
+if (__DEV__) {
+  const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
+  ReactNativeVersionCheck.checkVersions();
+}
 
 // Set up Promise
 // The native Promise implementation throws the following error:
