@@ -221,7 +221,7 @@ public class ReactInstanceManager {
     mDevSupportManager =
         DevSupportManagerFactory.create(
             applicationContext,
-            createDevInterface(),
+            this,
             mJSMainModulePath,
             useDeveloperSupport,
             redBoxHandler,
@@ -259,25 +259,6 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
-  }
-
-  private ReactInstanceDevCommandsHandler createDevInterface() {
-    return new ReactInstanceDevCommandsHandler() {
-      @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-      }
-
-      @Override
-      public void onJSBundleLoadedFromServer() {
-        ReactInstanceManager.this.onJSBundleLoadedFromServer();
-      }
-
-      @Override
-      public void toggleElementInspector() {
-        ReactInstanceManager.this.toggleElementInspector();
-      }
-    };
   }
 
   public DevSupportManager getDevSupportManager() {

@@ -9,7 +9,11 @@
 
 package com.facebook.react.devsupport;
 
+import android.app.Activity;
+
 import com.facebook.react.bridge.JavaJSExecutor;
+
+import javax.annotation.Nullable;
 
 /**
  * Interface used by {@link DevSupportManager} for requesting React instance recreation
@@ -31,4 +35,10 @@ public interface ReactInstanceDevCommandsHandler {
    * Request to toggle the react element inspector.
    */
   void toggleElementInspector();
+
+  /**
+   * Return activity react views are mounted in. This will be used by DevSupportManager to launch
+   * dialogs (such as dev settings dialog or a red box)
+   */
+  @Nullable Activity getCurrentActivity();
 }
