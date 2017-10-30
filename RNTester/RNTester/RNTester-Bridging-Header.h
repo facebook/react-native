@@ -8,13 +8,15 @@
  *
  */
 
-#import <UIKit/UIKit.h>
+#import "AppDelegate.h"
 
-@class RCTBridge;
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#if !TARGET_OS_TV
+#import <React/RCTPushNotificationManager.h>
+#endif
 
-@property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, readonly) RCTBridge *bridge;
-
-@end
