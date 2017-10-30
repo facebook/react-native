@@ -23,7 +23,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 
 static NSString *const kPostMessageHost = @"postMessage";
 
-@interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
+@interface RCTWebView () <WKUIDelegate, RCTAutoInsetsProtocol>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
@@ -35,13 +35,13 @@ static NSString *const kPostMessageHost = @"postMessage";
 
 @implementation RCTWebView
 {
-  UIWebView *_webView;
+  WKWebView *_webView;
   NSString *_injectedJavaScript;
 }
 
 - (void)dealloc
 {
-  _webView.delegate = nil;
+  _webView.UIDelegate = nil;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -50,8 +50,9 @@ static NSString *const kPostMessageHost = @"postMessage";
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _webView = [[UIWebView alloc] initWithFrame:self.bounds];
-    _webView.delegate = self;
+    WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
+    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:theConfiguration];
+    _webView.UIDelegate = self;
     [self addSubview:_webView];
   }
   return self;
@@ -72,7 +73,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)reload
 {
   NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
-  if (request.URL && !_webView.request.URL.absoluteString.length) {
+  if (request.URL && !_webView.URL.absoluteString.length) {
     [_webView loadRequest:request];
   }
   else {
@@ -94,12 +95,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
     RCTJSONStringify(eventInitDict, NULL)
   ];
-  [_webView stringByEvaluatingJavaScriptFromString:source];
+  [_webView evaluateJavaScript:source completionHandler:nil];
 }
 
 - (void)injectJavaScript:(NSString *)script
 {
-  [_webView stringByEvaluatingJavaScriptFromString:script];
+  [_webView evaluateJavaScript:script completionHandler:nil];
 }
 
 - (void)setSource:(NSDictionary *)source
@@ -123,7 +124,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     // passing the redirect urls back here, so we ignore them if trying to load
     // the same url. We'll expose a call to 'reload' to allow a user to load
     // the existing page.
-    if ([request.URL isEqual:_webView.request.URL]) {
+    if ([request.URL isEqual:_webView.URL]) {
       return;
     }
     if (!request.URL) {
@@ -149,18 +150,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                       updateOffset:NO];
 }
 
-- (void)setScalesPageToFit:(BOOL)scalesPageToFit
-{
-  if (_webView.scalesPageToFit != scalesPageToFit) {
-    _webView.scalesPageToFit = scalesPageToFit;
-    [_webView reload];
-  }
-}
+//- (void)setScalesPageToFit:(BOOL)scalesPageToFit
+//{
+//  if (_webView.scalesPageToFit != scalesPageToFit) {
+//    _webView.scalesPageToFit = scalesPageToFit;
+//    [_webView reload];
+//  }
+//}
 
-- (BOOL)scalesPageToFit
-{
-  return _webView.scalesPageToFit;
-}
+//- (BOOL)scalesPageToFit
+//{
+//  return _webView.scalesPageToFit;
+//}
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
@@ -177,11 +178,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (NSMutableDictionary<NSString *, id> *)baseEvent
 {
   NSMutableDictionary<NSString *, id> *event = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"url": _webView.request.URL.absoluteString ?: @"",
+    @"url": _webView.URL.absoluteString ?: @"",
     @"loading" : @(_webView.loading),
-    @"title": [_webView stringByEvaluatingJavaScriptFromString:@"document.title"],
+    @"title": @"",
     @"canGoBack": @(_webView.canGoBack),
     @"canGoForward" : @(_webView.canGoForward),
+  }];
+  [_webView evaluateJavaScript:@"document.title" completionHandler:^(id _Nullable title, NSError * _Nullable error) {
+    if(!error) {
+      event[@"title"] = title;
+    }
   }];
 
   return event;
@@ -253,7 +259,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
     NSString *source = @"document.dispatchEvent(new MessageEvent('message:received'));";
 
-    [_webView stringByEvaluatingJavaScriptFromString:source];
+    [_webView evaluateJavaScript:source completionHandler:nil];
 
     _onMessage(event);
   }
