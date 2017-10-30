@@ -680,7 +680,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   private int maybeTransformLeftRightToStartEnd(int spacingType) {
-    if (!I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getThemedContext())) {
+    if (!I18nUtil.getInstance().doLeftAndRightSwapInRTL(getThemedContext())) {
       return spacingType;
     }
 

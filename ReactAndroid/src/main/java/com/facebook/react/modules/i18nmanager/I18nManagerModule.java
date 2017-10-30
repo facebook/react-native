@@ -10,14 +10,11 @@
 package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
-
 import com.facebook.react.bridge.ContextBaseJavaModule;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,7 +42,8 @@ public class I18nManagerModule extends ContextBaseJavaModule {
 
     final Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put("isRTL", sharedI18nUtilInstance.isRTL(context));
-    constants.put("doesRTLFlipLeftAndRightStyles", sharedI18nUtilInstance.doesRTLFlipLeftAndRightStyles(context));
+    constants.put(
+        "doLeftAndRightSwapInRTL", sharedI18nUtilInstance.doLeftAndRightSwapInRTL(context));
     constants.put("localeIdentifier", locale.toString());
     return constants;
   }
@@ -61,7 +59,7 @@ public class I18nManagerModule extends ContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void makeRTLFlipLeftAndRightStyles(boolean value) {
-    sharedI18nUtilInstance.makeRTLFlipLeftAndRightStyles(getContext(), value);
+  public void swapLeftAndRightInRTL(boolean value) {
+    sharedI18nUtilInstance.swapLeftAndRightInRTL(getContext(), value);
   }
 }
