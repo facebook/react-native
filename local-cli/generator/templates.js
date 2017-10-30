@@ -182,16 +182,42 @@ function installTemplateDependencies(templatePath, yarnVersion) {
       'Could not parse the template\'s dependencies.json: ' + err.message
     );
   }
-  for (let depName in dependencies) {
-    const depVersion = dependencies[depName];
-    const depToInstall = depName + '@' + depVersion;
-    console.log('Adding ' + depToInstall + '...');
-    if (yarnVersion) {
-      execSync(`yarn add ${depToInstall}`, {stdio: 'inherit'});
-    } else {
-      execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
+
+  if (dependencies.dependencies) {
+    for (let depName in dependencies.dependencies) {
+      const depVersion = dependencies.dependencies[depName];
+      const depToInstall = depName + '@' + depVersion;
+      console.log('Adding ' + depToInstall + '...');
+      if (yarnVersion) {
+        execSync(`yarn add ${depToInstall}`, {stdio: 'inherit'});
+      } else {
+        execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
+      }
+    }
+
+    for (let depName in dependencies.devDependencies) {
+      const depVersion = dependencies.devDependencies[depName];
+      const depToInstall = depName + '@' + depVersion;
+      console.log('Adding ' + depToInstall + 'to devDependencies ...');
+      if (yarnVersion) {
+        execSync(`yarn add --dev ${depToInstall}`, {stdio: 'inherit'});
+      } else {
+        execSync(`npm install ${depToInstall} --save-dev --save-exact`, {stdio: 'inherit'});
+      }
+    }
+  } else { // For backward compability
+    for (let depName in dependencies) {
+      const depVersion = dependencies[depName];
+      const depToInstall = depName + '@' + depVersion;
+      console.log('Adding ' + depToInstall + '...');
+      if (yarnVersion) {
+        execSync(`yarn add ${depToInstall}`, {stdio: 'inherit'});
+      } else {
+        execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
+      }
     }
   }
+
   console.log('Linking native dependencies into the project\'s build files...');
   execSync('react-native link', {stdio: 'inherit'});
 }
