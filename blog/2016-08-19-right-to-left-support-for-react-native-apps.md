@@ -52,6 +52,10 @@ With this update, when you allow RTL layout for your app:
     // in AppDelegate.m
   	[[RCTI18nUtil sharedInstance] allowRTL:YES];
     ```
+    ```swift
+    // in AppDelegate.swift
+  	RCTI18nUtil.sharedInstance.allowRTL = true
+    ```
 
    Android:
     ```java
