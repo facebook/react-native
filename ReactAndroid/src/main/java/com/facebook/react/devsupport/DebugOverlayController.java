@@ -33,39 +33,7 @@ import javax.annotation.Nullable;
  */
 /* package */ class DebugOverlayController {
 
-  private final WindowManager mWindowManager;
-  private final ReactContext mReactContext;
-
-  private @Nullable FrameLayout mFPSDebugViewContainer;
-
-  public DebugOverlayController(ReactContext reactContext) {
-    mReactContext = reactContext;
-    mWindowManager = (WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE);
-  }
-
-  public void setFpsDebugViewVisible(boolean fpsDebugViewVisible) {
-    if (fpsDebugViewVisible && mFPSDebugViewContainer == null) {
-      if (!permissionCheck(mReactContext)) {
-        FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
-        return;
-      }
-      mFPSDebugViewContainer = new FpsView(mReactContext);
-      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
-          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-              | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-          PixelFormat.TRANSLUCENT);
-      mWindowManager.addView(mFPSDebugViewContainer, params);
-    } else if (!fpsDebugViewVisible && mFPSDebugViewContainer != null) {
-      mFPSDebugViewContainer.removeAllViews();
-      mWindowManager.removeView(mFPSDebugViewContainer);
-      mFPSDebugViewContainer = null;
-    }
-  }
-
-  private static boolean permissionCheck(Context context) {
+  public static void requestPermission(Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       // Get permission to show debug overlay in dev builds.
       if (!Settings.canDrawOverlays(context)) {
@@ -77,6 +45,14 @@ import javax.annotation.Nullable;
         if (canHandleIntent(context, intent)) {
           context.startActivity(intent);
         }
+      }
+    }
+  }
+
+  private static boolean permissionCheck(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      // Get permission to show debug overlay in dev builds.
+      if (!Settings.canDrawOverlays(context)) {
         // overlay permission not yet granted
         return false;
       } else {
@@ -108,5 +84,37 @@ import javax.annotation.Nullable;
   private static boolean canHandleIntent(Context context, Intent intent) {
     PackageManager packageManager = context.getPackageManager();
     return intent.resolveActivity(packageManager) != null;
+  }
+
+  private final WindowManager mWindowManager;
+  private final ReactContext mReactContext;
+
+  private @Nullable FrameLayout mFPSDebugViewContainer;
+
+  public DebugOverlayController(ReactContext reactContext) {
+    mReactContext = reactContext;
+    mWindowManager = (WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE);
+  }
+
+  public void setFpsDebugViewVisible(boolean fpsDebugViewVisible) {
+    if (fpsDebugViewVisible && mFPSDebugViewContainer == null) {
+      if (!permissionCheck(mReactContext)) {
+        FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
+        return;
+      }
+      mFPSDebugViewContainer = new FpsView(mReactContext);
+      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+          WindowManager.LayoutParams.MATCH_PARENT,
+          WindowManager.LayoutParams.MATCH_PARENT,
+          WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
+          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+              | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          PixelFormat.TRANSLUCENT);
+      mWindowManager.addView(mFPSDebugViewContainer, params);
+    } else if (!fpsDebugViewVisible && mFPSDebugViewContainer != null) {
+      mFPSDebugViewContainer.removeAllViews();
+      mWindowManager.removeView(mFPSDebugViewContainer);
+      mFPSDebugViewContainer = null;
+    }
   }
 }
