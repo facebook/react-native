@@ -14,49 +14,46 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
   
   var window: UIWindow?
-  
+  var bridge: RCTBridge? 
+
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
     bridge = RCTBridge(delegate: self, launchOptions: launchOptions)
     // Appetizer.io params check
     var initProps: [AnyHashable: Any]? = nil
-    var _routeUri: String? = UserDefaults.standard.string(forKey: "route")
-    if routeUri {
+    
+    if let routeUri = UserDefaults.standard.string(forKey: "route") {
       initProps = ["exampleFromAppetizeParams": "rntester://example/\(routeUri)Example"]
     }
-    var rootView = RCTRootView(bridge: bridge, moduleName: "RNTesterApp", initialProperties: initProps)
+    
+    let rootView = RCTRootView(bridge: bridge, moduleName: "RNTesterApp", initialProperties: initProps)
     window = UIWindow(frame: UIScreen.main.bounds)
-    var rootViewController = UIViewController()
-    rootViewController.view = rootView as? UIView ?? UIView()
-    window.rootViewController = rootViewController
-    window.makeKeyAndVisible()
+    let rootViewController = UIViewController()
+    rootViewController.view = rootView ?? UIView()
+    window?.rootViewController = rootViewController
+    window?.makeKeyAndVisible()
 
     return true
   }
   
-  func sourceURL(for bridge: __unused RCTBridge) -> URL {
+  func sourceURL(for bridge: RCTBridge) -> URL {
     return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "RNTester/js/RNTesterApp.ios", fallbackResource: nil)
   }
   
-  func loadSource(for bridge: RCTBridge, onProgress: RCTSourceLoadProgressBlock, onComplete loadCallback: RCTSourceLoadBlock) {
-    RCTJavaScriptLoader.loadBundle(atURL: sourceURL(for: bridge), onProgress: onProgress, onComplete: loadCallback)
-  }
-
-  
-  func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool
-  {
-    return RCTLinkingManager.application(app, open: url, options: options)
-
+  func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    return RCTLinkingManager.application(app, open: url as URL!, options: options)
   }
   
-# pragma mark - Push Notifications
+  func loadSource(for bridge: RCTBridge!, onProgress: RCTSourceLoadProgressBlock!, onComplete loadCallback: RCTSourceLoadBlock!) {
+    RCTJavaScriptLoader.loadBundle(at: sourceURL(for: bridge), onProgress: onProgress, onComplete: loadCallback)
+  }
+  
+// MARK - Push Notifications
   
 #if !TARGET_OS_TV
-  
 
   // Required to register for notifications
-  
   func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
     RCTPushNotificationManager.didRegister(notificationSettings)
   }
@@ -66,24 +63,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
     RCTPushNotificationManager.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
   }
 
-  
   // Required for the remoteNotificationRegistrationError event.
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    try? RCTPushNotificationManager.didFailToRegisterForRemoteNotifications()
+    RCTPushNotificationManager.didFailToRegisterForRemoteNotificationsWithError(error)
   }
   
   // Required for the remoteNotificationReceived event.
-  func application(_ application: __unused UIApplication, didReceiveRemoteNotification notification: [AnyHashable: Any]) {
-    RCTPushNotificationManager.didReceiveRemoteNotification(notification)
-  }
-  
-  func application(_ application: __unused UIApplication, didReceiveRemoteNotification notification: [AnyHashable: Any]) {
+  func application(_ application: UIApplication, didReceiveRemoteNotification notification: [AnyHashable: Any]) {
     RCTPushNotificationManager.didReceiveRemoteNotification(notification)
   }
   
   // Required for the localNotificationReceived event.
   func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
-    RCTPushNotificationManager.didReceive(notification as? UILocalNotification ?? UILocalNotification())
+    RCTPushNotificationManager.didReceive(notification ?? UILocalNotification())
   }
 
 #endif
