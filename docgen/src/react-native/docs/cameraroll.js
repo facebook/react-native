@@ -100,7 +100,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"cameraroll","title":"CameraRoll","layout":"autodocs","category":"APIs","permalink":"docs/cameraroll.html","platform":"cross","next":"clipboard","previous":"backhandler","sidebar":true,"path":"Libraries/CameraRoll/CameraRoll.js","filename":null}}>
+      <Layout metadata={{"id":"cameraroll","title":"CameraRoll","layout":"autodocs","category":"APIs","permalink":"docs/cameraroll.html","platform":"cross","next":"cameraroll","previous":"backhandler","sidebar":true,"path":"Libraries/CameraRoll/CameraRoll.js","filename":null}}>
         {content}
       </Layout>
     );

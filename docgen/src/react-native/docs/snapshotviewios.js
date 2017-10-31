@@ -670,7 +670,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"snapshotviewios","title":"SnapshotViewIOS","layout":"autodocs","category":"Components","permalink":"docs/snapshotviewios.html","platform":"ios","next":"statusbar","previous":"slider","sidebar":true,"path":"Libraries/RCTTest/SnapshotViewIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"snapshotviewios","title":"SnapshotViewIOS","layout":"autodocs","category":"Components","permalink":"docs/snapshotviewios.html","platform":"ios","next":"snapshotviewios","previous":"segmentedcontrolios","sidebar":true,"path":"Libraries/RCTTest/SnapshotViewIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -185,7 +185,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"viewstyleproptypes","title":"ViewStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/viewstyleproptypes.html","platform":"cross","next":"textstyleproptypes","previous":"viewproptypes","sidebar":true,"path":"Libraries/Components/View/ViewStylePropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"viewstyleproptypes","title":"ViewStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/viewstyleproptypes.html","platform":"cross","next":"viewstyleproptypes","previous":"shadow-props","sidebar":true,"path":"Libraries/Components/View/ViewStylePropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

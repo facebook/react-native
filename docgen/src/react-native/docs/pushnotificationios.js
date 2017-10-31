@@ -410,7 +410,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"pushnotificationios","title":"PushNotificationIOS","layout":"autodocs","category":"APIs","permalink":"docs/pushnotificationios.html","platform":"ios","next":"settings","previous":"pixelratio","sidebar":true,"path":"Libraries/PushNotificationIOS/PushNotificationIOS.js","filename":null}}>
+      <Layout metadata={{"id":"pushnotificationios","title":"PushNotificationIOS","layout":"autodocs","category":"APIs","permalink":"docs/pushnotificationios.html","platform":"ios","next":"pushnotificationios","previous":"permissionsandroid","sidebar":true,"path":"Libraries/PushNotificationIOS/PushNotificationIOS.js","filename":null}}>
         {content}
       </Layout>
     );

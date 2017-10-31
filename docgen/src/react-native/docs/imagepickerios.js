@@ -106,7 +106,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"imagepickerios","title":"ImagePickerIOS","layout":"autodocs","category":"APIs","permalink":"docs/imagepickerios.html","platform":"ios","next":"imagestore","previous":"imageeditor","sidebar":true,"path":"Libraries/CameraRoll/ImagePickerIOS.js","filename":null}}>
+      <Layout metadata={{"id":"imagepickerios","title":"ImagePickerIOS","layout":"autodocs","category":"APIs","permalink":"docs/imagepickerios.html","platform":"ios","next":"imagepickerios","previous":"geolocation","sidebar":true,"path":"Libraries/CameraRoll/ImagePickerIOS.js","filename":null}}>
         {content}
       </Layout>
     );

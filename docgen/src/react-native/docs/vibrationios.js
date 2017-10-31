@@ -41,7 +41,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"vibrationios","title":"VibrationIOS","layout":"autodocs","category":"APIs","permalink":"docs/vibrationios.html","platform":"ios","next":"layout-props","previous":"vibration","sidebar":true,"path":"Libraries/Vibration/VibrationIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"vibrationios","title":"VibrationIOS","layout":"autodocs","category":"APIs","permalink":"docs/vibrationios.html","platform":"ios","next":"vibrationios","previous":"toastandroid","sidebar":true,"path":"Libraries/Vibration/VibrationIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

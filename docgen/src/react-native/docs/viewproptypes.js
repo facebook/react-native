@@ -294,7 +294,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"viewproptypes","title":"ViewPropTypes","layout":"autodocs","category":"APIs","permalink":"docs/viewproptypes.html","platform":"cross","next":"viewstyleproptypes","previous":"shadow-props","sidebar":true,"path":"Libraries/Components/View/ViewPropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"viewproptypes","title":"ViewPropTypes","layout":"autodocs","category":"APIs","permalink":"docs/viewproptypes.html","platform":"cross","next":"viewproptypes","previous":"layout-props","sidebar":true,"path":"Libraries/Components/View/ViewPropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

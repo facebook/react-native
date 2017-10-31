@@ -942,7 +942,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"view","title":"View","layout":"autodocs","category":"Components","permalink":"docs/view.html","platform":"cross","next":"viewpagerandroid","previous":"touchablewithoutfeedback","sidebar":true,"path":"Libraries/Components/View/View.js","filename":null}}>
+      <Layout metadata={{"id":"view","title":"View","layout":"autodocs","category":"Components","permalink":"docs/view.html","platform":"cross","next":"view","previous":"touchableopacity","sidebar":true,"path":"Libraries/Components/View/View.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -26,7 +26,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"statusbarios","title":"StatusBarIOS","layout":"autodocs","category":"APIs","permalink":"docs/statusbarios.html","platform":"ios","next":"stylesheet","previous":"share","sidebar":true,"path":"Libraries/Components/StatusBar/StatusBarIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"statusbarios","title":"StatusBarIOS","layout":"autodocs","category":"APIs","permalink":"docs/statusbarios.html","platform":"ios","next":"statusbarios","previous":"settings","sidebar":true,"path":"Libraries/Components/StatusBar/StatusBarIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

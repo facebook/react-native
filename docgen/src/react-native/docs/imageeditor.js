@@ -52,7 +52,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"imageeditor","title":"ImageEditor","layout":"autodocs","category":"APIs","permalink":"docs/imageeditor.html","platform":"cross","next":"imagepickerios","previous":"geolocation","sidebar":true,"path":"Libraries/Image/ImageEditor.js","filename":null}}>
+      <Layout metadata={{"id":"imageeditor","title":"ImageEditor","layout":"autodocs","category":"APIs","permalink":"docs/imageeditor.html","platform":"cross","next":"imageeditor","previous":"easing","sidebar":true,"path":"Libraries/Image/ImageEditor.js","filename":null}}>
         {content}
       </Layout>
     );

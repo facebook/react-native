@@ -790,7 +790,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"toolbarandroid","title":"ToolbarAndroid","layout":"autodocs","category":"Components","permalink":"docs/toolbarandroid.html","platform":"android","next":"touchablehighlight","previous":"textinput","sidebar":true,"path":"Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"toolbarandroid","title":"ToolbarAndroid","layout":"autodocs","category":"Components","permalink":"docs/toolbarandroid.html","platform":"android","next":"toolbarandroid","previous":"text","sidebar":true,"path":"Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

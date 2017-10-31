@@ -320,7 +320,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"easing","title":"Easing","layout":"autodocs","category":"APIs","permalink":"docs/easing.html","platform":"cross","next":"geolocation","previous":"dimensions","sidebar":true,"path":"Libraries/Animated/src/Easing.js","filename":null}}>
+      <Layout metadata={{"id":"easing","title":"Easing","layout":"autodocs","category":"APIs","permalink":"docs/easing.html","platform":"cross","next":"easing","previous":"datepickerandroid","sidebar":true,"path":"Libraries/Animated/src/Easing.js","filename":null}}>
         {content}
       </Layout>
     );

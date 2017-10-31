@@ -61,7 +61,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"vibration","title":"Vibration","layout":"autodocs","category":"APIs","permalink":"docs/vibration.html","platform":"cross","next":"vibrationios","previous":"toastandroid","sidebar":true,"path":"Libraries/Vibration/Vibration.js","filename":null}}>
+      <Layout metadata={{"id":"vibration","title":"Vibration","layout":"autodocs","category":"APIs","permalink":"docs/vibration.html","platform":"cross","next":"vibration","previous":"timepickerandroid","sidebar":true,"path":"Libraries/Vibration/Vibration.js","filename":null}}>
         {content}
       </Layout>
     );

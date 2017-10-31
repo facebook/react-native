@@ -1276,7 +1276,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"virtualizedlist","title":"VirtualizedList","layout":"autodocs","category":"Components","permalink":"docs/virtualizedlist.html","platform":"cross","next":"webview","previous":"viewpagerandroid","sidebar":true,"path":"Libraries/Lists/VirtualizedList.js","filename":null}}>
+      <Layout metadata={{"id":"virtualizedlist","title":"VirtualizedList","layout":"autodocs","category":"Components","permalink":"docs/virtualizedlist.html","platform":"cross","next":"virtualizedlist","previous":"view","sidebar":true,"path":"Libraries/Lists/VirtualizedList.js","filename":null}}>
         {content}
       </Layout>
     );

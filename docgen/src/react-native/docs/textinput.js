@@ -1226,7 +1226,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"textinput","title":"TextInput","layout":"autodocs","category":"Components","permalink":"docs/textinput.html","platform":"cross","next":"toolbarandroid","previous":"text","sidebar":true,"path":"Libraries/Components/TextInput/TextInput.js","filename":null}}>
+      <Layout metadata={{"id":"textinput","title":"TextInput","layout":"autodocs","category":"Components","permalink":"docs/textinput.html","platform":"cross","next":"textinput","previous":"tabbarios-item","sidebar":true,"path":"Libraries/Components/TextInput/TextInput.js","filename":null}}>
         {content}
       </Layout>
     );

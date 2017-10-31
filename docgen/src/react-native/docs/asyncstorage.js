@@ -11,7 +11,7 @@ var content = `\{
           1920,
           14385
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 62,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -35,7 +35,7 @@ var content = `\{
           2285,
           2786
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 75,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -92,7 +92,7 @@ var content = `\{
           3094,
           3459
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 99,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -158,7 +158,7 @@ var content = `\{
           3725,
           4080
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 120,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -215,7 +215,7 @@ var content = `\{
           5240,
           5609
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 169,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -284,7 +284,7 @@ var content = `\{
           5934,
           6263
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 190,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -332,7 +332,7 @@ var content = `\{
           6547,
           6875
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 211,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -380,7 +380,7 @@ var content = `\{
           7392,
           8575
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 235,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -429,7 +429,7 @@ var content = `\{
           9513,
           10248
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 292,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -492,7 +492,7 @@ var content = `\{
           10805,
           11163
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 341,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -549,7 +549,7 @@ var content = `\{
           11710,
           12056
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 371,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -609,7 +609,7 @@ var content = `\{
           14021,
           14383
         ],
-        "filename": "nkoegy81pald9t0fb6b6.js",
+        "filename": "0ixhk1fcq0ospkxryfsrhc.js",
         "lineno": 443,
         "path": "/var/folders/82/w8hcc_tj7yq80482srkc1r2x0bj21j/T",
         "code": \{
@@ -673,7 +673,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"asyncstorage","title":"AsyncStorage","layout":"autodocs","category":"APIs","permalink":"docs/asyncstorage.html","platform":"cross","next":"backandroid","previous":"appstate","sidebar":true,"path":"Libraries/Storage/AsyncStorage.js","filename":null}}>
+      <Layout metadata={{"id":"asyncstorage","title":"AsyncStorage","layout":"autodocs","category":"APIs","permalink":"docs/asyncstorage.html","platform":"cross","next":"asyncstorage","previous":"appregistry","sidebar":true,"path":"Libraries/Storage/AsyncStorage.js","filename":null}}>
         {content}
       </Layout>
     );

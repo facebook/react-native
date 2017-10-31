@@ -784,7 +784,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"modal","title":"Modal","layout":"autodocs","category":"Components","permalink":"docs/modal.html","platform":"cross","next":"navigatorios","previous":"maskedviewios","sidebar":true,"path":"Libraries/Modal/Modal.js","filename":null}}>
+      <Layout metadata={{"id":"modal","title":"Modal","layout":"autodocs","category":"Components","permalink":"docs/modal.html","platform":"cross","next":"modal","previous":"listview","sidebar":true,"path":"Libraries/Modal/Modal.js","filename":null}}>
         {content}
       </Layout>
     );

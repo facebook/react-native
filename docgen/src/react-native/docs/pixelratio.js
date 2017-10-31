@@ -93,7 +93,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"pixelratio","title":"PixelRatio","layout":"autodocs","category":"APIs","permalink":"docs/pixelratio.html","platform":"cross","next":"pushnotificationios","previous":"permissionsandroid","sidebar":true,"path":"Libraries/Utilities/PixelRatio.js","filename":null}}>
+      <Layout metadata={{"id":"pixelratio","title":"PixelRatio","layout":"autodocs","category":"APIs","permalink":"docs/pixelratio.html","platform":"cross","next":"pixelratio","previous":"panresponder","sidebar":true,"path":"Libraries/Utilities/PixelRatio.js","filename":null}}>
         {content}
       </Layout>
     );

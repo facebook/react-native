@@ -132,7 +132,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"interactionmanager","title":"InteractionManager","layout":"autodocs","category":"APIs","permalink":"docs/interactionmanager.html","platform":"cross","next":"keyboard","previous":"imagestore","sidebar":true,"path":"Libraries/Interaction/InteractionManager.js","filename":null}}>
+      <Layout metadata={{"id":"interactionmanager","title":"InteractionManager","layout":"autodocs","category":"APIs","permalink":"docs/interactionmanager.html","platform":"cross","next":"interactionmanager","previous":"imagepickerios","sidebar":true,"path":"Libraries/Interaction/InteractionManager.js","filename":null}}>
         {content}
       </Layout>
     );

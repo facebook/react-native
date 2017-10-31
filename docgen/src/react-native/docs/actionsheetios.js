@@ -78,7 +78,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"actionsheetios","title":"ActionSheetIOS","layout":"autodocs","category":"APIs","permalink":"docs/actionsheetios.html","platform":"ios","next":"alert","previous":"accessibilityinfo","sidebar":true,"path":"Libraries/ActionSheetIOS/ActionSheetIOS.js","filename":null}}>
+      <Layout metadata={{"id":"actionsheetios","title":"ActionSheetIOS","layout":"autodocs","category":"APIs","permalink":"docs/actionsheetios.html","platform":"ios","next":"actionsheetios","previous":"webview","sidebar":true,"path":"Libraries/ActionSheetIOS/ActionSheetIOS.js","filename":null}}>
         {content}
       </Layout>
     );

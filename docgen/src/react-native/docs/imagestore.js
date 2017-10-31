@@ -111,7 +111,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"imagestore","title":"ImageStore","layout":"autodocs","category":"APIs","permalink":"docs/imagestore.html","platform":"cross","next":"interactionmanager","previous":"imagepickerios","sidebar":true,"path":"Libraries/Image/ImageStore.js","filename":null}}>
+      <Layout metadata={{"id":"imagestore","title":"ImageStore","layout":"autodocs","category":"APIs","permalink":"docs/imagestore.html","platform":"cross","next":"imagestore","previous":"imageeditor","sidebar":true,"path":"Libraries/Image/ImageStore.js","filename":null}}>
         {content}
       </Layout>
     );

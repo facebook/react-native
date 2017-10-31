@@ -729,7 +729,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"touchablenativefeedback","title":"TouchableNativeFeedback","layout":"autodocs","category":"Components","permalink":"docs/touchablenativefeedback.html","platform":"cross","next":"touchableopacity","previous":"touchablehighlight","sidebar":true,"path":"Libraries/Components/Touchable/TouchableNativeFeedback.android.js","filename":null}}>
+      <Layout metadata={{"id":"touchablenativefeedback","title":"TouchableNativeFeedback","layout":"autodocs","category":"Components","permalink":"docs/touchablenativefeedback.html","platform":"cross","next":"touchablenativefeedback","previous":"toolbarandroid","sidebar":true,"path":"Libraries/Components/Touchable/TouchableNativeFeedback.android.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -233,7 +233,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"systrace","title":"Systrace","layout":"autodocs","category":"APIs","permalink":"docs/systrace.html","platform":"cross","next":"timepickerandroid","previous":"stylesheet","sidebar":true,"path":"Libraries/Performance/Systrace.js","filename":null}}>
+      <Layout metadata={{"id":"systrace","title":"Systrace","layout":"autodocs","category":"APIs","permalink":"docs/systrace.html","platform":"cross","next":"systrace","previous":"statusbarios","sidebar":true,"path":"Libraries/Performance/Systrace.js","filename":null}}>
         {content}
       </Layout>
     );

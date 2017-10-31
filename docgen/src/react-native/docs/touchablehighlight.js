@@ -702,7 +702,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"touchablehighlight","title":"TouchableHighlight","layout":"autodocs","category":"Components","permalink":"docs/touchablehighlight.html","platform":"cross","next":"touchablenativefeedback","previous":"toolbarandroid","sidebar":true,"path":"Libraries/Components/Touchable/TouchableHighlight.js","filename":null}}>
+      <Layout metadata={{"id":"touchablehighlight","title":"TouchableHighlight","layout":"autodocs","category":"Components","permalink":"docs/touchablehighlight.html","platform":"cross","next":"touchablehighlight","previous":"textinput","sidebar":true,"path":"Libraries/Components/Touchable/TouchableHighlight.js","filename":null}}>
         {content}
       </Layout>
     );

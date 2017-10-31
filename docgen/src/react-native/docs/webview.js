@@ -985,7 +985,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"webview","title":"WebView","layout":"autodocs","category":"Components","permalink":"docs/webview.html","platform":"cross","next":"accessibilityinfo","previous":"virtualizedlist","sidebar":true,"path":"Libraries/Components/WebView/WebView.ios.js","filename":null}}>
+      <Layout metadata={{"id":"webview","title":"WebView","layout":"autodocs","category":"Components","permalink":"docs/webview.html","platform":"cross","next":"webview","previous":"viewpagerandroid","sidebar":true,"path":"Libraries/Components/WebView/WebView.ios.js","filename":null}}>
         {content}
       </Layout>
     );

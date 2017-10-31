@@ -791,7 +791,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"slider","title":"Slider","layout":"autodocs","category":"Components","permalink":"docs/slider.html","platform":"cross","next":"snapshotviewios","previous":"segmentedcontrolios","sidebar":true,"path":"Libraries/Components/Slider/Slider.js","filename":null}}>
+      <Layout metadata={{"id":"slider","title":"Slider","layout":"autodocs","category":"Components","permalink":"docs/slider.html","platform":"cross","next":"slider","previous":"sectionlist","sidebar":true,"path":"Libraries/Components/Slider/Slider.js","filename":null}}>
         {content}
       </Layout>
     );

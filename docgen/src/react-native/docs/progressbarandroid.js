@@ -726,7 +726,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"progressbarandroid","title":"ProgressBarAndroid","layout":"autodocs","category":"Components","permalink":"docs/progressbarandroid.html","platform":"android","next":"progressviewios","previous":"pickerios","sidebar":true,"path":"Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"progressbarandroid","title":"ProgressBarAndroid","layout":"autodocs","category":"Components","permalink":"docs/progressbarandroid.html","platform":"android","next":"progressbarandroid","previous":"picker","sidebar":true,"path":"Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

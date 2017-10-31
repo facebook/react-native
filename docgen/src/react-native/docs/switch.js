@@ -711,7 +711,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"switch","title":"Switch","layout":"autodocs","category":"Components","permalink":"docs/switch.html","platform":"cross","next":"tabbarios","previous":"statusbar","sidebar":true,"path":"Libraries/Components/Switch/Switch.js","filename":null}}>
+      <Layout metadata={{"id":"switch","title":"Switch","layout":"autodocs","category":"Components","permalink":"docs/switch.html","platform":"cross","next":"switch","previous":"snapshotviewios","sidebar":true,"path":"Libraries/Components/Switch/Switch.js","filename":null}}>
         {content}
       </Layout>
     );

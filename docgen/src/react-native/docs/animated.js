@@ -1117,7 +1117,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"animated","title":"Animated","layout":"autodocs","category":"APIs","permalink":"docs/animated.html","platform":"cross","next":"appregistry","previous":"alertios","sidebar":true,"path":"Libraries/Animated/src/AnimatedImplementation.js","filename":null}}>
+      <Layout metadata={{"id":"animated","title":"Animated","layout":"autodocs","category":"APIs","permalink":"docs/animated.html","platform":"cross","next":"animated","previous":"alert","sidebar":true,"path":"Libraries/Animated/src/AnimatedImplementation.js","filename":null}}>
         {content}
       </Layout>
     );

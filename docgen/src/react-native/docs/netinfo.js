@@ -113,7 +113,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"netinfo","title":"NetInfo","layout":"autodocs","category":"APIs","permalink":"docs/netinfo.html","platform":"cross","next":"panresponder","previous":"linking","sidebar":true,"path":"Libraries/Network/NetInfo.js","filename":null}}>
+      <Layout metadata={{"id":"netinfo","title":"NetInfo","layout":"autodocs","category":"APIs","permalink":"docs/netinfo.html","platform":"cross","next":"netinfo","previous":"linking","sidebar":true,"path":"Libraries/Network/NetInfo.js","filename":null}}>
         {content}
       </Layout>
     );

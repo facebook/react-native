@@ -702,7 +702,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"layout-props","title":"Layout Props","layout":"autodocs","category":"APIs","permalink":"docs/layout-props.html","platform":"cross","next":"shadow-props","previous":"vibrationios","sidebar":true,"path":"Libraries/StyleSheet/LayoutPropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"layout-props","title":"Layout Props","layout":"autodocs","category":"APIs","permalink":"docs/layout-props.html","platform":"cross","next":"layout-props","previous":"vibration","sidebar":true,"path":"Libraries/StyleSheet/LayoutPropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

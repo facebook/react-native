@@ -711,7 +711,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"segmentedcontrolios","title":"SegmentedControlIOS","layout":"autodocs","category":"Components","permalink":"docs/segmentedcontrolios.html","platform":"ios","next":"slider","previous":"sectionlist","sidebar":true,"path":"Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"segmentedcontrolios","title":"SegmentedControlIOS","layout":"autodocs","category":"Components","permalink":"docs/segmentedcontrolios.html","platform":"ios","next":"segmentedcontrolios","previous":"scrollview","sidebar":true,"path":"Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

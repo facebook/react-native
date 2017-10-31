@@ -138,7 +138,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"imagestyleproptypes","title":"ImageStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/imagestyleproptypes.html","platform":"cross","next":null,"previous":"textstyleproptypes","sidebar":true,"path":"Libraries/Image/ImageStylePropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"imagestyleproptypes","title":"ImageStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/imagestyleproptypes.html","platform":"cross","next":"imagestyleproptypes","previous":"viewstyleproptypes","sidebar":true,"path":"Libraries/Image/ImageStylePropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

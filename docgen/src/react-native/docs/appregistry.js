@@ -301,7 +301,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"appregistry","title":"AppRegistry","layout":"autodocs","category":"APIs","permalink":"docs/appregistry.html","platform":"cross","next":"appstate","previous":"animated","sidebar":true,"path":"Libraries/ReactNative/AppRegistry.js","filename":null}}>
+      <Layout metadata={{"id":"appregistry","title":"AppRegistry","layout":"autodocs","category":"APIs","permalink":"docs/appregistry.html","platform":"cross","next":"appregistry","previous":"alertios","sidebar":true,"path":"Libraries/ReactNative/AppRegistry.js","filename":null}}>
         {content}
       </Layout>
     );

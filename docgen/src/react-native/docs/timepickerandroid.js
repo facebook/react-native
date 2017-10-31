@@ -64,7 +64,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"timepickerandroid","title":"TimePickerAndroid","layout":"autodocs","category":"APIs","permalink":"docs/timepickerandroid.html","platform":"android","next":"toastandroid","previous":"systrace","sidebar":true,"path":"Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"timepickerandroid","title":"TimePickerAndroid","layout":"autodocs","category":"APIs","permalink":"docs/timepickerandroid.html","platform":"android","next":"timepickerandroid","previous":"stylesheet","sidebar":true,"path":"Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

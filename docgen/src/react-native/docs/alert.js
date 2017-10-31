@@ -61,7 +61,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"alert","title":"Alert","layout":"autodocs","category":"APIs","permalink":"docs/alert.html","platform":"cross","next":"alertios","previous":"actionsheetios","sidebar":true,"path":"Libraries/Alert/Alert.js","filename":null}}>
+      <Layout metadata={{"id":"alert","title":"Alert","layout":"autodocs","category":"APIs","permalink":"docs/alert.html","platform":"cross","next":"alert","previous":"accessibilityinfo","sidebar":true,"path":"Libraries/Alert/Alert.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -113,7 +113,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"settings","title":"Settings","layout":"autodocs","category":"APIs","permalink":"docs/settings.html","platform":"cross","next":"share","previous":"pushnotificationios","sidebar":true,"path":"Libraries/Settings/Settings.ios.js","filename":null}}>
+      <Layout metadata={{"id":"settings","title":"Settings","layout":"autodocs","category":"APIs","permalink":"docs/settings.html","platform":"cross","next":"settings","previous":"pixelratio","sidebar":true,"path":"Libraries/Settings/Settings.ios.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -131,7 +131,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"toastandroid","title":"ToastAndroid","layout":"autodocs","category":"APIs","permalink":"docs/toastandroid.html","platform":"android","next":"vibration","previous":"timepickerandroid","sidebar":true,"path":"Libraries/Components/ToastAndroid/ToastAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"toastandroid","title":"ToastAndroid","layout":"autodocs","category":"APIs","permalink":"docs/toastandroid.html","platform":"android","next":"toastandroid","previous":"systrace","sidebar":true,"path":"Libraries/Components/ToastAndroid/ToastAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

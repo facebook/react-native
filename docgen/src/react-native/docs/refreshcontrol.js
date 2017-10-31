@@ -738,7 +738,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"refreshcontrol","title":"RefreshControl","layout":"autodocs","category":"Components","permalink":"docs/refreshcontrol.html","platform":"cross","next":"scrollview","previous":"progressviewios","sidebar":true,"path":"Libraries/Components/RefreshControl/RefreshControl.js","filename":null}}>
+      <Layout metadata={{"id":"refreshcontrol","title":"RefreshControl","layout":"autodocs","category":"Components","permalink":"docs/refreshcontrol.html","platform":"cross","next":"refreshcontrol","previous":"progressbarandroid","sidebar":true,"path":"Libraries/Components/RefreshControl/RefreshControl.js","filename":null}}>
         {content}
       </Layout>
     );

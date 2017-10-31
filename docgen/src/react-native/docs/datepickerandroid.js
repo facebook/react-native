@@ -64,7 +64,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"datepickerandroid","title":"DatePickerAndroid","layout":"autodocs","category":"APIs","permalink":"docs/datepickerandroid.html","platform":"android","next":"dimensions","previous":"clipboard","sidebar":true,"path":"Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"datepickerandroid","title":"DatePickerAndroid","layout":"autodocs","category":"APIs","permalink":"docs/datepickerandroid.html","platform":"android","next":"datepickerandroid","previous":"cameraroll","sidebar":true,"path":"Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

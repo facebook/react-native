@@ -825,7 +825,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"text","title":"Text","layout":"autodocs","category":"Components","permalink":"docs/text.html","platform":"cross","next":"textinput","previous":"tabbarios-item","sidebar":true,"path":"Libraries/Text/Text.js","filename":null}}>
+      <Layout metadata={{"id":"text","title":"Text","layout":"autodocs","category":"Components","permalink":"docs/text.html","platform":"cross","next":"text","previous":"tabbarios","sidebar":true,"path":"Libraries/Text/Text.js","filename":null}}>
         {content}
       </Layout>
     );

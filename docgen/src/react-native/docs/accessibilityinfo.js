@@ -120,7 +120,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"accessibilityinfo","title":"AccessibilityInfo","layout":"autodocs","category":"APIs","permalink":"docs/accessibilityinfo.html","platform":"cross","next":"actionsheetios","previous":"webview","sidebar":true,"path":"Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js","filename":null}}>
+      <Layout metadata={{"id":"accessibilityinfo","title":"AccessibilityInfo","layout":"autodocs","category":"APIs","permalink":"docs/accessibilityinfo.html","platform":"cross","next":"accessibilityinfo","previous":"virtualizedlist","sidebar":true,"path":"Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js","filename":null}}>
         {content}
       </Layout>
     );

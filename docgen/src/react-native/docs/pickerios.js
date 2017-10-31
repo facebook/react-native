@@ -673,7 +673,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"pickerios","title":"PickerIOS","layout":"autodocs","category":"Components","permalink":"docs/pickerios.html","platform":"ios","next":"progressbarandroid","previous":"picker","sidebar":true,"path":"Libraries/Components/Picker/PickerIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"pickerios","title":"PickerIOS","layout":"autodocs","category":"Components","permalink":"docs/pickerios.html","platform":"ios","next":"pickerios","previous":"navigatorios","sidebar":true,"path":"Libraries/Components/Picker/PickerIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

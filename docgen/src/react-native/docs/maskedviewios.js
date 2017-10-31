@@ -672,7 +672,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"maskedviewios","title":"MaskedViewIOS","layout":"autodocs","category":"Components","permalink":"docs/maskedviewios.html","platform":"ios","next":"modal","previous":"listview","sidebar":true,"path":"Libraries/Components/MaskedView/MaskedViewIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"maskedviewios","title":"MaskedViewIOS","layout":"autodocs","category":"Components","permalink":"docs/maskedviewios.html","platform":"ios","next":"maskedviewios","previous":"keyboardavoidingview","sidebar":true,"path":"Libraries/Components/MaskedView/MaskedViewIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

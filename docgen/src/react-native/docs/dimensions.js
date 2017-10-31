@@ -111,7 +111,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"dimensions","title":"Dimensions","layout":"autodocs","category":"APIs","permalink":"docs/dimensions.html","platform":"cross","next":"easing","previous":"datepickerandroid","sidebar":true,"path":"Libraries/Utilities/Dimensions.js","filename":null}}>
+      <Layout metadata={{"id":"dimensions","title":"Dimensions","layout":"autodocs","category":"APIs","permalink":"docs/dimensions.html","platform":"cross","next":"dimensions","previous":"clipboard","sidebar":true,"path":"Libraries/Utilities/Dimensions.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -706,7 +706,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"touchableopacity","title":"TouchableOpacity","layout":"autodocs","category":"Components","permalink":"docs/touchableopacity.html","platform":"cross","next":"touchablewithoutfeedback","previous":"touchablenativefeedback","sidebar":true,"path":"Libraries/Components/Touchable/TouchableOpacity.js","filename":null}}>
+      <Layout metadata={{"id":"touchableopacity","title":"TouchableOpacity","layout":"autodocs","category":"Components","permalink":"docs/touchableopacity.html","platform":"cross","next":"touchableopacity","previous":"touchablehighlight","sidebar":true,"path":"Libraries/Components/Touchable/TouchableOpacity.js","filename":null}}>
         {content}
       </Layout>
     );

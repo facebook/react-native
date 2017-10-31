@@ -258,7 +258,7 @@ function getViewPropTypes() {
   }
 
   return docgen.parse(
-    fs.readFileSync(docsList.viewPropTypes.replace('../','')),
+    fs.readFileSync(docsList.viewPropTypes),
     viewPropTypesResolver,
     [
       viewPropTypesConversionHandler,
@@ -268,7 +268,7 @@ function getViewPropTypes() {
 }
 
 function renderComponent(filepath) {
-  filepath = filepath.replace('../','');
+  // filepath = filepath.replace('../','');
   if (!fs.existsSync(filepath)) {
     console.log(`${filepath} does not exist at ${process.cwd()}`);
     return;
@@ -326,7 +326,7 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   // Parse via jsdoc-api
   let jsonParsed = jsdocApi.explainSync({
     source: code,
-    configure: '../jsdocs/jsdoc-conf.json'
+    configure: 'jsdocs/jsdoc-conf.json'
   });
   // Clean up jsdoc-api return
   jsonParsed = jsonParsed.filter(i => {

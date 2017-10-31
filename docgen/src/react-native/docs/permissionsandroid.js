@@ -115,7 +115,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"permissionsandroid","title":"PermissionsAndroid","layout":"autodocs","category":"APIs","permalink":"docs/permissionsandroid.html","platform":"android","next":"pixelratio","previous":"panresponder","sidebar":true,"path":"Libraries/PermissionsAndroid/PermissionsAndroid.js","filename":null}}>
+      <Layout metadata={{"id":"permissionsandroid","title":"PermissionsAndroid","layout":"autodocs","category":"APIs","permalink":"docs/permissionsandroid.html","platform":"android","next":"permissionsandroid","previous":"netinfo","sidebar":true,"path":"Libraries/PermissionsAndroid/PermissionsAndroid.js","filename":null}}>
         {content}
       </Layout>
     );

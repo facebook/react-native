@@ -1108,7 +1108,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"scrollview","title":"ScrollView","layout":"autodocs","category":"Components","permalink":"docs/scrollview.html","platform":"cross","next":"sectionlist","previous":"refreshcontrol","sidebar":true,"path":"Libraries/Components/ScrollView/ScrollView.js","filename":null}}>
+      <Layout metadata={{"id":"scrollview","title":"ScrollView","layout":"autodocs","category":"Components","permalink":"docs/scrollview.html","platform":"cross","next":"scrollview","previous":"progressviewios","sidebar":true,"path":"Libraries/Components/ScrollView/ScrollView.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -985,7 +985,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"statusbar","title":"StatusBar","layout":"autodocs","category":"Components","permalink":"docs/statusbar.html","platform":"cross","next":"switch","previous":"snapshotviewios","sidebar":true,"path":"Libraries/Components/StatusBar/StatusBar.js","filename":null}}>
+      <Layout metadata={{"id":"statusbar","title":"StatusBar","layout":"autodocs","category":"Components","permalink":"docs/statusbar.html","platform":"cross","next":"statusbar","previous":"slider","sidebar":true,"path":"Libraries/Components/StatusBar/StatusBar.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -791,7 +791,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"viewpagerandroid","title":"ViewPagerAndroid","layout":"autodocs","category":"Components","permalink":"docs/viewpagerandroid.html","platform":"android","next":"virtualizedlist","previous":"view","sidebar":true,"path":"Libraries/Components/ViewPager/ViewPagerAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"viewpagerandroid","title":"ViewPagerAndroid","layout":"autodocs","category":"Components","permalink":"docs/viewpagerandroid.html","platform":"android","next":"viewpagerandroid","previous":"touchablewithoutfeedback","sidebar":true,"path":"Libraries/Components/ViewPager/ViewPagerAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

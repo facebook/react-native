@@ -720,7 +720,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"button","title":"Button","layout":"autodocs","category":"Components","permalink":"docs/button.html","platform":"cross","next":"datepickerios","previous":"activityindicator","sidebar":true,"path":"Libraries/Components/Button.js","filename":null}}>
+      <Layout metadata={{"id":"button","title":"Button","layout":"autodocs","category":"Components","permalink":"docs/button.html","platform":"cross","next":"checkbox","previous":"activityindicator","sidebar":true,"path":"Libraries/Components/Button.js","filename":null}}>
         {content}
       </Layout>
     );

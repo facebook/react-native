@@ -106,7 +106,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"keyboard","title":"Keyboard","layout":"autodocs","category":"APIs","permalink":"docs/keyboard.html","platform":"cross","next":"layoutanimation","previous":"interactionmanager","sidebar":true,"path":"Libraries/Components/Keyboard/Keyboard.js","filename":null}}>
+      <Layout metadata={{"id":"keyboard","title":"Keyboard","layout":"autodocs","category":"APIs","permalink":"docs/keyboard.html","platform":"cross","next":"keyboard","previous":"imagestore","sidebar":true,"path":"Libraries/Components/Keyboard/Keyboard.js","filename":null}}>
         {content}
       </Layout>
     );

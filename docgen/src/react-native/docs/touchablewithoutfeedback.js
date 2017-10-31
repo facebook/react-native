@@ -777,7 +777,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"touchablewithoutfeedback","title":"TouchableWithoutFeedback","layout":"autodocs","category":"Components","permalink":"docs/touchablewithoutfeedback.html","platform":"cross","next":"view","previous":"touchableopacity","sidebar":true,"path":"Libraries/Components/Touchable/TouchableWithoutFeedback.js","filename":null}}>
+      <Layout metadata={{"id":"touchablewithoutfeedback","title":"TouchableWithoutFeedback","layout":"autodocs","category":"Components","permalink":"docs/touchablewithoutfeedback.html","platform":"cross","next":"touchablewithoutfeedback","previous":"touchablenativefeedback","sidebar":true,"path":"Libraries/Components/Touchable/TouchableWithoutFeedback.js","filename":null}}>
         {content}
       </Layout>
     );

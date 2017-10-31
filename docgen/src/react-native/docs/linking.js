@@ -120,7 +120,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"linking","title":"Linking","layout":"autodocs","category":"APIs","permalink":"docs/linking.html","platform":"cross","next":"netinfo","previous":"layoutanimation","sidebar":true,"path":"Libraries/Linking/Linking.js","filename":null}}>
+      <Layout metadata={{"id":"linking","title":"Linking","layout":"autodocs","category":"APIs","permalink":"docs/linking.html","platform":"cross","next":"linking","previous":"keyboard","sidebar":true,"path":"Libraries/Linking/Linking.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -785,7 +785,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"drawerlayoutandroid","title":"DrawerLayoutAndroid","layout":"autodocs","category":"Components","permalink":"docs/drawerlayoutandroid.html","platform":"android","next":"flatlist","previous":"datepickerios","sidebar":true,"path":"Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js","filename":null}}>
+      <Layout metadata={{"id":"drawerlayoutandroid","title":"DrawerLayoutAndroid","layout":"autodocs","category":"Components","permalink":"docs/drawerlayoutandroid.html","platform":"android","next":"drawerlayoutandroid","previous":"checkbox","sidebar":true,"path":"Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js","filename":null}}>
         {content}
       </Layout>
     );

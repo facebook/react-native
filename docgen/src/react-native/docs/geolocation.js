@@ -133,7 +133,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"geolocation","title":"Geolocation","layout":"autodocs","category":"APIs","permalink":"docs/geolocation.html","platform":"cross","next":"imageeditor","previous":"easing","sidebar":true,"path":"Libraries/Geolocation/Geolocation.js","filename":null}}>
+      <Layout metadata={{"id":"geolocation","title":"Geolocation","layout":"autodocs","category":"APIs","permalink":"docs/geolocation.html","platform":"cross","next":"geolocation","previous":"dimensions","sidebar":true,"path":"Libraries/Geolocation/Geolocation.js","filename":null}}>
         {content}
       </Layout>
     );

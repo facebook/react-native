@@ -789,7 +789,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"tabbarios-item","title":"TabBarIOS.Item","layout":"autodocs","category":"Components","permalink":"docs/tabbarios-item.html","platform":"ios","next":"text","previous":"tabbarios","sidebar":true,"path":"Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"tabbarios-item","title":"TabBarIOS.Item","layout":"autodocs","category":"Components","permalink":"docs/tabbarios-item.html","platform":"ios","next":"tabbarios-item","previous":"switch","sidebar":true,"path":"Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

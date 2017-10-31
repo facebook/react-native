@@ -92,7 +92,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"appstate","title":"AppState","layout":"autodocs","category":"APIs","permalink":"docs/appstate.html","platform":"cross","next":"asyncstorage","previous":"appregistry","sidebar":true,"path":"Libraries/AppState/AppState.js","filename":null}}>
+      <Layout metadata={{"id":"appstate","title":"AppState","layout":"autodocs","category":"APIs","permalink":"docs/appstate.html","platform":"cross","next":"appstate","previous":"animated","sidebar":true,"path":"Libraries/AppState/AppState.js","filename":null}}>
         {content}
       </Layout>
     );

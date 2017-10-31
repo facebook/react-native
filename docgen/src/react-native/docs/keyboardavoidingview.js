@@ -744,7 +744,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"keyboardavoidingview","title":"KeyboardAvoidingView","layout":"autodocs","category":"Components","permalink":"docs/keyboardavoidingview.html","platform":"cross","next":"listview","previous":"image","sidebar":true,"path":"Libraries/Components/Keyboard/KeyboardAvoidingView.js","filename":null}}>
+      <Layout metadata={{"id":"keyboardavoidingview","title":"KeyboardAvoidingView","layout":"autodocs","category":"Components","permalink":"docs/keyboardavoidingview.html","platform":"cross","next":"keyboardavoidingview","previous":"flatlist","sidebar":true,"path":"Libraries/Components/Keyboard/KeyboardAvoidingView.js","filename":null}}>
         {content}
       </Layout>
     );

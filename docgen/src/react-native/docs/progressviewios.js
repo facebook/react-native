@@ -705,7 +705,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"progressviewios","title":"ProgressViewIOS","layout":"autodocs","category":"Components","permalink":"docs/progressviewios.html","platform":"ios","next":"refreshcontrol","previous":"progressbarandroid","sidebar":true,"path":"Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"progressviewios","title":"ProgressViewIOS","layout":"autodocs","category":"Components","permalink":"docs/progressviewios.html","platform":"ios","next":"progressviewios","previous":"pickerios","sidebar":true,"path":"Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

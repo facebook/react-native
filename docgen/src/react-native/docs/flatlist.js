@@ -1273,7 +1273,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"flatlist","title":"FlatList","layout":"autodocs","category":"Components","permalink":"docs/flatlist.html","platform":"cross","next":"image","previous":"drawerlayoutandroid","sidebar":true,"path":"Libraries/Lists/FlatList.js","filename":null}}>
+      <Layout metadata={{"id":"flatlist","title":"FlatList","layout":"autodocs","category":"Components","permalink":"docs/flatlist.html","platform":"cross","next":"flatlist","previous":"datepickerios","sidebar":true,"path":"Libraries/Lists/FlatList.js","filename":null}}>
         {content}
       </Layout>
     );

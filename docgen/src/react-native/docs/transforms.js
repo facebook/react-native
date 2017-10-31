@@ -151,7 +151,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"transforms","title":"Transforms","layout":"autodocs","category":"APIs","permalink":"docs/transforms.html","platform":"cross","next":"shadow-props","previous":"layout-props","sidebar":false,"path":"Libraries/StyleSheet/TransformPropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"transforms","title":"Transforms","layout":"autodocs","category":"APIs","permalink":"docs/transforms.html","platform":"cross","next":"shadow-props","previous":"vibrationios","sidebar":false,"path":"Libraries/StyleSheet/TransformPropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

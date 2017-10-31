@@ -175,7 +175,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"layoutanimation","title":"LayoutAnimation","layout":"autodocs","category":"APIs","permalink":"docs/layoutanimation.html","platform":"cross","next":"linking","previous":"keyboard","sidebar":true,"path":"Libraries/LayoutAnimation/LayoutAnimation.js","filename":null}}>
+      <Layout metadata={{"id":"layoutanimation","title":"LayoutAnimation","layout":"autodocs","category":"APIs","permalink":"docs/layoutanimation.html","platform":"cross","next":"layoutanimation","previous":"interactionmanager","sidebar":true,"path":"Libraries/LayoutAnimation/LayoutAnimation.js","filename":null}}>
         {content}
       </Layout>
     );

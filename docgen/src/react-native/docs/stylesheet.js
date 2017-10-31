@@ -130,7 +130,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"stylesheet","title":"StyleSheet","layout":"autodocs","category":"APIs","permalink":"docs/stylesheet.html","platform":"cross","next":"systrace","previous":"statusbarios","sidebar":true,"path":"Libraries/StyleSheet/StyleSheet.js","filename":null}}>
+      <Layout metadata={{"id":"stylesheet","title":"StyleSheet","layout":"autodocs","category":"APIs","permalink":"docs/stylesheet.html","platform":"cross","next":"stylesheet","previous":"share","sidebar":true,"path":"Libraries/StyleSheet/StyleSheet.js","filename":null}}>
         {content}
       </Layout>
     );

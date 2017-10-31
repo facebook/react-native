@@ -854,7 +854,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"listview","title":"ListView","layout":"autodocs","category":"Components","permalink":"docs/listview.html","platform":"cross","next":"maskedviewios","previous":"keyboardavoidingview","sidebar":true,"path":"Libraries/Lists/ListView/ListView.js","filename":null}}>
+      <Layout metadata={{"id":"listview","title":"ListView","layout":"autodocs","category":"Components","permalink":"docs/listview.html","platform":"cross","next":"listview","previous":"image","sidebar":true,"path":"Libraries/Lists/ListView/ListView.js","filename":null}}>
         {content}
       </Layout>
     );

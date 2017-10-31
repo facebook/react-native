@@ -77,7 +77,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"share","title":"Share","layout":"autodocs","category":"APIs","permalink":"docs/share.html","platform":"cross","next":"statusbarios","previous":"settings","sidebar":true,"path":"Libraries/Share/Share.js","filename":null}}>
+      <Layout metadata={{"id":"share","title":"Share","layout":"autodocs","category":"APIs","permalink":"docs/share.html","platform":"cross","next":"share","previous":"pushnotificationios","sidebar":true,"path":"Libraries/Share/Share.js","filename":null}}>
         {content}
       </Layout>
     );

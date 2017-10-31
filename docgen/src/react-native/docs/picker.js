@@ -757,7 +757,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"picker","title":"Picker","layout":"autodocs","category":"Components","permalink":"docs/picker.html","platform":"cross","next":"pickerios","previous":"navigatorios","sidebar":true,"path":"Libraries/Components/Picker/Picker.js","filename":null}}>
+      <Layout metadata={{"id":"picker","title":"Picker","layout":"autodocs","category":"Components","permalink":"docs/picker.html","platform":"cross","next":"picker","previous":"modal","sidebar":true,"path":"Libraries/Components/Picker/Picker.js","filename":null}}>
         {content}
       </Layout>
     );

@@ -1002,7 +1002,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"navigatorios","title":"NavigatorIOS","layout":"autodocs","category":"Components","permalink":"docs/navigatorios.html","platform":"ios","next":"picker","previous":"modal","sidebar":true,"path":"Libraries/Components/Navigation/NavigatorIOS.ios.js","filename":null}}>
+      <Layout metadata={{"id":"navigatorios","title":"NavigatorIOS","layout":"autodocs","category":"Components","permalink":"docs/navigatorios.html","platform":"ios","next":"navigatorios","previous":"maskedviewios","sidebar":true,"path":"Libraries/Components/Navigation/NavigatorIOS.ios.js","filename":null}}>
         {content}
       </Layout>
     );

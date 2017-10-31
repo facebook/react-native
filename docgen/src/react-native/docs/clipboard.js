@@ -55,7 +55,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"clipboard","title":"Clipboard","layout":"autodocs","category":"APIs","permalink":"docs/clipboard.html","platform":"cross","next":"datepickerandroid","previous":"cameraroll","sidebar":true,"path":"Libraries/Components/Clipboard/Clipboard.js","filename":null}}>
+      <Layout metadata={{"id":"clipboard","title":"Clipboard","layout":"autodocs","category":"APIs","permalink":"docs/clipboard.html","platform":"cross","next":"clipboard","previous":"backhandler","sidebar":true,"path":"Libraries/Components/Clipboard/Clipboard.js","filename":null}}>
         {content}
       </Layout>
     );

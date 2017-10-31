@@ -325,7 +325,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"textstyleproptypes","title":"TextStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/textstyleproptypes.html","platform":"cross","next":"imagestyleproptypes","previous":"viewstyleproptypes","sidebar":true,"path":"Libraries/Text/TextStylePropTypes.js","filename":null}}>
+      <Layout metadata={{"id":"textstyleproptypes","title":"TextStylePropTypes","layout":"autodocs","category":"APIs","permalink":"docs/textstyleproptypes.html","platform":"cross","next":"textstyleproptypes","previous":"viewproptypes","sidebar":true,"path":"Libraries/Text/TextStylePropTypes.js","filename":null}}>
         {content}
       </Layout>
     );

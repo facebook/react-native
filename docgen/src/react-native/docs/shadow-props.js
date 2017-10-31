@@ -54,7 +54,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"shadow-props","title":"Shadow Props","layout":"autodocs","category":"APIs","permalink":"docs/shadow-props.html","platform":"ios","next":"viewproptypes","previous":"layout-props","sidebar":true,"path":"Libraries/Components/View/ShadowPropTypesIOS.js","filename":null}}>
+      <Layout metadata={{"id":"shadow-props","title":"Shadow Props","layout":"autodocs","category":"APIs","permalink":"docs/shadow-props.html","platform":"ios","next":"shadow-props","previous":"layout-props","sidebar":true,"path":"Libraries/Components/View/ShadowPropTypesIOS.js","filename":null}}>
         {content}
       </Layout>
     );

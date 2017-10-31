@@ -46,7 +46,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"panresponder","title":"PanResponder","layout":"autodocs","category":"APIs","permalink":"docs/panresponder.html","platform":"cross","next":"permissionsandroid","previous":"netinfo","sidebar":true,"path":"Libraries/Interaction/PanResponder.js","filename":null}}>
+      <Layout metadata={{"id":"panresponder","title":"PanResponder","layout":"autodocs","category":"APIs","permalink":"docs/panresponder.html","platform":"cross","next":"panresponder","previous":"linking","sidebar":true,"path":"Libraries/Interaction/PanResponder.js","filename":null}}>
         {content}
       </Layout>
     );

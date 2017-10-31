@@ -212,7 +212,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"listviewdatasource","title":"ListViewDataSource","layout":"autodocs","category":"APIs","permalink":"docs/listviewdatasource.html","platform":"cross","next":"netinfo","previous":"linking","sidebar":false,"path":"Libraries/Lists/ListView/ListViewDataSource.js","filename":null}}>
+      <Layout metadata={{"id":"listviewdatasource","title":"ListViewDataSource","layout":"autodocs","category":"APIs","permalink":"docs/listviewdatasource.html","platform":"cross","next":"netinfo","previous":"layoutanimation","sidebar":false,"path":"Libraries/Lists/ListView/ListViewDataSource.js","filename":null}}>
         {content}
       </Layout>
     );

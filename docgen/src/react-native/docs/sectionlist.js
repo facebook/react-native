@@ -1226,7 +1226,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"sectionlist","title":"SectionList","layout":"autodocs","category":"Components","permalink":"docs/sectionlist.html","platform":"cross","next":"segmentedcontrolios","previous":"scrollview","sidebar":true,"path":"Libraries/Lists/SectionList.js","filename":null}}>
+      <Layout metadata={{"id":"sectionlist","title":"SectionList","layout":"autodocs","category":"Components","permalink":"docs/sectionlist.html","platform":"cross","next":"sectionlist","previous":"refreshcontrol","sidebar":true,"path":"Libraries/Lists/SectionList.js","filename":null}}>
         {content}
       </Layout>
     );

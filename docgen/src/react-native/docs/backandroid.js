@@ -80,7 +80,7 @@ var Page = React.createClass({
   statics: { content: content },
   render: function() {
     return (
-      <Layout metadata={{"id":"backandroid","title":"BackAndroid","layout":"autodocs","category":"APIs","permalink":"docs/backandroid.html","platform":"android","next":"backhandler","previous":"asyncstorage","sidebar":true,"path":"Libraries/Utilities/BackAndroid.js","filename":null}}>
+      <Layout metadata={{"id":"backandroid","title":"BackAndroid","layout":"autodocs","category":"APIs","permalink":"docs/backandroid.html","platform":"android","next":"backandroid","previous":"appstate","sidebar":true,"path":"Libraries/Utilities/BackAndroid.js","filename":null}}>
         {content}
       </Layout>
     );
