@@ -23,7 +23,7 @@ const siteConfig = {
      language the page is for, ex: 'en' */
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
-    { doc: "components", label: "APIs" },
+    { doc: "components-and-apis", label: "APIs" },
     { page: "help", label: "Community" },
     { blog: true, label: "Blog" },
     { search: true },

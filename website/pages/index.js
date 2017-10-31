@@ -9,11 +9,11 @@
 
 const React = require("react");
 
-const CompLibrary = require("../../core/CompLibrary.js");
+const CompLibrary = require("../core/CompLibrary.js");
 const Marked = CompLibrary.Marked; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
-const Prism = require("../../core/Prism.js"); // replace with CompLibrary.Prism when docusaurus is updated in npm
+// const Prism = require("../../core/Prism.js"); // replace with CompLibrary.Prism when docusaurus is updated in npm
 
 const siteConfig = require(process.cwd() + "/siteConfig.js");
 
@@ -129,7 +129,7 @@ class Features extends React.Component {
                 React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
               </Marked>
             </div>
-            <Prism>
+            <Marked>
               {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
@@ -148,7 +148,7 @@ class WhyReactNativeIsSoGreat extends Component {
     );
   }
 }`}
-            </Prism>
+            </Marked>
           </div>
         </Container>
         <Container>
@@ -161,7 +161,7 @@ class WhyReactNativeIsSoGreat extends Component {
                 With React Native, you don't build a "mobile web app", an "HTML5 app", or a "hybrid app". You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
               </Marked>
             </div>
-            <Prism>
+            <Marked>
               {`import React, { Component } from 'react';
 import { Image, ScrollView, Text } from 'react-native';
 
@@ -187,7 +187,7 @@ class AwkwardScrollingImageWithText extends Component {
     );
   }
 }`}
-            </Prism>
+            </Marked>
           </div>
         </Container>
         <Container>
@@ -217,7 +217,7 @@ class AwkwardScrollingImageWithText extends Component {
                 </Marked>
               </div>
             </div>
-            <Prism>
+            <Marked>
               {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { TheGreatestComponentInTheWorld } from './your-native-code';
@@ -235,7 +235,7 @@ class SomethingFast extends Component {
     );
   }
 }`}
-            </Prism>
+            </Marked>
 
           </div>
         </Container>

@@ -105,7 +105,6 @@ function generateAutodocForFile(file, options) {
     .then(body => {
       const dom = new JSDOM(body);
 
-
       const markdown = generateMarkdownFromDOM(dom);
       const frontmatter = fm(markdown);
 
@@ -122,12 +121,6 @@ function generateAutodocForFile(file, options) {
 /**
  * Generates Markdown documentation. Uses the convert script to extract docs from source files.
  *
- * STATUS FRIDAY 6:
- * Checking out tags and runnign autodocs for each tag not working out.
- * Lets instead check out thw tags and parse out the docs from the existing html, much easier. No need to re-generate when they already exist.
- * we can use filename as key
- *
- * we can then copy ecisting md files from there. solves a lot ofg issues
  */
 function generateAutodocs(options = { version: 'next' }) {
   console.log(`Generating Markdown files from JavaScript sources for version ${options.version}.`);
@@ -179,9 +172,6 @@ function checkOutDocs() {
       return;
     })
     .then(() => {
-      // shell.exec(`git config core.sparsecheckout true`).code !== 0;
-      // shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
-      // shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
       if (shell.exec(`git fetch`).code !== 0) {
         throw new Error('Error: git fetch failed');
       }
@@ -224,9 +214,6 @@ function checkOutDocs() {
             sidebarMetadata[version].push(frontmatter.attributes.id);
             return fs.outputFile(pathToOutputFile.toString(), markdown);
           }
-
-          // Couple things: we need docs/ to have a copy of 0.50 or next, without the versioned ids
-          // Plus I think we are having trouble loading docs that existing in older versions but got deleted. That' the next thing
           return;
         });
       });
@@ -236,7 +223,6 @@ function checkOutDocs() {
       const pathToSidebarMetadataFile = filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR, `sidebars-metadata.json`);
       return fs.outputFile(pathToSidebarMetadataFile.toString(), JSON.stringify(sidebarMetadata));
     }).then(() => {
-      let seq = Promise.resolve();
       filepath.create(CWD, '..', 'website', SIDEBAR_DIR);
       for (const version in sidebarMetadata) {
         if (sidebarMetadata.hasOwnProperty(version)) {
@@ -257,7 +243,105 @@ function checkOutDocs() {
 
       const pathToVersionsFile = filepath.create(CWD, BUILD_DIR, `versions.json`);
       return fs.outputFile(pathToVersionsFile.toString(), JSON.stringify(versions.reverse()));
+    }).then(() => {
+      shell.cd(CWD);
+      shell.cd(BUILD_DIR);
+      shell.cd(CHECKOUT_DIR);
+
+      shell.exec(`git config core.sparsecheckout true`).code !== 0;
+      shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
+      shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
+
+      if (shell.exec(`git checkout master`).code !== 0) {
+        throw new Error('Error: git checkout failed');
+      }
+
+      // maybe should clear out before?
+      shell.cp('-r', 'docs/*.md', '../../docs/.');
+
+      return glob('docs/**/*.md');
+    }).then(() => {
+      // now we handle sidebarring
+      // and make versioned sidebar?
+      return; //copy
+    }).then(() => {
+      // then finally we run docgen over Libraries/...
     });
+}
+
+function checkoutMasterDocs() {
+  const pathToGitCheckout = filepath.create(BUILD_DIR, CHECKOUT_DIR);
+  
+    let sidebarMetadata = {};
+    const p = Promise.resolve();
+    return p
+      .then(() => {
+        return fs.ensureDir(pathToGitCheckout.toString());
+      })
+      .then(() => {
+        shell.cd(CWD);
+        shell.cd(BUILD_DIR);
+        shell.cd(CHECKOUT_DIR);
+        return fs.exists(pathToGitCheckout.append(`.git`).toString())
+      }).then(gitCheckoutExists => {
+        if (!gitCheckoutExists) {
+          shell.exec(`git init`).code !== 0;
+  
+          if (shell.exec(`git remote add origin ${remoteBranch}`).code !== 0) {
+            throw new Error('Error: git remote failed');
+          }
+        }
+        return;
+      })
+      .then(() => {
+        if (shell.exec(`git fetch`).code !== 0) {
+          throw new Error('Error: git fetch failed');
+        }
+ 
+        shell.exec(`git config core.sparsecheckout true`).code !== 0;
+        shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
+        shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
+  
+        if (shell.exec(`git checkout master`).code !== 0) {
+          throw new Error('Error: git checkout failed');
+        }
+  
+        return glob('docs/**/*.md');
+      }).then((files) => {
+        let seq = Promise.resolve(); 
+        files.forEach((file) => {
+          seq = seq.then(() => {
+            console.log(`reading ${file}`)
+            return fs.readFile(file);
+          }).then((originalMarkdown) => {
+            console.log(`got:\n${originalMarkdown}`)
+            const frontmatter = fm(originalMarkdown);
+            
+            const transformedMarkdown = [
+              '---',
+              'id: ' + frontmatter.attributes.id,
+              'title: ' + frontmatter.attributes.title,
+              '---',
+              frontmatter.body
+            ]
+              .filter(function(line) {
+                return line;
+              })
+              .join('\n');
+  
+              const pathToOutputFile = filepath.create(CWD, '../..', 'docs', `${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
+            return fs.outputFile(pathToOutputFile.toString(), transformedMarkdown);
+          });
+        });
+        // now we convert
+        // now we handle sidebarring
+        // and make versioned sidebar?
+        return seq; //copy
+      }).then(() => {
+        // then finally we run docgen over Libraries/...
+        console.log(`should codegen`)
+      });
+    
 }
 
 function extractDocVersionFromFilename(file) {
@@ -392,7 +476,8 @@ if (argv.clean) {
 
 if (argv.autodocs) {
   runChecks();
-  checkOutDocs();
+  // checkOutDocs();
+  checkoutMasterDocs();
 }
 
 /**
