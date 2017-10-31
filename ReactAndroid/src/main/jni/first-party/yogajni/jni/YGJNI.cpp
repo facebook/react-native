@@ -249,6 +249,10 @@ jboolean jni_YGNodeIsDirty(alias_ref<jobject>, jlong nativePointer) {
   return (jboolean) YGNodeIsDirty(_jlong2YGNodeRef(nativePointer));
 }
 
+jboolean jni_YGNodeHasDirtyDescendants(alias_ref<jobject>, jlong nativePointer) {
+  return (jboolean) YGNodeHasDirtyDescendants(_jlong2YGNodeRef(nativePointer));
+}
+
 void jni_YGNodeSetHasMeasureFunc(alias_ref<jobject>, jlong nativePointer, jboolean hasMeasureFunc) {
   YGNodeSetMeasureFunc(_jlong2YGNodeRef(nativePointer), hasMeasureFunc ? YGJNIMeasureFunc : NULL);
 }
@@ -422,9 +426,7 @@ void jni_YGConfigSetLogger(alias_ref<jobject>, jlong nativePointer, alias_ref<jo
 
   auto context = YGConfigGetContext(config);
   if (context) {
-    auto jlogger = reinterpret_cast<global_ref<jobject> *>(context);
-    jlogger->releaseAlias();
-    delete jlogger;
+    delete reinterpret_cast<global_ref<jobject> *>(context);
   }
 
   if (logger) {
@@ -455,6 +457,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeCalculateLayout),
                         YGMakeNativeMethod(jni_YGNodeMarkDirty),
                         YGMakeNativeMethod(jni_YGNodeIsDirty),
+                        YGMakeNativeMethod(jni_YGNodeHasDirtyDescendants),
                         YGMakeNativeMethod(jni_YGNodeSetHasMeasureFunc),
                         YGMakeNativeMethod(jni_YGNodeSetHasBaselineFunc),
                         YGMakeNativeMethod(jni_YGNodeCopyStyle),
