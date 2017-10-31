@@ -9,7 +9,7 @@
 
 'use strict';
 const connect = require('connect');
-const convert = require('./convert.js');
+// const convert = require('./convert.js');
 const http = require('http');
 const optimist = require('optimist');
 const path = require('path');
@@ -47,7 +47,7 @@ const app = connect()
     // but fast enough that we don't really need to care right now.
     if (!server.noconvert && req.url.match(/\.html|\/$/)) {
       var extractDocs = req.url.match(/\/docs/); // Lazily extract docs.
-      convert({extractDocs});
+      // convert({extractDocs});
     }
     next();
   })

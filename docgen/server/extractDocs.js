@@ -258,7 +258,7 @@ function getViewPropTypes() {
   }
 
   return docgen.parse(
-    fs.readFileSync(docsList.viewPropTypes),
+    fs.readFileSync(docsList.viewPropTypes.replace('../','')),
     viewPropTypesResolver,
     [
       viewPropTypesConversionHandler,
@@ -268,8 +268,9 @@ function getViewPropTypes() {
 }
 
 function renderComponent(filepath) {
+  filepath = filepath.replace('../','');
   if (!fs.existsSync(filepath)) {
-    // We're processing old versions of the docs that may be missing newer libraries.
+    console.log(`${filepath} does not exist at ${process.cwd()}`);
     return;
   }
   try {
@@ -520,7 +521,6 @@ function renderStyle(filepath) {
 const all = docsList.components
   .concat(docsList.apis)
   .concat(docsList.stylesWithPermalink);
-
 const styleDocs = docsList.stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
@@ -543,6 +543,7 @@ function extractDocs() {
     return renderAPI(filepath, 'api');
   });
   var styles = docsList.stylesWithPermalink.map(renderStyle);
+
   return [].concat(
     components,
     apis,

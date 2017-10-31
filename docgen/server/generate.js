@@ -18,7 +18,7 @@ const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 const shell = require('shelljs');
 
-// const convert = require('./convert.js');
+const convert = require('./convert.js');
 const slugify = require('../core/slugify');
 
 const CWD = process.cwd();
@@ -39,8 +39,8 @@ const SIDEBAR_DIR = 'versioned_sidebars';
 const { JSDOM } = jsdom;
 
 // Start up a server. Don't forget to close the connection when done.
-// const server = require('./server.js');
-// server.noconvert = true;
+const server = require('./server.js');
+server.noconvert = true;
 
 const argv = require('minimist')(process.argv.slice(2), {
   alias: {
@@ -119,31 +119,35 @@ function generateAutodocForFile(file, options) {
 }
 
 /**
- * Generates Markdown documentation. Uses the convert script to extract docs from source files.
- *
+ * Generates Markdown documentation. 
+ * Uses the convert script to extract docs from source files.
  */
-function generateAutodocs(options = { version: 'next' }) {
-  console.log(`Generating Markdown files from JavaScript sources for version ${options.version}.`);
-  convert({extractDocs: true});
-  let queue = Promise.resolve();
+function generateAutodocs(options = { }) {
+  console.log(`Generating Markdown files from JavaScript sources.`);
 
-  return Promise.resolve().then(function() {
-    return glob('src/**/*.js');
-  }).then(function(files) {
-    let p = Promise.resolve();
-    files.forEach(function(file) {
-      p = p.then(function() {
-        return generateAutodocForFile(file, options);
+  const metadata = convert({extractDocs: true});
+  return Promise.resolve()
+    .then(function() {
+      return glob('src/**/*.js');
+    })
+    .then(function(files) {
+      let queue = Promise.resolve();
+      files.forEach(function(file) {
+        queue = queue.then(function() {
+          return generateAutodocForFile(file, options);
+        });
       });
-    });
 
-    return p;
-  }).then(function() {
-    console.log(`Generated Markdown files from JavaScript sources for version ${options.version}.`);
-  }).catch(function(e) {
-    console.error(e);
-    process.exit(1);
-  });
+      return queue;
+    })
+    .then(function() {
+      console.log(`Generated Markdown files from JavaScript sources.`);
+      return metadata;
+    })
+    .catch(function(e) {
+      console.error(e);
+      process.exit(1);
+    });
 }
 
 // Check out gh-pages branch
@@ -272,76 +276,90 @@ function checkOutDocs() {
 function checkoutMasterDocs() {
   const pathToGitCheckout = filepath.create(BUILD_DIR, CHECKOUT_DIR);
   
-    let sidebarMetadata = {};
-    const p = Promise.resolve();
-    return p
-      .then(() => {
-        return fs.ensureDir(pathToGitCheckout.toString());
-      })
-      .then(() => {
-        shell.cd(CWD);
-        shell.cd(BUILD_DIR);
-        shell.cd(CHECKOUT_DIR);
-        return fs.exists(pathToGitCheckout.append(`.git`).toString())
-      }).then(gitCheckoutExists => {
-        if (!gitCheckoutExists) {
-          shell.exec(`git init`).code !== 0;
-  
-          if (shell.exec(`git remote add origin ${remoteBranch}`).code !== 0) {
-            throw new Error('Error: git remote failed');
+  let sidebarMetadata = {};
+  const p = Promise.resolve();
+  return p
+    .then(() => {
+      return fs.ensureDir(pathToGitCheckout.toString());
+    })
+    .then(() => {
+      shell.cd(CWD);
+      shell.cd(BUILD_DIR);
+      shell.cd(CHECKOUT_DIR);
+      return fs.exists(pathToGitCheckout.append(`.git`).toString())
+    })
+    .then(gitCheckoutExists => {
+      if (!gitCheckoutExists) {
+        shell.exec(`git init`).code !== 0;
+
+        if (shell.exec(`git remote add origin ${remoteBranch}`).code !== 0) {
+          throw new Error('Error: git remote failed');
+        }
+      }
+      return;
+    })
+    .then(() => {
+      if (shell.exec(`git fetch`).code !== 0) {
+        throw new Error('Error: git fetch failed');
+      }
+      shell.exec(`git config core.sparsecheckout true`).code !== 0;
+      shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
+      shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
+      
+      if (shell.exec(`git checkout master`).code !== 0) {
+        throw new Error('Error: git checkout failed');
+      }
+
+      return glob('docs/**/*.md');
+    })
+    .then((files) => {
+      let seq = Promise.resolve(); 
+      files.forEach((file) => {
+        seq = seq.then(() => {
+          return fs.readFile(file, 'utf8');
+        }).then((originalMarkdown) => {
+          const frontmatter = fm(originalMarkdown);
+          
+          const category = frontmatter.attributes.category;
+          const transformedMarkdown = [
+            '---',
+            'id: ' + frontmatter.attributes.id,
+            'title: ' + frontmatter.attributes.title,
+            '---',
+            frontmatter.body
+          ].filter(function(line) {
+            return line;
+          }).join('\n');
+
+          if (!sidebarMetadata.hasOwnProperty(category)) {
+            sidebarMetadata[category] = [];
           }
-        }
-        return;
-      })
-      .then(() => {
-        if (shell.exec(`git fetch`).code !== 0) {
-          throw new Error('Error: git fetch failed');
-        }
- 
-        shell.exec(`git config core.sparsecheckout true`).code !== 0;
-        shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
-        shell.exec(`echo "Libraries/*" >> .git/info/sparse-checkout`).code !== 0;
-  
-        if (shell.exec(`git checkout master`).code !== 0) {
-          throw new Error('Error: git checkout failed');
-        }
-  
-        return glob('docs/**/*.md');
-      }).then((files) => {
-        let seq = Promise.resolve(); 
-        files.forEach((file) => {
-          seq = seq.then(() => {
-            console.log(`reading ${file}`)
-            return fs.readFile(file);
-          }).then((originalMarkdown) => {
-            console.log(`got:\n${originalMarkdown}`)
-            const frontmatter = fm(originalMarkdown);
-            
-            const transformedMarkdown = [
-              '---',
-              'id: ' + frontmatter.attributes.id,
-              'title: ' + frontmatter.attributes.title,
-              '---',
-              frontmatter.body
-            ]
-              .filter(function(line) {
-                return line;
-              })
-              .join('\n');
-  
-              const pathToOutputFile = filepath.create(CWD, '../..', 'docs', `${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
-            return fs.outputFile(pathToOutputFile.toString(), transformedMarkdown);
-          });
+
+          sidebarMetadata[category].push(frontmatter.attributes.id);
+
+          const pathToOutputFile = filepath.create(CWD, '..', 'docs', `${frontmatter.attributes.id}.${MARKDOWN_EXTENSION}`);
+          return fs.outputFile(pathToOutputFile.toString(), transformedMarkdown);
         });
-        // now we convert
-        // now we handle sidebarring
-        // and make versioned sidebar?
-        return seq; //copy
-      }).then(() => {
-        // then finally we run docgen over Libraries/...
-        console.log(`should codegen`)
       });
-    
+      // now we convert
+      // now we handle sidebarring
+      // and make versioned sidebar?
+      return seq; //copy
+    })
+    .then(() => {
+
+    })
+    .then(() => {
+      return generateAutodocs();
+    })
+    .then(() => {
+      console.log(`My sidebar: ${JSON.stringify(sidebarMetadata)}`);
+
+      // then finally we run docgen over Libraries/...
+      console.log(`should codegen`)
+      const pathToOutputFile = filepath.create(CWD, '..', 'website', `gen-sidebars.json`);
+      return fs.outputFile(pathToOutputFile.toString(), { "docs": sidebarMetadata });
+    });
 }
 
 function extractDocVersionFromFilename(file) {
@@ -477,7 +495,13 @@ if (argv.clean) {
 if (argv.autodocs) {
   runChecks();
   // checkOutDocs();
-  checkoutMasterDocs();
+  checkoutMasterDocs()
+    .finally(function() {
+      server.close();
+    }).catch(function(e) {
+      console.error(e);
+      process.exit(1);
+    });
 }
 
 /**

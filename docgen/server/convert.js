@@ -157,14 +157,8 @@ function execute(options) {
       metadatas.config[key] = process.env[key];
     });
 
-  // fs.writeFileSync(
-  //   'core/metadata.js',
-  //   '/**\n' +
-  //   ' * @generated\n' +
-  //   ' * @providesModule Metadata\n' +
-  //   ' */\n' +
-  //   'module.exports = ' + JSON.stringify(metadatas, null, 2) + ';'
-  // );
+  console.log(`conversion finished.`)
+  return JSON.stringify(metadatas, null, 2);
 }
 
 if (argv.convert) {
