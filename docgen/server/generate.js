@@ -347,12 +347,6 @@ function checkoutMasterDocs() {
       return seq; //copy
     })
     .then(() => {
-
-    })
-    .then(() => {
-      return generateAutodocs();
-    })
-    .then(() => {
       console.log(`My sidebar: ${JSON.stringify(sidebarMetadata)}`);
 
       // then finally we run docgen over Libraries/...
@@ -488,21 +482,31 @@ function generateMetatadaFile(categories) {
 // END DOM
 
 
+function checkoutAutodocs() {
+  return Promise.resolve()
+  .then(() => {
+    return generateAutodocs();
+  })
+  .finally(function() {
+    server.close();
+  }).catch(function(e) {
+    console.error(e);
+    process.exit(1);
+  });
+}
+
 if (argv.clean) {
   cleanFiles();
 }
 
-if (argv.autodocs) {
-  runChecks();
-  // checkOutDocs();
-  checkoutMasterDocs()
-    .finally(function() {
-      server.close();
-    }).catch(function(e) {
-      console.error(e);
-      process.exit(1);
-    });
-}
+// if (argv.autodocs) {
+runChecks();
+// checkOutDocs();
+checkoutMasterDocs()
+  .then(() => {
+    checkoutAutodocs();
+  })  
+// }
 
 /**
  * Check out gh-pages branch, cd releases/
