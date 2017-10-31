@@ -147,6 +147,9 @@ const API = {
 const STYLES_WHITELIST = {
   opacity: true,
   transform: true,
+  /* ios styles */
+  shadowOpacity: true,
+  shadowRadius: true,
   /* legacy android transform properties */
   scaleX: true,
   scaleY: true,
