@@ -768,7 +768,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method
                         arguments:(NSArray *)arguments
-                            error:(NSError **)error
+                            error:(NSError __autoreleasing **)error
 {
   RCTJSCExecutor *jsExecutor = (RCTJSCExecutor *)_javaScriptExecutor;
   if (![jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
