@@ -151,8 +151,10 @@ function buildBundle(
 
   // Save the assets of the bundle
   const assets = bundlePromise
-    .then(bundle => bundle.getAssets())
-    .then(outputAssets => saveAssets(
+    // TODO: Use the packager.getAssets() method to get the bundle assets.
+    // $FlowFixMe: This code is going away.
+    .then(bundle => bundle.getAssets && bundle.getAssets())
+    .then(outputAssets => outputAssets && saveAssets(
       outputAssets,
       args.platform,
       args.assetsDest,
