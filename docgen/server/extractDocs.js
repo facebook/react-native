@@ -258,7 +258,7 @@ function getViewPropTypes() {
   }
 
   return docgen.parse(
-    fs.readFileSync(docsList.viewPropTypes),
+    fs.readFileSync(docsList.viewPropTypes.replace('../','')),
     viewPropTypesResolver,
     [
       viewPropTypesConversionHandler,
@@ -268,7 +268,7 @@ function getViewPropTypes() {
 }
 
 function renderComponent(filepath) {
-  // filepath = filepath.replace('../','');
+  filepath = filepath.replace('../','');
   if (!fs.existsSync(filepath)) {
     console.log(`${filepath} does not exist at ${process.cwd()}`);
     return;
