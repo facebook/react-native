@@ -17,7 +17,7 @@
 
 #define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                          \
 {                                                                                                 \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5];                                      \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                      \
   NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
   while ((CONDITION)) {                                                                           \
     [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
@@ -49,6 +49,10 @@
  * otherwise, the UI will be compared to the existing snapshot.
  */
 @property (nonatomic, assign) BOOL recordMode;
+
+@property (nonatomic, assign, readwrite) BOOL useBundler;
+
+@property (nonatomic, assign, readwrite) BOOL useJSDebugger;
 
 @property (nonatomic, copy) NSString *testSuffix;
 

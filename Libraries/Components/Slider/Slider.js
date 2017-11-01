@@ -28,8 +28,64 @@ type Event = Object;
 
 /**
  * A component used to select a single value from a range of values.
+ *
+ * ### Usage
+ *
+ * The example below shows how to use `Slider` to change
+ * a value used by `Text`. The value is stored using
+ * the state of the root component (`App`). The same component
+ * subscribes to the `onValueChange`  of `Slider` and changes
+ * the value using `setState`.
+ *
+ *```
+ * import React from 'react';
+ * import { StyleSheet, Text, View, Slider } from 'react-native';
+ *
+ * export default class App extends React.Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       value: 50
+ *     }
+ *   }
+ *
+ *   change(value) {
+ *     this.setState(() => {
+ *       return {
+ *         value: parseFloat(value)
+ *       };
+ *     });
+ *   }
+ *
+ *   render() {
+ *     const {value} = this.state;
+ *     return (
+ *       <View style={styles.container}>
+ *         <Text style={styles.text}>{String(value)}</Text>
+ *         <Slider
+ *           step={1}
+ *           maximumValue={100}
+ *           onValueChange={this.change.bind(this)}
+ *           value={value} />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
+ *   container: {
+ *     flex: 1,
+ *     flexDirection: 'column',
+ *     justifyContent: 'center'
+ *   },
+ *   text: {
+ *     fontSize: 50,
+ *     textAlign: 'center'
+ *   }
+ * });
+ *```
+ *
  */
-// $FlowFixMe(>=0.41.0)
 var Slider = createReactClass({
   displayName: 'Slider',
   mixins: [NativeMethodsMixin],
@@ -159,8 +215,14 @@ var Slider = createReactClass({
 
   render: function() {
     const {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     props.style = [styles.slider, style];
 
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     props.onValueChange = onValueChange && ((event: Event) => {
       let userEvent = true;
       if (Platform.OS === 'android') {
@@ -171,8 +233,14 @@ var Slider = createReactClass({
       onValueChange && userEvent && onValueChange(event.nativeEvent.value);
     });
 
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     props.onChange = props.onValueChange;
 
+    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.54 was deployed. To see the error
+     * delete this comment and run Flow. */
     props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });

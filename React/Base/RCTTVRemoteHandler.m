@@ -22,7 +22,9 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+#if __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
+#endif
 
 @implementation RCTTVRemoteHandler {
   NSMutableArray<UIGestureRecognizer *> *_tvRemoteGestureRecognizers;
@@ -62,13 +64,13 @@
     // Right
     [self addTapGestureRecognizerWithSelector:@selector(swipedRight:)
                                     pressType:UIPressTypeRightArrow];
-    
+
     // Recognizers for long button presses
     // We don't intercept long menu press -- that's used by the system to go to the home screen
-        
+
     [self addLongPressGestureRecognizerWithSelector:@selector(longPlayPausePressed:)
                                           pressType:UIPressTypePlayPause];
-    
+
     [self addLongPressGestureRecognizerWithSelector:@selector(longSelectPressed:)
                                           pressType:UIPressTypeSelect];
 
@@ -114,8 +116,8 @@
 {
   [self sendAppleTVEvent:@"longPlayPause" toView:r.view];
 
+#if __has_include("RCTDevMenu.h") && RCT_DEV
   // If shake to show is enabled on device, use long play/pause event to show dev menu
-#if RCT_DEV
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
 #endif
 }
@@ -151,7 +153,7 @@
 {
   UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:selector];
   recognizer.allowedPressTypes = @[@(pressType)];
-  
+
   [_tvRemoteGestureRecognizers addObject:recognizer];
 }
 

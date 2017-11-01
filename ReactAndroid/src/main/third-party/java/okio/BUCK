@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 prebuilt_jar(
     name = "okio",
     binary_jar = ":okio-binary-jar",

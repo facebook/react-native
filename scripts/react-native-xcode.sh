@@ -49,7 +49,11 @@ cd "${REACT_NATIVE_DIR}"/../..
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
 # Define entry file
-ENTRY_FILE=${1:-index.ios.js}
+if [[ -s "index.ios.js" ]]; then
+  ENTRY_FILE=${1:-index.ios.js}
+else
+  ENTRY_FILE=${1:-index.js}
+fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   . "$HOME/.nvm/nvm.sh"
@@ -65,6 +69,14 @@ fi
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
+
+[ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+
+if [[ -z "$BUNDLE_CONFIG" ]]; then
+  CONFIG_ARG=""
+else
+  CONFIG_ARG="--config $(pwd)/$BUNDLE_CONFIG"
+fi
 
 nodejs_not_found()
 {
@@ -101,7 +113,8 @@ fi
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-$NODE_BINARY $CLI_PATH bundle \
+$NODE_BINARY $CLI_PATH $BUNDLE_COMMAND \
+  $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \

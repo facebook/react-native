@@ -4,30 +4,30 @@ title: How to Contribute
 layout: docs
 category: Contributing
 permalink: docs/contributing.html
-next: testing
-previous: upgrading
+next: maintainers
+previous: native-modules-android
 ---
 
 React Native is one of Facebook's first open source projects that is both under very active development and is also being used to ship code to everybody using Facebook's mobile apps. If you're interested in contributing to React Native, hopefully this document makes the process for contributing clear.
-
-Core contributors to React Native meet monthly and post their meeting notes on the [React Native blog](https://facebook.github.io/react-native/blog). You can also find ad hoc discussions in the [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) Facebook group.
 
 ## [Code of Conduct](https://code.facebook.com/codeofconduct)
 
 Facebook has adopted a Code of Conduct that we expect project participants to adhere to. Please read [the full text](https://code.facebook.com/codeofconduct) so that you can understand what actions will and will not be tolerated.
 
-## How to contribute
+## Get involved
 
 There are many ways to contribute to React Native, and many of them do not involve writing any code. Here's a few ideas to get started:
 
 * Simply start using React Native. Go through the [Getting Started](http://facebook.github.io/react-native/docs/getting-started.html) guide. Does everything work as expected? If not, we're always looking for improvements. Let us know by [opening an issue](http://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
 * Look through the [open issues](https://github.com/facebook/react-native/issues). Provide workarounds, ask for clarification, or suggest labels. Help [triage issues](http://facebook.github.io/react-native/docs/contributing.html#triaging-issues-and-pull-requests).
-* If you find an issue you would like to fix, [open a pull request](http://facebook.github.io/react-native/docs/contributing.html#your-first-pull-request). Issues tagged as [`Good First Task`](https://github.com/facebook/react-native/labels/Good%20First%20Task) are a good place to get started.
+* If you find an issue you would like to fix, [open a pull request](http://facebook.github.io/react-native/docs/contributing.html#your-first-pull-request). Issues tagged as [_Good first issue_](https://github.com/facebook/react-native/labels/Good%20first%20issue) are a good place to get started.
 * Read through the [React Native docs](http://facebook.github.io/react-native/docs). If you find anything that is confusing or can be improved, you can make edits by clicking "Improve this page" at the bottom of most docs.
 * Browse [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native) and answer questions. This will help you get familiarized with common pitfalls or misunderstandings, which can be useful when contributing updates to the documentation.
 * Take a look at the [features requested](https://react-native.canny.io/feature-requests) by others in the community and consider opening a pull request if you see something you want to work on.
 
 Contributions are very welcome. If you think you need help planning your contribution, please hop into [#react-native](https://discord.gg/0ZcbPKXt5bZjGY5n) and let people know you're looking for a mentor.
+
+Core contributors to React Native meet monthly and post their meeting notes on the [React Native blog](https://facebook.github.io/react-native/blog). You can also find ad hoc discussions in the [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) Facebook group.
 
 ### Triaging issues and pull requests
 
@@ -38,10 +38,7 @@ One great way you can contribute to the project without writing any code is to h
 * Flag issues that are stale or that should be closed.
 * Ask for test plans and review code.
 
-Adding labels, closing and reopening issues, and merging pull requests is, as you may expect, limited to a subset of contributors. Simply commenting on the issue or pull request can still go a long way towards helping us keep the number of outstanding issues under control.
-
-Once you have become an active contributor in the community, you may gain access to the Facebook GitHub Bot, allowing you to perform some of these operations yourself. You can learn more about the bot in the [maintainer's guide](docs/maintainers.html#facebook-github-bot).
-
+You can learn more about handling issues in the [maintainer's guide](docs/maintainers.html#handling-issues).
 
 ## Our development process
 
@@ -59,7 +56,7 @@ To see what changes are coming and provide better feedback to React Native contr
 
 We use [GitHub Issues](https://github.com/facebook/react-native/issues) for our public bugs. If you would like to report a problem, take a look around and see if someone already opened an issue about it. If you a are certain this is a new, unreported bug, you can submit a [bug report](http://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
 
-If you have questions about using React Native, the [help page](http://facebook.github.io/react-native/support.html) list various resources that should help you get started.
+If you have questions about using React Native, the [Community page](http://facebook.github.io/react-native/support.html) list various resources that should help you get started.
 
 We also have a [place where you can request features or enhancements](https://react-native.canny.io/feature-requests). If you see anything you'd like to be implemented, vote it up and explain your use case.
 
@@ -94,7 +91,7 @@ We have a list of [beginner friendly issues](https://github.com/facebook/react-n
 
 If you would like to request a new feature or enhancement but are not yet thinking about opening a pull request, we have a [place to track feature requests](https://react-native.canny.io/feature-requests).
 
-If you intend to change the public API, or make any non-trivial changes to the implementation, we recommend [filing an issue](https://github.com/facebook/react-native/issues/new). This lets us reach an agreement on your proposal before you put significant effort into it.
+If you intend to change the public API, or make any non-trivial changes to the implementation, we recommend [filing an issue](https://github.com/facebook/react-native/issues/new?title=%5BProposal%5D) that includes `[Proposal]` in the title. This lets us reach an agreement on your proposal before you put significant effort into it. These types of issues should be rare. If you have been contributing to the project long enough, you will probably already have access to the [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) Facebook Group, where this sort of discussion is usually held.
 
 If you're only fixing a bug, it's fine to submit a pull request right away but we still recommend to file an issue detailing what you're fixing. This is helpful in case we don't accept that specific fix but want to keep track of the issue.
 
@@ -102,16 +99,15 @@ If you're only fixing a bug, it's fine to submit a pull request right away but w
 
 Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
 
-**Before submitting a pull request**, please make sure the following is done:
+Please make sure the following is done when submitting a pull request:
 
 1. Fork [the repository](https://github.com/facebook/react-native) and create your branch from `master`.
 2. Add the copyright notice to the top of any new files you've added.
-3. Describe your [**test plan**](/react-native/docs/contributing.html#test-plan) in your commit.
-4. Ensure [**tests pass**](/react-native/docs/contributing.html#contrinuous-integration-tests) on both Travis and Circle CI.
-5. Make sure your code lints (`npm run lint`).
-6. If you haven't already, [sign the CLA](https://code.facebook.com/cla).
+3. Describe your [**test plan**](/react-native/docs/contributing.html#test-plan) in your pull request description. Make sure to [test your changes](/react-native/docs/testing.html)!
+4. Make sure your code lints (`npm run lint`).
+5. If you haven't already, [sign the CLA](https://code.facebook.com/cla).
 
-All pull requests should be opened against the `master` branch.
+All pull requests should be opened against the `master` branch. After opening your pull request, ensure [**all tests pass**](/react-native/docs/contributing.html#contrinuous-integration-tests) on Circle CI. If a test fails and you believe it is unrelated to your change, leave a comment on the pull request explaining why.
 
 > **Note:** It is not necessary to keep clicking `Merge master to your branch` on the PR page. You would want to merge master if there are conflicts or tests are failing. The Facebook-GitHub-Bot ultimately squashes all commits to a single one before merging your PR.
 
@@ -127,9 +123,8 @@ See [What is a Test Plan?](https://medium.com/@martinkonicek/what-is-a-test-plan
 
 #### Continuous integration tests
 
-Make sure all **tests pass** on both [Travis][travis] and [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](/react-native/docs/testing.html).
+Make sure all **tests pass** on [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](/react-native/docs/testing.html).
 
-[travis]: https://travis-ci.org/facebook/react-native
 [circle]: http://circleci.com/gh/facebook/react-native
 
 #### Breaking changes
@@ -190,7 +185,7 @@ However, there are still some styles that the linter cannot pick up.
 #### JavaScript
 
 * Use semicolons;
-* `'use strict';`
+* ES6 standards
 * Prefer `'` over `"`
 * Do not use the optional parameters of `setTimeout` and `setInterval`
 * 80 character line length

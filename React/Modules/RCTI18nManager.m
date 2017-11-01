@@ -14,6 +14,11 @@
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_METHOD(allowRTL:(BOOL)value)
 {
   [[RCTI18nUtil sharedInstance] allowRTL:value];
@@ -24,10 +29,16 @@ RCT_EXPORT_METHOD(forceRTL:(BOOL)value)
   [[RCTI18nUtil sharedInstance] forceRTL:value];
 }
 
+RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
+{
+  [[RCTI18nUtil sharedInstance] swapLeftAndRightInRTL:value];
+}
+
 - (NSDictionary *)constantsToExport
 {
   return @{
-    @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL])
+    @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL]),
+    @"doLeftAndRightSwapInRTL": @([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL])
   };
 }
 

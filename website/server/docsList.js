@@ -12,6 +12,7 @@
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/Button.js',
+  '../Libraries/Components/CheckBox/CheckBox.android.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Lists/FlatList.js',
@@ -101,8 +102,7 @@ const stylesWithPermalink = [
   '../Libraries/StyleSheet/TransformPropTypes.js',
   '../Libraries/Components/View/ShadowPropTypesIOS.js',
   '../Libraries/Components/View/ViewPropTypes.js',
-  ...stylesForEmbed,
-];
+].concat(stylesForEmbed);
 
 const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';
 

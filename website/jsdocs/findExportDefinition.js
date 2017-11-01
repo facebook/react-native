@@ -71,7 +71,7 @@ function isAssignmentStatement(node) {
  */
 function expressionToArray(expr) {
   var parts = [];
-  switch(expr.type) {
+  switch (expr.type) {
     case Syntax.CallExpression:
       parts = expressionToArray(expr.callee);
       break;

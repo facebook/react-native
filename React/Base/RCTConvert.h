@@ -160,11 +160,6 @@ RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNu
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
 
 /**
- * Get the converter function for the specified type
- */
-RCT_EXTERN SEL RCTConvertSelectorForType(NSString *type);
-
-/**
  * This macro is used for logging conversion errors. This is just used to
  * avoid repeating the same boilerplate for every error message.
  */

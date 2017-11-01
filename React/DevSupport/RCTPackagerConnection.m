@@ -13,19 +13,29 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
-#import <React/RCTWebSocketObserver.h>
 
 #import "RCTPackagerConnectionBridgeConfig.h"
 #import "RCTReloadPackagerMethod.h"
 #import "RCTSamplingProfilerPackagerMethod.h"
 
 #if RCT_DEV
+
+static dispatch_queue_t RCTPackagerConnectionQueue()
+{
+  static dispatch_queue_t queue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    queue = dispatch_queue_create("com.facebook.RCTPackagerConnectionQueue", DISPATCH_QUEUE_SERIAL);
+  });
+  return queue;
+};
 
 @interface RCTPackagerConnection () <RCTWebSocketProtocolDelegate>
 @end
@@ -34,6 +44,29 @@
   NSURL *_packagerURL;
   RCTReconnectingWebSocket *_socket;
   NSMutableDictionary<NSString *, id<RCTPackagerClientMethod>> *_handlers;
+}
+
++ (void)checkDefaultConnectionWithCallback:(void (^)(BOOL isRunning))callback
+                                     queue:(dispatch_queue_t)queue
+{
+  RCTBundleURLProvider *const settings = [RCTBundleURLProvider sharedSettings];
+  NSURLComponents *components = [NSURLComponents new];
+  components.scheme = @"http";
+  components.host = settings.jsLocation ?: @"localhost";
+  components.port = @(kRCTBundleURLProviderDefaultPort);
+  components.path = @"/status";
+  [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:components.URL]
+                                     queue:[NSOperationQueue mainQueue]
+                         completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                           NSString *const status = data != nil
+                             ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
+                             : nil;
+                           BOOL isRunning = [status isEqualToString:@"packager-status:running"];
+
+                           dispatch_async(queue, ^{
+                             callback(isRunning);
+                           });
+                         }];
 }
 
 + (instancetype)connectionForBridge:(RCTBridge *)bridge
@@ -47,7 +80,6 @@
   if (self = [super init]) {
     _packagerURL = [config packagerURL];
     _handlers = [[config defaultPackagerMethods] mutableCopy];
-
     [self connect];
   }
   return self;
@@ -71,19 +103,35 @@
   }
 
   NSString *key = [url absoluteString];
-  RCTReconnectingWebSocket *webSocket = socketConnections[key];
-  if (!webSocket) {
-    webSocket = [[RCTReconnectingWebSocket alloc] initWithURL:url];
-    [webSocket start];
-    socketConnections[key] = webSocket;
+  _socket = socketConnections[key];
+  if (!_socket) {
+    _socket = [[RCTReconnectingWebSocket alloc] initWithURL:url];
+    _socket.delegateDispatchQueue = RCTPackagerConnectionQueue();
+    [_socket start];
+    socketConnections[key] = _socket;
   }
 
-  webSocket.delegate = self;
+  _socket.delegate = self;
 }
+
+- (void)stop
+{
+  [_socket stop];
+}
+
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name
 {
-  _handlers[name] = handler;
+  @synchronized(self) {
+    _handlers[name] = handler;
+  }
+}
+
+- (id<RCTPackagerClientMethod>)handlerForMethod:(NSString *)name
+{
+  @synchronized(self) {
+    return _handlers[name];
+  }
 }
 
 static BOOL isSupportedVersion(NSNumber *version)
@@ -96,10 +144,6 @@ static BOOL isSupportedVersion(NSNumber *version)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  if (!_handlers) {
-    return;
-  }
-
   NSError *error = nil;
   NSDictionary<NSString *, id> *msg = RCTJSONParse(message, &error);
 
@@ -113,7 +157,7 @@ static BOOL isSupportedVersion(NSNumber *version)
     return;
   }
 
-  id<RCTPackagerClientMethod> methodHandler = _handlers[msg[@"method"]];
+  id<RCTPackagerClientMethod> methodHandler = [self handlerForMethod:msg[@"method"]];
   if (!methodHandler) {
     if (msg[@"id"]) {
       NSString *errorMsg = [NSString stringWithFormat:@"%@ no handler found for method %@", [self class], msg[@"method"]];
@@ -124,13 +168,27 @@ static BOOL isSupportedVersion(NSNumber *version)
     return; // If it was a broadcast then we ignore it gracefully
   }
 
-  if (msg[@"id"]) {
-    [methodHandler handleRequest:msg[@"params"]
-                   withResponder:[[RCTPackagerClientResponder alloc] initWithId:msg[@"id"]
-                                                                         socket:webSocket]];
-  } else {
-    [methodHandler handleNotification:msg[@"params"]];
-  }
+  dispatch_queue_t methodQueue = [methodHandler respondsToSelector:@selector(methodQueue)]
+    ? [methodHandler methodQueue]
+    : dispatch_get_main_queue();
+
+  dispatch_async(methodQueue, ^{
+    if (msg[@"id"]) {
+      [methodHandler handleRequest:msg[@"params"]
+                     withResponder:[[RCTPackagerClientResponder alloc] initWithId:msg[@"id"]
+                                                                           socket:webSocket]];
+    } else {
+      [methodHandler handleNotification:msg[@"params"]];
+    }
+  });
+}
+
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+}
+
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+{
 }
 
 @end

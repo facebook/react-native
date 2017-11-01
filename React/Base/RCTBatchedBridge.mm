@@ -23,6 +23,7 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
+#import <React/RCTDevSettings.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 
@@ -62,6 +63,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 @synthesize loading = _loading;
 @synthesize valid = _valid;
 @synthesize performanceLogger = _performanceLogger;
+@synthesize bridgeDescription = _bridgeDescription;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
@@ -114,7 +116,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   dispatch_group_enter(initModulesAndLoadSource);
   __weak RCTBatchedBridge *weakSelf = self;
   __block NSData *sourceCode;
-  [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
+  [self loadSource:^(NSError *error, RCTSource *source) {
     if (error) {
       RCTLogWarn(@"Failed to load source: %@", error);
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -122,7 +124,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       });
     }
 
-    sourceCode = source;
+    sourceCode = source.data;
     dispatch_group_leave(initModulesAndLoadSource);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
@@ -191,10 +193,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   [_performanceLogger markStartForTag:RCTPLScriptDownload];
 
   RCTPerformanceLogger *performanceLogger = _performanceLogger;
-  RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source, int64_t sourceLength) {
+  RCTSourceLoadBlock onSourceLoad = ^(NSError *error, RCTSource *source) {
     [performanceLogger markStopForTag:RCTPLScriptDownload];
-    [performanceLogger setValue:sourceLength forTag:RCTPLBundleSize];
-    _onSourceLoad(error, source, sourceLength);
+    [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
+    _onSourceLoad(error, source);
   };
 
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
@@ -204,19 +206,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   } else if (!self.bundleURL) {
     NSError *error = RCTErrorWithMessage(@"No bundle URL present.\n\nMake sure you're running a packager " \
                                          "server or have included a .jsbundle file in your application bundle.");
-    onSourceLoad(error, nil, 0);
+    onSourceLoad(error, nil);
   } else {
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
-      if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
-        NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
-        if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
-          self.bundleURL = fallbackURL;
-          [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
-          return;
-        }
+    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, RCTSource *source) {
+      if (error) {
+        RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
       }
-      onSourceLoad(error, source, sourceLength);
+      onSourceLoad(error, source);
     }];
   }
 }
@@ -250,17 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
-  RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (moduleData) {
-#if RCT_DEV
-    if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-      NSArray *whitelisted = [self.delegate whitelistedModulesForBridge:self];
-      RCTAssert(!whitelisted || [whitelisted containsObject:[moduleData moduleClass]],
-                @"Required config for %@, which was not whitelisted", moduleName);
-    }
-#endif
-  }
-  return moduleData.config;
+  return _moduleDataByName[moduleName].config;
 }
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -403,27 +389,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge prepareModulesWithDispatch]", nil);
 
-  NSArray<Class> *whitelistedModules = nil;
-  if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
-    whitelistedModules = [self.delegate whitelistedModulesForBridge:self];
-  }
-
   BOOL initializeImmediately = NO;
   if (dispatchGroup == NULL) {
     // If no dispatchGroup is passed in, we must prepare everything immediately.
     // We better be on the right thread too.
     RCTAssertMainQueue();
     initializeImmediately = YES;
-  } else if ([self.delegate respondsToSelector:@selector(shouldBridgeInitializeNativeModulesSynchronously:)]) {
-    initializeImmediately = [self.delegate shouldBridgeInitializeNativeModulesSynchronously:self];
   }
 
   // Set up modules that require main thread init or constants export
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (whitelistedModules && ![whitelistedModules containsObject:[moduleData moduleClass]]) {
-      continue;
-    }
-
     if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
@@ -454,12 +429,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [_performanceLogger setValue:_modulesInitializedOnMainQueue forTag:RCTPLNativeModuleMainThreadUsesCount];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)whitelistedModulesDidChange
-{
-  RCTAssertMainQueue();
-  [self prepareModulesWithDispatchGroup:NULL];
 }
 
 - (void)setUpExecutor
@@ -538,13 +507,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
        object:self->_parentBridge userInfo:@{@"bridge": self}];
+
+#if RCT_DEV
+      RCTLogWarn(@"RCTBatchedBridge is deprecated and will be removed in a future React Native release. "
+        "See https://fb.me/react-cxx-bridge for upgrade instructions.");
+#endif
     });
 
     [self _flushPendingCalls];
   }];
 
 #if RCT_DEV
-  if ([RCTGetURLQueryParam(self.bundleURL, @"hot") boolValue]) {
+  if (_parentBridge.devSettings.isHotLoadingEnabled) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
@@ -794,7 +768,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method
                         arguments:(NSArray *)arguments
-                            error:(NSError **)error
+                            error:(NSError __autoreleasing **)error
 {
   RCTJSCExecutor *jsExecutor = (RCTJSCExecutor *)_javaScriptExecutor;
   if (![jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
@@ -920,6 +894,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)handleBuffer:(id)buffer batchEnded:(BOOL)batchEnded
 {
   RCTAssertJSThread();
+
+  if (!self.valid) {
+    return;
+  }
 
   if (buffer != nil && buffer != (id)kCFNull) {
     _wasBatchActive = YES;
