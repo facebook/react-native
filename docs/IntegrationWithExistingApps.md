@@ -226,6 +226,11 @@ target 'NumberTileGame' do
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  
+  # Third party deps podspec link
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'GLog', :podspec => '../node_modules/react-native/third-party-podspecs/GLog.podspec'
+  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
 end
 ```
@@ -255,6 +260,11 @@ target 'swift-2048' do
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  
+  # Third party deps podspec link
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'GLog', :podspec => '../node_modules/react-native/third-party-podspecs/GLog.podspec'
+  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
 end
 ```
@@ -305,7 +315,6 @@ First, create an empty `index.js` file in the root of your React Native project.
 In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
 
 ```javascript
-'use strict';
 
 import React from 'react';
 import {
@@ -600,7 +609,6 @@ First, create an empty `index.js` file in the root of your React Native project.
 In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
 
 ```javascript
-'use strict';
 
 import React from 'react';
 import {

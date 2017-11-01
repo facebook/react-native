@@ -11,6 +11,8 @@
 
 #if RCT_DEV // Only supported in dev mode
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class RCTBridge;
 
 @interface RCTPackagerConnectionBridgeConfig : NSObject <RCTPackagerConnectionConfig>
@@ -18,5 +20,7 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif

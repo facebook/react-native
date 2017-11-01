@@ -154,6 +154,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'SwipeableListViewExample',
     module: require('./SwipeableListViewExample'),
     supportsTVOS: false,
@@ -265,6 +270,11 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'Dimensions',
+    module: require('./DimensionsExample'),
+    supportsTVOS: true,
   },
   {
     key: 'GeolocationExample',

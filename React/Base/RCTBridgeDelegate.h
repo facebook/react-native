@@ -41,37 +41,12 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * Customize how bridge native modules are initialized.
- *
- * By default all modules are created lazily except those that have constants to export
- * or require main thread initialization. If you want to limit the set of native
- * modules that this should be considered for, implement this method.
- *
- * Return nil to whitelist all modules found. Modules passed in extraModulesForBridge:
- * are automatically whitelisted.
- *
- * @experimental
+ * The location of bundle path, this should be a `file://` url
+ * pointing to a path inside the bundle resources, e.g. `file://..//main.jsbundle`.
+ * When running from the packager this should be an absolute URL,
+ * e.g. `http://localhost:8081/index.ios.bundle`.
  */
-- (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
-
-/**
- * When loading initial JavaScript, do so synchronously when the bridge is created iff
- * this returns true.  Otherwise, the JS will be fetched on a network thread, and
- * executed on the JS thread.  Currently used only by C++ bridge.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
-
-/**
- * When initializing native modules that require main thread initialization, the bridge
- * will default to dispatch module creation blocks asynchrously. If we're blockingly
- * waiting on the main thread to finish bridge creation on the main thread, this will
- * deadlock. Override this method to initialize modules synchronously instead.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
+- (NSURL *)bundledSourceURLForBridge:(RCTBridge *)bridge;
 
 /**
  * Configure whether the JSCExecutor created should use the system JSC API or
@@ -120,5 +95,12 @@
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Specifies the path to folder where additional bundles are located
+ *
+ * @experimental
+ */
+- (NSURL *)jsBundlesDirectory;
 
 @end

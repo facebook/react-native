@@ -135,6 +135,9 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       }
     };
 
+  private static final boolean DEBUG =
+      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.BRIDGE_CALLS);
+
   private static char paramTypeToChar(Class paramClass) {
     char tryCommon = commonTypeToChar(paramClass);
     if (tryCommon != '\0') {
@@ -332,12 +335,14 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
       .arg("method", traceName)
       .flush();
-    PrinterHolder.getPrinter()
-        .logMessage(
-            ReactDebugOverlayTags.BRIDGE_CALLS,
-            "JS->Java: %s.%s()",
-            mModuleWrapper.getName(),
-            mMethod.getName());
+    if (DEBUG) {
+      PrinterHolder.getPrinter()
+          .logMessage(
+              ReactDebugOverlayTags.BRIDGE_CALLS,
+              "JS->Java: %s.%s()",
+              mModuleWrapper.getName(),
+              mMethod.getName());
+    }
     try {
       if (!mArgumentsProcessed) {
         processArguments();

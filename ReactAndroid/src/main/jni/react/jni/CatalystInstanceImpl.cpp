@@ -10,10 +10,10 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
+#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
-#include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
@@ -23,6 +23,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
+#include "JniRAMBundleRegistry.h"
 #include "JNativeRunnable.h"
 #include "NativeArray.h"
 
@@ -100,6 +101,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
+    makeNativeMethod("jniSetJsBundlesDirectory", CatalystInstanceImpl::jniSetJsBundlesDirectory),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
@@ -176,6 +178,10 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
+void CatalystInstanceImpl::jniSetJsBundlesDirectory(const std::string& directoryPath) {
+  jsBundlesDirectory_ = directoryPath;
+}
+
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string& assetURL,
@@ -186,8 +192,10 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
-    auto bundle = folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL);
-    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
+    auto registry = jsBundlesDirectory_.empty()
+      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
+      : folly::make_unique<JniRAMBundleRegistry>(std::move(bundle), manager, sourceURL);
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(script),
@@ -217,7 +225,9 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   if (isIndexedRAMBundle(zFileName)) {
     auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
     auto startupScript = bundle->getStartupCode();
-    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    auto registry = jsBundlesDirectory_.empty()
+      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
+      : folly::make_unique<JSIndexedRAMBundleRegistry>(std::move(bundle), jsBundlesDirectory_);
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(startupScript),

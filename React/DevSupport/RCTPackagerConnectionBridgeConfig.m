@@ -9,7 +9,10 @@
 
 #import "RCTPackagerConnectionBridgeConfig.h"
 
+#import <objc/runtime.h>
+
 #import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
 
 #import "RCTJSEnvironment.h"
 #import "RCTReloadPackagerMethod.h"
@@ -18,38 +21,44 @@
 #if RCT_DEV // Only supported in dev mode
 
 @implementation RCTPackagerConnectionBridgeConfig {
-  RCTBridge *_bridge;
+  id<RCTJSEnvironment> _jsEnvironment;
+  RCTReloadPackagerMethodBlock _reloadCommand;
+  NSURL *_sourceURL;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super init]) {
-    _bridge = bridge;
+    _jsEnvironment = bridge;
+    _sourceURL = [bridge.bundleURL copy];
+    __weak RCTBridge *weakBridge = bridge;
+    _reloadCommand = ^(id params) {
+      if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+        weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+      }
+      [weakBridge reload];
+    };
   }
   return self;
 }
 
 - (NSURL *)packagerURL
 {
-  NSString *host = [_bridge.bundleURL host];
-  NSString *scheme = [_bridge.bundleURL scheme];
-  if (!host) {
-    host = @"localhost";
-    scheme = @"http";
-  }
-
-  NSNumber *port = [_bridge.bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
-  }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
+  NSURLComponents *components = [NSURLComponents new];
+  NSString *host = [_sourceURL host];
+  components.host = host ?: @"localhost";
+  components.scheme = host ? [_sourceURL scheme] : @"http";
+  components.port = [_sourceURL port] ?: @(kRCTBundleURLProviderDefaultPort);
+  components.path = @"/message";
+  components.queryItems = @[[NSURLQueryItem queryItemWithName:@"role" value:@"ios-rn-rctdevmenu"]];
+  return components.URL;
 }
 
 - (NSDictionary<NSString *, id<RCTPackagerClientMethod>> *)defaultPackagerMethods
 {
   return @{
-           @"reload": [[RCTReloadPackagerMethod alloc] initWithBridge:_bridge],
-           @"pokeSamplingProfiler": [[RCTSamplingProfilerPackagerMethod alloc] initWithJSEnvironment:_bridge]
+           @"reload": [[RCTReloadPackagerMethod alloc] initWithReloadCommand:_reloadCommand callbackQueue:dispatch_get_main_queue()],
+           @"pokeSamplingProfiler": [[RCTSamplingProfilerPackagerMethod alloc] initWithJSEnvironment:_jsEnvironment]
            };
 }
 

@@ -1,15 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
-
 package com.facebook.react.uimanager;
 
-import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -47,7 +44,6 @@ import javax.annotation.Nullable;
  * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
  * NativeViewHierarchyOptimizer} for more information.
  */
-@ReactPropertyHolder
 public interface ReactShadowNode<T extends ReactShadowNode> {
 
   /**
@@ -119,6 +115,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue);
 
   /** @return true if layout (position or dimensions) changed, false otherwise. */
+
   /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
@@ -184,6 +181,18 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   boolean isDescendantOf(T ancestorNode);
 
+  /*
+   * In some cases we need a way to specify some environmental data to shadow node
+   * to improve layout (or do something similar), so {@code localData} serves these needs.
+   * For example, any stateful embedded native views may benefit from this.
+   * Have in mind that this data is not supposed to interfere with the state of
+   * the shadow node.
+   * Please respect one-directional data flow of React.
+   * Use  {@link UIManagerModule#setViewLocalData} to set this property
+   * (to provide local/environmental data for a shadow node) from the main thread.
+   */
+  public void setLocalData(Object data);
+
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
    * rooted at this node for the given child. Put another way, this returns the number of native
@@ -208,7 +217,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    *
    * <p>In that case: getNativeOffsetForChild(Node 0) => 0 getNativeOffsetForChild(Node 1) => 1
    * getNativeOffsetForChild(Node 2) => 4 getNativeOffsetForChild(Node 3) => 4
-   * getNativeOffsetForChild(Node 4) => 6
+   *
+   * <p>getNativeOffsetForChild(Node 4) => 6
    */
   int getNativeOffsetForChild(T child);
 

@@ -68,7 +68,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Use `-[RCTUIManager setLocalData:forView:]` to set this property
  * (to provide local/environmental data for a shadow view) from the main thread.
  */
-@property (nonatomic, strong) NSObject *localData;
+- (void)setLocalData:(NSObject *)localData;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -84,9 +84,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
- * Computed layout direction for the view backed to Yoga node value.
+ * Computed layout direction of the view.
  */
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
 
 /**
  * Position and dimensions.
@@ -96,6 +97,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue left;
 @property (nonatomic, assign) YGValue bottom;
 @property (nonatomic, assign) YGValue right;
+@property (nonatomic, assign) YGValue start;
+@property (nonatomic, assign) YGValue end;
 
 @property (nonatomic, assign) YGValue width;
 @property (nonatomic, assign) YGValue height;
@@ -119,6 +122,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float borderLeftWidth;
 @property (nonatomic, assign) float borderBottomWidth;
 @property (nonatomic, assign) float borderRightWidth;
+@property (nonatomic, assign) float borderStartWidth;
+@property (nonatomic, assign) float borderEndWidth;
 
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
@@ -130,6 +135,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue marginLeft;
 @property (nonatomic, assign) YGValue marginBottom;
 @property (nonatomic, assign) YGValue marginRight;
+@property (nonatomic, assign) YGValue marginStart;
+@property (nonatomic, assign) YGValue marginEnd;
 
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
@@ -141,6 +148,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue paddingLeft;
 @property (nonatomic, assign) YGValue paddingBottom;
 @property (nonatomic, assign) YGValue paddingRight;
+@property (nonatomic, assign) YGValue paddingStart;
+@property (nonatomic, assign) YGValue paddingEnd;
 
 /**
  * Flexbox properties. All zero/disabled by default
@@ -277,15 +286,5 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
-
-@end
-
-@interface RCTShadowView (Deprecated)
-
-@property (nonatomic, assign, readonly) YGNodeRef cssNode
-__deprecated_msg("Use `yogaNode` instead.");
-
-- (BOOL)isCSSLeafNode
-__deprecated_msg("Use `isYogaLeafNode` instead.");
 
 @end

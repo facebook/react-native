@@ -117,20 +117,24 @@ static NSURL *serverRootWithHost(NSString *host)
   return host ? serverRootWithHost(host) : nil;
 }
 
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
-  resourceName = resourceName ?: @"main";
   NSString *packagerServerHost = [self packagerServerHost];
   if (!packagerServerHost) {
-    return [[NSBundle mainBundle] URLForResource:resourceName withExtension:@"jsbundle"];
+    resourceName = resourceName ?: @"main";
+    extension = extension ?: @"jsbundle";
+    return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
   } else {
-    NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-    // When we support only iOS 8 and above, use queryItems for a better API.
-    NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
-                       [self enableDev] ? @"true" : @"false",
-                       [self enableMinification] ? @"true": @"false"];
-    return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHost query:query];
+    return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
+                                             packagerHost:packagerServerHost
+                                                enableDev:[self enableDev]
+                                       enableMinification:[self enableMinification]];
   }
+}
+
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
 }
 
 - (NSURL *)resourceURLForResourceRoot:(NSString *)root

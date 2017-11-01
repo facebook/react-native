@@ -79,7 +79,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
         new ReactTextViewManager(),
         new ReactRawTextManager());
     uiManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {

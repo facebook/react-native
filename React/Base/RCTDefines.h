@@ -56,6 +56,14 @@
 #endif
 #endif
 
+#ifndef ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>)
+#define ENABLE_PACKAGER_CONNECTION 1
+#else
+#define ENABLE_PACKAGER_CONNECTION 0
+#endif
+#endif
+
 #if RCT_DEV
 #define RCT_IF_DEV(...) __VA_ARGS__
 #else

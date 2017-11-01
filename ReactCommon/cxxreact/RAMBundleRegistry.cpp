@@ -2,6 +2,8 @@
 
 #include "RAMBundleRegistry.h"
 
+#include <libgen.h>
+
 namespace facebook {
 namespace react {
 

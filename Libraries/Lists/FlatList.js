@@ -201,7 +201,7 @@ type OptionalProps<ItemT> = {
    */
   viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
 };
-type Props<ItemT> = RequiredProps<ItemT> &
+export type Props<ItemT> = RequiredProps<ItemT> &
   OptionalProps<ItemT> &
   VirtualizedListProps;
 
@@ -209,7 +209,7 @@ const defaultProps = {
   ...VirtualizedList.defaultProps,
   numColumns: 1,
 };
-type DefaultProps = typeof defaultProps;
+export type DefaultProps = typeof defaultProps;
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:
@@ -370,7 +370,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   /**
-   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
    * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
    * taps on items or by navigation actions.
    */

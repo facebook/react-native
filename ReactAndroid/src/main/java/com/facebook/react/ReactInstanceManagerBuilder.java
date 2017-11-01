@@ -2,6 +2,8 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
+
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
@@ -41,6 +43,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable RedBoxHandler mRedBoxHandler;
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
+  private boolean mDelayViewManagerClassLoadsEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
@@ -201,6 +204,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setDelayViewManagerClassLoadsEnabled(
+      boolean delayViewManagerClassLoadsEnabled) {
+    mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
+    return this;
+  }
+
   public ReactInstanceManagerBuilder setDevBundleDownloadListener(
     @Nullable DevBundleDownloadListener listener) {
     mDevBundleDownloadListener = listener;
@@ -262,12 +271,16 @@ public class ReactInstanceManagerBuilder {
       mUIImplementationProvider = new UIImplementationProvider();
     }
 
+    // We use the name of the device and the app for debugging & metrics
+    String appName = mApplication.getPackageName();
+    String deviceName = getFriendlyDeviceName();
+
     return new ReactInstanceManager(
         mApplication,
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-            ? new JSCJavaScriptExecutorFactory()
+            ? new JSCJavaScriptExecutorFactory(appName, deviceName)
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
@@ -283,6 +296,7 @@ public class ReactInstanceManagerBuilder {
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
+        mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
         mUseSeparateUIBackgroundThread,
         mMinNumShakes,

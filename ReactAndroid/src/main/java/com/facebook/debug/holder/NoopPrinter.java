@@ -16,4 +16,9 @@ public class NoopPrinter implements Printer {
 
   @Override
   public void logMessage(DebugOverlayTag tag, String message) {}
+
+  @Override
+  public boolean shouldDisplayLogMessage(final DebugOverlayTag tag) {
+    return false;
+  }
 }

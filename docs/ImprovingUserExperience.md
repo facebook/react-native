@@ -41,7 +41,7 @@ Check out [`TextInput` docs](docs/textinput.html) for more configuration options
 
 ## Manage layout when keyboard is visible
 
-Software keyboard takes almost half of the screen. If you have interactive elements that can get covered by the keyboard, make sure they are still accessible by using `KeyboardAvoidingView` ([see docs](docs/keyboardavoidingview.html)).
+Software keyboard takes almost half of the screen. If you have interactive elements that can get covered by the keyboard, make sure they are still accessible by using the [`KeyboardAvoidingView` component](docs/keyboardavoidingview.html).
 
 <video src="img/keyboardavoidingview.mp4" autoplay loop width="320" height="448"></video>
 
@@ -57,7 +57,7 @@ On mobile phones it's hard to be very precise when pressing buttons. Make sure a
 
 ## Use Android Ripple
 
-Android API 21+ uses the material design ripple to provide user with feedback when they touch an interactable area on the screen. React Native exposes this through the [`TouchableNativeFeedback` component](docs/docs/touchablenativefeedback.html). Using this touchable effect instead of opacity or highlight will often make your app feel much more fitting on the platform. That said, you need to be careful when using it because it doesn't work on iOS or on Android API < 21, so you will need to fallback to using one of the other Touchable components on iOS. You can use a library like [react-native-platform-touchable](https://github.com/react-community/react-native-platform-touchable) to handle the platform differences for you.
+Android API 21+ uses the material design ripple to provide user with feedback when they touch an interactable area on the screen. React Native exposes this through the [`TouchableNativeFeedback` component](docs/touchablenativefeedback.html). Using this touchable effect instead of opacity or highlight will often make your app feel much more fitting on the platform. That said, you need to be careful when using it because it doesn't work on iOS or on Android API < 21, so you will need to fallback to using one of the other Touchable components on iOS. You can use a library like [react-native-platform-touchable](https://github.com/react-community/react-native-platform-touchable) to handle the platform differences for you.
 
 <video src="img/ripple.mp4" autoplay loop width="320"></video>
 
