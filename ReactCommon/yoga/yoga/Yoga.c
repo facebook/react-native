@@ -2892,12 +2892,15 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           // top/left/bottom/right
           // set, override all the previously computed positions to set it
           // correctly.
-          if (YGNodeIsLeadingPosDefined(child, crossAxis)) {
+          const bool isChildLeadingPosDefined = YGNodeIsLeadingPosDefined(child, crossAxis);
+          if (isChildLeadingPosDefined) {
             child->layout.position[pos[crossAxis]] =
                 YGNodeLeadingPosition(child, crossAxis, availableInnerCrossDim) +
                 YGNodeLeadingBorder(node, crossAxis) +
                 YGNodeLeadingMargin(child, crossAxis, availableInnerWidth);
-          } else {
+          }
+          // If leading position is not defined or calculations result in Nan, default to border + margin
+          if (!isChildLeadingPosDefined || YGFloatIsUndefined(child->layout.position[pos[crossAxis]])) {
             child->layout.position[pos[crossAxis]] =
                 YGNodeLeadingBorder(node, crossAxis) +
                 YGNodeLeadingMargin(child, crossAxis, availableInnerWidth);
