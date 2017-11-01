@@ -3322,7 +3322,7 @@ float YGRoundValueToPixelGrid(const float value,
     scaledValue = scaledValue - fractial;
   } else {
     // Finally we just round the value
-    scaledValue = scaledValue - fractial + (fractial >= 0.5f ? 1.0f : 0.0f);
+    scaledValue = scaledValue - fractial + (fractial > 0.5f || YGFloatsEqual(fractial, 0.5f) ? 1.0f : 0.0f);
   }
   return scaledValue / pointScaleFactor;
 }
