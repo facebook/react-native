@@ -60,12 +60,28 @@ class SwipeableListView extends React.Component<Props, State> {
   _listViewRef: ?React.Element<any> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
 
-  static getNewDataSource(): Object {
+  static getNewDataSource(params: ?Object): Object {
     return new SwipeableListViewDataSource({
-      getRowData: (data, sectionID, rowID) => data[sectionID][rowID],
-      getSectionHeaderData: (data, sectionID) => data[sectionID],
-      rowHasChanged: (row1, row2) => row1 !== row2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+      getRowData: (
+        params && params.getRowData
+          ? params.getRowData
+          : (data, sectionID, rowID) => data[sectionID][rowID]
+      ),
+      getSectionHeaderData: (
+        params && params.getSectionHeaderData
+          ? params.getSectionHeaderData
+          : (data, sectionID) => data[sectionID]
+      ),
+      rowHasChanged: (
+        params && params.rowHasChanged
+          ? params.rowHasChanged
+          : (row1, row2) => row1 !== row2
+        ),
+      sectionHeaderHasChanged: (
+        params && params.sectionHeaderHasChanged
+          ? params.sectionHeaderHasChanged
+          : (s1, s2) => s1 !== s2
+      ),
     });
   }
 
