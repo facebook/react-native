@@ -134,7 +134,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public final boolean hasUpdates() {
-    return mNodeUpdated || hasNewLayout() || isDirty() || hasDirtyDescendants();
+    return mNodeUpdated || hasNewLayout() || isDirty();
   }
 
   @Override
@@ -172,11 +172,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public final boolean isDirty() {
     return mYogaNode != null && mYogaNode.isDirty();
-  }
-
-  @Override
-  public boolean hasDirtyDescendants() {
-    return mYogaNode != null && mYogaNode.hasDirtyDescendants();
   }
 
   @Override

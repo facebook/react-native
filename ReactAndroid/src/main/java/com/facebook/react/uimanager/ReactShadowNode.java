@@ -82,8 +82,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   boolean isDirty();
 
-  boolean hasDirtyDescendants();
-
   void addChildAt(T child, int i);
 
   T removeChildAt(int i);

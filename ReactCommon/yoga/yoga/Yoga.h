@@ -101,7 +101,6 @@ WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
 // marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
 WIN_EXPORT bool YGNodeIsDirty(const YGNodeRef node);
-WIN_EXPORT bool YGNodeHasDirtyDescendants(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 

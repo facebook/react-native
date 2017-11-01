@@ -123,7 +123,6 @@ typedef struct YGNode {
   void *context;
 
   bool isDirty;
-  bool hasDirtyDescendants;
   bool hasNewLayout;
   YGNodeType nodeType;
 
@@ -163,7 +162,6 @@ static const YGNode gYGNodeDefaults = {
     .children = NULL,
     .hasNewLayout = true,
     .isDirty = false,
-    .hasDirtyDescendants = false,
     .nodeType = YGNodeTypeDefault,
     .resolvedDimensions = {[YGDimensionWidth] = &YGValueUndefined,
                            [YGDimensionHeight] = &YGValueUndefined},
@@ -240,8 +238,6 @@ static YGConfig gYGConfigDefaults = {
 };
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
-static bool YGNodeIsLayoutBoundary(const YGNodeRef node);
-static void YGNodeMarkHasDirtyDescendants(const YGNodeRef node);
 
 YGMalloc gYGMalloc = &malloc;
 YGCalloc gYGCalloc = &calloc;
@@ -456,31 +452,14 @@ void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
 }
 
-static void YGNodeMarkHasDirtyDescendants(const YGNodeRef node) {
-  if (node && !node->hasDirtyDescendants) {
-    node->hasDirtyDescendants = true;
-    YGNodeMarkHasDirtyDescendants(node->parent);
-  }
-}
-
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
     node->layout.computedFlexBasis = YGUndefined;
     if (node->parent) {
-      if (YGNodeIsLayoutBoundary(node->parent)) {
-        node->parent->isDirty = true; // Because parent lays out the child
-        node->parent->layout.computedFlexBasis = YGUndefined;
-        YGNodeMarkHasDirtyDescendants(node->parent);
-      } else {
-        YGNodeMarkDirtyInternal(node->parent);
-      }
+      YGNodeMarkDirtyInternal(node->parent);
     }
   }
-}
-
-static bool YGNodeIsLayoutBoundary(const YGNodeRef node) {
-  return YGNodeStyleGetPositionType(node) == YGPositionTypeAbsolute;
 }
 
 void YGNodeSetMeasureFunc(const YGNodeRef node, YGMeasureFunc measureFunc) {
@@ -647,10 +626,6 @@ void YGNodeMarkDirty(const YGNodeRef node) {
 
 bool YGNodeIsDirty(const YGNodeRef node) {
   return node->isDirty;
-}
-
-bool YGNodeHasDirtyDescendants(const YGNodeRef node) {
-  return node->hasDirtyDescendants;
 }
 
 void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
@@ -3431,6 +3406,7 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                           const char *reason,
                           const YGConfigRef config) {
   YGLayout *layout = &node->layout;
+
   gDepth++;
 
   const bool needToVisitNode =
@@ -3522,26 +3498,6 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
   if (!needToVisitNode && cachedResults != NULL) {
     layout->measuredDimensions[YGDimensionWidth] = cachedResults->computedWidth;
     layout->measuredDimensions[YGDimensionHeight] = cachedResults->computedHeight;
-    if (YGNodeHasDirtyDescendants(node)) {
-        const uint32_t childCount = YGNodeListCount(node->children);
-        for (uint32_t i = 0; i < childCount; ++i) {
-          const YGNodeRef child = YGNodeListGet(node->children, i);
-          if (child->isDirty || YGNodeHasDirtyDescendants(child)) {
-            YGLayoutNodeInternal(child,
-                                child->layout.cachedLayout.availableWidth,
-                                child->layout.cachedLayout.availableHeight,
-                                child->layout.direction,
-                                child->layout.cachedLayout.widthMeasureMode,
-                                child->layout.cachedLayout.heightMeasureMode,
-                                cachedResults->computedWidth,
-                                cachedResults->computedHeight,
-                                performLayout,
-                                "layout",
-                                child->config
-                              );
-                          }
-        }
-      }
 
     if (gPrintChanges && gPrintSkips) {
       printf("%s%d.{[skipped] ", YGSpacer(gDepth), gDepth);
@@ -3629,7 +3585,6 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
     node->layout.dimensions[YGDimensionHeight] = node->layout.measuredDimensions[YGDimensionHeight];
     node->hasNewLayout = true;
     node->isDirty = false;
-    node->hasDirtyDescendants = false;
   }
 
   gDepth--;
