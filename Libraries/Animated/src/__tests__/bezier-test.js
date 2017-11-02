@@ -4,6 +4,7 @@
  *
  * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
  * @noflow
+ * @emails oncall+react_native
  */
 
 /* eslint-disable */
