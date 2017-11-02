@@ -261,6 +261,16 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Invoke this from an `onTouchCancel` event.
+   *
+   * @param {SyntheticEvent} e Event.
+   */
+  scrollResponderHandleTouchCancel: function(e: Event) {
+    this.state.isTouching = false;
+    this.props.onTouchCancel && this.props.onTouchCancel(e);
+  },
+
+  /**
    * Invoke this from an `onResponderRelease` event.
    */
   scrollResponderHandleResponderRelease: function(e: Event) {
@@ -548,7 +558,7 @@ var ScrollResponderMixin = {
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',
       `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
-      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? 'always' : 'never'}"' instead`
     );
 
     this.keyboardWillOpenTo = null;

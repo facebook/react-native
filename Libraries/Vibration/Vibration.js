@@ -90,7 +90,7 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
       return;
     }
   }
-  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex+1), pattern[nextIndex]);
+  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex + 1), pattern[nextIndex]);
 }
 
 var Vibration = {

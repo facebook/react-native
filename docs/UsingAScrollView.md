@@ -8,7 +8,7 @@ next: using-a-listview
 previous: handling-touches
 ---
 
-The [ScrollView](docs/scrollview.html) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogenous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
+The [ScrollView](docs/scrollview.html) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogeneous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
 
 This example creates a vertical `ScrollView` with both images and text mixed together.
 

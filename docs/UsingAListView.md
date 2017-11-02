@@ -75,6 +75,7 @@ export default class SectionListBasics extends Component {
           ]}
           renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
           renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+          keyExtractor={(item, index) => index}
         />
       </View>
     );

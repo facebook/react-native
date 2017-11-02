@@ -13,6 +13,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTErrorCustomizer.h>
 
+@class RCTJSStackFrame;
+
 @interface RCTRedBox : NSObject <RCTBridgeModule>
 
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer;
@@ -22,8 +24,16 @@
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack;
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack;
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack;
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
 
 - (void)dismiss;
+
+/** Overrides bridge.bundleURL. Modify on main thread only. You shouldn't need to use this. */
+@property (nonatomic, strong) NSURL *overrideBundleURL;
+
+/** Overrides the default behavior of calling [bridge reload] on reload. You shouldn't need to use this. */
+@property (nonatomic, strong) dispatch_block_t overrideReloadAction;
 
 @end
 

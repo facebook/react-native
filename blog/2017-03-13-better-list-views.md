@@ -29,7 +29,7 @@ If you want to render a set of data broken into logical sections, maybe with sec
 <SectionList
   renderItem={({item}) => <ListItem title={item.title} />}
   renderSectionHeader={({section}) => <H1 title={section.key} />}
-  sections={[ // homogenous rendering between sections
+  sections={[ // homogeneous rendering between sections
     {data: [...], key: ...},
     {data: [...], key: ...},
     {data: [...], key: ...},

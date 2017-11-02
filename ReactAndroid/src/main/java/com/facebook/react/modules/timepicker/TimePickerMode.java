@@ -7,15 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.quicklog.identifiers;
+package com.facebook.react.modules.timepicker;
 
-/**
- * Stub definition of identifier needed in react native open source code.
- * Use your own identifiers with your own QuickPerformanceLogger implementation
- */
-public class ReactNativeBridge {
 
-  public static final int CALL_JAVA_MODULE_METHOD = 0;
-
+public enum TimePickerMode {
+  CLOCK,
+  SPINNER,
+  DEFAULT
 }
-

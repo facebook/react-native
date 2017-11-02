@@ -25,20 +25,5 @@ JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
   return m_bundles.at(bundleId).get();
 }
 
-std::string RAMBundleRegistry::jsBundlesDir(std::string entryFile) {
-  char *pEntryFile = const_cast<char *>(entryFile.c_str());
-  std::string dir = dirname(pEntryFile);
-  std::string entryName = basename(pEntryFile);
-
-  std::size_t dotPosition = entryName.find(".");
-  if (dotPosition != std::string::npos) {
-    entryName.erase(dotPosition, std::string::npos);
-  }
-
-  std::string path = "js-bundles/" + entryName + "/";
-  // android's asset manager does not work with paths that start with a dot
-  return dir == "." ? path : dir + "/" + path;
-}
-
 }  // namespace react
 }  // namespace facebook
