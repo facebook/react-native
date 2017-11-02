@@ -29,34 +29,25 @@ public class CustomLineHeightSpan implements LineHeightSpan {
     // The general solution is that if there's not enough height to show the full line height, we
     // will prioritize in this order: descent, ascent, bottom, top
 
-    int height = mHeight;
-    int currentHeight = -fm.top + fm.bottom;
-    int delta = currentHeight - height;
-    if (delta > 0) {
-      int bottomSpaceAvailable = fm.bottom - fm.descent;
-      int topSpaceAvailable = -fm.top - -fm.ascent;
-      if (topSpaceAvailable > 0 && delta > 0) {
-        int topSpaceTaken = topSpaceAvailable;
-        if (delta < topSpaceTaken) {
-          topSpaceTaken = delta;
-        }
-        delta -= topSpaceTaken;
-        fm.top = fm.ascent - (topSpaceAvailable - topSpaceTaken);
-      }
-      if (bottomSpaceAvailable > 0) {
-        int bottomSpaceTaken = bottomSpaceAvailable;
-        if (delta < bottomSpaceAvailable) {
-          bottomSpaceTaken = delta;
-        }
-        delta -= bottomSpaceTaken;
-        fm.bottom = fm.descent + bottomSpaceAvailable - bottomSpaceTaken;
-      }
+    if (-fm.ascent > mHeight) {
+      // Show as much descent as possible
+      fm.bottom = fm.descent = mHeight;
+      fm.top = fm.ascent = 0;
+    } else if (-fm.ascent + fm.descent > mHeight) {
+      // Show all descent, and as much ascent as possible
+      fm.bottom = fm.descent;
+      fm.top = fm.ascent = -mHeight + fm.descent;
+    } else if (-fm.ascent + fm.bottom > mHeight) {
+      // Show all ascent, descent, as much bottom as possible
+      fm.top = fm.ascent;
+      fm.bottom = fm.ascent + mHeight;
+    } else if (-fm.top + fm.bottom > mHeight) {
+      // Show all ascent, descent, bottom, as much top as possible
+      fm.top = fm.bottom - mHeight;
+    } else {
+      // Show proportionally additional top
+      final int additional = mHeight - (-fm.top + fm.bottom);
+      fm.top -= additional;
     }
-
-    fm.top += delta;
-    if(delta > 0) {
-      fm.ascent = Math.max(fm.top, fm.ascent - delta);
-    }
-
   }
 }
