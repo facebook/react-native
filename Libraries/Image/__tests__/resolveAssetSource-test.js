@@ -146,7 +146,7 @@ describe('resolveAssetSource', () => {
         height: 200,
         scales: [1],
         hash: '5b6f00f',
-        name: '!@Logo#1_€', // Invalid chars shouldn't get passed to native
+        name: '!@Logo#1_\u20ac', // Invalid chars shouldn't get passed to native
         type: 'png',
       }, {
         __packager_asset: true,
@@ -174,7 +174,7 @@ describe('resolveAssetSource', () => {
         height: 200,
         scales: [1],
         hash: '5b6f00f',
-        name: '!@Logo#1_€',
+        name: '!@Logo#1_\u20ac',
         type: 'png',
       }, {
         __packager_asset: true,
@@ -202,7 +202,7 @@ describe('resolveAssetSource', () => {
         height: 200,
         scales: [1],
         hash: '5b6f00f',
-        name: '!@Logo#1_€',
+        name: '!@Logo#1_\u20ac',
         type: 'png',
       }, {
         __packager_asset: true,
@@ -233,7 +233,7 @@ describe('resolveAssetSource', () => {
         height: 200,
         scales: [1],
         hash: '5b6f00f',
-        name: '!@Logo#1_€',
+        name: '!@Logo#1_\u20ac',
         type: 'png',
       }, {
         __packager_asset: true,
@@ -256,7 +256,7 @@ describe('resolveAssetSource', () => {
         height: 200,
         scales: [1],
         hash: '5b6f00f',
-        name: '!@Logo#1_€',
+        name: '!@Logo#1_\u20ac',
         type: 'png',
       }, {
         __packager_asset: true,

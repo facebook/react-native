@@ -371,7 +371,7 @@ describe('Animated tests', () => {
       loop.start(cb);
 
       expect(animation.start).not.toBeCalled();
-      expect(cb).toBeCalledWith({ finished: true });
+      expect(cb).toBeCalledWith({finished: true});
     });
 
     it('supports interrupting an indefinite loop', () => {
