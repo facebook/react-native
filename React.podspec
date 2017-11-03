@@ -109,6 +109,7 @@ Pod::Spec.new do |s|
 
   s.subspec "jschelpers" do |ss|
     ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "React/PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jschelpers/*.h"
