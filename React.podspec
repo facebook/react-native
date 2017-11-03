@@ -120,6 +120,7 @@ Pod::Spec.new do |s|
   s.subspec "PrivateDatabase" do |ss|
     ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/privatedata/*.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "cxxreact" do |ss|
