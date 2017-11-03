@@ -24,6 +24,15 @@
 
 typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
+/**
+ * Get the converter function for the specified type
+ */
+static SEL selectorForType(NSString *type)
+{
+  const char *input = type.UTF8String;
+  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
+}
+
 @implementation RCTMethodArgument
 
 - (instancetype)initWithType:(NSString *)type
@@ -257,7 +266,7 @@ RCT_EXTERN_C_END
     BOOL isNullableType = NO;
     RCTMethodArgument *argument = arguments[i - 2];
     NSString *typeName = argument.type;
-    SEL selector = RCTConvertSelectorForType(typeName);
+    SEL selector = selectorForType(typeName);
     if ([RCTConvert respondsToSelector:selector]) {
       switch (objcType[0]) {
         // Primitives

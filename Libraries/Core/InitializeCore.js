@@ -38,6 +38,15 @@ if (global.window === undefined) {
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
+// Set up collections
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  polyfillGlobal('Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  polyfillGlobal('Set', () => require('Set'));
+}
+
 /**
  * Sets an object's property. If a property with the same name exists, this will
  * replace it but maintain its descriptor configuration. The property will be
@@ -119,15 +128,6 @@ if (!global.__fbDisableExceptionsManager) {
 // Check for compatibility between the JS and native code
 const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
 ReactNativeVersionCheck.checkVersions();
-
-// Set up collections
-const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
-if (_shouldPolyfillCollection('Map')) {
-  polyfillGlobal('Map', () => require('Map'));
-}
-if (_shouldPolyfillCollection('Set')) {
-  polyfillGlobal('Set', () => require('Set'));
-}
 
 // Set up Promise
 // The native Promise implementation throws the following error:

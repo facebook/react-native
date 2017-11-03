@@ -19,7 +19,6 @@ declare module "Map" {
     @@iterator(): Iterator<[K, V]>;
     constructor<Key, Value>(_: void): MapPolyfill<Key, Value>;
     constructor<Key, Value>(_: null): MapPolyfill<Key, Value>;
-    constructor<Key, Value>(iterable: Array<[Key, Value]>): MapPolyfill<Key, Value>;
     constructor<Key, Value>(iterable: Iterable<[Key, Value]>): MapPolyfill<Key, Value>;
     clear(): void;
     delete(key: K): boolean;

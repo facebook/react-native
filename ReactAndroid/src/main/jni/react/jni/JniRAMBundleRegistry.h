@@ -8,7 +8,7 @@ namespace react {
 
 class JniRAMBundleRegistry : public RAMBundleRegistry {
 public:
-  JniRAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle, AAssetManager *assetManager, const std::string& entryFile);
+  JniRAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle, AAssetManager *assetManager, const std::string& baseDirectoryPath);
 
 protected:
   virtual std::unique_ptr<JSModulesUnbundle> bundleById(uint32_t index) const override;

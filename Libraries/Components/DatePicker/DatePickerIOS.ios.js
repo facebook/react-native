@@ -36,7 +36,6 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-// $FlowFixMe(>=0.41.0)
 const DatePickerIOS = createReactClass({
   displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
