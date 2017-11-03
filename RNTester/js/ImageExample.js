@@ -195,8 +195,8 @@ var MultipleSourcesExample = createReactClass({
           <Image
             style={{flex: 1}}
             source={[
-              {uri: 'https://facebook.github.io/react-native/img/logo-small.png', width: 38, height: 38},
-              {uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png', width: 76, height: 76},
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 38, height: 38},
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 76, height: 76},
               {uri: 'https://facebook.github.io/react-native/img/logo-og.png', width: 400, height: 400}
             ]}
           />
@@ -728,7 +728,7 @@ exports.examples = [
 ];
 
 var fullImage = {uri: 'https://facebook.github.io/react-native/img/logo-og.png'};
-var smallImage = {uri: 'https://facebook.github.io/react-native/img/logo-small-2x.png'};
+var smallImage = {uri: 'https://facebook.github.io/react-native/img/favicon.png'};
 
 var styles = StyleSheet.create({
   base: {
