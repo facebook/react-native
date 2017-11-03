@@ -15,6 +15,7 @@ import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
@@ -31,14 +32,14 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManager reactInstanceManager,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       int minNumShakes) {
 
     return create(
       applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManager,
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
@@ -48,7 +49,7 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManager reactInstanceManager,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     @Nullable RedBoxHandler redBoxHandler,
@@ -71,7 +72,7 @@ public class DevSupportManagerFactory {
       Constructor constructor =
         devSupportManagerClass.getConstructor(
           Context.class,
-          ReactInstanceDevCommandsHandler.class,
+          ReactInstanceManager.class,
           String.class,
           boolean.class,
           RedBoxHandler.class,
@@ -79,7 +80,7 @@ public class DevSupportManagerFactory {
           int.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
-        reactInstanceCommandsHandler,
+        reactInstanceManager,
         packagerPathForJSBundleName,
         true,
         redBoxHandler,

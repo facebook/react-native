@@ -65,7 +65,6 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -482,7 +481,7 @@ public class ReactInstanceManager {
     }
   }
 
-  private void toggleElementInspector() {
+  public void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext
@@ -815,12 +814,16 @@ public class ReactInstanceManager {
     }
   }
 
+  public @Nullable Activity getCurrentActivity() {
+    return mCurrentActivity;
+  }
+
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
   }
 
   @ThreadConfined(UI)
-  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
+  public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
     recreateReactContextInBackground(
         new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
@@ -830,7 +833,7 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
-  private void onJSBundleLoadedFromServer() {
+  public void onJSBundleLoadedFromServer() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer()");
     recreateReactContextInBackground(
         mJavaScriptExecutorFactory,

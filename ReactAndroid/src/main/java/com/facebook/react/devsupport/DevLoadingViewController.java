@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
@@ -35,16 +36,16 @@ public class DevLoadingViewController {
 
   private static boolean sEnabled = true;
   private final Context mContext;
-  private final ReactInstanceDevCommandsHandler mCommandsHandler;
+  private final ReactInstanceManager mReactInstanceManager;
   private TextView mDevLoadingView;
 
   public static void setDevLoadingEnabled(boolean enabled) {
     sEnabled = enabled;
   }
 
-  public DevLoadingViewController(Context context, ReactInstanceDevCommandsHandler commandsHandler) {
+  public DevLoadingViewController(Context context, ReactInstanceManager reactInstanceManager) {
     mContext = context;
-    mCommandsHandler = commandsHandler;
+    mReactInstanceManager = reactInstanceManager;
     LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mDevLoadingView = (TextView) inflater.inflate(R.layout.dev_loading_view, null);
   }
@@ -137,7 +138,7 @@ public class DevLoadingViewController {
       return;
     }
 
-    Activity currentActivity = mCommandsHandler.getCurrentActivity();
+    Activity currentActivity = mReactInstanceManager.getCurrentActivity();
     if (currentActivity == null) {
       FLog.e(ReactConstants.TAG, "Unable to display loading message because react " +
               "activity isn't available");

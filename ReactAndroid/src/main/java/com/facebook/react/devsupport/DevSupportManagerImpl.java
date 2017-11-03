@@ -29,6 +29,7 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.FallbackJSBundleLoader;
@@ -88,9 +89,9 @@ import okhttp3.RequestBody;
  * bound to make sure that we don't display overlay or that we we don't listen for sensor events
  * when app is backgrounded.
  *
- * {@link ReactInstanceDevCommandsHandler} implementation is responsible for instantiating this
- * instance and for populating with an instance of {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewCatalystContextCreated}). Also, instance manager is
+ * {@link ReactInstanceManager} implementation is responsible for instantiating this class
+ * as well as for populating with a referece to {@link CatalystInstance} whenever instance
+ * manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager is
  * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
  * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  *
@@ -121,7 +122,7 @@ public class DevSupportManagerImpl implements
   private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions =
       new LinkedHashMap<>();
-  private final ReactInstanceDevCommandsHandler mReactInstanceCommandsHandler;
+  private final ReactInstanceManager mReactInstanceManager;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
@@ -179,13 +180,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManager reactInstanceManager,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     int minNumShakes) {
 
     this(applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManager,
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
@@ -195,13 +196,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManager reactInstanceManager,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes) {
-    mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
+    mReactInstanceManager = reactInstanceManager;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
@@ -245,7 +246,7 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController = new DevLoadingViewController(applicationContext, reactInstanceCommandsHandler);
+    mDevLoadingViewController = new DevLoadingViewController(applicationContext, reactInstanceManager);
   }
 
   @Override
@@ -368,7 +369,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              Context context = mReactInstanceCommandsHandler.getCurrentActivity();
+              Context context = mReactInstanceManager.getCurrentActivity();
               if (context == null) {
                 FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " +
                         "is not available, here is the error that redbox would've displayed: " + message);
@@ -449,7 +450,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceCommandsHandler.toggleElementInspector();
+            mReactInstanceManager.toggleElementInspector();
           }
         });
     options.put(
@@ -461,7 +462,7 @@ public class DevSupportManagerImpl implements
         public void onOptionSelected() {
           if (!mDevSettings.isFpsDebugEnabled()) {
             // Request overlay permission if needed when "Show Perf Monitor" option is selected
-            Context context = mReactInstanceCommandsHandler.getCurrentActivity();
+            Context context = mReactInstanceManager.getCurrentActivity();
             if (context == null) {
               FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
             } else {
@@ -495,7 +496,7 @@ public class DevSupportManagerImpl implements
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
-    Context context = mReactInstanceCommandsHandler.getCurrentActivity();
+    Context context = mReactInstanceManager.getCurrentActivity();
     if (context == null) {
       FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " +
               "isn't available");
@@ -862,7 +863,7 @@ public class DevSupportManagerImpl implements
         }
       }
     };
-    mReactInstanceCommandsHandler.onReloadWithJSDebugger(factory);
+    mReactInstanceManager.onReloadWithJSDebugger(factory);
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
@@ -909,7 +910,7 @@ public class DevSupportManagerImpl implements
                   @Override
                   public void run() {
                     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
+                    mReactInstanceManager.onJSBundleLoadedFromServer();
                   }
                 });
           }
