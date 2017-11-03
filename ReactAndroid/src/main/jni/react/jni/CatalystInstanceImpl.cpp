@@ -207,32 +207,11 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   }
 }
 
-bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
-  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
-  if (!bundle_stream) {
-    return false;
-  }
-  BundleHeader header;
-  bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
-  bundle_stream.close();
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
                                                  const std::string& sourceURL,
                                                  bool loadSynchronously) {
-  auto zFileName = fileName.c_str();
-  if (isIndexedRAMBundle(zFileName)) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
-    auto startupScript = bundle->getStartupCode();
-    auto registry = jsBundlesDirectory_.empty()
-      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
-      : folly::make_unique<JSIndexedRAMBundleRegistry>(std::move(bundle), jsBundlesDirectory_);
-    instance_->loadRAMBundle(
-      std::move(registry),
-      std::move(startupScript),
-      sourceURL,
-      loadSynchronously);
+  if (Instance::isIndexedRAMBundle(fileName.c_str())) {
+    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;
     RecoverableError::runRethrowingAsRecoverable<std::system_error>(
