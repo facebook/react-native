@@ -118,7 +118,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "PrivateDatabase" do |ss|
-    ss.source_files         = "Libraries/ART/**/*.{h,m}"
     ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/privatedata/*.h"
   end
