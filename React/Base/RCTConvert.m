@@ -222,6 +222,20 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
   return nil;
 }
 
++ (NSLocale *)NSLocale:(id)json
+{
+  if ([json isKindOfClass:[NSString class]]) {
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:json];
+    if (!locale) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
+    }
+    return locale;
+  } else if (json) {
+    RCTLogConvertError(json, @"a locale");
+  }
+  return nil;
+}
+
 // JS Standard for time is milliseconds
 RCT_CUSTOM_CONVERTER(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0)
 
