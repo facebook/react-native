@@ -202,9 +202,8 @@ var TouchableHighlight = createReactClass({
         }
       },
       underlayStyle: [
-        INACTIVE_UNDERLAY_PROPS.style,
-        props.style,
-      ],
+        INACTIVE_UNDERLAY_PROPS.style
+      ].concat(props.style),
       hasTVPreferredFocus: props.hasTVPreferredFocus
     };
   },
