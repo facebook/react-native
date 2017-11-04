@@ -109,11 +109,17 @@ Pod::Spec.new do |s|
 
   s.subspec "jschelpers" do |ss|
     ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "React/PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jschelpers/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
     ss.framework            = "JavaScriptCore"
+  end
+
+  s.subspec "PrivateDatabase" do |ss|
+    ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/privatedata/*.h"
   end
 
   s.subspec "cxxreact" do |ss|

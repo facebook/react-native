@@ -3,6 +3,7 @@
 #include "Instance.h"
 
 #include "JSBigString.h"
+#include "JSBundleType.h"
 #include "JSExecutor.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
@@ -11,6 +12,7 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
+#include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
@@ -18,6 +20,7 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
+#include <fstream>
 #include <mutex>
 #include <string>
 
@@ -89,6 +92,31 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   } else {
     loadApplication(nullptr, std::move(string), std::move(sourceURL));
   }
+}
+
+bool Instance::isIndexedRAMBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+
+  if (!bundle_stream ||
+      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return false;
+  }
+
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
+                           const std::string& sourceURL,
+                           bool loadSynchronously) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
+    auto startupScript = bundle->getStartupCode();
+    auto registry = folly::make_unique<RAMBundleRegistry>(std::move(bundle));
+    loadRAMBundle(
+      std::move(registry),
+      std::move(startupScript),
+      sourceURL,
+      loadSynchronously);
 }
 
 void Instance::loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
