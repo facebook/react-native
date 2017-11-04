@@ -69,7 +69,7 @@ var ActionSheetIOS = {
    * - `message` (string) - a message to share
    * - `subject` (string) - a subject for the message
    * - `excludedActivityTypes` (array) - the activities to exclude from the ActionSheet
-   * - `tintColor` (color) - tint color of the buttons   
+   * - `tintColor` (color) - tint color of the buttons
    *
    * NOTE: if `url` points to a local file, or is a base64-encoded
    * uri, the file it points to will be loaded and shared directly.
