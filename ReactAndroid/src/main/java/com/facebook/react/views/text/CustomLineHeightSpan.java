@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 package com.facebook.react.views.text;
 
@@ -29,25 +36,12 @@ public class CustomLineHeightSpan implements LineHeightSpan {
     // The general solution is that if there's not enough height to show the full line height, we
     // will prioritize in this order: descent, ascent, bottom, top
 
-    if (-fm.ascent > mHeight) {
-      // Show as much descent as possible
-      fm.bottom = fm.descent = mHeight;
-      fm.top = fm.ascent = 0;
-    } else if (-fm.ascent + fm.descent > mHeight) {
-      // Show all descent, and as much ascent as possible
-      fm.bottom = fm.descent;
-      fm.top = fm.ascent = -mHeight + fm.descent;
-    } else if (-fm.ascent + fm.bottom > mHeight) {
-      // Show all ascent, descent, as much bottom as possible
-      fm.top = fm.ascent;
-      fm.bottom = fm.ascent + mHeight;
-    } else if (-fm.top + fm.bottom > mHeight) {
-      // Show all ascent, descent, bottom, as much top as possible
-      fm.top = fm.bottom - mHeight;
-    } else {
-      // Show proportionally additional top
-      final int additional = mHeight - (-fm.top + fm.bottom);
-      fm.top -= additional;
-    }
+    // Show proportionally additional ascent / top & descent / bottom
+    final int additional = mHeight - (-fm.top + fm.bottom);
+
+    fm.top -= additional / 2;
+    fm.ascent -= additional / 2;
+    fm.descent += additional / 2;
+    fm.bottom += additional / 2;
   }
 }
