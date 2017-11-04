@@ -79,6 +79,11 @@ const DatePickerIOS = createReactClass({
     mode: PropTypes.oneOf(['date', 'time', 'datetime']),
 
     /**
+     * The date picker locale.
+     */
+    locale: PropTypes.string,
+
+    /**
      * The interval at which minutes can be selected.
      */
     minuteInterval: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]),
@@ -127,6 +132,7 @@ const DatePickerIOS = createReactClass({
           ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
+          locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }
@@ -155,6 +161,7 @@ const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
   propTypes: {
     ...DatePickerIOS.propTypes,
     date: PropTypes.number,
+    locale: PropTypes.string,
     minimumDate: PropTypes.number,
     maximumDate: PropTypes.number,
     onDateChange: () => null,
