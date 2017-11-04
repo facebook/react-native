@@ -16,6 +16,7 @@ const MetroListView = require('MetroListView'); // Used as a fallback legacy opt
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
+const ListView = require('ListView');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -326,7 +327,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
   scrollToEnd(params?: ?{animated?: ?boolean}) {
-    this._listRef.scrollToEnd(params);
+    if (this._listRef) {
+      this._listRef.scrollToEnd(params);
+    }
   }
 
   /**
@@ -343,7 +346,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewOffset?: number,
     viewPosition?: number,
   }) {
-    this._listRef.scrollToIndex(params);
+    if (this._listRef) {
+      this._listRef.scrollToIndex(params);
+    }
   }
 
   /**
@@ -357,7 +362,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     item: ItemT,
     viewPosition?: number,
   }) {
-    this._listRef.scrollToItem(params);
+    if (this._listRef) {
+      this._listRef.scrollToItem(params);
+    }
   }
 
   /**
@@ -366,7 +373,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
-    this._listRef.scrollToOffset(params);
+    if (this._listRef) {
+      this._listRef.scrollToOffset(params);
+    }
   }
 
   /**
@@ -375,7 +384,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * taps on items or by navigation actions.
    */
   recordInteraction() {
-    this._listRef.recordInteraction();
+    if (this._listRef) {
+      this._listRef.recordInteraction();
+    }
   }
 
   /**
@@ -384,7 +395,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * @platform ios
    */
   flashScrollIndicators() {
-    this._listRef.flashScrollIndicators();
+    if (this._listRef) {
+      this._listRef.flashScrollIndicators();
+    }
   }
 
   /**
@@ -457,13 +470,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _hasWarnedLegacy = false;
-  _listRef: VirtualizedList;
+  _listRef: null | VirtualizedList | ListView;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+  _captureRef = (ref: null | VirtualizedList | ListView) => {
     this._listRef = ref;
   };
 
