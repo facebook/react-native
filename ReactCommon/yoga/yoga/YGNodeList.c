@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <string.h>
+
 #include "YGNodeList.h"
 
 extern YGMalloc gYGMalloc;
@@ -72,6 +74,17 @@ void YGNodeListInsert(YGNodeListRef *listp, const YGNodeRef node, const uint32_t
   list->items[index] = node;
 }
 
+void YGNodeListReplace(YGNodeListRef list, const uint32_t index, const YGNodeRef newNode) {
+  list->items[index] = newNode;
+}
+
+void YGNodeListRemoveAll(const YGNodeListRef list) {
+  for (uint32_t i = 0; i < list->count; i++) {
+    list->items[i] = NULL;
+  }
+  list->count = 0;
+}
+
 YGNodeRef YGNodeListRemove(const YGNodeListRef list, const uint32_t index) {
   const YGNodeRef removed = list->items[index];
   list->items[index] = NULL;
@@ -101,4 +114,18 @@ YGNodeRef YGNodeListGet(const YGNodeListRef list, const uint32_t index) {
   }
 
   return NULL;
+}
+
+YGNodeListRef YGNodeListClone(const YGNodeListRef oldList) {
+  if (!oldList) {
+    return NULL;
+  }
+  const uint32_t count = oldList->count;
+  if (count == 0) {
+    return NULL;
+  }
+  const YGNodeListRef newList = YGNodeListNew(count);
+  memcpy(newList->items, oldList->items, sizeof(YGNodeRef) * count);
+  newList->count = count;
+  return newList;
 }

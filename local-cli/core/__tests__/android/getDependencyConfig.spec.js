@@ -7,19 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @format
+ * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
+jest.mock('fs');
+
 const getDependencyConfig = require('../../android').dependencyConfig;
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const mocks = require('../../__fixtures__/android');
 
 const userConfig = {};
 
 describe('android::getDependencyConfig', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
       nested: {
         android: {
@@ -38,27 +41,23 @@ describe('android::getDependencyConfig', () => {
   });
 
   it('returns an object with android project configuration', () => {
-    expect(getDependencyConfig('nested', userConfig)).not.toBeNull();
-    expect(typeof getDependencyConfig('nested', userConfig)).toBe('object');
+    expect(getDependencyConfig('/nested', userConfig)).not.toBeNull();
+    expect(typeof getDependencyConfig('/nested', userConfig)).toBe('object');
   });
 
   it('returns `null` if manifest file has not been found', () => {
-    expect(getDependencyConfig('empty', userConfig)).toBeNull();
+    expect(getDependencyConfig('/empty', userConfig)).toBeNull();
   });
 
   it('returns `null` if android project was not found', () => {
-    expect(getDependencyConfig('empty', userConfig)).toBeNull();
+    expect(getDependencyConfig('/empty', userConfig)).toBeNull();
   });
 
   it('returns `null` if android project does not contain ReactPackage', () => {
-    expect(getDependencyConfig('noPackage', userConfig)).toBeNull();
+    expect(getDependencyConfig('/noPackage', userConfig)).toBeNull();
   });
 
   it('returns `null` if it cannot find a packageClassName', () => {
-    expect(getDependencyConfig('corrupted', userConfig)).toBeNull();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
+    expect(getDependencyConfig('/corrupted', userConfig)).toBeNull();
   });
 });

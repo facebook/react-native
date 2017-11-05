@@ -9,7 +9,6 @@ import {
   View,
   Keyboard,
   LayoutAnimation,
-  UIManager,
 } from 'react-native';
 
 type Props = {

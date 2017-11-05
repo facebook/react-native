@@ -22,6 +22,7 @@ LOCAL_SRC_FILES := \
   NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
+  ReactMarker.cpp \
   ReadableNativeArray.cpp \
   ReadableNativeMap.cpp \
   WritableNativeArray.cpp \

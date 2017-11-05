@@ -7,17 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @format
+ * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
+jest.mock('fs');
+
 const findManifest = require('../../android/findManifest');
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::findManifest', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
       flat: {
         android: mocks.valid,
@@ -26,14 +29,10 @@ describe('android::findManifest', () => {
   });
 
   it('returns a manifest path if file exists in the folder', () => {
-    expect(typeof findManifest('flat')).toBe('string');
+    expect(typeof findManifest('/flat')).toBe('string');
   });
 
   it('returns `null` if there is no manifest in the folder', () => {
-    expect(findManifest('empty')).toBeNull();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
+    expect(findManifest('/empty')).toBeNull();
   });
 });

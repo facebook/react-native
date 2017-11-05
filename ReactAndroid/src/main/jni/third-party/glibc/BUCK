@@ -6,7 +6,7 @@ include_defs("//ReactAndroid/DEFS")
 
 # libpthread is implicitly included in the android runtime so, when building
 # on an android platform, we don't do anything.
-deprecated_prebuilt_cxx_library(
+prebuilt_cxx_library(
     name = "pthread",
     exported_platform_linker_flags = [
         (
@@ -14,7 +14,7 @@ deprecated_prebuilt_cxx_library(
             [],
         ),
         (
-            "default",
+            "^(default|linux)",
             ["-lpthread"],
         ),
         (
@@ -28,7 +28,7 @@ deprecated_prebuilt_cxx_library(
     ],
 )
 
-deprecated_prebuilt_cxx_library(
+prebuilt_cxx_library(
     name = "dl",
     exported_linker_flags = [
         "-ldl",
@@ -39,7 +39,7 @@ deprecated_prebuilt_cxx_library(
     ],
 )
 
-deprecated_prebuilt_cxx_library(
+prebuilt_cxx_library(
     name = "m",
     exported_linker_flags = [
         "-lm",
@@ -50,7 +50,7 @@ deprecated_prebuilt_cxx_library(
     ],
 )
 
-deprecated_prebuilt_cxx_library(
+prebuilt_cxx_library(
     name = "rt",
     exported_platform_linker_flags = [
         (
@@ -58,7 +58,7 @@ deprecated_prebuilt_cxx_library(
             [],
         ),
         (
-            "default",
+            "^(default|linux)",
             ["-lrt"],
         ),
     ],

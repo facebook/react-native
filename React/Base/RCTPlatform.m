@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
     @"isTesting": @(RCTRunningInTestEnvironment()),
-    @"reactNativeVersion": REACT_NATIVE_VERSION,
+    @"reactNativeVersion": RCT_REACT_NATIVE_VERSION,
   };
 }
 

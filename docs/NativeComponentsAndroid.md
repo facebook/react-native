@@ -144,7 +144,24 @@ class MyCustomView extends View {
 }
 ```
 
-The event name `topChange` maps to the `onChange` callback prop in JavaScript (mappings are in `UIManagerModuleConstants.java`). This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
+To map the `topChange` event name to the `onChange` callback prop in JavaScript, register it by overriding the `getExportedCustomBubblingEventTypeConstants` method in your `ViewManager`:
+
+```java
+public class ReactImageManager extends SimpleViewManager<MyCustomView> {
+    ...
+    public Map getExportedCustomBubblingEventTypeConstants() {
+        return MapBuilder.builder()
+            .put(
+                "topChange",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onChange")))
+                    .build();
+    }
+}
+```
+
+This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
 
 ```js
 // MyCustomView.js

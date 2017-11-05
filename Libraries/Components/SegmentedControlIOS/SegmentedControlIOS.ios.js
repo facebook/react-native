@@ -49,7 +49,6 @@ type Event = Object;
  * />
  * ````
  */
-// $FlowFixMe(>=0.41.0)
 var SegmentedControlIOS = createReactClass({
   displayName: 'SegmentedControlIOS',
   mixins: [NativeMethodsMixin],

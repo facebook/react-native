@@ -259,8 +259,7 @@ function getViewPropTypes() {
     viewPropTypesResolver,
     [
       viewPropTypesConversionHandler,
-      ...docgen.defaultHandlers,
-    ]
+    ].concat(docgen.defaultHandlers)
   );
 }
 
