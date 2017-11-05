@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|
-    ss.dependency             "Yoga", "#{package["version"]}.React"
+    ss.dependency             "yoga", "#{package["version"]}.React"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files        = "**/__tests__/*",
                               "IntegrationTests/*",
@@ -109,11 +109,18 @@ Pod::Spec.new do |s|
 
   s.subspec "jschelpers" do |ss|
     ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "React/PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jschelpers/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
     ss.framework            = "JavaScriptCore"
+  end
+
+  s.subspec "PrivateDatabase" do |ss|
+    ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/privatedata/*.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "cxxreact" do |ss|
@@ -135,11 +142,6 @@ Pod::Spec.new do |s|
   s.subspec "RCTActionSheet" do |ss|
     ss.dependency             "React/Core"
     ss.source_files         = "Libraries/ActionSheetIOS/*.{h,m}"
-  end
-
-  s.subspec "RCTAdSupport" do |ss|
-    ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/AdSupport/*.{h,m}"
   end
 
   s.subspec "RCTAnimation" do |ss|
@@ -204,6 +206,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "fishhook" do |ss|
+    ss.header_dir           = "fishhook"
     ss.source_files         = "Libraries/fishhook/*.{h,c}"
   end
 

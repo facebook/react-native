@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 include_defs("//ReactCommon/DEFS")
 
 cxx_library(

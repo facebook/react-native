@@ -23,8 +23,7 @@ var {
 
 var RCTNetworking = require('RCTNetworking');
 
-class XHRExampleCookies extends React.Component {
-  state: any;
+class XHRExampleCookies extends React.Component<any, any> {
   cancelled: boolean;
 
   constructor(props: any) {

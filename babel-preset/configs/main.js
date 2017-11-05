@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @format
  */
 'use strict';
 
@@ -21,7 +20,6 @@ const getPreset = (src, options) => {
 
   plugins.push(
     'syntax-class-properties',
-    'syntax-dynamic-import',
     'syntax-trailing-function-commas',
     'transform-class-properties',
     'transform-es2015-block-scoping',
@@ -34,11 +32,10 @@ const getPreset = (src, options) => {
     'transform-flow-strip-types',
     'transform-react-jsx',
     'transform-regenerator',
-    require('../transforms/transform-regenerator-runtime-insertion'),
     [
       'transform-es2015-modules-commonjs',
       {strict: false, allowTopLevelThis: true},
-    ],
+    ]
   );
 
   if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
@@ -59,6 +56,9 @@ const getPreset = (src, options) => {
   }
   if (isNull || src.indexOf('`') !== -1) {
     plugins.push('transform-es2015-template-literals');
+  }
+  if (isNull || src.indexOf('**') !== -1) {
+    plugins.push('transform-exponentiation-operator');
   }
   if (isNull || src.indexOf('Object.assign') !== -1) {
     plugins.push('transform-object-assign');

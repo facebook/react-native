@@ -48,11 +48,10 @@ try {
   const CLI_PACKAGE = path.join(ROOT, 'react-native-cli', 'react-native-cli-*.tgz');
   cd('..');
 
-  // can skip cli install for non sudo mode
   if (!argv['skip-cli-install']) {
-    if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally, please run in su mode');
-      echo('Or with --skip-cli-install to skip this step');
+    if (exec(`sudo npm install -g ${CLI_PACKAGE}`).code) {
+      echo('Could not install react-native-cli globally.');
+      echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -176,7 +175,7 @@ try {
         if (argv.tvos) {
           return exec('xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         } else {
-          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         }
       },
       numberOfRetries)) {

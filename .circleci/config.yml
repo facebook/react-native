@@ -1,0 +1,549 @@
+aliases:
+  - &restore-node-cache
+    keys:
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+      # Fallback in case checksum fails
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-
+
+  - &save-node-cache
+    paths:
+      - node_modules
+    key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+
+  - &restore-cache-website
+    keys:
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
+      # Fallback in case checksum fails
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-
+
+  - &save-cache-website
+    paths:
+      - website/node_modules
+    key: v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
+
+  - &restore-cache-analysis
+    keys:
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+      # Fallback in case checksum fails
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+  - &save-cache-analysis
+    paths:
+      - danger/node_modules
+      - node_modules
+    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+
+  - &restore-cache-android-packages
+    keys:
+      - v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      # Fallback in case checksum fails
+      - v1-android-sdkmanager-packages-{{ arch }}-
+  - &save-cache-android-packages
+    paths:
+      - /opt/android/sdk/system-images/android-23
+      - /opt/android/sdk/system-images/android-19
+      - /opt/android/sdk/platforms/android-26
+      - /opt/android/sdk/platforms/android-23
+      - /opt/android/sdk/platforms/android-19
+      - /opt/android/sdk/build-tools/23.0.1
+      - /opt/android/sdk/add-ons/addon-google_apis-google-23
+    key: v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+
+  - &restore-cache-ndk
+    keys:
+      - v1-android-ndk-{{ arch }}-r10e-32-64
+
+  - &save-cache-ndk
+    paths:
+      - /opt/ndk
+    key: v1-android-ndk-{{ arch }}-r10e-32-64
+
+  - &restore-cache-buck-downloads
+    keys:
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      # Fallback in case checksum fails
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-
+  - &save-cache-buck-downloads
+    paths:
+     - "ReactAndroid/build/downloads"
+    key: v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+
+  - &restore-cache-buck
+    keys:
+      - v1-buck-{{ arch }}-v2017.09.04.02
+  - &save-cache-buck
+    paths:
+      - ~/buck
+    key: v1-buck-{{ arch }}-v2017.09.04.02
+
+  - &restore-cache-watchman
+    keys:
+      - v1-watchman-{{ arch }}-v4.9.0
+  - &save-cache-watchman
+    paths:
+      - ~/watchman
+    key: v1-watchman-{{ arch }}-v4.9.0
+
+  - &install-node-dependencies
+    |
+      npm install --no-package-lock --no-spin --no-progress
+
+  - &run-node-tests
+    | 
+      npm test -- --maxWorkers=2
+      npm run lint
+      npm run flow -- check
+
+  - &filter-only-master-stable
+    branches:
+      only:
+        - /.*-stable/
+        - master
+
+  - &filter-ignore-gh-pages
+    branches:
+      ignore: gh-pages
+
+  - &filter-ignore-master-stable
+    branches:
+      ignore:
+        - master
+        - /.*-stable/
+        - gh-pages
+
+defaults: &defaults
+  working_directory: ~/react-native
+
+version: 2
+jobs:
+  # Runs JavaScript tests on Node 8
+  test-js-node-8:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
+
+  # Runs JavaScript tests on Node 6
+  test-js-node-6:
+    <<: *defaults
+    docker:
+      - image: circleci/node:6.11.0
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
+
+  # Runs JavaScript tests on Node 4
+  test-js-node-4:
+    <<: *defaults
+    docker:
+      - image: circleci/node:4.8.4
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
+
+  # Runs unit tests on iOS devices
+  test-objc-ios:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/objc-test-ios.sh
+
+  # Runs unit tests on tvOS devices
+  test-objc-tvos:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "Apple TV 1080p (10.0)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/objc-test-tvos.sh
+
+  # Runs end to end tests
+  test-objc-e2e:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+  # Checks podspec
+  test-podspec:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/process-podspecs.sh
+      
+  test-website:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            cd website
+            npm install --no-package-lock --no-spin --no-progress
+      - run:
+          name: Test Website
+          command: |
+            cd website
+            npm test
+      - run:
+          name: Test Build Static Website
+          command: cd website && node ./server/generate.js
+
+  deploy-website:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            cd website
+            npm install --no-package-lock --no-spin --no-progress
+      - run:
+          name: Build and Deploy Static Website
+          command: |
+            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
+              git config --global user.email "reactjs-bot@users.noreply.github.com"
+              git config --global user.name "Website Deployment Script"
+              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+              echo "Deploying website..."
+              cd website && GIT_USER=reactjs-bot npm run gh-pages
+            else
+              echo "Skipping deploy."
+            fi
+
+  # Build JavaScript bundle for Android tests
+  build-js-bundle:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run:
+          name: Build JavaScript Bundle
+          command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+      - persist_to_workspace:
+          root: ReactAndroid/src/androidTest/assets/
+          paths:
+            - AndroidTestBundle.js
+      - store_artifacts:
+          path: ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+
+  # Runs unit tests tests on Android
+  test-android:
+    <<: *defaults
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      - TERM: "dumb"
+      - ADB_INSTALL_TIMEOUT: 10
+      - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+      - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+      - BUILD_THREADS: 2
+    steps:
+      - checkout
+# CircleCI does not support interpolating env variables in the environment: step above.
+# https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
+      - run:
+          name: Configure PATH
+          command: |
+            echo 'export PATH=${ANDROID_NDK}:~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+# Configure dependencies
+      - run:
+          name: Install Build Dependencies
+          command: |
+            sudo apt-get update -y
+            sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+      - restore-cache: *restore-cache-android-packages
+      - run:
+          name: Install Android Packages
+          command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
+      - save-cache: *save-cache-android-packages
+      - run:
+          name: Create Android Virtual Device
+          command: source scripts/circle-ci-android-setup.sh && createAVD
+# Starting emulator in advance as it takes some time to boot.
+      - run:
+          name: Launch Android Virtual Device in Background
+          command: source scripts/circle-ci-android-setup.sh && launchAVD
+          background: true
+# Continue configuring dependencies while AVD boots.
+      - run:
+          name: Create Android NDK Directory
+          command: |
+            if [[ ! -e /opt/ndk ]]; then
+              sudo mkdir /opt/ndk
+            fi
+            sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
+      - restore-cache: *restore-cache-ndk
+      - run:
+          name: Install Android NDK
+          command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
+      - save-cache: *save-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - run:
+          name: Install Buck
+          command: |
+            if [[ ! -e ~/buck ]]; then
+              git clone https://github.com/facebook/buck.git ~/buck --branch v2017.09.04.02 --depth=1
+            fi
+            cd ~/buck && ant
+            buck --version
+      - save-cache: *save-cache-buck
+      - run:
+          name: Install Node
+          command: |
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+# TODO: Install and use watchman to speed up builds
+#      - restore-cache: *restore-cache-watchman
+#      - run:
+#          name: Install Watchman Dependencies
+#          command: |
+#            sudo apt-get update -y
+#            sudo apt-get install libtool pkg-config -y
+#      - run:
+#          name: Install Watchman
+#          command: |
+#            if [[ ! -e ~/watchman ]]; then
+#              mkdir ~/watchman
+#              git clone https://github.com/facebook/watchman.git ~/watchman --branch v4.9.0 --depth=1
+#              cd ~/watchman
+#              ./autogen.sh
+#              ./configure
+#              make
+#            fi
+#            cd ~/watchman
+#            sudo make install
+#      - save-cache: *save-cache-watchman
+      - restore-cache: *restore-cache-buck-downloads
+      - run:
+          name: Download Android App Dependencies
+          command: |
+            buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+            buck fetch ReactAndroid/src/main/java/com/facebook/react
+            buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+            buck fetch ReactAndroid/src/test/...
+            buck fetch ReactAndroid/src/androidTest/...
+            ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+      - save-cache: *save-cache-buck-downloads
+      - run:
+          name: Build Android App
+          command: |
+            buck build ReactAndroid/src/main/java/com/facebook/react
+            buck build ReactAndroid/src/main/java/com/facebook/react/shell
+# Wait for AVD to finish booting before running tests
+      - run:
+          name: Wait for Android Virtual Device
+          command: source scripts/circle-ci-android-setup.sh && waitForAVD
+# The JavaScript Bundle is built as part of the build-js-bundle workflow, and is required for instrumentation tests.
+      - attach_workspace:
+          at: ReactAndroid/src/androidTest/assets/
+      - run:
+          name: Check for JavaScript Bundle
+          command: |
+            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+              echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
+            else
+              echo "JavaScript bundle found.";
+            fi
+# Tests
+      - run:
+          name: Compile Native Libs for Unit and Integration Tests
+          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
+          no_output_timeout: 6m
+      - run:
+          name: Unit Tests
+          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
+# Integration Tests
+      - run:
+          name: Build and Install Test APK
+          command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+# TODO: Uncomment, test was already failing on Circle 1.0
+#      - run:
+#          name: Run Installed APK with Tests
+#          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+# TODO: Should be disabled, pending on https://our.intern.facebook.com/intern/tasks?t=16912142
+#       - run:
+#          name: Run Android End to End Tests
+#           command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
+
+# post (always runs)
+      - run:
+          name: Collect Test Results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
+            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
+# TODO: Circle does not understand Buck's report, maybe need to transform xml slightly
+#           find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: ~/junit
+
+  analyze-pull-request:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-cache-analysis
+      - run: *install-node-dependencies
+      - run:
+          name: Install Dependencies
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              npm install github@0.2.4
+              cd danger
+              npm install --no-package-lock --no-spin --no-progress
+            else
+              echo "Skipping dependency installation."            
+            fi
+      - save-cache: *save-cache-analysis
+# Run Danger      
+      - run:
+          name: Analyze Pull Request
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+            else
+              echo "Skipping pull request analysis."            
+            fi
+          when: always
+# Run eslint          
+      - run:
+          name: Analyze Code
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+            else
+              echo "Skipping code analysis."            
+            fi
+
+  publish-npm:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: *install-node-dependencies      
+      - run:
+        name: Publish React Native Package
+        command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+              git config --global user.email "reactjs-bot@users.noreply.github.com"
+              git config --global user.name "Website Deployment Script"
+              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+              node ./scripts/publish-npm.js
+            else
+              echo "Skipping publication."            
+            fi
+
+# Workflows enables us to run multiple jobs in parallel
+workflows:
+  version: 2
+  
+  test_node:
+    jobs:
+      - test-js-node-8:
+          filters: *filter-ignore-gh-pages
+      - test-js-node-6:
+          filters: *filter-ignore-gh-pages
+      
+# TODO: Re-enable. Node 4 tests are already failing on Circle 1.0
+#      - test-js-node-4:
+#          filters: *filter-ignore-gh-pages
+
+
+  test_android:
+    jobs:
+      - build-js-bundle:
+          filters: *filter-ignore-gh-pages
+      - test-android:
+          requires:
+            - build-js-bundle
+
+  test_ios:
+    jobs:
+      - test-objc-ios:
+          filters: *filter-ignore-gh-pages
+      - test-objc-tvos:
+          filters: *filter-ignore-gh-pages
+      - test-objc-e2e:
+          filters: *filter-ignore-gh-pages
+# TODO: Re-enable. Podspec tests are already failing on Travis
+#      - test-podspec:
+#          filters: *filter-ignore-gh-pages
+
+  website:
+    jobs:
+      - test-website:
+          filters: *filter-ignore-gh-pages
+      - deploy-website:
+          requires:
+            - test-website
+          filters: *filter-only-master-stable
+
+  analyze:
+    jobs:
+      - analyze-pull-request:
+          filters: *filter-ignore-master-stable
+
+  deploy:
+    jobs:
+      - hold:
+          type: approval
+      - publish-npm:
+          requires: 
+            - hold
+          filters: *filter-only-master-stable

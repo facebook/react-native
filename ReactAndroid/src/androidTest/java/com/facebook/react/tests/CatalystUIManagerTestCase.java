@@ -9,21 +9,20 @@
 
 package com.facebook.react.tests;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.testing.FakeWebSocketModule;
+import com.facebook.react.testing.ReactIntegrationTestCase;
+import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -31,9 +30,8 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.testing.FakeWebSocketModule;
-import com.facebook.react.testing.ReactIntegrationTestCase;
-import com.facebook.react.testing.ReactTestHelper;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Test case for basic {@link UIManagerModule} functionality.
@@ -80,11 +78,8 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
         new ReactViewManager(),
         new ReactTextViewManager(),
         new ReactRawTextManager());
-    uiManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    uiManager =
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {

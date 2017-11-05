@@ -47,7 +47,7 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-class FlatListExample extends React.PureComponent {
+class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
   static title = '<FlatList>';
   static description = 'Performant, scrollable list of data.';
 

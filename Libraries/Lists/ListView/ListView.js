@@ -21,9 +21,15 @@ var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var cloneReferencedElement = require('react-clone-referenced-element');
 var createReactClass = require('create-react-class');
 var isEmpty = require('isEmpty');
@@ -420,6 +426,9 @@ var ListView = createReactClass({
       var rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
+          /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
+           * an error found when Flow v0.54 was deployed. To see the error
+           * delete this comment and run Flow. */
           var warning = require('fbjs/lib/warning');
           warning(
             false,
@@ -490,11 +499,7 @@ var ListView = createReactClass({
             adjacentRowHighlighted,
           );
           if (separator) {
-            bodyComponents.push(
-              <View key={'s_' + comboID}>
-                {separator}
-              </View>,
-            );
+            bodyComponents.push(<View key={'s_' + comboID}>{separator}</View>);
             totalIndex++;
           }
         }

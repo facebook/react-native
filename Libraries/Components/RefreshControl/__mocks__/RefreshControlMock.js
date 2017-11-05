@@ -16,7 +16,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 const RCTRefreshControl = requireNativeComponent('RCTRefreshControl');
 
-class RefreshControlMock extends React.Component {
+class RefreshControlMock extends React.Component<{}> {
   static latestRef: ?RefreshControlMock;
   componentDidMount() {
     RefreshControlMock.latestRef = this;

@@ -14,8 +14,9 @@
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const React = require('React');
+const ProgressBarAndroid = require('ProgressBarAndroid');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
@@ -36,6 +37,46 @@ type DefaultProps = {
 
 /**
  * Displays a circular loading indicator.
+ *
+ * ### Example
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react'
+ * import {
+ *   ActivityIndicator,
+ *   AppRegistry,
+ *   StyleSheet,
+ *   Text,
+ *   View,
+ * } from 'react-native'
+ *
+ * class App extends Component {
+ *   render() {
+ *     return (
+ *       <View style={[styles.container, styles.horizontal]}>
+ *         <ActivityIndicator size="large" color="#0000ff" />
+ *         <ActivityIndicator size="small" color="#00ff00" />
+ *         <ActivityIndicator size="large" color="#0000ff" />
+ *         <ActivityIndicator size="small" color="#00ff00" />
+ *       </View>
+ *     )
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
+ *   container: {
+ *     flex: 1,
+ *     justifyContent: 'center'
+ *   },
+ *   horizontal: {
+ *     flexDirection: 'row',
+ *     justifyContent: 'space-around',
+ *     padding: 10
+ *   }
+ * })
+ *
+ * AppRegistry.registerComponent('App', () => App)
+ * ```
  */
 const ActivityIndicator = createReactClass({
   displayName: 'ActivityIndicator',
@@ -92,16 +133,20 @@ const ActivityIndicator = createReactClass({
         break;
     }
 
+    const nativeProps = {
+      ...props,
+      style: sizeStyle,
+      styleAttr: 'Normal',
+      indeterminate: true,
+    };
+
     return (
-      <View
-        onLayout={onLayout}
-        style={[styles.container, style]}>
-        <RCTActivityIndicator
-          {...props}
-          style={sizeStyle}
-          styleAttr="Normal"
-          indeterminate
-        />
+      <View onLayout={onLayout} style={[styles.container, style]}>
+        {Platform.OS === 'ios' ? (
+          <RCTActivityIndicator {...nativeProps} />
+        ) : (
+          <ProgressBarAndroid {...nativeProps} />
+        )}
       </View>
     );
   }
@@ -126,18 +171,7 @@ if (Platform.OS === 'ios') {
   var RCTActivityIndicator = requireNativeComponent(
     'RCTActivityIndicatorView',
     ActivityIndicator,
-    {nativeOnly: {activityIndicatorViewStyle: true}},
-  );
-} else if (Platform.OS === 'android') {
-  var RCTActivityIndicator = requireNativeComponent(
-    'AndroidProgressBar',
-    ActivityIndicator,
-    // Ignore props that are specific to non inderterminate ProgressBar.
-    {nativeOnly: {
-      indeterminate: true,
-      progress: true,
-      styleAttr: true,
-    }},
+    { nativeOnly: { activityIndicatorViewStyle: true } }
   );
 }
 

@@ -9,45 +9,43 @@
 
 package com.facebook.react.views.textinput;
 
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import android.os.Build;
 import android.text.Layout;
-import android.text.Spannable;
-import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
-import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.view.MeasureUtil;
-import com.facebook.react.views.text.ReactTextShadowNode;
+import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.view.MeasureUtil;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+import javax.annotation.Nullable;
 
 @VisibleForTesting
-public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    YogaMeasureFunction {
+public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
+    implements YogaMeasureFunction {
 
-  private @Nullable EditText mEditText;
-  private int mJsEventCount = UNSET;
+  private int mMostRecentEventCount = UNSET;
+  private @Nullable EditText mDummyEditText;
+  private @Nullable ReactTextInputLocalData mLocalData;
+
+  @VisibleForTesting public static final String PROP_TEXT = "text";
+
+  // Represents the {@code text} property only, not possible nested content.
+  private @Nullable String mText = null;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
         0 : Layout.BREAK_STRATEGY_SIMPLE;
+
     setMeasureFunction(this);
   }
 
@@ -55,20 +53,30 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
 
-    // TODO #7120264: cache this stuff better
-    mEditText = new EditText(getThemedContext());
+    // {@code EditText} has by default a border at the bottom of its view
+    // called "underline". To have a native look and feel of the TextEdit
+    // we have to preserve it at least by default.
+    // The border (underline) has its padding set by the background image
+    // provided by the system (which vary a lot among versions and vendors
+    // of Android), and it cannot be changed.
+    // So, we have to enforce it as a default padding.
+    // TODO #7120264: Cache this stuff better.
+    EditText editText = new EditText(getThemedContext());
+    setDefaultPadding(Spacing.START, editText.getPaddingStart());
+    setDefaultPadding(Spacing.TOP, editText.getPaddingTop());
+    setDefaultPadding(Spacing.END, editText.getPaddingEnd());
+    setDefaultPadding(Spacing.BOTTOM, editText.getPaddingBottom());
+
+    mDummyEditText = editText;
+
+    // We must measure the EditText without paddings, so we have to reset them.
+    mDummyEditText.setPadding(0, 0, 0, 0);
+
     // This is needed to fix an android bug since 4.4.3 which will throw an NPE in measure,
     // setting the layoutParams fixes it: https://code.google.com/p/android/issues/detail?id=75877
-    mEditText.setLayoutParams(
+    mDummyEditText.setLayoutParams(
         new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-
-    setDefaultPadding(Spacing.START, mEditText.getPaddingStart());
-    setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
-    setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
-    setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mEditText.setPadding(0, 0, 0, 0);
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
   }
 
   @Override
@@ -79,22 +87,14 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       float height,
       YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
-    EditText editText = Assertions.assertNotNull(mEditText);
+    EditText editText = Assertions.assertNotNull(mDummyEditText);
 
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        mFontSize == UNSET ?
-            (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-
-    if (mNumberOfLines != UNSET) {
-      editText.setLines(mNumberOfLines);
+    if (mLocalData == null) {
+      // No local data, no intrinsic size.
+      return YogaMeasureOutput.make(0, 0);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (editText.getBreakStrategy() != mTextBreakStrategy) {
-        editText.setBreakStrategy(mTextBreakStrategy);
-      }
-    }
+    mLocalData.apply(editText);
 
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
@@ -104,14 +104,40 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void onBeforeLayout() {
-    // We don't have to measure the text within the text input.
-    return;
+  public boolean isVirtualAnchor() {
+    return true;
+  }
+
+  @Override
+  public boolean isYogaLeafNode() {
+    return true;
+  }
+
+  @Override
+  public void setLocalData(Object data) {
+    Assertions.assertCondition(data instanceof ReactTextInputLocalData);
+    mLocalData = (ReactTextInputLocalData) data;
+
+    // Telling to Yoga that the node should be remeasured on next layout pass.
+    dirty();
+
+    // Note: We should NOT mark the node updated (by calling {@code markUpdated}) here
+    // because the state remains the same.
   }
 
   @ReactProp(name = "mostRecentEventCount")
   public void setMostRecentEventCount(int mostRecentEventCount) {
-    mJsEventCount = mostRecentEventCount;
+    mMostRecentEventCount = mostRecentEventCount;
+  }
+
+  @ReactProp(name = PROP_TEXT)
+  public void setText(@Nullable String text) {
+    mText = text;
+    markUpdated();
+  }
+
+  public @Nullable String getText() {
+    return mText;
   }
 
   @Override
@@ -135,20 +161,18 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mJsEventCount != UNSET) {
-      Spannable preparedSpannableText = fromTextCSSNode(this);
+    if (mMostRecentEventCount != UNSET) {
       ReactTextUpdate reactTextUpdate =
-        new ReactTextUpdate(
-          preparedSpannableText,
-          mJsEventCount,
-          mContainsImages,
-          getPadding(Spacing.LEFT),
-          getPadding(Spacing.TOP),
-          getPadding(Spacing.RIGHT),
-          getPadding(Spacing.BOTTOM),
-          mTextAlign,
-          mTextBreakStrategy
-        );
+          new ReactTextUpdate(
+              spannedFromShadowNode(this, getText()),
+              mMostRecentEventCount,
+              mContainsImages,
+              getPadding(Spacing.LEFT),
+              getPadding(Spacing.TOP),
+              getPadding(Spacing.RIGHT),
+              getPadding(Spacing.BOTTOM),
+              mTextAlign,
+              mTextBreakStrategy);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

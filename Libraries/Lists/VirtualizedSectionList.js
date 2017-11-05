@@ -39,8 +39,8 @@ type SectionBase = {
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
-  }) => ?React.Element<*>,
-  ItemSeparatorComponent?: ?ReactClass<*>,
+  }) => ?React.Element<any>,
+  ItemSeparatorComponent?: ?React.ComponentType<*>,
   keyExtractor?: (item: SectionItem, index: ?number) => string,
 
   // TODO: support more optional/override props
@@ -57,11 +57,11 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered after the last item in the last section.
    */
-  ListFooterComponent?: ?(ReactClass<*> | React.Element<*>),
+  ListFooterComponent?: ?(React.ComponentType<*> | React.Element<any>),
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?(ReactClass<*> | React.Element<*>),
+  ListHeaderComponent?: ?(React.ComponentType<*> | React.Element<any>),
   /**
    * Default renderer for every item in every section.
    */
@@ -78,20 +78,20 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered at the top of each section.
    */
-  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
+  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<*>,
+  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<any>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.
    */
-  SectionSeparatorComponent?: ?ReactClass<*>,
+  SectionSeparatorComponent?: ?React.ComponentType<*>,
   /**
    * Rendered at the bottom of every Item except the very last one in the last section.
    */
-  ItemSeparatorComponent?: ?ReactClass<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<*>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
@@ -134,7 +134,6 @@ type State = {childProps: VirtualizedListProps};
  * sections when new props are received, which should be plenty fast for up to ~10,000 items.
  */
 class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
-  DefaultProps,
   Props<SectionT>,
   State,
 > {
@@ -305,7 +304,10 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     ref && ref.updateSeparatorProps(newProps);
   };
 
-  _getSeparatorComponent(index: number, info?: ?Object): ?ReactClass<*> {
+  _getSeparatorComponent(
+    index: number,
+    info?: ?Object,
+  ): ?React.ComponentType<*> {
     info = info || this._subExtractor(index);
     if (!info) {
       return null;
@@ -369,13 +371,16 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   _cellRefs = {};
   _listRef: VirtualizedList;
   _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._listRef = ref;
   };
 }
 
 type ItemWithSeparatorProps = {
-  LeadingSeparatorComponent: ?ReactClass<*>,
-  SeparatorComponent: ?ReactClass<*>,
+  LeadingSeparatorComponent: ?React.ComponentType<*>,
+  SeparatorComponent: ?React.ComponentType<*>,
   cellKey: string,
   index: number,
   item: Item,
@@ -389,9 +394,10 @@ type ItemWithSeparatorProps = {
   trailingSection: ?Object,
 };
 
-class ItemWithSeparator extends React.Component {
-  props: ItemWithSeparatorProps;
-
+class ItemWithSeparator extends React.Component<
+  ItemWithSeparatorProps,
+  $FlowFixMeState,
+> {
   state = {
     separatorProps: {
       highlighted: false,
@@ -478,19 +484,21 @@ class ItemWithSeparator extends React.Component {
       section,
       separators: this._separators,
     });
-    const leadingSeparator =
-      LeadingSeparatorComponent &&
-      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />;
-    const separator =
-      SeparatorComponent &&
-      <SeparatorComponent {...this.state.separatorProps} />;
-    return leadingSeparator || separator
-      ? <View>
-          {leadingSeparator}
-          {element}
-          {separator}
-        </View>
-      : element;
+    const leadingSeparator = LeadingSeparatorComponent && (
+      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />
+    );
+    const separator = SeparatorComponent && (
+      <SeparatorComponent {...this.state.separatorProps} />
+    );
+    return leadingSeparator || separator ? (
+      <View>
+        {leadingSeparator}
+        {element}
+        {separator}
+      </View>
+    ) : (
+      element
+    );
   }
 }
 
