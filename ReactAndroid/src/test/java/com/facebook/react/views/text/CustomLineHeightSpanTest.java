@@ -13,8 +13,8 @@ import org.robolectric.RobolectricTestRunner;
 public class CustomLineHeightSpanTest {
 
   @Test
-  public void shouldIncreaseTop() {
-    CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(21);
+  public void shouldIncreaseAllMetricsProportionally() {
+    CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(22);
     Paint.FontMetricsInt fm = new Paint.FontMetricsInt();
     fm.top = -10;
     fm.ascent = -5;
@@ -22,9 +22,9 @@ public class CustomLineHeightSpanTest {
     fm.bottom = 10;
     customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
     assertThat(fm.top).isEqualTo(-11);
-    assertThat(fm.ascent).isEqualTo(-5);
-    assertThat(fm.descent).isEqualTo(5);
-    assertThat(fm.bottom).isEqualTo(10);
+    assertThat(fm.ascent).isEqualTo(-6);
+    assertThat(fm.descent).isEqualTo(6);
+    assertThat(fm.bottom).isEqualTo(11);
   }
 
   @Test
@@ -70,5 +70,20 @@ public class CustomLineHeightSpanTest {
     assertThat(fm.ascent).isEqualTo(-4);
     assertThat(fm.descent).isEqualTo(5);
     assertThat(fm.bottom).isEqualTo(5);
+  }
+
+  @Test
+  public void shouldReduceDescentLast() {
+    CustomLineHeightSpan customLineHeightSpan = new CustomLineHeightSpan(4);
+    Paint.FontMetricsInt fm = new Paint.FontMetricsInt();
+    fm.top = -10;
+    fm.ascent = -5;
+    fm.descent = 5;
+    fm.bottom = 10;
+    customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
+    assertThat(fm.top).isEqualTo(0);
+    assertThat(fm.ascent).isEqualTo(0);
+    assertThat(fm.descent).isEqualTo(4);
+    assertThat(fm.bottom).isEqualTo(4);
   }
 }
