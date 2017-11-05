@@ -54,6 +54,14 @@ public class UIImplementation {
   private final int[] mMeasureBuffer = new int[4];
 
   private long mLastCalculateLayoutTime = 0;
+  protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
+
+  /** Interface definition for a callback to be invoked when the layout has been updated */
+  public interface LayoutUpdateListener {
+
+    /** Called when the layout has been updated */
+    void onLayoutUpdated(ReactShadowNode root);
+  }
 
   public UIImplementation(
       ReactApplicationContext reactContext,
@@ -123,7 +131,7 @@ public class UIImplementation {
     return viewManager.createShadowNodeInstance(mReactContext);
   }
 
-  protected final ReactShadowNode resolveShadowNode(int reactTag) {
+  public final ReactShadowNode resolveShadowNode(int reactTag) {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
@@ -693,6 +701,10 @@ public class UIImplementation {
           } finally {
             Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
           }
+
+          if (mLayoutUpdateListener != null) {
+            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
+          }
         }
       }
     } finally {
@@ -979,6 +991,10 @@ public class UIImplementation {
     mOperationsQueue.enqueueUIBlock(block);
   }
 
+  public void prependUIBlock(UIBlock block) {
+    mOperationsQueue.prependUIBlock(block);
+  }
+
   public int resolveRootTagFromReactTag(int reactTag) {
     if (mShadowNodeRegistry.isRootNode(reactTag)) {
       return reactTag;
@@ -1004,5 +1020,13 @@ public class UIImplementation {
    */
   public void enableLayoutCalculationForRootNode(int rootViewTag) {
     this.mMeasuredRootNodes.add(rootViewTag);
+  }
+
+  public void setLayoutUpdateListener(LayoutUpdateListener listener) {
+    mLayoutUpdateListener = listener;
+  }
+
+  public void removeLayoutUpdateListener() {
+    mLayoutUpdateListener = null;
   }
 }

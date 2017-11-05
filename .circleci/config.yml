@@ -1,39 +1,42 @@
 aliases:
-  - &restore-cache
+  - &restore-node-cache
     keys:
-      - v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ .Branch }}-
-  - &save-cache
+      - v1-dependencies-{{ arch }}-{{ .Branch }}-
+
+  - &save-node-cache
     paths:
       - node_modules
-    key: v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
 
   - &restore-cache-website
     keys:
-      - v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
       # Fallback in case checksum fails
-      - v1-website-dependencies-{{ .Branch }}-
+      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-
+
   - &save-cache-website
     paths:
       - website/node_modules
-    key: v1-website-dependencies-{{ .Branch }}-{{ checksum "website/package.json" }}
+    key: v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
 
-  - &restore-cache-danger
+  - &restore-cache-analysis
     keys:
-      - v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - v1-danger-dependencies-{{ .Branch }}-
-  - &save-cache-danger
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+  - &save-cache-analysis
     paths:
       - danger/node_modules
-    key: v1-danger-dependencies-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - node_modules
+    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v1-android-sdkmanager-packages-
+      - v1-android-sdkmanager-packages-{{ arch }}-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk/system-images/android-23
@@ -43,93 +46,168 @@ aliases:
       - /opt/android/sdk/platforms/android-19
       - /opt/android/sdk/build-tools/23.0.1
       - /opt/android/sdk/add-ons/addon-google_apis-google-23
-    key: v1-android-sdkmanager-packages-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v1-android-ndk-r10e-32-64
+      - v1-android-ndk-{{ arch }}-r10e-32-64
+
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v1-android-ndk-r10e-32-64
+    key: v1-android-ndk-{{ arch }}-r10e-32-64
 
   - &restore-cache-buck-downloads
     keys:
-      - v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - v1-buck-downloads-{{ .Branch }}-
+      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-
   - &save-cache-buck-downloads
     paths:
      - "ReactAndroid/build/downloads"
-    key: v1-buck-downloads-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
-      - v1-buck-v2017.09.04.02
+      - v1-buck-{{ arch }}-v2017.09.04.02
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v1-buck-v2017.09.04.02
+    key: v1-buck-{{ arch }}-v2017.09.04.02
 
   - &restore-cache-watchman
     keys:
-      - v1-watchman-v4.9.0
+      - v1-watchman-{{ arch }}-v4.9.0
   - &save-cache-watchman
     paths:
       - ~/watchman
-    key: v1-watchman-v4.9.0
+    key: v1-watchman-{{ arch }}-v4.9.0
+
+  - &install-node-dependencies
+    |
+      npm install --no-package-lock --no-spin --no-progress
+
+  - &run-node-tests
+    | 
+      npm test -- --maxWorkers=2
+      npm run lint
+      npm run flow -- check
+
+  - &filter-only-master-stable
+    branches:
+      only:
+        - /.*-stable/
+        - master
+
+  - &filter-ignore-gh-pages
+    branches:
+      ignore: gh-pages
+
+  - &filter-ignore-master-stable
+    branches:
+      ignore:
+        - master
+        - /.*-stable/
+        - gh-pages
 
 defaults: &defaults
   working_directory: ~/react-native
 
 version: 2
 jobs:
-  test-node-8:
+  # Runs JavaScript tests on Node 8
+  test-js-node-8:
     <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
-      - run: |
-          npm test -- --maxWorkers=2
-          npm run lint
-          npm run flow -- check
-# eslint - doesn't run on non-PR builds
-      - run:
-          name: Analyze Code
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              npm install github@0.2.4
-              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
-            else 
-              echo "Skipping code analysis."
-            fi
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
 
-  test-node-6:
+  # Runs JavaScript tests on Node 6
+  test-js-node-6:
     <<: *defaults
     docker:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - run: npm install
-      - run: |
-          npm test -- --maxWorkers=2
-          npm run lint
-          npm run flow -- check
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
 
-  test-node-4:
+  # Runs JavaScript tests on Node 4
+  test-js-node-4:
     <<: *defaults
     docker:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - run: npm install
-      - run: |
-          npm test -- --maxWorkers=2
-          npm run lint
-          npm run flow -- check
-          
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-node-tests
+
+  # Runs unit tests on iOS devices
+  test-objc-ios:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/objc-test-ios.sh
+
+  # Runs unit tests on tvOS devices
+  test-objc-tvos:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "Apple TV 1080p (10.0)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/objc-test-tvos.sh
+
+  # Runs end to end tests
+  test-objc-e2e:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+  # Checks podspec
+  test-podspec:
+    <<: *defaults
+    macos:
+      xcode: "9.0"
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: ./scripts/process-podspecs.sh
+      
   test-website:
     <<: *defaults
     docker:
@@ -140,7 +218,7 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
-            npm install --no-package-lock
+            npm install --no-package-lock --no-spin --no-progress
       - run:
           name: Test Website
           command: |
@@ -160,7 +238,7 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
-            npm install --no-package-lock
+            npm install --no-package-lock --no-spin --no-progress
       - run:
           name: Build and Deploy Static Website
           command: |
@@ -168,20 +246,22 @@ jobs:
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
             else
               echo "Skipping deploy."
             fi
 
+  # Build JavaScript bundle for Android tests
   build-js-bundle:
     <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: npm install --no-package-lock
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
       - run:
           name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
@@ -192,6 +272,7 @@ jobs:
       - store_artifacts:
           path: ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
+  # Runs unit tests tests on Android
   test-android:
     <<: *defaults
     docker:
@@ -258,7 +339,10 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             sudo apt-get install -y nodejs
-      - run: npm install
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+# TODO: Install and use watchman to speed up builds
 #      - restore-cache: *restore-cache-watchman
 #      - run:
 #          name: Install Watchman Dependencies
@@ -322,11 +406,11 @@ jobs:
       - run:
           name: Build and Install Test APK
           command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-# Failing test is expected
+# TODO: Uncomment, test was already failing on Circle 1.0
 #      - run:
 #          name: Run Installed APK with Tests
 #          command: node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
-# Should be disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
+# TODO: Should be disabled, pending on https://our.intern.facebook.com/intern/tasks?t=16912142
 #       - run:
 #          name: Run Android End to End Tests
 #           command: source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
@@ -338,7 +422,7 @@ jobs:
             mkdir -p ~/junit/
             find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
-# TODO circle does not understand Buck's report, maybe need to transform xml slightly
+# TODO: Circle does not understand Buck's report, maybe need to transform xml slightly
 #           find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/junit/ \;
           when: always
       - store_test_results:
@@ -346,32 +430,120 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
+  analyze-pull-request:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-cache-analysis
+      - run: *install-node-dependencies
+      - run:
+          name: Install Dependencies
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              npm install github@0.2.4
+              cd danger
+              npm install --no-package-lock --no-spin --no-progress
+            else
+              echo "Skipping dependency installation."            
+            fi
+      - save-cache: *save-cache-analysis
+# Run Danger      
+      - run:
+          name: Analyze Pull Request
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+            else
+              echo "Skipping pull request analysis."            
+            fi
+          when: always
+# Run eslint          
+      - run:
+          name: Analyze Code
+          command: |
+            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+            else
+              echo "Skipping code analysis."            
+            fi
+
+  publish-npm:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: *install-node-dependencies      
+      - run:
+        name: Publish React Native Package
+        command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+              git config --global user.email "reactjs-bot@users.noreply.github.com"
+              git config --global user.name "Website Deployment Script"
+              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+              node ./scripts/publish-npm.js
+            else
+              echo "Skipping publication."            
+            fi
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
+  
   test_node:
     jobs:
-      - test-node-8
-      - test-node-6
-# Node 4 tests are already failing on Circle 1.0
-#      - test-node-4
-  website:
-    jobs:
-      - test-website
-      - deploy-website:
-          requires:
-            - test-website
-          filters:
-            branches:
-              only:
-                - /.*-stable/
-                - master
+      - test-js-node-8:
+          filters: *filter-ignore-gh-pages
+      - test-js-node-6:
+          filters: *filter-ignore-gh-pages
+      
+# TODO: Re-enable. Node 4 tests are already failing on Circle 1.0
+#      - test-js-node-4:
+#          filters: *filter-ignore-gh-pages
+
+
   test_android:
     jobs:
       - build-js-bundle:
-          filters:
-            branches:
-              ignore: gh-pages
+          filters: *filter-ignore-gh-pages
       - test-android:
           requires:
             - build-js-bundle
+
+  test_ios:
+    jobs:
+      - test-objc-ios:
+          filters: *filter-ignore-gh-pages
+      - test-objc-tvos:
+          filters: *filter-ignore-gh-pages
+      - test-objc-e2e:
+          filters: *filter-ignore-gh-pages
+# TODO: Re-enable. Podspec tests are already failing on Travis
+#      - test-podspec:
+#          filters: *filter-ignore-gh-pages
+
+  website:
+    jobs:
+      - test-website:
+          filters: *filter-ignore-gh-pages
+      - deploy-website:
+          requires:
+            - test-website
+          filters: *filter-only-master-stable
+
+  analyze:
+    jobs:
+      - analyze-pull-request:
+          filters: *filter-ignore-master-stable
+
+  deploy:
+    jobs:
+      - hold:
+          type: approval
+      - publish-npm:
+          requires: 
+            - hold
+          filters: *filter-only-master-stable

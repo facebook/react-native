@@ -102,7 +102,6 @@ const TouchableWithoutFeedback = createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    // $FlowFixMe: Expected a React PropType instead
     pressRetentionOffset: EdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
@@ -112,7 +111,6 @@ const TouchableWithoutFeedback = createReactClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
-    // $FlowFixMe: Expected a React PropType instead
     hitSlop: EdgeInsetsPropType,
   },
 
@@ -188,13 +186,10 @@ const TouchableWithoutFeedback = createReactClass({
       child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
-      // $FlowFixMe(>=0.41.0)
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
-      // $FlowFixMe(>=0.41.0)
       nativeID: this.props.nativeID,
-      // $FlowFixMe(>=0.41.0)
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

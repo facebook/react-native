@@ -4,6 +4,7 @@ const ios = require('./ios');
 const flat = {
   android: android.valid,
   ios: ios.valid,
+  Podfile: 'empty'
 };
 
 const nested = {
@@ -19,4 +20,9 @@ const withExamples = {
   android: android.valid,
 };
 
-module.exports = { flat, nested, withExamples };
+const withPods = {
+  Podfile: 'content',
+  ios: ios.pod
+};
+
+module.exports = { flat, nested, withExamples, withPods };
