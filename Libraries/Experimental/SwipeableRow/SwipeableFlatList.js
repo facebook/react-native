@@ -101,10 +101,6 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
     this._onClose = this._onClose.bind(this);
   }
 
-  onRefFlatList(ref) {
-    this._flatListRef = ref;
-  }
-
   render(): React.Node {
     return (
       <FlatList
@@ -115,6 +111,10 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
         extraData={this.state.extraData}
       />
     );
+  }
+
+  onRefFlatList(_flatListRef) {
+    this._flatListRef = _flatListRef;
   }
 
   _onScroll = (): void => {
