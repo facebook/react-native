@@ -277,13 +277,46 @@ var ListView = createReactClass({
   },
 
   /**
+   * This function is a pass through for the ScrollView#scrollTo
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
    *
-   * See `ScrollView#scrollTo`.
+   * DEPRECATED PARAMS:
+   * This function can take the arguments (x:number, y:number, animated:boolean)
+   * but it is deprecated, so please use an object {x:number, y:number, animated:boolean}
+   *
+   * Example:
+   *
+   * `scrollTo({x: 0, y: 0, animated: true})`
    */
-  scrollTo: function(...args: Array<mixed>) {
+  scrollTo: function(
+    y?: number | { x?: number, y?: number, animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ) {
     if (this._scrollComponent && this._scrollComponent.scrollTo) {
-      this._scrollComponent.scrollTo(...args);
+      var scrollToProps = {};
+
+      // The correct params were passed so use them
+      if (typeof y === 'object') {
+        scrollToProps = y;
+      } else {
+        // Map deprecated params to correct format and warn developer
+        console.warn('`scrollTo(y, x, animated)` method signature is deprecated. Example of correct signature: ' +
+          '`scrollTo({x: 5, y: 5, animated: true})`');
+        if (y) {
+          scrollToProps.y = y;
+        }
+
+        if (x) {
+          scrollToProps.x = x;
+        }
+
+        if (animated) {
+          scrollToProps.animated = animated;
+        }
+      }
+
+      this._scrollComponent.scrollTo(scrollToProps);
     }
   },
 

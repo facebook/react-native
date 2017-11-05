@@ -499,14 +499,14 @@ const ScrollView = createReactClass({
    * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
-  scrollTo: function(
-    y?: number | { x?: number, y?: number, animated?: boolean },
-    x?: number,
-    animated?: boolean
-  ) {
+scrollTo: function(
+  y?: number | { x?: number, y?: number, animated?: boolean },
+  x?: number,
+  animated?: boolean
+) {
     if (typeof y === 'number') {
-      console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, ' +
-        'animated: true})` instead.');
+      console.warn('`scrollTo(y, x, animated)` method signature is deprecated. Example of correct signature: ' +
+        '`scrollTo({x: 5, y: 5, animated: true})`');
     } else {
       ({x, y, animated} = y || {});
     }
