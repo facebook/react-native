@@ -10,6 +10,14 @@
   "engines": {
     "node": ">=4"
   },
+  "prettier": {
+    "requirePragma": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": false,
+    "jsxBracketSameLine": true,
+    "parser": "flow"
+  },
   "jest": {
     "transform": {
       "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
@@ -118,6 +126,7 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
+    "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
