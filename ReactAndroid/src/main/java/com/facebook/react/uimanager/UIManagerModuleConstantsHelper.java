@@ -24,6 +24,9 @@ import javax.annotation.Nullable;
  */
 /* package */ class UIManagerModuleConstantsHelper {
 
+  private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
+  private static final String DIRECT_EVENTS_KEY = "directEventTypes";
+
   /**
    * Generates a lazy discovery enabled version of {@link UIManagerModule} constants. It only
    * contains a list of view manager names, so that JS side is aware of the managers there are.
@@ -36,6 +39,12 @@ import javax.annotation.Nullable;
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
     constants.put("ViewManagerNames", resolver.getViewManagerNames());
     return constants;
+  }
+
+  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+    return MapBuilder.<String, Object>of(
+        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
+        DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
   }
 
   /**
@@ -106,9 +115,6 @@ import javax.annotation.Nullable;
       @Nullable Map defaultDirectEvents,
       @Nullable Map cumulativeBubblingEventTypes,
       @Nullable Map cumulativeDirectEventTypes) {
-    final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
-    final String DIRECT_EVENTS_KEY = "directEventTypes";
-
     Map<String, Object> viewManagerConstants = MapBuilder.newHashMap();
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();

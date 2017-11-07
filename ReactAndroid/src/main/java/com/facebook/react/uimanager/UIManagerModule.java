@@ -17,7 +17,6 @@ import android.content.res.Configuration;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -43,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-  /**
+/**
  * <p>Native module to allow JS to create and update native Views.</p>
  *
  * <p>
@@ -114,11 +113,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   private int mBatchId = 0;
-
-  // Defines if events were already exported to JS. We do not send them more
-  // than once as they are stored and mixed in with Fiber for every ViewManager
-  // on JS side.
-  private boolean mEventsWereSentToJS = false;
 
   public UIManagerModule(
       ReactApplicationContext reactContext,
@@ -233,7 +227,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
   }
 
-  @DoNotStrip
   @ReactMethod(isBlockingSynchronousMethod = true)
   public @Nullable WritableMap getConstantsForViewManager(final String viewManagerName) {
     ViewManager targetView =
@@ -249,13 +242,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     try {
       Map<String, Object> viewManagerConstants =
           UIManagerModuleConstantsHelper.createConstantsForViewManager(
-              targetView,
-              mEventsWereSentToJS ? null : UIManagerModuleConstants.getBubblingEventTypeConstants(),
-              mEventsWereSentToJS ? null : UIManagerModuleConstants.getDirectEventTypeConstants(),
-              null,
-              mCustomDirectEvents);
+              targetView, null, null, null, mCustomDirectEvents);
       if (viewManagerConstants != null) {
-        mEventsWereSentToJS = true;
         return Arguments.makeNativeMap(viewManagerConstants);
       }
       return null;
@@ -264,9 +252,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
   }
 
-  /**
-   * Resolves Direct Event name exposed to JS from the one known to the Native side.
-   */
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getDefaultEventTypes() {
+    return Arguments.makeNativeMap(UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
+  }
+
+  /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
   public CustomEventNamesResolver getDirectEventNamesResolver() {
     return new CustomEventNamesResolver() {
       @Override
