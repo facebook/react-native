@@ -555,7 +555,7 @@ Add the React Native dependency to your app's `build.gradle` file:
 dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     ...
-    compile "com.facebook.react:react-native:+" // From node_modules.
+    compile "com.facebook.react:react-native:0.49+" // From node_modules.
 }
 ```
 
