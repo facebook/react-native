@@ -347,7 +347,34 @@ To configure your app to be built using the `Release` scheme, go to **Product** 
 
 ![](img/ConfigureReleaseScheme.png)
 
-### 3. Build app for release
+### 3. Configure app to use static bundle
+
+During the development process React Native has loaded your JavaScript code dynamically at runtime. For a production build you want to pre-package the JavaScript bundle and distribute it inside your Application. To do this requires a code change in your App so that it knows to load the static bundle.
+
+In `AppDelegate.m`, change the default `jsCodeLocation` to point to the static bundle that is built in Release.
+```
+  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+```
+
+This will now reference the `main.jsbundle` resource file that is created during the `Bundle React Native code and images` Build Phase in Xcode.
+
+> Note: The static bundle is built every time you target a physical device, even in Debug. If you want to save time, turn off bundle generation in Debug by adding theollowing to your shell script in Xcode Build Phase `Bundle React Native code and images`:
+```
+ if [ "${CONFIGURATION}" == "Debug" ]; then
+  export SKIP_BUNDLING=true
+ fi
+```
+
+#### Pro Tip
+As your App Bundle grows in size, you may start to see a White Screen flash between your Splash Screen and the display of your root Application view. If this is thease, you can add the following code to `AppDelegate.m` in order to keep your Splash Screen displayed during the transition.
+```
+  // Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"
+  UIView* launchScreenView = [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
+  launchScreenView.frame = self.window.bounds;
+  rootView.loadingView = launchScreenView;
+```
+
+### 4. Build app for release
 
 You can now build your app for release by tapping `⌘B` or selecting **Product** → **Build** from the menu bar. Once built for release, you'll be able to distribute the app to beta testers and submit the app to the App Store.
 
