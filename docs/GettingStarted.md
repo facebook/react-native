@@ -112,7 +112,7 @@ Then run the following commands to create a new React Native project called "Awe
 create-react-native-app AwesomeProject
 
 cd AwesomeProject
-npm start
+yarn start
 ```
 
 This will start a development server for you, and print a QR code in your terminal.
