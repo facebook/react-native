@@ -46,6 +46,7 @@ The React Native monthly meeting continues! Let's see what our teams are up to.
 
 
 ### Infinite Red
+
 - New OSS tool for helping React Native and other projects. More [here](https://shift.infinite.red/solidarity-the-cli-for-developer-sanity-672fa81b98e9).
 - Revamping [Ignite](https://github.com/infinitered/ignite) for a new boilerplate release (Code name: Bowser)
 
