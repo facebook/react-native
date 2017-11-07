@@ -99,6 +99,6 @@
  *
  * @experimental
  */
-- (NSURL *)jsBundlesDirectory;
+- (NSURL *)jsSegmentsDirectory;
 
 @end

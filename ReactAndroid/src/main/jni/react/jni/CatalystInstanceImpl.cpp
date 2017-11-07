@@ -101,7 +101,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
-    makeNativeMethod("jniSetJsBundlesDirectory", CatalystInstanceImpl::jniSetJsBundlesDirectory),
+    makeNativeMethod("jniSetJsSegmentsDirectory", CatalystInstanceImpl::jniSetJsSegmentsDirectory),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
@@ -178,8 +178,8 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
-void CatalystInstanceImpl::jniSetJsBundlesDirectory(const std::string& directoryPath) {
-  jsBundlesDirectory_ = directoryPath;
+void CatalystInstanceImpl::jniSetJsSegmentsDirectory(const std::string& directoryPath) {
+  jsSegmentsDirectory_ = directoryPath;
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
@@ -193,7 +193,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
-    auto registry = jsBundlesDirectory_.empty()
+    auto registry = jsSegmentsDirectory_.empty()
       ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
       : folly::make_unique<JniRAMBundleRegistry>(std::move(bundle), manager, sourceURL);
     instance_->loadRAMBundle(
