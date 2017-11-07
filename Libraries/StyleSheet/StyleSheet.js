@@ -20,7 +20,7 @@ const flatten = require('flattenStyle');
 
 export type Styles = {[key: string]: Object};
 export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
-export type StyleValue = {[key: string]: Object} | number | false | null;
+export type StyleValue = Object | number | false | null | void;
 export type StyleProp = StyleValue | Array<StyleValue>;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
