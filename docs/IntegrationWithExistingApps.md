@@ -251,10 +251,10 @@ target 'swift-2048' do
   # but if not, adjust the `:path` accordingly
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
-    'CxxBridge', # Include this for RN >= 0.47
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'RCTText',
     'RCTNetwork',
+    'RCTLinkingIOS' # Include this for RN >= 0.44
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
@@ -450,7 +450,7 @@ import React
 
   let rootView = RCTRootView(
       bundleURL: jsCodeLocation,
-      moduleName: "RNHighScores",
+      moduleName: "MyReactNativeApp",
       initialProperties: mockData as [NSObject : AnyObject],
       launchOptions: nil
   )
@@ -487,7 +487,7 @@ You have now done all the basic steps to integrate React Native with your curren
 ##### 1. Add App Transport Security exception
 
 Apple has blocked implicit cleartext HTTP resource loading. So we need to add the following our project's `Info.plist` (or equivalent) file.
-
+<block class="objc swift" />
 ```xml
 <key>NSAppTransportSecurity</key>
 <dict>
@@ -501,7 +501,20 @@ Apple has blocked implicit cleartext HTTP resource loading. So we need to add th
     </dict>
 </dict>
 ```
-
+<block class="swift" />
+```xml
+<key>AppTransportSecurity</key>
+<dict>
+    <key>ExceptionDomains</key>
+    <dict>
+        <key>localhost</key>
+        <dict>
+            <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+        </dict>
+    </dict>
+</dict>
+```
 > App Transport Security is good for your users. Make sure to re-enable it prior to releasing your app for production.
 
 ##### 2. Run the packager
@@ -618,7 +631,7 @@ import {
   View
 } from 'react-native';
 
-class HelloWorld extends React.Component {
+class RNHighScores extends React.Component {
   render() {
     return (
       <View style={styles.container}>
@@ -639,7 +652,7 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('MyReactNativeApp', () => HelloWorld);
+AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
 ##### 3. Configure permissions for development error overlay
