@@ -12,6 +12,7 @@
 'use strict';
 
 import type {PackagerAsset} from '../../Libraries/Image/AssetRegistry';
+import md5 from 'md5';
 
 /**
  * FIXME: using number to represent discrete scale numbers is fragile in essence because of
@@ -57,11 +58,7 @@ function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
 
 function getAndroidResourceIdentifier(asset: PackagerAsset) {
   var folderPath = getBasePath(asset);
-  return (folderPath + '/' + asset.name)
-    .toLowerCase()
-    .replace(/\//g, '_')           // Encode folder structure in file name
-    .replace(/([^a-z0-9_])/g, '')  // Remove illegal chars
-    .replace(/^assets_/, '');      // Remove "assets_" prefix
+  return 'a' + md5(folderPath + '/' + asset.name).toLowerCase();
 }
 
 function getBasePath(asset: PackagerAsset) {
