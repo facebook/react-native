@@ -576,7 +576,7 @@ allprojects {
 }
 ```
 
-> Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x" errors after running Gradle sync in Android Studio.
+> Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x" errors after running Gradle sync in Android Studio. **Even if the sync runs succesfully gradle may still have found an incorrect version of react-native somewhere else, this will lead to all sorts of compatibility problems when trying to build or run your app.**
 
 ### Configuring permissions
 
