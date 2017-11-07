@@ -13,8 +13,8 @@
 
 @implementation RCTAnimatedNode
 {
-  NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_childNodes;
-  NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_parentNodes;
+  NSMapTable<NSNumber *, RCTAnimatedNode *> *_childNodes;
+  NSMapTable<NSNumber *, RCTAnimatedNode *> *_parentNodes;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -29,12 +29,12 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (NSDictionary<NSNumber *, RCTAnimatedNode *> *)childNodes
+- (NSMapTable<NSNumber *, RCTAnimatedNode *> *)childNodes
 {
   return _childNodes;
 }
 
-- (NSDictionary<NSNumber *, RCTAnimatedNode *> *)parentNodes
+- (NSMapTable<NSNumber *, RCTAnimatedNode *> *)parentNodes
 {
   return _parentNodes;
 }
@@ -42,10 +42,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)addChild:(RCTAnimatedNode *)child
 {
   if (!_childNodes) {
-    _childNodes = [NSMutableDictionary new];
+    _childNodes = [NSMapTable strongToWeakObjectsMapTable];
   }
   if (child) {
-    _childNodes[child.nodeTag] = child;
+    [_childNodes setObject:child forKey:child.nodeTag];
     [child onAttachedToNode:self];
   }
 }
@@ -64,10 +64,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)onAttachedToNode:(RCTAnimatedNode *)parent
 {
   if (!_parentNodes) {
-    _parentNodes = [NSMutableDictionary new];
+    _parentNodes = [NSMapTable strongToWeakObjectsMapTable];
   }
   if (parent) {
-    _parentNodes[parent.nodeTag] = parent;
+    [_parentNodes setObject:parent forKey:parent.nodeTag];
   }
 }
 
@@ -83,10 +83,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)detachNode
 {
-  for (RCTAnimatedNode *parent in _parentNodes.allValues) {
+  for (RCTAnimatedNode *parent in _parentNodes.objectEnumerator) {
     [parent removeChild:self];
   }
-  for (RCTAnimatedNode *child in _childNodes.allValues) {
+  for (RCTAnimatedNode *child in _childNodes.objectEnumerator) {
     [self removeChild:child];
   }
 }
@@ -94,7 +94,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setNeedsUpdate
 {
   _needsUpdate = YES;
-  for (RCTAnimatedNode *child in _childNodes.allValues) {
+  for (RCTAnimatedNode *child in _childNodes.objectEnumerator) {
     [child setNeedsUpdate];
   }
 }
@@ -102,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)updateNodeIfNecessary
 {
   if (_needsUpdate) {
-    for (RCTAnimatedNode *parent in _parentNodes.allValues) {
+    for (RCTAnimatedNode *parent in _parentNodes.objectEnumerator) {
       [parent updateNodeIfNecessary];
     }
     [self performUpdate];

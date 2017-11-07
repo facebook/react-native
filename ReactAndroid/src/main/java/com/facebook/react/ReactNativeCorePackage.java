@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
@@ -57,17 +57,15 @@ public class ReactNativeCorePackage extends LazyReactPackage {
 
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
-    List<ModuleSpec> moduleSpecList = new ArrayList<>();
-
-    moduleSpecList.add(
-      new ModuleSpec(UIManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return createUIManager(reactContext);
-        }
-      }));
-
-    return moduleSpecList;
+    return Collections.singletonList(
+        ModuleSpec.nativeModuleSpec(
+            UIManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return createUIManager(reactContext);
+              }
+            }));
   }
 
   @Override

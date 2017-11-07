@@ -75,7 +75,8 @@ import javax.annotation.Nullable;
     for (ViewManager viewManager : viewManagers) {
       final String viewManagerName = viewManager.getName();
 
-      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "constants for ViewManager")
+      SystraceMessage.beginSection(
+              TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModuleConstantsHelper.createConstants")
           .arg("ViewManager", viewManagerName)
           .arg("Lazy", false)
           .flush();

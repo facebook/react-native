@@ -9,12 +9,10 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.build.ReactBuildConfig;
+import java.lang.reflect.Constructor;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
-
-import java.lang.reflect.Constructor;
-
-import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * A specification for a native module. This exists so that we don't have to pay the cost
@@ -27,7 +25,7 @@ public class ModuleSpec {
   private static final Class[] EMPTY_SIGNATURE = {};
   private static final Class[] CONTEXT_SIGNATURE = { ReactApplicationContext.class };
 
-  private final Class<? extends NativeModule> mType;
+  private final @Nullable Class<? extends NativeModule> mType;
   private final Provider<? extends NativeModule> mProvider;
 
   /**
@@ -64,12 +62,22 @@ public class ModuleSpec {
     });
   }
 
-  public ModuleSpec(Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
+  public static ModuleSpec viewManagerSpec(Provider<? extends NativeModule> provider) {
+    return new ModuleSpec(null, provider);
+  }
+
+  public static ModuleSpec nativeModuleSpec(
+      Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
+    return new ModuleSpec(type, provider);
+  }
+
+  private ModuleSpec(
+      @Nullable Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
     mType = type;
     mProvider = provider;
   }
 
-  public Class<? extends NativeModule> getType() {
+  public @Nullable Class<? extends NativeModule> getType() {
     return mType;
   }
 

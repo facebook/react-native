@@ -99,7 +99,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
  * behavior of automatically renaming .gitignore to .npmignore.
  */
 function dotFilePath(path) {
-  if (!path) return path;
+  if (!path) {return path;}
   return path
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')

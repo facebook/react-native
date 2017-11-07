@@ -38,6 +38,15 @@ if (global.window === undefined) {
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
+// Set up collections
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  polyfillGlobal('Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  polyfillGlobal('Set', () => require('Set'));
+}
+
 /**
  * Sets an object's property. If a property with the same name exists, this will
  * replace it but maintain its descriptor configuration. The property will be
@@ -116,34 +125,9 @@ if (!global.__fbDisableExceptionsManager) {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
-const {PlatformConstants} = require('NativeModules');
-if (PlatformConstants) {
-  const formatVersion = version =>
-    `${version.major}.${version.minor}.${version.patch}` +
-    (version.prerelease !== null ? `-${version.prerelease}` : '');
-
-  const ReactNativeVersion = require('ReactNativeVersion');
-  const nativeVersion = PlatformConstants.reactNativeVersion;
-  if (ReactNativeVersion.version.major !== nativeVersion.major ||
-      ReactNativeVersion.version.minor !== nativeVersion.minor) {
-    throw new Error(
-      `React Native version mismatch.\n\nJavaScript version: ${formatVersion(ReactNativeVersion.version)}\n` +
-      `Native version: ${formatVersion(nativeVersion)}\n\n` +
-      'Make sure that you have rebuilt the native code. If the problem persists ' +
-      'try clearing the watchman and packager caches with `watchman watch-del-all ' +
-      '&& react-native start --reset-cache`.'
-    );
-  }
-}
-
-// Set up collections
-const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
-if (_shouldPolyfillCollection('Map')) {
-  polyfillGlobal('Map', () => require('Map'));
-}
-if (_shouldPolyfillCollection('Set')) {
-  polyfillGlobal('Set', () => require('Set'));
-}
+// Check for compatibility between the JS and native code
+const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
+ReactNativeVersionCheck.checkVersions();
 
 // Set up Promise
 // The native Promise implementation throws the following error:
@@ -221,6 +205,26 @@ BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
 BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
+
+global.fetchBundle = function(
+  bundleId: number,
+  callback: (?Error) => void,
+) {
+  const {BundleFetcher} = require('NativeModules');
+  if (!BundleFetcher) {
+    throw new Error('BundleFetcher is missing');
+  }
+
+  BundleFetcher.fetchBundle(bundleId, (errorObject: ?{message: string, code: string}) => {
+    if (errorObject) {
+      const error = new Error(errorObject.message);
+      (error: any).code = errorObject.code;
+      callback(error);
+    }
+
+    callback(null);
+  });
+};
 
 // Set up devtools
 if (__DEV__) {

@@ -252,11 +252,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (void)whitelistedModulesDidChange
-{
-  [self.batchedBridge whitelistedModulesDidChange];
-}
-
 - (void)reload
 {
   #if RCT_ENABLE_INSPECTOR

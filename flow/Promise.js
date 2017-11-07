@@ -33,6 +33,12 @@ declare class Promise<+R> {
   static race<T>(promises: Array<Promise<T>>): Promise<T>;
 
   // Non-standard APIs
+
+  // See https://github.com/facebook/fbjs/blob/master/packages/fbjs/src/__forks__/Promise.native.js#L21
+  finally<U>(
+    onFinally?: ?(value: any) => Promise<U> | U
+  ): Promise<U>;
+
   done<U>(
     onFulfill?: ?(value: R) => mixed,
     onReject?: ?(error: any) => mixed

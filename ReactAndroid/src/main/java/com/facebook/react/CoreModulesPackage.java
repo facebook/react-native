@@ -93,86 +93,107 @@ import javax.inject.Provider;
     List<ModuleSpec> moduleSpecList = new ArrayList<>();
 
     moduleSpecList.add(
-      new ModuleSpec(AndroidInfoModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new AndroidInfoModule();
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            AndroidInfoModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new AndroidInfoModule();
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new AnimationsDebugModule(
-            reactContext,
-            mReactInstanceManager.getDevSupportManager().getDevSettings());
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            AnimationsDebugModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new AnimationsDebugModule(
+                    reactContext, mReactInstanceManager.getDevSupportManager().getDevSettings());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(DeviceEventManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            DeviceEventManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(ExceptionsManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
-        }
-      }));
-    moduleSpecList
-      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new HeadlessJsTaskSupportModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            ExceptionsManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new SourceCodeModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            HeadlessJsTaskSupportModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new HeadlessJsTaskSupportModule(reactContext);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(Timing.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            SourceCodeModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new SourceCodeModule(reactContext);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(UIManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return createUIManager(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            Timing.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(DeviceInfoModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new DeviceInfoModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            UIManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return createUIManager(reactContext);
+              }
+            }));
+    moduleSpecList.add(
+        ModuleSpec.nativeModuleSpec(
+            DeviceInfoModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new DeviceInfoModule(reactContext);
+              }
+            }));
 
     if (ReactBuildConfig.DEBUG) {
       moduleSpecList.add(
-        new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new JSCHeapCapture(reactContext);
-          }
-        }));
+          ModuleSpec.nativeModuleSpec(
+              JSCHeapCapture.class,
+              new Provider<NativeModule>() {
+                @Override
+                public NativeModule get() {
+                  return new JSCHeapCapture(reactContext);
+                }
+              }));
       moduleSpecList.add(
-        new ModuleSpec(JSCSamplingProfiler.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new JSCSamplingProfiler(reactContext);
-          }
-        }));
+          ModuleSpec.nativeModuleSpec(
+              JSCSamplingProfiler.class,
+              new Provider<NativeModule>() {
+                @Override
+                public NativeModule get() {
+                  return new JSCSamplingProfiler(reactContext);
+                }
+              }));
     }
 
     return moduleSpecList;

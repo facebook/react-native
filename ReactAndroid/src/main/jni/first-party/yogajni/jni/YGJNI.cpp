@@ -422,9 +422,7 @@ void jni_YGConfigSetLogger(alias_ref<jobject>, jlong nativePointer, alias_ref<jo
 
   auto context = YGConfigGetContext(config);
   if (context) {
-    auto jlogger = reinterpret_cast<global_ref<jobject> *>(context);
-    jlogger->releaseAlias();
-    delete jlogger;
+    delete reinterpret_cast<global_ref<jobject> *>(context);
   }
 
   if (logger) {
