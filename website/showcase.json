@@ -178,6 +178,15 @@
     "pinned": false
   },
   {
+    "name": "Cheddur",
+    "icon": "https://i.imgur.com/L9C4ftI.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/cheddur/id1269377156",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.cheddur",
+    "infoLink": "https://www.cheddur.com",
+    "infoTitle": "Your personal guide to digital currency, proudly built with React Native.",
+    "pinned": false
+  },
+  {
     "name": "Tencent QQ",
     "icon": "http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96",
     "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
