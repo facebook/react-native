@@ -35,8 +35,8 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
-#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #import <cxxreact/Platform.h>
+#import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
 
 #import "NSDataBigString.h"
@@ -1152,8 +1152,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
           ? [[self.delegate jsSegmentsDirectory].path stringByAppendingString:@"/"]
           : nil;
         auto registry = jsSegmentsDirectory != nil
-          ? std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), jsSegmentsDirectory.UTF8String)
-          : std::make_unique<RAMBundleRegistry>(std::move(ramBundle));
+          ? RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory.UTF8String))
+          : RAMBundleRegistry::singleBundleRegistry(std::move(ramBundle));
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }

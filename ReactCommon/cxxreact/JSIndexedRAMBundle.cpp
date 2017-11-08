@@ -2,10 +2,19 @@
 
 #include "JSIndexedRAMBundle.h"
 
+#include <folly/Memory.h>
+
 #include "oss-compat-util.h"
 
 namespace facebook {
 namespace react {
+
+std::function<std::unique_ptr<JSModulesUnbundle>(uint32_t)> JSIndexedRAMBundle::buildFactory(const std::string& baseDirectoryPath) {
+  return [baseDirectoryPath](uint32_t index){
+    std::string bundlePathById = baseDirectoryPath + toString(index) + ".jsbundle";
+    return folly::make_unique<JSIndexedRAMBundle>(bundlePathById.c_str());
+  };
+}
 
 JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
     m_bundle (sourcePath, std::ios_base::in) {
