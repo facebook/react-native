@@ -10,10 +10,10 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
-#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #include <cxxreact/MethodCall.h>
-#include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/RecoverableError.h>
+#include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
@@ -22,9 +22,8 @@
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
-#include "JniJSModulesUnbundle.h"
-#include "JniRAMBundleRegistry.h"
 #include "JNativeRunnable.h"
+#include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
 
 using namespace facebook::jni;
@@ -101,7 +100,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
-    makeNativeMethod("jniSetJsBundlesDirectory", CatalystInstanceImpl::jniSetJsBundlesDirectory),
+    makeNativeMethod("jniSetJsSegmentsDirectory", CatalystInstanceImpl::jniSetJsSegmentsDirectory),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
@@ -178,8 +177,8 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
-void CatalystInstanceImpl::jniSetJsBundlesDirectory(const std::string& directoryPath) {
-  jsBundlesDirectory_ = directoryPath;
+void CatalystInstanceImpl::jniSetJsSegmentsDirectory(const std::string& directoryPath) {
+  jsSegmentsDirectory_ = directoryPath;
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
@@ -193,9 +192,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
-    auto registry = jsBundlesDirectory_.empty()
-      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
-      : folly::make_unique<JniRAMBundleRegistry>(std::move(bundle), manager, sourceURL);
+    auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(script),
@@ -207,30 +204,18 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   }
 }
 
-bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
-  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
-  if (!bundle_stream) {
-    return false;
-  }
-  BundleHeader header;
-  bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
-  bundle_stream.close();
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
                                                  const std::string& sourceURL,
                                                  bool loadSynchronously) {
-  auto zFileName = fileName.c_str();
-  if (isIndexedRAMBundle(zFileName)) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
-    auto startupScript = bundle->getStartupCode();
-    auto registry = jsBundlesDirectory_.empty()
-      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
-      : folly::make_unique<JSIndexedRAMBundleRegistry>(std::move(bundle), jsBundlesDirectory_);
+  if (Instance::isIndexedRAMBundle(fileName.c_str())) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(fileName.c_str());
+    auto script = bundle->getStartupCode();
+    auto registry = jsSegmentsDirectory_.empty()
+      ? RAMBundleRegistry::singleBundleRegistry(std::move(bundle))
+      : RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory_));
     instance_->loadRAMBundle(
       std::move(registry),
-      std::move(startupScript),
+      std::move(script),
       sourceURL,
       loadSynchronously);
   } else {

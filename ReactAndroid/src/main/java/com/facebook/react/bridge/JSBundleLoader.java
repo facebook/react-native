@@ -97,15 +97,15 @@ public abstract class JSBundleLoader {
   }
 
   /**
-   * This loader is used to wrap other loaders and set js bundles directory before executing
+   * This loader is used to wrap other loaders and set js segments directory before executing
    * application script.
    */
   public static JSBundleLoader createSplitBundlesLoader(
-      final String jsBundlesDirectory, final JSBundleLoader delegate) {
+      final String jsSegmentsDirectory, final JSBundleLoader delegate) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.setJsBundlesDirectory(jsBundlesDirectory);
+        instance.setJsSegmentsDirectory(jsSegmentsDirectory);
         return delegate.loadScript(instance);
       }
     };

@@ -9,6 +9,8 @@
 
 #import "RCTUIManagerUtils.h"
 
+#import <libkern/OSAtomic.h>
+
 #import "RCTAssert.h"
 
 char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
@@ -92,4 +94,11 @@ void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block)
       });
     }
   }
+}
+
+NSNumber *RCTAllocateRootViewTag()
+{
+  // Numbering of these tags goes from 1, 11, 21, 31, ..., 100501, ...
+  static int64_t rootViewTagCounter = -1;
+  return @(OSAtomicIncrement64(&rootViewTagCounter) * 10 + 1);
 }

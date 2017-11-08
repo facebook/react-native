@@ -27,7 +27,7 @@ Help reviewers and the release process by writing your own release notes
 [----------]        TYPE
 [ CLI      ]   [-------------]      LOCATION
 [ DOCS     ]   [ BREAKING    ]   [-------------]
-[ GENERAl  ]   [ BUGFIX      ]   [-{Component}-]
+[ GENERAL  ]   [ BUGFIX      ]   [-{Component}-]
 [ INTERNAL ]   [ ENHANCEMENT ]   [ {File}      ]
 [ IOS      ]   [ FEATURE     ]   [ {Directory} ]   |-----------|
 [ ANDROID  ]   [ MINOR       ]   [ {Framework} ] - | {Message} |

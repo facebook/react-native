@@ -40,8 +40,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
@@ -65,7 +63,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
    * Sets the path to folder where additional bundles are located.
    * Needs to be invoked before "loadScript" methods are called.
    */
-  void jniSetJsBundlesDirectory(const std::string& directoryPath);
+  void jniSetJsSegmentsDirectory(const std::string& directoryPath);
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);
@@ -76,8 +74,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
 
-  std::string jsBundlesDirectory_;
-   
+  std::string jsSegmentsDirectory_;
+
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;

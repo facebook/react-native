@@ -16,8 +16,9 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
+import type { Fbt } from 'fbt';
 
-type Buttons = Array<{
+export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
   style?: AlertButtonStyle,
@@ -79,8 +80,8 @@ type Options = {
 class Alert {
 
   static alert(
-    title: ?string,
-    message?: ?string,
+    title: ?string | ?Fbt,
+    message?: ?string | ?Fbt,
     buttons?: Buttons,
     options?: Options,
     type?: AlertType,
@@ -104,8 +105,8 @@ class Alert {
 class AlertAndroid {
 
   static alert(
-    title: ?string,
-    message?: ?string,
+    title: ?string | ?Fbt,
+    message?: ?string | ?Fbt,
     buttons?: Buttons,
     options?: Options,
   ): void {

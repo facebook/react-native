@@ -44,6 +44,10 @@ public:
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
+  static bool isIndexedRAMBundle(const char *sourcePath);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
+                             const std::string& sourceURL,
+                             bool loadSynchronously);
   void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                      std::unique_ptr<const JSBigString> startupScript,
                      std::string startupScriptSourceURL, bool loadSynchronously);

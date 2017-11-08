@@ -402,8 +402,14 @@ RCT_EXPORT_MODULE()
 
   if (inputCarryData) {
     NSUInteger encodedResponseLength = [encodedResponse dataUsingEncoding:encoding].length;
-    NSData *newCarryData = [currentCarryData subdataWithRange:NSMakeRange(encodedResponseLength, currentCarryData.length - encodedResponseLength)];
-    [inputCarryData setData:newCarryData];
+
+    // Ensure a valid subrange exists within currentCarryData
+    if (currentCarryData.length >= encodedResponseLength) {
+      NSData *newCarryData = [currentCarryData subdataWithRange:NSMakeRange(encodedResponseLength, currentCarryData.length - encodedResponseLength)];
+      [inputCarryData setData:newCarryData];
+    } else {
+      [inputCarryData setLength:0];
+    }
   }
 
   return encodedResponse;
