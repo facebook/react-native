@@ -175,10 +175,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   std::shared_ptr<Instance> _reactInstance;
 }
 
-@synthesize loading = _loading;
-@synthesize valid = _valid;
-@synthesize performanceLogger = _performanceLogger;
 @synthesize bridgeDescription = _bridgeDescription;
+@synthesize loading = _loading;
+@synthesize bundledSourceURL = _bundledSourceURL;
+@synthesize performanceLogger = _performanceLogger;
+@synthesize valid = _valid;
 
 + (void)initialize
 {
@@ -207,6 +208,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
+    if ([bridge.delegate respondsToSelector:@selector(bundledSourceURLForBridge:)]) {
+      _bundledSourceURL = [bridge.delegate bundledSourceURLForBridge:bridge];
+    }
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
