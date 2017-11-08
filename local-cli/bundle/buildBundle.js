@@ -53,9 +53,6 @@ function saveBundle(output, bundle, args) {
     /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
      * error found when Flow v0.56 was deployed. To see the error delete this
      * comment and run Flow. */
-    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.56 was deployed. To see the error
-     * delete this comment and run Flow. */
     output.save(bundle, args, log)
   ).then(() => bundle);
 }
@@ -115,6 +112,7 @@ function buildBundle(
       assetRegistryPath: ASSET_REGISTRY_PATH,
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
+      getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
       getPolyfills: config.getPolyfills,
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
@@ -128,7 +126,6 @@ function buildBundle(
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(terminal),
-      runBeforeMainModule: config.runBeforeMainModule,
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
@@ -151,8 +148,10 @@ function buildBundle(
 
   // Save the assets of the bundle
   const assets = bundlePromise
-    .then(bundle => bundle.getAssets())
-    .then(outputAssets => saveAssets(
+    // TODO: Use the packager.getAssets() method to get the bundle assets.
+    // $FlowFixMe: This code is going away.
+    .then(bundle => bundle.getAssets && bundle.getAssets())
+    .then(outputAssets => outputAssets && saveAssets(
       outputAssets,
       args.platform,
       args.assetsDest,

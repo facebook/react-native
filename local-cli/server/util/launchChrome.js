@@ -36,6 +36,8 @@ function getChromeAppName(): string {
   case 'linux':
     if (commandExistsUnixSync('google-chrome')) {
       return 'google-chrome';
+    } else if (commandExistsUnixSync('chromium-browser')) {
+      return 'chromium-browser';
     } else {
       return 'chromium';
     }

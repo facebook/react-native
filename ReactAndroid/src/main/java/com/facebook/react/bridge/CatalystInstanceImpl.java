@@ -210,6 +210,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniSetSourceURL(remoteURL);
   }
 
+  /* package */ void setJsSegmentsDirectory(String directoryPath) {
+    jniSetJsSegmentsDirectory(directoryPath);
+  }
+
   /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
     mSourceURL = assetURL;
     jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
@@ -221,6 +225,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private native void jniSetSourceURL(String sourceURL);
+  private native void jniSetJsSegmentsDirectory(String directoryPath);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
 

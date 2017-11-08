@@ -69,7 +69,7 @@ const Config = {
     ...MetroConfig.DEFAULT,
     getProjectRoots,
     getPolyfills,
-    runBeforeMainModule: [
+    getModulesRunBeforeMainModule: () => [
       require.resolve('../../Libraries/Core/InitializeCore'),
     ],
   }: ConfigT),

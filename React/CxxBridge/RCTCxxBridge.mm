@@ -175,10 +175,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   std::shared_ptr<Instance> _reactInstance;
 }
 
-@synthesize loading = _loading;
-@synthesize valid = _valid;
-@synthesize performanceLogger = _performanceLogger;
 @synthesize bridgeDescription = _bridgeDescription;
+@synthesize loading = _loading;
+@synthesize bundledSourceURL = _bundledSourceURL;
+@synthesize performanceLogger = _performanceLogger;
+@synthesize valid = _valid;
 
 + (void)initialize
 {
@@ -207,6 +208,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
+    if ([bridge.delegate respondsToSelector:@selector(bundledSourceURLForBridge:)]) {
+      _bundledSourceURL = [bridge.delegate bundledSourceURLForBridge:bridge];
+    }
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
@@ -1144,11 +1148,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        NSString *jsBundlesDirectory = [self.delegate respondsToSelector:@selector(jsBundlesDirectory)]
-          ? [[self.delegate jsBundlesDirectory].path stringByAppendingString:@"/"]
+        NSString *jsSegmentsDirectory = [self.delegate respondsToSelector:@selector(jsSegmentsDirectory)]
+          ? [[self.delegate jsSegmentsDirectory].path stringByAppendingString:@"/"]
           : nil;
-        auto registry = jsBundlesDirectory != nil
-          ? std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), jsBundlesDirectory.UTF8String)
+        auto registry = jsSegmentsDirectory != nil
+          ? std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), jsSegmentsDirectory.UTF8String)
           : std::make_unique<RAMBundleRegistry>(std::move(ramBundle));
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
