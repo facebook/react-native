@@ -79,7 +79,7 @@ To expose a method to JavaScript a Java method must be annotated using `@ReactMe
 
 ### Argument Types
 
-The following argument types are supported for methods annotated with `@ReactMethod` and they directly map to their JavaScript equivalents
+The following argument types are supported for methods annotated with `@ReactMethod` and as arguments to callbacks. They directly map to their JavaScript equivalents
 
 ```
 Boolean -> Bool
