@@ -17,7 +17,7 @@ let segmentLoaders = new Map();
 
 /**
  * Ensure that a bundle segment is ready for use, for example requiring some of
- * its module. We cache load promises so as to avoid calling `fetchBundle` twice
+ * its module. We cache load promises so as to avoid calling `fetchSegment` twice
  * for the same bundle. We assume that once a segment is fetched/loaded, it is
  * never gettting removed during this instance of the JavaScript VM.
  */
@@ -30,16 +30,16 @@ async function loadForModule(moduleID: number): Promise<void> {
   if (segmentLoader != null) {
     return await segmentLoader;
   }
-  // FIXME: `fetchBundle` should be renamed `fetchSegment`.
-  const {fetchBundle} = global;
-  if (fetchBundle == null) {
+
+  const {fetchSegment} = global;
+  if (fetchSegment == null) {
     throw new Error(
-      'When bundle splitting is enabled, the `global.fetchBundle` function ' +
+      'When bundle splitting is enabled, the `global.fetchSegment` function ' +
         'must be provided to be able to load particular bundle segments.',
     );
   }
   segmentLoader = new Promise((resolve, reject) => {
-    fetchBundle(segmentId, error => {
+    fetchSegment(segmentId, error => {
       if (error != null) {
         reject(error);
         return;
