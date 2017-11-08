@@ -79,7 +79,7 @@ class AssetSourceResolver {
         this.drawableFolderInBundle() :
         this.resourceIdentifierWithoutScale();
     } else {
-      return this.scaledAssetURLInScript();
+      return this.scaledAssetURLNearBundle();
     }
   }
 
@@ -104,10 +104,10 @@ class AssetSourceResolver {
   }
 
   /**
-   * Resolves to where the script is running from, with a scaled asset filename
+   * Resolves to where the bundle is running from, with a scaled asset filename
    * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
    */
-  scaledAssetURLInScript(): ResolvedAssetSource {
+  scaledAssetURLNearBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
