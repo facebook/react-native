@@ -89,7 +89,9 @@ Pod::Spec.new do |spec|
       "boost/xpressive/**/*.ipp"
     ]
   end
-
+  spec.subspec 'type_index-includes' do |cs|
+    cs.preserve_paths = 'boost/type_index/**/*.hpp'
+  end
 
 end
 
