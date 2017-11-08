@@ -243,11 +243,13 @@ const viewConfig = {
  * ```javascript
  * class MyAppHeaderText extends Component {
  *   render() {
- *     <MyAppText>
- *       <Text style={{fontSize: 20}}>
- *         {this.props.children}
- *       </Text>
- *     </MyAppText>
+ *     return ( 
+ *       <MyAppText>
+ *         <Text style={{fontSize: 20}}>
+ *           {this.props.children}
+ *         </Text>
+ *       </MyAppText>
+ *     );
  *   }
  * }
  * ```
