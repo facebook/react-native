@@ -10,10 +10,10 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
-#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #include <cxxreact/MethodCall.h>
-#include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/RecoverableError.h>
+#include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
@@ -22,9 +22,8 @@
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
-#include "JniJSModulesUnbundle.h"
-#include "JniRAMBundleRegistry.h"
 #include "JNativeRunnable.h"
+#include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
 
 using namespace facebook::jni;
@@ -193,9 +192,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
-    auto registry = jsSegmentsDirectory_.empty()
-      ? folly::make_unique<RAMBundleRegistry>(std::move(bundle))
-      : folly::make_unique<JniRAMBundleRegistry>(std::move(bundle), manager, sourceURL);
+    auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(script),
@@ -211,7 +208,16 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
                                                  const std::string& sourceURL,
                                                  bool loadSynchronously) {
   if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(fileName.c_str());
+    auto script = bundle->getStartupCode();
+    auto registry = jsSegmentsDirectory_.empty()
+      ? RAMBundleRegistry::singleBundleRegistry(std::move(bundle))
+      : RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory_));
+    instance_->loadRAMBundle(
+      std::move(registry),
+      std::move(script),
+      sourceURL,
+      loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;
     RecoverableError::runRethrowingAsRecoverable<std::system_error>(
