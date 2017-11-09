@@ -17,7 +17,7 @@ the state of the root component (`App`). The same component
 subscribes to the `onValueChange`  of `Slider` and changes
 the value using `setState`.
 
-```
+```javascript
 import React from 'react';
 import { StyleSheet, Text, View, Slider } from 'react-native';
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`style`](docs/slider.html#style)
 - [`disabled`](docs/slider.html#disabled)
 - [`maximumValue`](docs/slider.html#maximumvalue)
@@ -103,7 +103,7 @@ Used to style and layout the `Slider`.  See `StyleSheet.js` and
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 
@@ -274,7 +274,7 @@ leftmost pixel of the image will be stretched to fill the track.
 
 | Type | Required | Platform |
 | - | - | - |
-| Image.propTypes.source | No | iOS  |
+| [Image.propTypes.source](docs/image.html#source) | No | iOS  |
 
 
 
@@ -289,7 +289,7 @@ rightmost pixel of the image will be stretched to fill the track.
 
 | Type | Required | Platform |
 | - | - | - |
-| Image.propTypes.source | No | iOS  |
+| [Image.propTypes.source](docs/image.html#source) | No | iOS  |
 
 
 
@@ -303,7 +303,7 @@ Sets an image for the thumb. Only static images are supported.
 
 | Type | Required | Platform |
 | - | - | - |
-| Image.propTypes.source | No | iOS  |
+| [Image.propTypes.source](docs/image.html#source) | No | iOS  |
 
 
 
@@ -318,7 +318,7 @@ The center pixel of the image will be stretched to fill the track.
 
 | Type | Required | Platform |
 | - | - | - |
-| Image.propTypes.source | No | iOS  |
+| [Image.propTypes.source](docs/image.html#source) | No | iOS  |
 
 
 

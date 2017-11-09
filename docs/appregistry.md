@@ -199,12 +199,13 @@ static registerHeadlessTask(taskKey, task)
 
 
 Register a headless task. A headless task is a bit of code that runs without a UI.
-@param taskKey the key associated with this task
-@param task    a promise returning function that takes some data passed from the native side as
-               the only argument; when the promise is resolved or rejected the native side is
-               notified of this event and it may decide to destroy the JS context.
 
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| taskKey | string | No | The key associated with this task. |
+| task | function | No | A promise returning function that takes some data passed from the native side as the only argument; when the promise is resolved or rejected the native side is notified of this event and it may decide to destroy the JS context. |
 
 
 ---
@@ -215,12 +216,15 @@ Register a headless task. A headless task is a bit of code that runs without a U
 static startHeadlessTask(taskId, taskKey, data)
 ```
 
-
 Only called from native code. Starts a headless task.
 
-@param taskId the native id for this task instance to keep track of its execution
-@param taskKey the key for the task to start
-@param data the data to pass to the task
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| taskId | number | No | The native id for this task instance to keep track of its execution |
+| taskKey | string | No | The key for the task to start |
+| data | any | No | The data to pass to the task |
 
 
 

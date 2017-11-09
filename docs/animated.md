@@ -533,25 +533,51 @@ static unforkEvent(event, listener)
 
 ## Properties
 
+### Value
+
+Standard value class for driving animations. Typically initialized with `new Animated.Value(0);`
+
+See also `AnimatedValue.js`.
+
+
+| Type |
+| - |
+| AnimatedValue |
+
+---
+
+### ValueXY
+
+2D value class for driving 2D animations, such as pan gestures.
+
+See also `AnimatedValueXY.js`.
+
+| Type |
+| - |
+| AnimatedValueXY |
+
 
 
 ---
 
+### Interpolation
 
+Exported to use the Interpolation type in flow
 
----
+See also `AnimatedInterpolation.js`.
 
-
-
----
-
-
-
----
-
-
+| Type |
+| - |
+| AnimatedInterpolation |
 
 ---
 
+### Node
+
+Exported for ease of type checking. All animated values derive from this class.
+
+| Type |
+| - |
+| AnimatedNode |
 
 

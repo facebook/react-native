@@ -7,21 +7,11 @@ permalink: docs/navigatorios.html
 next: picker
 previous: modal
 ---
-`NavigatorIOS` is a wrapper around
-[`UINavigationController`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/),
-enabling you to implement a navigation stack. It works exactly the same as it
-would on a native app using `UINavigationController`, providing the same
-animations and behavior from UIKit.
+`NavigatorIOS` is a wrapper around [`UINavigationController`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UINavigationController_Class/), enabling you to implement a navigation stack. It works exactly the same as it would on a native app using `UINavigationController`, providing the same animations and behavior from UIKit.
 
-As the name implies, it is only available on iOS. Take a look at
-[`React Navigation`](https://reactnavigation.org/) for a cross-platform
-solution in JavaScript, or check out either of these components for native
-solutions: [native-navigation](http://airbnb.io/native-navigation/),
-[react-native-navigation](https://github.com/wix/react-native-navigation).
+As the name implies, it is only available on iOS. Take a look at [`React Navigation`](https://reactnavigation.org/) for a cross-platform solution in JavaScript, or check out either of these components for native solutions: [native-navigation](http://airbnb.io/native-navigation/), [react-native-navigation](https://github.com/wix/react-native-navigation).
 
-To set up the navigator, provide the `initialRoute` prop with a route
-object. A route object is used to describe each scene that your app
-navigates to. `initialRoute` represents the first route in your navigator.
+To set up the navigator, provide the `initialRoute` prop with a route object. A route object is used to describe each scene that your app navigates to. `initialRoute` represents the first route in your navigator.
 
 ```
 import PropTypes from 'prop-types';
@@ -67,13 +57,9 @@ class MyScene extends Component {
 }
 ```
 
-In this code, the navigator renders the component specified in initialRoute,
-which in this case is `MyScene`. This component will receive a `route` prop
-and a `navigator` prop representing the navigator. The navigator's navigation
-bar will render the title for the current scene, "My Initial Scene".
+In this code, the navigator renders the component specified in initialRoute, which in this case is `MyScene`. This component will receive a `route` prop and a `navigator` prop representing the navigator. The navigator's navigation bar will render the title for the current scene, "My Initial Scene".
 
-You can optionally pass in a `passProps` property to your `initialRoute`.
-`NavigatorIOS` passes this in as props to the rendered component:
+You can optionally pass in a `passProps` property to your `initialRoute`. `NavigatorIOS` passes this in as props to the rendered component:
 
 ```
 initialRoute={{
@@ -87,10 +73,7 @@ You can then access the props passed in via `{this.props.myProp}`.
 
 #### Handling Navigation
 
-To trigger navigation functionality such as pushing or popping a view, you
-have access to a `navigator` object. The object is passed in as a prop to any
-component that is rendered by `NavigatorIOS`. You can then call the
-relevant methods to perform the navigation action you need:
+To trigger navigation functionality such as pushing or popping a view, you have access to a `navigator` object. The object is passed in as a prop to any component that is rendered by `NavigatorIOS`. You can then call the relevant methods to perform the navigation action you need:
 
 ```
 class MyView extends Component {
@@ -119,8 +102,7 @@ class MyView extends Component {
 }
 ```
 
-You can also trigger navigator functionality from the `NavigatorIOS`
-component:
+You can also trigger navigator functionality from the `NavigatorIOS` component:
 
 ```
 class NavvyIOS extends Component {
@@ -150,18 +132,11 @@ class NavvyIOS extends Component {
 }
 ```
 
-The code above adds a `_handleNavigationRequest` private method that is
-invoked from the `NavigatorIOS` component when the right navigation bar item
-is pressed. To get access to the navigator functionality, a reference to it
-is saved in the `ref` prop and later referenced to push a new scene into the
-navigation stack.
+The code above adds a `_handleNavigationRequest` private method that is invoked from the `NavigatorIOS` component when the right navigation bar item is pressed. To get access to the navigator functionality, a reference to it is saved in the `ref` prop and later referenced to push a new scene into the navigation stack.
 
 #### Navigation Bar Configuration
 
-Props passed to `NavigatorIOS` will set the default configuration
-for the navigation bar. Props passed as properties to a route object will set
-the configuration for that route's navigation bar, overriding any props
-passed to the `NavigatorIOS` component.
+Props passed to `NavigatorIOS` will set the default configuration for the navigation bar. Props passed as properties to a route object will set the configuration for that route's navigation bar, overriding any props passed to the `NavigatorIOS` component.
 
 ```
 _handleNavigationRequest() {
@@ -183,8 +158,7 @@ render() {
 }
 ```
 
-In the example above the navigation bar color is changed when the new route
-is pushed.
+In the example above the navigation bar color is changed when the new route is pushed.
 
 ### Props
 
@@ -228,14 +202,64 @@ is pushed.
 
 NavigatorIOS uses `route` objects to identify child views, their props,
 and navigation bar configuration. Navigation operations such as push
-operations expect routes to look like this the `initialRoute`.
+operations expect routes to look like this.
 
 | Type | Required |
 | - | - |
-| object: {component: function,title: string,titleImage: Image.propTypes.source,passProps: object,backButtonIcon: Image.propTypes.source,backButtonTitle: string,leftButtonIcon: Image.propTypes.source,leftButtonTitle: string,leftButtonSystemIcon: Object.keys(SystemIcons),onLeftButtonPress: function,rightButtonIcon: Image.propTypes.source,rightButtonTitle: string,rightButtonSystemIcon: Object.keys(SystemIcons),onRightButtonPress: function,wrapperStyle: ViewPropTypes.style,navigationBarHidden: bool,shadowHidden: bool,tintColor: string,barTintColor: string,barStyle: enum('default', 'black'),titleTextColor: string,translucent: bool} | Yes |
+| object | Yes |
 
+**Routes:**
 
+The following parameters can be used to define a route:
 
+* `**component**`: function
+  The React Class to render for this route. 
+* `**title**`: string
+  The title displayed in the navigation bar and the back button for this route. 
+* `**titleImage**`: [Image](docs/image.html)
+  If set, a title image will appear instead of the text title. 
+* `**passProps**`: object
+  Use this to specify additional props to pass to the rendered component. `NavigatorIOS` will automatically pass in `route` and `navigator` props to the comoponent. 
+* `**backButtonIcon**`: [Image](docs/image.html)
+  If set, the left navigation button image will be displayed using this source. Note that this doesn't apply to the header of the current view, but to those views that are subsequently pushed. 
+* `**backButtonTitle**`: string
+  If set, the left navigation button text will be set to this. Note that this doesn't apply to the left button of the current view, but to those views that are subsequently pushed.
+* `**leftButtonIcon**`: [Image](docs/image.html)
+  If set, the left navigation button image will be displayed using this source. 
+* `**leftButtonTitle**`: string
+  If set, the left navigation button will display this text. 
+* `**leftButtonSystemIcon**`: [SystemIcon](docs/navigatorios.html#system-icons)
+  If set, the left header button will appear with this system icon. See below for supported icons.
+* `**onLeftButtonPress**`: function
+  This function will be invoked when the left navigation bar item is pressed. 
+* `**rightButtonIcon**`: [Image](docs/image.html)
+  If set, the right navigation button image will be displayed using this source. 
+* `**rightButtonTitle**`: string
+  If set, the right navigation button will display this text. 
+* `**rightButtonSystemIcon**`: [SystemIcon](docs/navigatorios.html#system-icons)
+  If set, the right header button will appear with this system icon. See below for supported icons.
+* `**onRightButtonPress**`: function
+  This function will be invoked when the right navigation bar item is pressed. 
+* `**wrapperStyle**`: [ViewPropTypes.style](docs/viewproptypes.html#style)
+  Styles for the navigation item containing the component. 
+* `**navigationBarHidden**`: boolean
+  Boolean value that indicates whether the navigation bar is hidden. 
+* `**shadowHidden**`: boolean
+  Boolean value that indicates whether to hide the 1px hairline shadow. 
+* `**tintColor**`: string
+  The color used for the buttons in the navigation bar. 
+* `**barTintColor**`: string
+  The background color of the navigation bar. 
+* `**barStyle**`: enum('default', 'black')
+  The style of the navigation bar. Supported values are 'default', 'black'. Use 'black' instead of setting `barTintColor` to black. This produces a navigation bar with the native iOS style with higher translucency.
+* `**titleTextColor**`: string
+  The text color of the navigation bar title. 
+* `**translucent**`: boolean
+  Boolean value that indicates whether the navigation bar is translucent. 
+
+#### System Icons
+
+Used in `leftButtonSystemIcon` and `rightButtonSystemIcon`. Supported icons are `done`, `cancel`, `edit`, `save`, `add`, `compose`, `reply`, `action`, `organize`, `bookmarks`, `search`, `refresh`, `stop`, `camera`, `trash`, `play`, `pause`, `rewind`, `fast-forward`, `undo`, `redo`, and `page-curl`.
 
 ---
 
@@ -295,7 +319,7 @@ A common use case is to set the `backgroundColor` for every scene.
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 
@@ -384,7 +408,7 @@ Navigate forward to a new route.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route to navigate to. |
+| route | object | Yes | The new route to navigate to. |
 
 
 
@@ -403,7 +427,7 @@ Go back N scenes at once. When N=1, behavior matches `pop()`.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| n | number | No | The number of scenes to pop. |
+| n | number | Yes | The number of scenes to pop. |
 
 
 
@@ -434,8 +458,8 @@ Replace a route in the navigation stack.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route that will replace the specified one. |
-| index | number | No | The route into the stack that should be replaced.   If it is negative, it counts from the back of the stack. |
+| route | object | Yes | The new route that will replace the specified one. |
+| index | number | Yes | The route into the stack that should be replaced.   If it is negative, it counts from the back of the stack. |
 
 
 
@@ -455,7 +479,7 @@ load the view for the new route.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route to navigate to. |
+| route | object | Yes | The new route to navigate to. |
 
 
 
@@ -474,7 +498,7 @@ Replace the route/view for the previous scene.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route to will replace the previous scene. |
+| route | object | Yes | The new route to will replace the previous scene. |
 
 
 
@@ -505,7 +529,7 @@ Go back to the item for a particular route object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route to navigate to. |
+| route | object | Yes | The new route to navigate to. |
 
 
 
@@ -524,7 +548,7 @@ Replaces the previous route/view and transitions back to it.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route that replaces the previous scene. |
+| route | object | Yes | The new route that replaces the previous scene. |
 
 
 
@@ -543,7 +567,7 @@ Replaces the top item and pop to it.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| route | object | No | The new route that will replace the topmost item. |
+| route | object | Yes | The new route that will replace the topmost item. |
 
 
 

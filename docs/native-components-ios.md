@@ -4,6 +4,7 @@ title: Native UI Components
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-components-ios.html
+banner: ejected
 next: custom-webview-ios
 previous: native-modules-ios
 ---

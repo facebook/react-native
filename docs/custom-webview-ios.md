@@ -4,6 +4,7 @@ title: Custom WebView
 layout: docs
 category: Guides (iOS)
 permalink: docs/custom-webview-ios.html
+banner: ejected
 next: linking-libraries-ios
 previous: native-components-ios
 ---

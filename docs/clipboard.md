@@ -28,7 +28,7 @@ previous: cameraroll
 ### `getString()`
 
 ```javascript
-static getString()
+Clipboard.getString()
 ```
 
 
@@ -47,17 +47,23 @@ async _getContent() {
 ### `setString()`
 
 ```javascript
-static setString(content)
+Clipboard.setString(content)
 ```
 
 
-Set content of string type. You can use following code to set clipboard content
+Set content of string type. You can use following code to set clipboard content:
+
 ```javascript
 _setContent() {
   Clipboard.setString('hello world');
 }
 ```
-@param the content to be stored in the clipboard.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| content | string | yes | The content to be stored in the clipboard. |
 
 
 
