@@ -236,8 +236,6 @@ public class ReactInstanceManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       boolean useSeparateUIBackgroundThread,
       int minNumShakes,
-      boolean splitPackagesEnabled,
-      boolean useOnlyDefaultPackages,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
@@ -273,30 +271,17 @@ public class ReactInstanceManager {
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
-      if (!splitPackagesEnabled) {
-        CoreModulesPackage coreModulesPackage =
-            new CoreModulesPackage(
-                this,
-                mBackBtnHandler,
-                mUIImplementationProvider,
-                mLazyViewManagersEnabled,
-                mMinTimeLeftInFrameForNonBatchedOperationMs);
-        mPackages.add(coreModulesPackage);
-      } else {
-        PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-        mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
-        if (mUseDeveloperSupport) {
-          mPackages.add(new DebugCorePackage());
-        }
-        if (!useOnlyDefaultPackages) {
-          mPackages.add(
-              new ReactNativeCorePackage(
-                  this,
-                  mUIImplementationProvider,
-                  mLazyViewManagersEnabled,
-                  mMinTimeLeftInFrameForNonBatchedOperationMs));
-        }
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
+      mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
+      if (mUseDeveloperSupport) {
+        mPackages.add(new DebugCorePackage());
       }
+      mPackages.add(
+          new ReactNativeCorePackage(
+              this,
+              mUIImplementationProvider,
+              mLazyViewManagersEnabled,
+              mMinTimeLeftInFrameForNonBatchedOperationMs));
       mPackages.addAll(packages);
     }
 
