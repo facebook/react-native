@@ -101,6 +101,7 @@ if (!global.process.env.NODE_ENV) {
 // Setup the Systrace profiling hooks if necessary
 if (global.__RCTProfileIsProfiling) {
   const Systrace = require('Systrace');
+  Systrace.installReactHook(true);
   Systrace.setEnabled(true);
 }
 
