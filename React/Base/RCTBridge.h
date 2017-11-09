@@ -139,6 +139,13 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
                             error:(NSError **)error;
 
 /**
+ * This method registers the file path of an additional JS segment by its ID.
+ *
+ * @experimental
+ */
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path;
+
+/**
  * Retrieve a bridge module instance by name or class. Note that modules are
  * lazily instantiated, so calling these methods for the first time with a given
  * module name/class may cause the class to be sychronously instantiated,

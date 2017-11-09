@@ -398,6 +398,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
+{
+  [self.batchedBridge registerSegmentWithId:segmentId path:path];
+}
+
 @end
 
 @implementation RCTBridge (JavaScriptCore)
