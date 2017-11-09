@@ -9,10 +9,9 @@
 namespace facebook {
 namespace react {
 
-std::function<std::unique_ptr<JSModulesUnbundle>(uint32_t)> JSIndexedRAMBundle::buildFactory(const std::string& baseDirectoryPath) {
-  return [baseDirectoryPath](uint32_t index){
-    std::string bundlePathById = baseDirectoryPath + toString(index) + ".jsbundle";
-    return folly::make_unique<JSIndexedRAMBundle>(bundlePathById.c_str());
+std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> JSIndexedRAMBundle::buildFactory() {
+  return [](const std::string& bundlePath){
+    return folly::make_unique<JSIndexedRAMBundle>(bundlePath.c_str());
   };
 }
 

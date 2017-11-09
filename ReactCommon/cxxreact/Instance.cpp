@@ -156,6 +156,10 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }
 
+void Instance::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  nativeToJsBridge_->registerBundle(bundleId, bundlePath);
+}
+
 const ModuleRegistry &Instance::getModuleRegistry() const {
   return *moduleRegistry_;
 }

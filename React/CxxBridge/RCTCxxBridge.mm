@@ -1152,7 +1152,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
           ? [[self.delegate jsSegmentsDirectory].path stringByAppendingString:@"/"]
           : nil;
         auto registry = jsSegmentsDirectory != nil
-          ? RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory.UTF8String))
+          ? RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory())
           : RAMBundleRegistry::singleBundleRegistry(std::move(ramBundle));
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
