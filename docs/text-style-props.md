@@ -1,32 +1,32 @@
 ---
-id: textstyleproptypes
-title: TextStylePropTypes
+id: text-style-props
+title: Text Style Props
 layout: docs
 category: APIs
-permalink: docs/textstyleproptypes.html
-next: imagestyleproptypes
-previous: viewstyleproptypes
+permalink: docs/text-style-props.html
+next: image-style-props
+previous: view-style-props
 ---
 ### Props
 
-- [`textShadowOffset`](docs/textstyleproptypes.html#textshadowoffset)
-- [`color`](docs/textstyleproptypes.html#color)
-- [`fontSize`](docs/textstyleproptypes.html#fontsize)
-- [`fontStyle`](docs/textstyleproptypes.html#fontstyle)
-- [`fontWeight`](docs/textstyleproptypes.html#fontweight)
-- [`lineHeight`](docs/textstyleproptypes.html#lineheight)
-- [`textAlign`](docs/textstyleproptypes.html#textalign)
-- [`textDecorationLine`](docs/textstyleproptypes.html#textdecorationline)
-- [`textShadowColor`](docs/textstyleproptypes.html#textshadowcolor)
-- [`fontFamily`](docs/textstyleproptypes.html#fontfamily)
-- [`textShadowRadius`](docs/textstyleproptypes.html#textshadowradius)
-- [`includeFontPadding`](docs/textstyleproptypes.html#includefontpadding)
-- [`textAlignVertical`](docs/textstyleproptypes.html#textalignvertical)
-- [`fontVariant`](docs/textstyleproptypes.html#fontvariant)
-- [`letterSpacing`](docs/textstyleproptypes.html#letterspacing)
-- [`textDecorationColor`](docs/textstyleproptypes.html#textdecorationcolor)
-- [`textDecorationStyle`](docs/textstyleproptypes.html#textdecorationstyle)
-- [`writingDirection`](docs/textstyleproptypes.html#writingdirection)
+- [`textShadowOffset`](docs/text-style-props.html#textshadowoffset)
+- [`color`](docs/text-style-props.html#color)
+- [`fontSize`](docs/text-style-props.html#fontsize)
+- [`fontStyle`](docs/text-style-props.html#fontstyle)
+- [`fontWeight`](docs/text-style-props.html#fontweight)
+- [`lineHeight`](docs/text-style-props.html#lineheight)
+- [`textAlign`](docs/text-style-props.html#textalign)
+- [`textDecorationLine`](docs/text-style-props.html#textdecorationline)
+- [`textShadowColor`](docs/text-style-props.html#textshadowcolor)
+- [`fontFamily`](docs/text-style-props.html#fontfamily)
+- [`textShadowRadius`](docs/text-style-props.html#textshadowradius)
+- [`includeFontPadding`](docs/text-style-props.html#includefontpadding)
+- [`textAlignVertical`](docs/text-style-props.html#textalignvertical)
+- [`fontVariant`](docs/text-style-props.html#fontvariant)
+- [`letterSpacing`](docs/text-style-props.html#letterspacing)
+- [`textDecorationColor`](docs/text-style-props.html#textdecorationcolor)
+- [`textDecorationStyle`](docs/text-style-props.html#textdecorationstyle)
+- [`writingDirection`](docs/text-style-props.html#writingdirection)
 
 
 

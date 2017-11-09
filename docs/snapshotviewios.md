@@ -7,9 +7,10 @@ permalink: docs/snapshotviewios.html
 next: statusbar
 previous: slider
 ---
+
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`onSnapshotReady`](docs/snapshotviewios.html#onsnapshotready)
 - [`testIdentifier`](docs/snapshotviewios.html#testidentifier)
 

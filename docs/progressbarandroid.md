@@ -31,7 +31,7 @@ render: function() {
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`animating`](docs/progressbarandroid.html#animating)
 - [`color`](docs/progressbarandroid.html#color)
 - [`indeterminate`](docs/progressbarandroid.html#indeterminate)
@@ -107,13 +107,13 @@ The progress value (between 0 and 1).
 
 Style of the ProgressBar. One of:
 
-- Horizontal
-- Normal (default)
-- Small
-- Large
-- Inverse
-- SmallInverse
-- LargeInverse
+- `Horizontal`
+- `Normal` (default)
+- `Small`
+- `Large`
+- `Inverse`
+- `SmallInverse`
+- `LargeInverse`
 
 | Type | Required |
 | - | - |

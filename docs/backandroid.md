@@ -8,7 +8,7 @@ next: backhandler
 previous: asyncstorage
 ---
 
-Deprecated.  Use BackHandler instead.
+**Deprecated.** Use [BackHandler](docs/backhandler.html) instead.
 
 
 ### Methods
@@ -29,7 +29,7 @@ Deprecated.  Use BackHandler instead.
 ### `exitApp()`
 
 ```javascript
-static exitApp()
+BackAndroid.exitApp()
 ```
 
 
@@ -39,7 +39,7 @@ static exitApp()
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(eventName, handler)
+BackAndroid.addEventListener(eventName, handler)
 ```
 
 
@@ -49,7 +49,7 @@ static addEventListener(eventName, handler)
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(eventName, handler)
+BackAndroid.removeEventListener(eventName, handler)
 ```
 
 

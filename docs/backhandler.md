@@ -10,17 +10,13 @@ previous: backhandler
 
 Detect hardware button presses for back navigation.
 
-Android: Detect hardware back button presses, and programmatically invoke the default back button
-functionality to exit the app if there are no listeners or if none of the listeners return true.
+**Android:** Detect hardware back button presses, and programmatically invoke the default back button functionality to exit the app if there are no listeners or if none of the listeners return true.
 
-tvOS: Detect presses of the menu button on the TV remote.  (Still to be implemented:
-programmatically disable menu button handling
-functionality to exit the app if there are no listeners or if none of the listeners return true.)
+**tvOS:** Detect presses of the menu button on the TV remote. Still to be implemented: programmatically disable menu button handling functionality to exit the app if there are no listeners or if none of the listeners return true.
 
-iOS: Not applicable.
+**iOS:** Not applicable.
 
-The event subscriptions are called in reverse order (i.e. last registered subscription first),
-and if one subscription returns true then subscriptions registered earlier will not be called.
+The event subscriptions are called in reverse order (i.e. last registered subscription first), and if one subscription returns true then subscriptions registered earlier will not be called.
 
 Example:
 
@@ -56,7 +52,7 @@ BackHandler.addEventListener('hardwareBackPress', function() {
 ### `exitApp()`
 
 ```javascript
-static exitApp()
+BackHandler.exitApp()
 ```
 
 
@@ -66,7 +62,7 @@ static exitApp()
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(eventName, handler)
+BackHandler.addEventListener(eventName, handler)
 ```
 
 
@@ -76,7 +72,7 @@ static addEventListener(eventName, handler)
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(eventName, handler)
+BackHandler.removeEventListener(eventName, handler)
 ```
 
 

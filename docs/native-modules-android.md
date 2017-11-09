@@ -4,6 +4,7 @@ title: Native Modules
 layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
+banner: ejected
 next: native-components-android
 previous: app-extensions
 ---

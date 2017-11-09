@@ -35,15 +35,11 @@ mounted. One use case is to specify status bar styles per route using `Navigator
 
 ### Imperative API
 
-For cases where using a component is not ideal, there is also an imperative
-API exposed as static functions on the component. It is however not recommended
-to use the static API and the component for the same prop because any value
-set by the static API will get overriden by the one set by the component in
-the next render.
+For cases where using a component is not ideal, there is also an imperative API exposed as static functions on the component. It is however not recommended to use the static API and the component for the same prop because any value set by the static API will get overriden by the one set by the component in the next render.
 
 ### Constants
 
-`currentHeight` (Android only) The height of the status bar.
+`currentHeight` (Android only) The current height of the status bar on the device.
 
 ### Props
 
@@ -188,17 +184,17 @@ prop. Defaults to 'fade'.
 ### `setHidden()`
 
 ```javascript
-static setHidden(hidden: boolean, [animation]: StatusBarAnimation)
+StatusBar.setHidden(hidden: boolean, [animation]: StatusBarAnimation)
 ```
 
-Show or hide the status bar
+Show or hide the status bar.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| hidden | boolean | No | Hide the status bar. |
-| animation | [StatusBarAnimation](docs/statusbar.html#statusbaranimation) | Yes | Optional animation when   changing the status bar hidden property. |
+| hidden | boolean | Yes | Hide the status bar. |
+| animation | [StatusBarAnimation](docs/statusbar.html#statusbaranimation) | No | Optional animation when   changing the status bar hidden property. |
 
 
 
@@ -208,17 +204,17 @@ Show or hide the status bar
 ### `setBarStyle()`
 
 ```javascript
-static setBarStyle(style: StatusBarStyle, [animated]: boolean)
+StatusBar.setBarStyle(style: StatusBarStyle, [animated]: boolean)
 ```
 
-Set the status bar style
+Set the status bar style.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| style | [StatusBarStyle](docs/statusbar.html#statusbarstyle) | No | Status bar style to set |
-| animated | boolean | Yes | Animate the style change. |
+| style | [StatusBarStyle](docs/statusbar.html#statusbarstyle) | Yes | Status bar style to set |
+| animated | boolean | No | Animate the style change. |
 
 
 
@@ -228,16 +224,16 @@ Set the status bar style
 ### `setNetworkActivityIndicatorVisible()`
 
 ```javascript
-static setNetworkActivityIndicatorVisible(visible: boolean)
+StatusBar.setNetworkActivityIndicatorVisible(visible: boolean)
 ```
 
-Control the visibility of the network activity indicator
+Control the visibility of the network activity indicator.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| visible | boolean | No | Show the indicator. |
+| visible | boolean | Yes | Show the indicator. |
 
 
 
@@ -247,17 +243,17 @@ Control the visibility of the network activity indicator
 ### `setBackgroundColor()`
 
 ```javascript
-static setBackgroundColor(color: string, [animated]: boolean)
+StatusBar.setBackgroundColor(color: string, [animated]: boolean)
 ```
 
-Set the background color for the status bar
+Set the background color for the status bar.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| color | string | No | Background color. |
-| animated | boolean | Yes | Animate the style change. |
+| color | string | Yes | Background color. |
+| animated | boolean | No | Animate the style change. |
 
 
 
@@ -267,16 +263,16 @@ Set the background color for the status bar
 ### `setTranslucent()`
 
 ```javascript
-static setTranslucent(translucent: boolean)
+StatusBar.setTranslucent(translucent: boolean)
 ```
 
-Control the translucency of the status bar
+Control the translucency of the status bar.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| translucent | boolean | No | Set as translucent. |
+| translucent | boolean | Yes | Set as translucent. |
 
 
 
@@ -307,7 +303,7 @@ Status bar style
 
 ### StatusBarAnimation
 
-Status bar animation
+Status bar animation.
 
 | Type |
 | - |

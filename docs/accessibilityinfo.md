@@ -78,7 +78,7 @@ class ScreenReaderStatusExample extends React.Component {
 ### `fetch()`
 
 ```javascript
-static fetch()
+AccessibilityInfo.fetch()
 ```
 
 
@@ -94,7 +94,7 @@ and `false` otherwise.
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(eventName, handler)
+AccessibilityInfo.addEventListener(eventName, handler)
 ```
 
 
@@ -117,7 +117,7 @@ Add an event handler. Supported events:
 ### `setAccessibilityFocus()`
 
 ```javascript
-static setAccessibilityFocus(reactTag)
+AccessibilityInfo.setAccessibilityFocus(reactTag)
 ```
 
 
@@ -131,7 +131,7 @@ iOS-Only. Set accessibility focus to a react component.
 ### `announceForAccessibility()`
 
 ```javascript
-static announceForAccessibility(announcement)
+AccessibilityInfo.announceForAccessibility(announcement)
 ```
 
 
@@ -145,7 +145,7 @@ iOS-Only. Post a string to be announced by the screen reader.
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(eventName, handler)
+AccessibilityInfo.removeEventListener(eventName, handler)
 ```
 
 

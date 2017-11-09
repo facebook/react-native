@@ -4,6 +4,7 @@ title: Custom WebView
 layout: docs
 category: Guides (Android)
 permalink: docs/custom-webview-android.html
+banner: ejected
 next: headless-js-android
 previous: native-components-android
 ---
@@ -213,7 +214,7 @@ For events, the event handler must always be set to a function. This means it is
 
 If you are unsure how something should be implemented from the JS side, look at [WebView.android.js](https://github.com/facebook/react-native/blob/master/Libraries/Components/WebView/WebView.android.js) in the React Native source.
 
-```js
+```javascript
 export default class CustomWebView extends Component {
   static propTypes = {
     ...WebView.propTypes,

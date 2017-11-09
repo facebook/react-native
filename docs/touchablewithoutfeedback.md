@@ -48,12 +48,10 @@ If you wish to have several child components, wrap them in a View.
 
 ### `hitSlop`
 
-This defines how far your touch can start away from the button. This is
-added to `pressRetentionOffset` when moving off of the button.
-** NOTE **
-The touch area never extends past the parent view bounds and the Z-index
-of sibling views always takes precedence if a touch hits two overlapping
-views.
+This defines how far your touch can start away from the button. This is added to `pressRetentionOffset` when moving off of the button.
+
+> Note:
+> The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
 | Type | Required |
 | - | - |

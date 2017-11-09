@@ -9,7 +9,7 @@ previous: switch
 ---
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`barStyle`](docs/tabbarios.html#barstyle)
 - [`barTintColor`](docs/tabbarios.html#bartintcolor)
 - [`itemPositioning`](docs/tabbarios.html#itempositioning)
@@ -61,12 +61,10 @@ Background color of the tab bar
 ### `itemPositioning`
 
 Specifies tab bar item positioning. Available values are:
-- fill - distributes items across the entire width of the tab bar
-- center - centers item in the available tab bar space
-- auto (default) - distributes items dynamically according to the
-user interface idiom. In a horizontally compact environment (e.g. iPhone 5)
-this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
-it defaults to center.
+
+- `fill` - distributes items across the entire width of the tab bar
+- `center` - centers item in the available tab bar space
+- `auto` (default) - distributes items dynamically according to the user interface idiom. In a horizontally compact environment (e.g. iPhone 5) this value defaults to `fill`, in a horizontally regular one (e.g. iPad) it defaults to center.
 
 | Type | Required |
 | - | - |
@@ -83,7 +81,7 @@ it defaults to center.
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 

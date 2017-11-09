@@ -46,7 +46,7 @@ try {
 ### `open()`
 
 ```javascript
-static open(options)
+DatePickerAndroid.open(options)
 ```
 
 
@@ -78,7 +78,7 @@ when using the `minDate` and `maxDate` options.
 ### `dateSetAction()`
 
 ```javascript
-static dateSetAction()
+DatePickerAndroid.dateSetAction()
 ```
 
 
@@ -92,7 +92,7 @@ A date has been selected.
 ### `dismissedAction()`
 
 ```javascript
-static dismissedAction()
+DatePickerAndroid.dismissedAction()
 ```
 
 

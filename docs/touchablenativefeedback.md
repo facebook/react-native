@@ -99,11 +99,10 @@ fallback to background.
 ### `SelectableBackground()`
 
 ```javascript
-static SelectableBackground()
+TouchableNativeFeedback.SelectableBackground()
 ```
 
-Creates an object that represents android theme's default background for
-selectable elements (?android:attr/selectableItemBackground).
+Creates an object that represents android theme's default background for selectable elements (?android:attr/selectableItemBackground).
 
 
 
@@ -112,11 +111,10 @@ selectable elements (?android:attr/selectableItemBackground).
 ### `SelectableBackgroundBorderless()`
 
 ```javascript
-static SelectableBackgroundBorderless()
+TouchableNativeFeedback.SelectableBackgroundBorderless()
 ```
 
-Creates an object that represent android theme's default background for borderless
-selectable elements (?android:attr/selectableItemBackgroundBorderless).
+Creates an object that represent android theme's default background for borderless selectable elements (?android:attr/selectableItemBackgroundBorderless).
 Available on android API level 21+.
 
 
@@ -126,21 +124,17 @@ Available on android API level 21+.
 ### `Ripple()`
 
 ```javascript
-static Ripple(color: string, borderless: boolean)
+TouchableNativeFeedback.Ripple(color: string, borderless: boolean)
 ```
 
-Creates an object that represents ripple drawable with specified color (as a
-string). If property `borderless` evaluates to true the ripple will
-render outside of the view bounds (see native actionbar buttons as an
-example of that behavior). This background type is available on Android
-API level 21+.
+Creates an object that represents ripple drawable with specified color (as a string). If property `borderless` evaluates to true the ripple will render outside of the view bounds (see native actionbar buttons as an example of that behavior). This background type is available on Android API level 21+.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| color | string | No | The ripple color |
-| borderless | boolean | No | If the ripple can render outside it's bounds |
+| color | string | Yes | The ripple color |
+| borderless | boolean | Yes | If the ripple can render outside its bounds |
 
 
 
@@ -150,8 +144,8 @@ API level 21+.
 ### `canUseNativeForeground()`
 
 ```javascript
-static canUseNativeForeground()
+TouchableNativeFeedback.canUseNativeForeground()
 ```
 
-
+Whether native foreground ripple is available on the current version of Android. 
 

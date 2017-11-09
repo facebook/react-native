@@ -1,44 +1,44 @@
 ---
-id: viewproptypes
-title: ViewPropTypes
+id: view-props
+title: View Props
 layout: docs
 category: APIs
-permalink: docs/viewproptypes.html
-next: viewstyleproptypes
+permalink: docs/view-props.html
+next: view-style-props
 previous: shadow-props
 ---
 ### Props
 
-- [`onStartShouldSetResponder`](docs/viewproptypes.html#onstartshouldsetresponder)
-- [`accessibilityLabel`](docs/viewproptypes.html#accessibilitylabel)
-- [`hitSlop`](docs/viewproptypes.html#hitslop)
-- [`nativeID`](docs/viewproptypes.html#nativeid)
-- [`onAccessibilityTap`](docs/viewproptypes.html#onaccessibilitytap)
-- [`onLayout`](docs/viewproptypes.html#onlayout)
-- [`onMagicTap`](docs/viewproptypes.html#onmagictap)
-- [`onMoveShouldSetResponder`](docs/viewproptypes.html#onmoveshouldsetresponder)
-- [`onMoveShouldSetResponderCapture`](docs/viewproptypes.html#onmoveshouldsetrespondercapture)
-- [`onResponderGrant`](docs/viewproptypes.html#onrespondergrant)
-- [`onResponderMove`](docs/viewproptypes.html#onrespondermove)
-- [`onResponderReject`](docs/viewproptypes.html#onresponderreject)
-- [`onResponderRelease`](docs/viewproptypes.html#onresponderrelease)
-- [`onResponderTerminate`](docs/viewproptypes.html#onresponderterminate)
-- [`onResponderTerminationRequest`](docs/viewproptypes.html#onresponderterminationrequest)
-- [`accessible`](docs/viewproptypes.html#accessible)
-- [`onStartShouldSetResponderCapture`](docs/viewproptypes.html#onstartshouldsetrespondercapture)
-- [`pointerEvents`](docs/viewproptypes.html#pointerevents)
-- [`removeClippedSubviews`](docs/viewproptypes.html#removeclippedsubviews)
-- [`style`](docs/viewproptypes.html#style)
-- [`testID`](docs/viewproptypes.html#testid)
-- [`accessibilityComponentType`](docs/viewproptypes.html#accessibilitycomponenttype)
-- [`accessibilityLiveRegion`](docs/viewproptypes.html#accessibilityliveregion)
-- [`collapsable`](docs/viewproptypes.html#collapsable)
-- [`importantForAccessibility`](docs/viewproptypes.html#importantforaccessibility)
-- [`needsOffscreenAlphaCompositing`](docs/viewproptypes.html#needsoffscreenalphacompositing)
-- [`renderToHardwareTextureAndroid`](docs/viewproptypes.html#rendertohardwaretextureandroid)
-- [`accessibilityTraits`](docs/viewproptypes.html#accessibilitytraits)
-- [`accessibilityViewIsModal`](docs/viewproptypes.html#accessibilityviewismodal)
-- [`shouldRasterizeIOS`](docs/viewproptypes.html#shouldrasterizeios)
+- [`onStartShouldSetResponder`](docs/view-props.html#onstartshouldsetresponder)
+- [`accessibilityLabel`](docs/view-props.html#accessibilitylabel)
+- [`hitSlop`](docs/view-props.html#hitslop)
+- [`nativeID`](docs/view-props.html#nativeid)
+- [`onAccessibilityTap`](docs/view-props.html#onaccessibilitytap)
+- [`onLayout`](docs/view-props.html#onlayout)
+- [`onMagicTap`](docs/view-props.html#onmagictap)
+- [`onMoveShouldSetResponder`](docs/view-props.html#onmoveshouldsetresponder)
+- [`onMoveShouldSetResponderCapture`](docs/view-props.html#onmoveshouldsetrespondercapture)
+- [`onResponderGrant`](docs/view-props.html#onrespondergrant)
+- [`onResponderMove`](docs/view-props.html#onrespondermove)
+- [`onResponderReject`](docs/view-props.html#onresponderreject)
+- [`onResponderRelease`](docs/view-props.html#onresponderrelease)
+- [`onResponderTerminate`](docs/view-props.html#onresponderterminate)
+- [`onResponderTerminationRequest`](docs/view-props.html#onresponderterminationrequest)
+- [`accessible`](docs/view-props.html#accessible)
+- [`onStartShouldSetResponderCapture`](docs/view-props.html#onstartshouldsetrespondercapture)
+- [`pointerEvents`](docs/view-props.html#pointerevents)
+- [`removeClippedSubviews`](docs/view-props.html#removeclippedsubviews)
+- [`style`](docs/view-props.html#style)
+- [`testID`](docs/view-props.html#testid)
+- [`accessibilityComponentType`](docs/view-props.html#accessibilitycomponenttype)
+- [`accessibilityLiveRegion`](docs/view-props.html#accessibilityliveregion)
+- [`collapsable`](docs/view-props.html#collapsable)
+- [`importantForAccessibility`](docs/view-props.html#importantforaccessibility)
+- [`needsOffscreenAlphaCompositing`](docs/view-props.html#needsoffscreenalphacompositing)
+- [`renderToHardwareTextureAndroid`](docs/view-props.html#rendertohardwaretextureandroid)
+- [`accessibilityTraits`](docs/view-props.html#accessibilitytraits)
+- [`accessibilityViewIsModal`](docs/view-props.html#accessibilityviewismodal)
+- [`shouldRasterizeIOS`](docs/view-props.html#shouldrasterizeios)
 
 
 
@@ -399,7 +399,7 @@ subviews must also have `overflow: hidden`, as should the containing view
 
 | Type | Required |
 | - | - |
-| stylePropType | No |
+| style | No |
 
 
 

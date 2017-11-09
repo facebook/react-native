@@ -51,7 +51,7 @@ AppRegistry.registerComponent('App', () => App)
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`animating`](docs/activityindicator.html#animating)
 - [`color`](docs/activityindicator.html#color)
 - [`size`](docs/activityindicator.html#size)

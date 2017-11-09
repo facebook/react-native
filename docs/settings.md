@@ -33,7 +33,7 @@ previous: pushnotificationios
 ### `get()`
 
 ```javascript
-static get(key)
+Settings.get(key)
 ```
 
 
@@ -43,7 +43,7 @@ static get(key)
 ### `set()`
 
 ```javascript
-static set(settings)
+Settings.set(settings)
 ```
 
 
@@ -53,7 +53,7 @@ static set(settings)
 ### `watchKeys()`
 
 ```javascript
-static watchKeys(keys, callback)
+Settings.watchKeys(keys, callback)
 ```
 
 
@@ -63,7 +63,7 @@ static watchKeys(keys, callback)
 ### `clearWatch()`
 
 ```javascript
-static clearWatch(watchId)
+Settings.clearWatch(watchId)
 ```
 
 

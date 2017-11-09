@@ -7,24 +7,17 @@ permalink: docs/asyncstorage.html
 next: backandroid
 previous: appstate
 ---
-`AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage
-system that is global to the app.  It should be used instead of LocalStorage.
+`AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app.  It should be used instead of LocalStorage.
 
-It is recommended that you use an abstraction on top of `AsyncStorage`
-instead of `AsyncStorage` directly for anything more than light usage since
-it operates globally.
+It is recommended that you use an abstraction on top of `AsyncStorage` instead of `AsyncStorage` directly for anything more than light usage since it operates globally.
 
-On iOS, `AsyncStorage` is backed by native code that stores small values in a
-serialized dictionary and larger values in separate files. On Android,
-`AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite
-based on what is available.
+On iOS, `AsyncStorage` is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, `AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite based on what is available.
 
-The `AsyncStorage` JavaScript code is a simple facade that provides a clear
-JavaScript API, real `Error` objects, and simple non-multi functions. Each
-method in the API returns a `Promise` object.
+The `AsyncStorage` JavaScript code is a simple facade that provides a clear JavaScript API, real `Error` objects, and simple non-multi functions. Each method in the API returns a `Promise` object.
 
 Persisting data:
-```
+
+```javascript
 try {
   await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
 } catch (error) {
@@ -33,7 +26,8 @@ try {
 ```
 
 Fetching data:
-```
+
+```javascript
 try {
   const value = await AsyncStorage.getItem('@MySuperStore:key');
   if (value !== null){
@@ -53,6 +47,11 @@ try {
 - [`mergeItem`](docs/asyncstorage.html#mergeitem)
 - [`clear`](docs/asyncstorage.html#clear)
 - [`getAllKeys`](docs/asyncstorage.html#getallkeys)
+
+The following batched functions are useful for executing a lot of operations at once, allowing for native optimizations and provide the convenience of a single callback after all operations are complete.
+
+These functions return arrays of errors, potentially one for every key. For key-specific errors, the Error object will have a key property to indicate which key caused the error.
+
 - [`flushGetRequests`](docs/asyncstorage.html#flushgetrequests)
 - [`multiGet`](docs/asyncstorage.html#multiget)
 - [`multiSet`](docs/asyncstorage.html#multiset)
@@ -81,8 +80,8 @@ Returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| key | string | No | Key of the item to fetch. |
-| callback | ?(error: ?Error, result: ?string) => void | Yes | Function that will be called with a result if found or   any error. |
+| key | string | Yes | Key of the item to fetch. |
+| callback | ?(error: ?Error, result: ?string) => void | No | Function that will be called with a result if found or   any error. |
 
 
 
@@ -95,16 +94,17 @@ Returns a `Promise` object.
 static setItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 ```
 
-Sets the value for a `key` and invokes a callback upon completion.
+Sets the value for a `key` and invokes a callback upon completion. 
+
 Returns a `Promise` object.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| key | string | No | Key of the item to set. |
-| value | string | No | Value to set for the `key`. |
-| callback | ?(error: ?Error) => void | Yes | Function that will be called with any error. |
+| key | string | Yes | Key of the item to set. |
+| value | string | Yes | Value to set for the `key`. |
+| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
 
 
 
@@ -124,8 +124,8 @@ Returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| key | string | No | Key of the item to remove. |
-| callback | ?(error: ?Error) => void | Yes | Function that will be called with any error. |
+| key | string | Yes | Key of the item to remove. |
+| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
 
 
 
@@ -138,35 +138,32 @@ Returns a `Promise` object.
 static mergeItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 ```
 
-Merges an existing `key` value with an input value, assuming both values
-are stringified JSON. Returns a `Promise` object.
+Merges an existing `key` value with an input value, assuming both values are stringified JSON. Returns a `Promise` object.
 
-**NOTE:** This is not supported by all native implementations.
+> Note: 
+> This is not supported by all native implementations.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| key | string | No | Key of the item to modify. |
-| value | string | No | New value to merge for the `key`. |
-| callback | ?(error: ?Error) => void | Yes | Function that will be called with any error. |
-
-
+| key | string | Yes | Key of the item to modify. |
+| value | string | Yes | New value to merge for the `key`. |
+| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
 
 
 Example:
 
 ```javascript
-
 let UID123_object = {
- name: 'Chris',
- age: 30,
- traits: {hair: 'brown', eyes: 'brown'},
+  name: 'Chris',
+  age: 30,
+  traits: {hair: 'brown', eyes: 'brown'},
 };
 // You only need to define what will be added or updated
 let UID123_delta = {
- age: 31,
- traits: {eyes: 'blue', shoe_size: 10}
+  age: 31,
+  traits: {eyes: 'blue', shoe_size: 10}
 };
 
 AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
@@ -182,8 +179,6 @@ AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
 //    {'shoe_size':10,'hair':'brown','eyes':'blue'}}
 ```
 
-
-
 ---
 
 ### `clear()`
@@ -192,15 +187,13 @@ AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
 static clear([callback]: ?(error: ?Error) => void)
 ```
 
-Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably
-don't want to call this; use `removeItem` or `multiRemove` to clear only
-your app's keys. Returns a `Promise` object.
+Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably don't want to call this; use `removeItem` or `multiRemove` to clear only your app's keys. Returns a `Promise` object.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| callback | ?(error: ?Error) => void | Yes | Function that will be called with any error. |
+| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
 
 
 
@@ -220,7 +213,7 @@ Returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| callback | ?(error: ?Error, keys: ?Array<string>) => void | Yes | Function that will be called the keys found and any error. |
+| callback | ?(error: ?Error, keys: ?Array<string>) => void | No | Function that will be called the keys found and any error. |
 
 
 
@@ -235,8 +228,6 @@ static flushGetRequests(): [object Object]
 
 Flushes any pending requests using a single batch call to get the data.
 
-
-
 ---
 
 ### `multiGet()`
@@ -245,9 +236,7 @@ Flushes any pending requests using a single batch call to get the data.
 static multiGet(keys: Array<string>, [callback]: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void)
 ```
 
-This allows you to batch the fetching of items given an array of `key`
-inputs. Your callback will be invoked with an array of corresponding
-key-value pairs found:
+This allows you to batch the fetching of items given an array of `key` inputs. Your callback will be invoked with an array of corresponding key-value pairs found:
 
 ```
 multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
@@ -259,10 +248,8 @@ The method returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| keys | Array<string> | No | Array of key for the items to get. |
-| callback | ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void | Yes | Function that will be called with a key-value array of    the results, plus an array of any key-specific errors found. |
-
-
+| keys | Array<string> | Yes | Array of key for the items to get. |
+| callback | ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void | No | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
 
 
 Example:
@@ -302,8 +289,8 @@ The method returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| keyValuePairs | Array<Array<string>> | No | Array of key-value array for the items to set. |
-| callback | ?(errors: ?Array<Error>) => void | Yes | Function that will be called with an array of any   key-specific errors found. |
+| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to set. |
+| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
 
 
 
@@ -323,8 +310,8 @@ a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| keys | Array<string> | No | Array of key for the items to delete. |
-| callback | ?(errors: ?Array<Error>) => void | Yes | Function that will be called an array of any key-specific   errors found. |
+| keys | Array<string> | Yes | Array of key for the items to delete. |
+| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called an array of any key-specific   errors found. |
 
 
 
@@ -360,8 +347,8 @@ keys. This assumes that the values are stringified JSON. Returns a
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| keyValuePairs | Array<Array<string>> | No | Array of key-value array for the items to merge. |
-| callback | ?(errors: ?Array<Error>) => void | Yes | Function that will be called with an array of any   key-specific errors found. |
+| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to merge. |
+| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
 
 
 

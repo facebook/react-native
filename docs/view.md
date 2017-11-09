@@ -7,17 +7,12 @@ permalink: docs/view.html
 next: viewpagerandroid
 previous: touchablewithoutfeedback
 ---
-The most fundamental component for building a UI, `View` is a container that supports layout with
-[flexbox](docs/flexbox.html), [style](docs/style.html),
-[some touch handling](docs/handling-touches.html), and
-[accessibility](docs/accessibility.html) controls. `View` maps directly to the
-native view equivalent on whatever platform React Native is running on, whether that is a
-`UIView`, `<div>`, `android.view`, etc.
+
+The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](docs/flexbox.html), [style](docs/style.html), [some touch handling](docs/handling-touches.html), and [accessibility](docs/accessibility.html) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
-This example creates a `View` that wraps two colored boxes and a text component in a row with
-padding.
+This example creates a `View` that wraps two colored boxes and a text component in a row with padding.
 
 ```javascript
 class ViewColoredBoxesWithText extends Component {
@@ -33,13 +28,11 @@ class ViewColoredBoxesWithText extends Component {
 }
 ```
 
-> `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity
-> and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
-For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them
-are of the following form:
+For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them are of the following form:
 
 - `nativeEvent`
   - `changedTouches` - Array of all touch events that have changed since the last event.
@@ -54,7 +47,7 @@ are of the following form:
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`onStartShouldSetResponder`](docs/view.html#onstartshouldsetresponder)
 - [`accessibilityLabel`](docs/view.html#accessibilitylabel)
 - [`hitSlop`](docs/view.html#hitslop)
