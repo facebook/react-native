@@ -4,6 +4,7 @@ title: Running On Device
 layout: docs
 category: Guides
 permalink: docs/running-on-device.html
+banner: ejected
 next: upgrading
 previous: integration-with-existing-apps
 ---
