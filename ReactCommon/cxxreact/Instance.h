@@ -60,6 +60,9 @@ public:
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
 
   // This method is experimental, and may be modified or removed.
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
+
+  // This method is experimental, and may be modified or removed.
   template <typename T>
   Value callFunctionSync(const std::string &module, const std::string &method,
                          T &&args) {

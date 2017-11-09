@@ -212,7 +212,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
     auto script = bundle->getStartupCode();
     auto registry = jsSegmentsDirectory_.empty()
       ? RAMBundleRegistry::singleBundleRegistry(std::move(bundle))
-      : RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory_));
+      : RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
     instance_->loadRAMBundle(
       std::move(registry),
       std::move(script),

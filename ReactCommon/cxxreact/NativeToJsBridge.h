@@ -98,6 +98,7 @@ public:
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
 
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
 

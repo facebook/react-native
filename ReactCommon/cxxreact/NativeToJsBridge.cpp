@@ -171,6 +171,12 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
     });
 }
 
+void NativeToJsBridge::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  runOnExecutorQueue([bundleId, bundlePath] (JSExecutor* executor) {
+    executor->registerBundle(bundleId, bundlePath);
+  });
+}
+
 void NativeToJsBridge::setGlobalVariable(std::string propName,
                                          std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
