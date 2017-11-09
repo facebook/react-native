@@ -4,6 +4,7 @@ title: Custom WebView
 layout: docs
 category: Guides (Android)
 permalink: docs/custom-webview-android.html
+banner: ejected
 next: headless-js-android
 previous: native-components-android
 ---

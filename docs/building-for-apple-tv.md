@@ -4,6 +4,7 @@ title: Building For Apple TV
 layout: docs
 category: Guides (iOS)
 permalink: docs/building-for-apple-tv.html
+banner: ejected
 next: app-extensions
 previous: communication-ios
 ---

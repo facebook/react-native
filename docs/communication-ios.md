@@ -4,6 +4,7 @@ title: Communication between native and React Native
 layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
+banner: ejected
 next: building-for-apple-tv
 previous: linking-libraries-ios
 ---

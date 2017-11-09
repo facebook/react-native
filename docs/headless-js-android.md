@@ -89,7 +89,7 @@ Following lines shows part of Android manifest file for registering broadcast re
 </receiver>
 ```
 
-Broadcast receiver then handles intent that was broadcasted in onReceive function. This is a great place to check whether your app is on foreground or not. If app is not on foreground we can prepare our intent to be started, with no information or additional information bundled using putExta (keep in mind bundle can handle only parcelable values). In the end service is started and wakelock is acquired.
+Broadcast receiver then handles intent that was broadcasted in onReceive function. This is a great place to check whether your app is on foreground or not. If app is not on foreground we can prepare our intent to be started, with no information or additional information bundled using `putExtra` (keep in mind bundle can handle only parcelable values). In the end service is started and wakelock is acquired.
 
 ```java
 public class NetworkChangeReceiver extends BroadcastReceiver {

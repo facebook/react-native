@@ -4,6 +4,7 @@ title: Communication between native and React Native
 layout: docs
 category: Guides (Android)
 permalink: docs/communication-android.html
+banner: ejected
 next: contributing
 previous: android-building-from-source
 ---
