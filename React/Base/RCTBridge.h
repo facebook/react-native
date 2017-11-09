@@ -172,9 +172,9 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, strong, readonly) NSURL *bundleURL;
 
 /**
- * URL of the original script (not necessarily loaded) of the bridge.
+ * URL of the embedded bundle of the bridge.
  */
-@property (nonatomic, strong, readonly) NSURL *bundledSourceURL;
+@property (nonatomic, strong, readonly) NSURL *embeddedBundleURL;
 
 /**
  * The class of the executor currently being used. Changes to this value will
