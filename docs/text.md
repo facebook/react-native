@@ -7,6 +7,7 @@ permalink: docs/text.html
 next: textinput
 previous: tabbarios-item
 ---
+
 A React component for displaying text.
 
 `Text` supports nesting, styling, and touch handling.

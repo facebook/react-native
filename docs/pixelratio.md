@@ -72,7 +72,7 @@ accumulating rounding errors.
 ### `get()`
 
 ```javascript
-static get()
+PixelRatio.get()
 ```
 
 
@@ -85,10 +85,11 @@ Returns the device pixel density. Some examples:
   - PixelRatio.get() === 2
     - iPhone 4, 4S
     - iPhone 5, 5c, 5s
-    - iPhone 6
+    - iPhone 6, 7, 8
     - xhdpi Android devices (320 dpi)
   - PixelRatio.get() === 3
-    - iPhone 6 plus
+    - iPhone 6, 7, 8 Plus
+    - iPhone X
     - xxhdpi Android devices (480 dpi)
   - PixelRatio.get() === 3.5
     - Nexus 6
@@ -101,21 +102,19 @@ Returns the device pixel density. Some examples:
 ### `getFontScale()`
 
 ```javascript
-static getFontScale()
+PixelRatio.getFontScale()
 ```
 
 
-Returns the scaling factor for font sizes. This is the ratio that is used to calculate the
-absolute font size, so any elements that heavily depend on that should use this to do
-calculations.
+Returns the scaling factor for font sizes. This is the ratio that is used to calculate the absolute font size, so any elements that heavily depend on that should use this to do calculations.
 
 If a font scale is not set, this returns the device pixel ratio.
 
-Currently this is only implemented on Android and reflects the user preference set in
-Settings > Display > Font size, on iOS it will always return the default pixel ratio.
-@platform android
+Currently this is only implemented on Android and reflects the user preference set in Settings > Display > Font size, on iOS it will always return the default pixel ratio.
 
-
+| Platform |
+| - |
+| Android |
 
 
 ---
@@ -123,9 +122,8 @@ Settings > Display > Font size, on iOS it will always return the default pixel r
 ### `getPixelSizeForLayoutSize()`
 
 ```javascript
-static getPixelSizeForLayoutSize(layoutSize)
+PixelRatio.getPixelSizeForLayoutSize(layoutSize)
 ```
-
 
 Converts a layout size (dp) to pixel size (px).
 
@@ -139,27 +137,9 @@ Guaranteed to return an integer number.
 ### `roundToNearestPixel()`
 
 ```javascript
-static roundToNearestPixel(layoutSize)
+PixelRatio.roundToNearestPixel(layoutSize)
 ```
 
-
-Rounds a layout size (dp) to the nearest layout size that corresponds to
-an integer number of pixels. For example, on a device with a PixelRatio
-of 3, `PixelRatio.roundToNearestPixel(8.4) = 8.33`, which corresponds to
-exactly (8.33 * 3) = 25 pixels.
-
-
-
-
----
-
-### `startDetecting()`
-
-```javascript
-static startDetecting()
-```
-
-// No-op for iOS, but used on the web. Should not be documented.
-
+Rounds a layout size (dp) to the nearest layout size that corresponds to an integer number of pixels. For example, on a device with a PixelRatio of 3, `PixelRatio.roundToNearestPixel(8.4) = 8.33`, which corresponds to exactly (8.33 * 3) = 25 pixels.
 
 

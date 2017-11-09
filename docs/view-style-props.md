@@ -1,40 +1,40 @@
 ---
-id: viewstyleproptypes
-title: ViewStylePropTypes
+id: view-style-props
+title: View Style Props
 layout: docs
 category: APIs
-permalink: docs/viewstyleproptypes.html
-next: textstyleproptypes
-previous: viewproptypes
+permalink: docs/view-style-props.html
+next: text-style-props
+previous: view-props
 ---
 ### Props
 
-- [`borderRightColor`](docs/viewstyleproptypes.html#borderrightcolor)
-- [`backfaceVisibility`](docs/viewstyleproptypes.html#backfacevisibility)
-- [`borderBottomColor`](docs/viewstyleproptypes.html#borderbottomcolor)
-- [`borderBottomEndRadius`](docs/viewstyleproptypes.html#borderbottomendradius)
-- [`borderBottomLeftRadius`](docs/viewstyleproptypes.html#borderbottomleftradius)
-- [`borderBottomRightRadius`](docs/viewstyleproptypes.html#borderbottomrightradius)
-- [`borderBottomStartRadius`](docs/viewstyleproptypes.html#borderbottomstartradius)
-- [`borderBottomWidth`](docs/viewstyleproptypes.html#borderbottomwidth)
-- [`borderColor`](docs/viewstyleproptypes.html#bordercolor)
-- [`borderEndColor`](docs/viewstyleproptypes.html#borderendcolor)
-- [`borderLeftColor`](docs/viewstyleproptypes.html#borderleftcolor)
-- [`borderLeftWidth`](docs/viewstyleproptypes.html#borderleftwidth)
-- [`borderRadius`](docs/viewstyleproptypes.html#borderradius)
-- [`backgroundColor`](docs/viewstyleproptypes.html#backgroundcolor)
-- [`borderRightWidth`](docs/viewstyleproptypes.html#borderrightwidth)
-- [`borderStartColor`](docs/viewstyleproptypes.html#borderstartcolor)
-- [`borderStyle`](docs/viewstyleproptypes.html#borderstyle)
-- [`borderTopColor`](docs/viewstyleproptypes.html#bordertopcolor)
-- [`borderTopEndRadius`](docs/viewstyleproptypes.html#bordertopendradius)
-- [`borderTopLeftRadius`](docs/viewstyleproptypes.html#bordertopleftradius)
-- [`borderTopRightRadius`](docs/viewstyleproptypes.html#bordertoprightradius)
-- [`borderTopStartRadius`](docs/viewstyleproptypes.html#bordertopstartradius)
-- [`borderTopWidth`](docs/viewstyleproptypes.html#bordertopwidth)
-- [`borderWidth`](docs/viewstyleproptypes.html#borderwidth)
-- [`opacity`](docs/viewstyleproptypes.html#opacity)
-- [`elevation`](docs/viewstyleproptypes.html#elevation)
+- [`borderRightColor`](docs/view-style-props.html#borderrightcolor)
+- [`backfaceVisibility`](docs/view-style-props.html#backfacevisibility)
+- [`borderBottomColor`](docs/view-style-props.html#borderbottomcolor)
+- [`borderBottomEndRadius`](docs/view-style-props.html#borderbottomendradius)
+- [`borderBottomLeftRadius`](docs/view-style-props.html#borderbottomleftradius)
+- [`borderBottomRightRadius`](docs/view-style-props.html#borderbottomrightradius)
+- [`borderBottomStartRadius`](docs/view-style-props.html#borderbottomstartradius)
+- [`borderBottomWidth`](docs/view-style-props.html#borderbottomwidth)
+- [`borderColor`](docs/view-style-props.html#bordercolor)
+- [`borderEndColor`](docs/view-style-props.html#borderendcolor)
+- [`borderLeftColor`](docs/view-style-props.html#borderleftcolor)
+- [`borderLeftWidth`](docs/view-style-props.html#borderleftwidth)
+- [`borderRadius`](docs/view-style-props.html#borderradius)
+- [`backgroundColor`](docs/view-style-props.html#backgroundcolor)
+- [`borderRightWidth`](docs/view-style-props.html#borderrightwidth)
+- [`borderStartColor`](docs/view-style-props.html#borderstartcolor)
+- [`borderStyle`](docs/view-style-props.html#borderstyle)
+- [`borderTopColor`](docs/view-style-props.html#bordertopcolor)
+- [`borderTopEndRadius`](docs/view-style-props.html#bordertopendradius)
+- [`borderTopLeftRadius`](docs/view-style-props.html#bordertopleftradius)
+- [`borderTopRightRadius`](docs/view-style-props.html#bordertoprightradius)
+- [`borderTopStartRadius`](docs/view-style-props.html#bordertopstartradius)
+- [`borderTopWidth`](docs/view-style-props.html#bordertopwidth)
+- [`borderWidth`](docs/view-style-props.html#borderwidth)
+- [`opacity`](docs/view-style-props.html#opacity)
+- [`elevation`](docs/view-style-props.html#elevation)
 
 
 

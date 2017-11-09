@@ -21,7 +21,6 @@ app will use this data. This key will appear as `Privacy - Photo Library Usage D
 
 ### Methods
 
-- [`=`](docs/cameraroll.html#)
 - [`saveToCameraRoll`](docs/cameraroll.html#savetocameraroll)
 - [`getPhotos`](docs/cameraroll.html#getphotos)
 
@@ -34,20 +33,10 @@ app will use this data. This key will appear as `Privacy - Photo Library Usage D
 
 ## Methods
 
-### `=()`
-
-```javascript
-=(;, AssetTypeOptions, static, (, :)
-```
-
-
-
----
-
 ### `saveToCameraRoll()`
 
 ```javascript
-static saveToCameraRoll(tag, type?)
+CameraRoll.saveToCameraRoll(tag, type?)
 ```
 
 
@@ -72,7 +61,7 @@ Returns a Promise which will resolve with the new URI.
 ### `getPhotos()`
 
 ```javascript
-static getPhotos(params)
+CameraRoll.getPhotos(params)
 ```
 
 

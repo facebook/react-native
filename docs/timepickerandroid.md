@@ -46,7 +46,7 @@ try {
 ### `open()`
 
 ```javascript
-static open(options)
+TimePickerAndroid.open(options)
 ```
 
 
@@ -76,7 +76,7 @@ being undefined. **Always** check whether the `action` before reading the values
 ### `timeSetAction()`
 
 ```javascript
-static timeSetAction()
+TimePickerAndroid.timeSetAction()
 ```
 
 
@@ -90,7 +90,7 @@ A time has been selected.
 ### `dismissedAction()`
 
 ```javascript
-static dismissedAction()
+TimePickerAndroid.dismissedAction()
 ```
 
 

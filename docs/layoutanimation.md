@@ -46,7 +46,7 @@ Note that in order to get this to work on **Android** you need to set the follow
 ### `configureNext()`
 
 ```javascript
-static configureNext(config, onAnimationDidEnd?)
+LayoutAnimation.configureNext(config, onAnimationDidEnd?)
 ```
 
 
@@ -71,7 +71,7 @@ Only supported on iOS.
 ### `create()`
 
 ```javascript
-static create(duration, type, creationProp)
+LayoutAnimation.create(duration, type, creationProp)
 ```
 
 
@@ -85,7 +85,7 @@ Helper for creating a config for `configureNext`.
 ### `checkConfig()`
 
 ```javascript
-static checkConfig(config, location, name)
+LayoutAnimation.checkConfig(config, location, name)
 ```
 
 

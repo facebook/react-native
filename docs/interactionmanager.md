@@ -82,7 +82,7 @@ from executing, making apps more responsive.
 ### `runAfterInteractions()`
 
 ```javascript
-static runAfterInteractions(task)
+InteractionManager.runAfterInteractions(task)
 ```
 
 
@@ -97,7 +97,7 @@ Schedule a function to run after all interactions have completed. Returns a canc
 ### `createInteractionHandle()`
 
 ```javascript
-static createInteractionHandle()
+InteractionManager.createInteractionHandle()
 ```
 
 
@@ -111,7 +111,7 @@ Notify manager that an interaction has started.
 ### `clearInteractionHandle()`
 
 ```javascript
-static clearInteractionHandle(handle)
+InteractionManager.clearInteractionHandle(handle)
 ```
 
 
@@ -125,7 +125,7 @@ Notify manager that an interaction has completed.
 ### `setDeadline()`
 
 ```javascript
-static setDeadline(deadline)
+InteractionManager.setDeadline(deadline)
 ```
 
 

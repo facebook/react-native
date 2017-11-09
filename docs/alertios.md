@@ -56,7 +56,7 @@ cross-platform support if you don't need to create iOS-only prompts.
 ### `alert()`
 
 ```javascript
-static alert(title: string, [message]: string, [callbackOrButtons]: ?(() => void), ButtonsArray, [type]: AlertType): [object Object]
+AlertIOS.alert(title: string, [message]: string, [callbackOrButtons]: ?(() => void), ButtonsArray, [type]: AlertType): [object Object]
 ```
 
 Create and display a popup alert.
@@ -65,10 +65,10 @@ Create and display a popup alert.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| title | string | No | The dialog's title. Passing null or '' will hide the title. |
-| message | string | Yes | An optional message that appears below    the dialog's title. |
-| callbackOrButtons | ?(() => void),[ButtonsArray](docs/alertios.html#buttonsarray) | Yes | This optional argument should   be either a single-argument function or an array of buttons. If passed   a function, it will be called when the user taps 'OK'.   If passed an array of button configurations, each button should include   a `text` key, as well as optional `onPress` and `style` keys. `style`   should be one of 'default', 'cancel' or 'destructive'. |
-| type | [AlertType](docs/alertios.html#alerttype) | Yes | Deprecated, do not use. |
+| title | string | Yes | The dialog's title. Passing null or '' will hide the title. |
+| message | string | No | An optional message that appears below    the dialog's title. |
+| callbackOrButtons | ?(() => void),[ButtonsArray](docs/alertios.html#buttonsarray) | No | This optional argument should   be either a single-argument function or an array of buttons. If passed   a function, it will be called when the user taps 'OK'.   If passed an array of button configurations, each button should include   a `text` key, as well as optional `onPress` and `style` keys. `style`   should be one of 'default', 'cancel' or 'destructive'. |
+| type | [AlertType](docs/alertios.html#alerttype) | No | Deprecated, do not use. |
 
 
 
@@ -93,7 +93,7 @@ AlertIOS.alert(
 ### `prompt()`
 
 ```javascript
-static prompt(title: string, [message]: string, [callbackOrButtons]: ?((text: string) => void), ButtonsArray, [type]: AlertType, [defaultValue]: string, [keyboardType]: string): [object Object]
+AlertIOS.prompt(title: string, [message]: string, [callbackOrButtons]: ?((text: string) => void), ButtonsArray, [type]: AlertType, [defaultValue]: string, [keyboardType]: string): [object Object]
 ```
 
 Create and display a prompt to enter some text.
@@ -102,12 +102,12 @@ Create and display a prompt to enter some text.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| title | string | No | The dialog's title. |
-| message | string | Yes | An optional message that appears above the text   input. |
-| callbackOrButtons | ?((text: string) => void),[ButtonsArray](docs/alertios.html#buttonsarray) | Yes | This optional argument should   be either a single-argument function or an array of buttons. If passed   a function, it will be called with the prompt's value when the user   taps 'OK'.   If passed an array of button configurations, each button should include   a `text` key, as well as optional `onPress` and `style` keys (see   example). `style` should be one of 'default', 'cancel' or 'destructive'. |
-| type | [AlertType](docs/alertios.html#alerttype) | Yes | This configures the text input. One of 'plain-text',   'secure-text' or 'login-password'. |
-| defaultValue | string | Yes | The default text in text input. |
-| keyboardType | string | Yes | The keyboard type of first text field(if exists).   One of 'default', 'email-address', 'numeric', 'phone-pad',   'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',   'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'. |
+| title | string | Yes | The dialog's title. |
+| message | string | No | An optional message that appears above the text   input. |
+| callbackOrButtons | ?((text: string) => void),[ButtonsArray](docs/alertios.html#buttonsarray) | No | This optional argument should   be either a single-argument function or an array of buttons. If passed   a function, it will be called with the prompt's value when the user   taps 'OK'.   If passed an array of button configurations, each button should include   a `text` key, as well as optional `onPress` and `style` keys (see   example). `style` should be one of 'default', 'cancel' or 'destructive'. |
+| type | [AlertType](docs/alertios.html#alerttype) | No | This configures the text input. One of 'plain-text',   'secure-text' or 'login-password'. |
+| defaultValue | string | No | The default text in text input. |
+| keyboardType | string | No | The keyboard type of first text field(if exists).   One of 'default', 'email-address', 'numeric', 'phone-pad',   'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',   'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'. |
 
 
 
@@ -191,7 +191,7 @@ An Alert button style
 
 ### ButtonsArray
 
-Array or buttons
+Array of buttons
 
 | Type |
 | - |

@@ -39,7 +39,7 @@ render: function() {
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`renderNavigationView`](docs/drawerlayoutandroid.html#rendernavigationview)
 - [`onDrawerClose`](docs/drawerlayoutandroid.html#ondrawerclose)
 - [`drawerPosition`](docs/drawerlayoutandroid.html#drawerposition)

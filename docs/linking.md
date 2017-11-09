@@ -206,10 +206,9 @@ The method returns a `Promise` object. If the user confirms the open dialog or t
 url automatically opens, the promise is resolved.  If the user cancels the open dialog
 or there are no registered applications for the url, the promise is rejected.
 
-NOTE: This method will fail if the system doesn't know how to open the specified URL.
-If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.
+> This method will fail if the system doesn't know how to open the specified URL. If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.
 
-NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
+> For web URLs, the protocol ("http://", "https://") must be set accordingly!
 
 
 
@@ -225,13 +224,16 @@ canOpenURL(url)
 
 Determine whether or not an installed app can handle a given URL.
 
-NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
+> For web URLs, the protocol ("http://", "https://") must be set accordingly!
 
-NOTE: As of iOS 9, your app needs to provide the `LSApplicationQueriesSchemes` key
+> As of iOS 9, your app needs to provide the `LSApplicationQueriesSchemes` key
 inside `Info.plist` or canOpenURL will always return false.
 
-@param URL the URL to open
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| url | string | Yes | The URL to open | 
 
 
 
@@ -247,7 +249,7 @@ getInitialURL()
 If the app launch was triggered by an app link,
 it will give the link url, otherwise it will give `null`
 
-NOTE: To support deep linking on Android, refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
+> To support deep linking on Android, refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
 
 
 
