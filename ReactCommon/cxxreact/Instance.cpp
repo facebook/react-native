@@ -111,7 +111,7 @@ void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
                            bool loadSynchronously) {
     auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
     auto startupScript = bundle->getStartupCode();
-    auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
+    auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
     loadRAMBundle(
       std::move(registry),
       std::move(startupScript),
