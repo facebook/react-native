@@ -48,8 +48,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
   private int mMinNumShakes = 1;
-  private boolean mEnableSplitPackage;
-  private boolean mUseOnlyDefaultPackages;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
 
   /* package protected */ ReactInstanceManagerBuilder() {
@@ -227,16 +225,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
-    mEnableSplitPackage = enableSplitPackage;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
-    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setMinTimeLeftInFrameForNonBatchedOperationMs(
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
@@ -300,8 +288,6 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mUseSeparateUIBackgroundThread,
         mMinNumShakes,
-        mEnableSplitPackage,
-        mUseOnlyDefaultPackages,
         mMinTimeLeftInFrameForNonBatchedOperationMs);
   }
 }

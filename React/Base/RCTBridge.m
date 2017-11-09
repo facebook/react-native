@@ -329,9 +329,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  if ([self.delegate respondsToSelector:@selector(bundledSourceURLForBridge:)]) {
-    _bundledSourceURL = [self.delegate bundledSourceURLForBridge:self];
-    _bundledSourceURL = [RCTConvert NSURL:_bundledSourceURL.absoluteString];
+  if ([self.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
+    _embeddedBundleURL = [self.delegate embeddedBundleURLForBridge:self];
+    _embeddedBundleURL = [RCTConvert NSURL:_embeddedBundleURL.absoluteString];
   }
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
