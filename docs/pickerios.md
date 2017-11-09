@@ -7,9 +7,10 @@ permalink: docs/pickerios.html
 next: progressbarandroid
 previous: picker
 ---
+
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`itemStyle`](docs/pickerios.html#itemstyle)
 - [`onValueChange`](docs/pickerios.html#onvaluechange)
 - [`selectedValue`](docs/pickerios.html#selectedvalue)
@@ -31,7 +32,7 @@ previous: picker
 
 | Type | Required |
 | - | - |
-| itemStylePropType | No |
+| [style](docs/text-style-props.html) | No |
 
 
 
@@ -53,7 +54,7 @@ previous: picker
 
 ### `selectedValue`
 
-
+A string or integer.
 
 | Type | Required |
 | - | - |

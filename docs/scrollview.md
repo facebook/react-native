@@ -43,7 +43,7 @@ supports out of the box.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`alwaysBounceVertical`](docs/scrollview.html#alwaysbouncevertical)
 - [`contentContainerStyle`](docs/scrollview.html#contentcontainerstyle)
 - [`keyboardDismissMode`](docs/scrollview.html#keyboarddismissmode)
@@ -62,7 +62,6 @@ supports out of the box.
 - [`endFillColor`](docs/scrollview.html#endfillcolor)
 - [`overScrollMode`](docs/scrollview.html#overscrollmode)
 - [`scrollPerfTag`](docs/scrollview.html#scrollperftag)
-- [`DEPRECATED_sendUpdatedChildFrames`](docs/scrollview.html#deprecated-sendupdatedchildframes)
 - [`alwaysBounceHorizontal`](docs/scrollview.html#alwaysbouncehorizontal)
 - [`horizontal`](docs/scrollview.html#horizontal)
 - [`automaticallyAdjustContentInsets`](docs/scrollview.html#automaticallyadjustcontentinsets)
@@ -85,6 +84,7 @@ supports out of the box.
 - [`snapToAlignment`](docs/scrollview.html#snaptoalignment)
 - [`snapToInterval`](docs/scrollview.html#snaptointerval)
 - [`zoomScale`](docs/scrollview.html#zoomscale)
+- [`DEPRECATED_sendUpdatedChildFrames`](docs/scrollview.html#deprecated-sendupdatedchildframes)
 
 
 
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
 
 | Type | Required |
 | - | - |
-| StyleSheetPropType(ViewStylePropTypes) | No |
+| [style](docs/view-style-props.html) | No |
 
 
 
@@ -414,25 +414,6 @@ FpsListener for it to be useful.
 | Type | Required | Platform |
 | - | - | - |
 | string | No | Android  |
-
-
-
-
----
-
-### `DEPRECATED_sendUpdatedChildFrames`
-
-When true, ScrollView will emit updateChildFrames data in scroll events,
-otherwise will not compute or emit child frame data.  This only exists
-to support legacy issues, `onLayout` should be used instead to retrieve
-frame data.
-The default value is false.
-
-
-| Type | Required | Platform |
-| - | - | - |
-| bool | No | iOS  |
-
 
 
 
@@ -796,6 +777,20 @@ The current scale of the scroll view content. The default value is 1.0.
 | number | No | iOS  |
 
 
+---
+
+### `DEPRECATED_sendUpdatedChildFrames`
+
+**Deprecated.** When true, ScrollView will emit updateChildFrames data in scroll events,
+otherwise will not compute or emit child frame data.  This only exists
+to support legacy issues, `onLayout` should be used instead to retrieve
+frame data.
+The default value is false.
+
+
+| Type | Required | Platform |
+| - | - | - |
+| bool | No | iOS  |
 
 
 

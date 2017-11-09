@@ -164,12 +164,18 @@ static measureMethods(object, objectName, methodNames)
 
 
 Measures multiple methods of a class. For example, you can do:
+
+```javascript
 Systrace.measureMethods(JSON, 'JSON', ['parse', 'stringify']);
+```
 
-@param object
-@param objectName
-@param methodNames Map from method names to method display names.
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| object | any | Yes | | 
+| objectName | string | Yes | |
+| methodNames | array | Yes| Map from method names to method display names. |
 
 
 
@@ -183,12 +189,19 @@ static measure(objName, fnName, func)
 
 
 Returns an profiled version of the input function. For example, you can:
-JSON.parse = Systrace.measure('JSON', 'parse', JSON.parse);
 
-@param objName
-@param fnName
-@param {function} func
-@return {function} replacement function
+```javascript
+JSON.parse = Systrace.measure('JSON', 'parse', JSON.parse);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| objName | string | Yes | | 
+| fnName | string | Yes | |
+| func | function | Yes | |
+
 
 
 

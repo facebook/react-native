@@ -29,14 +29,18 @@ previous: datepickerandroid
 ### `set()`
 
 ```javascript
-static set(dims)
+Dimensions.set(dims)
 ```
 
 
 This should only be called from native code by sending the
 didUpdateDimensions event.
 
-@param {object} dims Simple string-keyed object of dimensions to set
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| dims | object | Yes | Simple string-keyed object of dimensions to set |
 
 
 
@@ -46,23 +50,24 @@ didUpdateDimensions event.
 ### `get()`
 
 ```javascript
-static get(dim)
+Dimensions.get(dim)
 ```
 
 
 Initial dimensions are set before `runApplication` is called so they should
 be available before any other require's are run, but may be updated later.
 
-Note: Although dimensions are available immediately, they may change (e.g
-due to device rotation) so any rendering logic or styles that depend on
-these constants should try to call this function on every render, rather
-than caching the value (for example, using inline styles rather than
-setting a value in a `StyleSheet`).
+> Note:
+> Although dimensions are available immediately, they may change (e.g due to device rotation) so any rendering logic or styles that depend on these constants should try to call this function on every render, rather than caching the value (for example, using inline styles rather than setting a value in a `StyleSheet`).
 
 Example: `var {height, width} = Dimensions.get('window');`
 
-@param {string} dim Name of dimension as defined when calling `set`.
-@returns {Object?} Value for the dimension.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| dim | string | Yes | Name of dimension as defined when calling `set`. |
+
 
 
 
@@ -72,7 +77,7 @@ Example: `var {height, width} = Dimensions.get('window');`
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(type, handler)
+Dimensions.addEventListener(type, handler)
 ```
 
 
@@ -91,7 +96,7 @@ Add an event handler. Supported events:
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(type, handler)
+Dimensions.removeEventListener(type, handler)
 ```
 
 

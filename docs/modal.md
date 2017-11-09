@@ -67,7 +67,7 @@ The `onRequestClose` callback is called when the user taps the hardware back but
 
 | Type | Required |
 | - | - |
-| (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func | No |
+| function | Required on Android and Apple TV |
 
 
 

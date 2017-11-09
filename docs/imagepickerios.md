@@ -29,7 +29,7 @@ previous: imageeditor
 ### `canRecordVideos()`
 
 ```javascript
-static canRecordVideos(callback)
+ImagePickerIOS.canRecordVideos(callback)
 ```
 
 
@@ -39,7 +39,7 @@ static canRecordVideos(callback)
 ### `canUseCamera()`
 
 ```javascript
-static canUseCamera(callback)
+ImagePickerIOS.canUseCamera(callback)
 ```
 
 
@@ -49,7 +49,7 @@ static canUseCamera(callback)
 ### `openCameraDialog()`
 
 ```javascript
-static openCameraDialog(config, successCallback, cancelCallback)
+ImagePickerIOS.openCameraDialog(config, successCallback, cancelCallback)
 ```
 
 
@@ -59,7 +59,7 @@ static openCameraDialog(config, successCallback, cancelCallback)
 ### `openSelectDialog()`
 
 ```javascript
-static openSelectDialog(config, successCallback, cancelCallback)
+ImagePickerIOS.openSelectDialog(config, successCallback, cancelCallback)
 ```
 
 

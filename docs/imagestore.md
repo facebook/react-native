@@ -29,7 +29,7 @@ previous: imagepickerios
 ### `hasImageForTag()`
 
 ```javascript
-static hasImageForTag(uri, callback)
+ImageStore.hasImageForTag(uri, callback)
 ```
 
 
@@ -44,7 +44,7 @@ Check if the ImageStore contains image data for the specified URI.
 ### `removeImageForTag()`
 
 ```javascript
-static removeImageForTag(uri)
+ImageStore.removeImageForTag(uri)
 ```
 
 
@@ -63,7 +63,7 @@ will simply fail silently.
 ### `addImageFromBase64()`
 
 ```javascript
-static addImageFromBase64(base64ImageData, success, failure)
+ImageStore.addImageFromBase64(base64ImageData, success, failure)
 ```
 
 
@@ -85,7 +85,7 @@ than necessary.
 ### `getBase64ForTag()`
 
 ```javascript
-static getBase64ForTag(uri, success, failure)
+ImageStore.getBase64ForTag(uri, success, failure)
 ```
 
 

@@ -12,7 +12,7 @@ It can automatically adjust either its position or bottom padding based on the p
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [ViewPropTypes props...](docs/viewproptypes.html#props)
 - [`keyboardVerticalOffset`](docs/keyboardavoidingview.html#keyboardverticaloffset)
 - [`behavior`](docs/keyboardavoidingview.html#behavior)
 - [`contentContainerStyle`](docs/keyboardavoidingview.html#contentcontainerstyle)
@@ -68,7 +68,7 @@ The style of the content container(View) when behavior is 'position'.
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 

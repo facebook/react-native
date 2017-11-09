@@ -30,7 +30,7 @@ history and configure various properties for the web content.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`source`](docs/webview.html#source)
 - [`automaticallyAdjustContentInsets`](docs/webview.html#automaticallyadjustcontentinsets)
 - [`injectJavaScript`](docs/webview.html#injectjavascript)
@@ -85,8 +85,23 @@ Loads static html or a uri (with optional headers) in the WebView.
 
 | Type | Required |
 | - | - |
-| object: {uri: string,method: string,headers: object,body: string}, ,object: {html: string,baseUrl: string}, ,number | No |
+| object: {uri: string, method: string, headers: object, body: string},object: {html: string, baseUrl: string}, number | No |
 
+**Keys:**
+
+An object with either set of keys can be used. Shape:
+
+- `uri` - The URI to load in the `WebView`. Can be a local or remote file.
+- `method` - The HTTP Method to use. Defaults to GET if not specified. On Android, only GET and POST are supported.
+- `headers` - Additional HTTP headers to send with the request. On Android, this can only be used with GET requests.
+- `body` - The HTTP body to send with the request. This must be a valid UTF-8 string, and will be sent exactly as specified, with no additional encoding (e.g. URL-escaping or base64) applied. On Android, this can only be used with POST requests.
+
+Shape:
+
+- `html` - A static HTML page to display in the WebView.
+- `baseUrl` - The base URL to be used for any relative links in the HTML.
+
+The packager uses a third type, `number`, internally.
 
 
 
@@ -151,14 +166,17 @@ to tap them before they start playing. The default value is `true`.
 
 ### `nativeConfig`
 
-Override the native component used to render the WebView. Enables a custom native
-WebView which uses the same JavaScript as the original WebView.
+Override the native component used to render the WebView. Enables a custom native WebView which uses the same JavaScript as the original WebView.
 
 | Type | Required |
 | - | - |
 | object: {component: any,props: object,viewManager: object} | No |
 
+**Keys:**
 
+- `component` - The native component used to render the WebView.
+- `props` - Set props directly on the native component WebView. Enables custom props which the original WebView doesn't pass through.
+- `viewManager` - Set the ViewManager to use for communication with the native side. iOS only.
 
 
 ---
@@ -324,7 +342,7 @@ The style to apply to the `WebView`.
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 
@@ -501,7 +519,7 @@ Possible values for `dataDetectorTypes` are:
 
 | Type | Required | Platform |
 | - | - | - |
-| enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all'), ,array of enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all') | No | iOS  |
+| enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all'), array of enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all') | No | iOS  |
 
 
 
@@ -558,7 +576,7 @@ Boolean value that determines whether scrolling is enabled in the
 ### `extraNativeComponentConfig()`
 
 ```javascript
-static extraNativeComponentConfig()
+WebView.extraNativeComponentConfig()
 ```
 
 

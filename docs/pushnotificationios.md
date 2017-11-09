@@ -70,7 +70,7 @@ And then in your AppDelegate implementation add the following:
 
 ### Methods
 
-- [`=`](docs/pushnotificationios.html#)
+- [`presentLocalNotification`](docs/pushnotificationios.html#presentlocalnotification)
 - [`scheduleLocalNotification`](docs/pushnotificationios.html#schedulelocalnotification)
 - [`cancelAllLocalNotifications`](docs/pushnotificationios.html#cancelalllocalnotifications)
 - [`removeAllDeliveredNotifications`](docs/pushnotificationios.html#removealldeliverednotifications)
@@ -96,8 +96,9 @@ And then in your AppDelegate implementation add the following:
 - [`getBadgeCount`](docs/pushnotificationios.html#getbadgecount)
 - [`getData`](docs/pushnotificationios.html#getdata)
 
+## Events
 
-
+- [PushNotificationEventName](docs/pushnotificationios.html#pushnotificationeventname)
 
 ---
 
@@ -105,12 +106,23 @@ And then in your AppDelegate implementation add the following:
 
 ## Methods
 
-### `=()`
+### `presentLocalNotification()`
 
 ```javascript
-=(NewData, NoData, ResultFailed, }, static, (, :)
+presentLocalNotification(details)
 ```
 
+Schedules the localNotification for immediate presentation.
+
+`details` is an object containing:
+
+- `alertBody` : The message displayed in the notification alert.
+- `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
+- `soundName` : The sound played when the notification is fired (optional).
+- `isSilent`  : If true, the notification will appear without sound (optional).
+- `category`  : The category of this notification, required for actionable notifications (optional).
+- `userInfo`  : An optional object containing additional notification data.
+- `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
 
 
 ---
@@ -177,18 +189,22 @@ static getDeliveredNotifications(callback)
 ```
 
 
-Provides you with a list of the app’s notifications that are still displayed in Notification Center
+Provides you with a list of the app’s notifications that are still displayed in Notification Center.
 
-@param callback Function which receive an array of delivered notifications
+A delivered notification is an object containing:
 
- A delivered notification is an object containing:
+- `identifier`: The identifier of this notification.
+- `title`: The title of this notification.
+- `body`: The body of this notification.
+- `category`: The category of this notification, if has one.
+- `userInfo`: An optional object containing additional notification data.
+- `thread-id`: The thread identifier of this notification, if has one.
 
-- `identifier`  : The identifier of this notification.
-- `title`  : The title of this notification.
-- `body`  : The body of this notification.
-- `category`  : The category of this notification, if has one.
-- `userInfo`  : An optional object containing additional notification data.
-- `thread-id`  : The thread identifier of this notification, if has one.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| callback | function | Yes | Function which receives an array of delivered notifications. |
 
 
 
@@ -201,11 +217,13 @@ Provides you with a list of the app’s notifications that are still displayed i
 static removeDeliveredNotifications(identifiers)
 ```
 
+Removes the specified notifications from Notification Center.
 
-Removes the specified notifications from Notification Center
+**Parameters:**
 
-@param identifiers Array of notification identifiers
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| identifiers | array | Yes | Array of notification identifiers |
 
 
 
@@ -403,9 +421,7 @@ constructor(nativeNotif)
 ```
 
 
-You will never need to instantiate `PushNotificationIOS` yourself.
-Listening to the `notification` event and invoking
-`getInitialNotification` is sufficient
+You will never need to instantiate `PushNotificationIOS` yourself. Listening to the `notification` event and invoking `getInitialNotification` is sufficient.
 
 
 
@@ -419,19 +435,11 @@ finish(fetchResult)
 ```
 
 
-This method is available for remote notifications that have been received via:
-`application:didReceiveRemoteNotification:fetchCompletionHandler:`
-https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler:
+This method is available for remote notifications that have been received via [`application:didReceiveRemoteNotification:fetchCompletionHandler:`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application).
 
-Call this to execute when the remote notification handling is complete. When
-calling this block, pass in the fetch result value that best describes
-the results of your operation. You *must* call this handler and should do so
-as soon as possible. For a list of possible values, see `PushNotificationIOS.FetchResult`.
+Call this to execute when the remote notification handling is complete. When calling this block, pass in the fetch result value that best describes the results of your operation. You *must* call this handler and should do so as soon as possible. For a list of possible values, see `PushNotificationIOS.FetchResult`.
 
-If you do not call this method your background remote notifications could
-be throttled, to read more about it see the above documentation link.
-
-
+If you do not call this method your background remote notifications could be throttled, to read more about it see the above documentation link.
 
 
 ---
@@ -531,4 +539,13 @@ Gets the data object on the notif
 
 
 
+## Events
 
+### `PushNotificationEventName`
+
+An event emitted by PushNotificationIOS.
+
+- `notification` - Fired when a remote notification is received. The handler will be invoked with an instance of `PushNotificationIOS`.
+- `localNotification` - Fired when a local notification is received. The handler will be invoked with an instance of `PushNotificationIOS`.
+- `register` - Fired when the user registers for remote notifications. The handler will be invoked with a hex string representing the deviceToken.
+- `registrationError` - Fired when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a emulator. The handler will be invoked with `{message: string, code: number, details: any}`.

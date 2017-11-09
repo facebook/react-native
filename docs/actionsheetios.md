@@ -8,7 +8,7 @@ next: alert
 previous: accessibilityinfo
 ---
 
-
+Display action sheets and share sheets on iOS.
 
 ### Methods
 
@@ -27,7 +27,7 @@ previous: accessibilityinfo
 ### `showActionSheetWithOptions()`
 
 ```javascript
-static showActionSheetWithOptions(options, callback)
+ActionSheetIOS.showActionSheetWithOptions(options, callback)
 ```
 
 
@@ -65,7 +65,7 @@ ActionSheetIOS.showActionSheetWithOptions({
 ### `showShareActionSheetWithOptions()`
 
 ```javascript
-static showShareActionSheetWithOptions(options, failureCallback, successCallback)
+ActionSheetIOS.showShareActionSheetWithOptions(options, failureCallback, successCallback)
 ```
 
 

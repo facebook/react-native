@@ -74,7 +74,7 @@ was created from a mock provider.
 ### `setRNConfiguration()`
 
 ```javascript
-static setRNConfiguration(config)
+Geolocation.setRNConfiguration(config)
 ```
 
 
@@ -96,7 +96,7 @@ before using Geolocation APIs.
 ### `requestAuthorization()`
 
 ```javascript
-static requestAuthorization()
+Geolocation.requestAuthorization()
 ```
 
 
@@ -113,7 +113,7 @@ authorization.
 ### `getCurrentPosition()`
 
 ```javascript
-static getCurrentPosition(geo_success, geo_error?, geo_options?)
+Geolocation.getCurrentPosition(geo_success, geo_error?, geo_options?)
 ```
 
 
@@ -130,7 +130,7 @@ or it will request an update which might take a while.
 ### `watchPosition()`
 
 ```javascript
-static watchPosition(success, error?, options?)
+Geolocation.watchPosition(success, error?, options?)
 ```
 
 
@@ -145,7 +145,7 @@ options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool), distanceFilte
 ### `clearWatch()`
 
 ```javascript
-static clearWatch(watchID)
+Geolocation.clearWatch(watchID)
 ```
 
 
@@ -155,7 +155,7 @@ static clearWatch(watchID)
 ### `stopObserving()`
 
 ```javascript
-static stopObserving()
+Geolocation.stopObserving()
 ```
 
 

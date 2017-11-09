@@ -43,7 +43,7 @@ transparent pixels block that content.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`maskElement`](docs/maskedviewios.html#maskelement)
 
 
@@ -59,7 +59,7 @@ transparent pixels block that content.
 
 ### `maskElement`
 
-
+Should be a React element to be rendered and applied as the mask for the child element.
 
 | Type | Required |
 | - | - |

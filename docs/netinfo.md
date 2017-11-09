@@ -8,7 +8,7 @@ next: panresponder
 previous: linking
 ---
 
-NetInfo exposes info about online/offline status
+NetInfo exposes info about online/offline status.
 
 ```
 NetInfo.getConnectionInfo().then((connectionInfo) => {
@@ -56,44 +56,6 @@ To request network info, you need to add the following line to your
 app's `AndroidManifest.xml`:
 
 `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
-
-### isConnectionExpensive
-
-Available on Android. Detect if the current active connection is metered or not. A network is
-classified as metered when the user is sensitive to heavy data usage on that connection due to
-monetary costs, data limitations or battery/performance issues.
-
-```
-NetInfo.isConnectionExpensive()
-.then(isConnectionExpensive => {
-  console.log('Connection is ' + (isConnectionExpensive ? 'Expensive' : 'Not Expensive'));
-})
-.catch(error => {
-  console.error(error);
-});
-```
-
-### isConnected
-
-Available on all platforms. Asynchronously fetch a boolean to determine
-internet connectivity.
-
-```
-NetInfo.isConnected.fetch().then(isConnected => {
-  console.log('First, is ' + (isConnected ? 'online' : 'offline'));
-});
-function handleFirstConnectivityChange(isConnected) {
-  console.log('Then, is ' + (isConnected ? 'online' : 'offline'));
-  NetInfo.isConnected.removeEventListener(
-    'connectionChange',
-    handleFirstConnectivityChange
-  );
-}
-NetInfo.isConnected.addEventListener(
-  'connectionChange',
-  handleFirstConnectivityChange
-);
-```
 
 ### Connectivity Types (deprecated)
 
@@ -148,7 +110,7 @@ The rest of the connectivity types are hidden by the Android API, but can be use
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(eventName, handler)
+NetInfo.addEventListener(eventName, handler)
 ```
 
 
@@ -170,7 +132,7 @@ Adds an event handler. Supported events:
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(eventName, handler)
+NetInfo.removeEventListener(eventName, handler)
 ```
 
 
@@ -184,7 +146,7 @@ Removes the listener for network status changes.
 ### `fetch()`
 
 ```javascript
-static fetch()
+NetInfo.fetch()
 ```
 
 
@@ -199,7 +161,7 @@ resolves with one of the deprecated connectivity types listed above.
 ### `getConnectionInfo()`
 
 ```javascript
-static getConnectionInfo()
+NetInfo.getConnectionInfo()
 ```
 
 
@@ -215,12 +177,44 @@ respectively.
 ### `isConnectionExpensive()`
 
 ```javascript
-static isConnectionExpensive()
+NetInfo.isConnectionExpensive()
+```
+
+Available on Android. Detect if the current active connection is metered or not. A network is
+classified as metered when the user is sensitive to heavy data usage on that connection due to
+monetary costs, data limitations or battery/performance issues.
+
+```
+NetInfo.isConnectionExpensive()
+.then(isConnectionExpensive => {
+  console.log('Connection is ' + (isConnectionExpensive ? 'Expensive' : 'Not Expensive'));
+})
+.catch(error => {
+  console.error(error);
+});
 ```
 
 
 
 ## Properties
 
+### `isConnected`
 
+Available on all platforms. Asynchronously fetch a boolean to determine internet connectivity.
 
+```
+NetInfo.isConnected.fetch().then(isConnected => {
+  console.log('First, is ' + (isConnected ? 'online' : 'offline'));
+});
+function handleFirstConnectivityChange(isConnected) {
+  console.log('Then, is ' + (isConnected ? 'online' : 'offline'));
+  NetInfo.isConnected.removeEventListener(
+    'connectionChange',
+    handleFirstConnectivityChange
+  );
+}
+NetInfo.isConnected.addEventListener(
+  'connectionChange',
+  handleFirstConnectivityChange
+);
+```

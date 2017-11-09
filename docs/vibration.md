@@ -63,7 +63,7 @@ Vibration.cancel()
 ### `vibrate()`
 
 ```javascript
-static vibrate(pattern: number, Array<number>, repeat: boolean)
+Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 ```
 
 Trigger a vibration with specified `pattern`.
@@ -72,8 +72,8 @@ Trigger a vibration with specified `pattern`.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| pattern | number,Array<number> | No | Vibration pattern, accept a number or an array of number. Default to 400ms. |
-| repeat | boolean | No | Optional. Repeat vibration pattern until cancel(), default to false. |
+| pattern | number, Array<number> | Yes | Vibration pattern, accept a number or an array of number. Default to 400ms. |
+| repeat | boolean | Yes | Optional. Repeat vibration pattern until cancel(), default to false. |
 
 
 
@@ -83,13 +83,11 @@ Trigger a vibration with specified `pattern`.
 ### `cancel()`
 
 ```javascript
-static cancel()
-```
-
-Stop vibration
-```
 Vibration.cancel()
 ```
+
+Stop vibration.
+
 
 
 

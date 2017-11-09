@@ -68,7 +68,7 @@ class Example extends Component {
 ### `addListener()`
 
 ```javascript
-static addListener(eventName, callback)
+Keyboard.addListener(eventName, callback)
 ```
 
 
@@ -102,7 +102,7 @@ since there is no native corresponding event.
 ### `removeListener()`
 
 ```javascript
-static removeListener(eventName, callback)
+Keyboard.removeListener(eventName, callback)
 ```
 
 
@@ -119,7 +119,7 @@ Removes a specific listener.
 ### `removeAllListeners()`
 
 ```javascript
-static removeAllListeners(eventName)
+Keyboard.removeAllListeners(eventName)
 ```
 
 
@@ -135,7 +135,7 @@ Removes all listeners for a specific event type.
 ### `dismiss()`
 
 ```javascript
-static dismiss()
+Keyboard.dismiss()
 ```
 
 

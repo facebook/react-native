@@ -4,6 +4,7 @@ title: Native Modules
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-modules-ios.html
+banner: ejected
 next: native-components-ios
 previous: testing
 ---

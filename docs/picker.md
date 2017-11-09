@@ -4,9 +4,10 @@ title: Picker
 layout: docs
 category: components
 permalink: docs/picker.html
-next: pickerios
+next: picker-item
 previous: navigatorios
 ---
+
 Renders the native picker component on iOS and Android. Example:
 
     <Picker
@@ -18,15 +19,15 @@ Renders the native picker component on iOS and Android. Example:
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view-props.html)
 - [`onValueChange`](docs/picker.html#onvaluechange)
 - [`selectedValue`](docs/picker.html#selectedvalue)
-- [`style`](docs/picker.html#style)
-- [`testID`](docs/picker.html#testid)
 - [`enabled`](docs/picker.html#enabled)
 - [`mode`](docs/picker.html#mode)
 - [`prompt`](docs/picker.html#prompt)
+- [`style`](docs/picker.html#style)
 - [`itemStyle`](docs/picker.html#itemstyle)
+- [`testID`](docs/picker.html#testid)
 
 
 
@@ -42,6 +43,7 @@ Renders the native picker component on iOS and Android. Example:
 ### `onValueChange`
 
 Callback for when an item is selected. This is called with the following parameters:
+
   - `itemValue`: the `value` prop of the item that was selected
   - `itemPosition`: the index of the selected item in this picker
 
@@ -61,32 +63,6 @@ Value matching value of one of the items. Can be a string or an integer.
 | Type | Required |
 | - | - |
 | any | No |
-
-
-
-
----
-
-### `style`
-
-
-
-| Type | Required |
-| - | - |
-| pickerStyleType | No |
-
-
-
-
----
-
-### `testID`
-
-Used to locate this view in end-to-end tests.
-
-| Type | Required |
-| - | - |
-| string | No |
 
 
 
@@ -137,6 +113,16 @@ Prompt string for this picker, used on Android in dialog mode as the title of th
 
 
 
+---
+
+### `style`
+
+
+
+| Type | Required |
+| - | - |
+| [style](docs/picker-style-props.html) | No |
+
 
 ---
 
@@ -147,10 +133,17 @@ Style to apply to each of the item labels.
 
 | Type | Required | Platform |
 | - | - | - |
-| itemStylePropType | No | iOS  |
+| [style](docs/textstyleproptypes.html) | No | iOS  |
 
 
+---
 
+### `testID`
 
+Used to locate this view in end-to-end tests.
+
+| Type | Required |
+| - | - |
+| string | No |
 
 

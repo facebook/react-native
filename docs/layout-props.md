@@ -4,7 +4,7 @@ title: Layout Props
 layout: docs
 category: APIs
 permalink: docs/layout-props.html
-next: shadow-props
+next: picker-style-props
 previous: vibrationios
 ---
 ### Props
