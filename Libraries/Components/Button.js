@@ -55,6 +55,7 @@ class Button extends React.Component<{
   title: string,
   onPress: () => any,
   color?: ?string,
+  hasTVPreferredFocus?: ?boolean,
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
@@ -77,6 +78,10 @@ class Button extends React.Component<{
      * If true, disable all interactions for this component.
      */
     disabled: PropTypes.bool,
+    /**
+     * TV preferred focus (see documentation for the View component).
+     */
+    hasTVPreferredFocus: PropTypes.bool,
     /**
      * Handler to be called when the user taps the button
      */
@@ -101,6 +106,7 @@ class Button extends React.Component<{
       title,
       hasTVPreferredFocus,
       disabled,
+      hasTVPreferredFocus,
       testID,
     } = this.props;
     const buttonStyles = [styles.button];
@@ -132,6 +138,7 @@ class Button extends React.Component<{
         hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
+        hasTVPreferredFocus={hasTVPreferredFocus}
         onPress={onPress}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
