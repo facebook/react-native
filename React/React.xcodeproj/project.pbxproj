@@ -263,6 +263,10 @@
 		27595AD61E575C7800CCE2B1 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D21E03699D0018521A /* Platform.h */; };
 		27595AD71E575C7800CCE2B1 /* SampleCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D41E03699D0018521A /* SampleCxxModule.h */; };
 		27595AD81E575C7800CCE2B1 /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D51E03699D0018521A /* SystraceSection.h */; };
+		2D16E68E1FA4FD3900B85C8A /* RCTTVNavigationEventEmitter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D0B842D1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h */; };
+		2D1D83CD1F74E2CE00615550 /* libprivatedata-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9936F32F1F5F2E5B0010BF04 /* libprivatedata-tvOS.a */; };
+		2D1D83CE1F74E2DA00615550 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D621EBD27B9005632C8 /* libdouble-conversion.a */; };
+		2D1D83EF1F74E76C00615550 /* RCTModalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91076A871F743AB00081B4FA /* RCTModalManager.m */; };
 		2D3B5E931D9B087300451313 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
 		2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */; };
@@ -520,7 +524,6 @@
 		3D383D6D1EBD2940005632C8 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7E881E25C6D100323FB7 /* libdouble-conversion.a */; };
 		3D383D6E1EBD2940005632C8 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */; };
 		3D383D6F1EBD2940005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7ECE1E25DB7D00323FB7 /* libthird-party.a */; };
-		3D383D701EBD2949005632C8 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D621EBD27B9005632C8 /* libdouble-conversion.a */; };
 		3D383D711EBD2949005632C8 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */; };
 		3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D3C1EBD27B6005632C8 /* libthird-party.a */; };
 		3D3C08891DE342FB00C268FA /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libyoga.a */; };
@@ -1299,6 +1302,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				2D16E68E1FA4FD3900B85C8A /* RCTTVNavigationEventEmitter.h in Copy Headers */,
 				59500D481F71C67600B122B7 /* RCTUIManagerUtils.h in Copy Headers */,
 				3D0E37901F1CC5E100DCAC9F /* RCTWebSocketModule.h in Copy Headers */,
 				5960C1BF1F0804F50066FD5B /* RCTLayoutAnimation.h in Copy Headers */,
@@ -2210,7 +2214,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D383D701EBD2949005632C8 /* libdouble-conversion.a in Frameworks */,
+				2D1D83CE1F74E2DA00615550 /* libdouble-conversion.a in Frameworks */,
+				2D1D83CD1F74E2CE00615550 /* libprivatedata-tvOS.a in Frameworks */,
 				3D383D711EBD2949005632C8 /* libjschelpers.a in Frameworks */,
 				3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */,
 				3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */,
@@ -3997,6 +4002,7 @@
 				2D3B5EC61D9B095000451313 /* RCTProfileTrampoline-x86_64.S in Sources */,
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
+				2D1D83EF1F74E76C00615550 /* RCTModalManager.m in Sources */,
 				2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */,
 				2D3B5EEC1D9B09D400451313 /* RCTTabBarItemManager.m in Sources */,
 				2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */,
