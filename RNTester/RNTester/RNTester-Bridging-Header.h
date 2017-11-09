@@ -8,12 +8,15 @@
  *
  */
 
-#import <UIKit/UIKit.h>
-
 #import "AppDelegate.h"
 
-int main(int argc, char * argv[]) {
-  @autoreleasepool {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-  }
-}
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
+
+#if !TARGET_OS_TV
+#import <React/RCTPushNotificationManager.h>
+#endif
+

@@ -15,7 +15,7 @@
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTViewManager.h>
 
-#import "AppDelegate.h"
+#import "RNTester-Swift.h"
 
 @interface FlexibleSizeExampleViewManager : RCTViewManager
 

@@ -5,14 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
 
-#import "AppDelegate.h"
+#if !TARGET_OS_TV
+#import <React/RCTPushNotificationManager.h>
+#endif
 
-int main(int argc, char * argv[]) {
-  @autoreleasepool {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-  }
-}

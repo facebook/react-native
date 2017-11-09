@@ -12,8 +12,7 @@
 
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
-
-#import "AppDelegate.h"
+#import "RNTester-Swift.h"
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 
