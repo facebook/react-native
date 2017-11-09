@@ -4,6 +4,7 @@ title: Understanding the CLI
 layout: docs
 category: Contributing
 permalink: docs/understanding-cli.html
+banner: ejected
 next: activityindicator
 previous: testing
 ---
