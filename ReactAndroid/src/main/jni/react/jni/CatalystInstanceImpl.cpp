@@ -100,7 +100,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
-    makeNativeMethod("jniSetJsSegmentsDirectory", CatalystInstanceImpl::jniSetJsSegmentsDirectory),
+    makeNativeMethod("jniRegisterSegment", CatalystInstanceImpl::jniRegisterSegment),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
@@ -177,8 +177,8 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
-void CatalystInstanceImpl::jniSetJsSegmentsDirectory(const std::string& directoryPath) {
-  jsSegmentsDirectory_ = directoryPath;
+void CatalystInstanceImpl::jniRegisterSegment(int segmentId, const std::string& path) {
+  instance_->registerBundle((uint32_t)segmentId, path);
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
@@ -208,16 +208,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
                                                  const std::string& sourceURL,
                                                  bool loadSynchronously) {
   if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(fileName.c_str());
-    auto script = bundle->getStartupCode();
-    auto registry = jsSegmentsDirectory_.empty()
-      ? RAMBundleRegistry::singleBundleRegistry(std::move(bundle))
-      : RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
-    instance_->loadRAMBundle(
-      std::move(registry),
-      std::move(script),
-      sourceURL,
-      loadSynchronously);
+    instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;
     RecoverableError::runRethrowingAsRecoverable<std::system_error>(

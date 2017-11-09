@@ -210,8 +210,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniSetSourceURL(remoteURL);
   }
 
-  /* package */ void setJsSegmentsDirectory(String directoryPath) {
-    jniSetJsSegmentsDirectory(directoryPath);
+  @Override
+  public void registerSegment(int segmentId, String path) {
+    jniRegisterSegment(segmentId, path);
   }
 
   /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
@@ -225,7 +226,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private native void jniSetSourceURL(String sourceURL);
-  private native void jniSetJsSegmentsDirectory(String directoryPath);
+  private native void jniRegisterSegment(int segmentId, String path);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
 

@@ -96,21 +96,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * This loader is used to wrap other loaders and set js segments directory before executing
-   * application script.
-   */
-  public static JSBundleLoader createSplitBundlesLoader(
-      final String jsSegmentsDirectory, final JSBundleLoader delegate) {
-    return new JSBundleLoader() {
-      @Override
-      public String loadScript(CatalystInstanceImpl instance) {
-        instance.setJsSegmentsDirectory(jsSegmentsDirectory);
-        return delegate.loadScript(instance);
-      }
-    };
-  }
-
   /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(CatalystInstanceImpl instance);
 }
