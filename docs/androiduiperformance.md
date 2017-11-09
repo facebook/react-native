@@ -5,3 +5,4 @@ layout: redirect
 permalink: docs/android-ui-performance.html		
 destinationUrl: performance.html		
 ---
+Redirecting...
