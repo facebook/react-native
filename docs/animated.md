@@ -66,6 +66,16 @@ invoked with `{finished: true}`. If the animation is done because `stop()`
 was called on it before it could finish (e.g. because it was interrupted by a
 gesture or another animation), then it will receive `{finished: false}`.
 
+```javascript
+this.animateValue.spring({}).start(function onComplete({finished}) {
+  if (finished === true) {
+    console.log('Animation was stopped')
+  } else {
+    console.log('Animation was aborted')
+  }
+})
+```
+
 ### Using the native driver
 
 By using the native driver, we send everything about the animation to native
