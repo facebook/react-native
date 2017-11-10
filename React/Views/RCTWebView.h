@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <WebKit/WebKit.h>
+
 #import <React/RCTView.h>
 
 @class RCTWebView;
@@ -37,6 +39,9 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL scalesPageToFit;
+@property (nonatomic, assign) BOOL allowsInlineMediaPlayback;
+@property (nonatomic, assign) BOOL mediaPlaybackRequiresUserAction;
+@property (nonatomic, assign) WKDataDetectorTypes dataDetectorTypes;
 
 - (void)goForward;
 - (void)goBack;

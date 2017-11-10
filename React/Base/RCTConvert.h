@@ -9,6 +9,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
+#if !TARGET_OS_TV
+#import <WebKit/WebKit.h>
+#endif
 
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderStyle.h>
@@ -70,6 +73,7 @@ typedef NSURL RCTFileURL;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 #if !TARGET_OS_TV
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
++ (WKDataDetectorTypes)WKDataDetectorTypes:(id)json;
 #endif
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
