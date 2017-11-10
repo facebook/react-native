@@ -19,7 +19,7 @@ const NativeModules = require('NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
-let _customSourceTransformer, _serverURL, _scriptURL;
+let _customSourceTransformer, _serverURL, _scriptURL, _embeddedBundleURL;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
@@ -36,28 +36,36 @@ function getDevServerURL(): ?string {
   return _serverURL;
 }
 
-function getScriptURL(): ?string {
-  if (_scriptURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.scriptURL;
-    if (!scriptURL) {
-      // scriptURL is falsy, we have nothing to go on here
-      _scriptURL = null;
-      return _scriptURL;
-    }
+function _coerceLocalScriptURL(scriptURL: ?string): ?string {
+  if (scriptURL) {
     if (scriptURL.startsWith('assets://')) {
       // android: running from within assets, no offline path to use
-      _scriptURL = null;
-      return _scriptURL;
+      return null;
     }
-    _scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
     if (!scriptURL.startsWith('file://')) {
       // Add file protocol in case we have an absolute file path and not a URL.
       // This shouldn't really be necessary. scriptURL should be a URL.
-      _scriptURL = 'file://' + _scriptURL;
+      scriptURL = 'file://' + scriptURL;
     }
   }
+  return scriptURL;
+}
 
+function getScriptURL(): ?string {
+  if (_scriptURL === undefined) {
+    const scriptURL = NativeModules.SourceCode.scriptURL;
+    _scriptURL = _coerceLocalScriptURL(scriptURL);
+  }
   return _scriptURL;
+}
+
+function getEmbeddedBundledURL(): ?string {
+  if (_embeddedBundleURL === undefined) {
+    const scriptURL = NativeModules.SourceCode.embeddedBundleURL;
+    _embeddedBundleURL = _coerceLocalScriptURL(scriptURL);
+  }
+  return _embeddedBundleURL;
 }
 
 function setCustomSourceTransformer(
@@ -80,7 +88,12 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return null;
   }
 
-  const resolver = new AssetSourceResolver(getDevServerURL(), getScriptURL(), asset);
+  const resolver = new AssetSourceResolver(
+    getDevServerURL(),
+    getScriptURL(),
+    getEmbeddedBundledURL(),
+    asset,
+  );
   if (_customSourceTransformer) {
     return _customSourceTransformer(resolver);
   }
