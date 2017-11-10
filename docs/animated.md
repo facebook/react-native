@@ -67,9 +67,9 @@ was called on it before it could finish (e.g. because it was interrupted by a
 gesture or another animation), then it will receive `{finished: false}`.
 
 ```javascript
-this.animateValue.spring({}).start(function onComplete({finished}) {
-  if (finished === true) {
-    console.log('Animation was stopped')
+this.animateValue.spring({}).start(({finished}) => {
+  if (finished) {
+    console.log('Animation was completed')
   } else {
     console.log('Animation was aborted')
   }
