@@ -52,12 +52,19 @@ class AssetSourceResolver {
   serverUrl: ?string;
   // where the jsbundle is being run from
   jsbundleUrl: ?string;
+  // where the embedded bundle in the app is stored
+  embeddedBundleUrl: ?string;
   // the asset to resolve
   asset: PackagerAsset;
 
-  constructor(serverUrl: ?string, jsbundleUrl: ?string, asset: PackagerAsset) {
+  constructor(serverUrl: ?string,
+    jsbundleUrl: ?string,
+    embeddedBundleUrl: ?string,
+    asset: PackagerAsset
+  ) {
     this.serverUrl = serverUrl;
     this.jsbundleUrl = jsbundleUrl;
+    this.embeddedBundleUrl = embeddedBundleUrl;
     this.asset = asset;
   }
 
@@ -67,6 +74,10 @@ class AssetSourceResolver {
 
   isLoadedFromFileSystem(): boolean {
     return !!this.jsbundleUrl;
+  }
+
+  canLoadFromEmbeddedBundledLocation(): boolean {
+    return !!this.embeddedBundleUrl;
   }
 
   defaultAsset(): ResolvedAssetSource {
@@ -109,6 +120,15 @@ class AssetSourceResolver {
    */
   scaledAssetURLNearBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
+    return this.fromSource(path + getScaledAssetPath(this.asset));
+  }
+
+  /**
+   * Resolves to the asset that was bundled with the app, with a scaled asset filename
+   * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
+   */
+  scaledAssetURLInEmbeddedBundleUrl(): ResolvedAssetSource {
+    const path = this.embeddedBundleUrl || 'file://';
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
 
