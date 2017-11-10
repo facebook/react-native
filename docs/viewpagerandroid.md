@@ -49,7 +49,7 @@ var styles = {
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`initialPage`](docs/viewpagerandroid.html#initialpage)
 - [`keyboardDismissMode`](docs/viewpagerandroid.html#keyboarddismissmode)
 - [`onPageScroll`](docs/viewpagerandroid.html#onpagescroll)
