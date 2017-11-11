@@ -241,6 +241,11 @@ var ListView = createReactClass({
      * If empty sections are not desired to be rendered their indices should be excluded from sectionID object.
      */
     enableEmptySections: PropTypes.bool,
+    
+    /**
+    * Flag indicating whether data source should be read in inverted order.
+    */
+    inverted: PropTypes.bool,
   },
 
   /**
@@ -463,7 +468,8 @@ var ListView = createReactClass({
         }
       }
 
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+      for (var _rowIdx = 0; _rowIdx < rowIDs.length; _rowIdx++) {
+        var rowIdx = this.props.inverted?rowIDs.length - 1 - _rowIdx:_rowIdx;
         var rowID = rowIDs[rowIdx];
         var comboID = sectionID + '_' + rowID;
         var shouldUpdateRow =
