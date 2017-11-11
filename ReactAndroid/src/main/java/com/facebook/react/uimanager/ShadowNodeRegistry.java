@@ -29,7 +29,7 @@ public class ShadowNodeRegistry {
     mThreadAsserter = new SingleThreadAsserter();
   }
 
-  public void addRootNode(ReactShadowNode node) {
+  public synchronized void addRootNode(ReactShadowNode node) {
     // TODO(6242243): This should be asserted... but UIManagerModule is
     // thread-unsafe and calls this on the wrong thread.
     //mThreadAsserter.assertNow();
@@ -38,7 +38,7 @@ public class ShadowNodeRegistry {
     mRootTags.put(tag, true);
   }
 
-  public void removeRootNode(int tag) {
+  public synchronized void removeRootNode(int tag) {
     mThreadAsserter.assertNow();
     if (!mRootTags.get(tag)) {
       throw new IllegalViewOperationException(
@@ -49,12 +49,12 @@ public class ShadowNodeRegistry {
     mRootTags.delete(tag);
   }
 
-  public void addNode(ReactShadowNode node) {
+  public synchronized void addNode(ReactShadowNode node) {
     mThreadAsserter.assertNow();
     mTagsToCSSNodes.put(node.getReactTag(), node);
   }
 
-  public void removeNode(int tag) {
+  public synchronized void removeNode(int tag) {
     mThreadAsserter.assertNow();
     if (mRootTags.get(tag)) {
       throw new IllegalViewOperationException(
@@ -63,22 +63,22 @@ public class ShadowNodeRegistry {
     mTagsToCSSNodes.remove(tag);
   }
 
-  public ReactShadowNode getNode(int tag) {
+  public synchronized ReactShadowNode getNode(int tag) {
     mThreadAsserter.assertNow();
     return mTagsToCSSNodes.get(tag);
   }
 
-  public boolean isRootNode(int tag) {
+  public synchronized boolean isRootNode(int tag) {
     mThreadAsserter.assertNow();
     return mRootTags.get(tag);
   }
 
-  public int getRootNodeCount() {
+  public synchronized int getRootNodeCount() {
     mThreadAsserter.assertNow();
     return mRootTags.size();
   }
 
-  public int getRootTag(int index) {
+  public synchronized int getRootTag(int index) {
     mThreadAsserter.assertNow();
     return mRootTags.keyAt(index);
   }
