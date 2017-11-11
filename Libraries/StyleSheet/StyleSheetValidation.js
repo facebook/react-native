@@ -24,6 +24,10 @@ var invariant = require('fbjs/lib/invariant');
 const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 class StyleSheetValidation {
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static validateStyleProp(prop, style, caller) {
     if (!__DEV__) {
       return;
@@ -59,6 +63,10 @@ class StyleSheetValidation {
     }
   }
 
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static validateStyle(name, styles) {
     if (!__DEV__) {
       return;
