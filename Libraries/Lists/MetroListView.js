@@ -195,7 +195,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   _renderHeaderAndEmpty = () => [
     this.props.ListHeaderComponent && this._renderHeader(),
     this.props.ListEmptyComponent &&
-      !this.state.ds.getRowCount() &&
+      this.state.ds.getRowCount() === 0 &&
       this._renderEmpty(),
   ];
   _renderRow = (item, sectionID, rowID, highlightRow) => {
