@@ -34,6 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
+    postMinifyProcess: config.postMinifyProcess,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
