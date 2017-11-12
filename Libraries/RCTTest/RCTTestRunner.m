@@ -31,6 +31,7 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
              moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -46,7 +47,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
     _appPath = app;
-    [self updateScript];
+
+    if (scriptURL != nil) {
+      _scriptURL = scriptURL;
+    } else {
+      [self updateScript];
+    }
   }
   return self;
 }
