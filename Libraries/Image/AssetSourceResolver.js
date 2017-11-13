@@ -73,7 +73,7 @@ class AssetSourceResolver {
   }
 
   isLoadedFromFileSystem(): boolean {
-    return !!this.jsbundleUrl;
+    return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
   canLoadFromEmbeddedBundledLocation(): boolean {
