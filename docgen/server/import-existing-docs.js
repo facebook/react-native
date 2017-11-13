@@ -11,8 +11,7 @@
 "use strict";
 
 /** 
- * This is meant to be a one-time run script that checks out every version of the docs off GitHub. This includes both the Markdown-formatted guides, as well as the autodocs generated from JavaScript code.
- * Given that the autodocs are generated from JavaScript code and stored as HTML in source control, we'll need to go back and regenerate autodocs for every single version.
+ * This is meant to be a one-time run script that checks out every version of the docs off GitHub. This is simply any Markdown doc in the docs/ folder of a given release.
  * Once we have Markdown formatted docs, we'll need to go through these and generate all the necessary sidebar files.
  * We'll be working with a few directories:
  * 
