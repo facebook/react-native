@@ -420,7 +420,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0.0)
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0.0f)
   public void setLetterSpacing(ReactEditText view, float spacing) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
       // Only set letter spacing on Android 21 and up devices, not available otherwise

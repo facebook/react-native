@@ -65,7 +65,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       float nextLetterSpacing = update.getLetterSpacing();
-      if (Float.isNan(nextLetterSpacing)) {
+      if (Float.isNaN(nextLetterSpacing)) {
         nextLetterSpacing = 0.0f;
       }
 
