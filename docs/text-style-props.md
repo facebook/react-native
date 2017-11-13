@@ -231,9 +231,9 @@ For best results also set `textAlignVertical` to `center`. Default is true.
 
 
 
-| Type | Required | Platform |
-| - | - | - |
-| number | No | iOS  |
+| Type | Required |
+| - | - |
+| number | No |
 
 
 

@@ -459,6 +459,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#EEEEEE',
     color: '#000000',
     textAlignVertical: 'center',
+    letterSpacing: 1.2,
     alignSelf: 'center',
   }
 });
