@@ -43,7 +43,7 @@ function _coerceLocalScriptURL(scriptURL: ?string): ?string {
       return null;
     }
     scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
-    if (!scriptURL.startsWith('file://')) {
+    if (!scriptURL.includes('://')) {
       // Add file protocol in case we have an absolute file path and not a URL.
       // This shouldn't really be necessary. scriptURL should be a URL.
       scriptURL = 'file://' + scriptURL;
