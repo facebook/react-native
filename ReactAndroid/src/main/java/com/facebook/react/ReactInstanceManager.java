@@ -75,6 +75,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -233,6 +234,7 @@ public class ReactInstanceManager {
       boolean lazyNativeModulesEnabled,
       boolean lazyViewManagersEnabled,
       boolean delayViewManagerClassLoadsEnabled,
+      @Nullable PackagerConnectionSettings packagerConnectionSettings,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       boolean useSeparateUIBackgroundThread,
       int minNumShakes,
@@ -257,6 +259,7 @@ public class ReactInstanceManager {
         mJSMainModulePath,
         useDeveloperSupport,
         redBoxHandler,
+        packagerConnectionSettings,
         devBundleDownloadListener,
         minNumShakes);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;

@@ -19,6 +19,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.uimanager.UIImplementationProvider;
 
 /**
@@ -66,6 +67,7 @@ public abstract class ReactNativeHost {
   protected ReactInstanceManager createReactInstanceManager() {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
+      .setPackagerConnectionSettings(getPackagerConnectionSettings())
       .setJSMainModulePath(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
@@ -103,6 +105,10 @@ public abstract class ReactNativeHost {
 
   protected final Application getApplication() {
     return mApplication;
+  }
+
+  protected PackagerConnectionSettings getPackagerConnectionSettings() {
+    return null;
   }
 
   /**
