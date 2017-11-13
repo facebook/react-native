@@ -189,6 +189,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           getPadding(Spacing.TOP),
           getPadding(Spacing.END),
           getPadding(Spacing.BOTTOM),
+          getLetterSpacing(),
           getTextAlign(),
           mTextBreakStrategy
         );

@@ -242,6 +242,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  protected float mLetterSpacing = 0.0f;
+  protected float mPreviousLetterSpacing = Float.NaN;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -291,6 +293,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
+  private static float calculateLetterSpacing(float letterSpacing, int fontSize) {
+    if (Float.isNaN(letterSpacing) || letterSpacing == 0.0f) {
+      return 0.0f;
+    }
+
+    return letterSpacing / fontSize * 2.0f;
+  }
+
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
@@ -302,6 +312,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
     }
     return textAlign;
+  }
+
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(float letterSpacing) {
+    mPreviousLetterSpacing = letterSpacing;
+    mLetterSpacing = calculateLetterSpacing(letterSpacing, mFontSize);
+    markUpdated();
   }
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
@@ -363,6 +380,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
               : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
+    mLetterSpacing = calculateLetterSpacing(mPreviousLetterSpacing, mFontSize);
     markUpdated();
   }
 
