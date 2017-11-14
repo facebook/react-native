@@ -89,9 +89,6 @@ CatalystInstanceImpl::~CatalystInstanceImpl() {
   if (moduleMessageQueue_ != NULL) {
     moduleMessageQueue_->quitSynchronous();
   }
-  if (uiBackgroundMessageQueue_ != NULL) {
-    uiBackgroundMessageQueue_->quitSynchronous();
-  }
 }
 
 void CatalystInstanceImpl::registerNatives() {
@@ -119,15 +116,11 @@ void CatalystInstanceImpl::initializeBridge(
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
-    jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
   moduleMessageQueue_ = std::make_shared<JMessageQueueThread>(nativeModulesQueue);
-  if (uiBackgroundQueue.get() != nullptr) {
-    uiBackgroundMessageQueue_ = std::make_shared<JMessageQueueThread>(uiBackgroundQueue);
-  }
 
   // This used to be:
   //
@@ -150,13 +143,12 @@ void CatalystInstanceImpl::initializeBridge(
        std::weak_ptr<Instance>(instance_),
        javaModules,
        cxxModules,
-       moduleMessageQueue_,
-       uiBackgroundMessageQueue_));
+       moduleMessageQueue_));
 
   instance_->initializeBridge(
     folly::make_unique<JInstanceCallback>(
     callback,
-    uiBackgroundMessageQueue_ != NULL ? uiBackgroundMessageQueue_ : moduleMessageQueue_),
+    moduleMessageQueue_),
     jseh->getExecutorFactory(),
     folly::make_unique<JMessageQueueThread>(jsQueue),
     moduleRegistry_);
@@ -169,8 +161,7 @@ void CatalystInstanceImpl::extendNativeModules(
     std::weak_ptr<Instance>(instance_),
     javaModules,
     cxxModules,
-    moduleMessageQueue_,
-    uiBackgroundMessageQueue_));
+    moduleMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {

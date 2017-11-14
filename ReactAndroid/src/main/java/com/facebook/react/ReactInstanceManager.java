@@ -156,7 +156,6 @@ public class ReactInstanceManager {
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mDelayViewManagerClassLoadsEnabled;
-  private final boolean mUseSeparateUIBackgroundThread;
   private final int mMinNumShakes;
 
   private class ReactContextInitParams {
@@ -204,7 +203,6 @@ public class ReactInstanceManager {
       boolean lazyViewManagersEnabled,
       boolean delayViewManagerClassLoadsEnabled,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      boolean useSeparateUIBackgroundThread,
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
@@ -236,7 +234,6 @@ public class ReactInstanceManager {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
-    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
@@ -995,15 +992,6 @@ public class ReactInstanceManager {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           }
         });
-    if (mUseSeparateUIBackgroundThread) {
-      reactContext.runOnUiBackgroundQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-            }
-          });
-    }
   }
 
   private void attachRootViewToInstance(
@@ -1080,9 +1068,7 @@ public class ReactInstanceManager {
       ? mNativeModuleCallExceptionHandler
       : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-      .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
-        ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
-        ReactQueueConfigurationSpec.createDefault())
+      .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
       .setJSExecutor(jsExecutor)
       .setRegistry(nativeModuleRegistry)
       .setJSBundleLoader(jsBundleLoader)

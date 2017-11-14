@@ -83,7 +83,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final NativeModuleRegistry mNativeModuleRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
-  private final @Nullable MessageQueueThread mUIBackgroundQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
@@ -114,7 +113,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
-    mUIBackgroundQueueThread = mReactQueueConfiguration.getUIBackgroundQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -123,7 +121,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mNativeModulesQueueThread,
-      mUIBackgroundQueueThread,
       mNativeModuleRegistry.getJavaModules(this),
       mNativeModuleRegistry.getCxxModules());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
@@ -191,7 +188,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       JavaScriptExecutor jsExecutor,
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
-      MessageQueueThread uiBackgroundQueue,
       Collection<JavaModuleWrapper> javaModules,
       Collection<ModuleHolder> cxxModules);
 
