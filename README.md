@@ -58,10 +58,10 @@ Read our [contributing guide](https://facebook.github.io/react-native/docs/contr
 
 ### Beginner Friendly Bugs
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Task) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ## License
 
 React Native is [BSD licensed](./LICENSE). We also provide an additional [patent grant](./PATENTS).
 
-React documentation is [Creative Commons licensed](./LICENSE-docs).
+React Native documentation is [Creative Commons licensed](./LICENSE-docs).

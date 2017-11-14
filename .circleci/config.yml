@@ -21,16 +21,16 @@ aliases:
       - website/node_modules
     key: v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
 
-  - &restore-cache-danger
+  - &restore-cache-analysis
     keys:
-      - v1-danger-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - v1-danger-dependencies-{{ arch }}-{{ .Branch }}-
-
-  - &save-cache-danger
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+  - &save-cache-analysis
     paths:
       - danger/node_modules
-    key: v1-danger-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "danger/package.json" }}
+      - node_modules
+    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
 
   - &restore-cache-android-packages
     keys:
@@ -93,13 +93,29 @@ aliases:
       npm run lint
       npm run flow -- check
 
+  - &filter-only-master-stable
+    branches:
+      only:
+        - /.*-stable/
+        - master
+
+  - &filter-ignore-gh-pages
+    branches:
+      ignore: gh-pages
+
+  - &filter-ignore-master-stable
+    branches:
+      ignore:
+        - master
+        - /.*-stable/
+        - gh-pages
+
 defaults: &defaults
   working_directory: ~/react-native
 
 version: 2
 jobs:
-
-  # Runs unit tests on Node 8
+  # Runs JavaScript tests on Node 8
   test-js-node-8:
     <<: *defaults
     docker:
@@ -111,7 +127,7 @@ jobs:
       - save-cache: *save-node-cache
       - run: *run-node-tests
 
-  # Runs unit tests on Node 6
+  # Runs JavaScript tests on Node 6
   test-js-node-6:
     <<: *defaults
     docker:
@@ -123,7 +139,7 @@ jobs:
       - save-cache: *save-node-cache
       - run: *run-node-tests
 
-  # Runs unit tests on Node 4
+  # Runs JavaScript tests on Node 4
   test-js-node-4:
     <<: *defaults
     docker:
@@ -191,7 +207,7 @@ jobs:
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
       - run: ./scripts/process-podspecs.sh
-          
+      
   test-website:
     <<: *defaults
     docker:
@@ -202,7 +218,7 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
-            npm install --no-package-lock
+            npm install --no-package-lock --no-spin --no-progress
       - run:
           name: Test Website
           command: |
@@ -222,21 +238,26 @@ jobs:
           name: Install Dependencies
           command: |
             cd website
-            npm install --no-package-lock
+            npm install --no-package-lock --no-spin --no-progress
+# The CIRCLE_PROJECT_USERNAME and CIRCLE_PR_USERNAME checks below 
+# ensure deploys only happen on projects owned by "facebook", 
+# never on a forked PR build.
       - run:
           name: Build and Deploy Static Website
           command: |
-            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
+            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CIRCLE_PR_USERNAME ]]; then
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
+            elif [[ -n $CIRCLE_PR_USERNAME ]]; then
+              echo "Skipping website deploy, this is a forked PR build."
             else
-              echo "Skipping deploy."
+              echo "Skipping website deploy."
             fi
 
+  # Build JavaScript bundle for Android tests
   build-js-bundle:
     <<: *defaults
     docker:
@@ -256,6 +277,7 @@ jobs:
       - store_artifacts:
           path: ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
+  # Runs unit tests tests on Android
   test-android:
     <<: *defaults
     docker:
@@ -413,43 +435,122 @@ jobs:
       - store_artifacts:
           path: ~/junit
 
+  analyze-pull-request:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-cache-analysis
+      - run: *install-node-dependencies
+# The CIRCLE_PR_NUMBER checks below ensure
+# code analysis only runs on forked PR builds.
+      - run:
+          name: Install Dependencies
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              npm install github@0.2.4
+              cd danger
+              npm install --no-package-lock --no-spin --no-progress
+            else
+              echo "Skipping dependency installation."            
+            fi
+      - save-cache: *save-cache-analysis
+# Run Danger      
+      - run:
+          name: Analyze Pull Request
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+            else
+              echo "Skipping pull request analysis."            
+            fi
+          when: always
+# Run eslint
+      - run:
+          name: Analyze Code
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" && -n "$CIRCLE_PROJECT_USERNAME" && -n "$CIRCLE_PROJECT_REPONAME" ]; then
+              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+            else
+              echo "Skipping code analysis."            
+            fi
+
+  publish-npm:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: *install-node-dependencies      
+      - run:
+        name: Publish React Native Package
+        command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+              git config --global user.email "reactjs-bot@users.noreply.github.com"
+              git config --global user.name "Website Deployment Script"
+              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+              node ./scripts/publish-npm.js
+            else
+              echo "Skipping publication."            
+            fi
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
   
   test_node:
     jobs:
-      - test-js-node-8
-      - test-js-node-6
-# TODO: Node 4 tests are already failing on Circle 1.0
-#      - test-js-node-4
+      - test-js-node-8:
+          filters: *filter-ignore-gh-pages
+      - test-js-node-6:
+          filters: *filter-ignore-gh-pages
+      
+# TODO: Re-enable. Node 4 tests are already failing on Circle 1.0
+#      - test-js-node-4:
+#          filters: *filter-ignore-gh-pages
 
-  website:
-    jobs:
-      - test-website
-      - deploy-website:
-          requires:
-            - test-website
-          filters:
-            branches:
-              only:
-                - /.*-stable/
-                - master
 
   test_android:
     jobs:
       - build-js-bundle:
-          filters:
-            branches:
-              ignore: gh-pages
+          filters: *filter-ignore-gh-pages
       - test-android:
           requires:
             - build-js-bundle
 
   test_ios:
     jobs:
-      - test-objc-ios
-      - test-objc-tvos
-# TODO: Podspec tests are already failing on Travis
-#      - test-podspec
-      - test-objc-e2e
+      - test-objc-ios:
+          filters: *filter-ignore-gh-pages
+      - test-objc-tvos:
+          filters: *filter-ignore-gh-pages
+      - test-objc-e2e:
+          filters: *filter-ignore-gh-pages
+# TODO: Re-enable. Podspec tests are already failing on Travis
+#      - test-podspec:
+#          filters: *filter-ignore-gh-pages
+
+  website:
+    jobs:
+      - test-website:
+          filters: *filter-ignore-gh-pages
+      - deploy-website:
+          requires:
+            - test-website
+          filters: *filter-only-master-stable
+
+  analyze:
+    jobs:
+      - analyze-pull-request:
+          filters: *filter-ignore-master-stable
+
+  deploy:
+    jobs:
+      - hold:
+          type: approval
+      - publish-npm:
+          requires: 
+            - hold
+          filters: *filter-only-master-stable

@@ -458,6 +458,12 @@ namespace facebook {
       m_bundleRegistry = std::move(bundleRegistry);
     }
 
+    void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+      if (m_bundleRegistry) {
+        m_bundleRegistry->registerBundle(bundleId, bundlePath);
+      }
+    }
+
     void JSCExecutor::bindBridge() throw(JSException) {
       SystraceSection s("JSCExecutor::bindBridge");
       std::call_once(m_bindFlag, [this] {
@@ -651,7 +657,7 @@ namespace facebook {
     void JSCExecutor::loadModule(uint32_t bundleId, uint32_t moduleId) {
       auto module = m_bundleRegistry->getModule(bundleId, moduleId);
       auto sourceUrl = String::createExpectingAscii(m_context, module.name);
-      auto source = String::createExpectingAscii(m_context, module.code);
+      auto source = adoptString(std::unique_ptr<JSBigString>(new JSBigStdString(module.code)));
       evaluateScript(m_context, source, sourceUrl);
     }
 

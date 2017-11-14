@@ -14,6 +14,7 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+#import "RCTI18nUtil.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -25,6 +26,8 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_TOP,
   META_PROP_RIGHT,
   META_PROP_BOTTOM,
+  META_PROP_START,
+  META_PROP_END,
   META_PROP_HORIZONTAL,
   META_PROP_VERTICAL,
   META_PROP_ALL,
@@ -100,8 +103,17 @@ switch (ygvalue.unit) {                            \
 }
 
 static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeStart);
-  RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeEnd);
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
+    RCT_SET_YGVALUE(metaProps[META_PROP_START], YGNodeStyleSetPadding, node, YGEdgeStart);
+    RCT_SET_YGVALUE(metaProps[META_PROP_END], YGNodeStyleSetPadding, node, YGEdgeEnd);
+    RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeLeft);
+    RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeRight);
+  } else {
+    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    RCT_SET_YGVALUE(start, YGNodeStyleSetPadding, node, YGEdgeStart);
+    RCT_SET_YGVALUE(end, YGNodeStyleSetPadding, node, YGEdgeEnd);
+  }
   RCT_SET_YGVALUE(metaProps[META_PROP_TOP], YGNodeStyleSetPadding, node, YGEdgeTop);
   RCT_SET_YGVALUE(metaProps[META_PROP_BOTTOM], YGNodeStyleSetPadding, node, YGEdgeBottom);
   RCT_SET_YGVALUE(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetPadding, node, YGEdgeHorizontal);
@@ -110,8 +122,17 @@ static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT],
 }
 
 static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeStart);
-  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeEnd);
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_START], YGNodeStyleSetMargin, node, YGEdgeStart);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_END], YGNodeStyleSetMargin, node, YGEdgeEnd);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeLeft);
+    RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeRight);
+  } else {
+    YGValue start = metaProps[META_PROP_START].unit == YGUnitUndefined ? metaProps[META_PROP_LEFT] : metaProps[META_PROP_START];
+    YGValue end = metaProps[META_PROP_END].unit == YGUnitUndefined ? metaProps[META_PROP_RIGHT] : metaProps[META_PROP_END];
+    RCT_SET_YGVALUE_AUTO(start, YGNodeStyleSetMargin, node, YGEdgeStart);
+    RCT_SET_YGVALUE_AUTO(end, YGNodeStyleSetMargin, node, YGEdgeEnd);
+  }
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_TOP], YGNodeStyleSetMargin, node, YGEdgeTop);
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_BOTTOM], YGNodeStyleSetMargin, node, YGEdgeBottom);
   RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetMargin, node, YGEdgeHorizontal);
@@ -120,8 +141,17 @@ static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], 
 }
 
 static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
-  YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_LEFT].value);
-  YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_RIGHT].value);
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
+    YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_START].value);
+    YGNodeStyleSetBorder(node, YGEdgeEnd, metaProps[META_PROP_END].value);
+    YGNodeStyleSetBorder(node, YGEdgeLeft, metaProps[META_PROP_LEFT].value);
+    YGNodeStyleSetBorder(node, YGEdgeRight, metaProps[META_PROP_RIGHT].value);
+  } else {
+    const float start = YGFloatIsUndefined(metaProps[META_PROP_START].value) ? metaProps[META_PROP_LEFT].value : metaProps[META_PROP_START].value;
+    const float end = YGFloatIsUndefined(metaProps[META_PROP_END].value) ? metaProps[META_PROP_RIGHT].value : metaProps[META_PROP_END].value;
+    YGNodeStyleSetBorder(node, YGEdgeStart, start);
+    YGNodeStyleSetBorder(node, YGEdgeEnd, end);
+  }
   YGNodeStyleSetBorder(node, YGEdgeTop, metaProps[META_PROP_TOP].value);
   YGNodeStyleSetBorder(node, YGEdgeBottom, metaProps[META_PROP_BOTTOM].value);
   YGNodeStyleSetBorder(node, YGEdgeHorizontal, metaProps[META_PROP_HORIZONTAL].value);
@@ -516,6 +546,8 @@ RCT_MARGIN_PROPERTY(Top, TOP)
 RCT_MARGIN_PROPERTY(Left, LEFT)
 RCT_MARGIN_PROPERTY(Bottom, BOTTOM)
 RCT_MARGIN_PROPERTY(Right, RIGHT)
+RCT_MARGIN_PROPERTY(Start, START)
+RCT_MARGIN_PROPERTY(End, END)
 
 // Padding
 
@@ -537,6 +569,8 @@ RCT_PADDING_PROPERTY(Top, TOP)
 RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
+RCT_PADDING_PROPERTY(Start, START)
+RCT_PADDING_PROPERTY(End, END)
 
 // Border
 
@@ -556,6 +590,8 @@ RCT_BORDER_PROPERTY(Top, TOP)
 RCT_BORDER_PROPERTY(Left, LEFT)
 RCT_BORDER_PROPERTY(Bottom, BOTTOM)
 RCT_BORDER_PROPERTY(Right, RIGHT)
+RCT_BORDER_PROPERTY(Start, START)
+RCT_BORDER_PROPERTY(End, END)
 
 // Dimensions
 #define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \
@@ -600,10 +636,35 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
   return YGNodeStyleGetPosition(_yogaNode, edge);                   \
 }
 
+
 RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
-RCT_POSITION_PROPERTY(Right, right, YGEdgeEnd)
 RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
-RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
+RCT_POSITION_PROPERTY(Start, start, YGEdgeStart)
+RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
+
+- (void)setLeft:(YGValue)value
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
+  [self dirtyText];
+}
+- (YGValue)left
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
+  return YGNodeStyleGetPosition(_yogaNode, edge);
+}
+
+- (void)setRight:(YGValue)value
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
+  [self dirtyText];
+}
+- (YGValue)right
+{
+  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
+  return YGNodeStyleGetPosition(_yogaNode, edge);
+}
 
 // Size
 

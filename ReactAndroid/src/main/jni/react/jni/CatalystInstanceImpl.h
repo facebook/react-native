@@ -40,8 +40,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
@@ -60,6 +58,12 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
   void jniSetSourceURL(const std::string& sourceURL);
+
+  /**
+   * Registers the file path of an additional JS segment by its ID.
+   *
+   */
+  void jniRegisterSegment(int segmentId, const std::string& path);
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);

@@ -59,6 +59,7 @@ class Button extends React.Component<{
   disabled?: ?boolean,
   testID?: ?string,
   fontSize?: ?string,
+  hasTVPreferredFocus?: ?boolean,
 }> {
   static propTypes = {
     /**
@@ -89,6 +90,11 @@ class Button extends React.Component<{
      * Used to change button's fontSize
      */
     fontSize: PropTypes.number,
+     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     *
+     * @platform ios
+     */
+    hasTVPreferredFocus: PropTypes.bool,
   };
 
   render() {
@@ -97,6 +103,7 @@ class Button extends React.Component<{
       color,
       onPress,
       title,
+      hasTVPreferredFocus,
       disabled,
       testID,
       fontSize,
@@ -130,6 +137,7 @@ class Button extends React.Component<{
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={accessibilityTraits}
+        hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>

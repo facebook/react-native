@@ -53,7 +53,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *         />
  *         <Image
  *           style={{width: 50, height: 50}}
- *           source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react-native/img/favicon.png'}}
  *         />
  *         <Image
  *           style={{width: 66, height: 58}}
@@ -132,7 +132,6 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  *
  */
-// $FlowFixMe(>=0.41.0)
 const Image = createReactClass({
   displayName: 'Image',
   propTypes: {
@@ -375,7 +374,7 @@ const Image = createReactClass({
     }
 
     if (this.props.children) {
-      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using aboslute positioning.');
+      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using absolute positioning.');
     }
 
     return (

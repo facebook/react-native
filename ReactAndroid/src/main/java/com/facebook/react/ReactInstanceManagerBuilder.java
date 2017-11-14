@@ -6,7 +6,6 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
@@ -44,12 +43,11 @@ public class ReactInstanceManagerBuilder {
   private @Nullable RedBoxHandler mRedBoxHandler;
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
+  private boolean mDelayViewManagerClassLoadsEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private boolean mUseSeparateUIBackgroundThread;
   private int mMinNumShakes = 1;
-  private boolean mEnableSplitPackage;
-  private boolean mUseOnlyDefaultPackages;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
 
   /* package protected */ ReactInstanceManagerBuilder() {
@@ -204,6 +202,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setDelayViewManagerClassLoadsEnabled(
+      boolean delayViewManagerClassLoadsEnabled) {
+    mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
+    return this;
+  }
+
   public ReactInstanceManagerBuilder setDevBundleDownloadListener(
     @Nullable DevBundleDownloadListener listener) {
     mDevBundleDownloadListener = listener;
@@ -218,16 +222,6 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
     mMinNumShakes = minNumShakes;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
-    mEnableSplitPackage = enableSplitPackage;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
-    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
     return this;
   }
 
@@ -290,11 +284,10 @@ public class ReactInstanceManagerBuilder {
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
+        mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
         mUseSeparateUIBackgroundThread,
         mMinNumShakes,
-        mEnableSplitPackage,
-        mUseOnlyDefaultPackages,
         mMinTimeLeftInFrameForNonBatchedOperationMs);
   }
 }

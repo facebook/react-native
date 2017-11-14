@@ -154,7 +154,7 @@ There are some cases where an animated value needs to invert another animated va
 An example is inverting a scale (2x --> 0.5x):
 
 ```javascript
-const a = Animated.Value(1);
+const a = new Animated.Value(1);
 const b = Animated.divide(1, a);
 
 Animated.spring(a, {

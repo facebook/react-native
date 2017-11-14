@@ -70,8 +70,12 @@
 @property (nonatomic, assign) CGFloat borderRadius;
 @property (nonatomic, assign) CGFloat borderTopLeftRadius;
 @property (nonatomic, assign) CGFloat borderTopRightRadius;
+@property (nonatomic, assign) CGFloat borderTopStartRadius;
+@property (nonatomic, assign) CGFloat borderTopEndRadius;
 @property (nonatomic, assign) CGFloat borderBottomLeftRadius;
 @property (nonatomic, assign) CGFloat borderBottomRightRadius;
+@property (nonatomic, assign) CGFloat borderBottomStartRadius;
+@property (nonatomic, assign) CGFloat borderBottomEndRadius;
 
 /**
  * Border colors (actually retained).
@@ -80,6 +84,8 @@
 @property (nonatomic, assign) CGColorRef borderRightColor;
 @property (nonatomic, assign) CGColorRef borderBottomColor;
 @property (nonatomic, assign) CGColorRef borderLeftColor;
+@property (nonatomic, assign) CGColorRef borderStartColor;
+@property (nonatomic, assign) CGColorRef borderEndColor;
 @property (nonatomic, assign) CGColorRef borderColor;
 
 /**
@@ -89,6 +95,8 @@
 @property (nonatomic, assign) CGFloat borderRightWidth;
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
+@property (nonatomic, assign) CGFloat borderStartWidth;
+@property (nonatomic, assign) CGFloat borderEndWidth;
 @property (nonatomic, assign) CGFloat borderWidth;
 
 /**
