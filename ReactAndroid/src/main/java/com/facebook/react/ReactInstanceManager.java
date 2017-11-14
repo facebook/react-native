@@ -272,16 +272,16 @@ public class ReactInstanceManager {
     mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
-      if (mUseDeveloperSupport) {
-        mPackages.add(new DebugCorePackage());
-      }
       mPackages.add(
-          new ReactNativeCorePackage(
+          new CoreModulesPackage(
               this,
+              mBackBtnHandler,
               mUIImplementationProvider,
               mLazyViewManagersEnabled,
               mMinTimeLeftInFrameForNonBatchedOperationMs));
+      if (mUseDeveloperSupport) {
+        mPackages.add(new DebugCorePackage());
+      }
       mPackages.addAll(packages);
     }
 
