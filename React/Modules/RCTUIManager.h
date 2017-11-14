@@ -30,6 +30,12 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 /**
+ * Register a root view tag and creates corresponding `rootView` and
+ * `rootShadowView`.
+ */
+- (void)registerRootViewTag:(NSNumber *)rootTag;
+
+/**
  * Register a root view with the RCTUIManager.
  */
 - (void)registerRootView:(UIView *)rootView;

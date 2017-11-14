@@ -10,6 +10,14 @@
   "engines": {
     "node": ">=4"
   },
+  "prettier": {
+    "requirePragma": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": false,
+    "jsxBracketSameLine": true,
+    "parser": "flow"
+  },
   "jest": {
     "transform": {
       "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
@@ -118,6 +126,7 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
+    "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
@@ -163,7 +172,7 @@
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
     "lodash": "^4.16.6",
-    "metro-bundler": "^0.20.0",
+    "metro-bundler": "^0.21.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -200,8 +209,8 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.58.0",
-    "jest": "^21",
+    "flow-bin": "^0.59.0",
+    "jest": "21.3.0-beta.8",
     "prettier": "1.7.0",
     "react": "16.0.0",
     "react-test-renderer": "16.0.0",

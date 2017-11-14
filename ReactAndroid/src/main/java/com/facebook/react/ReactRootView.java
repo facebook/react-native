@@ -330,7 +330,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
     if (reactApplicationContext != null) {
-      reactApplicationContext.runUIBackgroundRunnable(
+      reactApplicationContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactApplicationContext) {
             @Override
             public void runGuarded() {

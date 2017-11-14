@@ -152,42 +152,10 @@ public class ReactInstanceManager {
   // Identifies whether the instance manager destroy function is in process,
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
-  private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
-  private final boolean mLazyViewManagersEnabled;
   private final boolean mDelayViewManagerClassLoadsEnabled;
-  private final boolean mUseSeparateUIBackgroundThread;
-  private final int mMinNumShakes;
-  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
-
-  private final ReactInstanceDevCommandsHandler mDevInterface =
-      new ReactInstanceDevCommandsHandler() {
-
-        @Override
-        public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-          ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-        }
-
-        @Override
-        public void onJSBundleLoadedFromServer() {
-          ReactInstanceManager.this.onJSBundleLoadedFromServer();
-        }
-
-        @Override
-        public void toggleElementInspector() {
-          ReactInstanceManager.this.toggleElementInspector();
-        }
-      };
-
-  private final DefaultHardwareBackBtnHandler mBackBtnHandler =
-      new DefaultHardwareBackBtnHandler() {
-        @Override
-        public void invokeDefaultOnBackPressed() {
-          ReactInstanceManager.this.invokeDefaultOnBackPressed();
-        }
-      };
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -234,10 +202,7 @@ public class ReactInstanceManager {
       boolean lazyViewManagersEnabled,
       boolean delayViewManagerClassLoadsEnabled,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      boolean useSeparateUIBackgroundThread,
       int minNumShakes,
-      boolean splitPackagesEnabled,
-      boolean useOnlyDefaultPackages,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
@@ -253,49 +218,38 @@ public class ReactInstanceManager {
     mPackages = new ArrayList<>();
     mInitFunctions = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
-    mDevSupportManager = DevSupportManagerFactory.create(
-        applicationContext,
-        mDevInterface,
-        mJSMainModulePath,
-        useDeveloperSupport,
-        redBoxHandler,
-        devBundleDownloadListener,
-        minNumShakes);
+    mDevSupportManager =
+        DevSupportManagerFactory.create(
+            applicationContext,
+            createDevInterface(),
+            mJSMainModulePath,
+            useDeveloperSupport,
+            redBoxHandler,
+            devBundleDownloadListener,
+            minNumShakes);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
-    mUIImplementationProvider = uiImplementationProvider;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
-    mLazyViewManagersEnabled = lazyViewManagersEnabled;
     mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
-    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
-    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-    mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
-      if (!splitPackagesEnabled) {
-        CoreModulesPackage coreModulesPackage =
-            new CoreModulesPackage(
-                this,
-                mBackBtnHandler,
-                mUIImplementationProvider,
-                mLazyViewManagersEnabled,
-                mMinTimeLeftInFrameForNonBatchedOperationMs);
-        mPackages.add(coreModulesPackage);
-      } else {
-        PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-        mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
-        if (mUseDeveloperSupport) {
-          mPackages.add(new DebugCorePackage());
-        }
-        if (!useOnlyDefaultPackages) {
-          mPackages.add(
-              new ReactNativeCorePackage(
-                  this,
-                  mUIImplementationProvider,
-                  mLazyViewManagersEnabled,
-                  mMinTimeLeftInFrameForNonBatchedOperationMs));
-        }
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
+      mPackages.add(
+          new CoreModulesPackage(
+              this,
+              new DefaultHardwareBackBtnHandler() {
+                @Override
+                public void invokeDefaultOnBackPressed() {
+                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+                }
+              },
+              uiImplementationProvider,
+              lazyViewManagersEnabled,
+              minTimeLeftInFrameForNonBatchedOperationMs));
+      if (mUseDeveloperSupport) {
+        mPackages.add(new DebugCorePackage());
       }
       mPackages.addAll(packages);
     }
@@ -305,6 +259,25 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
+  }
+
+  private ReactInstanceDevCommandsHandler createDevInterface() {
+    return new ReactInstanceDevCommandsHandler() {
+      @Override
+      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
+        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
+      }
+
+      @Override
+      public void onJSBundleLoadedFromServer() {
+        ReactInstanceManager.this.onJSBundleLoadedFromServer();
+      }
+
+      @Override
+      public void toggleElementInspector() {
+        ReactInstanceManager.this.toggleElementInspector();
+      }
+    };
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -852,10 +825,6 @@ public class ReactInstanceManager {
     return mLifecycleState;
   }
 
-  public int getMinNumShakes() {
-    return mMinNumShakes;
-  }
-
   @ThreadConfined(UI)
   private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
@@ -1017,15 +986,6 @@ public class ReactInstanceManager {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           }
         });
-    if (mUseSeparateUIBackgroundThread) {
-      reactContext.runOnUiBackgroundQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-            }
-          });
-    }
   }
 
   private void attachRootViewToInstance(
@@ -1102,9 +1062,7 @@ public class ReactInstanceManager {
       ? mNativeModuleCallExceptionHandler
       : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-      .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
-        ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
-        ReactQueueConfigurationSpec.createDefault())
+      .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
       .setJSExecutor(jsExecutor)
       .setRegistry(nativeModuleRegistry)
       .setJSBundleLoader(jsBundleLoader)
