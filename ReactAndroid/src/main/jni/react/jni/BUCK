@@ -13,6 +13,7 @@ EXPORTED_HEADERS = [
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
+    "ReactMarker.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
     "WritableNativeArray.h",

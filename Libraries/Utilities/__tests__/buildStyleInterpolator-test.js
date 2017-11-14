@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -227,7 +228,97 @@ describe('buildStyleInterpolator', function() {
     });
     expect(res).toBe(false);
   });
+  it('should handle identity', function() {
+    var testAnim = {
+      opacity: {
+        type: 'identity',
+      },
+    };
+    var interpolator = buildStyleInterpolator(testAnim);
+    var obj = {};
+    var res = interpolator(obj, 0.5);
+    expect(obj).toEqual({
+      opacity: 0.5,
+    });
+    expect(res).toBe(true);
 
+    res = interpolator(obj, 0.5);
+    // No change detected
+    expect(obj).toEqual({
+      opacity: 0.5,
+    });
+    expect(res).toBe(false);
+  });
+  it('should translate', function() {
+    var testAnim = {
+      transformTranslate: {
+        from: {x: 1, y: 10, z: 100},
+        to: {x: 5, y: 50, z: 500},
+        min: 0,
+        max: 4,
+        type: 'linear',
+      },
+    };
+    var interpolator = buildStyleInterpolator(testAnim);
+    var obj = {};
+    var res = interpolator(obj, 1);
+    expect(obj).toEqual({
+      transform: [{matrix: [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, 0,
+                            2, 20, 200, 1]}]
+    });
+    expect(res).toBe(true);
+  });
+  it('should scale', function() {
+    var testAnim = {
+      transformScale: {
+        from: {x: 1, y: 10, z: 100},
+        to: {x: 5, y: 50, z: 500},
+        min: 0,
+        max: 4,
+        type: 'linear',
+      },
+    };
+    var interpolator = buildStyleInterpolator(testAnim);
+    var obj = {};
+    var res = interpolator(obj, 1);
+    expect(obj).toEqual({
+      transform: [{matrix: [2, 0, 0, 0,
+                            0, 20, 0, 0,
+                            0, 0, 200, 0,
+                            0, 0, 0, 1]}]
+    });
+    expect(res).toBe(true);
+  });
+  it('should combine scale and translate', function() {
+    var testAnim = {
+      transformScale: {
+        from: {x: 1, y: 10, z: 100},
+        to: {x: 5, y: 50, z: 500},
+        min: 0,
+        max: 4,
+        type: 'linear',
+      },
+      transformTranslate: {
+        from: {x: 1, y: 10, z: 100},
+        to: {x: 5, y: 50, z: 500},
+        min: 0,
+        max: 4,
+        type: 'linear',
+      },
+    };
+    var interpolator = buildStyleInterpolator(testAnim);
+    var obj = {};
+    var res = interpolator(obj, 1);
+    expect(obj).toEqual({
+      transform: [{matrix: [2, 0, 0, 0,
+                            0, 20, 0, 0,
+                            0, 0, 200, 0,
+                            4, 400, 40000, 1]}]
+    });
+    expect(res).toBe(true);
+  });
   it('should step', function() {
     var testAnim = {
       opacity: {

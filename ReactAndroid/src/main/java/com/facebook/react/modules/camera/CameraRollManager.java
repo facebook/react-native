@@ -420,21 +420,31 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(photoDescriptor.getFileDescriptor());
 
-        if (width <= 0 || height <= 0) {
-          width =
+        try {
+          if (width <= 0 || height <= 0) {
+            width =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+          }
+          int timeInMillisec =
               Integer.parseInt(
-                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-          height =
-              Integer.parseInt(
-                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+          int playableDuration = timeInMillisec / 1000;
+          image.putInt("playableDuration", playableDuration);
+        } catch (NumberFormatException e) {
+          FLog.e(
+              ReactConstants.TAG,
+              "Number format exception occurred while trying to fetch video metadata for "
+                  + photoUri.toString(),
+              e);
+          return false;
+        } finally {
+          retriever.release();
+          photoDescriptor.close();
         }
-        int timeInMillisec =
-            Integer.parseInt(
-                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        int playableDuration = timeInMillisec / 1000;
-        image.putInt("playableDuration", playableDuration);
-        retriever.release();
-        photoDescriptor.close();
       } catch (IOException e) {
         FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
         return false;

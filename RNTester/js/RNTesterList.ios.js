@@ -124,6 +124,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SafeAreaViewExample',
+    module: require('./SafeAreaViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
     supportsTVOS: true,
@@ -146,6 +151,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample'),
     supportsTVOS: false,
   },
   {
@@ -260,6 +270,11 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'Dimensions',
+    module: require('./DimensionsExample'),
+    supportsTVOS: true,
   },
   {
     key: 'GeolocationExample',

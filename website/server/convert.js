@@ -9,7 +9,7 @@
 
 'use strict';
 
-var fs = require('fs')
+var fs = require('fs');
 var glob = require('glob');
 var mkdirp = require('mkdirp');
 var optimist = require('optimist');
@@ -36,7 +36,7 @@ function splitHeader(content) {
 function rmFile(file) {
   try {
     fs.unlinkSync(file);
-  } catch(e) {
+  } catch (e) {
     /* seriously, unlink throws when the file doesn't exist :( */
   }
 }
@@ -63,7 +63,7 @@ function extractMetadata(content) {
     var key = keyvalue[0].trim();
     var value = keyvalue.slice(1).join(':').trim();
     // Handle the case where you have "Community #10"
-    try { value = JSON.parse(value); } catch(e) { }
+    try { value = JSON.parse(value); } catch (e) { }
     metadata[key] = value;
   }
   return {metadata: metadata, rawContent: both.content};
@@ -157,18 +157,6 @@ function execute(options) {
   }
 
   if (options.extractDocs) {
-    // Rendering docs can take up to 8 seconds. We wait until /docs/ are
-    // requested before doing so, then we store the results in memory to
-    // speed up subsequent requests.
-    var extractedDocs = cache.get('extractedDocs');
-    if (!extractedDocs) {
-      extractedDocs = extractDocs();
-      cache.put('extractedDocs', extractedDocs);
-    }
-    extractedDocs.forEach(function(content) {
-      handleMarkdown(content, null);
-    });
-
     var files = glob.sync(DOCS_MD_DIR + '**/*.*');
     files.forEach(function(file) {
       var extension = path.extname(file);

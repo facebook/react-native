@@ -73,7 +73,6 @@ export type Props = ViewProps;
  *   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
  *   - `touches` - Array of all current touches on the screen.
  */
-// $FlowFixMe(>=0.41.0)
 const View = createReactClass({
   displayName: 'View',
   // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,

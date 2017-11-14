@@ -17,7 +17,7 @@ const Platform = require('Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
-type Buttons = Array<{
+export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
   style?: AlertButtonStyle,

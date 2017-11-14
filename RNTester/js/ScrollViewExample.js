@@ -35,9 +35,6 @@ exports.examples = [
     return (
       <View>
         <ScrollView
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */
           ref={(scrollView) => { _scrollView = scrollView; }}
           automaticallyAdjustContentInsets={false}
           onScroll={() => { console.log('onScroll!'); }}
@@ -55,13 +52,11 @@ exports.examples = [
           onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
           <Text>Scroll to bottom</Text>
         </TouchableOpacity>
-        { Platform.OS === 'ios' ?
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => { _scrollView.flashScrollIndicators(); }}>
-            <Text>Flash scroll indicators</Text>
-          </TouchableOpacity>
-          : null }
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.flashScrollIndicators(); }}>
+          <Text>Flash scroll indicators</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -76,9 +71,6 @@ exports.examples = [
         <View style={addtionalStyles}>
           <Text style={styles.text}>{title}</Text>
           <ScrollView
-            /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-             * comment suppresses an error when upgrading Flow's support for
-             * React. To see the error delete this comment and run Flow. */
             ref={(scrollView) => { _scrollView = scrollView; }}
             automaticallyAdjustContentInsets={false}
             horizontal={true}
@@ -95,13 +87,11 @@ exports.examples = [
             onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
             <Text>Scroll to end</Text>
           </TouchableOpacity>
-          { Platform.OS === 'ios' ?
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => { _scrollView.flashScrollIndicators(); }}>
-              <Text>Flash scroll indicators</Text>
-            </TouchableOpacity>
-            : null }
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => { _scrollView.flashScrollIndicators(); }}>
+            <Text>Flash scroll indicators</Text>
+          </TouchableOpacity>
         </View>
       );
     }

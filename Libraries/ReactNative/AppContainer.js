@@ -62,20 +62,20 @@ class AppContainer extends React.Component<Props, State> {
           'toggleElementInspector',
           () => {
             const Inspector = require('Inspector');
-            const inspector = this.state.inspector
-              ? null
-              : <Inspector
-                  inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                  onRequestRerenderApp={updateInspectedViewTag => {
-                    this.setState(
-                      s => ({mainKey: s.mainKey + 1}),
-                      () =>
-                        updateInspectedViewTag(
-                          ReactNative.findNodeHandle(this._mainRef),
-                        ),
-                    );
-                  }}
-                />;
+            const inspector = this.state.inspector ? null : (
+              <Inspector
+                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
+                onRequestRerenderApp={updateInspectedViewTag => {
+                  this.setState(
+                    s => ({mainKey: s.mainKey + 1}),
+                    () =>
+                      updateInspectedViewTag(
+                        ReactNative.findNodeHandle(this._mainRef),
+                      ),
+                  );
+                }}
+              />
+            );
             this.setState({inspector});
           },
         );
@@ -116,11 +116,7 @@ class AppContainer extends React.Component<Props, State> {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper) {
-      innerView = (
-        <Wrapper>
-          {innerView}
-        </Wrapper>
-      );
+      innerView = <Wrapper>{innerView}</Wrapper>;
     }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">

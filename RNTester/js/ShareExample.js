@@ -82,6 +82,7 @@ class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
       url: 'http://facebook.github.io/react-native/',
       title: 'React Native'
     }, {
+      subject: 'A subject to go in the email heading',
       dialogTitle: 'Share React Native website',
       excludedActivityTypes: [
         'com.apple.UIKit.activity.PostToTwitter'

@@ -38,6 +38,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.inject.Provider;
 /**
  * This module should be removed following the completion of an experiment into splitting this into
@@ -92,86 +93,107 @@ import javax.inject.Provider;
     List<ModuleSpec> moduleSpecList = new ArrayList<>();
 
     moduleSpecList.add(
-      new ModuleSpec(AndroidInfoModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new AndroidInfoModule();
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            AndroidInfoModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new AndroidInfoModule();
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new AnimationsDebugModule(
-            reactContext,
-            mReactInstanceManager.getDevSupportManager().getDevSettings());
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            AnimationsDebugModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new AnimationsDebugModule(
+                    reactContext, mReactInstanceManager.getDevSupportManager().getDevSettings());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(DeviceEventManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            DeviceEventManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(ExceptionsManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
-        }
-      }));
-    moduleSpecList
-      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new HeadlessJsTaskSupportModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            ExceptionsManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new SourceCodeModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            HeadlessJsTaskSupportModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new HeadlessJsTaskSupportModule(reactContext);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(Timing.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            SourceCodeModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new SourceCodeModule(reactContext);
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(UIManagerModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return createUIManager(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            Timing.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
+              }
+            }));
     moduleSpecList.add(
-      new ModuleSpec(DeviceInfoModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new DeviceInfoModule(reactContext);
-        }
-      }));
+        ModuleSpec.nativeModuleSpec(
+            UIManagerModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return createUIManager(reactContext);
+              }
+            }));
+    moduleSpecList.add(
+        ModuleSpec.nativeModuleSpec(
+            DeviceInfoModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new DeviceInfoModule(reactContext);
+              }
+            }));
 
     if (ReactBuildConfig.DEBUG) {
       moduleSpecList.add(
-        new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new JSCHeapCapture(reactContext);
-          }
-        }));
+          ModuleSpec.nativeModuleSpec(
+              JSCHeapCapture.class,
+              new Provider<NativeModule>() {
+                @Override
+                public NativeModule get() {
+                  return new JSCHeapCapture(reactContext);
+                }
+              }));
       moduleSpecList.add(
-        new ModuleSpec(JSCSamplingProfiler.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new JSCSamplingProfiler(reactContext);
-          }
-        }));
+          ModuleSpec.nativeModuleSpec(
+              JSCSamplingProfiler.class,
+              new Provider<NativeModule>() {
+                @Override
+                public NativeModule get() {
+                  return new JSCSamplingProfiler(reactContext);
+                }
+              }));
     }
 
     return moduleSpecList;
@@ -183,18 +205,34 @@ import javax.inject.Provider;
     return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 
-  private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+  private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
-      List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
-        reactContext);
-      return new UIManagerModule(
-          reactContext,
-          viewManagersList,
-          mUIImplementationProvider,
-          mLazyViewManagersEnabled,
-          mMinTimeLeftInFrameForNonBatchedOperationMs);
+      if (mLazyViewManagersEnabled) {
+        UIManagerModule.ViewManagerResolver resolver = new UIManagerModule.ViewManagerResolver() {
+          @Override
+          public @Nullable ViewManager getViewManager(String viewManagerName) {
+            return mReactInstanceManager.createViewManager(viewManagerName);
+          }
+          @Override
+          public List<String> getViewManagerNames() {
+            return mReactInstanceManager.getViewManagerNames();
+          }
+        };
+
+        return new UIManagerModule(
+            reactContext,
+            resolver,
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      } else {
+        return new UIManagerModule(
+            reactContext,
+            mReactInstanceManager.createAllViewManagers(reactContext),
+            mUIImplementationProvider,
+            mMinTimeLeftInFrameForNonBatchedOperationMs);
+      }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

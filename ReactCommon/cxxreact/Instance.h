@@ -21,9 +21,9 @@ namespace react {
 
 class JSBigString;
 class JSExecutorFactory;
-class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
+class RAMBundleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
@@ -44,9 +44,13 @@ public:
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
-  void loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                    std::unique_ptr<const JSBigString> startupScript,
-                    std::string startupScriptSourceURL, bool loadSynchronously);
+  static bool isIndexedRAMBundle(const char *sourcePath);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
+                             const std::string& sourceURL,
+                             bool loadSynchronously);
+  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                     std::unique_ptr<const JSBigString> startupScript,
+                     std::string startupScriptSourceURL, bool loadSynchronously);
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
@@ -54,6 +58,9 @@ public:
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+
+  // This method is experimental, and may be modified or removed.
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
   // This method is experimental, and may be modified or removed.
   template <typename T>
@@ -73,10 +80,10 @@ public:
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadApplication(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> startupScript,
                        std::string startupScriptSourceURL);
-  void loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                            std::unique_ptr<const JSBigString> startupScript,
                            std::string startupScriptSourceURL);
 

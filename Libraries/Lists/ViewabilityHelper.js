@@ -112,8 +112,7 @@ class ViewabilityHelper {
       : itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-        itemVisiblePercentThreshold !=
-          null !==
+        (itemVisiblePercentThreshold != null) !==
           (viewAreaCoveragePercentThreshold != null),
       'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
@@ -222,6 +221,13 @@ class ViewabilityHelper {
         createViewToken,
       );
     }
+  }
+
+  /**
+   * clean-up cached _viewableIndices to evaluate changed items on next update
+   */
+  resetViewableIndices() {
+    this._viewableIndices = [];
   }
 
   /**

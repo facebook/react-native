@@ -12,6 +12,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -40,6 +41,7 @@
     _backedTextInput = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInput.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInput.textInputDelegate = self;
+    _backedTextInput.font = self.fontAttributes.font;
 
     [self addSubview:_backedTextInput];
   }
@@ -90,7 +92,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                               notifyDelegate:YES];
     }
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", _backedTextInput.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", _backedTextInput.text, (long long)eventLag);
   }
 }
 

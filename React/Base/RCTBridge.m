@@ -252,11 +252,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (void)whitelistedModulesDidChange
-{
-  [self.batchedBridge whitelistedModulesDidChange];
-}
-
 - (void)reload
 {
   #if RCT_ENABLE_INSPECTOR
@@ -334,6 +329,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
+  if ([self.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
+    _embeddedBundleURL = [self.delegate embeddedBundleURLForBridge:self];
+    _embeddedBundleURL = [RCTConvert NSURL:_embeddedBundleURL.absoluteString];
+  }
+
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
 
@@ -396,6 +396,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                             error:(NSError **)error
 {
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
+}
+
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
+{
+  [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
 @end

@@ -44,7 +44,7 @@ export type JSTimerType =
   | 'setImmediate'
   | 'requestIdleCallback';
 
-// These timing contants should be kept in sync with the ones in native ios and
+// These timing constants should be kept in sync with the ones in native ios and
 // android `RCTTiming` module.
 const FRAME_DURATION = 1000 / 60;
 const IDLE_CALLBACK_FRAME_DEADLINE = 1;
@@ -331,7 +331,7 @@ const JSTimers = {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
-              requestIdleCallbackTimeouts[id];
+              delete requestIdleCallbackTimeouts[id];
             }
             return func(deadline);
           }
