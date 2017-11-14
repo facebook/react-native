@@ -58,7 +58,7 @@ class Button extends React.Component<{
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
-  textSize?: ?string,
+  fontSize?: ?string,
 }> {
   static propTypes = {
     /**
@@ -86,9 +86,9 @@ class Button extends React.Component<{
      */
     testID: PropTypes.string,
     /**
-     * Used to change button's textSize
+     * Used to change button's fontSize
      */
-    textSize: PropTypes.string,
+    fontSize: PropTypes.number,
   };
 
   render() {
@@ -99,7 +99,7 @@ class Button extends React.Component<{
       title,
       disabled,
       testID,
-      textSize,
+      fontSize,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -110,8 +110,8 @@ class Button extends React.Component<{
         buttonStyles.push({backgroundColor: color});
       }
     }
-    if (textSize) {
-        textStyles.push({fontSize: parseInt(textSize)});
+    if (fontSize) {
+        textStyles.push({fontSize: fontSize});
     }
     const accessibilityTraits = ['button'];
     if (disabled) {
