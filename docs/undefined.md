@@ -1,4 +1,0 @@
----
-id: undefined
-title: undefined
----

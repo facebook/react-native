@@ -8,26 +8,26 @@
  */
 
 /* List of projects/orgs using your project for the users page */
-const users = require('./showcase.json');
+const users = require("./showcase.json");
 
 const siteConfig = {
   title: "React Native" /* title for your website */,
-  url: "https://hramos.github.io" /* your github url */,
+  url: "https://facebook.github.io" /* your github url */,
   baseUrl: "/react-native/" /* base url for your project */,
   projectName: "react-native",
-  repo: "hramos/react-native" /* repo for your project */,
+  repo: "facebook/react-native" /* repo for your project */,
   users,
   /* base url for editing docs, usage example: editUrl + 'en/doc1.md' */
-  editUrl: "https://github.com/hramos/react-native/edit/master/docs/",
+  editUrl: "https://github.com/facebook/react-native/edit/master/docs/",
   /* header links for links on this site, 'LANGUAGE' will be replaced by whatever
      language the page is for, ex: 'en' */
   headerLinks: [
     { doc: "getting-started", label: "Docs" },
-    { doc: "components-and-apis", label: "APIs" },
+    // { doc: "components-and-apis", label: "APIs" },
     { page: "help", label: "Community" },
     { blog: true, label: "Blog" },
     { search: true },
-    { href: "https://github.com/hramos/react-native", label: "GitHub" },
+    { href: "https://github.com/github/react-native", label: "GitHub" },
     { href: "https://facebook.github.io/react", label: "React" }
   ],
   /* path to images for header/footer */
@@ -52,13 +52,13 @@ const siteConfig = {
     apiKey:
       "2c98749b4a1e588efec53b2acec13025" /* use your search-only api key */,
     indexName: "react-native-versions",
-    algoliaOptions: { 
-      facetFilters: [ "tags:VERSION" ], 
-      hitsPerPage: 5 
+    algoliaOptions: {
+      facetFilters: ["tags:VERSION"],
+      hitsPerPage: 5
     }
   },
-  facebookAppId: '1677033832619985',
-  twitter: 'reactnative'
+  facebookAppId: "1677033832619985",
+  twitter: "reactnative"
   /* remove this to disable google analytics tracking */
   /* gaTrackingId: "" */
 };

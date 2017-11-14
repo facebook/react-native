@@ -30,107 +30,94 @@ class Footer extends React.Component {
       <footer className="nav-footer" id="footer">
         <section className="sitemap">
           <div>
-          <h5><a href={this.props.config.baseUrl + "docs"}>Docs</a></h5>
-          <a href={this.props.config.baseUrl + "docs/getting-started.html"}>
-            Getting Started
-          </a>
-          <a href={this.props.config.baseUrl + "docs/tutorial.html"}>Learn the Basics</a>
-          <a
-            href={this.props.config.baseUrl + "docs/components-and-apis.html"}
-          >
-            Components and APIs
-          </a>
-          <a href={this.props.config.baseUrl + "docs/more-resources.html"} >
-            More Resources
-          </a>
-        </div>
-        <div>
-          <h5>
-            <a href={this.props.config.baseUrl + "support.html"}>
-              Community
+            <h5>
+              <a href={this.props.config.baseUrl + "docs"}>Docs</a>
+            </h5>
+            <a href={this.props.config.baseUrl + "docs/getting-started.html"}>
+              Getting Started
             </a>
-          </h5>
-          <a href={this.props.config.baseUrl + "users.html"}>
-            Who's using React Native?
-          </a>
-          <a
-            href="http://www.meetup.com/topics/react-native/"
-            target="_blank"
-          >
-            Meetups
-          </a>
-          <a
-            href="https://www.facebook.com/groups/react.native.community"
-            target="_blank"
-          >
-            Facebook Group
-          </a>
-          <a
-            href="https://twitter.com/reactnative"
-            target="_blank"
-          >
-            Twitter
-          </a>
-        </div>
-        <div>
-          <h5>
-            <a href={this.props.config.baseUrl + "help.html"}>
-              Help
+            <a href={this.props.config.baseUrl + "docs/tutorial.html"}>
+              Learn the Basics
             </a>
-          </h5>
-          <a
-            href="http://stackoverflow.com/questions/tagged/react-native"
-            target="_blank"
-          >
-            Stack Overflow
-          </a>
-          <a
-            href="https://discord.gg/0ZcbPKXt5bZjGY5n"
-          >
-            Reactiflux Chat
-          </a>
-          <a
-            href={this.props.config.baseUrl + "versions.html"}
-            target="_blank"
-          >
-            Latest Releases
-          </a>
-          <a
-            href="https://react-native.canny.io/feature-requests"
-            target="_blank"
-          >
-            Feature Requests
-          </a>
-        </div>
-        <div>
-          <h5>More</h5>
-          <a href={this.props.config.baseUrl + "blog"}>Blog</a>
-          <a
-            href="http://facebook.github.io/react/"
-            target="_blank"
-          >
-            React
-          </a>
-          <a
-            href="https://github.com/facebook/react-native"
-            target="_blank"
-          >
-            GitHub
-          </a>
-          <div className="githubButton">
             <a
-              className="github-button"
-              href="https://github.com/facebook/react-native"
-              data-icon="octicon-star"
-              data-count-href="/facebook/react-native/stargazers"
-              data-count-api="/repos/facebook/react-native#stargazers_count"
-              data-count-aria-label="# stargazers on GitHub"
-              aria-label="Star facebook/react-native on GitHub"
+              href={this.props.config.baseUrl + "docs/components-and-apis.html"}
             >
-              Star
+              Components and APIs
+            </a>
+            <a href={this.props.config.baseUrl + "docs/more-resources.html"}>
+              More Resources
             </a>
           </div>
-        </div>
+          <div>
+            <h5>
+              <a href={this.props.config.baseUrl + "help.html"}>Community</a>
+            </h5>
+            <a href={this.props.config.baseUrl + "users.html"}>
+              Who's using React Native?
+            </a>
+            <a
+              href="http://www.meetup.com/topics/react-native/"
+              target="_blank"
+            >
+              Meetups
+            </a>
+            <a
+              href="https://www.facebook.com/groups/react.native.community"
+              target="_blank"
+            >
+              Facebook Group
+            </a>
+            <a href="https://twitter.com/reactnative" target="_blank">
+              Twitter
+            </a>
+          </div>
+          <div>
+            <h5>
+              <a href={this.props.config.baseUrl + "help.html"}>Help</a>
+            </h5>
+            <a
+              href="http://stackoverflow.com/questions/tagged/react-native"
+              target="_blank"
+            >
+              Stack Overflow
+            </a>
+            <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a>
+            <a
+              href={this.props.config.baseUrl + "versions.html"}
+              target="_blank"
+            >
+              Latest Releases
+            </a>
+            <a
+              href="https://react-native.canny.io/feature-requests"
+              target="_blank"
+            >
+              Feature Requests
+            </a>
+          </div>
+          <div>
+            <h5>More</h5>
+            <a href={this.props.config.baseUrl + "blog"}>Blog</a>
+            <a href="http://facebook.github.io/react/" target="_blank">
+              React
+            </a>
+            <a href="https://github.com/facebook/react-native" target="_blank">
+              GitHub
+            </a>
+            <div className="githubButton">
+              <a
+                className="github-button"
+                href="https://github.com/facebook/react-native"
+                data-icon="octicon-star"
+                data-count-href="/facebook/react-native/stargazers"
+                data-count-api="/repos/facebook/react-native#stargazers_count"
+                data-count-aria-label="# stargazers on GitHub"
+                aria-label="Star facebook/react-native on GitHub"
+              >
+                Star
+              </a>
+            </div>
+          </div>
         </section>
 
         <a

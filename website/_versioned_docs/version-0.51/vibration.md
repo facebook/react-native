@@ -1,0 +1,28 @@
+---
+id: version-0.51-vibration
+original_id: vibration
+title: vibration
+---
+<a id="content"></a><h1><a class="anchor" name="vibration"></a>Vibration <a class="hash-link" href="docs/vibration.html#vibration">#</a></h1><div><div><p>The Vibration API is exposed at <code>Vibration.vibrate()</code>.
+The vibration is asynchronous so this method will return immediately.</p><p>There will be no effect on devices that do not support Vibration, eg. the simulator.</p><p><strong>Note for Android:</strong>
+add <code>&lt;uses-permission android:name="android.permission.VIBRATE"/&gt;</code> to <code>AndroidManifest.xml</code></p><p>Since the <strong>vibration duration in iOS is not configurable</strong>, so there are some differences with Android.
+In Android, if <code>pattern</code> is a number, it specified the vibration duration in ms. If <code>pattern</code>
+is an array, those odd indices is the vibration duration, while the even one are the separation time.</p><p>In iOS, invoking <code>vibrate(duration)</code> will just ignore the duration and vibrate for a fixed time. While the
+<code>pattern</code> array is used to define the duration between each vibration. See below example for more.</p><p>Repeatable vibration is also supported, the vibration will repeat with defined pattern until <code>cancel()</code> is called.</p><p>Example:</p><div class="prism language-javascript"><span class="token keyword">const</span> DURATION <span class="token operator">=</span> <span class="token number">10000</span>
+<span class="token keyword">const</span> PATTERN <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1000</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> <span class="token number">3000</span><span class="token punctuation">]</span>
+
+Vibration<span class="token punctuation">.</span><span class="token function">vibrate</span><span class="token punctuation">(</span>DURATION<span class="token punctuation">)</span><span class="token comment" spellcheck="true">
+// Android: vibrate for 10s
+</span><span class="token comment" spellcheck="true">// iOS: duration is not configurable, vibrate for fixed time (about 500ms)
+</span>
+Vibration<span class="token punctuation">.</span><span class="token function">vibrate</span><span class="token punctuation">(</span>PATTERN<span class="token punctuation">)</span><span class="token comment" spellcheck="true">
+// Android: wait 1s -&gt; vibrate 2s -&gt; wait 3s
+</span><span class="token comment" spellcheck="true">// iOS: wait 1s -&gt; vibrate -&gt; wait 2s -&gt; vibrate -&gt; wait 3s -&gt; vibrate
+</span>
+Vibration<span class="token punctuation">.</span><span class="token function">vibrate</span><span class="token punctuation">(</span>PATTERN<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">
+// Android: wait 1s -&gt; vibrate 2s -&gt; wait 3s -&gt; wait 1s -&gt; vibrate 2s -&gt; wait 3s -&gt; ...
+</span><span class="token comment" spellcheck="true">// iOS: wait 1s -&gt; vibrate -&gt; wait 2s -&gt; vibrate -&gt; wait 3s -&gt; vibrate -&gt; wait 1s -&gt; vibrate -&gt; wait 2s -&gt; vibrate -&gt; wait 3s -&gt; vibrate -&gt; ...
+</span>
+Vibration<span class="token punctuation">.</span><span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">
+// Android: vibration stopped
+</span><span class="token comment" spellcheck="true">// iOS: vibration stopped</span></div></div><span><h3><a class="anchor" name="methods"></a>Methods <a class="hash-link" href="docs/vibration.html#methods">#</a></h3><div class="props"><div class="prop"><h4 class="methodTitle"><a class="anchor" name="vibrate"></a><span class="methodType">static </span>vibrate<span class="methodType">(pattern: number, Array&lt;number&gt;, repeat: boolean)</span> <a class="hash-link" href="docs/vibration.html#vibrate">#</a></h4><div><p>Trigger a vibration with specified <code>pattern</code>.</p></div><div><strong>Parameters:</strong><table class="params"><thead><tr><th>Name and Type</th><th>Description</th></tr></thead><tbody><tr><td>pattern<br><br><div><span>number | </span><span>Array&lt;number&gt;</span></div></td><td class="description"><div><p>Vibration pattern, accept a number or an array of number. Default to 400ms.</p></div></td></tr><tr><td>repeat<br><br><div><span>boolean</span></div></td><td class="description"><div><p>Optional. Repeat vibration pattern until cancel(), default to false.</p></div></td></tr></tbody></table></div></div><div class="prop"><h4 class="methodTitle"><a class="anchor" name="cancel"></a><span class="methodType">static </span>cancel<span class="methodType">()</span> <a class="hash-link" href="docs/vibration.html#cancel">#</a></h4><div><p>Stop vibration</p><div class="prism language-javascript">Vibration<span class="token punctuation">.</span><span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div></div></span></div><p class="edit-page-block"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Libraries/Vibration/Vibration.js">Improve this page</a> by sending a pull request!</p><div class="docs-prevnext"><a class="docs-prev" href="docs/toastandroid.html#content">← Prev</a><a class="docs-next" href="docs/vibrationios.html#content">Next →</a></div>

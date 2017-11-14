@@ -7,6 +7,6 @@
     "examples": "docusaurus-examples"
   },
   "dependencies": {
-    "docusaurus": "file:../../docusaurus"
+    "docusaurus": "^1.0.0-beta.12"
   }
 }

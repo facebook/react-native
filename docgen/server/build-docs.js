@@ -33,11 +33,14 @@ const remoteBranch = `https://${GIT_USER}@github.com/${GITHUB_USERNAME}/${GITHUB
 
 const DOCS_CHECKOUT_DIR = `${GITHUB_REPONAME}-docs`;
 const RELEASES_CHECKOUT_DIR = `${GITHUB_REPONAME}-releases`;
+const TAGS_CHECKOUT_DIR = `${GITHUB_REPONAME}-tags`;
 const BUILD_DIR = "build";
 const DOCS_DIR = "versioned_docs";
 const SIDEBAR_DIR = "versioned_sidebars";
 
 const { JSDOM } = jsdom;
+
+let versionedDocsBlacklist = [];
 
 // Start up a server. Don't forget to close the connection when done.
 const server = require("./server.js");
@@ -256,6 +259,14 @@ function generateDocsFromMaster() {
                   body: frontmatter.body
                 }
               });
+
+              if (
+                frontmatter.attributes.category !== "Components" &&
+                frontmatter.attributes.category !== "APIs"
+              ) {
+                // Let's make sure we don't version anything outside of the Components/APIs categories. This is used later on when we parse old releases.
+                versionedDocsBlacklist.push(frontmatter.attributes.id);
+              }
             }
             return;
           });
@@ -345,12 +356,6 @@ function generateDocsFromMaster() {
 // Must be called after checkOutDocs()
 // Check out gh-pages branch
 function generateDocsFromPastReleases() {
-  // TODO checkout gh-pages
-
-  // if (shell.exec(`git checkout gh-pages`).code !== 0) {
-  //   throw new Error("Error: git checkout failed");
-  // }
-
   const pathToGitCheckout = filepath.create(
     CWD,
     BUILD_DIR,
@@ -428,8 +433,12 @@ function generateDocsFromPastReleases() {
 
             const frontmatter = res.frontmatter;
 
-            // have to implement some sort of check to ensure this is a docs file.
-            if (!blacklist.includes(frontmatter.attributes.original_id)) {
+            if (
+              !blacklist.includes(frontmatter.attributes.original_id) &&
+              !versionedDocsBlacklist.includes(
+                frontmatter.attributes.original_id
+              )
+            ) {
               if (!docsVersions.hasOwnProperty(version)) {
                 docsVersions[version] = {};
               }
@@ -507,7 +516,7 @@ function generateDocsFromPastReleases() {
               "..",
               "website",
               "versioned_docs",
-              version,
+              "version-" + version,
               metadata.original_id + ".md"
             );
 
@@ -520,69 +529,187 @@ function generateDocsFromPastReleases() {
       });
       return seq;
     })
-    // .then(() => {
-    //   filepath.create(CWD, "..", "website", SIDEBAR_DIR);
-    //   for (const version in sidebarMetadata) {
-    //     if (sidebarMetadata.hasOwnProperty(version)) {
-    //       const documents = sidebarMetadata[version];
-    //       let sidebar = {};
-    //       sidebar[`version-${version}-docs`] = { APIs: documents };
-
-    //       const pathToSidebarFile = filepath.create(
-    //         CWD,
-    //         "..",
-    //         "website",
-    //         SIDEBAR_DIR,
-    //         `version-${version}-sidebars.json`
-    //       );
-    //       console.log(`Writing ${pathToSidebarFile}: ${sidebar}`);
-
-    //       fs.outputFileSync(
-    //         pathToSidebarFile.toString(),
-    //         JSON.stringify(sidebar)
-    //       );
-    //     }
-    //   }
-    //   return;
-    // })
-    // .then(() => {
-    //   filepath.create(CWD, BUILD_DIR, SIDEBAR_DIR);
-    //   const versions = Object.keys(sidebarMetadata);
-
-    //   const pathToVersionsFile = filepath.create(
-    //     CWD,
-    //     BUILD_DIR,
-    //     `versions.json`
-    //   );
-    //   return fs.outputFile(
-    //     pathToVersionsFile.toString(),
-    //     JSON.stringify(versions.reverse())
-    //   );
-    // })
     .then(() => {
       console.log("Finished with releases");
       return;
-      //   shell.cd(CWD);
-      //   shell.cd(BUILD_DIR);
-      //   shell.cd(CHECKOUT_DIR);
+    });
 
-      //   shell.exec(`git config core.sparsecheckout true`).code !== 0;
-      //   shell.exec(`echo "docs/*" >> .git/info/sparse-checkout`).code !== 0;
+  return p;
+}
 
-      //   if (shell.exec(`git checkout master`).code !== 0) {
-      //     throw new Error('Error: git checkout failed');
-      //   }
+// Attempt to run autodoc generation... on every single... release.
+function generateDocsFromGitTag(tag) {
+  const pathToGitCheckout = filepath.create(CWD, BUILD_DIR, TAGS_CHECKOUT_DIR);
 
-      //   // maybe should clear out before?
-      //   shell.cp('-r', 'docs/*.md', '../../docs/.');
+  let blacklist = [
+    "404",
+    "index",
+    "help",
+    "users",
+    "showcase",
+    "support",
+    "versions"
+  ];
 
-      //   return glob('docs/**/*.md');
-      // }).then(() => {
-      //   // now we handle sidebarring
-      //   // and make versioned sidebar?
-      //   return; //copy
-      // }).then(() => {
-      //   // then finally we run docgen over Libraries/...
+  let docsVersions = {};
+  const p = Promise.resolve()
+    .then(() => {
+      return fs.ensureDir(pathToGitCheckout.toString());
+    })
+    .then(() => {
+      shell.cd(pathToGitCheckout.toString());
+      shell.echo(shell.pwd());
+      return fs.exists(pathToGitCheckout.append(`.git`).toString());
+    })
+    .then(gitCheckoutExists => {
+      if (!gitCheckoutExists) {
+        shell.exec(`git init`).code !== 0;
+
+        if (shell.exec(`git remote add origin ${remoteBranch}`).code !== 0) {
+          throw new Error("Error: git remote failed");
+        }
+      }
+      return;
+    })
+    .then(() => {
+      if (shell.exec(`git fetch`).code !== 0) {
+        throw new Error("Error: git fetch failed");
+      }
+
+      shell.exec(`git config core.sparsecheckout false`).code !== 0;
+
+      if (shell.exec(`git checkout ${tag}`).code !== 0) {
+        throw new Error("Error: git checkout failed for " + tag);
+      }
+
+      return;
+    })
+    .then(() => {
+      return glob("releases/**/*.html");
+    })
+    .then(files => {
+      // Parse every Markdown file and build out our metadata, which can be used later on to generate both the markdown docs in the final location, as well as our sidebar metadata files.
+      let seq = Promise.resolve();
+      files.forEach(file => {
+        console.log("Parsing " + file);
+        // e.g. docs/view.md
+        seq = seq
+          .then(() => {
+            return extractMarkdownFromHTMLDocs(file);
+          })
+          .then(res => {
+            if (res.markdown === undefined) {
+              console.log("Skipping " + file + " for lack of markdown.");
+              return;
+            }
+
+            const version = extractDocVersionFromFilename(file);
+            if (!version) {
+              console.log("Skipping " + file + " for lack of version.");
+              return;
+            }
+
+            const frontmatter = res.frontmatter;
+
+            if (
+              !blacklist.includes(frontmatter.attributes.original_id) &&
+              !versionedDocsBlacklist.includes(
+                frontmatter.attributes.original_id
+              )
+            ) {
+              if (!docsVersions.hasOwnProperty(version)) {
+                docsVersions[version] = {};
+              }
+
+              docsVersions[version] = Object.assign({}, docsVersions[version], {
+                [frontmatter.attributes.id]: {
+                  metadata: frontmatter.attributes,
+                  body: frontmatter.body,
+                  version
+                }
+              });
+            }
+            return;
+          });
+      });
+      return seq;
+    })
+    .then(() => {
+      let seq = Promise.resolve();
+      Object.keys(docsVersions).forEach(version => {
+        seq.then(() => {
+          // Generate sidebar file...
+
+          const docsMetadata = docsVersions[version];
+          let documents = Object.keys(docsMetadata);
+          // TODO: We don't have old docs' categories
+          let sidebar = {
+            ["version-" + version + "-docs"]: {
+              Docs: documents
+            }
+          };
+
+          const pathToSidebarFile = filepath.create(
+            CWD,
+            "..",
+            "website",
+            "versioned_sidebars",
+            "version-" + version + "-sidebars.json"
+          );
+
+          return fs.outputFile(
+            pathToSidebarFile.toString(),
+            JSON.stringify(sidebar)
+          );
+        });
+        return seq;
+      });
+    })
+    .then(() => {
+      // Generate markdown files...
+      let seq = Promise.resolve();
+      Object.keys(docsVersions).forEach(version => {
+        const docsMetadata = docsVersions[version];
+
+        Object.keys(docsMetadata).forEach(documentId => {
+          const metadata = docsMetadata[documentId].metadata;
+          const body = docsMetadata[documentId].body;
+
+          const transformedMarkdown = [
+            "---",
+            "id: " + metadata.id,
+            "original_id: " + metadata.original_id,
+            "title: " + metadata.title,
+            "---",
+            body
+          ]
+            .filter(function(line) {
+              return line;
+            })
+            .join("\n");
+
+          seq = seq.then(() => {
+            const pathToMarkdownFile = filepath.create(
+              CWD,
+              "..",
+              "website",
+              "versioned_docs",
+              "version-" + version,
+              metadata.original_id + ".md"
+            );
+
+            return fs.outputFile(
+              pathToMarkdownFile.toString(),
+              transformedMarkdown
+            );
+          });
+        });
+      });
+      return seq;
+    })
+    .then(() => {
+      console.log("Finished with releases");
+      return;
     });
 
   return p;

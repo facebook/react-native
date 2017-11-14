@@ -1,6 +1,0 @@
----
-id: version-0.18-transforms
-title: transforms
-original_id: transforms
----
-<a id="content"></a><h1>Transforms</h1><div><noscript></noscript><h3><a class="anchor" name="props"></a><a class="edit-github" href="https://github.com/facebook/react-native/blob/master/Libraries/StyleSheet/TransformPropTypes.js">Edit on GitHub</a>Props <a class="hash-link" href="#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="transform"></a>transform <span class="propType">[{perspective: number}, {rotate: string}, {rotateX: string}, {rotateY: string}, {rotateZ: string}, {scale: number}, {scaleX: number}, {scaleY: number}, {translateX: number}, {translateY: number}, {skewX: string}, {skewY: string}]</span> <a class="hash-link" href="#transform">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="transformmatrix"></a>transformMatrix <span class="propType">TransformMatrixPropType</span> <a class="hash-link" href="#transformmatrix">#</a></h4></div></div></div><div class="docs-prevnext"><a class="docs-next" href="geolocation.html#content">Next →</a></div>
