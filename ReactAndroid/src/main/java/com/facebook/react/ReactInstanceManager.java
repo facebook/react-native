@@ -156,7 +156,6 @@ public class ReactInstanceManager {
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mDelayViewManagerClassLoadsEnabled;
-  private final int mMinNumShakes;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -234,7 +233,6 @@ public class ReactInstanceManager {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
-    mMinNumShakes = minNumShakes;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
@@ -825,10 +823,6 @@ public class ReactInstanceManager {
 
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
-  }
-
-  public int getMinNumShakes() {
-    return mMinNumShakes;
   }
 
   @ThreadConfined(UI)
