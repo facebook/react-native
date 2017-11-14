@@ -305,7 +305,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          reactApplicationContext.runUIBackgroundRunnable(
+          reactApplicationContext.runOnNativeModulesQueueThread(
             new GuardedRunnable(reactApplicationContext) {
               @Override
               public void runGuarded() {
@@ -325,7 +325,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
+    getReactApplicationContext().assertOnNativeModulesQueueThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -344,7 +344,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     reactApplicationContext.assertOnUiQueueThread();
 
-    reactApplicationContext.runUIBackgroundRunnable(
+    reactApplicationContext.runOnNativeModulesQueueThread(
         new GuardedRunnable(reactApplicationContext) {
           @Override
           public void runGuarded() {

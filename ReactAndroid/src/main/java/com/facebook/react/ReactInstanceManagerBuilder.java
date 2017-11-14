@@ -46,7 +46,6 @@ public class ReactInstanceManagerBuilder {
   private boolean mDelayViewManagerClassLoadsEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
-  private boolean mUseSeparateUIBackgroundThread;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
 
@@ -214,12 +213,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
-    boolean useSeparateUIBackgroundThread) {
-    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
     mMinNumShakes = minNumShakes;
     return this;
@@ -286,7 +279,6 @@ public class ReactInstanceManagerBuilder {
         mLazyViewManagersEnabled,
         mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
-        mUseSeparateUIBackgroundThread,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs);
   }
