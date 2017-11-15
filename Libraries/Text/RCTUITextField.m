@@ -87,6 +87,17 @@
   self.enabled = editable;
 }
 
+#pragma mark - Tooltip
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if (_tooltipHidden) {
+    return NO;
+  }
+
+  return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark - Caret Manipulation
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
