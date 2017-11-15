@@ -255,7 +255,7 @@ fs.open.mockImplementation(function(filepath) {
   }
 
   if (error || data == null) {
-    error = Error(`ENOENT: no such file or directory, open ${filepath}`);
+    error = Error(`ENOENT: no such file or directory: \`${filepath}\``);
   }
   if (data != null) {
     /* global Buffer: true */
@@ -409,7 +409,9 @@ function getToNode(filepath) {
     }
     node = node[part];
     if (node == null) {
-      const err = new Error('ENOENT: no such file or directory');
+      const err = new Error(
+        `ENOENT: no such file or directory: \`${filepath}\``,
+      );
       err.code = 'ENOENT';
       throw err;
     }

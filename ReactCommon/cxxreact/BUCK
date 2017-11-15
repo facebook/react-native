@@ -80,7 +80,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "JSCExecutor.h",
     "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
-    "JSIndexedRAMBundleRegistry.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
     "MethodCall.h",

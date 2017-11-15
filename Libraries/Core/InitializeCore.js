@@ -38,6 +38,15 @@ if (global.window === undefined) {
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
+// Set up collections
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  polyfillGlobal('Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  polyfillGlobal('Set', () => require('Set'));
+}
+
 /**
  * Sets an object's property. If a property with the same name exists, this will
  * replace it but maintain its descriptor configuration. The property will be
@@ -92,6 +101,7 @@ if (!global.process.env.NODE_ENV) {
 // Setup the Systrace profiling hooks if necessary
 if (global.__RCTProfileIsProfiling) {
   const Systrace = require('Systrace');
+  Systrace.installReactHook(true);
   Systrace.setEnabled(true);
 }
 
@@ -119,15 +129,6 @@ if (!global.__fbDisableExceptionsManager) {
 // Check for compatibility between the JS and native code
 const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
 ReactNativeVersionCheck.checkVersions();
-
-// Set up collections
-const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
-if (_shouldPolyfillCollection('Map')) {
-  polyfillGlobal('Map', () => require('Map'));
-}
-if (_shouldPolyfillCollection('Set')) {
-  polyfillGlobal('Set', () => require('Set'));
-}
 
 // Set up Promise
 // The native Promise implementation throws the following error:
@@ -206,16 +207,17 @@ BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require(
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
 
-global.fetchBundle = function(
-  bundleId: number,
+global.fetchSegment = function(
+  segmentId: number,
   callback: (?Error) => void,
 ) {
-  const {BundleFetcher} = require('NativeModules');
-  if (!BundleFetcher) {
-    throw new Error('BundleFetcher is missing');
+  const {SegmentFetcher} = require('NativeModules');
+  if (!SegmentFetcher) {
+    throw new Error('SegmentFetcher is missing. Please ensure that it is ' +
+      'included as a NativeModule.');
   }
 
-  BundleFetcher.fetchBundle(bundleId, (errorObject: ?{message: string, code: string}) => {
+  SegmentFetcher.fetchSegment(segmentId, (errorObject: ?{message: string, code: string}) => {
     if (errorObject) {
       const error = new Error(errorObject.message);
       (error: any).code = errorObject.code;

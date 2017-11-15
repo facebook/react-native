@@ -26,6 +26,7 @@ var ActionSheetIOS = {
    * - `destructiveButtonIndex` (int) - index of destructive button in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   * - `tintColor` (color) - tint color of the buttons
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
@@ -68,6 +69,7 @@ var ActionSheetIOS = {
    * - `message` (string) - a message to share
    * - `subject` (string) - a subject for the message
    * - `excludedActivityTypes` (array) - the activities to exclude from the ActionSheet
+   * - `tintColor` (color) - tint color of the buttons
    *
    * NOTE: if `url` points to a local file, or is a base64-encoded
    * uri, the file it points to will be loaded and shared directly.

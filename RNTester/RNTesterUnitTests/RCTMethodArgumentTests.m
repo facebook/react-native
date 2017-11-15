@@ -19,14 +19,14 @@
 
 @implementation RCTMethodArgumentTests
 
-extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTypes);
+extern NSString *RCTParseMethodSignature(const char *methodSignature, NSArray **argTypes);
 
 - (void)testOneArgument
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSInteger)foo";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
 }
@@ -35,8 +35,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSInteger)foo bar:(BOOL)bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -46,8 +46,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo : (NSInteger)foo bar : (BOOL) bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -57,8 +57,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo : (NSInteger)foo\nbar : (BOOL) bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -68,8 +68,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSInteger)foo:(BOOL)bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo::");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo::");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -79,8 +79,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:foo:bar:bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:::");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:::");
   XCTAssertEqual(arguments.count, (NSUInteger)3);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"id");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"id");
@@ -91,8 +91,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(foo::type &)foo bar:(bar::type &)bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"foo::type");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"bar::type");
@@ -102,8 +102,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(__attribute__((unused)) NSString *)foo bar:(__unused BOOL)bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -113,8 +113,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(nullable NSString *)foo bar:(nonnull NSNumber *)bar baz:(id)baz";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:baz:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:baz:");
   XCTAssertEqual(arguments.count, (NSUInteger)3);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"NSNumber");
@@ -128,8 +128,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSString *)foo bar:(BOOL)bar;";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -139,8 +139,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(__unused NSString *)foo bar:(NSNumber *)bar";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"NSNumber");
@@ -152,8 +152,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSArray<NSString *> *)foo;";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSStringArray");
 }
@@ -162,8 +162,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSArray<NSArray<NSString *> *> *)foo;";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSStringArrayArray");
 }
@@ -172,8 +172,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSSet<NSNumber *> *)foo;";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSNumberSet");
 }
@@ -182,8 +182,8 @@ extern SEL RCTParseMethodSignature(const char *methodSignature, NSArray **argTyp
 {
   NSArray *arguments;
   const char *methodSignature = "foo:(NSDictionary<NSString *, NSNumber *> *)foo;";
-  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
-  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  NSString *selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(selector, @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSNumberDictionary");
 }

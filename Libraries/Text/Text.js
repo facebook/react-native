@@ -243,11 +243,13 @@ const viewConfig = {
  * ```javascript
  * class MyAppHeaderText extends Component {
  *   render() {
- *     <MyAppText>
- *       <Text style={{fontSize: 20}}>
- *         {this.props.children}
- *       </Text>
- *     </MyAppText>
+ *     return (
+ *       <MyAppText>
+ *         <Text style={{fontSize: 20}}>
+ *           {this.props.children}
+ *         </Text>
+ *       </MyAppText>
+ *     );
  *   }
  * }
  * ```
@@ -489,44 +491,33 @@ const Text = createReactClass({
                 return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
-            // $FlowFixMe(>=0.41.0)
             return setResponder;
           },
           onResponderGrant: function(e: SyntheticEvent<>, dispatchID: string) {
-            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderGrant.apply(this, arguments);
           }.bind(this),
           onResponderMove: function(e: SyntheticEvent<>) {
-            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderMove.apply(this, arguments);
           }.bind(this),
           onResponderRelease: function(e: SyntheticEvent<>) {
-            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderRelease.apply(this, arguments);
           }.bind(this),
           onResponderTerminate: function(e: SyntheticEvent<>) {
-            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderTerminate.apply(this, arguments);
           }.bind(this),
           onResponderTerminationRequest: function(): bool {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
-            // $FlowFixMe(>=0.41.0)
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
-              // $FlowFixMe(>=0.41.0)
               allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
             }
             return allowTermination;

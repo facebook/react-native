@@ -201,6 +201,9 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
+  if(Platform.isTVOS) {
+    return null;
+  }
   return (
     <View style={styles.option}>
       <Text>{key}:</Text>

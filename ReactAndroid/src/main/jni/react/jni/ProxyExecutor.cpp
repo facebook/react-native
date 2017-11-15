@@ -90,6 +90,12 @@ void ProxyExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) {
     "Loading application RAM bundles is not supported for proxy executors");
 }
 
+void ProxyExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  jni::throwNewJavaException(
+    "java/lang/UnsupportedOperationException",
+    "Loading application RAM bundles is not supported for proxy executors");
+}
+
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   auto call = folly::dynamic::array(moduleId, methodId, std::move(arguments));
 
