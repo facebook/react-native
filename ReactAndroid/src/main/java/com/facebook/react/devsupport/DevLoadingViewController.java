@@ -12,8 +12,11 @@ package com.facebook.react.devsupport;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
@@ -37,7 +40,8 @@ public class DevLoadingViewController {
   private static boolean sEnabled = true;
   private final Context mContext;
   private final ReactInstanceManager mReactInstanceManager;
-  private TextView mDevLoadingView;
+  private final TextView mDevLoadingView;
+  private @Nullable PopupWindow mDevLoadingPopup;
 
   public static void setDevLoadingEnabled(boolean enabled) {
     sEnabled = enabled;
@@ -133,8 +137,8 @@ public class DevLoadingViewController {
   }
 
   private void showInternal() {
-    if (mDevLoadingView.getParent() != null) {
-      // already attached
+    if (mDevLoadingPopup != null && mDevLoadingPopup.isShowing()) {
+      // already showing
       return;
     }
 
@@ -145,17 +149,23 @@ public class DevLoadingViewController {
       return;
     }
 
-    ViewGroup parent = (ViewGroup) currentActivity.getWindow().getDecorView().getRootView();
-    parent.addView(
+    mDevLoadingPopup = new PopupWindow(
             mDevLoadingView,
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
+    mDevLoadingPopup.setTouchable(false);
+
+    mDevLoadingPopup.showAtLocation(
+            currentActivity.getWindow().getDecorView(),
+            Gravity.NO_GRAVITY,
+            0,
+            0);
   }
 
   private void hideInternal() {
-    ViewGroup parent = (ViewGroup) mDevLoadingView.getParent();
-    if (parent != null) {
-      parent.removeView(mDevLoadingView);
+    if (mDevLoadingPopup != null && mDevLoadingPopup.isShowing()) {
+      mDevLoadingPopup.dismiss();
+      mDevLoadingPopup = null;
     }
   }
 }

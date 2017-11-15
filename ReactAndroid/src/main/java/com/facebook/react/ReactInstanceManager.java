@@ -543,11 +543,43 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
+    mCurrentActivity = activity;
+
     if (mUseDeveloperSupport) {
-      mDevSupportManager.setDevSupportEnabled(true);
+      // Resume can be called from one of two different states:
+      // a) when activity was paused
+      // b) when activity has just been created
+      // In case of (a) the activity is attached to window and it is ok to add new views to it or
+      // open dialogs. In case of (b) there is often a slight delay before such a thing happens.
+      // As dev support manager can add views or open dialogs immediately after it gets enabled
+      // (e.g. in the case when JS bundle is being fetched in background) we only want to enable
+      // it once we know for sure the current activity is attached.
+
+      // We check if activity is attached to window by checking if decor view is attached
+      final View decorView = mCurrentActivity.getWindow().getDecorView();
+      if (decorView.getWindowToken() == null) {
+        // window token isn't set which means the view is not attached. We could use
+        // View#isAttchedToWindow but it is only available since API 19
+
+        decorView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+          @Override
+          public void onViewAttachedToWindow(View v) {
+            // we can drop listener now that we know the view is attached
+            decorView.removeOnAttachStateChangeListener(this);
+            mDevSupportManager.setDevSupportEnabled(true);
+          }
+
+          @Override
+          public void onViewDetachedFromWindow(View v) {
+            // do nothing
+          }
+        });
+      } else {
+        // activity is attached to window, we can enable dev support immediately
+        mDevSupportManager.setDevSupportEnabled(true);
+      }
     }
 
-    mCurrentActivity = activity;
     moveToResumedLifecycleState(false);
   }
 
