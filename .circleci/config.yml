@@ -99,6 +99,11 @@ aliases:
         - /.*-stable/
         - master
 
+  - &filter-only-stable
+    branches:
+      only:
+        - /.*-stable/
+
   - &filter-ignore-gh-pages
     branches:
       ignore: gh-pages
@@ -550,4 +555,4 @@ workflows:
       - publish-npm:
           requires: 
             - hold
-          filters: *filter-only-master-stable
+          filters: *filter-only-stable
