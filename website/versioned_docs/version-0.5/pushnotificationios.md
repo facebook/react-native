@@ -1,6 +1,7 @@
 ---
-id: pushnotificationios
+id: version-0.5-pushnotificationios
 title: PushNotificationIOS
+original_id: pushnotificationios
 ---
 
 <div class="banner-crna-ejected">

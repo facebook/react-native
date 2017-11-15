@@ -1,6 +1,7 @@
 ---
-id: geolocation
+id: version-0.5-geolocation
 title: Geolocation
+original_id: geolocation
 ---
 
 The Geolocation API extends the web spec:

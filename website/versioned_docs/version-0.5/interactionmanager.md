@@ -1,6 +1,7 @@
 ---
-id: interactionmanager
+id: version-0.5-interactionmanager
 title: InteractionManager
+original_id: interactionmanager
 ---
 
 InteractionManager allows long-running work to be scheduled after any

@@ -1,6 +1,7 @@
 ---
-id: vibrationios
+id: version-0.5-vibrationios
 title: VibrationIOS
+original_id: vibrationios
 ---
 
 > NOTE:

@@ -1,6 +1,7 @@
 ---
-id: dimensions
+id: version-0.5-dimensions
 title: Dimensions
+original_id: dimensions
 ---
 
 

@@ -1,6 +1,7 @@
 ---
-id: actionsheetios
+id: version-0.5-actionsheetios
 title: ActionSheetIOS
+original_id: actionsheetios
 ---
 
 Display action sheets and share sheets on iOS.

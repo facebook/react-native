@@ -1,6 +1,7 @@
 ---
-id: transforms
+id: version-0.5-transforms
 title: Transforms
+original_id: transforms
 ---
 ### Props
 

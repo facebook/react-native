@@ -1,0 +1,95 @@
+{
+  "version-0.5-docs": {
+    "The Basics": [
+      "version-0.5-getting-started",
+      "version-0.5-tutorial",
+      "version-0.5-props",
+      "version-0.5-state",
+      "version-0.5-style",
+      "version-0.5-height-and-width",
+      "version-0.5-flexbox",
+      "version-0.5-handling-text-input",
+      "version-0.5-handling-touches",
+      "version-0.5-using-a-scrollview",
+      "version-0.5-using-a-listview",
+      "version-0.5-network",
+      "version-0.5-more-resources"
+    ],
+    "Guides": [
+      "version-0.5-components-and-apis",
+      "version-0.5-platform-specific-code",
+      "version-0.5-navigation",
+      "version-0.5-images",
+      "version-0.5-animations",
+      "version-0.5-accessibility",
+      "version-0.5-improvingux",
+      "version-0.5-timers",
+      "version-0.5-debugging",
+      "version-0.5-performance",
+      "version-0.5-gesture-responder-system",
+      "version-0.5-javascript-environment",
+      "version-0.5-direct-manipulation",
+      "version-0.5-colors",
+      "version-0.5-integration-with-existing-apps",
+      "version-0.5-running-on-device",
+      "version-0.5-upgrading",
+      "version-0.5-troubleshooting"
+    ],
+    "Guides (iOS)": [
+      "version-0.5-native-modules-ios",
+      "version-0.5-native-components-ios",
+      "version-0.5-linking-libraries-ios",
+      "version-0.5-running-on-simulator-ios",
+      "version-0.5-communication-ios",
+      "version-0.5-building-for-apple-tv",
+      "version-0.5-app-extensions"
+    ],
+    "Guides (Android)": [
+      "version-0.5-native-modules-android",
+      "version-0.5-native-components-android",
+      "version-0.5-headless-js-android",
+      "version-0.5-signed-apk-android",
+      "version-0.5-android-building-from-source"
+    ],
+    "Contributing": [
+      "version-0.5-contributing",
+      "version-0.5-maintainers",
+      "version-0.5-testing",
+      "version-0.5-understanding-cli"
+    ],
+    "Components": [
+      "version-0.5-datepickerios",
+      "version-0.5-image",
+      "version-0.5-navigatorios",
+      "version-0.5-scrollview",
+      "version-0.5-segmentedcontrolios",
+      "version-0.5-tabbarios",
+      "version-0.5-tabbarios-item",
+      "version-0.5-text",
+      "version-0.5-textinput",
+      "version-0.5-touchablehighlight",
+      "version-0.5-touchableopacity",
+      "version-0.5-touchablewithoutfeedback",
+      "version-0.5-webview"
+    ],
+    "APIs": [
+      "version-0.5-actionsheetios",
+      "version-0.5-cameraroll",
+      "version-0.5-dimensions",
+      "version-0.5-geolocation",
+      "version-0.5-imagestyleproptypes",
+      "version-0.5-interactionmanager",
+      "version-0.5-layout-props",
+      "version-0.5-netinfo",
+      "version-0.5-pixelratio",
+      "version-0.5-pushnotificationios",
+      "version-0.5-settings",
+      "version-0.5-statusbarios",
+      "version-0.5-stylesheet",
+      "version-0.5-textstyleproptypes",
+      "version-0.5-transforms",
+      "version-0.5-vibrationios",
+      "version-0.5-viewstyleproptypes"
+    ]
+  }
+}
