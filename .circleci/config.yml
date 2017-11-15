@@ -99,6 +99,11 @@ aliases:
         - /.*-stable/
         - master
 
+  - &filter-only-stable
+    branches:
+      only:
+        - /.*-stable/
+
   - &filter-ignore-gh-pages
     branches:
       ignore: gh-pages
@@ -476,6 +481,7 @@ jobs:
               echo "Skipping code analysis."            
             fi
 
+# Publishes new version to npm. This is "hold" type of job and has to be run manually  
   publish-npm:
     <<: *defaults
     docker:
@@ -486,15 +492,11 @@ jobs:
       - run:
         name: Publish React Native Package
         command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-              git config --global user.email "reactjs-bot@users.noreply.github.com"
-              git config --global user.name "Website Deployment Script"
-              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-              node ./scripts/publish-npm.js
-            else
-              echo "Skipping publication."            
-            fi
+          echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+          git config --global user.email "reactjs-bot@users.noreply.github.com"
+          git config --global user.name "Website Deployment Script"
+          echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+          node ./scripts/publish-npm.js
 
 # Workflows enables us to run multiple jobs in parallel
 workflows:
@@ -553,4 +555,4 @@ workflows:
       - publish-npm:
           requires: 
             - hold
-          filters: *filter-only-master-stable
+          filters: *filter-only-stable
