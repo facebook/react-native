@@ -24,5 +24,7 @@
 - (void)allowRTL:(BOOL)value;
 - (BOOL)isRTLForced;
 - (void)forceRTL:(BOOL)value;
+- (BOOL)doLeftAndRightSwapInRTL;
+- (void)swapLeftAndRightInRTL:(BOOL)value;
 
 @end

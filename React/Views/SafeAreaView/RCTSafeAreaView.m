@@ -15,7 +15,7 @@
 #import "RCTSafeAreaViewLocalData.h"
 
 @implementation RCTSafeAreaView {
-  RCTBridge *_bridge;
+  __weak RCTBridge *_bridge;
   UIEdgeInsets _currentSafeAreaInsets;
 }
 

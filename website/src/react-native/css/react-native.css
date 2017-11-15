@@ -567,9 +567,12 @@ html * {
   padding-right: 20px; }
 
 hr {
-  height: 0;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #eee; }
+  height: 1px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 1px solid #ececec;
+  margin-top: 40px;
+}
 
 ul, li {
   margin-left: 20px; }
@@ -2176,3 +2179,53 @@ footer .newsletter {
 footer .newsletter h5 {
   color: #05A5D1;
   margin: 0 0 10px; }
+
+table {
+  background: #ebf9ff;
+  border: 1px solid #B0B0B0;
+  border-collapse: collapse;
+  display: table;
+  margin: 20px 0;
+  width: 80%;
+}
+table thead {
+  border-bottom: 1px solid #B0B0B0;
+  display: table-header-group;
+}
+table tbody {
+  display: table-row-group;
+}
+table tr {
+  display: table-row;
+}
+table tr:nth-of-type(even) {
+  background: #e0f6ff;
+}
+table tr th, table tr td {
+  border-right: 1px dotted #B0B0B0;
+  display: table-cell;
+  font-size: 14px;
+  line-height: 1.3em;
+  padding: 10px;
+  text-align: left;
+}
+table tr th:last-of-type, table tr td:last-of-type {
+  border-right: 0;
+}
+table tr th code, table tr td code {
+  display: inline-block;
+  font-size: 12px;
+}
+table tr th {
+  color: #000000;
+  background: #e0f6ff;
+  font-weight: bold;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  text-transform: uppercase;
+}
+table tr th:first-of-type {
+  width: 60%;
+}
+table tr th:nth-of-type(4) {
+  width: 80%;
+}

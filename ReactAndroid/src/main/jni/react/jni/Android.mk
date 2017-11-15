@@ -14,7 +14,6 @@ LOCAL_SRC_FILES := \
   JSLoader.cpp \
   JSLogging.cpp \
   JniJSModulesUnbundle.cpp \
-	JniRAMBundleRegistry.cpp \
   MethodInvoker.cpp \
   ModuleRegistryBuilder.cpp \
   NativeArray.cpp \
@@ -22,6 +21,7 @@ LOCAL_SRC_FILES := \
   NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
+  ReactMarker.cpp \
   ReadableNativeArray.cpp \
   ReadableNativeMap.cpp \
   WritableNativeArray.cpp \

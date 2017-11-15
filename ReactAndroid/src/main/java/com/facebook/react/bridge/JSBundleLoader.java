@@ -10,7 +10,6 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
-
 import com.facebook.react.common.DebugServerException;
 
 /**
@@ -97,8 +96,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * Loads the script, returning the URL of the source it loaded.
-   */
+  /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(CatalystInstanceImpl instance);
 }
