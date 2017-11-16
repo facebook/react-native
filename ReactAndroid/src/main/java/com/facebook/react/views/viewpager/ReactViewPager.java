@@ -9,17 +9,19 @@
 
 package com.facebook.react.views.viewpager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Wrapper view for {@link ViewPager}. It's forwarding calls to {@link ViewGroup#addView} to add
@@ -116,7 +118,7 @@ public class ReactViewPager extends ViewPager {
     }
   }
 
-  private class PageChangeListener implements ViewPager.OnPageChangeListener {
+  private class PageChangeListener implements OnPageChangeListener {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

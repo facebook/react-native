@@ -9,14 +9,17 @@
 
 package com.facebook.react.devsupport;
 
-import android.os.Handler;
-import android.os.Looper;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaJSExecutor;
+import javax.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
+
+import android.os.Handler;
+import android.os.Looper;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JavaJSExecutor;
 
 /**
  * Executes JS remotely via the react nodejs server as a proxy to a browser on the host machine.
@@ -157,7 +160,8 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   @Override
-  public void loadApplicationScript(String sourceURL) throws JavaJSExecutor.ProxyExecutorException {
+  public void loadApplicationScript(String sourceURL)
+      throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).loadApplicationScript(
         sourceURL,
@@ -172,7 +176,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   @Override
   public @Nullable String executeJSCall(String methodName, String jsonArgsArray)
-      throws JavaJSExecutor.ProxyExecutorException {
+      throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).executeJSCall(
         methodName,

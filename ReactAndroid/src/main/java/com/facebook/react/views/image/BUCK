@@ -11,7 +11,6 @@ android_library(
         react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
-    required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
         react_native_dep("third-party/java/jsr-305:jsr-305"),
