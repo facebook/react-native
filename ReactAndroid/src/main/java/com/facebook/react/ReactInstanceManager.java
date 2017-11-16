@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Process;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
@@ -557,10 +558,7 @@ public class ReactInstanceManager {
 
       // We check if activity is attached to window by checking if decor view is attached
       final View decorView = mCurrentActivity.getWindow().getDecorView();
-      if (decorView.getWindowToken() == null) {
-        // window token isn't set which means the view is not attached. We could use
-        // View#isAttchedToWindow but it is only available since API 19
-
+      if (!ViewCompat.isAttachedToWindow(decorView)) {
         decorView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
           @Override
           public void onViewAttachedToWindow(View v) {
