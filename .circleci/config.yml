@@ -73,11 +73,11 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v1-buck-{{ arch }}-v2017.11.16
+      - v1-buck-{{ arch }}-v2017.09.04.02
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v1-buck-{{ arch }}-v2017.11.16
+    key: v1-buck-{{ arch }}-v2017.09.04.02
 
   - &restore-cache-watchman
     keys:
@@ -91,13 +91,10 @@ aliases:
     |
       npm install --no-package-lock --no-spin --no-progress
 
-  # Install Buck version of 12b972d50a517290b2a4c1776744d4cbb7c3dda2 which
-  # happens to be "latest" as of 16.11.2017. Waiting for a new release.
   - &install-buck
     |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --depth=1
-        (cd ~/buck && git reset --hard 12b972d50a517290b2a4c1776744d4cbb7c3dda2)
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2017.09.04.02 --depth=1
       fi
       cd ~/buck && ant
       buck --version
