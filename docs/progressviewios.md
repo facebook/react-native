@@ -11,7 +11,7 @@ Use `ProgressViewIOS` to render a UIProgressView on iOS.
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`progress`](docs/progressviewios.html#progress)
 - [`progressImage`](docs/progressviewios.html#progressimage)
 - [`progressTintColor`](docs/progressviewios.html#progresstintcolor)

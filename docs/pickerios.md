@@ -10,7 +10,7 @@ previous: picker
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`itemStyle`](docs/pickerios.html#itemstyle)
 - [`onValueChange`](docs/pickerios.html#onvaluechange)
 - [`selectedValue`](docs/pickerios.html#selectedvalue)

@@ -30,7 +30,7 @@ history and configure various properties for the web content.
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`source`](docs/webview.html#source)
 - [`automaticallyAdjustContentInsets`](docs/webview.html#automaticallyadjustcontentinsets)
 - [`injectJavaScript`](docs/webview.html#injectjavascript)

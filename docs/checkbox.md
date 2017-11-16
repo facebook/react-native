@@ -19,7 +19,7 @@ the supplied `value` prop instead of the expected result of any user actions.
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`disabled`](docs/checkbox.html#disabled)
 - [`onChange`](docs/checkbox.html#onchange)
 - [`onValueChange`](docs/checkbox.html#onvaluechange)
