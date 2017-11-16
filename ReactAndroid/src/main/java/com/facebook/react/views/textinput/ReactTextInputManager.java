@@ -331,6 +331,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
       cursorDrawableResField.setAccessible(true);
       int drawableResId = cursorDrawableResField.getInt(view);
+      
+      // Older devices (sdk version 19) fails to get the cursor drawable
+      if (drawableResId == 0) return;
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
       if (color != null) {
