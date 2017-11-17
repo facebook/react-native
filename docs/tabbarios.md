@@ -9,7 +9,7 @@ previous: switch
 ---
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`barStyle`](docs/tabbarios.html#barstyle)
 - [`barTintColor`](docs/tabbarios.html#bartintcolor)
 - [`itemPositioning`](docs/tabbarios.html#itempositioning)
