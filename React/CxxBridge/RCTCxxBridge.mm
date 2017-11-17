@@ -176,8 +176,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
+@synthesize embeddedBundleURL = _embeddedBundleURL;
 @synthesize loading = _loading;
-@synthesize bundledSourceURL = _bundledSourceURL;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
 
@@ -208,8 +208,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
-    if ([bridge.delegate respondsToSelector:@selector(bundledSourceURLForBridge:)]) {
-      _bundledSourceURL = [bridge.delegate bundledSourceURLForBridge:bridge];
+    if ([bridge.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
+      _embeddedBundleURL = [bridge.delegate embeddedBundleURLForBridge:bridge];
     }
 
     registerPerformanceLoggerHooks(_performanceLogger);
@@ -1148,12 +1148,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        NSString *jsSegmentsDirectory = [self.delegate respondsToSelector:@selector(jsSegmentsDirectory)]
-          ? [[self.delegate jsSegmentsDirectory].path stringByAppendingString:@"/"]
-          : nil;
-        auto registry = jsSegmentsDirectory != nil
-          ? RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory(jsSegmentsDirectory.UTF8String))
-          : RAMBundleRegistry::singleBundleRegistry(std::move(ramBundle));
+        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }
@@ -1212,6 +1207,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   return ret;
+}
+
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
+{
+  if (_reactInstance) {
+    _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String);
+  }
 }
 
 #pragma mark - Payload Processing

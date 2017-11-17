@@ -9,17 +9,14 @@ previous: statusbar
 ---
 Renders a boolean input.
 
-This is a controlled component that requires an `onValueChange` callback that
-updates the `value` prop in order for the component to reflect user actions.
-If the `value` prop is not updated, the component will continue to render
-the supplied `value` prop instead of the expected result of any user actions.
+This is a controlled component that requires an `onValueChange` callback that updates the `value` prop in order for the component to reflect user actions. If the `value` prop is not updated, the component will continue to render the supplied `value` prop instead of the expected result of any user actions.
 
 @keyword checkbox
 @keyword toggle
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`disabled`](docs/switch.html#disabled)
 - [`onTintColor`](docs/switch.html#ontintcolor)
 - [`onValueChange`](docs/switch.html#onvaluechange)
@@ -27,9 +24,6 @@ the supplied `value` prop instead of the expected result of any user actions.
 - [`thumbTintColor`](docs/switch.html#thumbtintcolor)
 - [`tintColor`](docs/switch.html#tintcolor)
 - [`value`](docs/switch.html#value)
-
-
-
 
 
 

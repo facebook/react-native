@@ -17,7 +17,7 @@ namespace react {
 
 class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
 public:
-  static std::function<std::unique_ptr<JSModulesUnbundle>(uint32_t)> buildFactory(const std::string& baseDirectoryPath);
+  static std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> buildFactory();
 
   // Throws std::runtime_error on failure.
   JSIndexedRAMBundle(const char *sourceURL);

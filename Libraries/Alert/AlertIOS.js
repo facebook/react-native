@@ -12,9 +12,7 @@
  */
 'use strict';
 
-const RCTAlertManager = require('NativeModules').AlertManager;
-
-import type { Fbt } from 'fbt';
+var RCTAlertManager = require('NativeModules').AlertManager;
 
 /**
  * An Alert button type
@@ -135,8 +133,8 @@ class AlertIOS {
    * );
    */
   static alert(
-    title: ?string | ?Fbt,
-    message?: ?string | ?Fbt,
+    title: ?string,
+    message?: ?string,
     callbackOrButtons?: ?(() => void) | ButtonsArray,
     type?: AlertType,
   ): void {
@@ -194,8 +192,8 @@ class AlertIOS {
    * );
    */
   static prompt(
-    title: ?string | ?Fbt,
-    message?: ?string | ?Fbt,
+    title: ?string,
+    message?: ?string,
     callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,

@@ -28,7 +28,7 @@ selects a value and changes the index, as shown in the example below.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`enabled`](docs/segmentedcontrolios.html#enabled)
 - [`momentary`](docs/segmentedcontrolios.html#momentary)
 - [`onChange`](docs/segmentedcontrolios.html#onchange)

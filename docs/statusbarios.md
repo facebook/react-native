@@ -8,12 +8,4 @@ next: stylesheet
 previous: share
 ---
 
-Use `StatusBar` for mutating the status bar.
-
-
-
-
----
-
-# Reference
-
+Use [`StatusBar`](docs/statusbar.html) for mutating the status bar.

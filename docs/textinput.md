@@ -118,7 +118,7 @@ or control this param programmatically with native code.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`placeholderTextColor`](docs/textinput.html#placeholdertextcolor)
 - [`allowFontScaling`](docs/textinput.html#allowfontscaling)
 - [`autoCorrect`](docs/textinput.html#autocorrect)

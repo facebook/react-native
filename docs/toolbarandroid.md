@@ -43,7 +43,7 @@ onActionSelected: function(position) {
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`overflowIcon`](docs/toolbarandroid.html#overflowicon)
 - [`actions`](docs/toolbarandroid.html#actions)
 - [`contentInsetStart`](docs/toolbarandroid.html#contentinsetstart)

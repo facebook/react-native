@@ -78,7 +78,7 @@ class ScreenReaderStatusExample extends React.Component {
 ### `fetch()`
 
 ```javascript
-static fetch()
+AccessibilityInfo.fetch(): Promise
 ```
 
 
@@ -94,22 +94,10 @@ and `false` otherwise.
 ### `addEventListener()`
 
 ```javascript
-static addEventListener(eventName, handler)
+AccessibilityInfo.addEventListener(eventName: ChangeEventName, handler: Function): Object
 ```
 
-
-Add an event handler. Supported events:
-
-- `change`: Fires when the state of the screen reader changes. The argument
-  to the event handler is a boolean. The boolean is `true` when a screen
-  reader is enabled and `false` otherwise.
-- `announcementFinished`: iOS-only event. Fires when the screen reader has
-  finished making an announcement. The argument to the event handler is a dictionary
-  with these keys:
-    - `announcement`: The string announced by the screen reader.
-    - `success`: A boolean indicating whether the announcement was successfully made.
-
-
+Add an event handler. See [Change Event Names](docs/accessibilityinfo.html#changeeventnames).
 
 
 ---
@@ -117,11 +105,15 @@ Add an event handler. Supported events:
 ### `setAccessibilityFocus()`
 
 ```javascript
-static setAccessibilityFocus(reactTag)
+AccessibilityInfo.setAccessibilityFocus(reactTag: number): void
 ```
 
+Set accessibility focus to a React component.
 
-iOS-Only. Set accessibility focus to a react component.
+
+| Platform |
+| - |
+| iOS |
 
 
 
@@ -131,12 +123,14 @@ iOS-Only. Set accessibility focus to a react component.
 ### `announceForAccessibility()`
 
 ```javascript
-static announceForAccessibility(announcement)
+AccessibilityInfo.announceForAccessibility(announcement: string): void
 ```
 
+Post a string to be announced by the screen reader.
 
-iOS-Only. Post a string to be announced by the screen reader.
-
+| Platform |
+| - |
+| iOS |
 
 
 
@@ -145,12 +139,26 @@ iOS-Only. Post a string to be announced by the screen reader.
 ### `removeEventListener()`
 
 ```javascript
-static removeEventListener(eventName, handler)
+AccessibilityInfo.removeEventListener(eventName: ChangeEventName, handler)
 ```
 
-
-Remove an event handler.
-
+Remove an event handler. See [Change Event Names](docs/accessibilityinfo.html#changeeventnames).
 
 
 
+## Change Event Names
+
+### `change`
+
+Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is `true` when a screen reader is enabled and `false` otherwise.
+
+### `announcementFinished`
+
+Fires when the screen reader has finished making an announcement. The argument to the event handler is a dictionary with these keys:
+
+  - `announcement`: The string announced by the screen reader.
+  - `success`: A boolean indicating whether the announcement was successfully made.
+
+| Platform |
+| - |
+| iOS |

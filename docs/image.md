@@ -109,7 +109,6 @@ Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-
 
 ### Props
 
-- [`style`](docs/image.html#style)
 - [`blurRadius`](docs/image.html#blurradius)
 - [`onLayout`](docs/image.html#onlayout)
 - [`onLoad`](docs/image.html#onload)
@@ -126,6 +125,7 @@ Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-
 - [`defaultSource`](docs/image.html#defaultsource)
 - [`onPartialLoad`](docs/image.html#onpartialload)
 - [`onProgress`](docs/image.html#onprogress)
+- [`style`](docs/image.html#style)
 
 
 
@@ -143,73 +143,6 @@ Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-
 # Reference
 
 ## Props
-
-### `style`
-
-> `ImageResizeMode` is an `Enum` for different image resizing modes, set via the
-> `resizeMode` style property on `Image` components. The values are `contain`, `cover`,
-> `stretch`, `center`, `repeat`.
-
-| Type | Required |
-| - | - |
-| style | No |
-
-
-  - [Layout Props...](docs/layout-props.html#props)
-
-  - [Shadow Props...](docs/shadow-props.html#props)
-
-  - [Transforms...](docs/transforms.html#props)
-
-  - **`borderTopRightRadius`**: number
-
-  - **`backfaceVisibility`**: enum('visible', 'hidden')
-
-  - **`borderBottomLeftRadius`**: number
-
-  - **`borderBottomRightRadius`**: number
-
-  - **`borderColor`**: [color](docs/colors.html)
-
-  - **`borderRadius`**: number
-
-  - **`borderTopLeftRadius`**: number
-
-  - **`backgroundColor`**: [color](docs/colors.html)
-
-  - **`borderWidth`**: number
-
-  - **`opacity`**: number
-
-  - **`overflow`**: enum('visible', 'hidden')
-
-  - **`resizeMode`**: Object.keys(ImageResizeMode)
-
-  - **`tintColor`**: [color](docs/colors.html)
-
-    Changes the color of all the non-transparent pixels to the tintColor.
-
-  - **`overlayColor`**: string (_Android_)
-
-    When the image has rounded corners, specifying an overlayColor will
-    cause the remaining space in the corners to be filled with a solid color.
-    This is useful in cases which are not supported by the Android
-    implementation of rounded corners:
-      - Certain resize modes, such as 'contain'
-      - Animated GIFs
-    
-    A typical way to use this prop is with images displayed on a solid
-    background and setting the `overlayColor` to the same color
-    as the background.
-    
-    For details of how this works under the hood, see
-    http://frescolib.org/docs/rounded-corners-and-circles.html
-    
-    
-
-
-
----
 
 ### `blurRadius`
 
@@ -483,27 +416,25 @@ Invoked on download progress with `{nativeEvent: {loaded, total}}`.
 | function | No | iOS  |
 
 
+---
 
+### `style`
 
-
+| Type | Required |
+| - | - |
+| [style](docs/imagestyleproptypes.html) | No |
 
 ## Methods
 
 ### `getSize()`
 
 ```javascript
-static getSize(uri: string, success: function, [failure]: function): 
+static getSize(uri: string, success: function, [failure]: function): void
 ```
 
-Retrieve the width and height (in pixels) of an image prior to displaying it.
-This method can fail if the image cannot be found, or fails to download.
+Retrieve the width and height (in pixels) of an image prior to displaying it. This method can fail if the image cannot be found, or fails to download.
 
-In order to retrieve the image dimensions, the image may first need to be
-loaded or downloaded, after which it will be cached. This means that in
-principle you could use this method to preload images, however it is not
-optimized for that purpose, and may in future be implemented in a way that
-does not fully load/download the image data. A proper, supported way to
-preload images will be provided as a separate API.
+In order to retrieve the image dimensions, the image may first need to be loaded or downloaded, after which it will be cached. This means that in principle you could use this method to preload images, however it is not optimized for that purpose, and may in future be implemented in a way that does not fully load/download the image data. A proper, supported way to preload images will be provided as a separate API.
 
 Does not work for static image resources.
 
@@ -511,9 +442,9 @@ Does not work for static image resources.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| uri | string | No | The location of the image. |
-| success | function | No | The function that will be called if the image was successfully found and widthand height retrieved. |
-| failure | function | Yes | The function that will be called if there was an error, such as failing toto retrieve the image. |
+| uri | string | Yes | The location of the image. |
+| success | function | Yes | The function that will be called if the image was successfully found and widthand height retrieved. |
+| failure | function | No | The function that will be called if there was an error, such as failing toto retrieve the image. |
 
 
 
@@ -523,7 +454,7 @@ Does not work for static image resources.
 ### `prefetch()`
 
 ```javascript
-static prefetch(url: string): 
+Image.prefetch(url: string): 
 ```
 
 Prefetches a remote image for later use by downloading it to the disk
@@ -533,7 +464,7 @@ cache
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| url | string | No | The remote location of the image. |
+| url | string | Yes | The remote location of the image. |
 
 
 

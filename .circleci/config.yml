@@ -69,11 +69,11 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v1-buck-{{ arch }}-v2017.09.04.02
+      - v1-buck-{{ arch }}-v2017.11.16.01
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v1-buck-{{ arch }}-v2017.09.04.02
+    key: v1-buck-{{ arch }}-v2017.11.16.01
 
   - &restore-cache-watchman
     keys:
@@ -239,17 +239,22 @@ jobs:
           command: |
             cd website
             npm install --no-package-lock --no-spin --no-progress
+# The CIRCLE_PROJECT_USERNAME and CIRCLE_PR_USERNAME checks below 
+# ensure deploys only happen on projects owned by "facebook", 
+# never on a forked PR build.
       - run:
           name: Build and Deploy Static Website
           command: |
-            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
+            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CIRCLE_PR_USERNAME ]]; then
               git config --global user.email "reactjs-bot@users.noreply.github.com"
               git config --global user.name "Website Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
               echo "Deploying website..."
               cd website && GIT_USER=reactjs-bot npm run gh-pages
+            elif [[ -n $CIRCLE_PR_USERNAME ]]; then
+              echo "Skipping website deploy, this is a forked PR build."
             else
-              echo "Skipping deploy."
+              echo "Skipping website deploy."
             fi
 
   # Build JavaScript bundle for Android tests
@@ -329,7 +334,7 @@ jobs:
           name: Install Buck
           command: |
             if [[ ! -e ~/buck ]]; then
-              git clone https://github.com/facebook/buck.git ~/buck --branch v2017.09.04.02 --depth=1
+              git clone https://github.com/facebook/buck.git ~/buck --branch v2017.11.16.01 --depth=1
             fi
             cd ~/buck && ant
             buck --version
@@ -438,10 +443,12 @@ jobs:
       - checkout
       - restore-cache: *restore-cache-analysis
       - run: *install-node-dependencies
+# The CIRCLE_PR_NUMBER checks below ensure
+# code analysis only runs on forked PR builds.
       - run:
           name: Install Dependencies
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               npm install github@0.2.4
               cd danger
               npm install --no-package-lock --no-spin --no-progress
@@ -453,17 +460,17 @@ jobs:
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
             else
               echo "Skipping pull request analysis."            
             fi
           when: always
-# Run eslint          
+# Run eslint
       - run:
           name: Analyze Code
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" && -n "$CIRCLE_PROJECT_USERNAME" && -n "$CIRCLE_PROJECT_REPONAME" ]; then
               cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
             else
               echo "Skipping code analysis."            

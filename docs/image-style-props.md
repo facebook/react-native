@@ -1,31 +1,34 @@
 ---
-id: imagestyleproptypes
-title: ImageStylePropTypes
+id: image-style-props
+title: Image Style Props
 layout: docs
 category: APIs
-permalink: docs/imagestyleproptypes.html
+permalink: docs/image-style-props.html
 next: null
-previous: textstyleproptypes
+previous: text-style-props
 ---
+
+[Image](docs/image.html) style props.
+
 ### Props
 
-- [`borderTopRightRadius`](docs/imagestyleproptypes.html#bordertoprightradius)
-- [`backfaceVisibility`](docs/imagestyleproptypes.html#backfacevisibility)
-- [`borderBottomLeftRadius`](docs/imagestyleproptypes.html#borderbottomleftradius)
-- [`borderBottomRightRadius`](docs/imagestyleproptypes.html#borderbottomrightradius)
-- [`borderColor`](docs/imagestyleproptypes.html#bordercolor)
-- [`borderRadius`](docs/imagestyleproptypes.html#borderradius)
-- [`borderTopLeftRadius`](docs/imagestyleproptypes.html#bordertopleftradius)
-- [`backgroundColor`](docs/imagestyleproptypes.html#backgroundcolor)
-- [`borderWidth`](docs/imagestyleproptypes.html#borderwidth)
-- [`opacity`](docs/imagestyleproptypes.html#opacity)
-- [`overflow`](docs/imagestyleproptypes.html#overflow)
-- [`resizeMode`](docs/imagestyleproptypes.html#resizemode)
-- [`tintColor`](docs/imagestyleproptypes.html#tintcolor)
-- [`overlayColor`](docs/imagestyleproptypes.html#overlaycolor)
-
-
-
+- [Layout Props...](docs/layout-props.html#props)
+- [Shadow Props...](docs/shadow-props.html#props)
+- [Transforms...](docs/transforms.html#props)
+- [`borderTopRightRadius`](docs/image-style-props.html#bordertoprightradius)
+- [`backfaceVisibility`](docs/image-style-props.html#backfacevisibility)
+- [`borderBottomLeftRadius`](docs/image-style-props.html#borderbottomleftradius)
+- [`borderBottomRightRadius`](docs/image-style-props.html#borderbottomrightradius)
+- [`borderColor`](docs/image-style-props.html#bordercolor)
+- [`borderRadius`](docs/image-style-props.html#borderradius)
+- [`borderTopLeftRadius`](docs/image-style-props.html#bordertopleftradius)
+- [`backgroundColor`](docs/image-style-props.html#backgroundcolor)
+- [`borderWidth`](docs/image-style-props.html#borderwidth)
+- [`opacity`](docs/image-style-props.html#opacity)
+- [`overflow`](docs/image-style-props.html#overflow)
+- [`resizeMode`](docs/image-style-props.html#resizemode)
+- [`tintColor`](docs/image-style-props.html#tintcolor)
+- [`overlayColor`](docs/image-style-props.html#overlaycolor)
 
 
 

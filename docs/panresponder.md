@@ -121,41 +121,31 @@ To see it in action, try the
 ### `create()`
 
 ```javascript
-static create(config)
+PanResponder.create(config)
 ```
 
+Enhanced versions of all of the responder callbacks
+that provide not only the typical `ResponderSyntheticEvent`, but also the `PanResponder` gesture state.  Simply replace the word `Responder` with
+`PanResponder` in each of the typical `onResponder*` callbacks.
 
-@param {object} config Enhanced versions of all of the responder callbacks
-that provide not only the typical `ResponderSyntheticEvent`, but also the
-`PanResponder` gesture state.  Simply replace the word `Responder` with
-`PanResponder` in each of the typical `onResponder*` callbacks. For
-example, the `config` object would look like:
+For example, the `config` object would look like:
 
- - `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
- - `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`
- - `onStartShouldSetPanResponder: (e, gestureState) => {...}`
- - `onStartShouldSetPanResponderCapture: (e, gestureState) => {...}`
- - `onPanResponderReject: (e, gestureState) => {...}`
- - `onPanResponderGrant: (e, gestureState) => {...}`
- - `onPanResponderStart: (e, gestureState) => {...}`
- - `onPanResponderEnd: (e, gestureState) => {...}`
- - `onPanResponderRelease: (e, gestureState) => {...}`
- - `onPanResponderMove: (e, gestureState) => {...}`
- - `onPanResponderTerminate: (e, gestureState) => {...}`
- - `onPanResponderTerminationRequest: (e, gestureState) => {...}`
- - `onShouldBlockNativeResponder: (e, gestureState) => {...}`
+- `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
+- `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`
+- `onStartShouldSetPanResponder: (e, gestureState) => {...}`
+- `onStartShouldSetPanResponderCapture: (e, gestureState) => {...}`
+- `onPanResponderReject: (e, gestureState) => {...}`
+- `onPanResponderGrant: (e, gestureState) => {...}`
+- `onPanResponderStart: (e, gestureState) => {...}`
+- `onPanResponderEnd: (e, gestureState) => {...}`
+- `onPanResponderRelease: (e, gestureState) => {...}`
+- `onPanResponderMove: (e, gestureState) => {...}`
+- `onPanResponderTerminate: (e, gestureState) => {...}`
+- `onPanResponderTerminationRequest: (e, gestureState) => {...}`
+- `onShouldBlockNativeResponder: (e, gestureState) => {...}`
 
- In general, for events that have capture equivalents, we update the
- gestureState once in the capture phase and can use it in the bubble phase
- as well.
+In general, for events that have capture equivalents, we update the gestureState once in the capture phase and can use it in the bubble phase as well.
 
- Be careful with onStartShould* callbacks. They only reflect updated
- `gestureState` for start/end events that bubble/capture to the Node.
- Once the node is the responder, you can rely on every start/end event
- being processed by the gesture and `gestureState` being updated
- accordingly. (numberActiveTouches) may not be totally accurate unless you
- are the responder.
-
-
+Be careful with onStartShould* callbacks. They only reflect updated `gestureState` for start/end events that bubble/capture to the Node. Once the node is the responder, you can rely on every start/end event  being processed by the gesture and `gestureState` being updated accordingly. (numberActiveTouches) may not be totally accurate unless you are the responder.
 
 

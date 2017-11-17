@@ -49,7 +49,7 @@ var styles = {
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`initialPage`](docs/viewpagerandroid.html#initialpage)
 - [`keyboardDismissMode`](docs/viewpagerandroid.html#keyboarddismissmode)
 - [`onPageScroll`](docs/viewpagerandroid.html#onpagescroll)
@@ -92,8 +92,9 @@ update the page, and `onPageSelected` to monitor page changes
 ### `keyboardDismissMode`
 
 Determines whether the keyboard gets dismissed in response to a drag.
-  - 'none' (the default), drags do not dismiss the keyboard.
-  - 'on-drag', the keyboard is dismissed when a drag begins.
+
+- 'none' (the default), drags do not dismiss the keyboard.
+- 'on-drag', the keyboard is dismissed when a drag begins.
 
 | Type | Required |
 | - | - |
@@ -106,13 +107,11 @@ Determines whether the keyboard gets dismissed in response to a drag.
 
 ### `onPageScroll`
 
-Executed when transitioning between pages (ether because of animation for
-the requested page change or when user is swiping/dragging between pages)
-The `event.nativeEvent` object for this callback will carry following data:
- - position - index of first page from the left that is currently visible
- - offset - value from range [0,1) describing stage between page transitions.
-   Value x means that (1 - x) fraction of the page at "position" index is
-   visible, and x fraction of the next page is visible.
+Executed when transitioning between pages (ether because of animation for the requested page change or when user is swiping/dragging between pages) The `event.nativeEvent` object for this callback will carry following data:
+
+- position - index of first page from the left that is currently visible
+- offset - value from range [0,1) describing stage between page transitions.
+  Value x means that (1 - x) fraction of the page at "position" index is visible, and x fraction of the next page is visible.
 
 | Type | Required |
 | - | - |

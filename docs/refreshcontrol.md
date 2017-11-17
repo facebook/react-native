@@ -53,7 +53,7 @@ in the `onRefresh` function otherwise the refresh indicator will stop immediatel
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`refreshing`](docs/refreshcontrol.html#refreshing)
 - [`onRefresh`](docs/refreshcontrol.html#onrefresh)
 - [`colors`](docs/refreshcontrol.html#colors)

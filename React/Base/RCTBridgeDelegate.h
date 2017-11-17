@@ -41,10 +41,10 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * The location of bundle path, this should be a `file://` url
+ * The location of embedded bundle path, this should be a `file://` url
  * pointing to a path inside the bundle resources, e.g. `file://..//main.jsbundle`.
  */
-- (NSURL *)bundledSourceURLForBridge:(RCTBridge *)bridge;
+- (NSURL *)embeddedBundleURLForBridge:(RCTBridge *)bridge;
 
 /**
  * Configure whether the JSCExecutor created should use the system JSC API or
@@ -93,12 +93,5 @@
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
-
-/**
- * Specifies the path to folder where additional bundles are located
- *
- * @experimental
- */
-- (NSURL *)jsSegmentsDirectory;
 
 @end

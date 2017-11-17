@@ -7,17 +7,12 @@ permalink: docs/view.html
 next: viewpagerandroid
 previous: touchablewithoutfeedback
 ---
-The most fundamental component for building a UI, `View` is a container that supports layout with
-[flexbox](docs/flexbox.html), [style](docs/style.html),
-[some touch handling](docs/handling-touches.html), and
-[accessibility](docs/accessibility.html) controls. `View` maps directly to the
-native view equivalent on whatever platform React Native is running on, whether that is a
-`UIView`, `<div>`, `android.view`, etc.
+
+The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](docs/flexbox.html), [style](docs/style.html), [some touch handling](docs/handling-touches.html), and [accessibility](docs/accessibility.html) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
-This example creates a `View` that wraps two colored boxes and a text component in a row with
-padding.
+This example creates a `View` that wraps two colored boxes and a text component in a row with padding.
 
 ```javascript
 class ViewColoredBoxesWithText extends Component {
@@ -33,14 +28,12 @@ class ViewColoredBoxesWithText extends Component {
 }
 ```
 
-> `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity
-> and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
-For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them
-are of the following form:
-
+For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them are of the following form:
+  
 - `nativeEvent`
   - `changedTouches` - Array of all touch events that have changed since the last event.
   - `identifier` - The ID of the touch.
@@ -52,9 +45,11 @@ are of the following form:
   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
   - `touches` - Array of all current touches on the screen.
 
+For most touch interactions, you'll simply want to wrap your component in [`TouchableHighlight`](docs/touchablehighlight.html) or [`TouchableOpacity`](docs/touchableopacity.html).
+
+
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
 - [`onStartShouldSetResponder`](docs/view.html#onstartshouldsetresponder)
 - [`accessibilityLabel`](docs/view.html#accessibilitylabel)
 - [`hitSlop`](docs/view.html#hitslop)
@@ -392,30 +387,27 @@ Controls whether the `View` can be the target of touch events.
   - `'box-none'`: The View is never the target of touch events but it's
     subviews can be. It behaves like if the view had the following classes
     in CSS:
-```
-.box-none {
-     pointer-events: none;
-}
-.box-none * {
-     pointer-events: all;
-}
-```
+    ```
+    .box-none {
+        pointer-events: none;
+    }
+    .box-none * {
+        pointer-events: all;
+    }
+    ```
   - `'box-only'`: The view can be the target of touch events but it's
     subviews cannot be. It behaves like if the view had the following classes
     in CSS:
-```
-.box-only {
-     pointer-events: all;
-}
-.box-only * {
-     pointer-events: none;
-}
-```
-> Since `pointerEvents` does not affect layout/appearance, and we are
-> already deviating from the spec by adding additional modes, we opt to not
-> include `pointerEvents` on `style`. On some platforms, we would need to
-> implement it as a `className` anyways. Using `style` or not is an
-> implementation detail of the platform.
+    ```
+    .box-only {
+        pointer-events: all;
+    }
+    .box-only * {
+        pointer-events: none;
+    }
+    ```
+
+> Since `pointerEvents` does not affect layout/appearance, and we are already deviating from the spec by adding additional modes, we opt to not include `pointerEvents` on `style`. On some platforms, we would need to implement it as a `className` anyways. Using `style` or not is an implementation detail of the platform.
 
 | Type | Required |
 | - | - |
@@ -428,12 +420,7 @@ Controls whether the `View` can be the target of touch events.
 
 ### `removeClippedSubviews`
 
-This is a special performance property exposed by `RCTView` and is useful
-for scrolling content when there are many subviews, most of which are
-offscreen. For this property to be effective, it must be applied to a
-view that contains many subviews that extend outside its bound. The
-subviews must also have `overflow: hidden`, as should the containing view
-(or one of its superviews).
+This is a special performance property exposed by `RCTView` and is useful for scrolling content when there are many subviews, most of which are offscreen. For this property to be effective, it must be applied to a view that contains many subviews that extend outside its bound. The subviews must also have `overflow: hidden`, as should the containing view (or one of its superviews).
 
 | Type | Required |
 | - | - |
@@ -450,7 +437,7 @@ subviews must also have `overflow: hidden`, as should the containing view
 
 | Type | Required |
 | - | - |
-| stylePropType | No |
+| [style](docs/style.html) | No |
 
 
 
@@ -477,7 +464,7 @@ Used to locate this view in end-to-end tests.
 Indicates to accessibility services to treat UI component like a
 native one. Works for Android only.
 
-Possible values are one of:
+Possible values for `AccessibilityComponentTypes`:
 
 - `'none'`
 - `'button'`
@@ -545,15 +532,12 @@ that query the screen. Works for Android only.
 
 Possible values:
 
- - `'auto'` - The system determines whether the view is important for accessibility -
-   default (recommended).
- - `'yes'` - The view is important for accessibility.
- - `'no'` - The view is not important for accessibility.
- - `'no-hide-descendants'` - The view is not important for accessibility,
-   nor are any of its descendant views.
+- `'auto'` - The system determines whether the view is important for accessibility - default (recommended).
+- `'yes'` - The view is important for accessibility.
+- `'no'` - The view is not important for accessibility.
+- `'no-hide-descendants'` - The view is not important for accessibility, nor are any of its descendant views.
 
-See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
-for reference.
+See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility) for reference.
 
 
 
@@ -655,7 +639,7 @@ for more information.
 
 | Type | Required | Platform |
 | - | - | - |
-| AccessibilityTraits, ,array of AccessibilityTraits | No | iOS  |
+| AccessibilityTraits, array of AccessibilityTraits | No | iOS  |
 
 
 
@@ -704,15 +688,14 @@ memory. Test and measure when using this property.
 
 
 
-
-
 ## Type Definitions
 
 ### Props
 
 | Type |
 | - |
-| ViewProps |
+| [ViewProps](docs/view.html#props) |
+
 
 
 

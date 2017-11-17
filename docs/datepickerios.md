@@ -15,7 +15,7 @@ source of truth.
 
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [View props...](docs/view.html#props)
 - [`date`](docs/datepickerios.html#date)
 - [`onDateChange`](docs/datepickerios.html#ondatechange)
 - [`maximumDate`](docs/datepickerios.html#maximumdate)

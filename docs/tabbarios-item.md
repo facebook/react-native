@@ -7,9 +7,10 @@ permalink: docs/tabbarios-item.html
 next: text
 previous: tabbarios
 ---
+
 ### Props
 
-* [ViewPropTypes props...](docs/viewproptypes.html#props)
+- [ViewPropTypes props...](docs/viewproptypes.html#props)
 - [`selected`](docs/tabbarios-item.html#selected)
 - [`badge`](docs/tabbarios-item.html#badge)
 - [`icon`](docs/tabbarios-item.html#icon)
@@ -53,7 +54,7 @@ Little red bubble that sits at the top right of the icon.
 
 | Type | Required |
 | - | - |
-| string, ,number | No |
+| string, number | No |
 
 
 
@@ -121,7 +122,7 @@ icon is defined. If left empty, the icon will be tinted in blue.
 
 | Type | Required |
 | - | - |
-| Image.propTypes.source | No |
+| [Image.propTypes.source](docs/image.html#source) | No |
 
 
 
@@ -134,7 +135,7 @@ React style object.
 
 | Type | Required |
 | - | - |
-| ViewPropTypes.style | No |
+| [ViewPropTypes.style](docs/viewproptypes.html#style) | No |
 
 
 
@@ -150,8 +151,6 @@ system ones.
 | Type | Required |
 | - | - |
 | enum('bookmarks', 'contacts', 'downloads', 'favorites', 'featured', 'history', 'more', 'most-recent', 'most-viewed', 'recents', 'search', 'top-rated') | No |
-
-
 
 
 ---

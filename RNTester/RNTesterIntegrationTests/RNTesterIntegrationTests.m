@@ -37,7 +37,7 @@
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp", nil);
+  _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp", nil, nil);
   _runner.recordMode = NO;
 }
 

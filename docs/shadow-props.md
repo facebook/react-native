@@ -4,7 +4,7 @@ title: Shadow Props
 layout: docs
 category: APIs
 permalink: docs/shadow-props.html
-next: viewproptypes
+next: view-props
 previous: layout-props
 ---
 ### Props
