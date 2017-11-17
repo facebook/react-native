@@ -59,7 +59,7 @@ Registers an app's root component.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | appKey | string | Yes |  |
-| componentProvider | function | Yes | A function that returns a React component or element |
+| componentProvider | function | Yes | A function that returns a React component or element. |
 | section | boolean | No |  |
 
 ---
@@ -127,9 +127,9 @@ Only called from native code. Starts a headless task.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| taskId | number | No | The native id for this task instance to keep track of its execution |
-| taskKey | string | No | The key for the task to start |
-| data | any | No | The data to pass to the task |
+| taskId | number | No | The native id for this task instance to keep track of its execution. |
+| taskKey | string | No | The key for the task to start. |
+| data | any | No | The data to pass to the task. |
 
 
 ---

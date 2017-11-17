@@ -4,7 +4,7 @@ title: Animated
 layout: docs
 category: APIs
 permalink: docs/animated.html
-next: appregistry
+next: animatedvalue
 previous: alertios
 ---
 
@@ -529,20 +529,15 @@ values directly where possible.
 static unforkEvent(event, listener)
 ```
 
-
-
 ## Properties
 
 ### Value
 
-Standard value class for driving animations. Typically initialized with `new Animated.Value(0);`
-
-See also `AnimatedValue.js`.
-
+Standard value for driving animations.
 
 | Type |
 | - |
-| AnimatedValue |
+| [`AnimatedValue`](docs/animatedvalue.html) |
 
 ---
 
@@ -550,13 +545,9 @@ See also `AnimatedValue.js`.
 
 2D value class for driving 2D animations, such as pan gestures.
 
-See also `AnimatedValueXY.js`.
-
 | Type |
 | - |
-| AnimatedValueXY |
-
-
+| [`AnimatedValueXY`](docs/animatedvaluexy.html) |
 
 ---
 
@@ -564,11 +555,9 @@ See also `AnimatedValueXY.js`.
 
 Exported to use the Interpolation type in flow
 
-See also `AnimatedInterpolation.js`.
-
 | Type |
 | - |
-| AnimatedInterpolation |
+| [AnimatedInterpolation](docs/animatedinterpolation.html) |
 
 ---
 

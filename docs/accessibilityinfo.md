@@ -8,9 +8,7 @@ next: actionsheetios
 previous: webview
 ---
 
-Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The
-`AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the
-screen reader as well as to register to be notified when the state of the screen reader changes.
+Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The `AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the screen reader as well as to register to be notified when the state of the screen reader changes.
 
 Here's a small example illustrating how to use `AccessibilityInfo`:
 
@@ -57,7 +55,6 @@ class ScreenReaderStatusExample extends React.Component {
 }
 ```
 
-
 ### Methods
 
 - [`fetch`](docs/accessibilityinfo.html#fetch)
@@ -65,9 +62,6 @@ class ScreenReaderStatusExample extends React.Component {
 - [`setAccessibilityFocus`](docs/accessibilityinfo.html#setaccessibilityfocus)
 - [`announceForAccessibility`](docs/accessibilityinfo.html#announceforaccessibility)
 - [`removeEventListener`](docs/accessibilityinfo.html#removeeventlistener)
-
-
-
 
 ---
 
