@@ -10,7 +10,7 @@ previous: slider
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`onSnapshotReady`](docs/snapshotviewios.html#onsnapshotready)
 - [`testIdentifier`](docs/snapshotviewios.html#testidentifier)
 

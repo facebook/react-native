@@ -43,7 +43,7 @@ supports out of the box.
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`alwaysBounceVertical`](docs/scrollview.html#alwaysbouncevertical)
 - [`contentContainerStyle`](docs/scrollview.html#contentcontainerstyle)
 - [`keyboardDismissMode`](docs/scrollview.html#keyboarddismissmode)
