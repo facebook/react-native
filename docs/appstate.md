@@ -8,11 +8,9 @@ next: asyncstorage
 previous: appregistry
 ---
 
-`AppState` can tell you if the app is in the foreground or background,
-and notify you when the state changes.
+`AppState` can tell you if the app is in the foreground or background, and notify you when the state changes.
 
-AppState is frequently used to determine the intent and proper behavior when
-handling push notifications.
+App state is frequently used to determine the intent and proper behavior when handling push notifications.
 
 ### App States
 
@@ -70,8 +68,6 @@ This example will only ever appear to say "Current state is: active" because the
 - [`removeEventListener`](docs/appstate.html#removeeventlistener)
 
 
-
-
 ---
 
 # Reference
@@ -84,9 +80,14 @@ This example will only ever appear to say "Current state is: active" because the
 addEventListener(type, handler)
 ```
 
+Add a handler to AppState changes by listening to the `change` event type and providing the handler.
 
-Add a handler to AppState changes by listening to the `change` event type
-and providing the handler
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| type | string | Yes |  |
+| handler | function | Yes |  |
 
 ---
 
@@ -96,9 +97,11 @@ and providing the handler
 removeEventListener(type, handler)
 ```
 
+Remove a handler by passing the `change` event type and the handler.
 
-Remove a handler by passing the `change` event type and the handler
+**Parameters:**
 
-
-
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| type | string | Yes |  |
+| handler | function | Yes |  |

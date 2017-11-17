@@ -81,13 +81,7 @@ class ScreenReaderStatusExample extends React.Component {
 AccessibilityInfo.fetch()
 ```
 
-
-Query whether a screen reader is currently enabled. Returns a promise which
-resolves to a boolean. The result is `true` when a screen reader is enabled
-and `false` otherwise.
-
-
-
+Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a screen reader is enabled and `false` otherwise.
 
 ---
 
@@ -97,8 +91,14 @@ and `false` otherwise.
 AccessibilityInfo.addEventListener(eventName, handler)
 ```
 
+Add an event handler. 
 
-Add an event handler. Supported events:
+| Name | Type | Required | Description |
+| - | - | - | - |
+| eventName | string | Yes | Name of the event |
+| handler | function | Yes | Event handler |
+
+Supported events:
 
 - `change`: Fires when the state of the screen reader changes. The argument
   to the event handler is a boolean. The boolean is `true` when a screen
@@ -109,9 +109,6 @@ Add an event handler. Supported events:
     - `announcement`: The string announced by the screen reader.
     - `success`: A boolean indicating whether the announcement was successfully made.
 
-
-
-
 ---
 
 ### `setAccessibilityFocus()`
@@ -120,10 +117,11 @@ Add an event handler. Supported events:
 AccessibilityInfo.setAccessibilityFocus(reactTag)
 ```
 
-
 iOS-Only. Set accessibility focus to a react component.
 
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| reactTag | number | Yes | React component tag |
 
 
 ---
@@ -137,6 +135,10 @@ AccessibilityInfo.announceForAccessibility(announcement)
 
 iOS-Only. Post a string to be announced by the screen reader.
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| announcement | string | Yes | String to be announced |
+
 
 
 
@@ -148,9 +150,11 @@ iOS-Only. Post a string to be announced by the screen reader.
 AccessibilityInfo.removeEventListener(eventName, handler)
 ```
 
-
 Remove an event handler.
 
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| eventName | string | Yes | Name of the event |
+| handler | function | Yes | Event handler |
 
 

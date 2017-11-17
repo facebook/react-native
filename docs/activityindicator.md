@@ -7,6 +7,7 @@ permalink: docs/activityindicator.html
 next: button
 previous: null
 ---
+
 Displays a circular loading indicator.
 
 ### Example
@@ -58,10 +59,6 @@ AppRegistry.registerComponent('App', () => App)
 - [`hidesWhenStopped`](docs/activityindicator.html#hideswhenstopped)
 
 
-
-
-
-
 ---
 
 # Reference
@@ -101,7 +98,7 @@ Passing a number to the size prop is only supported on Android.
 
 | Type | Required |
 | - | - |
-| enum('small', 'large'), ,number | No |
+| enum('small', 'large'), number | No |
 
 
 
