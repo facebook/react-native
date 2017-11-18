@@ -49,7 +49,7 @@ To "stop" an application when a view should be destroyed, call `AppRegistry.unmo
 ### `registerComponent()`
 
 ```javascript
-static registerComponent(appKey, componentProvider, [section])
+AppRegistry.registerComponent(appKey, componentProvider, [section])
 ```
 
 Registers an app's root component.
@@ -67,7 +67,7 @@ Registers an app's root component.
 ### `runApplication()`
 
 ```javascript
-static runApplication(appKey, appParameters)
+AppRegistry.runApplication(appKey, appParameters)
 ```
 
 Loads the JavaScript bundle and runs the app.
@@ -84,7 +84,7 @@ Loads the JavaScript bundle and runs the app.
 ### `unmountApplicationComponentAtRootTag()`
 
 ```javascript
-static unmountApplicationComponentAtRootTag(rootTag)
+AppRegistry.unmountApplicationComponentAtRootTag(rootTag)
 ```
 
 Stops an application when a view should be destroyed. The `rootTag` should match the tag that was passed into `runApplication()`. These should always be used as a pair.
@@ -100,7 +100,7 @@ Stops an application when a view should be destroyed. The `rootTag` should match
 ### `registerHeadlessTask()`
 
 ```javascript
-static registerHeadlessTask(taskKey, task)
+AppRegistry.registerHeadlessTask(taskKey, task)
 ```
 
 Register a headless task. A headless task is a bit of code that runs without a UI.
@@ -118,7 +118,7 @@ Register a headless task. A headless task is a bit of code that runs without a U
 ### `startHeadlessTask()`
 
 ```javascript
-static startHeadlessTask(taskId, taskKey, data)
+AppRegistry.startHeadlessTask(taskId, taskKey, data)
 ```
 
 Only called from native code. Starts a headless task.
@@ -138,7 +138,7 @@ Only called from native code. Starts a headless task.
 ### `setWrapperComponentProvider()`
 
 ```javascript
-static setWrapperComponentProvider(provider)
+AppRegistry.setWrapperComponentProvider(provider)
 ```
 
 
@@ -148,7 +148,7 @@ static setWrapperComponentProvider(provider)
 ### `registerConfig()`
 
 ```javascript
-static registerConfig(config)
+AppRegistry.registerConfig(config)
 ```
 
 
@@ -158,7 +158,7 @@ static registerConfig(config)
 ### `registerRunnable()`
 
 ```javascript
-static registerRunnable(appKey, run)
+AppRegistry.registerRunnable(appKey, run)
 ```
 
 
@@ -168,7 +168,7 @@ static registerRunnable(appKey, run)
 ### `registerSection()`
 
 ```javascript
-static registerSection(appKey, component)
+AppRegistry.registerSection(appKey, component)
 ```
 
 
@@ -178,7 +178,7 @@ static registerSection(appKey, component)
 ### `getAppKeys()`
 
 ```javascript
-static getAppKeys()
+AppRegistry.getAppKeys()
 ```
 
 
@@ -188,7 +188,7 @@ static getAppKeys()
 ### `getSectionKeys()`
 
 ```javascript
-static getSectionKeys()
+AppRegistry.getSectionKeys()
 ```
 
 
@@ -198,7 +198,7 @@ static getSectionKeys()
 ### `getSections()`
 
 ```javascript
-static getSections()
+AppRegistry.getSections()
 ```
 
 
@@ -208,7 +208,7 @@ static getSections()
 ### `getRunnable()`
 
 ```javascript
-static getRunnable(appKey)
+AppRegistry.getRunnable(appKey)
 ```
 
 
@@ -218,7 +218,7 @@ static getRunnable(appKey)
 ### `getRegistry()`
 
 ```javascript
-static getRegistry()
+AppRegistry.getRegistry()
 ```
 
 
@@ -228,7 +228,7 @@ static getRegistry()
 ### `setComponentProviderInstrumentationHook()`
 
 ```javascript
-static setComponentProviderInstrumentationHook(hook)
+AppRegistry.setComponentProviderInstrumentationHook(hook)
 ```
 
 
