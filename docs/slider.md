@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`style`](docs/slider.html#style)
 - [`disabled`](docs/slider.html#disabled)
 - [`maximumValue`](docs/slider.html#maximumvalue)

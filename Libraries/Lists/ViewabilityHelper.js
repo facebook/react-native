@@ -74,7 +74,6 @@ export type ViewabilityConfig = {|
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
-  _lastUpdateTime: number = 0;
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
@@ -170,15 +169,11 @@ class ViewabilityHelper {
     }) => void,
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
-    const updateTime = Date.now();
-    if (this._lastUpdateTime === 0 && itemCount > 0 && getFrameMetrics(0)) {
-      // Only count updates after the first item is rendered and has a frame.
-      this._lastUpdateTime = updateTime;
-    }
-    const updateElapsed = this._lastUpdateTime
-      ? updateTime - this._lastUpdateTime
-      : 0;
-    if (this._config.waitForInteraction && !this._hasInteracted) {
+    if (
+      (this._config.waitForInteraction && !this._hasInteracted) ||
+      itemCount === 0 ||
+      !getFrameMetrics(0)
+    ) {
       return;
     }
     let viewableIndices = [];
@@ -200,11 +195,7 @@ class ViewabilityHelper {
       return;
     }
     this._viewableIndices = viewableIndices;
-    this._lastUpdateTime = updateTime;
-    if (
-      this._config.minimumViewTime &&
-      updateElapsed < this._config.minimumViewTime
-    ) {
+    if (this._config.minimumViewTime) {
       const handle = setTimeout(() => {
         this._timers.delete(handle);
         this._onUpdateSync(

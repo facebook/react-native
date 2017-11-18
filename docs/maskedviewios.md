@@ -43,7 +43,7 @@ transparent pixels block that content.
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`maskElement`](docs/maskedviewios.html#maskelement)
 
 
