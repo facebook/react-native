@@ -209,7 +209,7 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
 ### `decay()`
 
 ```javascript
-static decay(value, config)
+Animated.decay(value, config)
 ```
 
 Animates a value from an initial velocity to zero based on a decay coefficient.
@@ -234,7 +234,7 @@ Config is an object that may have the following options:
 ### `timing()`
 
 ```javascript
-static timing(value, config)
+Animated.timing(value, config)
 ```
 
 Animates a value along a timed easing curve. The [`Easing`](docs/easing.html) module has tons of predefined curves, or you can use your own function.
@@ -264,7 +264,7 @@ Config is an object that may have the following options:
 ### `spring()`
 
 ```javascript
-static spring(value, config)
+Animated.spring(value, config)
 ```
 
 Animates a value according to an analytical spring model based on [damped harmonic oscillation](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator). Tracks velocity state to create fluid motions as the `toValue` updates, and can be chained together.
@@ -308,7 +308,7 @@ Other configuration options are as follows:
 ### `add()`
 
 ```javascript
-static add(a, b)
+Animated.add(a, b)
 ```
 
 Creates a new Animated value composed from two Animated values added together.
@@ -328,7 +328,7 @@ Creates a new Animated value composed from two Animated values added together.
 ### `divide()`
 
 ```javascript
-static divide(a, b)
+Animated.divide(a, b)
 ```
 
 
@@ -347,7 +347,7 @@ Creates a new Animated value composed by dividing the first Animated value by th
 ### `multiply()`
 
 ```javascript
-static multiply(a, b)
+Animated.multiply(a, b)
 ```
 
 Creates a new Animated value composed from two Animated values multiplied together.
@@ -365,7 +365,7 @@ Creates a new Animated value composed from two Animated values multiplied togeth
 ### `modulo()`
 
 ```javascript
-static modulo(a, modulus)
+Animated.modulo(a, modulus)
 ```
 
 
@@ -384,7 +384,7 @@ Creates a new Animated value that is the (non-negative) modulo of the provided A
 ### `diffClamp()`
 
 ```javascript
-static diffClamp(a, min, max)
+Animated.diffClamp(a, min, max)
 ```
 
 Create a new Animated value that is limited between 2 values. It uses the difference between the last value so even if the value is far from the bounds it will start changing when the value starts getting closer again. (`value = clamp(value + diff, min, max)`).
@@ -404,7 +404,7 @@ This is useful with scroll events, for example, to show the navbar when scrollin
 ### `delay()`
 
 ```javascript
-static delay(time)
+Animated.delay(time)
 ```
 
 Starts an animation after the given delay.
@@ -421,7 +421,7 @@ Starts an animation after the given delay.
 ### `sequence()`
 
 ```javascript
-static sequence(animations)
+Animated.sequence(animations)
 ```
 
 Starts an array of animations in order, waiting for each to complete before starting the next.  If the current running animation is stopped, no following animations will be started.
@@ -439,7 +439,7 @@ Starts an array of animations in order, waiting for each to complete before star
 ### `parallel()`
 
 ```javascript
-static parallel(animations, [config])
+Animated.parallel(animations, [config])
 ```
 
 Starts an array of animations all at the same time. By default, if one
@@ -459,7 +459,7 @@ this with the `stopTogether` flag through `config`.
 ### `stagger()`
 
 ```javascript
-static stagger(time, animations)
+Animated.stagger(time, animations)
 ```
 
 Array of animations may run in parallel (overlap), but are started in
@@ -477,7 +477,7 @@ sequence with successive delays.  Nice for doing trailing effects.
 ### `loop()`
 
 ```javascript
-static loop(animation)
+Animated.loop(animation)
 ```
 
 Loops a given animation continuously, so that each time it reaches the end, it resets and begins again from the start. Can specify number of times to loop using the key `iterations` in the config. Will loop without blocking the UI thread if the child animation is set to `useNativeDriver: true`. In addition, loops can prevent `VirtualizedList`-based components from rendering more rows while the animation is running. You can pass `isInteraction: false` in the child animation config to fix this.
@@ -493,7 +493,7 @@ Loops a given animation continuously, so that each time it reaches the end, it r
 ### `event()`
 
 ```javascript
-static event(argMapping, [config])
+Animated.event(argMapping, [config])
 ```
 
 Takes an array of mappings and extracts values from each arg accordingly, then calls `setValue` on the mapped outputs. e.g.
@@ -563,7 +563,7 @@ Imperative API to attach an animated value to an event on a view. Prefer using `
 ### `forkEvent()`
 
 ```javascript
-static forkEvent(event, listener)
+Animated.forkEvent(event, listener)
 ```
 
 Advanced imperative API for snooping on animated events that are passed in through props. Use values directly where possible.
@@ -580,7 +580,7 @@ Advanced imperative API for snooping on animated events that are passed in throu
 ### `unforkEvent()`
 
 ```javascript
-static unforkEvent(event, listener)
+Animated.unforkEvent(event, listener)
 ```
 
 Advanced imperative API for snooping on animated events that are passed in through props. Use values directly where possible.
