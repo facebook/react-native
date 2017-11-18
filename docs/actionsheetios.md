@@ -34,8 +34,8 @@ Display an iOS action sheet.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| options | object | Yes |  |
-| callback | function | Yes | Provides index for the selected item |
+| options | object | Yes | See below. |
+| callback | function | Yes | Provides index for the selected item. |
 
 The `options` object must contain one or more of:
 
@@ -73,9 +73,9 @@ Display the iOS share sheet.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| options | object | Yes |  |
-| failureCallback | function | Yes |  |
-| successCallback | function | Yes |  |
+| options | object | Yes | See below. |
+| failureCallback | function | Yes | See below. |
+| successCallback | function | Yes | See below. |
 
 The `options` object should contain one or both of `message` and `url` and can additionally have a `subject` or `excludedActivityTypes`:
 

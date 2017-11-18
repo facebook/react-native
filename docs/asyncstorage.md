@@ -187,7 +187,7 @@ Returns a `Promise` object.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | key | string | Yes | Key of the item to fetch. |
-| callback | ?(error: ?Error, result: ?string) => void | No | Function that will be called with a result if found or   any error. |
+| callback | (error, result) => void | No | Function that will be called with a result if found or any error. |
 
 
 
@@ -210,7 +210,7 @@ Returns a `Promise` object.
 | - | - | - | - |
 | key | string | Yes | Key of the item to set. |
 | value | string | Yes | Value to set for the `key`. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
+| callback | (error) => void | No | Function that will be called with any error. |
 
 
 
@@ -231,7 +231,7 @@ Returns a `Promise` object.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | key | string | Yes | Key of the item to remove. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
+| callback | (error) => void | No | Function that will be called with any error. |
 
 
 ---
@@ -253,7 +253,7 @@ Merges an existing `key` value with an input value, assuming both values are str
 | - | - | - | - |
 | key | string | Yes | Key of the item to modify. |
 | value | string | Yes | New value to merge for the `key`. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
+| callback | (error) => void | No | Function that will be called with any error. |
 
 
 ---
@@ -270,7 +270,7 @@ Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably don't
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
+| callback | (error) => void | No | Function that will be called with any error. |
 
 
 
@@ -290,7 +290,7 @@ Returns a `Promise` object.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| callback | ?(error: ?Error, keys: ?Array<string>) => void | No | Function that will be called the keys found and any error. |
+| callback | (error, keys) => void | No | Function that will be called with an array of keys found, and any error. |
 
 
 
@@ -326,7 +326,7 @@ The method returns a `Promise` object.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | keys | Array<string> | Yes | Array of key for the items to get. |
-| callback | ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void | No | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
+| callback | (errors, result) => void | No | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
 
 
 
@@ -354,7 +354,7 @@ The method returns a `Promise` object.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to set. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
+| callback | (errors) => void | No | Function that will be called with an array of any key-specific errors found. |
 
 
 
@@ -375,7 +375,7 @@ a `Promise` object.
 | Name | Type | Required | Description |
 | - | - | - | - |
 | keys | Array<string> | Yes | Array of key for the items to delete. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called an array of any key-specific   errors found. |
+| callback | (errors) => void | No | Function that will be called an array of any key-specific errors found. |
 
 
 
@@ -399,6 +399,6 @@ keys. This assumes that the values are stringified JSON. Returns a
 | Name | Type | Required | Description |
 | - | - | - | - |
 | keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to merge. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
+| callback | (errors) => void | No | Function that will be called with an array of any key-specific errors found. |
 
 

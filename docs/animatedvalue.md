@@ -3,7 +3,7 @@ id: animatedvalue
 title: AnimatedValue
 layout: docs
 category: APIs
-permalink: docs/animated.html
+permalink: docs/animatedvalue.html
 next: animatedvaluexy
 previous: animated
 ---
@@ -11,6 +11,8 @@ previous: animated
 Standard value for driving animations. One `Animated.Value` can drive multiple properties in a synchronized fashion, but can only be driven by one mechanism at a time. Using a new mechanism (e.g. starting a new animation, or calling `setValue`) will stop any previous ones.
 
 Typically initialized with `new Animated.Value(0);`
+
+See also [`Animated`](docs/animated.html).
 
 ### Methods
 
@@ -46,7 +48,7 @@ Directly set the value. This will stop any animations running on the value and u
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| value | number | Yes |  |
+| value | number | Yes | Value |
 
 ---
 
@@ -62,7 +64,7 @@ Sets an offset that is applied on top of whatever value is set, whether via `set
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| offset | number | Yes |  |
+| offset | number | Yes | Offset value  |
 
 ---
 
@@ -177,7 +179,7 @@ See `AnimatedInterpolation.js`
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| config | object | Yes |  |
+| config | object | Yes | See below. |
 
 The `config` object is composed of the following keys:
 
@@ -202,8 +204,8 @@ Typically only used internally, but could be used by a custom Animation class.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| animation | Animation | Yes | See `Animation.js` |
-| callback | function | Yes |  |
+| animation | Animation | Yes | See `Animation.js`. |
+| callback | function | Yes | Callback function. |
 
 ---
 

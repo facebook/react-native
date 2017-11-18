@@ -65,7 +65,7 @@ Launches an alert dialog with the specified title, and optionally a message.
 | title | string | Yes | Alert title |
 | message | string | No | Alert message |
 | buttons | array | No | Array of buttons |
-| options | object | No |  |
+| options | object | No | See below. |
 
 The optional `buttons` array should be composed of objects with any of the following:
 

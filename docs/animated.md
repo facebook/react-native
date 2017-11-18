@@ -185,9 +185,10 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
 - [`stagger`](docs/animated.html#stagger)
 - [`loop`](docs/animated.html#loop)
 - [`event`](docs/animated.html#event)
+- [`createAnimatedComponent`](docs/animated.html#createanimatedcomponent)
+- [`attachNativeEvent`](docs/animated.html#attachnativeevent)
 - [`forkEvent`](docs/animated.html#forkevent)
 - [`unforkEvent`](docs/animated.html#unforkevent)
-
 
 ### Properties
 
@@ -195,8 +196,6 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
 - [`ValueXY`](docs/animated.html#valuexy)
 - [`Interpolation`](docs/animated.html#interpolation)
 - [`Node`](docs/animated.html#node)
-- [`createAnimatedComponent`](docs/animated.html#createanimatedcomponent)
-- [`attachNativeEvent`](docs/animated.html#attachnativeevent)
 
 
 
@@ -213,20 +212,22 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
 static decay(value, config)
 ```
 
+Animates a value from an initial velocity to zero based on a decay coefficient.
 
-Animates a value from an initial velocity to zero based on a decay
-coefficient.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| value | AnimatedValue or AnimatedValueXY | Yes | Value to animate. |
+| config | object | Yes | See below. |
 
 Config is an object that may have the following options:
 
-  - `velocity`: Initial velocity.  Required.
-  - `deceleration`: Rate of decay.  Default 0.997.
-  - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
-    `InteractionManager`. Default true.
-  - `useNativeDriver`: Uses the native driver when true. Default false.
-
-
-
+- `velocity`: Initial velocity. Required.
+- `deceleration`: Rate of decay. Default 0.997.
+- `isInteraction`: Whether or not this animation creates an "interaction handle" on the
+  `InteractionManager`. Default true.
+- `useNativeDriver`: Uses the native driver when true. Default false.
 
 ---
 
@@ -236,10 +237,14 @@ Config is an object that may have the following options:
 static timing(value, config)
 ```
 
+Animates a value along a timed easing curve. The [`Easing`](docs/easing.html) module has tons of predefined curves, or you can use your own function.
 
-Animates a value along a timed easing curve. The
-[`Easing`](docs/easing.html) module has tons of predefined curves, or you
-can use your own function.
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| value | AnimatedValue or AnimatedValueXY | Yes | Value to animate. |
+| config | object | Yes | See below. |
 
 Config is an object that may have the following options:
 
@@ -262,55 +267,41 @@ Config is an object that may have the following options:
 static spring(value, config)
 ```
 
+Animates a value according to an analytical spring model based on [damped harmonic oscillation](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator). Tracks velocity state to create fluid motions as the `toValue` updates, and can be chained together.
 
-Animates a value according to an analytical spring model based on
-[damped harmonic oscillation](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
-Tracks velocity state to create fluid motions as the `toValue` updates, and
-can be chained together.
+**Parameters:**
 
-Config is an object that may have the following options.
+| Name | Type | Required | Description |
+| - | - | - | - |
+| value | AnimatedValue or AnimatedValueXY | Yes | Value to animate. |
+| config | object | Yes | See below. |
 
-Note that you can only define one of bounciness/speed, tension/friction, or
-stiffness/damping/mass, but not more than one:
+`config` is an object that may have the following options.
 
-The friction/tension or bounciness/speed options match the spring model in
-[Facebook Pop](https://github.com/facebook/pop), [Rebound](http://facebook.github.io/rebound/),
-and [Origami](http://origami.design/).
+Note that you can only define one of bounciness/speed, tension/friction, or stiffness/damping/mass, but not more than one:
 
-  - `friction`: Controls "bounciness"/overshoot.  Default 7.
-  - `tension`: Controls speed.  Default 40.
-  - `speed`: Controls speed of the animation. Default 12.
-  - `bounciness`: Controls bounciness. Default 8.
+The friction/tension or bounciness/speed options match the spring model in [Facebook Pop](https://github.com/facebook/pop), [Rebound](http://facebook.github.io/rebound/), and [Origami](http://origami.design/).
 
-Specifying stiffness/damping/mass as parameters makes `Animated.spring` use an
-analytical spring model based on the motion equations of a [damped harmonic
-oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
-This behavior is slightly more precise and faithful to the physics behind
-spring dynamics, and closely mimics the implementation in iOS's
-CASpringAnimation primitive.
+- `friction`: Controls "bounciness"/overshoot.  Default 7.
+- `tension`: Controls speed.  Default 40.
+- `speed`: Controls speed of the animation. Default 12.
+- `bounciness`: Controls bounciness. Default 8.
 
-  - `stiffness`: The spring stiffness coefficient. Default 100.
-  - `damping`: Defines how the spring’s motion should be damped due to the forces of friction.
-    Default 10.
-  - `mass`: The mass of the object attached to the end of the spring. Default 1.
+Specifying stiffness/damping/mass as parameters makes `Animated.spring` use an analytical spring model based on the motion equations of a [damped harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator). This behavior is slightly more precise and faithful to the physics behind spring dynamics, and closely mimics the implementation in iOS's CASpringAnimation primitive.
+
+- `stiffness`: The spring stiffness coefficient. Default 100.
+- `damping`: Defines how the spring’s motion should be damped due to the forces of friction. Default 10.
+- `mass`: The mass of the object attached to the end of the spring. Default 1.
 
 Other configuration options are as follows:
 
-  - `velocity`: The initial velocity of the object attached to the spring. Default 0 (object
-    is at rest).
-  - `overshootClamping`: Boolean indiciating whether the spring should be clamped and not
-    bounce. Default false.
-  - `restDisplacementThreshold`: The threshold of displacement from rest below which the
-    spring should be considered at rest. Default 0.001.
-  - `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels
-    per second. Default 0.001.
-  - `delay`: Start the animation after delay (milliseconds).  Default 0.
-  - `isInteraction`: Whether or not this animation creates an "interaction handle" on the
-    `InteractionManager`. Default true.
-  - `useNativeDriver`: Uses the native driver when true. Default false.
-
-
-
+- `velocity`: The initial velocity of the object attached to the spring. Default 0 (object is at rest).
+- `overshootClamping`: Boolean indiciating whether the spring should be clamped and not bounce. Default false.
+- `restDisplacementThreshold`: The threshold of displacement from rest below which the spring should be considered at rest. Default 0.001.
+- `restSpeedThreshold`: The speed at which the spring should be considered at rest in pixels per second. Default 0.001.
+- `delay`: Start the animation after delay (milliseconds).  Default 0.
+- `isInteraction`: Whether or not this animation creates an "interaction handle" on the `InteractionManager`. Default true.
+- `useNativeDriver`: Uses the native driver when true. Default false.
 
 ---
 
@@ -320,10 +311,15 @@ Other configuration options are as follows:
 static add(a, b)
 ```
 
+Creates a new Animated value composed from two Animated values added together.
 
-Creates a new Animated value composed from two Animated values added
-together.
 
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| a | AnimatedValue | Yes | Operand. |
+| b | AnimatedValue | Yes | Operand. |
 
 
 
@@ -336,10 +332,14 @@ static divide(a, b)
 ```
 
 
-Creates a new Animated value composed by dividing the first Animated value
-by the second Animated value.
+Creates a new Animated value composed by dividing the first Animated value by the second Animated value.
 
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| a | AnimatedValue | Yes | Operand. |
+| b | AnimatedValue | Yes | Operand. |
 
 
 ---
@@ -350,12 +350,15 @@ by the second Animated value.
 static multiply(a, b)
 ```
 
-
-Creates a new Animated value composed from two Animated values multiplied
-together.
+Creates a new Animated value composed from two Animated values multiplied together.
 
 
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| a | AnimatedValue | Yes | Operand. |
+| b | AnimatedValue | Yes | Operand. |
 
 ---
 
@@ -366,10 +369,14 @@ static modulo(a, modulus)
 ```
 
 
-Creates a new Animated value that is the (non-negative) modulo of the
-provided Animated value
+Creates a new Animated value that is the (non-negative) modulo of the provided Animated value.
 
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| a | AnimatedValue | Yes | Operand. |
+| modulus | AnimatedValue | Yes | Operand. |
 
 
 ---
@@ -380,17 +387,17 @@ provided Animated value
 static diffClamp(a, min, max)
 ```
 
+Create a new Animated value that is limited between 2 values. It uses the difference between the last value so even if the value is far from the bounds it will start changing when the value starts getting closer again. (`value = clamp(value + diff, min, max)`).
 
-Create a new Animated value that is limited between 2 values. It uses the
-difference between the last value so even if the value is far from the bounds
-it will start changing when the value starts getting closer again.
-(`value = clamp(value + diff, min, max)`).
+This is useful with scroll events, for example, to show the navbar when scrolling up and to hide it when scrolling down.
 
-This is useful with scroll events, for example, to show the navbar when
-scrolling up and to hide it when scrolling down.
+**Parameters:**
 
-
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| a | AnimatedValue | Yes | Operand. |
+| min | number | Yes | Minimum value. |
+| max | number | Yes | Maximum value. |
 
 ---
 
@@ -400,11 +407,14 @@ scrolling up and to hide it when scrolling down.
 static delay(time)
 ```
 
-
 Starts an animation after the given delay.
 
 
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| time | number | Yes | Delay in milliseconds. |
 
 ---
 
@@ -414,11 +424,13 @@ Starts an animation after the given delay.
 static sequence(animations)
 ```
 
+Starts an array of animations in order, waiting for each to complete before starting the next.  If the current running animation is stopped, no following animations will be started.
 
-Starts an array of animations in order, waiting for each to complete
-before starting the next.  If the current running animation is stopped, no
-following animations will be started.
+**Parameters:**
 
+| Name | Type | Required | Description |
+| - | - | - | - |
+| animations | array | Yes | Array of animations. |
 
 
 
@@ -427,15 +439,19 @@ following animations will be started.
 ### `parallel()`
 
 ```javascript
-static parallel(animations, config?)
+static parallel(animations, [config])
 ```
 
+Starts an array of animations all at the same time. By default, if one
+of the animations is stopped, they will all be stopped. You can override
+this with the `stopTogether` flag through `config`.
 
-Starts an array of animations all at the same time.  By default, if one
-of the animations is stopped, they will all be stopped.  You can override
-this with the `stopTogether` flag.
+**Parameters:**
 
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| animations | array | Yes | Array of animations. |
+| config | object | No | An object with a `stopTogether` key (boolean). |
 
 
 ---
@@ -446,12 +462,15 @@ this with the `stopTogether` flag.
 static stagger(time, animations)
 ```
 
-
 Array of animations may run in parallel (overlap), but are started in
 sequence with successive delays.  Nice for doing trailing effects.
 
+**Parameters:**
 
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| time | number | Yes | Delay in milliseconds. |
+| animations | array | Yes | Array of animations. |
 
 ---
 
@@ -461,50 +480,83 @@ sequence with successive delays.  Nice for doing trailing effects.
 static loop(animation)
 ```
 
+Loops a given animation continuously, so that each time it reaches the end, it resets and begins again from the start. Can specify number of times to loop using the key `iterations` in the config. Will loop without blocking the UI thread if the child animation is set to `useNativeDriver: true`. In addition, loops can prevent `VirtualizedList`-based components from rendering more rows while the animation is running. You can pass `isInteraction: false` in the child animation config to fix this.
 
-Loops a given animation continuously, so that each time it reaches the
-end, it resets and begins again from the start. Can specify number of
-times to loop using the key `iterations` in the config. Will loop without
-blocking the UI thread if the child animation is set to `useNativeDriver: true`.
-In addition, loops can prevent `VirtualizedList`-based components from rendering
-more rows while the animation is running. You can pass `isInteraction: false` in the
-child animation config to fix this.
+**Parameters:**
 
-
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| animation | animation | Yes | Animation to loop. |
 
 ---
 
 ### `event()`
 
 ```javascript
-static event(argMapping, config?)
+static event(argMapping, [config])
 ```
 
-
-Takes an array of mappings and extracts values from each arg accordingly,
-then calls `setValue` on the mapped outputs.  e.g.
+Takes an array of mappings and extracts values from each arg accordingly, then calls `setValue` on the mapped outputs. e.g.
 
 ```javascript
- onScroll={Animated.event(
-   [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
-   {listener: (event) => console.log(event)}, // Optional async listener
- )}
- ...
- onPanResponderMove: Animated.event([
-   null,                // raw event arg ignored
-   {dx: this._panX},    // gestureState arg
-{listener: (event, gestureState) => console.log(event, gestureState)}, // Optional async listener
- ]),
+onScroll={Animated.event(
+  [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
+  {listener: (event) => console.log(event)}, // Optional async listener
+)}
+...
+onPanResponderMove: Animated.event([
+  null,                // raw event arg ignored
+  {dx: this._panX},    // gestureState arg
+  {listener: (event, gestureState) => console.log(event, gestureState)}, // Optional async listener
+]),
 ```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| argMapping | array | Yes | Array of mappings. |
+| config | object | No | See below. |
+
 
 Config is an object that may have the following options:
 
-  - `listener`: Optional async listener.
-  - `useNativeDriver`: Uses the native driver when true. Default false.
+- `listener`: Optional async listener.
+- `useNativeDriver`: Uses the native driver when true. Default false.
 
+---
 
+### `createAnimatedComponent()`
 
+```javascript
+createAnimatedComponent(component)
+```
+
+Make any React component Animatable. Used to create `Animated.View`, etc.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| component | component | Yes | React component |
+
+---
+
+### `attachNativeEvent()`
+
+```javascript
+attachNativeEvent(viewRef, eventName, argMapping)
+```
+
+Imperative API to attach an animated value to an event on a view. Prefer using `Animated.event` with `useNativeDrive: true` if possible.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| viewRef | any | Yes | View reference. |
+| eventName | string | Yes | Event name. |
+| argMapping | array | Yes | Array of mappings. |
 
 ---
 
@@ -514,12 +566,14 @@ Config is an object that may have the following options:
 static forkEvent(event, listener)
 ```
 
+Advanced imperative API for snooping on animated events that are passed in through props. Use values directly where possible.
 
-Advanced imperative API for snooping on animated events that are passed in through props. Use
-values directly where possible.
+**Parameters:**
 
-
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| event | event or function | Yes | Event. |
+| listener | function | Yes | Handler. |
 
 ---
 
@@ -528,6 +582,16 @@ values directly where possible.
 ```javascript
 static unforkEvent(event, listener)
 ```
+
+Advanced imperative API for snooping on animated events that are passed in through props. Use values directly where possible.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| event | event or function | Yes | Event. |
+| listener | function | Yes | Handler. |
+
 
 ## Properties
 
@@ -553,20 +617,19 @@ Standard value for driving animations.
 
 ### Interpolation
 
-Exported to use the Interpolation type in flow
+Exported to use the Interpolation type in flow.
 
 | Type |
 | - |
-| [AnimatedInterpolation](docs/animatedinterpolation.html) |
+| AnimatedInterpolation |
 
 ---
 
 ### Node
 
-Exported for ease of type checking. All animated values derive from this class.
+Exported for ease of type checking. All animated values derive from this class. See `AnimatedNode.js`.
 
 | Type |
 | - |
 | AnimatedNode |
-
 
