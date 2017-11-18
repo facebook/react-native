@@ -8,14 +8,9 @@ next: animatedvalue
 previous: alertios
 ---
 
-The `Animated` library is designed to make animations fluid, powerful, and
-easy to build and maintain. `Animated` focuses on declarative relationships
-between inputs and outputs, with configurable transforms in between, and
-simple `start`/`stop` methods to control time-based animation execution.
+The `Animated` library is designed to make animations fluid, powerful, and easy to build and maintain. `Animated` focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and simple `start`/`stop` methods to control time-based animation execution.
 
-The simplest workflow for creating an animation is to create an
-`Animated.Value`, hook it up to one or more style attributes of an animated
-component, and then drive updates via animations using `Animated.timing()`:
+The simplest workflow for creating an animation is to create an `Animated.Value`, hook it up to one or more style attributes of an animated component, and then drive updates via animations using `Animated.timing()`:
 
 ```javascript
 Animated.timing(                            // Animate value over time
@@ -26,72 +21,44 @@ Animated.timing(                            // Animate value over time
 ).start();                                  // Start the animation
 ```
 
-Refer to the [Animations](docs/animations.html#animated-api) guide to see
-additional examples of `Animated` in action.
+Refer to the [Animations](docs/animations.html#animated-api) guide to see additional examples of `Animated` in action.
 
 ## Overview
 
 There are two value types you can use with `Animated`:
 
-- [`Animated.Value()`](docs/animated.html#value) for single values
-- [`Animated.ValueXY()`](docs/animated.html#valuexy) for vectors
+- [`Animated.Value()`](docs/animatedvalue.html) for single values
+- [`Animated.ValueXY()`](docs/animatedvaluexy.html) for vectors
 
-`Animated.Value` can bind to style properties or other props, and can be
-interpolated as well. A single `Animated.Value` can drive any number of
-properties.
+`Animated.Value` can bind to style properties or other props, and can be interpolated as well. A single `Animated.Value` can drive any number of properties.
 
 ### Configuring animations
 
-`Animated` provides three types of animation types. Each animation type
-provides a particular animation curve that controls how your values animate
-from their initial value to the final value:
+`Animated` provides three types of animation types. Each animation type provides a particular animation curve that controls how your values animate from their initial value to the final value:
 
-- [`Animated.decay()`](docs/animated.html#decay) starts with an initial
-  velocity and gradually slows to a stop.
-- [`Animated.spring()`](docs/animated.html#spring) provides a simple
-  spring physics model.
-- [`Animated.timing()`](docs/animated.html#timing) animates a value over time
-  using [easing functions](docs/easing.html).
+- [`Animated.decay()`](docs/animated.html#decay) starts with an initial velocity and gradually slows to a stop.
+- [`Animated.spring()`](docs/animated.html#spring) provides a simple spring physics model.
+- [`Animated.timing()`](docs/animated.html#timing) animates a value over time using [easing functions](docs/easing.html).
 
-In most cases, you will be using `timing()`. By default, it uses a symmetric
-easeInOut curve that conveys the gradual acceleration of an object to full
-speed and concludes by gradually decelerating to a stop.
+In most cases, you will be using `timing()`. By default, it uses a symmetric easeInOut curve that conveys the gradual acceleration of an object to full speed and concludes by gradually decelerating to a stop.
 
 ### Working with animations
 
-Animations are started by calling `start()` on your animation. `start()`
-takes a completion callback that will be called when the animation is done.
-If the animation finished running normally, the completion callback will be
-invoked with `{finished: true}`. If the animation is done because `stop()`
-was called on it before it could finish (e.g. because it was interrupted by a
-gesture or another animation), then it will receive `{finished: false}`.
+Animations are started by calling `start()` on your animation. `start()` takes a completion callback that will be called when the animation is done. If the animation finished running normally, the completion callback will be invoked with `{finished: true}`. If the animation is done because `stop()` was called on it before it could finish (e.g. because it was interrupted by a gesture or another animation), then it will receive `{finished: false}`.
 
 ### Using the native driver
 
-By using the native driver, we send everything about the animation to native
-before starting the animation, allowing native code to perform the animation
-on the UI thread without having to go through the bridge on every frame.
-Once the animation has started, the JS thread can be blocked without
-affecting the animation.
+By using the native driver, we send everything about the animation to native before starting the animation, allowing native code to perform the animation on the UI thread without having to go through the bridge on every frame. Once the animation has started, the JS thread can be blocked without affecting the animation.
 
-You can use the native driver by specifying `useNativeDriver: true` in your
-animation configuration. See the
-[Animations](docs/animations.html#using-the-native-driver) guide to learn
-more.
+You can use the native driver by specifying `useNativeDriver: true` in your animation configuration. See the [Animations](docs/animations.html#using-the-native-driver) guide to learn more.
 
 ### Animatable components
 
-Only animatable components can be animated. These special components do the
-magic of binding the animated values to the properties, and do targeted
-native updates to avoid the cost of the react render and reconciliation
-process on every frame. They also handle cleanup on unmount so they are safe
-by default.
+Only animatable components can be animated. These special components do the magic of binding the animated values to the properties, and do targeted native updates to avoid the cost of the react render and reconciliation process on every frame. They also handle cleanup on unmount so they are safe by default.
 
-- [`createAnimatedComponent()`](docs/animated.html#createanimatedcomponent)
-  can be used to make a component animatable.
+- [`createAnimatedComponent()`](docs/animated.html#createanimatedcomponent) can be used to make a component animatable.
 
-`Animated` exports the following animatable components using the above
-wrapper:
+`Animated` exports the following animatable components using the above wrapper:
 
 - `Animated.Image`
 - `Animated.ScrollView`
@@ -102,27 +69,18 @@ wrapper:
 
 Animations can also be combined in complex ways using composition functions:
 
-- [`Animated.delay()`](docs/animated.html#delay) starts an animation after
-  a given delay.
-- [`Animated.parallel()`](docs/animated.html#parallel) starts a number of
-  animations at the same time.
-- [`Animated.sequence()`](docs/animated.html#sequence) starts the animations
-  in order, waiting for each to complete before starting the next.
-- [`Animated.stagger()`](docs/animated.html#stagger) starts animations in
-  order and in parallel, but with successive delays.
+- [`Animated.delay()`](docs/animated.html#delay) starts an animation after a given delay.
+- [`Animated.parallel()`](docs/animated.html#parallel) starts a number of animations at the same time.
+- [`Animated.sequence()`](docs/animated.html#sequence) starts the animations in order, waiting for each to complete before starting the next.
+- [`Animated.stagger()`](docs/animated.html#stagger) starts animations in order and in parallel, but with successive delays.
 
-Animations can also be chained together simply by setting the `toValue` of
-one animation to be another `Animated.Value`. See
-[Tracking dynamic values](docs/animations.html#tracking-dynamic-values) in
-the Animations guide.
+Animations can also be chained together simply by setting the `toValue` of one animation to be another `Animated.Value`. See [Tracking dynamic values](docs/animations.html#tracking-dynamic-values) in the Animations guide.
 
-By default, if one animation is stopped or interrupted, then all other
-animations in the group are also stopped.
+By default, if one animation is stopped or interrupted, then all other animations in the group are also stopped.
 
 ### Combining animated values
 
-You can combine two animated values via addition, multiplication, division,
-or modulo to make a new animated value:
+You can combine two animated values via addition, multiplication, division, or modulo to make a new animated value:
 
 - [`Animated.add()`](docs/animated.html#add)
 - [`Animated.divide()`](docs/animated.html#divide)
@@ -131,29 +89,19 @@ or modulo to make a new animated value:
 
 ### Interpolation
 
-The `interpolate()` function allows input ranges to map to different output
-ranges. By default, it will extrapolate the curve beyond the ranges given,
-but you can also have it clamp the output value. It uses lineal interpolation
-by default but also supports easing functions.
+The `interpolate()` function allows input ranges to map to different output ranges. By default, it will extrapolate the curve beyond the ranges given, but you can also have it clamp the output value. It uses lineal interpolation by default but also supports easing functions.
 
-- [`interpolate()`](docs/animated.html#interpolate)
+- [`interpolate()`](docs/animatedvalue.html#interpolate)
 
-Read more about interpolation in the
-[Animation](docs/animations.html#interpolation) guide.
+Read more about interpolation in the [Animation](docs/animations.html#interpolation) guide.
 
 ### Handling gestures and other events
 
-Gestures, like panning or scrolling, and other events can map directly to
-animated values using `Animated.event()`. This is done with a structured map
-syntax so that values can be extracted from complex event objects. The first
-level is an array to allow mapping across multiple args, and that array
-contains nested objects.
+Gestures, like panning or scrolling, and other events can map directly to animated values using `Animated.event()`. This is done with a structured map syntax so that values can be extracted from complex event objects. The first level is an array to allow mapping across multiple args, and that array contains nested objects.
 
 - [`Animated.event()`](docs/animated.html#event)
 
-For example, when working with horizontal scrolling gestures, you would do
-the following in order to map `event.nativeEvent.contentOffset.x` to
-`scrollX` (an `Animated.Value`):
+For example, when working with horizontal scrolling gestures, you would do the following in order to map `event.nativeEvent.contentOffset.x` to `scrollX` (an `Animated.Value`):
 
 ```javascript
  onScroll={Animated.event(
@@ -167,28 +115,40 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
  )}
 ```
 
-
-
 ### Methods
 
-- [`decay`](docs/animated.html#decay)
-- [`timing`](docs/animated.html#timing)
-- [`spring`](docs/animated.html#spring)
+#### Configuring animations
+
+- [`decay()`](docs/animated.html#decay)
+- [`timing()`](docs/animated.html#timing)
+- [`spring()`](docs/animated.html#spring)
+
+#### Combining animated values
+
 - [`add`](docs/animated.html#add)
 - [`divide`](docs/animated.html#divide)
 - [`multiply`](docs/animated.html#multiply)
 - [`modulo`](docs/animated.html#modulo)
 - [`diffClamp`](docs/animated.html#diffclamp)
+
+#### Composing animations
+
 - [`delay`](docs/animated.html#delay)
 - [`sequence`](docs/animated.html#sequence)
 - [`parallel`](docs/animated.html#parallel)
 - [`stagger`](docs/animated.html#stagger)
-- [`loop`](docs/animated.html#loop)
+
+#### Handling gestures and other events
+
 - [`event`](docs/animated.html#event)
-- [`createAnimatedComponent`](docs/animated.html#createanimatedcomponent)
 - [`attachNativeEvent`](docs/animated.html#attachnativeevent)
 - [`forkEvent`](docs/animated.html#forkevent)
 - [`unforkEvent`](docs/animated.html#unforkevent)
+
+#### Others
+
+- [`loop`](docs/animated.html#loop)
+- [`createAnimatedComponent`](docs/animated.html#createanimatedcomponent)
 
 ### Properties
 
@@ -196,8 +156,6 @@ the following in order to map `event.nativeEvent.contentOffset.x` to
 - [`ValueXY`](docs/animated.html#valuexy)
 - [`Interpolation`](docs/animated.html#interpolation)
 - [`Node`](docs/animated.html#node)
-
-
 
 
 ---
