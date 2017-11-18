@@ -233,33 +233,33 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     // `console.log(e.stderr)`
     return Promise.reject();
   }
-    const devices = adb.getDevices();
-    if (devices && devices.length > 0) {
-      devices.forEach((device) => {
-        tryRunAdbReverse(args.port, device);
-        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
-      });
-    } else {
-      try {
-        // If we cannot execute based on adb devices output, fall back to
-        // shell am start
-        const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
-        ];
-        console.log(chalk.bold(
-          `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
-        ));
-        child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
-      } catch (e) {
-        console.log(chalk.red(
-          'adb invocation failed. Do you have adb in your PATH?'
-        ));
-        // stderr is automatically piped from the gradle process, so the user
-        // should see the error already, there is no need to do
-        // `console.log(e.stderr)`
-        return Promise.reject();
-      }
+  const devices = adb.getDevices();
+  if (devices && devices.length > 0) {
+    devices.forEach((device) => {
+      tryRunAdbReverse(args.port, device);
+      tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
+    });
+  } else {
+    try {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    } catch (e) {
+      console.log(chalk.red(
+        'adb invocation failed. Do you have adb in your PATH?'
+      ));
+      // stderr is automatically piped from the gradle process, so the user
+      // should see the error already, there is no need to do
+      // `console.log(e.stderr)`
+      return Promise.reject();
     }
+  }
 }
 
 function startServerInNewWindow() {
