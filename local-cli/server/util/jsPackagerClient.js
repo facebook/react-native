@@ -96,7 +96,7 @@ class JsPackagerClient {
     return new Promise((resolve, reject) => {
       this.sendRequest('getpeers', TARGET_SERVER, undefined).then(
         response => {
-          if (!response instanceof Map) {
+          if (!(response instanceof Map)) {
             reject('Results received from server are of wrong format:\n' +
                    JSON.stringify(response));
           } else {

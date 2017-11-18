@@ -112,9 +112,10 @@ try {
     cd('..');
     exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
 
-    echo(`Starting appium server, ${APPIUM_PID}`);
+    echo('Starting appium server');
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
+    echo(`Started appium server, ${APPIUM_PID}`);
 
     echo('Building the app');
     if (exec('buck build android/app').code) {
@@ -123,12 +124,13 @@ try {
       throw Error(exitCode);
     }
 
-    echo(`Starting packager server, ${SERVER_PID}`);
+    echo('Starting packager server');
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('npm', ['start', '--', '--max-workers 1'], {
       env: process.env
     });
     SERVER_PID = packagerProcess.pid;
+    echo(`Started packager server, ${SERVER_PID}`);
     // wait a bit to allow packager to startup
     exec('sleep 15s');
     echo('Executing android e2e test');
