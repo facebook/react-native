@@ -302,7 +302,7 @@ exports.examples = [
   {
     title: 'Cache Policy',
     description: 'First image has never been loaded before and is instructed not to load unless in cache.' +
-    'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
+    ' Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
     ' local cache state.',
     render: function () {
       return (

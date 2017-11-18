@@ -443,7 +443,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       !(this._isNestedWithSameOrientation() && props.onViewableItemsChanged),
-      'Nesting lists that scroll in the same direction does not support onViewableItemsChanged' +
+      'Nesting lists that scroll in the same direction does not support onViewableItemsChanged ' +
         'on the inner list.',
     );
 
@@ -603,7 +603,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       warning(
         flatStyles == null || flatStyles.flexWrap !== 'wrap',
         '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-          'Consider using `numColumns` with `FlatList` instead.',
+          ' Consider using `numColumns` with `FlatList` instead.',
       );
     }
 

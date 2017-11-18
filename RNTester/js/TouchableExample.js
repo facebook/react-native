@@ -71,7 +71,7 @@ exports.examples = [
   },
  }, {
   title: 'TouchableNativeFeedback with Animated child',
-  description: 'TouchableNativeFeedback can have an AnimatedComponent as a' +
+  description: 'TouchableNativeFeedback can have an AnimatedComponent as a ' +
     'direct child.',
   platform: 'android',
   render: function() {
