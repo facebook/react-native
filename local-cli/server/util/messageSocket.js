@@ -48,7 +48,7 @@ function isRequest(message) {
 function isResponse(message) {
   return (
     typeof message.id === 'object' &&
-    typeof message.id.requestId !== undefined &&
+    typeof message.id.requestId !== 'undefined' &&
     typeof message.id.clientId === 'string' && (
       message.result !== undefined ||
       message.error !== undefined

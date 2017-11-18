@@ -540,7 +540,7 @@ var ListView = createReactClass({
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
         DEPRECATED_sendUpdatedChildFrames:
-          typeof props.onChangeVisibleRows !== undefined,
+          typeof props.onChangeVisibleRows !== 'undefined',
       },
       header,
       bodyComponents,
