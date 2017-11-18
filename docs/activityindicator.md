@@ -5,7 +5,6 @@ layout: docs
 category: components
 permalink: docs/activityindicator.html
 next: button
-previous: null
 ---
 
 Displays a circular loading indicator.
@@ -52,7 +51,7 @@ AppRegistry.registerComponent('App', () => App)
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [`View` props...](docs/view.html#props)
 - [`animating`](docs/activityindicator.html#animating)
 - [`color`](docs/activityindicator.html#color)
 - [`size`](docs/activityindicator.html#size)
@@ -67,14 +66,11 @@ AppRegistry.registerComponent('App', () => App)
 
 ### `animating`
 
-Whether to show the indicator (true, the default) or hide it (false).
+Whether to show the indicator (`true`, the default) or hide it (`false`).
 
 | Type | Required |
 | - | - |
 | bool | No |
-
-
-
 
 ---
 
@@ -86,22 +82,17 @@ The foreground color of the spinner (default is gray).
 | - | - |
 | [color](docs/colors.html) | No |
 
-
-
-
 ---
 
 ### `size`
 
 Size of the indicator (default is 'small').
+
 Passing a number to the size prop is only supported on Android.
 
 | Type | Required |
 | - | - |
 | enum('small', 'large'), number | No |
-
-
-
 
 ---
 
@@ -110,13 +101,6 @@ Passing a number to the size prop is only supported on Android.
 Whether the indicator should hide when not animating (true by default).
 
 
-
 | Type | Required | Platform |
 | - | - | - |
 | bool | No | iOS  |
-
-
-
-
-
-

@@ -9,12 +9,10 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
@@ -32,6 +30,7 @@ public class DevInternalSettings implements
   private static final String PREFS_FPS_DEBUG_KEY = "fps_debug";
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
   private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
+  private static final String PREFS_JS_BUNDLE_DELTAS_KEY = "js_bundle_deltas";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
@@ -81,10 +80,11 @@ public class DevInternalSettings implements
 
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (mListener != null) {
-      if (PREFS_FPS_DEBUG_KEY.equals(key) ||
-          PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
-          PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
-          PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
+      if (PREFS_FPS_DEBUG_KEY.equals(key)
+          || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key)
+          || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)
+          || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key)
+          || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
         mListener.onInternalSettingsChanged();
       }
     }
@@ -112,6 +112,16 @@ public class DevInternalSettings implements
 
   public void setElementInspectorEnabled(boolean enabled) {
     mPreferences.edit().putBoolean(PREFS_INSPECTOR_DEBUG_KEY, enabled).apply();
+  }
+
+  @SuppressLint("SharedPreferencesUse")
+  public boolean isBundleDeltasEnabled() {
+    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, false);
+  }
+
+  @SuppressLint("SharedPreferencesUse")
+  public void setBundleDeltasEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, enabled).apply();
   }
 
   @Override

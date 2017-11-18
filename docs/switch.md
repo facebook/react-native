@@ -16,7 +16,7 @@ This is a controlled component that requires an `onValueChange` callback that up
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`disabled`](docs/switch.html#disabled)
 - [`onTintColor`](docs/switch.html#ontintcolor)
 - [`onValueChange`](docs/switch.html#onvaluechange)

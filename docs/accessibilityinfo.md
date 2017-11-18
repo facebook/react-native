@@ -111,11 +111,15 @@ Supported events:
 AccessibilityInfo.setAccessibilityFocus(reactTag)
 ```
 
-iOS-Only. Set accessibility focus to a react component.
+Set accessibility focus to a React component.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
 | reactTag | number | Yes | React component tag |
+
+| Platform |
+| - |
+| iOS |
 
 
 ---
@@ -126,15 +130,15 @@ iOS-Only. Set accessibility focus to a react component.
 AccessibilityInfo.announceForAccessibility(announcement)
 ```
 
-
-iOS-Only. Post a string to be announced by the screen reader.
+Post a string to be announced by the screen reader.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
 | announcement | string | Yes | String to be announced |
 
-
-
+| Platform |
+| - |
+| iOS |
 
 ---
 
@@ -150,5 +154,4 @@ Remove an event handler.
 | - | - | - | - |
 | eventName | string | Yes | Name of the event |
 | handler | function | Yes | Event handler |
-
 

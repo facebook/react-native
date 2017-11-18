@@ -37,7 +37,7 @@ type DefaultProps = {
 
 /**
  * Displays a circular loading indicator.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
 const ActivityIndicator = createReactClass({
