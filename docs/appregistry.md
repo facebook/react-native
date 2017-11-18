@@ -58,9 +58,9 @@ Registers an app's root component.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| appKey | string | Yes |  |
+| appKey | string | Yes | Application key. |
 | componentProvider | function | Yes | A function that returns a React component or element. |
-| section | boolean | No |  |
+| section | boolean | No | Is this a section? |
 
 ---
 
@@ -76,8 +76,8 @@ Loads the JavaScript bundle and runs the app.
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| appKey | string | Yes |  |
-| appParameters | any | Yes |  |
+| appKey | string | Yes | Application key. |
+| appParameters | any | Yes | Params. |
 
 ---
 
@@ -93,7 +93,7 @@ Stops an application when a view should be destroyed. The `rootTag` should match
 
 | Name | Type | Required | Description |
 | - | - | - | - |
-| rootTag | number | Yes |  |
+| rootTag | number | Yes | React tag. |
 
 ---
 
