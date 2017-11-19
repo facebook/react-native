@@ -473,7 +473,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listRef: null | VirtualizedList | ListView;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = (ref: null | VirtualizedList | ListView) => {
+  _captureRef = ref => {
     this._listRef = ref;
   };
 
