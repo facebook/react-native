@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   divider: {
-    width: 4,
+    width: 0,
   },
 });
 
