@@ -274,7 +274,7 @@ var Image = createReactClass({
     }
 
     if (this.props.children) {
-      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using absolute positioning.');
+      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.');
     }
 
     if (source && (source.uri || Array.isArray(source))) {
