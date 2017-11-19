@@ -208,7 +208,7 @@ const Systrace = {
       _asyncCookie++;
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
     return cookie;
   },
@@ -217,7 +217,7 @@ const Systrace = {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
   },
 
