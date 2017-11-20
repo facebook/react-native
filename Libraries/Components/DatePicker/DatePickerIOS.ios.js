@@ -96,6 +96,14 @@ const DatePickerIOS = createReactClass({
      * instance, to show times in Pacific Standard Time, pass -7 * 60.
      */
     timeZoneOffsetInMinutes: PropTypes.number,
+
+    /**
+     * DatePicker locale.
+     *
+     * By default, date picker locale is based on users locale. Using this parameter
+     * you can manually change it.
+     */
+    locale: PropTypes.string,
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -142,6 +150,7 @@ const DatePickerIOS = createReactClass({
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
+          locale={props.locale || undefined}
           onChange={this._onChange}
           onStartShouldSetResponder={() => true}
           onResponderTerminationRequest={() => false}
