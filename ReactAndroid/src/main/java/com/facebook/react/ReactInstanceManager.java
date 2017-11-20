@@ -764,8 +764,14 @@ public class ReactInstanceManager {
   }
 
   public @Nullable ViewManager createViewManager(String viewManagerName) {
-    ReactApplicationContext context =
-        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+    ReactApplicationContext context;
+    synchronized (mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
     synchronized (mPackages) {
       for (ReactPackage reactPackage : mPackages) {
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
@@ -781,9 +787,15 @@ public class ReactInstanceManager {
     return null;
   }
 
-  public List<String> getViewManagerNames() {
-    ReactApplicationContext context =
-        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+  public @Nullable List<String> getViewManagerNames() {
+    ReactApplicationContext context;
+    synchronized(mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
     synchronized (mPackages) {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mPackages) {
