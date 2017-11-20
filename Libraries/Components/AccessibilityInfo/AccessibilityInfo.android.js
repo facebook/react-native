@@ -24,6 +24,16 @@ type ChangeEventName = $Enum<{
 
 var _subscriptions = new Map();
 
+/**
+ * Sometimes it's useful to know whether or not the device has a screen reader
+ * that is currently active. The `AccessibilityInfo` API is designed for this
+ * purpose. You can use it to query the current state of the screen reader as 
+ * well as to register to be notified when the state of the screen reader 
+ * changes.
+ *
+ * See http://facebook.github.io/react-native/docs/accessibilityinfo.html
+ */
+
 var AccessibilityInfo = {
 
   fetch: function(): Promise {

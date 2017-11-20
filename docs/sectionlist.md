@@ -62,9 +62,8 @@ here, along with the following caveats:
 - [`sections`](docs/virtualizedlist.html#sections)
 - [`renderItem`](docs/virtualizedlist.html#renderitem)
 - [`ItemSeparatorComponent`](docs/virtualizedlist.html#itemseparatorcomponent)
-- [`ItemSeparatorComponent`](docs/virtualizedlist.html#itemseparatorcomponent)
 - [`ListEmptyComponent`](docs/virtualizedlist.html#listemptycomponent)
-- [`ListFooterComponent`](docs/virtualizedlist.html#listgootercomponent)
+- [`ListFooterComponent`](docs/virtualizedlist.html#listfootercomponent)
 SectionSeparatorComponent
 - [`extradata`](docs/virtualizedlist.html#extradata)
 - [`initialNumToRender`](docs/virtualizedlist.html#initialnumtorender)
