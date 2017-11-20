@@ -86,6 +86,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
     return;
   }
 
+  //unnecessary to update avaliableSize, it's triggered by setBounds: from RCTUIManager
+  if (self.superview) {
+    CGRect superviewFrame = self.superview.bounds;
+    if (!CGRectEqualToRect(superviewFrame, self.frame)) {
+      return;
+    }
+  }
+
   [_bridge.uiManager setAvailableSize:self.availableSize forRootView:self];
 }
 
