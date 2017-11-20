@@ -113,6 +113,10 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
   let templateName;
   if (template.includes('://')) {
      // URL, e.g. git://, file://
+     if (template.lastIndexOf('/')===template.length-1) {
+       // template ends with '/'. Remove it because on might use to tab to complete template path
+       template = template.substr(0, template.length-1)
+     }
      installPackage = template;
      templateName = template.substr(template.lastIndexOf('/') + 1);
   } else {
