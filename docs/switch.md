@@ -88,7 +88,7 @@ Used to locate this view in end-to-end tests.
 
 ### `thumbTintColor`
 
-Color of the foreground switch grip.
+Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
 
 | Type | Required |
 | - | - |
@@ -120,9 +120,3 @@ Default value is false.
 | Type | Required |
 | - | - |
 | bool | No |
-
-
-
-
-
-
