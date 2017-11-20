@@ -68,6 +68,18 @@ typedef struct {
 
 @end
 
+@implementation RCTConvert (CoreLocation)
+
+RCT_ENUM_CONVERTER(CLAuthorizationStatus, (@{
+  @"notDetermined": @(kCLAuthorizationStatusNotDetermined),
+  @"restricted": @(kCLAuthorizationStatusRestricted),
+  @"denied": @(kCLAuthorizationStatusDenied),
+  @"authorizedAlways": @(kCLAuthorizationStatusAuthorizedAlways),
+  @"authorizedWhenInUse": @(kCLAuthorizationStatusAuthorizedWhenInUse),
+}), kCLAuthorizationStatusNotDetermined, intValue)
+
+@end
+
 static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code, NSString *msg /* nil for default */)
 {
   if (!msg) {
@@ -126,6 +138,7 @@ static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code,
   BOOL _usingSignificantChanges;
   RCTLocationConfiguration _locationConfiguration;
   RCTLocationOptions _observerOptions;
+  BOOL _hasListeners;
 }
 
 RCT_EXPORT_MODULE()
@@ -148,8 +161,33 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"geolocationDidChange", @"geolocationError"];
+  return @[@"geolocationDidChange",
+           @"geolocationError",
+           @"locationAuthorizationStatusDidChange"];
 }
+
+- (void)startObserving
+{
+  _hasListeners = YES;
+  if (!_locationManager) {
+    _locationManager = [CLLocationManager new];
+    _locationManager.delegate = self;
+  }
+}
+
+- (void)stopObserving
+{
+  _hasListeners = NO;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{@"notDetermined": @(kCLAuthorizationStatusNotDetermined),
+           @"restricted": @(kCLAuthorizationStatusRestricted),
+           @"denied": @(kCLAuthorizationStatusDenied),
+           @"authorizedAlways": @(kCLAuthorizationStatusAuthorizedAlways),
+           @"authorizedWhenInUse": @(kCLAuthorizationStatusAuthorizedWhenInUse)};
+};
 
 #pragma mark - Private API
 
@@ -390,6 +428,13 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
   if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
     _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
+}
+
+-(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+  if (_hasListeners) {
+    [self sendEventWithName:@"locationAuthorizationStatusDidChange" body:@(status)];
   }
 }
 

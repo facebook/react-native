@@ -41,6 +41,10 @@ type GeoOptions = {
   useSignificantChanges?: bool,
 }
 
+type LocationEventName = $Enum<{
+  authorizationStatusChange: string,
+}>;
+
 /**
  * The Geolocation API extends the web spec:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
@@ -215,6 +219,28 @@ var Geolocation = {
         }
       }
       subscriptions = [];
+    }
+  },
+
+  addEventListener: function(eventName: LocationEventName, callback: Function) {
+    if (eventName === 'authorizationStatusChange') {
+      return LocationEventEmitter.addListener(
+        'locationAuthorizationStatusDidChange',
+        callback
+      );
+    } else {
+      warning(false, 'Trying to subscribe to unknown event: ' + eventName);
+    }
+  },
+
+  removeEventListener: function(eventName: LocationEventName, callback?: Function) {
+    if (eventName === 'authorizationStatusChange') {
+      return LocationEventEmitter.removeListener(
+        'locationAuthorizationStatusDidChange',
+        callback
+      );
+    } else {
+      warning(false, 'Trying to unsubscribe from unknown event: ' + eventName);
     }
   }
 };
