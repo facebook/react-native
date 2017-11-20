@@ -200,7 +200,7 @@ const TextInput = createReactClass({
      */
     autoCapitalize: PropTypes.oneOf([
       'none',
-      'sentences',
+      'sentences', // default
       'words',
       'characters',
     ]),
