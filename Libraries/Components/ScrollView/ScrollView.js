@@ -612,7 +612,7 @@ const ScrollView = createReactClass({
       }
     }
     if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag') {
+      if (this.props.keyboardDismissMode === 'on-drag' && this.state.isTouching) {
         dismissKeyboard();
       }
     }
