@@ -153,7 +153,7 @@ aliases:
   - &install-build-dependencies
     |
       sudo apt-get update -y
-      sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev -y
+      sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
 
   - &install-android-app-dependencies
     |
@@ -171,10 +171,12 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: circleci/android:api-26-alpha
+  resource_class: "large"
   environment:
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
-    - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
     - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
     - BUILD_THREADS: 2
 
@@ -320,7 +322,7 @@ jobs:
             fi
 
   # Publishes new version onto npm
-  publish-npm:
+  deploy:
     <<: *android_defaults
     steps:
       - checkout
@@ -508,58 +510,49 @@ jobs:
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
-  
-  test_node:
+
+  build:
     jobs:
+
+      # Test Javascript on Node 8 and 6
       - test-js-node-8:
           filters: *filter-ignore-gh-pages
       - test-js-node-6:
           filters: *filter-ignore-gh-pages
-      
-# TODO: Re-enable. Node 4 tests are already failing on Circle 1.0
-#      - test-js-node-4:
-#          filters: *filter-ignore-gh-pages
 
-
-  test_android:
-    jobs:
+      # Test Android
       - build-js-bundle:
           filters: *filter-ignore-gh-pages
       - test-android:
           requires:
             - build-js-bundle
 
-  test_ios:
-    jobs:
+      # Test iOS & tvOS
       - test-objc-ios:
           filters: *filter-ignore-gh-pages
       - test-objc-tvos:
           filters: *filter-ignore-gh-pages
       - test-objc-e2e:
           filters: *filter-ignore-gh-pages
-# TODO: Re-enable. Podspec tests are already failing on Travis
-#      - test-podspec:
-#          filters: *filter-ignore-gh-pages
 
-  website:
-    jobs:
+      # Test website
       - test-website:
           filters: *filter-ignore-gh-pages
-      - deploy-website:
-          requires:
-            - test-website
-          filters: *filter-only-master-stable
-
-  analyze:
-    jobs:
-      - analyze-pull-request:
-          filters: *filter-ignore-master-stable
-
-  deploy:
-    jobs:
+    
+      # If we are on a stable branch, deploy to `npm`
       - hold:
           type: approval
-      - publish-npm:
-          requires: 
-            - hold
+      - deploy:
           filters: *filter-only-stable
+          requires:
+            - hold
+      
+      # If we are on a master / stable branch, deploy docs
+      - deploy-website:
+          filters: *filter-only-master-stable
+          requires:
+            - test-website
+
+      - analyze-pull-request:
+          filters: *filter-ignore-master-stable
+      g
