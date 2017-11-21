@@ -349,6 +349,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
                           useSignificantChanges:options.useSignificantChanges];
 }
 
+RCT_EXPORT_METHOD(getAuthorizationStatus:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@([CLLocationManager authorizationStatus])]);
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager

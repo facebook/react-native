@@ -122,6 +122,17 @@ var Geolocation = {
   },
 
   /*
+   * Invokes the callback once with the current authorization status.
+   */
+  getAuthorizationStatus: function(callback: Function) {
+    invariant(
+      typeof callback === 'function',
+      'Must provide a valid callback.'
+    );
+    RCTLocationObserver.getAuthorizationStatus(callback);
+  },
+
+  /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    * On Android, if the location is cached this can return almost immediately,
