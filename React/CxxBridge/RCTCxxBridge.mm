@@ -188,11 +188,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-- (JSContext *)jsContext
-{
-  return contextForGlobalContextRef([self jsContextRef]);
-}
-
 - (JSGlobalContextRef)jsContextRef
 {
   return (JSGlobalContextRef)(self->_reactInstance ? self->_reactInstance->getJavaScriptContext() : nullptr);

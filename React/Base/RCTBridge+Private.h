@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <JavaScriptCore/JavaScriptCore.h>
 #import <JavaScriptCore/JSBase.h>
 
 #import <React/RCTBridge.h>
@@ -155,6 +156,15 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
+
+@end
+
+@interface RCTBridge (JavaScriptCore)
+
+/**
+ * The raw JSGlobalContextRef used by the bridge.
+ */
+@property (nonatomic, readonly, assign) JSGlobalContextRef jsContextRef;
 
 @end
 
