@@ -327,8 +327,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       cursorDrawableResField.setAccessible(true);
       int drawableResId = cursorDrawableResField.getInt(view);
 
-      // If the view has no cursor drawable, React Native will crash when
-      // trying to load a resource of id 0.
+      // The view has no cursor drawable.
       if (drawableResId == 0) {
         return;
       }
