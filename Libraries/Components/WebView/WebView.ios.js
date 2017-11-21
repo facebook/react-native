@@ -314,7 +314,9 @@ class WebView extends React.Component {
 
     /**
      * Set this to provide JavaScript that will be injected into the web page
-     * when the view loads.
+     * when the view loads. On Android this code is injected using the 
+     * `javascript:` url scheme, which means that comments in the injected
+     * code will cause the injection to fail.
      */
     injectedJavaScript: PropTypes.string,
 
@@ -358,7 +360,9 @@ class WebView extends React.Component {
 
     /**
      * Function that accepts a string that will be passed to the WebView and
-     * executed immediately as JavaScript.
+     * executed immediately as JavaScript. On Android this code is injected 
+     * using the `javascript:` url scheme, which means that comments in the 
+     * injected code will cause the injection to fail.
      */
     injectJavaScript: PropTypes.func,
 
