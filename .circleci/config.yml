@@ -555,4 +555,3 @@ workflows:
 
       - analyze-pull-request:
           filters: *filter-ignore-master-stable
-      g
