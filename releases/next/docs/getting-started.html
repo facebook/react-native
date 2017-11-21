@@ -249,7 +249,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
       container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
     event && event.preventDefault();
   }
-
   function convertBlocks() {
     // Convert <div>...<span><block /></span>...</div>
     // Into <div>...<block />...</div>
@@ -274,12 +273,10 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
       }
     }
   }
-
   function guessPlatformAndOS() {
     if (!document.querySelector('block')) {
       return;
     }
-
     // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
     // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
     var foundHash = false;
@@ -302,7 +299,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
             if (parent.tagName === 'BLOCK') {
               // Could be more than one target os and dev platform, but just choose some sort of order
               // of priority here.
-
               // Dev OS
               if (parent.className.indexOf('mac') > -1) {
                 displayTab('os', 'mac');
@@ -320,7 +316,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
               } else {
                 break;
               }
-
               // Target Platform
               if (parent.className.indexOf('ios') > -1) {
                 displayTab('platform', 'ios');
@@ -333,7 +328,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
               } else {
                 break;
               }
-
               // Guide
               if (parent.className.indexOf('native') > -1) {
                 displayTab('guide', 'native');
@@ -346,7 +340,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
               } else {
                 break;
               }
-
               break;
             }
             parent = parent.parentElement;
@@ -354,7 +347,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
         }
       }
     }
-
     // Do the default if there is no matching hash
     if (!foundHash) {
       var isMac = navigator.platform === 'MacIntel';
@@ -368,7 +360,6 @@ to the <a href="docs/tutorial.html" target="_blank">Tutorial</a>.</p><span><scri
       displayTab('language', 'objc');
     }
   }
-
   convertBlocks();
   guessPlatformAndOS();
 </script>
