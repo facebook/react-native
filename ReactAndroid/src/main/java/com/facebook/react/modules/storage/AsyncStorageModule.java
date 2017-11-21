@@ -143,7 +143,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -188,7 +188,7 @@ public final class AsyncStorageModule
             statement.clearBindings();
             statement.bindString(1, keyValueArray.getArray(idx).getString(0));
             statement.bindString(2, keyValueArray.getArray(idx).getString(1));
-            statement.execute();
+            statement.execute(AsyncTask.THREAD_POOL_EXECUTOR);
           }
           mReactDatabaseSupplier.get().setTransactionSuccessful();
         } catch (Exception e) {
@@ -210,7 +210,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -261,7 +261,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -324,7 +324,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -347,7 +347,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
@@ -381,7 +381,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    }.execute();
+    }.execute(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /**
