@@ -646,7 +646,6 @@ to the [Tutorial](docs/tutorial.html).
       container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
     event && event.preventDefault();
   }
-
   function convertBlocks() {
     // Convert <div>...<span><block /></span>...</div>
     // Into <div>...<block />...</div>
@@ -671,12 +670,10 @@ to the [Tutorial](docs/tutorial.html).
       }
     }
   }
-
   function guessPlatformAndOS() {
     if (!document.querySelector('block')) {
       return;
     }
-  
     // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
     // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
     var foundHash = false;
@@ -699,7 +696,6 @@ to the [Tutorial](docs/tutorial.html).
             if (parent.tagName === 'BLOCK') {
               // Could be more than one target os and dev platform, but just choose some sort of order
               // of priority here.
-
               // Dev OS
               if (parent.className.indexOf('mac') > -1) {
                 displayTab('os', 'mac');
@@ -717,7 +713,6 @@ to the [Tutorial](docs/tutorial.html).
               } else {
                 break;
               }
-
               // Target Platform
               if (parent.className.indexOf('ios') > -1) {
                 displayTab('platform', 'ios');
@@ -730,7 +725,6 @@ to the [Tutorial](docs/tutorial.html).
               } else {
                 break;
               }
-
               // Guide
               if (parent.className.indexOf('native') > -1) {
                 displayTab('guide', 'native');
@@ -743,7 +737,6 @@ to the [Tutorial](docs/tutorial.html).
               } else {
                 break;
               }
-
               break;
             }
             parent = parent.parentElement;
@@ -751,7 +744,6 @@ to the [Tutorial](docs/tutorial.html).
         }
       }
     }
-
     // Do the default if there is no matching hash
     if (!foundHash) {
       var isMac = navigator.platform === 'MacIntel';
@@ -765,7 +757,6 @@ to the [Tutorial](docs/tutorial.html).
       displayTab('language', 'objc');
     }
   }
-
   convertBlocks();
   guessPlatformAndOS();
 </script>
