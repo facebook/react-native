@@ -41,7 +41,11 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
+#if TARGET_OS_TV
     self.windowLevel = UIWindowLevelAlert + 1000;
+#else
+    self.windowLevel = UIWindowLevelStatusBar - 1;
+#endif
     self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
     self.hidden = YES;
 
