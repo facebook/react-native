@@ -65,11 +65,6 @@ typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
                                  YGNodeRef parent,
                                  int childIndex);
 
-typedef void *(*YGMalloc)(size_t size);
-typedef void *(*YGCalloc)(size_t count, size_t size);
-typedef void *(*YGRealloc)(void *ptr, size_t size);
-typedef void (*YGFree)(void *ptr);
-
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
