@@ -3816,23 +3816,3 @@ void *YGConfigGetContext(const YGConfigRef config) {
 void YGConfigSetNodeClonedFunc(const YGConfigRef config, const YGNodeClonedFunc callback) {
   config->cloneNodeCallback = callback;
 }
-
-void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
-  YGAssert(gNodeInstanceCount == 0 && gConfigInstanceCount == 0,
-           "Cannot set memory functions: all node must be freed first");
-  YGAssert((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
-               (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
-           "Cannot set memory functions: functions must be all NULL or Non-NULL");
-
-  if (ygmalloc == NULL || yccalloc == NULL || ygrealloc == NULL || ygfree == NULL) {
-    gYGMalloc = &malloc;
-    gYGCalloc = &calloc;
-    gYGRealloc = &realloc;
-    gYGFree = &free;
-  } else {
-    gYGMalloc = ygmalloc;
-    gYGCalloc = yccalloc;
-    gYGRealloc = ygrealloc;
-    gYGFree = ygfree;
-  }
-}
