@@ -205,6 +205,12 @@ class StatusBar extends React.Component<{
   }
 
   /**
+   * Get wether the StatusBar is hidden or visible
+   */
+  static getHidden(){
+        return StatusBar._defaultProps.hidden.value;
+    }
+  /**
    * Set the status bar style
    * @param style Status bar style to set
    * @param animated Animate the style change.
