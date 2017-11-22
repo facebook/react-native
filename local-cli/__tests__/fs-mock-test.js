@@ -24,6 +24,10 @@ jest.mock('fs');
 const fs = require('fs');
 
 describe('fs mock', () => {
+  beforeEach(() => {
+    (fs: $FlowFixMe).mock.clear();
+  });
+
   describe('writeFileSync()', () => {
     it('stores content correctly', () => {
       fs.writeFileSync('/test', 'foobar', 'utf8');
@@ -53,6 +57,30 @@ describe('fs mock', () => {
        * error found when Flow v0.56 was deployed. To see the error delete this
        * comment and run Flow. */
       expect(content).toEqual('foobar');
+    });
+  });
+
+  describe('createWriteStream()', () => {
+    it('writes content', done => {
+      const stream = fs.createWriteStream('/test');
+      stream.write('hello, ');
+      stream.write('world');
+      stream.end('!');
+      process.nextTick(() => {
+        const content = fs.readFileSync('/test', 'utf8');
+        expect(content).toEqual('hello, world!');
+        done();
+      });
+    });
+  });
+
+  describe('writeSync()', () => {
+    it('writes content', () => {
+      const fd = fs.openSync('/test', 'w');
+      fs.writeSync(fd, 'hello, world!');
+      fs.closeSync(fd);
+      const content = fs.readFileSync('/test', 'utf8');
+      expect(content).toEqual('hello, world!');
     });
   });
 });
