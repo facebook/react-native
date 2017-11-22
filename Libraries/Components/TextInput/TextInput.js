@@ -601,10 +601,9 @@ const TextInput = createReactClass({
      */
     caretHidden: PropTypes.bool,
     /*
-      * If `true`, tooltip is hidden. The default value is `false`.
-      * @platform ios
-      */
-    tooltipHidden: PropTypes.bool,
+     * If `true`, contextMenuVisible is hidden. The default value is `false`.
+     */
+    contextMenuHidden: PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {

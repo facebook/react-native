@@ -87,11 +87,11 @@
   self.enabled = editable;
 }
 
-#pragma mark - Tooltip
+#pragma mark - Context Menu
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-  if (_tooltipHidden) {
+  if (_contextMenuHidden) {
     return NO;
   }
 
