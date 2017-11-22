@@ -60,19 +60,16 @@ static UIColor *defaultPlaceholderColor()
 - (NSString *)accessibilityLabel
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
-
   NSString *superAccessibilityLabel = [super accessibilityLabel];
   if (superAccessibilityLabel.length > 0) {
     [accessibilityLabel appendString:superAccessibilityLabel];
   }
-
   if (self.placeholder.length > 0 && self.text.length == 0) {
     if (accessibilityLabel.length > 0) {
       [accessibilityLabel appendString:@" "];
     }
     [accessibilityLabel appendString:self.placeholder];
   }
-
   return accessibilityLabel;
 }
 
