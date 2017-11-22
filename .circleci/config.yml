@@ -171,10 +171,12 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: circleci/android:api-26-alpha
+  resource_class: "large"
   environment:
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
-    - GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
     - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
     - BUILD_THREADS: 2
 
@@ -553,4 +555,3 @@ workflows:
 
       - analyze-pull-request:
           filters: *filter-ignore-master-stable
-      
