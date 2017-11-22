@@ -54,13 +54,13 @@ public class ReactViewGroup extends ViewGroup implements
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
-   * children layout is updated, it will call {@link #updateSubviewClipStatus} to notify parent
-   * view about that fact so that view can be attached/detached if necessary.
+   * children layout is updated, it will call {@link #updateSubviewClipStatus} to notify parent view
+   * about that fact so that view can be attached/detached if necessary.
    *
-   * TODO(7728005): Attach/detach views in batch - once per frame in case when multiple children
+   * <p>TODO(7728005): Attach/detach views in batch - once per frame in case when multiple children
    * update their layout.
    */
-  private static final class ChildrenLayoutChangeListener implements OnLayoutChangeListener {
+  private static final class ChildrenLayoutChangeListener implements View.OnLayoutChangeListener {
 
     private final ReactViewGroup mParent;
 
@@ -129,9 +129,9 @@ public class ReactViewGroup extends ViewGroup implements
 
   @Override
   public void onRtlPropertiesChanged(int layoutDirection) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       if (mReactBackgroundDrawable != null) {
-        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
+        mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
       }
     }
   }
@@ -233,7 +233,20 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
+    backgroundDrawable.setRadius(borderRadius, position);
+
+    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
+        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      final int UPDATED_LAYER_TYPE =
+          backgroundDrawable.hasRoundedBorders()
+              ? View.LAYER_TYPE_SOFTWARE
+              : View.LAYER_TYPE_HARDWARE;
+
+      if (UPDATED_LAYER_TYPE != getLayerType()) {
+        setLayerType(UPDATED_LAYER_TYPE, null);
+      }
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -396,7 +409,7 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
-  public void addView(View child, int index, LayoutParams params) {
+  public void addView(View child, int index, ViewGroup.LayoutParams params) {
     // This will get called for every overload of addView so there is not need to override every method.
     mDrawingOrderHelper.handleAddView(child);
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
@@ -468,7 +481,8 @@ public class ReactViewGroup extends ViewGroup implements
     addViewWithSubviewClippingEnabled(child, index, sDefaultLayoutParam);
   }
 
-  /*package*/ void addViewWithSubviewClippingEnabled(View child, int index, LayoutParams params) {
+  /*package*/ void addViewWithSubviewClippingEnabled(
+      View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);
@@ -588,12 +602,12 @@ public class ReactViewGroup extends ViewGroup implements
         updateBackgroundDrawable(layerDrawable);
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         mLayoutDirection =
             I18nUtil.getInstance().isRTL(getContext())
                 ? LAYOUT_DIRECTION_RTL
                 : LAYOUT_DIRECTION_LTR;
-        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
+        mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
       }
     }
     return mReactBackgroundDrawable;
@@ -670,7 +684,7 @@ public class ReactViewGroup extends ViewGroup implements
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
               final boolean isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL;
               float topStartBorderRadius =
                   mReactBackgroundDrawable.getBorderRadius(
@@ -685,7 +699,7 @@ public class ReactViewGroup extends ViewGroup implements
                   mReactBackgroundDrawable.getBorderRadius(
                       ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
 
-              if (I18nUtil.getInstance().doesRTLFlipLeftAndRightStyles(getContext())) {
+              if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(getContext())) {
                 if (YogaConstants.isUndefined(topStartBorderRadius)) {
                   topStartBorderRadius = topLeftBorderRadius;
                 }

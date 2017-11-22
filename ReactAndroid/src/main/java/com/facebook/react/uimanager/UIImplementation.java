@@ -131,7 +131,7 @@ public class UIImplementation {
     return viewManager.createShadowNodeInstance(mReactContext);
   }
 
-  protected final ReactShadowNode resolveShadowNode(int reactTag) {
+  public final ReactShadowNode resolveShadowNode(int reactTag) {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 

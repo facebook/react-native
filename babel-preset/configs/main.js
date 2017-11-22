@@ -76,9 +76,6 @@ const getPreset = (src, options) => {
   ) {
     plugins.push('transform-react-display-name');
   }
-  if (isNull || src.indexOf('import(')) {
-    plugins.push(require('../transforms/transform-dynamic-import'));
-  }
 
   if (options && options.dev) {
     plugins.push('transform-react-jsx-source');

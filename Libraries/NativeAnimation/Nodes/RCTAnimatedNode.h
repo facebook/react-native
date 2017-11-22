@@ -17,8 +17,8 @@
 @property (nonatomic, readonly) NSNumber *nodeTag;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *config;
 
-@property (nonatomic, copy, readonly) NSDictionary<NSNumber *, RCTAnimatedNode *> *childNodes;
-@property (nonatomic, copy, readonly) NSDictionary<NSNumber *, RCTAnimatedNode *> *parentNodes;
+@property (nonatomic, copy, readonly) NSMapTable<NSNumber *, RCTAnimatedNode *> *childNodes;
+@property (nonatomic, copy, readonly) NSMapTable<NSNumber *, RCTAnimatedNode *> *parentNodes;
 
 @property (nonatomic, readonly) BOOL needsUpdate;
 

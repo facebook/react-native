@@ -16,6 +16,7 @@ android_library(
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],

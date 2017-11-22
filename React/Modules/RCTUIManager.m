@@ -32,6 +32,8 @@
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView+Internal.h"
 #import "RCTShadowView.h"
+#import "RCTSurfaceRootShadowView.h"
+#import "RCTSurfaceRootView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -96,7 +98,10 @@ RCT_EXPORT_MODULE()
   RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-      [(id<RCTInvalidating>)self->_viewRegistry[rootViewTag] invalidate];
+      UIView *rootView = self->_viewRegistry[rootViewTag];
+      if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
+        [(id<RCTInvalidating>)rootView invalidate];
+      }
     }
 
     self->_rootViewTags = nil;
@@ -244,6 +249,31 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (dispatch_queue_t)methodQueue
 {
   return RCTGetUIManagerQueue();
+}
+
+- (void)registerRootViewTag:(NSNumber *)rootTag
+{
+  RCTAssertUIManagerQueue();
+
+  RCTAssert(RCTIsReactRootView(rootTag),
+    @"Attempt to register rootTag (%@) which is not actually root tag.", rootTag);
+
+  RCTAssert(![_rootViewTags containsObject:rootTag],
+    @"Attempt to register rootTag (%@) which was already registred.", rootTag);
+
+  [_rootViewTags addObject:rootTag];
+
+  // Registering root shadow view
+  RCTSurfaceRootShadowView *shadowView = [RCTSurfaceRootShadowView new];
+  shadowView.reactTag = rootTag;
+  _shadowViewRegistry[rootTag] = shadowView;
+
+  // Registering root view
+  RCTExecuteOnMainQueue(^{
+    RCTSurfaceRootView *rootView = [RCTSurfaceRootView new];
+    rootView.reactTag = rootTag;
+    self->_viewRegistry[rootTag] = rootView;
+  });
 }
 
 - (void)registerRootView:(RCTRootContentView *)rootView
@@ -551,7 +581,9 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        rootView.intrinsicContentSize = contentSize;
+        if ([rootView isKindOfClass:[RCTRootView class]]) {
+          rootView.intrinsicContentSize = contentSize;
+        }
       });
     }
   }
@@ -948,7 +980,8 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
     [componentData setProps:props forShadowView:shadowView];
     _shadowViewRegistry[reactTag] = shadowView;
     RCTShadowView *rootView = _shadowViewRegistry[rootTag];
-    RCTAssert([rootView isKindOfClass:[RCTRootShadowView class]],
+    RCTAssert([rootView isKindOfClass:[RCTRootShadowView class]] ||
+              [rootView isKindOfClass:[RCTSurfaceRootShadowView class]],
       @"Given `rootTag` (%@) does not correspond to a valid root shadow view instance.", rootTag);
     shadowView.rootView = (RCTRootShadowView *)rootView;
   }

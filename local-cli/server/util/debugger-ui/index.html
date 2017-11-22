@@ -206,10 +206,6 @@
   connectToDebuggerProxy();
 
   async function getBlobUrl(url) {
-    if (window.location.hash.indexOf('useDeltaBundler') === -1) {
-      return url;
-    }
-
     return await window.deltaUrlToBlobUrl(url.replace('.bundle', '.delta'));
   }
 })();

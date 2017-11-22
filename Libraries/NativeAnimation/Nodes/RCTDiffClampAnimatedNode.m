@@ -51,7 +51,7 @@
 
 - (CGFloat)inputNodeValue
 {
-  RCTValueAnimatedNode *inputNode = (RCTValueAnimatedNode *)self.parentNodes[_inputNodeTag];
+  RCTValueAnimatedNode *inputNode = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_inputNodeTag];
   if (![inputNode isKindOfClass:[RCTValueAnimatedNode class]]) {
     RCTLogError(@"Illegal node ID set as an input for Animated.DiffClamp node");
     return 0;

@@ -170,8 +170,13 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         List<? extends Element> elements = typeElement.getEnclosedElements();
         boolean hasConstants = false;
         if (elements != null) {
-          hasConstants = elements.stream()
-            .anyMatch((Element m) -> m.getKind() == ElementKind.METHOD && m.getSimpleName().contentEquals("getConstants"));
+          hasConstants =
+              elements
+                  .stream()
+                  .filter(element -> element.getKind() == ElementKind.METHOD)
+                  .map(Element::getSimpleName)
+                  .anyMatch(
+                      name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
         String valueString = new StringBuilder()
