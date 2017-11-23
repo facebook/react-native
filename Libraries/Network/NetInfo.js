@@ -83,6 +83,8 @@ const _isConnectedSubscriptions = new Map();
 /**
  * NetInfo exposes info about online/offline status
  *
+ * First, install **Reachability** Library from [Apple Source](https://developer.apple.com/library/content/samplecode/Reachability/Introduction/Intro.html#//apple_ref/doc/uid/DTS40007324-Intro-DontLinkElementID_2) 
+ *
  * ```
  * NetInfo.getConnectionInfo().then((connectionInfo) => {
  *   console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
