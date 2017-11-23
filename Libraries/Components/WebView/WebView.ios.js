@@ -292,7 +292,7 @@ class WebView extends React.Component {
 
     /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
-     * as JavaScript is enabled by default on iOS. The default value is `true`.
+     * as JavaScript is enabled by default on iOS. The default value is `false`.
      * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
