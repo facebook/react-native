@@ -67,18 +67,23 @@ typedef struct {
 }
 
 @end
+  
+static NSString *RCTAuthorizationStatus(CLAuthorizationStatus status)
+{
+  static NSDictionary *statuses;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    statuses = @{
+      @(kCLAuthorizationStatusNotDetermined): @"not_determined",
+      @(kCLAuthorizationStatusRestricted): @"restricted",
+      @(kCLAuthorizationStatusDenied): @"denied",
+      @(kCLAuthorizationStatusAuthorizedAlways): @"authorized_always",
+      @(kCLAuthorizationStatusAuthorizedWhenInUse): @"authorized_when_in_use"
+    };
+  });
 
-@implementation RCTConvert (CoreLocation)
-
-RCT_ENUM_CONVERTER(CLAuthorizationStatus, (@{
-  @"notDetermined": @(kCLAuthorizationStatusNotDetermined),
-  @"restricted": @(kCLAuthorizationStatusRestricted),
-  @"denied": @(kCLAuthorizationStatusDenied),
-  @"authorizedAlways": @(kCLAuthorizationStatusAuthorizedAlways),
-  @"authorizedWhenInUse": @(kCLAuthorizationStatusAuthorizedWhenInUse),
-}), kCLAuthorizationStatusNotDetermined, intValue)
-
-@end
+  return statuses[status] ?: @"not_determined";
+}
 
 static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code, NSString *msg /* nil for default */)
 {
@@ -179,15 +184,6 @@ RCT_EXPORT_MODULE()
 {
   _hasListeners = NO;
 }
-
-- (NSDictionary *)constantsToExport
-{
-  return @{@"notDetermined": @(kCLAuthorizationStatusNotDetermined),
-           @"restricted": @(kCLAuthorizationStatusRestricted),
-           @"denied": @(kCLAuthorizationStatusDenied),
-           @"authorizedAlways": @(kCLAuthorizationStatusAuthorizedAlways),
-           @"authorizedWhenInUse": @(kCLAuthorizationStatusAuthorizedWhenInUse)};
-};
 
 #pragma mark - Private API
 
@@ -351,7 +347,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
 RCT_EXPORT_METHOD(getAuthorizationStatus:(RCTResponseSenderBlock)callback)
 {
-  callback(@[@([CLLocationManager authorizationStatus])]);
+  callback(@[RCTAuthorizationStatus([CLLocationManager authorizationStatus])]);
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -439,7 +435,7 @@ RCT_EXPORT_METHOD(getAuthorizationStatus:(RCTResponseSenderBlock)callback)
 -(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
   if (_hasListeners) {
-    [self sendEventWithName:@"locationAuthorizationStatusDidChange" body:@(status)];
+    [self sendEventWithName:@"locationAuthorizationStatusDidChange" body:@(RCTAuthorizationStatus(status))];
   }
 }
 
