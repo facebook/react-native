@@ -421,7 +421,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
     invariant(
       areEqual(
-        nextProps.onViewableItemsChanged, 
+        nextProps.onViewableItemsChanged,
         this.props.onViewableItemsChanged
       ),
       'Changing onViewableItemsChanged on the fly is not supported',
@@ -432,7 +432,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
     invariant(
       areEqual(
-        nextProps.viewabilityConfigCallbackPairs, 
+        nextProps.viewabilityConfigCallbackPairs,
         this.props.viewabilityConfigCallbackPairs
       ),
       'Changing viewabilityConfigCallbackPairs on the fly is not supported',
