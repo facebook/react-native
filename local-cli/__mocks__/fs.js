@@ -67,6 +67,7 @@ fs.readdir.mockImplementation((filepath, callback) => {
 });
 
 fs.readFile.mockImplementation(function(filepath, encoding, callback) {
+  filepath = path.normalize(filepath);
   callback = asyncCallback(callback);
   if (arguments.length === 2) {
     callback = encoding;
@@ -90,6 +91,7 @@ fs.readFile.mockImplementation(function(filepath, encoding, callback) {
 });
 
 fs.readFileSync.mockImplementation(function(filepath, encoding) {
+  filepath = path.normalize(filepath);
   const node = getToNode(filepath);
   if (isDirNode(node)) {
     throw new Error('Error readFileSync a dir: ' + filepath);
@@ -103,6 +105,7 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
 fs.writeFile.mockImplementation(asyncify(fs.writeFileSync));
 
 fs.writeFileSync.mockImplementation((filePath, content, options) => {
+  filePath = path.normalize(filePath);
   if (options == null || typeof options === 'string') {
     options = {encoding: options};
   }

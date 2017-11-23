@@ -46,6 +46,12 @@ describe('fs mock', () => {
         fs.writeFileSync('/dir/test', 'foobar', 'utf8'),
       ).toThrowError('ENOENT: no such file or directory');
     });
+
+    it('properly normalizes paths', () => {
+      fs.writeFileSync('/test/foo/../bar/../../tadam', 'beep', 'utf8');
+      const content = fs.readFileSync('/glo/../tadam', 'utf8');
+      expect(content).toEqual('beep');
+    });
   });
 
   describe('mkdirSync()', () => {
