@@ -679,6 +679,10 @@
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
+		53330EE71FC6EE74008D7FA9 /* YGNodePrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53330EE41FC6EE70008D7FA9 /* YGNodePrint.cpp */; };
+		53330EE81FC6EE75008D7FA9 /* YGNodePrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53330EE41FC6EE70008D7FA9 /* YGNodePrint.cpp */; };
+		53330EEA1FC6EE7F008D7FA9 /* YGNodePrint.h in Headers */ = {isa = PBXBuildFile; fileRef = 53330EE31FC6EE70008D7FA9 /* YGNodePrint.h */; };
+		53330EEB1FC6EE7F008D7FA9 /* YGNodePrint.h in Headers */ = {isa = PBXBuildFile; fileRef = 53330EE31FC6EE70008D7FA9 /* YGNodePrint.h */; };
 		53CBF1BF1FB50263002CBB31 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1BB1FB50262002CBB31 /* Yoga-internal.h */; };
 		53CBF1C01FB50263002CBB31 /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1BC1FB50263002CBB31 /* YGEnums.cpp */; };
 		53CBF1C11FB50263002CBB31 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1BD1FB50263002CBB31 /* Yoga.cpp */; };
@@ -1347,6 +1351,8 @@
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
+		53330EE31FC6EE70008D7FA9 /* YGNodePrint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGNodePrint.h; sourceTree = "<group>"; };
+		53330EE41FC6EE70008D7FA9 /* YGNodePrint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGNodePrint.cpp; sourceTree = "<group>"; };
 		53CBF1BB1FB50262002CBB31 /* Yoga-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yoga-internal.h"; sourceTree = "<group>"; };
 		53CBF1BC1FB50263002CBB31 /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGEnums.cpp; sourceTree = "<group>"; };
 		53CBF1BD1FB50263002CBB31 /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Yoga.cpp; sourceTree = "<group>"; };
@@ -1464,6 +1470,8 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				53330EE41FC6EE70008D7FA9 /* YGNodePrint.cpp */,
+				53330EE31FC6EE70008D7FA9 /* YGNodePrint.h */,
 				53CBF1BC1FB50263002CBB31 /* YGEnums.cpp */,
 				53CBF1BE1FB50263002CBB31 /* YGNodeList.cpp */,
 				53CBF1BB1FB50262002CBB31 /* Yoga-internal.h */,
@@ -2048,6 +2056,7 @@
 				3DFE0D171DF8574D00459392 /* YGMacros.h in Headers */,
 				3DFE0D181DF8574D00459392 /* YGNodeList.h in Headers */,
 				3DFE0D191DF8574D00459392 /* Yoga.h in Headers */,
+				53330EEB1FC6EE7F008D7FA9 /* YGNodePrint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2077,6 +2086,7 @@
 				1339578B1DF76D3500EC27BE /* Yoga.h in Headers */,
 				1339578A1DF76D3500EC27BE /* YGNodeList.h in Headers */,
 				133957891DF76D3500EC27BE /* YGMacros.h in Headers */,
+				53330EEA1FC6EE7F008D7FA9 /* YGNodePrint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2615,6 +2625,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53330EE71FC6EE74008D7FA9 /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2622,6 +2633,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53330EE81FC6EE75008D7FA9 /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

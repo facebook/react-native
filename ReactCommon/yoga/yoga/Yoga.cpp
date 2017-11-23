@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "YGNodeList.h"
+#include "YGNodePrint.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
@@ -29,202 +30,6 @@ __forceinline const float fmaxf(const float a, const float b) {
 }
 #endif
 #endif
-
-typedef struct YGCachedMeasurement {
-  float availableWidth;
-  float availableHeight;
-  YGMeasureMode widthMeasureMode;
-  YGMeasureMode heightMeasureMode;
-
-  float computedWidth;
-  float computedHeight;
-} YGCachedMeasurement;
-
-// This value was chosen based on empiracle data. Even the most complicated
-// layouts should not require more than 16 entries to fit within the cache.
-#define YG_MAX_CACHED_RESULT_COUNT 16
-
-typedef struct YGLayout {
-  float position[4];
-  float dimensions[2];
-  float margin[6];
-  float border[6];
-  float padding[6];
-  YGDirection direction;
-
-  uint32_t computedFlexBasisGeneration;
-  float computedFlexBasis;
-  bool hadOverflow;
-
-  // Instead of recomputing the entire layout every single time, we
-  // cache some information to break early when nothing changed
-  uint32_t generationCount;
-  YGDirection lastParentDirection;
-
-  uint32_t nextCachedMeasurementsIndex;
-  YGCachedMeasurement cachedMeasurements[YG_MAX_CACHED_RESULT_COUNT];
-  float measuredDimensions[2];
-
-  YGCachedMeasurement cachedLayout;
-} YGLayout;
-
-typedef struct YGStyle {
-  YGDirection direction;
-  YGFlexDirection flexDirection;
-  YGJustify justifyContent;
-  YGAlign alignContent;
-  YGAlign alignItems;
-  YGAlign alignSelf;
-  YGPositionType positionType;
-  YGWrap flexWrap;
-  YGOverflow overflow;
-  YGDisplay display;
-  float flex;
-  float flexGrow;
-  float flexShrink;
-  YGValue flexBasis;
-  YGValue margin[YGEdgeCount];
-  YGValue position[YGEdgeCount];
-  YGValue padding[YGEdgeCount];
-  YGValue border[YGEdgeCount];
-  YGValue dimensions[2];
-  YGValue minDimensions[2];
-  YGValue maxDimensions[2];
-
-  // Yoga specific properties, not compatible with flexbox specification
-  float aspectRatio;
-} YGStyle;
-
-typedef struct YGConfig {
-  bool experimentalFeatures[YGExperimentalFeatureCount + 1];
-  bool useWebDefaults;
-  bool useLegacyStretchBehaviour;
-  float pointScaleFactor;
-  YGLogger logger;
-  YGNodeClonedFunc cloneNodeCallback;
-  void *context;
-} YGConfig;
-
-typedef struct YGNode {
-  YGStyle style;
-  YGLayout layout;
-  uint32_t lineIndex;
-
-  YGNodeRef parent;
-  YGNodeListRef children;
-
-  struct YGNode *nextChild;
-
-  YGMeasureFunc measure;
-  YGBaselineFunc baseline;
-  YGPrintFunc print;
-  YGConfigRef config;
-  void *context;
-
-  bool isDirty;
-  bool hasNewLayout;
-  YGNodeType nodeType;
-
-  YGValue const *resolvedDimensions[2];
-} YGNode;
-
-#define YG_UNDEFINED_VALUES \
-  { .value = YGUndefined, .unit = YGUnitUndefined }
-
-#define YG_AUTO_VALUES \
-  { .value = YGUndefined, .unit = YGUnitAuto }
-
-#define YG_DEFAULT_EDGE_VALUES_UNIT                                                   \
-  {                                                                                   \
-    [YGEdgeLeft] = YG_UNDEFINED_VALUES, [YGEdgeTop] = YG_UNDEFINED_VALUES,            \
-    [YGEdgeRight] = YG_UNDEFINED_VALUES, [YGEdgeBottom] = YG_UNDEFINED_VALUES,        \
-    [YGEdgeStart] = YG_UNDEFINED_VALUES, [YGEdgeEnd] = YG_UNDEFINED_VALUES,           \
-    [YGEdgeHorizontal] = YG_UNDEFINED_VALUES, [YGEdgeVertical] = YG_UNDEFINED_VALUES, \
-    [YGEdgeAll] = YG_UNDEFINED_VALUES,                                                \
-  }
-
-#define YG_DEFAULT_DIMENSION_VALUES \
-  { [YGDimensionWidth] = YGUndefined, [YGDimensionHeight] = YGUndefined, }
-
-#define YG_DEFAULT_DIMENSION_VALUES_UNIT \
-  { [YGDimensionWidth] = YG_UNDEFINED_VALUES, [YGDimensionHeight] = YG_UNDEFINED_VALUES, }
-
-#define YG_DEFAULT_DIMENSION_VALUES_AUTO_UNIT \
-  { [YGDimensionWidth] = YG_AUTO_VALUES, [YGDimensionHeight] = YG_AUTO_VALUES, }
-
-static const float kDefaultFlexGrow = 0.0f;
-static const float kDefaultFlexShrink = 0.0f;
-static const float kWebDefaultFlexShrink = 1.0f;
-
-static const YGStyle gYGNodeStyleDefaults = {
-    .direction = YGDirectionInherit,
-    .flexDirection = YGFlexDirectionColumn,
-    .justifyContent = YGJustifyFlexStart,
-    .alignContent = YGAlignFlexStart,
-    .alignItems = YGAlignStretch,
-    .alignSelf = YGAlignAuto,
-    .positionType = YGPositionTypeRelative,
-    .flexWrap = YGWrapNoWrap,
-    .overflow = YGOverflowVisible,
-    .display = YGDisplayFlex,
-    .flex = YGUndefined,
-    .flexGrow = YGUndefined,
-    .flexShrink = YGUndefined,
-    .flexBasis = YG_AUTO_VALUES,
-    .margin = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .position = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .padding = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .border = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .dimensions = YG_DEFAULT_DIMENSION_VALUES_AUTO_UNIT,
-    .minDimensions = YG_DEFAULT_DIMENSION_VALUES_UNIT,
-    .maxDimensions = YG_DEFAULT_DIMENSION_VALUES_UNIT,
-    .aspectRatio = YGUndefined,
-};
-
-static const YGLayout gYGNodeLayoutDefaults = {
-    .position = {},
-    .dimensions = YG_DEFAULT_DIMENSION_VALUES,
-    .margin = {},
-    .border = {},
-    .padding = {},
-    .direction = YGDirectionInherit,
-    .computedFlexBasisGeneration = 0,
-    .computedFlexBasis = YGUndefined,
-    .hadOverflow = false,
-    .generationCount = 0,
-    .lastParentDirection = (YGDirection)-1,
-    .nextCachedMeasurementsIndex = 0,
-    .cachedMeasurements = {},
-    .measuredDimensions = YG_DEFAULT_DIMENSION_VALUES,
-    .cachedLayout =
-        {
-            .availableWidth = 0,
-            .availableHeight = 0,
-            .widthMeasureMode = (YGMeasureMode)-1,
-            .heightMeasureMode = (YGMeasureMode)-1,
-            .computedWidth = -1,
-            .computedHeight = -1,
-        },
-};
-
-static const YGNode gYGNodeDefaults = {
-    .style = gYGNodeStyleDefaults,
-    .layout = gYGNodeLayoutDefaults,
-    .lineIndex = 0,
-    .parent = nullptr,
-    .children = nullptr,
-    .nextChild = nullptr,
-    .measure = nullptr,
-    .baseline = nullptr,
-    .print = nullptr,
-    .config = nullptr,
-    .context = nullptr,
-    .isDirty = false,
-    .hasNewLayout = true,
-    .nodeType = YGNodeTypeDefault,
-    .resolvedDimensions = {[YGDimensionWidth] = &YGValueUndefined,
-                           [YGDimensionHeight] = &YGValueUndefined},
-};
 
 #ifdef ANDROID
 static int YGAndroidLog(const YGConfigRef config,
@@ -316,9 +121,10 @@ bool YGFloatIsUndefined(const float value) {
   return isnan(value);
 }
 
-static inline const YGValue *YGComputedEdgeValue(const YGValue edges[YGEdgeCount],
-                                                 const YGEdge edge,
-                                                 const YGValue *const defaultValue) {
+const YGValue* YGComputedEdgeValue(
+    const YGValue edges[YGEdgeCount],
+    const YGEdge edge,
+    const YGValue* const defaultValue) {
   if (edges[edge].unit != YGUnitUndefined) {
     return &edges[edge];
   }
@@ -940,7 +746,7 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                           const char *reason,
                           const YGConfigRef config);
 
-static inline bool YGValueEqual(const YGValue a, const YGValue b) {
+bool YGValueEqual(const YGValue a, const YGValue b) {
   if (a.unit != b.unit) {
     return false;
   }
@@ -963,222 +769,18 @@ static inline void YGResolveDimensions(YGNodeRef node) {
   }
 }
 
-static inline bool YGFloatsEqual(const float a, const float b) {
+bool YGFloatsEqual(const float a, const float b) {
   if (YGFloatIsUndefined(a)) {
     return YGFloatIsUndefined(b);
   }
   return fabs(a - b) < 0.0001f;
 }
 
-typedef struct YGStringStream {
-  char *str;
-  uint32_t length;
-  uint32_t capacity;
-} YGStringStream;
-
-static void YGWriteToStringStream(YGStringStream *stream, const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  va_list argsCopy;
-  va_copy(argsCopy, args);
-  int available = stream->capacity - stream->length;
-  int required = vsnprintf(nullptr, 0, format, args);
-  va_end(args);
-  if (required >= available) {
-    char *newStr = (char *) realloc(stream->str, sizeof(char) * (stream->capacity) * 2);
-    if (newStr != nullptr) {
-      stream->str = newStr;
-      stream->capacity *= 2;
-      available = stream->capacity - stream->length;
-    }
-  };
-  vsnprintf(stream->str + stream->length, available, format, argsCopy);
-  if (required < available) {
-    stream->length += required;
-  } else {
-    stream->length = stream->capacity - 1;
-  }
-  va_end(argsCopy);
-}
-
-static void YGIndent(YGStringStream *stream, const uint32_t n) {
-  for (uint32_t i = 0; i < n; i++) {
-    YGWriteToStringStream(stream, "  ");
-  }
-}
-
-static void YGPrintNumberIfNotUndefinedf(YGStringStream *stream,
-                                         const char *str,
-                                         const float number) {
-  if (!YGFloatIsUndefined(number)) {
-    YGWriteToStringStream(stream, "%s: %g; ", str, number);
-  }
-}
-
-static void YGPrintNumberIfNotUndefined(YGStringStream *stream,
-                                        const char *str,
-                                        const YGValue *const number) {
-  if (number->unit != YGUnitUndefined) {
-    if (number->unit == YGUnitAuto) {
-      YGWriteToStringStream(stream, "%s: auto; ", str);
-    } else {
-      const char *unit = number->unit == YGUnitPoint ? "px" : "%%";
-      YGWriteToStringStream(stream, "%s: %g%s; ", str, number->value, unit);
-    }
-  }
-}
-
-static void YGPrintNumberIfNotAuto(YGStringStream *stream,
-                                   const char *str,
-                                   const YGValue *const number) {
-  if (number->unit != YGUnitAuto) {
-    YGPrintNumberIfNotUndefined(stream, str, number);
-  }
-}
-
-static void YGPrintEdgeIfNotUndefined(YGStringStream *stream,
-                                      const char *str,
-                                      const YGValue *edges,
-                                      const YGEdge edge) {
-  YGPrintNumberIfNotUndefined(stream, str, YGComputedEdgeValue(edges, edge, &YGValueUndefined));
-}
-
-static void YGPrintNumberIfNotZero(YGStringStream *stream,
-                                   const char *str,
-                                   const YGValue *const number) {
-  if (!YGFloatsEqual(number->value, 0)) {
-    YGPrintNumberIfNotUndefined(stream, str, number);
-  }
-}
-
-static bool YGFourValuesEqual(const YGValue four[4]) {
-  return YGValueEqual(four[0], four[1]) && YGValueEqual(four[0], four[2]) &&
-         YGValueEqual(four[0], four[3]);
-}
-
-static void YGPrintEdges(YGStringStream *stream, const char *str, const YGValue *edges) {
-  if (YGFourValuesEqual(edges)) {
-    YGPrintNumberIfNotZero(stream, str, &edges[YGEdgeLeft]);
-  } else {
-    for (uint32_t edge = 0; edge < YGEdgeCount; edge++) {
-      char buf[30];
-      snprintf(buf, sizeof(buf), "%s-%s", str, YGEdgeToString((YGEdge)edge));
-      YGPrintNumberIfNotZero(stream, buf, &edges[edge]);
-    }
-  }
-}
-
-static void YGNodeToString(YGStringStream *stream,
-                           const YGNodeRef node,
-                           const YGPrintOptions options,
-                           const uint32_t level) {
-  YGIndent(stream, level);
-  YGWriteToStringStream(stream, "<div ");
-
-  if (node->print) {
-    node->print(node);
-  }
-
-  if (options & YGPrintOptionsLayout) {
-    YGWriteToStringStream(stream, "layout=\"");
-    YGWriteToStringStream(stream, "width: %g; ", node->layout.dimensions[YGDimensionWidth]);
-    YGWriteToStringStream(stream, "height: %g; ", node->layout.dimensions[YGDimensionHeight]);
-    YGWriteToStringStream(stream, "top: %g; ", node->layout.position[YGEdgeTop]);
-    YGWriteToStringStream(stream, "left: %g;", node->layout.position[YGEdgeLeft]);
-    YGWriteToStringStream(stream, "\" ");
-  }
-
-  if (options & YGPrintOptionsStyle) {
-    YGWriteToStringStream(stream, "style=\"");
-    if (node->style.flexDirection != gYGNodeDefaults.style.flexDirection) {
-      YGWriteToStringStream(stream,
-                            "flex-direction: %s; ",
-                            YGFlexDirectionToString(node->style.flexDirection));
-    }
-    if (node->style.justifyContent != gYGNodeDefaults.style.justifyContent) {
-      YGWriteToStringStream(stream,
-                            "justify-content: %s; ",
-                            YGJustifyToString(node->style.justifyContent));
-    }
-    if (node->style.alignItems != gYGNodeDefaults.style.alignItems) {
-      YGWriteToStringStream(stream, "align-items: %s; ", YGAlignToString(node->style.alignItems));
-    }
-    if (node->style.alignContent != gYGNodeDefaults.style.alignContent) {
-      YGWriteToStringStream(stream, "align-content: %s; ", YGAlignToString(node->style.alignContent));
-    }
-    if (node->style.alignSelf != gYGNodeDefaults.style.alignSelf) {
-      YGWriteToStringStream(stream, "align-self: %s; ", YGAlignToString(node->style.alignSelf));
-    }
-
-    YGPrintNumberIfNotUndefinedf(stream, "flex-grow", node->style.flexGrow);
-    YGPrintNumberIfNotUndefinedf(stream, "flex-shrink", node->style.flexShrink);
-    YGPrintNumberIfNotAuto(stream, "flex-basis", &node->style.flexBasis);
-    YGPrintNumberIfNotUndefinedf(stream, "flex", node->style.flex);
-
-    if (node->style.flexWrap != gYGNodeDefaults.style.flexWrap) {
-      YGWriteToStringStream(stream, "flexWrap: %s; ", YGWrapToString(node->style.flexWrap));
-    }
-
-    if (node->style.overflow != gYGNodeDefaults.style.overflow) {
-      YGWriteToStringStream(stream, "overflow: %s; ", YGOverflowToString(node->style.overflow));
-    }
-
-    if (node->style.display != gYGNodeDefaults.style.display) {
-      YGWriteToStringStream(stream, "display: %s; ", YGDisplayToString(node->style.display));
-    }
-
-    YGPrintEdges(stream, "margin", node->style.margin);
-    YGPrintEdges(stream, "padding", node->style.padding);
-    YGPrintEdges(stream, "border", node->style.border);
-
-    YGPrintNumberIfNotAuto(stream, "width", &node->style.dimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotAuto(stream, "height", &node->style.dimensions[YGDimensionHeight]);
-    YGPrintNumberIfNotAuto(stream, "max-width", &node->style.maxDimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotAuto(stream, "max-height", &node->style.maxDimensions[YGDimensionHeight]);
-    YGPrintNumberIfNotAuto(stream, "min-width", &node->style.minDimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotAuto(stream, "min-height", &node->style.minDimensions[YGDimensionHeight]);
-
-    if (node->style.positionType != gYGNodeDefaults.style.positionType) {
-      YGWriteToStringStream(stream,
-                            "position: %s; ",
-                            YGPositionTypeToString(node->style.positionType));
-    }
-
-    YGPrintEdgeIfNotUndefined(stream, "left", node->style.position, YGEdgeLeft);
-    YGPrintEdgeIfNotUndefined(stream, "right", node->style.position, YGEdgeRight);
-    YGPrintEdgeIfNotUndefined(stream, "top", node->style.position, YGEdgeTop);
-    YGPrintEdgeIfNotUndefined(stream, "bottom", node->style.position, YGEdgeBottom);
-    YGWriteToStringStream(stream, "\" ");
-
-    if (node->measure != nullptr) {
-      YGWriteToStringStream(stream, "has-custom-measure=\"true\"");
-    }
-  }
-  YGWriteToStringStream(stream, ">");
-
-  const uint32_t childCount = YGNodeListCount(node->children);
-  if (options & YGPrintOptionsChildren && childCount > 0) {
-    for (uint32_t i = 0; i < childCount; i++) {
-      YGWriteToStringStream(stream, "\n");
-      YGNodeToString(stream, YGNodeGetChild(node, i), options, level + 1);
-    }
-    YGWriteToStringStream(stream, "\n");
-    YGIndent(stream, level);
-  }
-  YGWriteToStringStream(stream, "</div>");
-}
-
 static void YGNodePrintInternal(const YGNodeRef node,
                                 const YGPrintOptions options) {
-  YGStringStream stream;
-  stream.str = (char *) malloc(sizeof(char) * 1024);
-  stream.length = 0;
-  stream.capacity = 1024;
-  if (stream.str != nullptr) {
-    YGNodeToString(&stream, node, options, 0);
-    YGLog(node, YGLogLevelDebug, stream.str);
-    free(stream.str);
-  }
+  std::string str;
+  facebook::yoga::YGNodeToString(&str, node, options, 0);
+  YGLog(node, YGLogLevelDebug, str.c_str());
 }
 
 void YGNodePrint(const YGNodeRef node, const YGPrintOptions options) {
