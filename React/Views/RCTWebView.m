@@ -115,7 +115,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     // Check for a static html source first
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {
-      NSURL *baseURL = [RCTConvert NSURL:source[@"baseUrl"]];
+      NSURL *baseURL = [NSURL fileURLWithPath: [[NSBundle mainBundle] resourcePath] isDirectory: YES];
       if (!baseURL) {
         baseURL = [NSURL URLWithString:@"about:blank"];
       }
