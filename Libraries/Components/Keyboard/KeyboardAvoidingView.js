@@ -157,7 +157,7 @@ const KeyboardAvoidingView = createReactClass({
     switch (behavior) {
       case 'height':
         let heightStyle;
-        if (this.frame) {
+        if (this.frame && this.state.bottom) {
           // Note that we only apply a height change when there is keyboard present,
           // i.e. this.state.bottom is greater than 0. If we remove that condition,
           // this.frame.height will never go back to its original value.
