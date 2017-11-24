@@ -365,7 +365,6 @@ You have built a great app using React Native, and you are now itching to releas
     container.className = 'display-' + type + '-' + value + ' ' +
       container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
   }
-
   function convertBlocks() {
     // Convert <div>...<span><block /></span>...</div>
     // Into <div>...<block />...</div>
@@ -390,12 +389,10 @@ You have built a great app using React Native, and you are now itching to releas
       }
     }
   }
-
   function guessPlatformAndOS() {
     if (!document.querySelector('block')) {
       return;
     }
-  
     // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
     // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
     var foundHash = false;
@@ -418,7 +415,6 @@ You have built a great app using React Native, and you are now itching to releas
             if (parent.tagName === 'BLOCK') {
               // Could be more than one target os and dev platform, but just choose some sort of order
               // of priority here.
-
               // Dev OS
               if (parent.className.indexOf('mac') > -1) {
                 displayTab('os', 'mac');
@@ -436,7 +432,6 @@ You have built a great app using React Native, and you are now itching to releas
               } else {
                 break;
               }
-
               // Target Platform
               if (parent.className.indexOf('ios') > -1) {
                 displayTab('platform', 'ios');
@@ -449,7 +444,6 @@ You have built a great app using React Native, and you are now itching to releas
               } else {
                 break;
               }
-
               // Guide
               if (parent.className.indexOf('native') > -1) {
                 displayTab('guide', 'native');
@@ -462,7 +456,6 @@ You have built a great app using React Native, and you are now itching to releas
               } else {
                 break;
               }
-
               break;
             }
             parent = parent.parentElement;
@@ -470,7 +463,6 @@ You have built a great app using React Native, and you are now itching to releas
         }
       }
     }
-
     // Do the default if there is no matching hash
     if (!foundHash) {
       var isMac = navigator.platform === 'MacIntel';
@@ -484,7 +476,6 @@ You have built a great app using React Native, and you are now itching to releas
       displayTab('language', 'objc');
     }
   }
-
   convertBlocks();
   guessPlatformAndOS();
 </script>

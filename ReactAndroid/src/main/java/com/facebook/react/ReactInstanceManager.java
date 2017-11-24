@@ -29,7 +29,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JSC_CALLS;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
 
 import android.app.Activity;
 import android.content.Context;
@@ -395,8 +395,9 @@ public class ReactInstanceManager {
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport && mJSMainModulePath != null &&
-      !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
+    if (mUseDeveloperSupport
+        && mJSMainModulePath != null
+        && !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.
@@ -764,8 +765,14 @@ public class ReactInstanceManager {
   }
 
   public @Nullable ViewManager createViewManager(String viewManagerName) {
-    ReactApplicationContext context =
-        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+    ReactApplicationContext context;
+    synchronized (mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
     synchronized (mPackages) {
       for (ReactPackage reactPackage : mPackages) {
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
@@ -781,9 +788,15 @@ public class ReactInstanceManager {
     return null;
   }
 
-  public List<String> getViewManagerNames() {
-    ReactApplicationContext context =
-        Assertions.assertNotNull((ReactApplicationContext) getCurrentReactContext());
+  public @Nullable List<String> getViewManagerNames() {
+    ReactApplicationContext context;
+    synchronized(mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
     synchronized (mPackages) {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mPackages) {
@@ -1082,7 +1095,7 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
-    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
+    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);

@@ -52,12 +52,18 @@ function exec(command, logOutput) {
       process.stderr.write(data);
     });
 
-    child.on('exit', code => {
-      (code === 0)
-        ? resolve(stdout)
-        : reject(new Error(`Command '${command}' exited with code ${code}:
+    child.on('exit', (code, signal) => {
+      if (code === 0) {
+        resolve(stdout);
+      } else if (code) {
+        reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
 stdout: ${stdout}`));
+      } else {
+        reject(new Error(`Command '${command}' terminated with signal '${signal}':
+stderr: ${stderr}
+stdout: ${stdout}`));
+      }
     });
   });
 }

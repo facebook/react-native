@@ -116,7 +116,7 @@ public class DevInternalSettings implements
 
   @SuppressLint("SharedPreferencesUse")
   public boolean isBundleDeltasEnabled() {
-    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, false);
+    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, true);
   }
 
   @SuppressLint("SharedPreferencesUse")
