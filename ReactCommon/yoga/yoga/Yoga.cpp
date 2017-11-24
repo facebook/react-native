@@ -1862,17 +1862,17 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
   // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
   const float minInnerWidth =
-      YGResolveValue(&node->style.minDimensions[YGDimensionWidth], parentWidth) - marginAxisRow -
+      YGResolveValue(&node->style.minDimensions[YGDimensionWidth], parentWidth) -
       paddingAndBorderAxisRow;
   const float maxInnerWidth =
-      YGResolveValue(&node->style.maxDimensions[YGDimensionWidth], parentWidth) - marginAxisRow -
+      YGResolveValue(&node->style.maxDimensions[YGDimensionWidth], parentWidth) -
       paddingAndBorderAxisRow;
   const float minInnerHeight =
       YGResolveValue(&node->style.minDimensions[YGDimensionHeight], parentHeight) -
-      marginAxisColumn - paddingAndBorderAxisColumn;
+      paddingAndBorderAxisColumn;
   const float maxInnerHeight =
       YGResolveValue(&node->style.maxDimensions[YGDimensionHeight], parentHeight) -
-      marginAxisColumn - paddingAndBorderAxisColumn;
+      paddingAndBorderAxisColumn;
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
   const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
 
