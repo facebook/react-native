@@ -1,0 +1,7 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+
+target 'AbstractTesting' do
+  pod 'TestPod', '~> 3.1'
+
+end
