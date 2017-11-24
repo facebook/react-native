@@ -82,7 +82,7 @@ static NSString *RCTAuthorizationStatus(CLAuthorizationStatus status)
     };
   });
 
-  return statuses[status] ?: @"not_determined";
+  return statuses[@(status)] ?: @"not_determined";
 }
 
 static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code, NSString *msg /* nil for default */)
