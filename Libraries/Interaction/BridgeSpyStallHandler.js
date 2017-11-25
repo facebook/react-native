@@ -28,7 +28,7 @@ const BridgeSpyStallHandler = {
         infoLog(
           spyBuffer.length + ' bridge messages during stall: ',
           spyBuffer.map((info) => {
-            let args = '<args>';
+            let args;
             try {
               args = JSON.stringify(info.args);
             } catch (e1) {

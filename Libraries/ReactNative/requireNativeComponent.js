@@ -61,7 +61,7 @@ function requireNativeComponent(
       // as lazy view managers discovery is Android-specific.
       if (UIManager.ViewManagerNames) {
         // Lazy view managers enabled.
-        viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+        merge(viewConfig, UIManager.getDefaultEventTypes());
       } else {
         viewConfig.bubblingEventTypes = merge(
           viewConfig.bubblingEventTypes,

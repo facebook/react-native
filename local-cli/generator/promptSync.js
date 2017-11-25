@@ -11,7 +11,7 @@ function create() {
   return prompt;
 
   function prompt(ask, value, opts) {
-    var insert = 0, savedinsert = 0, res, i, savedstr;
+    var insert = 0, savedinsert = 0, res, i;
     opts = opts || {};
 
     if (Object(ask) === ask) {
@@ -34,8 +34,6 @@ function create() {
 
     var buf = new Buffer(3);
     var str = '', character, read;
-
-    savedstr = '';
 
     if (ask) {
       process.stdout.write(ask);
