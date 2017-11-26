@@ -35,8 +35,8 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
-#include <cxxreact/JSIndexedRAMBundleRegistry.h>
 #import <cxxreact/Platform.h>
+#import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
 
 #import "NSDataBigString.h"
@@ -60,6 +60,8 @@
             @"This method must be called on JS thread")
 
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
+
+typedef void (^RCTPendingCall)();
 
 using namespace facebook::react;
 
@@ -157,7 +159,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   BOOL _wasBatchActive;
   BOOL _didInvalidate;
 
-  NSMutableArray<dispatch_block_t> *_pendingCalls;
+  NSMutableArray<RCTPendingCall> *_pendingCalls;
   std::atomic<NSInteger> _pendingCount;
 
   // Native modules
@@ -175,21 +177,17 @@ struct RCTInstanceCallback : public InstanceCallback {
   std::shared_ptr<Instance> _reactInstance;
 }
 
-@synthesize loading = _loading;
-@synthesize valid = _valid;
-@synthesize performanceLogger = _performanceLogger;
 @synthesize bridgeDescription = _bridgeDescription;
+@synthesize embeddedBundleURL = _embeddedBundleURL;
+@synthesize loading = _loading;
+@synthesize performanceLogger = _performanceLogger;
+@synthesize valid = _valid;
 
 + (void)initialize
 {
   if (self == [RCTCxxBridge class]) {
     RCTPrepareJSCExecutor();
   }
-}
-
-- (JSContext *)jsContext
-{
-  return contextForGlobalContextRef([self jsContextRef]);
 }
 
 - (JSGlobalContextRef)jsContextRef
@@ -207,6 +205,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
+    if ([bridge.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
+      _embeddedBundleURL = [bridge.delegate embeddedBundleURLForBridge:bridge];
+    }
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
@@ -973,7 +974,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 #pragma mark - RCTBridge methods
 
-- (void)_runAfterLoad:(dispatch_block_t)block
+- (void)_runAfterLoad:(RCTPendingCall)block
 {
   // Ordering here is tricky.  Ideally, the C++ bridge would provide
   // functionality to defer calls until after the app is loaded.  Until that
@@ -1026,9 +1027,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   // Phase B: _flushPendingCalls happens.  Each block in _pendingCalls is
   // executed, adding work to the queue, and _pendingCount is decremented.
   // loading is set to NO.
-  NSArray *pendingCalls = _pendingCalls;
+  NSArray<RCTPendingCall> *pendingCalls = _pendingCalls;
   _pendingCalls = nil;
-  for (dispatch_block_t call in pendingCalls) {
+  for (RCTPendingCall call in pendingCalls) {
     call();
     _pendingCount--;
   }
@@ -1051,18 +1052,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueJSCall:]", nil);
 
   RCTProfileBeginFlowEvent();
-  [self _runAfterLoad:^{
+  __weak __typeof(self) weakSelf = self;
+  [self _runAfterLoad:^(){
     RCTProfileEndFlowEvent();
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
 
-    if (self->_reactInstance) {
-      self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
-                                           convertIdToFollyDynamic(args ?: @[]));
+    if (strongSelf->_reactInstance) {
+      strongSelf->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
+                                             convertIdToFollyDynamic(args ?: @[]));
 
       // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
       // the block is invoked after callJSFunction
       if (completion) {
-        if (self->_jsMessageThread) {
-          self->_jsMessageThread->runOnQueue(completion);
+        if (strongSelf->_jsMessageThread) {
+          strongSelf->_jsMessageThread->runOnQueue(completion);
         } else {
           RCTLogWarn(@"Can't invoke completion without messageThread");
         }
@@ -1087,11 +1093,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
    */
 
   RCTProfileBeginFlowEvent();
-  [self _runAfterLoad:^{
+  __weak __typeof(self) weakSelf = self;
+  [self _runAfterLoad:^(){
     RCTProfileEndFlowEvent();
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
 
-    if (self->_reactInstance) {
-      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
+    if (strongSelf->_reactInstance) {
+      strongSelf->_reactInstance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
     }
   }];
 }
@@ -1144,12 +1155,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        NSString *jsSegmentsDirectory = [self.delegate respondsToSelector:@selector(jsSegmentsDirectory)]
-          ? [[self.delegate jsSegmentsDirectory].path stringByAppendingString:@"/"]
-          : nil;
-        auto registry = jsSegmentsDirectory != nil
-          ? std::make_unique<JSIndexedRAMBundleRegistry>(std::move(ramBundle), jsSegmentsDirectory.UTF8String)
-          : std::make_unique<RAMBundleRegistry>(std::move(ramBundle));
+        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
         self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }
@@ -1208,6 +1214,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   return ret;
+}
+
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
+{
+  if (_reactInstance) {
+    _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String);
+  }
 }
 
 #pragma mark - Payload Processing

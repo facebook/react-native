@@ -17,12 +17,15 @@ require('../../setupBabel')();
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const ReactPackager = require('metro-bundler');
+
+const HmrServer = require('metro-bundler/src/HmrServer');
+
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const Terminal = require('metro-bundler/src/lib/Terminal');
 
-const attachHMRServer = require('./util/attachHMRServer');
+const attachWebsocketServer = require('./util/attachWebsocketServer');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -131,10 +134,10 @@ function runServer(
     : http.createServer(app);
 
   serverInstance.listen(args.port, args.host, 511, function() {
-    attachHMRServer({
+    attachWebsocketServer({
       httpServer: serverInstance,
       path: '/hot',
-      packagerServer,
+      websocketServer: new HmrServer(packagerServer, reporter),
     });
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
@@ -200,7 +203,6 @@ function getPackagerServer(args, config, reporter) {
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
     transformCache: TransformCaching.useTempDir(),
-    useDeltaBundler: false,
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

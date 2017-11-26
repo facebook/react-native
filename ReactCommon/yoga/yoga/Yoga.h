@@ -65,11 +65,6 @@ typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
                                  YGNodeRef parent,
                                  int childIndex);
 
-typedef void *(*YGMalloc)(size_t size);
-typedef void *(*YGCalloc)(size_t count, size_t size);
-typedef void *(*YGRealloc)(void *ptr, size_t size);
-typedef void (*YGFree)(void *ptr);
-
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
@@ -278,8 +273,5 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 
 WIN_EXPORT void YGConfigSetContext(const YGConfigRef config, void *context);
 WIN_EXPORT void *YGConfigGetContext(const YGConfigRef config);
-
-WIN_EXPORT void
-YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
 
 YG_EXTERN_C_END

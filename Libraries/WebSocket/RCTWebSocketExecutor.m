@@ -117,7 +117,7 @@ RCT_EXPORT_MODULE()
     initError = error;
     dispatch_semaphore_signal(s);
   }];
-  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC));
+  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5));
   if (initError) {
     RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
   }

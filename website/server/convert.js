@@ -157,18 +157,6 @@ function execute(options) {
   }
 
   if (options.extractDocs) {
-    // Rendering docs can take up to 8 seconds. We wait until /docs/ are
-    // requested before doing so, then we store the results in memory to
-    // speed up subsequent requests.
-    var extractedDocs = cache.get('extractedDocs');
-    if (!extractedDocs) {
-      extractedDocs = extractDocs();
-      cache.put('extractedDocs', extractedDocs);
-    }
-    extractedDocs.forEach(function(content) {
-      handleMarkdown(content, null);
-    });
-
     var files = glob.sync(DOCS_MD_DIR + '**/*.*');
     files.forEach(function(file) {
       var extension = path.extname(file);

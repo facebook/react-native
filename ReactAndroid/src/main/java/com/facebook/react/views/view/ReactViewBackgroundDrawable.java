@@ -109,6 +109,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   private @Nullable float[] mBorderCornerRadii;
   private final Context mContext;
+  private int mLayoutDirection;
 
   public enum BorderRadiusLocation {
     TOP_LEFT,
@@ -128,14 +129,27 @@ public class ReactViewBackgroundDrawable extends Drawable {
   @Override
   public void draw(Canvas canvas) {
     updatePathEffect();
-    boolean roundedBorders = mBorderCornerRadii != null ||
-        (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
-
-    if (!roundedBorders) {
+    if (!hasRoundedBorders()) {
       drawRectangularBackgroundWithBorders(canvas);
     } else {
       drawRoundedBackgroundWithBorders(canvas);
     }
+  }
+
+  public boolean hasRoundedBorders() {
+    if (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+      return true;
+    }
+
+    if (mBorderCornerRadii != null) {
+      for (final float borderRadii : mBorderCornerRadii) {
+        if (!YogaConstants.isUndefined(borderRadii) && borderRadii > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   @Override
@@ -290,6 +304,25 @@ public class ReactViewBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
+  /** Similar to Drawable.getLayoutDirection, but available in APIs < 23. */
+  public int getResolvedLayoutDirection() {
+    return mLayoutDirection;
+  }
+
+  /** Similar to Drawable.setLayoutDirection, but available in APIs < 23. */
+  public boolean setResolvedLayoutDirection(int layoutDirection) {
+    if (mLayoutDirection != layoutDirection) {
+      mLayoutDirection = layoutDirection;
+      return onResolvedLayoutDirectionChanged(layoutDirection);
+    }
+    return false;
+  }
+
+  /** Similar to Drawable.onLayoutDirectionChanged, but available in APIs < 23. */
+  public boolean onResolvedLayoutDirectionChanged(int layoutDirection) {
+    return false;
+  }
+
   @VisibleForTesting
   public int getColor() {
     return mColor;
@@ -323,8 +356,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
@@ -478,13 +511,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       float topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START);
       float topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END);
       float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
       float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
-      
+
       if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
         if (YogaConstants.isUndefined(topStartRadius)) {
           topStartRadius = topLeftRadius;
@@ -600,23 +633,29 @@ public class ReactViewBackgroundDrawable extends Drawable {
      * border of V will render inside O.
      *
      * <p>Let BorderWidth = (borderTop, borderLeft, borderBottom, borderRight).
+     *
      * <p>Let I (for inner) = O - BorderWidth.
      *
      * <p>Then, remembering that O and I are rectangles and that I is inside O, O - I gives us the
      * border of V. Therefore, we can use canvas.clipPath to draw V's border.
      *
      * <p>canvas.clipPath(O, Region.OP.INTERSECT);
+     *
      * <p>canvas.clipPath(I, Region.OP.DIFFERENCE);
+     *
      * <p>canvas.drawRect(O, paint);
      *
      * <p>This lets us draw non-rounded single-color borders.
      *
      * <p>To extend this algorithm to rounded single-color borders, we:
+     *
      * <p>1. Curve the corners of O by the (border radii of V) using Path#addRoundRect.
+     *
      * <p>2. Curve the corners of I by (border radii of V - border widths of V) using
      * Path#addRoundRect.
      *
      * <p>Let O' = curve(O, border radii of V).
+     *
      * <p>Let I' = curve(I, border radii of V - border widths of V)
      *
      * <p>The rationale behind this decision is the (first sentence of the) following section in the
@@ -627,7 +666,9 @@ public class ReactViewBackgroundDrawable extends Drawable {
      * render curved single-color borders:
      *
      * <p>canvas.clipPath(O, Region.OP.INTERSECT);
+     *
      * <p>canvas.clipPath(I, Region.OP.DIFFERENCE);
+     *
      * <p>canvas.drawRect(O, paint);
      *
      * <p>To extend this algorithm to rendering multi-colored rounded borders, we render each side
@@ -635,8 +676,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
      * border radii are 0. Then, the four quadrilaterals would be:
      *
      * <p>Left: (O.left, O.top), (I.left, I.top), (I.left, I.bottom), (O.left, O.bottom)
+     *
      * <p>Top: (O.left, O.top), (I.left, I.top), (I.right, I.top), (O.right, O.top)
+     *
      * <p>Right: (O.right, O.top), (I.right, I.top), (I.right, I.bottom), (O.right, O.bottom)
+     *
      * <p>Bottom: (O.right, O.bottom), (I.right, I.bottom), (I.left, I.bottom), (O.left, O.bottom)
      *
      * <p>Now, lets consider what happens when we render a rounded border (radii != 0). For the sake
@@ -930,8 +974,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
@@ -1140,8 +1184,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float borderLeftWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
     float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mBorderWidth != null) {
-      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mBorderWidth != null) {
+      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       float borderStartWidth = mBorderWidth.getRaw(Spacing.START);
       float borderEndWidth = mBorderWidth.getRaw(Spacing.END);
 

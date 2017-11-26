@@ -48,16 +48,7 @@ const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from 'metro-bundler';
 
-function saveBundle(output, bundle, args) {
-  return Promise.resolve(
-    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-     * error found when Flow v0.56 was deployed. To see the error delete this
-     * comment and run Flow. */
-    output.save(bundle, args, log)
-  ).then(() => bundle);
-}
-
-function buildBundle(
+async function buildBundle(
   args: OutputOptions & {
     assetsDest: mixed,
     entryFile: string,
@@ -129,7 +120,6 @@ function buildBundle(
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
-      useDeltaBundler: false,
       watch: false,
       workerPath: config.getWorkerPath && config.getWorkerPath(),
     };
@@ -138,26 +128,27 @@ function buildBundle(
     shouldClosePackager = true;
   }
 
-  const bundlePromise = output.build(packagerInstance, requestOpts)
-    .then(bundle => {
-      if (shouldClosePackager) {
-        packagerInstance.end();
-      }
-      return saveBundle(output, bundle, args);
-    });
+  const bundle = await output.build(packagerInstance, requestOpts);
+
+  await output.save(bundle, args, log);
 
   // Save the assets of the bundle
-  const assets = bundlePromise
-    // TODO: Use the packager.getAssets() method to get the bundle assets.
-    // $FlowFixMe: This code is going away.
-    .then(bundle => bundle.getAssets && bundle.getAssets())
-    .then(outputAssets => outputAssets && saveAssets(
-      outputAssets,
-      args.platform,
-      args.assetsDest,
-    ));
+  const outputAssets = await packagerInstance.getAssets({
+    ...Server.DEFAULT_BUNDLE_OPTIONS,
+    ...requestOpts,
+  });
 
   // When we're done saving bundle output and the assets, we're done.
+  const assets = await saveAssets(
+    outputAssets,
+    args.platform,
+    args.assetsDest,
+  );
+
+  if (shouldClosePackager) {
+    packagerInstance.end();
+  }
+
   return assets;
 }
 

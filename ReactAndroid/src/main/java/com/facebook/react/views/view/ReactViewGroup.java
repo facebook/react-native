@@ -129,9 +129,9 @@ public class ReactViewGroup extends ViewGroup implements
 
   @Override
   public void onRtlPropertiesChanged(int layoutDirection) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       if (mReactBackgroundDrawable != null) {
-        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
+        mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
       }
     }
   }
@@ -233,7 +233,20 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
+    backgroundDrawable.setRadius(borderRadius, position);
+
+    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
+        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      final int UPDATED_LAYER_TYPE =
+          backgroundDrawable.hasRoundedBorders()
+              ? View.LAYER_TYPE_SOFTWARE
+              : View.LAYER_TYPE_HARDWARE;
+
+      if (UPDATED_LAYER_TYPE != getLayerType()) {
+        setLayerType(UPDATED_LAYER_TYPE, null);
+      }
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -589,12 +602,12 @@ public class ReactViewGroup extends ViewGroup implements
         updateBackgroundDrawable(layerDrawable);
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         mLayoutDirection =
             I18nUtil.getInstance().isRTL(getContext())
                 ? LAYOUT_DIRECTION_RTL
                 : LAYOUT_DIRECTION_LTR;
-        mReactBackgroundDrawable.setLayoutDirection(mLayoutDirection);
+        mReactBackgroundDrawable.setResolvedLayoutDirection(mLayoutDirection);
       }
     }
     return mReactBackgroundDrawable;
@@ -671,7 +684,7 @@ public class ReactViewGroup extends ViewGroup implements
                 mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
                     borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
               final boolean isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL;
               float topStartBorderRadius =
                   mReactBackgroundDrawable.getBorderRadius(

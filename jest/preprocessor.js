@@ -25,6 +25,7 @@ const babelRegisterOnly = require('metro-bundler/src/babelRegisterOnly');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
+const generate = require('babel-generator').default;
 
 const nodeFiles = RegExp([
   '/local-cli/',
@@ -47,18 +48,29 @@ module.exports = {
       ).code;
     }
 
-    return transformer.transform({
+    const {ast} = transformer.transform({
       filename: file,
       localPath: file,
       options: {
         dev: true,
         inlineRequires: true,
+        minify: false,
         platform: '',
         projectRoot: '',
         retainLines: true,
       },
       src,
-    }).code;
+    });
+
+    return generate(ast, {
+      code: true,
+      comments: false,
+      compact: false,
+      filename: file,
+      retainLines: true,
+      sourceFileName: file,
+      sourceMaps: true,
+    }, src).code;
   },
 
   getCacheKey: createCacheKeyFunction([

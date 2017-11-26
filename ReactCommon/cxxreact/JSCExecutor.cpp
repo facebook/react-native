@@ -458,6 +458,12 @@ namespace facebook {
       m_bundleRegistry = std::move(bundleRegistry);
     }
 
+    void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+      if (m_bundleRegistry) {
+        m_bundleRegistry->registerBundle(bundleId, bundlePath);
+      }
+    }
+
     void JSCExecutor::bindBridge() throw(JSException) {
       SystraceSection s("JSCExecutor::bindBridge");
       std::call_once(m_bindFlag, [this] {
