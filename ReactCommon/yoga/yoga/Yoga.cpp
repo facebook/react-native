@@ -2123,6 +2123,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
 
+    bool sizeBasedOnContent = false;
     // If we don't measure with exact main dimension we want to ensure we don't violate min and max
     if (measureModeMainDim != YGMeasureModeExactly) {
       if (!YGFloatIsUndefined(minInnerMainDim) && sizeConsumedOnCurrentLine < minInnerMainDim) {
@@ -2137,11 +2138,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           // space we've used is all space we need. Root node also should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
         }
+        sizeBasedOnContent = !node->config->useLegacyStretchBehaviour;
       }
     }
 
     float remainingFreeSpace = 0;
-    if (!YGFloatIsUndefined(availableInnerMainDim)) {
+    if (!sizeBasedOnContent && !YGFloatIsUndefined(availableInnerMainDim)) {
       remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine;
     } else if (sizeConsumedOnCurrentLine < 0) {
       // availableInnerMainDim is indefinite which means the node is being sized based on its
