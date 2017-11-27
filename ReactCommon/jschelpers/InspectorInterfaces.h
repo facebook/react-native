@@ -14,8 +14,6 @@
 #include <string>
 #include <vector>
 
-#include <JavaScriptCore/JSBase.h>
-
 namespace facebook {
 namespace react {
 
@@ -46,8 +44,8 @@ public:
 // Note: not destructible!
 class IInspector {
 public:
-  virtual void registerGlobalContext(const std::string& title, const std::function<bool()> &checkIsInspectedRemote, JSGlobalContextRef ctx) = 0;
-  virtual void unregisterGlobalContext(JSGlobalContextRef ctx) = 0;
+  virtual void registerGlobalContext(const std::string& title, const std::function<bool()> &checkIsInspectedRemote, void* ctx) = 0;
+  virtual void unregisterGlobalContext(void* ctx) = 0;
 
   virtual std::vector<InspectorPage> getPages() const = 0;
   virtual std::unique_ptr<ILocalConnection> connect(int pageId, std::unique_ptr<IRemoteConnection> remote) = 0;
