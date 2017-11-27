@@ -657,29 +657,30 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     return node->layout.instanceName;                          \
   }
 
-#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)        \
-  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {        \
-    YGAssertWithNode(node,                                                     \
-                     edge < YGEdgeEnd,                                         \
-                     "Cannot get layout properties of multi-edge shorthands"); \
-                                                                               \
-    if (edge == YGEdgeLeft) {                                                  \
-      if (node->layout.direction == YGDirectionRTL) {                          \
-        return node->layout.instanceName[YGEdgeEnd];                           \
-      } else {                                                                 \
-        return node->layout.instanceName[YGEdgeStart];                         \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    if (edge == YGEdgeRight) {                                                 \
-      if (node->layout.direction == YGDirectionRTL) {                          \
-        return node->layout.instanceName[YGEdgeStart];                         \
-      } else {                                                                 \
-        return node->layout.instanceName[YGEdgeEnd];                           \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    return node->layout.instanceName[edge];                                    \
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName) \
+  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) { \
+    YGAssertWithNode(                                                   \
+        node,                                                           \
+        edge <= YGEdgeEnd,                                              \
+        "Cannot get layout properties of multi-edge shorthands");       \
+                                                                        \
+    if (edge == YGEdgeLeft) {                                           \
+      if (node->layout.direction == YGDirectionRTL) {                   \
+        return node->layout.instanceName[YGEdgeEnd];                    \
+      } else {                                                          \
+        return node->layout.instanceName[YGEdgeStart];                  \
+      }                                                                 \
+    }                                                                   \
+                                                                        \
+    if (edge == YGEdgeRight) {                                          \
+      if (node->layout.direction == YGDirectionRTL) {                   \
+        return node->layout.instanceName[YGEdgeStart];                  \
+      } else {                                                          \
+        return node->layout.instanceName[YGEdgeEnd];                    \
+      }                                                                 \
+    }                                                                   \
+                                                                        \
+    return node->layout.instanceName[edge];                             \
   }
 
 YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
