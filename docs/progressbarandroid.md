@@ -31,7 +31,7 @@ render: function() {
 
 ### Props
 
-- [View props...](docs/view-props.html)
+- [View props...](docs/view.html#props)
 - [`animating`](docs/progressbarandroid.html#animating)
 - [`color`](docs/progressbarandroid.html#color)
 - [`indeterminate`](docs/progressbarandroid.html#indeterminate)

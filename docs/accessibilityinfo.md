@@ -8,9 +8,7 @@ next: actionsheetios
 previous: webview
 ---
 
-Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The
-`AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the
-screen reader as well as to register to be notified when the state of the screen reader changes.
+Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The `AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the screen reader as well as to register to be notified when the state of the screen reader changes.
 
 Here's a small example illustrating how to use `AccessibilityInfo`:
 
@@ -57,7 +55,6 @@ class ScreenReaderStatusExample extends React.Component {
 }
 ```
 
-
 ### Methods
 
 - [`fetch`](docs/accessibilityinfo.html#fetch)
@@ -65,9 +62,6 @@ class ScreenReaderStatusExample extends React.Component {
 - [`setAccessibilityFocus`](docs/accessibilityinfo.html#setaccessibilityfocus)
 - [`announceForAccessibility`](docs/accessibilityinfo.html#announceforaccessibility)
 - [`removeEventListener`](docs/accessibilityinfo.html#removeeventlistener)
-
-
-
 
 ---
 
@@ -81,13 +75,7 @@ class ScreenReaderStatusExample extends React.Component {
 AccessibilityInfo.fetch()
 ```
 
-
-Query whether a screen reader is currently enabled. Returns a promise which
-resolves to a boolean. The result is `true` when a screen reader is enabled
-and `false` otherwise.
-
-
-
+Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a screen reader is enabled and `false` otherwise.
 
 ---
 
@@ -97,8 +85,14 @@ and `false` otherwise.
 AccessibilityInfo.addEventListener(eventName, handler)
 ```
 
+Add an event handler. 
 
-Add an event handler. Supported events:
+| Name | Type | Required | Description |
+| - | - | - | - |
+| eventName | string | Yes | Name of the event |
+| handler | function | Yes | Event handler |
+
+Supported events:
 
 - `change`: Fires when the state of the screen reader changes. The argument
   to the event handler is a boolean. The boolean is `true` when a screen
@@ -109,9 +103,6 @@ Add an event handler. Supported events:
     - `announcement`: The string announced by the screen reader.
     - `success`: A boolean indicating whether the announcement was successfully made.
 
-
-
-
 ---
 
 ### `setAccessibilityFocus()`
@@ -120,10 +111,15 @@ Add an event handler. Supported events:
 AccessibilityInfo.setAccessibilityFocus(reactTag)
 ```
 
+Set accessibility focus to a React component.
 
-iOS-Only. Set accessibility focus to a react component.
+| Name | Type | Required | Description |
+| - | - | - | - |
+| reactTag | number | Yes | React component tag |
 
-
+| Platform |
+| - |
+| iOS |
 
 
 ---
@@ -134,11 +130,15 @@ iOS-Only. Set accessibility focus to a react component.
 AccessibilityInfo.announceForAccessibility(announcement)
 ```
 
+Post a string to be announced by the screen reader.
 
-iOS-Only. Post a string to be announced by the screen reader.
+| Name | Type | Required | Description |
+| - | - | - | - |
+| announcement | string | Yes | String to be announced |
 
-
-
+| Platform |
+| - |
+| iOS |
 
 ---
 
@@ -148,9 +148,10 @@ iOS-Only. Post a string to be announced by the screen reader.
 AccessibilityInfo.removeEventListener(eventName, handler)
 ```
 
-
 Remove an event handler.
 
-
-
+| Name | Type | Required | Description |
+| - | - | - | - |
+| eventName | string | Yes | Name of the event |
+| handler | function | Yes | Event handler |
 

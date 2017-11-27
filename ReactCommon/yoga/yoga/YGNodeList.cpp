@@ -11,10 +11,6 @@
 
 #include "YGNodeList.h"
 
-extern YGMalloc gYGMalloc;
-extern YGRealloc gYGRealloc;
-extern YGFree gYGFree;
-
 struct YGNodeList {
   uint32_t capacity;
   uint32_t count;
@@ -22,21 +18,22 @@ struct YGNodeList {
 };
 
 YGNodeListRef YGNodeListNew(const uint32_t initialCapacity) {
-  const YGNodeListRef list = gYGMalloc(sizeof(struct YGNodeList));
-  YGAssert(list != NULL, "Could not allocate memory for list");
+  const YGNodeListRef list =
+      (const YGNodeListRef)malloc(sizeof(struct YGNodeList));
+  YGAssert(list != nullptr, "Could not allocate memory for list");
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = gYGMalloc(sizeof(YGNodeRef) * list->capacity);
-  YGAssert(list->items != NULL, "Could not allocate memory for items");
+  list->items = (YGNodeRef*)malloc(sizeof(YGNodeRef) * list->capacity);
+  YGAssert(list->items != nullptr, "Could not allocate memory for items");
 
   return list;
 }
 
 void YGNodeListFree(const YGNodeListRef list) {
   if (list) {
-    gYGFree(list->items);
-    gYGFree(list);
+    free(list->items);
+    free(list);
   }
 }
 
@@ -62,8 +59,9 @@ void YGNodeListInsert(YGNodeListRef *listp, const YGNodeRef node, const uint32_t
 
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = gYGRealloc(list->items, sizeof(YGNodeRef) * list->capacity);
-    YGAssert(list->items != NULL, "Could not extend allocation for items");
+    list->items =
+        (YGNodeRef*)realloc(list->items, sizeof(YGNodeRef) * list->capacity);
+    YGAssert(list->items != nullptr, "Could not extend allocation for items");
   }
 
   for (uint32_t i = list->count; i > index; i--) {
@@ -80,18 +78,18 @@ void YGNodeListReplace(YGNodeListRef list, const uint32_t index, const YGNodeRef
 
 void YGNodeListRemoveAll(const YGNodeListRef list) {
   for (uint32_t i = 0; i < list->count; i++) {
-    list->items[i] = NULL;
+    list->items[i] = nullptr;
   }
   list->count = 0;
 }
 
 YGNodeRef YGNodeListRemove(const YGNodeListRef list, const uint32_t index) {
   const YGNodeRef removed = list->items[index];
-  list->items[index] = NULL;
+  list->items[index] = nullptr;
 
   for (uint32_t i = index; i < list->count - 1; i++) {
     list->items[i] = list->items[i + 1];
-    list->items[i + 1] = NULL;
+    list->items[i + 1] = nullptr;
   }
 
   list->count--;
@@ -105,7 +103,7 @@ YGNodeRef YGNodeListDelete(const YGNodeListRef list, const YGNodeRef node) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 YGNodeRef YGNodeListGet(const YGNodeListRef list, const uint32_t index) {
@@ -113,16 +111,16 @@ YGNodeRef YGNodeListGet(const YGNodeListRef list, const uint32_t index) {
     return list->items[index];
   }
 
-  return NULL;
+  return nullptr;
 }
 
 YGNodeListRef YGNodeListClone(const YGNodeListRef oldList) {
   if (!oldList) {
-    return NULL;
+    return nullptr;
   }
   const uint32_t count = oldList->count;
   if (count == 0) {
-    return NULL;
+    return nullptr;
   }
   const YGNodeListRef newList = YGNodeListNew(count);
   memcpy(newList->items, oldList->items, sizeof(YGNodeRef) * count);
