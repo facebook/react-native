@@ -54,6 +54,7 @@ module.exports = {
       options: {
         dev: true,
         inlineRequires: true,
+        minify: false,
         platform: '',
         projectRoot: '',
         retainLines: true,
