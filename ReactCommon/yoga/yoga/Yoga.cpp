@@ -2447,6 +2447,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             betweenMainDim = 0;
           }
           break;
+        case YGJustifySpaceEvenly:
+          // Space is distributed evenly across all elements
+          betweenMainDim = remainingFreeSpace / (itemsOnLine + 1);
+          leadingMainDim = betweenMainDim;
+          break;
         case YGJustifySpaceAround:
           // Space on the edges is half of the space between elements
           betweenMainDim = remainingFreeSpace / itemsOnLine;
