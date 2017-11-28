@@ -19,7 +19,7 @@ const ReactNative = {
   get _() {
     invariant(
       false,
-      'Importing all exports from react-native (eg `import * as Foo from "react-native"` is not ' +
+      'Importing all exports from react-native (eg `import * as Foo from "react-native"`) is not ' +
       'supported. Please be explicit instead (eg `import { Bar } from "react-native"`)'
     );
   },
