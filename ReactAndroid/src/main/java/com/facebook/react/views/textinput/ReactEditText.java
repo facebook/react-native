@@ -117,16 +117,7 @@ public class ReactEditText extends EditText {
   // TODO: t6408636 verify if we should schedule a layout after a View does a requestLayout()
   @Override
   public boolean isLayoutRequested() {
-    // If we are watching and updating container height based on content size
-    // then we don't want to scroll right away. This isn't perfect -- you might
-    // want to limit the height the text input can grow to. Possible solution
-    // is to add another prop that determines whether we should scroll to end
-    // of text.
-    if (mContentSizeWatcher != null) {
-      return isMultiline();
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @Override

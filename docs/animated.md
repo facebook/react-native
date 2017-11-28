@@ -46,6 +46,16 @@ In most cases, you will be using `timing()`. By default, it uses a symmetric eas
 
 Animations are started by calling `start()` on your animation. `start()` takes a completion callback that will be called when the animation is done. If the animation finished running normally, the completion callback will be invoked with `{finished: true}`. If the animation is done because `stop()` was called on it before it could finish (e.g. because it was interrupted by a gesture or another animation), then it will receive `{finished: false}`.
 
+```javascript
+this.animateValue.spring({}).start(({finished}) => {
+  if (finished) {
+    console.log('Animation was completed')
+  } else {
+    console.log('Animation was aborted')
+  }
+})
+```
+
 ### Using the native driver
 
 By using the native driver, we send everything about the animation to native before starting the animation, allowing native code to perform the animation on the UI thread without having to go through the bridge on every frame. Once the animation has started, the JS thread can be blocked without affecting the animation.

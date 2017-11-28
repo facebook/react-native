@@ -19,9 +19,9 @@
 #include <folly/Memory.h>
 #include <folly/String.h>
 #include <glog/logging.h>
-#include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
+#include <jsinspector/InspectorInterfaces.h>
 
 #include "JSBigString.h"
 #include "JSBundleType.h"

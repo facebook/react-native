@@ -27,7 +27,7 @@ type RelayProfiler = {
 
 /* eslint no-bitwise: 0 */
 const TRACE_TAG_REACT_APPS = 1 << 17;
-const TRACE_TAG_JSC_CALLS = 1 << 27;
+const TRACE_TAG_JS_VM_CALLS = 1 << 27;
 
 let _enabled = false;
 let _asyncCookie = 0;
@@ -155,9 +155,9 @@ const Systrace = {
     if (_enabled !== enabled) {
       if (__DEV__) {
         if (enabled) {
-          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JS_VM_CALLS);
         } else {
-          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
         }
         if (_canInstallReactHook) {
           if (_useFiber) {

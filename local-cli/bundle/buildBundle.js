@@ -94,9 +94,6 @@ async function buildBundle(
         ? config.getProvidesModuleNodeModules()
         : defaultProvidesModuleNodeModules;
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
     const terminal = new Terminal(process.stdout);
     const options = {
       assetExts: defaultAssetExts.concat(assetExts),
@@ -136,6 +133,7 @@ async function buildBundle(
   const outputAssets = await packagerInstance.getAssets({
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...requestOpts,
+    bundleType: 'todo',
   });
 
   // When we're done saving bundle output and the assets, we're done.
