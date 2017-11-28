@@ -52,20 +52,37 @@ var Settings = {
   },
 
   _sendObservations(body: Object) {
-    Object.keys(body).forEach((key) => {
-      var newValue = body[key];
-      var didChange = this._settings[key] !== newValue;
-      this._settings[key] = newValue;
+    const watchedKeys = new Set(subscriptions.reduce((keys, subscription) => {
+      return subscription.keys.concat(subscription.keys);
+    }, []));
 
-      if (didChange) {
-        subscriptions.forEach((sub) => {
-          if (sub.keys.indexOf(key) !== -1 && sub.callback) {
-            sub.callback();
-          }
-        });
+    watchedKeys.forEach((key) => {
+      const newValue = body[key];
+      this._checkValue(key, newValue);
+    });
+
+    this._settings = {
+      ...body,
+    };
+  },
+
+  _checkValue(key: String, newValue: mixed) {
+    var didChange = this._settings[key] !== newValue;
+    this._settings[key] = newValue;
+    if (didChange) {
+      this._sendUpdate(key);
+    }
+  },
+
+  _sendUpdate(key: String) {
+    // TODO maybe combine the updates so that only one is triggered per
+    // subscription instead of 1 per key change.
+    subscriptions.forEach((subscription) => {
+      if (subscription.keys.indexOf(key) !== -1 && subscription.callback) {
+        subscription.callback();
       }
     });
-  },
+  }
 };
 
 RCTDeviceEventEmitter.addListener(
