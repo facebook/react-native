@@ -15,6 +15,15 @@ const invariant = require('fbjs/lib/invariant');
 
 // Export React, plus some native additions.
 const ReactNative = {
+  // Dummy export, to catch attempts to import *
+  get _() {
+    invariant(
+      false,
+      'Importing all exports from react-native (eg `import * as Foo from "react-native"` is not ' +
+      'supported. Please be explicit instead (eg `import { Bar } from "react-native"`)'
+    );
+  },
+
   // Components
   get AccessibilityInfo() { return require('AccessibilityInfo'); },
   get ActivityIndicator() { return require('ActivityIndicator'); },
