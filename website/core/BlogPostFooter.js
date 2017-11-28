@@ -14,8 +14,8 @@
 var React = require('React');
 var BlogPostDate = require('BlogPostDate');
 
-var BlogPostFooter = React.createClass({
-  render: function() {
+class BlogPostFooter extends React.Component {
+  render() {
     var post = this.props.post;
 
     var authorImage = this.props.post.authorImage ? this.props.post.authorImage : '/react-native/img/author.png';
@@ -31,7 +31,7 @@ var BlogPostFooter = React.createClass({
       <div>
         <aside className="author-info">
           <div className="author-image">
-            <span className="the-image" style={{backgroundImage: "url(" + authorImage + ")"}}></span>
+            <span className="the-image" style={{backgroundImage: 'url(' + authorImage + ')'}} />
           </div>
           <p className="posted-on">Posted on <BlogPostDate post={post} /></p>
           <p className="name-title">
@@ -50,14 +50,13 @@ var BlogPostFooter = React.createClass({
               data-layout="standard"
               data-share="true"
               data-width="225"
-              data-show-faces="false">
-            </div>
-            <a href="https://twitter.com/share" className="twitter-share-button" data-text={post.title} data-url={"http://facebook.github.io/react-native/blog/" + post.path} data-via={post.authorTwitter} data-related="reactnative" data-show-count="false">Tweet</a>
+              data-show-faces="false" />
+            <a href="https://twitter.com/share" className="twitter-share-button" data-text={post.title} data-url={'http://facebook.github.io/react-native/blog/' + post.path} data-via={post.authorTwitter} data-related="reactnative" data-show-count="false">Tweet</a>
           </div>
         </aside>
       </div>
     );
   }
-});
+}
 
 module.exports = BlogPostFooter;

@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 #import <objc/runtime.h>
 
 #import <ImageIO/ImageIO.h>
@@ -66,7 +66,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+    return 2;
 }
 
 - (id<RCTImageCache>)imageCache
@@ -314,7 +314,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
         // Add missing png extension
         if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-            mutableRequest.URL = [NSURL fileURLWithPath:[request.URL.path stringByAppendingPathExtension:@"png"]];
+            mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
         }
         request = mutableRequest;
     }
@@ -324,7 +324,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     BOOL requiresScheduling = [loadHandler respondsToSelector:@selector(requiresScheduling)] ?
     [loadHandler requiresScheduling] : YES;
 
-    __block volatile uint32_t cancelled = 0;
+    __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+    // TODO: Protect this variable shared between threads.
     __block dispatch_block_t cancelLoad = nil;
     void (^completionHandler)(NSError *, id, NSString *) = ^(NSError *error, id imageOrData, NSString *fetchDate) {
         cancelLoad = nil;
@@ -338,11 +339,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
             // Most loaders do not return on the main thread, so caller is probably not
             // expecting it, and may do expensive post-processing in the callback
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (!cancelled) {
+                if (!atomic_load(&cancelled)) {
                     completionBlock(error, imageOrData, cacheResult, fetchDate);
                 }
             });
-        } else if (!cancelled) {
+        } else if (!atomic_load(&cancelled)) {
             completionBlock(error, imageOrData, cacheResult, fetchDate);
         }
     };
@@ -369,7 +370,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     __weak RCTImageLoader *weakSelf = self;
     dispatch_async(_URLRequestQueue, ^{
         __typeof(self) strongSelf = weakSelf;
-        if (cancelled || !strongSelf) {
+        if (atomic_load(&cancelled) || !strongSelf) {
             return;
         }
 
@@ -392,12 +393,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     });
 
     return ^{
+        BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
+        if (alreadyCancelled) {
+            return;
+        }
         dispatch_block_t cancelLoadLocal = cancelLoad;
         cancelLoad = nil;
-        if (cancelLoadLocal && !cancelled) {
+        if (cancelLoadLocal) {
             cancelLoadLocal();
         }
-        OSAtomicOr32Barrier(1, &cancelled);
     };
 }
 
@@ -524,20 +528,25 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-    __block volatile uint32_t cancelled = 0;
+    __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+    // TODO: Protect this variable shared between threads.
     __block dispatch_block_t cancelLoad = nil;
     dispatch_block_t cancellationBlock = ^{
+        BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
+        if (alreadyCancelled) {
+            return;
+        }
         dispatch_block_t cancelLoadLocal = cancelLoad;
-        if (cancelLoadLocal && !cancelled) {
+        cancelLoad = nil;
+        if (cancelLoadLocal) {
             cancelLoadLocal();
         }
-        OSAtomicOr32Barrier(1, &cancelled);
     };
 
     __weak RCTImageLoader *weakSelf = self;
     void (^completionHandler)(NSError *, id, BOOL, NSString *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate) {
         __typeof(self) strongSelf = weakSelf;
-        if (cancelled || !strongSelf) {
+        if (atomic_load(&cancelled) || !strongSelf) {
             return;
         }
 
@@ -606,17 +615,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         return ^{};
     }
 
-    __block volatile uint32_t cancelled = 0;
+    __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
     void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
         if (RCTIsMainQueue()) {
             // Most loaders do not return on the main thread, so caller is probably not
             // expecting it, and may do expensive post-processing in the callback
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (!cancelled) {
+                if (!atomic_load(&cancelled)) {
                     completionBlock(error, clipped ? RCTResizeImageIfNeeded(image, size, scale, resizeMode) : image);
                 }
             });
-        } else if (!cancelled) {
+        } else if (!atomic_load(&cancelled)) {
             completionBlock(error, clipped ? RCTResizeImageIfNeeded(image, size, scale, resizeMode) : image);
         }
     };
@@ -638,7 +647,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
             // Do actual decompression on a concurrent background queue
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (!cancelled) {
+                if (!atomic_load(&cancelled)) {
 
                     // Decompress the image data (this may be CPU and memory intensive)
                     UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
@@ -695,7 +704,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         });
 
         return ^{
-            OSAtomicOr32Barrier(1, &cancelled);
+            atomic_store(&cancelled, YES);
         };
     }
 }
@@ -707,10 +716,30 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         CGSize size;
         if ([imageOrData isKindOfClass:[NSData class]]) {
             NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-            size = (CGSize){
-                [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-            };
+
+            NSInteger imageOrientation = [meta[(id)kCGImagePropertyOrientation] integerValue];
+            switch (imageOrientation) {
+                case kCGImagePropertyOrientationLeft:
+                case kCGImagePropertyOrientationRight:
+                case kCGImagePropertyOrientationLeftMirrored:
+                case kCGImagePropertyOrientationRightMirrored:
+                    // swap width and height
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                    };
+                    break;
+                case kCGImagePropertyOrientationUp:
+                case kCGImagePropertyOrientationDown:
+                case kCGImagePropertyOrientationUpMirrored:
+                case kCGImagePropertyOrientationDownMirrored:
+                default:
+                    size = (CGSize){
+                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+                    };
+                    break;
+            }
         } else {
             UIImage *image = imageOrData;
             size = (CGSize){

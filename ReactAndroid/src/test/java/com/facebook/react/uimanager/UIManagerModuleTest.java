@@ -9,15 +9,19 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationPropertyUpdater;
@@ -31,11 +35,13 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.views.text.ReactRawTextManager;
-import com.facebook.react.views.text.ReactTextShadowNode;
+import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,15 +54,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link UIManagerModule}.
@@ -137,7 +134,7 @@ public class UIManagerModuleTest {
     uiManager.updateView(
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "New text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "New text"));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -675,7 +672,7 @@ public class UIManagerModuleTest {
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
         rootTag,
-        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, text, "collapsable", false));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, text, "collapsable", false));
 
     uiManager.manageChildren(
         textTag,
@@ -818,11 +815,8 @@ public class UIManagerModuleTest {
         new ReactViewManager(),
         new ReactTextViewManager(),
         new ReactRawTextManager());
-    UIManagerModule uiManagerModule =  new UIManagerModule(
-        mReactContext,
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    UIManagerModule uiManagerModule =
+        new UIManagerModule(mReactContext, viewManagers, new UIImplementationProvider(), 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

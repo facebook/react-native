@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -135,11 +137,23 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when a spring stops', () => {
+    it('send toValue when an underdamped spring stops', () => {
       var anim = new Animated.Value(0);
       var listener = jest.fn();
       anim.addListener(listener);
       Animated.spring(anim, {toValue: 15}).start();
+      jest.runAllTimers();
+      var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      expect(lastValue).not.toBe(15);
+      expect(lastValue).toBeCloseTo(15);
+      expect(anim.__getValue()).toBe(15);
+    });
+
+    it('send toValue when a critically damped spring stops', () => {
+      var anim = new Animated.Value(0);
+      var listener = jest.fn();
+      anim.addListener(listener);
+      Animated.spring(anim, {stiffness: 8000, damping: 2000, toValue: 15}).start();
       jest.runAllTimers();
       var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
       expect(lastValue).not.toBe(15);
@@ -357,7 +371,7 @@ describe('Animated tests', () => {
       loop.start(cb);
 
       expect(animation.start).not.toBeCalled();
-      expect(cb).toBeCalledWith({ finished: true });
+      expect(cb).toBeCalledWith({finished: true});
     });
 
     it('supports interrupting an indefinite loop', () => {

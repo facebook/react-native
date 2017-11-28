@@ -7,38 +7,55 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule renderApplication
+ * @format
  * @flow
  */
 
 'use strict';
 
-var AppContainer = require('AppContainer');
-var React = require('React');
-var ReactNative = require('ReactNative');
+const AppContainer = require('AppContainer');
+const React = require('React');
+const ReactNative = require('ReactNative');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
 
 function renderApplication<Props: Object>(
-  RootComponent: ReactClass<Props>,
+  RootComponent: React.ComponentType<Props>,
   initialProps: Props,
-  rootTag: any
+  rootTag: any,
+  WrapperComponent?: ?React.ComponentType<*>,
 ) {
-  invariant(
-    rootTag,
-    'Expect to have a valid rootTag, instead got ', rootTag
+  invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
+
+  let renderable = (
+    <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+      <RootComponent {...initialProps} rootTag={rootTag} />
+    </AppContainer>
   );
-  ReactNative.render(
-    <AppContainer rootTag={rootTag}>
-      <RootComponent
-        {...initialProps}
-        rootTag={rootTag}
-      />
-    </AppContainer>,
-    rootTag
-  );
+
+  // If the root component is async, the user probably wants the initial render
+  // to be async also. To do this, wrap AppContainer with an async marker.
+  // For more info see https://fb.me/is-component-async
+  if (
+    RootComponent.prototype != null &&
+    RootComponent.prototype.unstable_isAsyncReactComponent === true
+  ) {
+    // $FlowFixMe This is not yet part of the official public API
+    class AppContainerAsyncWrapper extends React.unstable_AsyncComponent {
+      render() {
+        return this.props.children;
+      }
+    }
+
+    renderable = (
+      <AppContainerAsyncWrapper>{renderable}</AppContainerAsyncWrapper>
+    );
+  }
+
+  ReactNative.render(renderable, rootTag);
 }
 
 module.exports = renderApplication;

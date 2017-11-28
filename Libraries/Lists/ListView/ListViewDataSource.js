@@ -14,6 +14,9 @@
 
 var invariant = require('fbjs/lib/invariant');
 var isEmpty = require('isEmpty');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
@@ -62,7 +65,7 @@ type ParamType = {
  *
  * ```
  * getInitialState: function() {
- *   var ds = new ListViewDataSource({rowHasChanged: this._rowHasChanged});
+ *   var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
  *   return {ds};
  * },
  * _onDataArrived(newData) {
@@ -154,11 +157,19 @@ class ListViewDataSource {
    * you also specify what your `sectionIdentities` are. If you don't care
    * about sections you should safely be able to use `cloneWithRows`.
    *
-   * `sectionIdentities` is an array of identifiers for  sections.
-   * ie. ['s1', 's2', ...].  If not provided, it's assumed that the
+   * `sectionIdentities` is an array of identifiers for sections.
+   * ie. ['s1', 's2', ...].  The identifiers should correspond to the keys or array indexes
+   * of the data you wish to include.  If not provided, it's assumed that the
    * keys of dataBlob are the section identities.
    *
    * Note: this returns a new object!
+   *
+   * ```
+   * const dataSource = ds.cloneWithRowsAndSections({
+   *   addresses: ['row 1', 'row 2'],
+   *   phone_numbers: ['data 1', 'data 2'],
+   * }, ['phone_numbers']);
+   * ```
    */
   cloneWithRowsAndSections(
     dataBlob: any,
@@ -207,10 +218,20 @@ class ListViewDataSource {
     return newSource;
   }
 
+  /**
+   * Returns the total number of rows in the data source.
+   *
+   * If you are specifying the rowIdentities or sectionIdentities, then `getRowCount` will return the number of rows in the filtered data source.
+   */
   getRowCount(): number {
     return this._cachedRowCount;
   }
 
+  /**
+   * Returns the total number of rows in the data source (see `getRowCount` for how this is calculated) plus the number of sections in the data.
+   *
+   * If you are specifying the rowIdentities or sectionIdentities, then `getRowAndSectionCount` will return the number of rows & sections in the filtered data source.
+   */
   getRowAndSectionCount(): number {
     return this._cachedRowCount + this.sectionIdentities.length;
   }

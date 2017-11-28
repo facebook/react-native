@@ -13,7 +13,7 @@ public class AndroidInfoHelpers {
   public static final String DEVICE_LOCALHOST = "localhost";
 
   private static final int DEBUG_SERVER_HOST_PORT = 8081;
-  private static final int INSPECTOR_PROXY_PORT = 8081;
+  private static final int INSPECTOR_PROXY_PORT = 8082;
 
   private static boolean isRunningOnGenymotion() {
     return Build.FINGERPRINT.contains("vbox");
@@ -31,6 +31,7 @@ public class AndroidInfoHelpers {
     return getServerIpAddress(INSPECTOR_PROXY_PORT);
   }
 
+  // WARNING(festevezga): This RN helper method has been copied to another FB-only target. Any changes should be applied to both.
   public static String getFriendlyDeviceName() {
     if (isRunningOnGenymotion()) {
       // Genymotion already has a friendly name by default

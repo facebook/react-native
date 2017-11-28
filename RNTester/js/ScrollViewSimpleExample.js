@@ -22,7 +22,7 @@ var {
 
 var NUM_ITEMS = 20;
 
-class ScrollViewSimpleExample extends React.Component {
+class ScrollViewSimpleExample extends React.Component<{}> {
   static title = '<ScrollView>';
   static description = 'Component that enables scrolling through child components.';
 

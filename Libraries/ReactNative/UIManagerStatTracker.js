@@ -8,6 +8,7 @@
  *
  * @providesModule UIManagerStatTracker
  * @flow
+ * @format
  */
 'use strict';
 
@@ -45,7 +46,14 @@ var UIManagerStatTracker = {
       updateViewOrig(tag, className, props);
     };
     var manageChildrenOrig = UIManager.manageChildren;
-    UIManager.manageChildren = function(tag, moveFrom, moveTo, addTags, addIndices, remove) {
+    UIManager.manageChildren = function(
+      tag,
+      moveFrom,
+      moveTo,
+      addTags,
+      addIndices,
+      remove,
+    ) {
       incStat('manageChildren', 1);
       incStat('move', Object.keys(moveFrom || []).length);
       incStat('remove', Object.keys(remove || []).length);

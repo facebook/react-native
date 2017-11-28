@@ -20,7 +20,7 @@ var {
   TouchableOpacity,
 } = ReactNative;
 
-class TransparentHitTestExample extends React.Component {
+class TransparentHitTestExample extends React.Component<{}> {
   render() {
     return (
       <View style={{flex: 1}}>

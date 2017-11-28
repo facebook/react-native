@@ -22,8 +22,7 @@ var {
 } = ReactNative;
 
 
-class XHRExampleFetch extends React.Component {
-  state: any;
+class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
   responseHeaders: ?Object;
 

@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 # NOTE(agallagher): The platform really should be responsible for providing
 # this type of provided dependency.  As it is now, we need to setup dummy
 # rules to model glibc's libraries.
@@ -12,7 +14,7 @@ prebuilt_cxx_library(
             [],
         ),
         (
-            "default",
+            "^(default|linux)",
             ["-lpthread"],
         ),
         (
@@ -56,7 +58,7 @@ prebuilt_cxx_library(
             [],
         ),
         (
-            "default",
+            "^(default|linux)",
             ["-lrt"],
         ),
     ],

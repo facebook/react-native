@@ -7,37 +7,42 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableHighlight
- * @noflow
+ * @flow
  */
 'use strict';
 
-// Note (avik): add @flow when Flow supports spread properties in propTypes
-
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const React = require('React');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
-var ensureComponentIsNative = require('ensureComponentIsNative');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var keyOf = require('fbjs/lib/keyOf');
-var merge = require('merge');
+const createReactClass = require('create-react-class');
+const ensureComponentIsNative = require('ensureComponentIsNative');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const keyOf = require('fbjs/lib/keyOf');
+const merge = require('merge');
 
-type Event = Object;
+import type {Event} from 'TouchableWithoutFeedback';
 
-var DEFAULT_PROPS = {
+const DEFAULT_PROPS = {
   activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -66,9 +71,78 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *   );
  * },
  * ```
+ *
+ *
+ * ### Example
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react'
+ * import {
+ *   AppRegistry,
+ *   StyleSheet,
+ *   TouchableHighlight,
+ *   Text,
+ *   View,
+ * } from 'react-native'
+ *
+ * class App extends Component {
+ *   constructor(props) {
+ *     super(props)
+ *     this.state = { count: 0 }
+ *   }
+ *
+ *   onPress = () => {
+ *     this.setState({
+ *       count: this.state.count+1
+ *     })
+ *   }
+ *
+ *  render() {
+ *     return (
+ *       <View style={styles.container}>
+ *         <TouchableHighlight
+ *          style={styles.button}
+ *          onPress={this.onPress}
+ *         >
+ *          <Text> Touch Here </Text>
+ *         </TouchableHighlight>
+ *         <View style={[styles.countContainer]}>
+ *           <Text style={[styles.countText]}>
+ *             { this.state.count !== 0 ? this.state.count: null}
+ *           </Text>
+ *         </View>
+ *       </View>
+ *     )
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
+ *   container: {
+ *     flex: 1,
+ *     justifyContent: 'center',
+ *     paddingHorizontal: 10
+ *   },
+ *   button: {
+ *     alignItems: 'center',
+ *     backgroundColor: '#DDDDDD',
+ *     padding: 10
+ *   },
+ *   countContainer: {
+ *     alignItems: 'center',
+ *     padding: 10
+ *   },
+ *   countText: {
+ *     color: '#FF00FF'
+ *   }
+ * })
+ *
+ * AppRegistry.registerComponent('App', () => App)
+ * ```
+ *
  */
 
-var TouchableHighlight = React.createClass({
+var TouchableHighlight = createReactClass({
+  displayName: 'TouchableHighlight',
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
     /**
@@ -108,7 +182,6 @@ var TouchableHighlight = React.createClass({
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
-
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],

@@ -94,6 +94,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSObjectIsFunction = JSObjectIsFunction,
       .JSObjectMake = JSObjectMake,
       .JSObjectMakeArray = JSObjectMakeArray,
+      .JSObjectMakeDate = JSObjectMakeDate,
       .JSObjectMakeError = JSObjectMakeError,
       .JSObjectMakeFunctionWithCallback = JSObjectMakeFunctionWithCallback,
       .JSObjectSetPrivate = JSObjectSetPrivate,

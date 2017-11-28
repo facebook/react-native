@@ -8,13 +8,9 @@
 
 package com.facebook.react.tests;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -22,15 +18,17 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.testing.FakeWebSocketModule;
+import com.facebook.react.testing.ReactIntegrationTestCase;
+import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.testing.FakeWebSocketModule;
-import com.facebook.react.testing.ReactIntegrationTestCase;
-import com.facebook.react.testing.ReactTestHelper;
+import java.util.Arrays;
+import java.util.List;
 
 public class ViewRenderingTestCase extends ReactIntegrationTestCase {
 
@@ -51,11 +49,8 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     super.setUp();
 
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ReactViewManager());
-    final UIManagerModule uiManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    final UIManagerModule uiManager =
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

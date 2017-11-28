@@ -13,12 +13,12 @@
 
 var React = require('React');
 
-var ExcerptLink = React.createClass({
-  render: function() {
-    var cta = "Read more";
+class ExcerptLink extends React.Component {
+  render() {
+    var cta = 'Read more';
 
-    if (this.props.category === "videos") {
-      cta = "Watch video";
+    if (this.props.category === 'videos') {
+      cta = 'Watch video';
     }
 
     return (
@@ -29,6 +29,6 @@ var ExcerptLink = React.createClass({
       </footer>
     );
   }
-});
+}
 
 module.exports = ExcerptLink;

@@ -9,20 +9,9 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -33,15 +22,18 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
-import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -53,6 +45,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Okio;
 import okio.Sink;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -68,10 +63,8 @@ public class DevServerHelper {
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
+      "http://%s/%s.%s?platform=android&dev=%s&minify=%s";
   private static final String RESOURCE_URL_FORMAT = "http://%s/%s";
-  private static final String SOURCE_MAP_URL_FORMAT =
-      BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT =
       "http://%s/launch-js-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
@@ -79,7 +72,7 @@ public class DevServerHelper {
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
-  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
   private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
 
@@ -88,6 +81,8 @@ public class DevServerHelper {
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
+
+  private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
   public interface OnServerContentChangeListener {
     void onServerContentChanged();
@@ -108,6 +103,7 @@ public class DevServerHelper {
   private final OkHttpClient mClient;
   private final Handler mRestartOnChangePollingHandler;
   private final BundleDownloader mBundleDownloader;
+  private final String mPackageName;
 
   private boolean mOnChangePollingEnabled;
   private @Nullable JSPackagerClient mPackagerClient;
@@ -115,7 +111,7 @@ public class DevServerHelper {
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
 
-  public DevServerHelper(DevInternalSettings settings) {
+  public DevServerHelper(DevInternalSettings settings, String packageName) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -125,6 +121,7 @@ public class DevServerHelper {
     mBundleDownloader = new BundleDownloader(mClient);
 
     mRestartOnChangePollingHandler = new Handler();
+    mPackageName = packageName;
   }
 
   public void openPackagerConnection(
@@ -195,16 +192,22 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl());
+        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void openInspector(String id) {
+  public void sendEventToAllConnections(String event) {
     if (mInspectorPackagerConnection != null) {
-      mInspectorPackagerConnection.sendOpenEvent(id);
+      mInspectorPackagerConnection.sendEventToAllConnections(event);
+    }
+  }
+
+  public void disableDebugger() {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendEventToAllConnections(DEBUGGER_MSG_DISABLE);
     }
   }
 
@@ -314,7 +317,8 @@ public class DevServerHelper {
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
         mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
-        AndroidInfoHelpers.getFriendlyDeviceName());
+        AndroidInfoHelpers.getFriendlyDeviceName(),
+        mPackageName);
   }
 
   public BundleDownloader getBundleDownloader() {
@@ -350,20 +354,16 @@ public class DevServerHelper {
     return mSettings.isJSMinifyEnabled();
   }
 
-  /**
-   * @return whether we should enabled HMR when requesting JS bundles.
-   */
-  private boolean getHMR() {
-    return mSettings.isHotModuleReplacementEnabled();
-  }
-
   private static String createBundleURL(
-      String host,
-      String jsModulePath,
-      boolean devMode,
-      boolean hmr,
-      boolean jsMinify) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
+      String host, String jsModulePath, boolean devMode, boolean jsMinify, boolean useDeltas) {
+    return String.format(
+        Locale.US,
+        BUNDLE_URL_FORMAT,
+        host,
+        jsModulePath,
+        useDeltas ? "delta" : "bundle",
+        devMode,
+        jsMinify);
   }
 
   private static String createResourceURL(String host, String resourcePath) {
@@ -380,11 +380,11 @@ public class DevServerHelper {
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
-      mSettings.getPackagerConnectionSettings().getDebugServerHost(),
-      jsModulePath,
-      getDevMode(),
-      getHMR(),
-      getJSMinifyMode());
+        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
+        jsModulePath,
+        getDevMode(),
+        getJSMinifyMode(),
+        mSettings.isBundleDeltasEnabled());
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -543,11 +543,11 @@ public class DevServerHelper {
   public String getSourceMapUrl(String mainModuleName) {
     return String.format(
         Locale.US,
-        SOURCE_MAP_URL_FORMAT,
+        BUNDLE_URL_FORMAT,
         mSettings.getPackagerConnectionSettings().getDebugServerHost(),
         mainModuleName,
+        "map",
         getDevMode(),
-        getHMR(),
         getJSMinifyMode());
   }
 
@@ -557,8 +557,8 @@ public class DevServerHelper {
         BUNDLE_URL_FORMAT,
         mSettings.getPackagerConnectionSettings().getDebugServerHost(),
         mainModuleName,
+        mSettings.isBundleDeltasEnabled() ? "delta" : "bundle",
         getDevMode(),
-        getHMR(),
         getJSMinifyMode());
   }
 
@@ -567,11 +567,7 @@ public class DevServerHelper {
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
     return createBundleURL(
-        getHostForJSProxy(),
-        mainModuleName,
-        getDevMode(),
-        getHMR(),
-        getJSMinifyMode());
+        getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode(), false);
   }
 
   /**

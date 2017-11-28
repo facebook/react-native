@@ -195,8 +195,8 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
         case COLOR_TYPE_LINEAR_GRADIENT:
           // For mBrushData format refer to LinearGradient and insertColorStopsIntoArray functions in ReactNativeART.js
           if (mBrushData.length < 5) {
-            FLog.w(ReactConstants.TAG, 
-              "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received " 
+            FLog.w(ReactConstants.TAG,
+              "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received "
               + mBrushData.length);
             return false;
           }
@@ -296,20 +296,20 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
           float start = (float) Math.toDegrees(data[i++]);
           float end = (float) Math.toDegrees(data[i++]);
 
-          boolean clockwise = data[i++] == 1f;
+          boolean counterClockwise = !(data[i++] == 1f);
           float sweep = end - start;
-          if (Math.abs(sweep) > 360) {
-            sweep = 360;
+          if (Math.abs(sweep) >= 360) {
+            path.addCircle(x, y, r, counterClockwise ? Path.Direction.CCW : Path.Direction.CW);
           } else {
             sweep = modulus(sweep, 360);
-          }
-          if (!clockwise && sweep < 360) {
-            start = end;
-            sweep = 360 - sweep;
-          }
+            if (counterClockwise && sweep < 360) {
+              // Counter-clockwise sweeps are negative
+              sweep = -1 * (360 - sweep);
+            }
 
-          RectF oval = new RectF(x - r, y - r, x + r, y + r);
-          path.arcTo(oval, start, sweep);
+            RectF oval = new RectF(x - r, y - r, x + r, y + r);
+            path.arcTo(oval, start, sweep);
+          }
           break;
         }
         default:

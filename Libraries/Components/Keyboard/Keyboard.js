@@ -142,4 +142,3 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 
 module.exports = Keyboard;
-

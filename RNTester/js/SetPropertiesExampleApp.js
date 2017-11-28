@@ -18,7 +18,7 @@ const {
   View,
 } = ReactNative;
 
-class SetPropertiesExampleApp extends React.Component {
+class SetPropertiesExampleApp extends React.Component<$FlowFixMeProps> {
 
   render() {
     const wrapperStyle = {

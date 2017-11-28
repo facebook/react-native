@@ -20,7 +20,7 @@ var {
   View
 } = ReactNative;
 
-class BasicSwitchExample extends React.Component {
+class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
@@ -41,7 +41,7 @@ class BasicSwitchExample extends React.Component {
   }
 }
 
-class DisabledSwitchExample extends React.Component {
+class DisabledSwitchExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -57,7 +57,7 @@ class DisabledSwitchExample extends React.Component {
   }
 }
 
-class ColorSwitchExample extends React.Component {
+class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -84,7 +84,7 @@ class ColorSwitchExample extends React.Component {
   }
 }
 
-class EventSwitchExample extends React.Component {
+class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     eventSwitchIsOn: false,
     eventSwitchRegressionIsOn: true,
