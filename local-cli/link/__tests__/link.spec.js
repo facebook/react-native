@@ -205,4 +205,42 @@ describe('link', () => {
       done();
     });
   });
+
+  it('should replace forward slashes in scoped package names for android', () => {
+    const isInstalledAndroid = jest.fn(() => false);
+    const registerNativeModule = sinon.stub();
+    const registerDependencyAndroid = jest.fn();
+    const config = {
+      getProjectConfig: () => ({ ios: {}, android: {}, assets: [] }),
+      getDependencyConfig: sinon.stub(),
+    };
+
+    const  mockDependencyConfig = [{
+      config: { ios: {}, android: {}, windows: null, assets: [], commands: {}, params: [], },
+      name: '@scope/react-native-package',
+    }];
+
+    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(true));
+
+    jest.mock('../getDependencyConfig.js', () => () => mockDependencyConfig);
+
+    jest.mock(
+      '../android/isInstalled.js',
+      () => isInstalledAndroid,
+    );
+
+    jest.setMock(
+      '../ios/registerNativeModule.js',
+      registerNativeModule,
+    );
+
+    jest.mock('../android/registerNativeModule.js', () => registerDependencyAndroid);
+
+    const link = require('../link').func;
+
+    return link(['react-native-test'], config).then(() => {
+      expect(isInstalledAndroid).toHaveBeenCalledWith({}, '@scope_react-native-package');
+      expect(registerDependencyAndroid).toHaveBeenCalledWith('@scope_react-native-package', {}, {}, {});
+    });
+  });
 });

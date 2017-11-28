@@ -51,6 +51,8 @@ const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
 
 const linkDependencyAndroid = (androidProject, dependency) => {
+  dependency.name = dependency.name.replace(/\//g, '_');
+
   if (!androidProject || !dependency.config.android) {
     return null;
   }
