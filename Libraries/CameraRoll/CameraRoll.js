@@ -126,7 +126,7 @@ class CameraRoll {
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
    */
-  static saveImageWithTag(tag: string): Promise<Object> {
+  static saveImageWithTag(tag: string): Promise<string> {
     console.warn(
       '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
@@ -150,7 +150,7 @@ class CameraRoll {
   static saveToCameraRoll(
     tag: string,
     type?: 'photo' | 'video',
-  ): Promise<Object> {
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
@@ -215,9 +215,50 @@ class CameraRoll {
    *              - `speed`: {number}
    * - `page_info` : {object} : An object with the following shape:
    *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {boolean}
-   *      - `end_cursor`: {boolean}
+   *      - `start_cursor`: {string}
+   *      - `end_cursor`: {string}
+   *
+   * Loading images:
+   * ```
+   * _handleButtonPress = () => {
+   *    CameraRoll.getPhotos({
+   *        first: 20,
+   *        assetType: 'All',
+   *      })
+   *      .then(r => {
+   *        this.setState({ photos: r.edges });
+   *      })
+   *      .catch((err) => {
+   *         //Error Loading Images
+   *      });
+   *    };
+   * render() {
+   *  return (
+   *    <View>
+   *      <Button title="Load Images" onPress={this._handleButtonPress} />
+   *      <ScrollView>
+   *        {this.state.photos.map((p, i) => {
+   *        return (
+   *          <Image
+   *            key={i}
+   *            style={{
+   *              width: 300,
+   *              height: 100,
+   *            }}
+   *            source={{ uri: p.node.image.uri }}
+   *          />
+   *        );
+   *      })}
+   *      </ScrollView>
+   *    </View>
+   *  );
+   * }
+   * ```
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static getPhotos(params) {
     if (__DEV__) {
       checkPropTypes(

@@ -25,7 +25,8 @@ cxx_library(
     ],
     deps = ([
         FBJNI_TARGET,
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("jsinspector:jsinspector"),
     ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )

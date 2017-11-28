@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 android_prebuilt_aar(
     name = "fresco-react-native",
     aar = ":fresco-binary-aar",

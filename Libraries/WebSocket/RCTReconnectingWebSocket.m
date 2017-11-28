@@ -13,6 +13,10 @@
 #import <React/RCTDefines.h>
 #import <fishhook/fishhook.h>
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+#import <os/log.h>
+#endif /* __IPHONE_11_0 */
+
 #import "RCTSRWebSocket.h"
 
 #if RCT_DEV // Only supported in dev mode
@@ -27,10 +31,24 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   vsnprintf(buffer, buffer_size, format, copy);
   va_end(copy);
 
-  if (strstr(buffer, "nw_connection_get_connected_socket_block_invoke") == NULL) {
+  if (strstr(buffer, "nw_connection_get_connected_socket_block_invoke") == NULL &&
+      strstr(buffer, "Connection has no connected handler") == NULL) {
     orig_nwlog_legacy_v(level, format, args);
   }
 }
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+
+static void (*orig_os_log_error_impl)(void *dso, os_log_t log, os_log_type_t type, const char *format, uint8_t *buf, uint32_t size);
+
+static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, const char *format, uint8_t *buf, uint32_t size)
+{
+  if (strstr(format, "TCP Conn %p Failed : error %ld:%d") == NULL) {
+    orig_os_log_error_impl(dso, log, type, format, buf, size);
+  }
+}
+
+#endif /* __IPHONE_11_0 */
 
 @interface RCTReconnectingWebSocket () <RCTSRWebSocketDelegate>
 @end
@@ -40,8 +58,6 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   RCTSRWebSocket *_socket;
 }
 
-@synthesize delegate = _delegate;
-
 + (void)load
 {
   static dispatch_once_t onceToken;
@@ -49,15 +65,26 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
     rebind_symbols((struct rebinding[1]){
       {"nwlog_legacy_v", my_nwlog_legacy_v, (void *)&orig_nwlog_legacy_v}
     }, 1);
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    rebind_symbols((struct rebinding[1]){
+      {"_os_log_error_impl", my_os_log_error_impl, (void *)&orig_os_log_error_impl}
+    }, 1);
+#endif /* __IPHONE_11_0 */
   });
+}
+
+- (instancetype)initWithURL:(NSURL *)url queue:(dispatch_queue_t)queue
+{
+  if (self = [super init]) {
+    _url = url;
+    _delegateDispatchQueue = queue;
+  }
+  return self;
 }
 
 - (instancetype)initWithURL:(NSURL *)url
 {
-  if (self = [super init]) {
-    _url = url;
-  }
-  return self;
+  return [self initWithURL:url queue:dispatch_get_main_queue()];
 }
 
 - (void)send:(id)data
@@ -70,9 +97,7 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   [self stop];
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-  if (_delegateDispatchQueue) {
-    [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
-  }
+  [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
   [_socket open];
 }
 
@@ -85,9 +110,7 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  if (_delegate) {
-    [_delegate webSocket:webSocket didReceiveMessage:message];
-  }
+  [_delegate reconnectingWebSocket:self didReceiveMessage:message];
 }
 
 - (void)reconnect
@@ -101,14 +124,20 @@ static void my_nwlog_legacy_v(int level, char *format, va_list args) {
   });
 }
 
+- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+{
+  [_delegate reconnectingWebSocketDidOpen:self];
+}
+
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
+  [_delegate reconnectingWebSocketDidClose:self];
   [self reconnect];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-  [self.delegate webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
+  [_delegate reconnectingWebSocketDidClose:self];
   [self reconnect];
 }
 

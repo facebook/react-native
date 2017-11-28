@@ -91,8 +91,12 @@ public:
       }];
   }
 
-  void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
-    RCTAssert(NO, @"Unbundle is not supported in RCTObjcExecutor");
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
+  }
+
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,
@@ -115,6 +119,10 @@ public:
     [m_jse injectJSONText:@(jsonValue->c_str())
            asGlobalObjectNamed:@(propName.c_str())
            callback:m_errorBlock];
+  }
+
+  virtual std::string getDescription() override {
+    return [NSStringFromClass([m_jse class]) UTF8String];
   }
 
 private:

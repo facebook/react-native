@@ -30,7 +30,7 @@
 
 @implementation RCTNativeAnimatedNodesManager
 {
-  RCTUIManager *_uiManager;
+  __weak RCTUIManager *_uiManager;
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.

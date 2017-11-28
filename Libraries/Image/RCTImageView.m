@@ -63,6 +63,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 @implementation RCTImageView
 {
+  // Weak reference back to the bridge, for image loading
   __weak RCTBridge *_bridge;
 
   // The image source that's currently displayed
@@ -71,15 +72,14 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // The image source that's being loaded from the network
   RCTImageSource *_pendingImageSource;
 
-  // Size of the image loaded / being loaded, so we can determine when to issue
-  // a reload to accomodate a changing size.
+  // Size of the image loaded / being loaded, so we can determine when to issue a reload to accommodate a changing size.
   CGSize _targetSize;
 
-  /**
-   * A block that can be invoked to cancel the most recent call to -reloadImage,
-   * if any.
-   */
+  // A block that can be invoked to cancel the most recent call to -reloadImage, if any
   RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
+
+  // Whether the latest change of props requires the image to be reloaded
+  BOOL _needsReload;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (blurRadius != _blurRadius) {
     _blurRadius = blurRadius;
-    [self reloadImage];
+    _needsReload = YES;
   }
 }
 
@@ -156,7 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         UIEdgeInsetsEqualToEdgeInsets(capInsets, UIEdgeInsetsZero)) {
       _capInsets = capInsets;
       // Need to reload image when enabling or disabling capInsets
-      [self reloadImage];
+      _needsReload = YES;
     } else {
       _capInsets = capInsets;
       [self updateWithImage:self.image];
@@ -176,7 +176,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if (![imageSources isEqual:_imageSources]) {
     _imageSources = [imageSources copy];
-    [self reloadImage];
+    _needsReload = YES;
   }
 }
 
@@ -194,7 +194,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
 
     if ([self shouldReloadImageSourceAfterResize]) {
-      [self reloadImage];
+      _needsReload = YES;
     }
   }
 }
@@ -278,6 +278,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reloadImage
 {
   [self cancelImageLoad];
+  _needsReload = NO;
 
   RCTImageSource *source = [self imageSourceForSize:self.frame.size];
   _pendingImageSource = source;
@@ -425,6 +426,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // If the existing image or an image being loaded are not the right
     // size, reload the asset in case there is a better size available.
     _targetSize = idealSize;
+    [self reloadImage];
+  }
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if (_needsReload) {
     [self reloadImage];
   }
 }

@@ -11,6 +11,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
@@ -24,11 +25,13 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 {
   FBSnapshotTestController *_testController;
   RCTBridgeModuleListProvider _moduleProvider;
+  NSString *_appPath;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
              moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -43,18 +46,28 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
     _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
+    _appPath = app;
 
-    if (getenv("CI_USE_PACKAGER")) {
-      _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    if (scriptURL != nil) {
+      _scriptURL = scriptURL;
     } else {
-      _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+      [self updateScript];
     }
-    RCTAssert(_scriptURL != nil, @"No scriptURL set");
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
+
+- (void)updateScript
+{
+  if (getenv("CI_USE_PACKAGER") || _useBundler) {
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", _appPath]];
+  } else {
+    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+  }
+  RCTAssert(_scriptURL != nil, @"No scriptURL set");
+}
 
 - (void)setRecordMode:(BOOL)recordMode
 {
@@ -64,6 +77,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)recordMode
 {
   return _testController.recordMode;
+}
+
+- (void)setUseBundler:(BOOL)useBundler
+{
+  _useBundler = useBundler;
+  [self updateScript];
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
@@ -110,8 +129,8 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
                                               moduleProvider:_moduleProvider
                                                launchOptions:nil];
+    [bridge.devSettings setIsDebuggingRemotely:_useJSDebugger];
     batchedBridge = [bridge batchedBridge];
-
 
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
 #if TARGET_OS_TV

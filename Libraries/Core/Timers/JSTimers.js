@@ -23,6 +23,9 @@ import type {ExtendedError} from 'parseErrorStack';
 let _performanceNow = null;
 function performanceNow() {
   if (!_performanceNow) {
+    /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.54 was deployed. To see the error delete this
+     * comment and run Flow. */
     _performanceNow = require('fbjs/lib/performanceNow');
   }
   return _performanceNow();
@@ -41,7 +44,7 @@ export type JSTimerType =
   | 'setImmediate'
   | 'requestIdleCallback';
 
-// These timing contants should be kept in sync with the ones in native ios and
+// These timing constants should be kept in sync with the ones in native ios and
 // android `RCTTiming` module.
 const FRAME_DURATION = 1000 / 60;
 const IDLE_CALLBACK_FRAME_DEADLINE = 1;
@@ -101,6 +104,9 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
   require('fbjs/lib/warning')(
     timerID <= GUID,
     'Tried to call timer with ID %s but no such timer exists.',
@@ -325,7 +331,7 @@ const JSTimers = {
             const timeoutId = requestIdleCallbackTimeouts[id];
             if (timeoutId) {
               JSTimers.clearTimeout(timeoutId);
-              requestIdleCallbackTimeouts[id];
+              delete requestIdleCallbackTimeouts[id];
             }
             return func(deadline);
           }

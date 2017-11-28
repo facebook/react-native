@@ -16,27 +16,6 @@
 #import <React/RCTViewManager.h>
 
 /**
- * UIManager queue
- */
-RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
-
-/**
- * Default name for the UIManager queue
- */
-RCT_EXTERN char *const RCTUIManagerQueueName;
-
-/**
- * Check if we are currently on UIManager queue.
- */
-RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
-
-/**
- * Convenience macro for asserting that we're running on UIManager queue.
- */
-#define RCTAssertUIManagerQueue() RCTAssert(RCTIsUIManagerQueue(), \
-@"This function must be called on the UIManager queue")
-
-/**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
  * next render cycle will pick up updated views and layout appropriately.
  */
@@ -49,6 +28,12 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * The RCTUIManager is the module responsible for updating the view hierarchy.
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
+
+/**
+ * Register a root view tag and creates corresponding `rootView` and
+ * `rootShadowView`.
+ */
+- (void)registerRootViewTag:(NSNumber *)rootTag;
 
 /**
  * Register a root view with the RCTUIManager.
@@ -78,6 +63,17 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
  */
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView;
+
+/**
+ * Sets local data for a shadow view corresponded with given view.
+ * In some cases we need a way to specify some environmental data to shadow view
+ * to improve layout (or do something similar), so `localData` serves these needs.
+ * For example, any stateful embedded native views may benefit from this.
+ * Have in mind that this data is not supposed to interfere with the state of
+ * the shadow view.
+ * Please respect one-directional data flow of React.
+ */
+- (void)setLocalData:(NSObject *)localData forView:(UIView *)view;
 
 /**
  * Set the size of a view. This might be in response to a screen rotation
@@ -175,26 +171,6 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * See `RCTUIManagerObserver` protocol for more details.
  */
 @property (atomic, retain, readonly) RCTUIManagerObserverCoordinator *observerCoordinator;
-
-@end
-
-@interface RCTUIManager (Deprecated)
-
-/**
- * This method is deprecated and will be removed in next releases.
- * Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.
- * Only frames with `origin` equals {0, 0} are supported.
- */
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
-__deprecated_msg("Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.");
-
-
-/**
- * This method is deprecated and will be removed in next releases.
- * Use `registerRootView:` instead. There is no need to specify `sizeFlexibility` anymore.
- */
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
-__deprecated_msg("Use `registerRootView:` instead.");
 
 @end
 

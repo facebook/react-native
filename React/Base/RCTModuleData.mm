@@ -65,7 +65,7 @@
         methodName = "init";
       }
       RCTLogWarn(@"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-        "`requiresMainQueueSetup. In a future release React Native will default to initializing all native modules "
+        "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
         "on a background thread unless explicitly opted-out of.", _moduleClass, methodName);
     }
   }
@@ -373,6 +373,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (dispatch_queue_t)methodQueue
 {
   (void)[self instance];
+  RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@, bridge.valid: %d)",
+            self, _instance, _bridge.valid);
   return _methodQueue;
 }
 

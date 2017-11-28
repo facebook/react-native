@@ -172,6 +172,7 @@
     "name": "SoundCloud Pulse",
     "icon": "https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg",
     "linkAppStore": "https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.soundcloud.creators&hl=en",
     "infoLink": "https://developers.soundcloud.com/blog/react-native-at-soundcloud",
     "infoTitle": "Why React Native worked well for us",
     "pinned": false

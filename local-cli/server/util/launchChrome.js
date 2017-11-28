@@ -10,6 +10,9 @@
  */
 'use strict';
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const opn = require('opn');
 const execSync = require('child_process').execSync;
 
@@ -33,6 +36,8 @@ function getChromeAppName(): string {
   case 'linux':
     if (commandExistsUnixSync('google-chrome')) {
       return 'google-chrome';
+    } else if (commandExistsUnixSync('chromium-browser')) {
+      return 'chromium-browser';
     } else {
       return 'chromium';
     }

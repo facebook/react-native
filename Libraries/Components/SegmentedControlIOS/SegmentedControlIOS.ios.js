@@ -35,7 +35,7 @@ type Event = Object;
  * #### Programmatically changing selected index
  *
  * The selected index can be changed on the fly by assigning the
- * selectIndex prop to a state variable, then changing that variable.
+ * selectedIndex prop to a state variable, then changing that variable.
  * Note that the state variable would need to be updated as the user
  * selects a value and changes the index, as shown in the example below.
  *
@@ -49,7 +49,6 @@ type Event = Object;
  * />
  * ````
  */
-// $FlowFixMe(>=0.41.0)
 var SegmentedControlIOS = createReactClass({
   displayName: 'SegmentedControlIOS',
   mixins: [NativeMethodsMixin],

@@ -33,12 +33,12 @@ type Props = ViewProps & {
  *
  * ```
  * import React from 'react';
- * import { MaskedView, Text, View } from 'react-native';
+ * import { MaskedViewIOS, Text, View } from 'react-native';
  *
  * class MyMaskedView extends React.Component {
  *   render() {
  *     return (
- *       <MaskedView
+ *       <MaskedViewIOS
  *         style={{ flex: 1 }}
  *         maskElement={
  *           <View style={styles.maskContainerStyle}>
@@ -49,7 +49,7 @@ type Props = ViewProps & {
  *         }
  *       >
  *         <View style={{ flex: 1, backgroundColor: 'blue' }} />
- *       </MaskedView>
+ *       </MaskedViewIOS>
  *     );
  *   }
  * }

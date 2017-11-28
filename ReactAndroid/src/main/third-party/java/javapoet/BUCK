@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 prebuilt_jar(
     name = "javapoet",
     binary_jar = ":jsr305-binary-jar",

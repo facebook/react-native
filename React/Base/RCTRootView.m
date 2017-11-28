@@ -24,6 +24,7 @@
 #import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
@@ -90,8 +91,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 #if TARGET_OS_TV
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
-      [self addGestureRecognizer:gr];
+    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
     }
 #endif
 
@@ -243,7 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
      * NOTE: Since the bridge persists, the RootViews might be reused, so the
      * react tag must be re-assigned every time a new UIManager is created.
      */
-    self.reactTag = [_bridge.uiManager allocateRootTag];
+    self.reactTag = RCTAllocateRootViewTag();
   }
   return super.reactTag;
 }
@@ -393,17 +394,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   RCTLogWarn(@"Calling deprecated `[-RCTRootView intrinsicSize]`.");
   return self.intrinsicContentSize;
-}
-
-@end
-
-@implementation RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag
-{
-  NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
-  objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  return rootTag;
 }
 
 @end

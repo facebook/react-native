@@ -48,7 +48,7 @@ class TVEventHandlerView extends React.Component<$FlowFixMeProps, {
     this._tvEventHandler.enable(this, function(cmp, evt) {
       cmp.setState({
         lastEventType: evt.eventType
-      })
+      });
     });
   }
 

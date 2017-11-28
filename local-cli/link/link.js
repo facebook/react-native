@@ -9,20 +9,31 @@
  * @flow
  */
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const log = require('npmlog');
 const path = require('path');
-const uniq = require('lodash').uniq;
+const uniqBy = require('lodash').uniqBy;
 const flatten = require('lodash').flatten;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
 const registerDependencyWindows = require('./windows/registerNativeModule');
 const registerDependencyIOS = require('./ios/registerNativeModule');
+const registerDependencyPods = require('./pods/registerNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
 const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
+const isInstalledPods = require('./pods/isInstalled');
 const copyAssetsAndroid = require('./android/copyAssets');
 const copyAssetsIOS = require('./ios/copyAssets');
 const getProjectDependencies = require('./getProjectDependencies');
@@ -36,7 +47,7 @@ import type {RNConfig} from '../core';
 
 log.heading = 'rnpm-link';
 
-const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
+const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
 
 const linkDependencyAndroid = (androidProject, dependency) => {
@@ -97,17 +108,19 @@ const linkDependencyIOS = (iOSProject, dependency) => {
     return;
   }
 
-  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios);
-
+  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios) || isInstalledPods(iOSProject, dependency.config.ios);
   if (isInstalled) {
     log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
     return;
   }
 
   log.info(`Linking ${dependency.name} ios dependency`);
-
-  registerDependencyIOS(dependency.config.ios, iOSProject);
-
+  if (iOSProject.podfile && dependency.config.ios.podspec) {
+    registerDependencyPods(dependency, iOSProject);
+  }
+  else {
+    registerDependencyIOS(dependency.config.ios, iOSProject);
+  }
   log.info(`iOS module ${dependency.name} has been successfully linked`);
 };
 

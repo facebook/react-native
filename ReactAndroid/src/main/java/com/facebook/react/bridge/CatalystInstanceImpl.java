@@ -10,6 +10,7 @@
 package com.facebook.react.bridge;
 
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.util.Log;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -82,12 +83,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final NativeModuleRegistry mNativeModuleRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
-  private final @Nullable MessageQueueThread mUIBackgroundQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
+
+  private JavaScriptContextHolder mJavaScriptContextHolder;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -111,7 +113,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
-    mUIBackgroundQueueThread = mReactQueueConfiguration.getUIBackgroundQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -120,10 +121,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mNativeModulesQueueThread,
-      mUIBackgroundQueueThread,
       mNativeModuleRegistry.getJavaModules(this),
       mNativeModuleRegistry.getCxxModules());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+
+    mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -186,7 +188,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       JavaScriptExecutor jsExecutor,
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
-      MessageQueueThread uiBackgroundQueue,
       Collection<JavaModuleWrapper> javaModules,
       Collection<ModuleHolder> cxxModules);
 
@@ -205,6 +206,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniSetSourceURL(remoteURL);
   }
 
+  @Override
+  public void registerSegment(int segmentId, String path) {
+    jniRegisterSegment(segmentId, path);
+  }
+
   /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
     mSourceURL = assetURL;
     jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
@@ -216,6 +222,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private native void jniSetSourceURL(String sourceURL);
+  private native void jniRegisterSegment(int segmentId, String path);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
 
@@ -314,29 +321,39 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
 
     // TODO: tell all APIs to shut down
+    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_START);
     mDestroyed = true;
 
-    mNativeModulesQueueThread.runOnQueue(new Runnable() {
-      @Override
-      public void run() {
-        mNativeModuleRegistry.notifyJSInstanceDestroy();
-        boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-        if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
-          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-            listener.onTransitionToBridgeIdle();
-          }
-        }
-        UiThreadUtil.runOnUiThread(new Runnable() {
+    mNativeModulesQueueThread.runOnQueue(
+        new Runnable() {
           @Override
           public void run() {
-            mHybridData.resetNative();
-            // Kill non-UI threads from UI thread.
-            getReactQueueConfiguration().destroy();
-            Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+            mNativeModuleRegistry.notifyJSInstanceDestroy();
+            boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+            if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
+              for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+                listener.onTransitionToBridgeIdle();
+              }
+            }
+            AsyncTask.execute(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    // Kill non-UI threads from neutral third party
+                    // potentially expensive, so don't run on UI thread
+
+                    // contextHolder is used as a lock to guard against other users of the JS VM having
+                    // the VM destroyed underneath them, so notify them before we resetNative
+                    mJavaScriptContextHolder.clear();
+
+                    mHybridData.resetNative();
+                    getReactQueueConfiguration().destroy();
+                    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+                    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
+                  }
+                });
           }
         });
-      }
-    });
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
@@ -433,7 +450,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public native void setGlobalVariable(String propName, String jsonValue);
 
   @Override
-  public native long getJavaScriptContext();
+  public JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mJavaScriptContextHolder;
+  }
+
+  private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();

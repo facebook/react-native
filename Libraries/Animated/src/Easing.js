@@ -62,6 +62,10 @@ class Easing {
   /**
    * A stepping function, returns 1 for any positive value of `n`.
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static step0(n) {
     return n > 0 ? 1 : 0;
   }
@@ -69,6 +73,10 @@ class Easing {
   /**
    * A stepping function, returns 1 if `n` is greater than or equal to 1.
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static step1(n) {
     return n >= 1 ? 1 : 0;
   }
@@ -79,6 +87,10 @@ class Easing {
    *
    * http://cubic-bezier.com/#0,0,1,1
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static linear(t) {
     return t;
   }
@@ -102,6 +114,10 @@ class Easing {
    *
    * http://easings.net/#easeInQuad
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static quad(t) {
     return t * t;
   }
@@ -112,6 +128,10 @@ class Easing {
    *
    * http://easings.net/#easeInCubic
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static cubic(t) {
     return t * t * t;
   }
@@ -122,7 +142,16 @@ class Easing {
    * n = 4: http://easings.net/#easeInQuart
    * n = 5: http://easings.net/#easeInQuint
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static poly(n) {
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     return (t) => Math.pow(t, n);
   }
 
@@ -131,6 +160,10 @@ class Easing {
    *
    * http://easings.net/#easeInSine
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static sin(t) {
     return 1 - Math.cos(t * Math.PI / 2);
   }
@@ -140,6 +173,10 @@ class Easing {
    *
    * http://easings.net/#easeInCirc
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static circle(t) {
     return 1 - Math.sqrt(1 - t * t);
   }
@@ -149,6 +186,10 @@ class Easing {
    *
    * http://easings.net/#easeInExpo
    */
+  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
+   * caught by Flow 0.59 which was not caught before. Most likely, this error
+   * is because an exported function parameter is missing an annotation.
+   * Without an annotation, these parameters are uncovered by Flow. */
   static exp(t) {
     return Math.pow(2, 10 * (t - 1));
   }
@@ -162,11 +203,6 @@ class Easing {
    * times.
    *
    * http://easings.net/#easeInElastic
-   *
-   * Wolfram Plots:
-   *
-   * - http://tiny.cc/elastic_b_1 (bounciness = 1, default)
-   * - http://tiny.cc/elastic_b_3 (bounciness = 3)
    */
   static elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;

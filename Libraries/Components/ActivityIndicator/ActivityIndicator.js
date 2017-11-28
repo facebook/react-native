@@ -14,8 +14,9 @@
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const React = require('React');
+const ProgressBarAndroid = require('ProgressBarAndroid');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
@@ -36,10 +37,9 @@ type DefaultProps = {
 
 /**
  * Displays a circular loading indicator.
+ *
+ * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
-/* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.53 was deployed. To see the error delete this comment and
- * run Flow. */
 const ActivityIndicator = createReactClass({
   displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
@@ -48,15 +48,21 @@ const ActivityIndicator = createReactClass({
     ...ViewPropTypes,
     /**
      * Whether to show the indicator (true, the default) or hide it (false).
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
      */
     animating: PropTypes.bool,
     /**
      * The foreground color of the spinner (default is gray).
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#color
      */
     color: ColorPropType,
     /**
      * Size of the indicator (default is 'small').
      * Passing a number to the size prop is only supported on Android.
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#size
      */
     size: PropTypes.oneOfType([
       PropTypes.oneOf([ 'small', 'large' ]),
@@ -66,6 +72,8 @@ const ActivityIndicator = createReactClass({
      * Whether the indicator should hide when not animating (true by default).
      *
      * @platform ios
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
      */
     hidesWhenStopped: PropTypes.bool,
   },
@@ -95,16 +103,20 @@ const ActivityIndicator = createReactClass({
         break;
     }
 
+    const nativeProps = {
+      ...props,
+      style: sizeStyle,
+      styleAttr: 'Normal',
+      indeterminate: true,
+    };
+
     return (
-      <View
-        onLayout={onLayout}
-        style={[styles.container, style]}>
-        <RCTActivityIndicator
-          {...props}
-          style={sizeStyle}
-          styleAttr="Normal"
-          indeterminate
-        />
+      <View onLayout={onLayout} style={[styles.container, style]}>
+        {Platform.OS === 'ios' ? (
+          <RCTActivityIndicator {...nativeProps} />
+        ) : (
+          <ProgressBarAndroid {...nativeProps} />
+        )}
       </View>
     );
   }
@@ -129,18 +141,7 @@ if (Platform.OS === 'ios') {
   var RCTActivityIndicator = requireNativeComponent(
     'RCTActivityIndicatorView',
     ActivityIndicator,
-    {nativeOnly: {activityIndicatorViewStyle: true}},
-  );
-} else if (Platform.OS === 'android') {
-  var RCTActivityIndicator = requireNativeComponent(
-    'AndroidProgressBar',
-    ActivityIndicator,
-    // Ignore props that are specific to non inderterminate ProgressBar.
-    {nativeOnly: {
-      indeterminate: true,
-      progress: true,
-      styleAttr: true,
-    }},
+    { nativeOnly: { activityIndicatorViewStyle: true } }
   );
 }
 

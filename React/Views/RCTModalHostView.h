@@ -15,6 +15,7 @@
 
 @class RCTBridge;
 @class RCTModalHostViewController;
+@class RCTTVRemoteHandler;
 
 @protocol RCTModalHostViewInteractor;
 
@@ -26,6 +27,8 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
+@property (nonatomic, copy) NSNumber *identifier;
+
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
@@ -33,6 +36,7 @@
 
 #if TARGET_OS_TV
 @property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
+@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
 #endif
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;

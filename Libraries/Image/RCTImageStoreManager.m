@@ -32,7 +32,12 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
 RCT_EXPORT_MODULE()
 
-- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
+- (float)handlerPriority
+{
+    return 1;
+}
+
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)(void))block
 {
   dispatch_async(_methodQueue, ^{
     [self removeImageForTag:imageTag];

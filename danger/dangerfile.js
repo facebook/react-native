@@ -51,7 +51,7 @@ if (editsBlogPost) {
 }
 
 // Fails if the description is too short.
-if (danger.github.pr.body.length < 10) {
+if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
   fail(':grey_question: This pull request needs a description.');
   markdown('@facebook-github-bot label Needs more information');
 }
@@ -75,7 +75,7 @@ if (packageChanged) {
 
 // Warns if a test plan is missing.
 const gettingStartedChanged = includes(danger.git.modified_files, 'docs/GettingStarted.md');
-const includesTestPlan = danger.github.pr.body.toLowerCase().includes('test plan');
+const includesTestPlan = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('test plan');
 
 // Warns if a test plan is missing, when editing the Getting Started guide. This page needs to be
 // tested in all its permutations.
@@ -91,6 +91,35 @@ if (!includesTestPlan && !editsDocs) {
   const idea = 'This PR appears to be missing a Test Plan.';
   warn(`${title} - <i>${idea}</i>`);
   markdown('@facebook-github-bot label Needs more information');
+}
+
+// Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
+const releaseNotesRegex = /\[(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\]\s*?\[(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
+const includesReleaseNotes = danger.github.pr.body.toLowerCase().includes('release notes');
+const correctlyFormattedReleaseNotes = releaseNotesRegex.test(danger.github.pr.body);
+const releaseNotesCaptureGroups = releaseNotesRegex.exec(danger.github.pr.body);
+
+if (!includesReleaseNotes) {
+  const title = ':clipboard: Release Notes';
+  const idea = 'This PR appears to be missing Release Notes.';
+  warn(`${title} - <i>${idea}</i>`);
+  markdown('@facebook-github-bot label Needs more information');
+} else if (!correctlyFormattedReleaseNotes) {
+  const title = ':clipboard: Release Notes';
+  const idea = 'This PR may have incorrectly formatted Release Notes.';
+  warn(`${title} - <i>${idea}</i>`);
+  markdown('@facebook-github-bot label Needs more information');
+} else if (releaseNotesCaptureGroups) {
+  const category = releaseNotesCaptureGroups[1].toLowerCase();
+
+  // Use Release Notes to Tag PRs appropriately
+  if (category === 'ios' ){
+    markdown('@facebook-github-bot label iOS');
+  }
+
+  if (category === 'android' ){
+    markdown('@facebook-github-bot label Android');
+  }
 }
 
 // Tags PRs that have been submitted by a core contributor.
