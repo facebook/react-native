@@ -17,10 +17,16 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
-    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @""
+    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @"",
+    @"embeddedBundleURL": self.bridge.embeddedBundleURL.absoluteString ?: @""
   };
 }
 

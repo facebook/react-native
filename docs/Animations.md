@@ -106,7 +106,7 @@ Animated.timing(
   this.state.xPosition,
   {
     toValue: 100,
-    easing: Easing.back,
+    easing: Easing.back(),
     duration: 2000,
   }                              
 ).start();  
@@ -154,7 +154,7 @@ There are some cases where an animated value needs to invert another animated va
 An example is inverting a scale (2x --> 0.5x):
 
 ```javascript
-const a = Animated.Value(1);
+const a = new Animated.Value(1);
 const b = Animated.divide(1, a);
 
 Animated.spring(a, {
@@ -360,6 +360,25 @@ things like `transform` and `opacity` will work, but flexbox and position proper
 When using `Animated.event`, it will only work with direct events and not bubbling events.
 This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
 
+When an animation is running, it can prevent `VirtualizedList` components from rendering more rows. If you need to run a long or looping animation while the user is scrolling through a list, you can use `isInteraction: false` in your animation's config to prevent this issue.
+
+### Bear in mind
+
+While using transform styles such as `rotateY`, `rotateX`, and others ensure the transform style `perspective` is in place.
+At this time some animations may not render on Android without it. Example below.
+
+```javascript
+<Animated.View
+  style={{
+    transform: [
+      { scale: this.state.scale },
+      { rotateY: this.state.rotateY },
+      { perspective: 1000 } // without this line this Animation will not render on Android while working fine on iOS
+    ]
+  }}
+/>
+```
+
 ### Additional examples
 
 The RNTester app has various examples of `Animated` in use:
@@ -472,7 +491,7 @@ manage frame updates for you.
 
 ### `setNativeProps`
 
-As mentioned [in the Direction Manipulation section](docs/direct-manipulation.html),
+As mentioned [in the Direct Manipulation section](docs/direct-manipulation.html),
 `setNativeProps` allows us to modify properties of native-backed
 components (components that are actually backed by native views, unlike
 composite components) directly, without having to `setState` and

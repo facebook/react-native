@@ -22,14 +22,14 @@
 #import "RCTText.h"
 #import "RCTTextView.h"
 
-NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
 NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
 
-CGFloat const RCTTextAutoSizeDefaultMinimumFontScale       = 0.5f;
-CGFloat const RCTTextAutoSizeWidthErrorMargin              = 0.05f;
-CGFloat const RCTTextAutoSizeHeightErrorMargin             = 0.025f;
-CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
+static NSString *const kShadowViewAttributeName = @"RCTShadowViewAttributeName";
+
+static CGFloat const kAutoSizeWidthErrorMargin  = 0.05f;
+static CGFloat const kAutoSizeHeightErrorMargin = 0.025f;
+static CGFloat const kAutoSizeGranularity       = 0.001f;
 
 @implementation RCTShadowText
 {
@@ -38,7 +38,7 @@ CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
   CGFloat _cachedTextStorageWidthMode;
   NSAttributedString *_cachedAttributedString;
   CGFloat _effectiveLetterSpacing;
-  UIUserInterfaceLayoutDirection _cachedEffectiveLayoutDirection;
+  UIUserInterfaceLayoutDirection _cachedLayoutDirection;
 }
 
 static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
@@ -72,7 +72,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _fontSizeMultiplier = 1.0;
     _textAlign = NSTextAlignmentNatural;
     _writingDirection = NSWritingDirectionNatural;
-    _cachedEffectiveLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
+    _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
@@ -116,12 +116,9 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   parentProperties = [super processUpdatedProperties:applierBlocks
                                     parentProperties:parentProperties];
 
-  UIEdgeInsets padding = self.paddingAsInsets;
-  CGFloat width = self.frame.size.width - (padding.left + padding.right);
-
-
+  CGFloat availableWidth = self.availableSize.width;
   NSNumber *parentTag = [[self reactSuperview] reactTag];
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:YGMeasureModeExactly];
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:availableWidth widthMode:YGMeasureModeExactly];
   CGRect textFrame = [self calculateTextFrame:textStorage];
   BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -160,12 +157,13 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
              absolutePosition:(CGPoint)absolutePosition
 {
   // Run layout on subviews.
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width widthMode:YGMeasureModeExactly];
+  CGFloat availableWidth = self.availableSize.width;
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:availableWidth widthMode:YGMeasureModeExactly];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-  [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
+  [layoutManager.textStorage enumerateAttribute:kShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
       YGNodeRef childNode = child.yogaNode;
       float width = YGNodeStyleGetWidth(childNode).value;
@@ -198,9 +196,9 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 {
   if (
       _cachedTextStorage &&
-      width == _cachedTextStorageWidth &&
+      (width == _cachedTextStorageWidth || (isnan(width) && isnan(_cachedTextStorageWidth))) &&
       widthMode == _cachedTextStorageWidthMode &&
-      _cachedEffectiveLayoutDirection == self.effectiveLayoutDirection
+      _cachedLayoutDirection == self.layoutDirection
   ) {
     return _cachedTextStorage;
   }
@@ -220,7 +218,10 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   }
 
   textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+  textContainer.size = (CGSize){
+    widthMode == YGMeasureModeUndefined || isnan(width) ? CGFLOAT_MAX : width,
+    CGFLOAT_MAX
+  };
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
@@ -271,12 +272,12 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   if (
       ![self isTextDirty] &&
       _cachedAttributedString &&
-      _cachedEffectiveLayoutDirection == self.effectiveLayoutDirection
+      _cachedLayoutDirection == self.layoutDirection
   ) {
     return _cachedAttributedString;
   }
 
-  _cachedEffectiveLayoutDirection = self.effectiveLayoutDirection;
+  _cachedLayoutDirection = self.layoutDirection;
 
   if (_fontSize && !isnan(_fontSize)) {
     fontSize = @(_fontSize);
@@ -334,7 +335,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       attachment.bounds = (CGRect){CGPointZero, {width, height}};
       NSMutableAttributedString *attachmentString = [NSMutableAttributedString new];
       [attachmentString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
-      [attachmentString addAttribute:RCTShadowViewAttributeName value:child range:(NSRange){0, attachmentString.length}];
+      [attachmentString addAttribute:kShadowViewAttributeName value:child range:(NSRange){0, attachmentString.length}];
       [attributedString appendAttributedString:attachmentString];
       if (height > heightOfTallestSubview) {
         heightOfTallestSubview = height;
@@ -418,7 +419,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   // Text alignment
   NSTextAlignment textAlign = _textAlign;
   if (textAlign == NSTextAlignmentRight || textAlign == NSTextAlignmentLeft) {
-    if (_cachedEffectiveLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+    if (_cachedLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
       if (textAlign == NSTextAlignmentRight) {
         textAlign = NSTextAlignmentLeft;
       } else {
@@ -477,8 +478,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 - (CGRect)calculateTextFrame:(NSTextStorage *)textStorage
 {
   CGRect textFrame = UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size},
-                                           self.paddingAsInsets);
-
+                                           self.compoundInsets);
 
   if (_adjustsFontSizeToFit) {
     textFrame = [self updateStorage:textStorage toFitFrame:textFrame];
@@ -489,7 +489,6 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 
 - (CGRect)updateStorage:(NSTextStorage *)textStorage toFitFrame:(CGRect)frame
 {
-
   BOOL fits = [self attemptScale:1.0f
                        inStorage:textStorage
                         forFrame:frame];
@@ -504,8 +503,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     requiredSize = [self calculateSize:textStorage];
   }
 
-  //Vertically center draw position for new text sizing.
-  frame.origin.y = self.paddingAsInsets.top + RCTRoundPixelValue((CGRectGetHeight(frame) - requiredSize.height) / 2.0f);
+  // Vertically center draw position for new text sizing.
+  frame.origin.y = self.compoundInsets.top + RCTRoundPixelValue((CGRectGetHeight(frame) - requiredSize.height) / 2.0f);
   return frame;
 }
 
@@ -516,7 +515,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
                                prevMid:(CGFloat)prevMid
 {
   CGFloat midScale = (minScale + maxScale) / 2.0f;
-  if (round((prevMid / RCTTextAutoSizeGranularity)) == round((midScale / RCTTextAutoSizeGranularity))) {
+  if (round((prevMid / kAutoSizeGranularity)) == round((midScale / kAutoSizeGranularity))) {
     //Bail because we can't meet error margin.
     return [self calculateSize:textStorage];
   } else {
@@ -529,12 +528,12 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       return [self calculateOptimumScaleInFrame:frame
                                      forStorage:textStorage
                                        minScale:minScale
-                                       maxScale:midScale - RCTTextAutoSizeGranularity
+                                       maxScale:midScale - kAutoSizeGranularity
                                         prevMid:midScale];
     } else {
       return [self calculateOptimumScaleInFrame:frame
                                      forStorage:textStorage
-                                       minScale:midScale + RCTTextAutoSizeGranularity
+                                       minScale:midScale + kAutoSizeGranularity
                                        maxScale:maxScale
                                         prevMid:midScale];
     }
@@ -577,8 +576,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   textContainer.maximumNumberOfLines == 0;
 
   if (fitLines && fitSize) {
-    if ((requiredSize.width + (CGRectGetWidth(frame) * RCTTextAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame) &&
-        (requiredSize.height + (CGRectGetHeight(frame) * RCTTextAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame))
+    if ((requiredSize.width + (CGRectGetWidth(frame) * kAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame) &&
+        (requiredSize.height + (CGRectGetHeight(frame) * kAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame))
     {
       return RCTSizeWithinRange;
     } else {

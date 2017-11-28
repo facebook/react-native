@@ -14,10 +14,12 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
 
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
 function dependencies(argv, config, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
-    return Promise.reject(`File ${rootModuleAbsolutePath} does not exist`);
+    return Promise.reject(new Error(`File ${rootModuleAbsolutePath} does not exist`));
   }
 
   const transformModulePath =
@@ -26,10 +28,13 @@ function dependencies(argv, config, args, packagerInstance) {
       undefined;
 
   const packageOpts = {
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
+    postMinifyProcess: config.postMinifyProcess,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,

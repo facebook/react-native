@@ -31,11 +31,10 @@ exports.examples = [{
   }
 }];
 
-class ShareMessageExample extends React.Component {
+class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;
-  state: any;
 
   constructor(props) {
     super(props);
@@ -83,6 +82,7 @@ class ShareMessageExample extends React.Component {
       url: 'http://facebook.github.io/react-native/',
       title: 'React Native'
     }, {
+      subject: 'A subject to go in the email heading',
       dialogTitle: 'Share React Native website',
       excludedActivityTypes: [
         'com.apple.UIKit.activity.PostToTwitter'
@@ -104,7 +104,6 @@ class ShareMessageExample extends React.Component {
       this.setState({result: 'dismissed'});
     }
   }
-
 }
 
 

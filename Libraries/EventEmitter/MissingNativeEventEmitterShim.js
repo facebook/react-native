@@ -38,7 +38,7 @@ class MissingNativeEventEmitterShim extends EventEmitter {
   }
 
   // EventEmitter
-  addListener(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
+  addListener(eventType: string, listener: Function, context: ?Object) {
     this.throwMissingNativeModule();
   }
 

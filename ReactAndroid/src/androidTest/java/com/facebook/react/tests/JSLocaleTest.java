@@ -49,7 +49,7 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
         getContext(),
         viewManagers,
         new UIImplementationProvider(),
-        false);
+        0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

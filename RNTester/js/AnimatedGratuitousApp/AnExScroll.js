@@ -22,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-class AnExScroll extends React.Component {
+class AnExScroll extends React.Component<$FlowFixMeProps, any> {
   state: any = { scrollX: new Animated.Value(0) };
 
   render() {

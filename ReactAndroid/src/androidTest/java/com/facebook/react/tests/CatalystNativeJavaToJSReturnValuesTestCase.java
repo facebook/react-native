@@ -8,8 +8,6 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -18,9 +16,9 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.testing.AssertModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
@@ -28,7 +26,7 @@ import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-
+import java.util.ArrayList;
 import org.junit.Ignore;
 
 /**
@@ -113,11 +111,9 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
   protected void setUp() throws Exception {
     super.setUp();
 
-    final UIManagerModule mUIManager = new UIManagerModule(
-        getContext(),
-        new ArrayList<ViewManager>(),
-        new UIImplementationProvider(),
-        false);
+    final UIManagerModule mUIManager =
+        new UIManagerModule(
+            getContext(), new ArrayList<ViewManager>(), new UIImplementationProvider(), 0);
 
     mAssertModule = new AssertModule();
 

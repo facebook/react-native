@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+javascript_foundation
  */
 'use strict';
 
@@ -57,5 +59,17 @@ describe('getAssetDestPathAndroid', () => {
     expect(
       getAssetDestPathAndroid(asset, 1).startsWith('assets_')
     ).toBeFalsy();
+  });
+
+  it('should put non-drawable resources to `raw/`', () => {
+    const asset = {
+      name: 'video',
+      type: 'mp4',
+      httpServerLocation: '/assets/app/test',
+    };
+
+    expect(getAssetDestPathAndroid(asset, 1)).toBe(
+      'raw/app_test_video.mp4'
+    );
   });
 });

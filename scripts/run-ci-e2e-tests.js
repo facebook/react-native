@@ -48,11 +48,10 @@ try {
   const CLI_PACKAGE = path.join(ROOT, 'react-native-cli', 'react-native-cli-*.tgz');
   cd('..');
 
-  // can skip cli install for non sudo mode
   if (!argv['skip-cli-install']) {
-    if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally, please run in su mode');
-      echo('Or with --skip-cli-install to skip this step');
+    if (exec(`sudo npm install -g ${CLI_PACKAGE}`).code) {
+      echo('Could not install react-native-cli globally.');
+      echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -167,7 +166,7 @@ try {
     SERVER_PID = packagerProcess.pid;
     exec('sleep 15s');
     // prepare cache to reduce chances of possible red screen "Can't fibd variable __fbBatchedBridge..."
-    exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.ios.bundle?platform=ios&dev=true)');
+    exec('response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)');
     echo(`Starting packager server, ${SERVER_PID}`);
     echo('Executing ' + iosTestType + ' e2e test');
     if (tryExecNTimes(
@@ -176,7 +175,7 @@ try {
         if (argv.tvos) {
           return exec('xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         } else {
-          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         }
       },
       numberOfRetries)) {
@@ -190,12 +189,12 @@ try {
 
   if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('react-native bundle --max-workers 1 --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+    if (exec('react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js').code) {
       echo('Could not build Android bundle');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+    if (exec('react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js').code) {
       echo('Could not build iOS bundle');
       exitCode = 1;
       throw Error(exitCode);

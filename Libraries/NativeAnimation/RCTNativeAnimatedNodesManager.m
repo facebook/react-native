@@ -30,7 +30,7 @@
 
 @implementation RCTNativeAnimatedNodesManager
 {
-  RCTUIManager *_uiManager;
+  __weak RCTUIManager *_uiManager;
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
@@ -170,6 +170,7 @@
     RCTLogError(@"Not a value node.");
     return;
   }
+  [self stopAnimationsForNode:node];
 
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   valueNode.value = value.floatValue;
@@ -264,6 +265,20 @@
   }
 }
 
+- (void)stopAnimationsForNode:(nonnull RCTAnimatedNode *)node
+{
+    NSMutableArray<id<RCTAnimationDriver>> *discarded = [NSMutableArray new];
+    for (id<RCTAnimationDriver> driver in _activeAnimations) {
+        if ([driver.valueNode isEqual:node]) {
+            [discarded addObject:driver];
+        }
+    }
+    for (id<RCTAnimationDriver> driver in discarded) {
+        [driver stopAnimation];
+        [_activeAnimations removeObject:driver];
+    }
+}
+
 #pragma mark -- Events
 
 - (void)addAnimatedEventToView:(nonnull NSNumber *)viewTag
@@ -328,6 +343,7 @@
   NSMutableArray<RCTEventAnimation *> *driversForKey = _eventDrivers[key];
   if (driversForKey) {
     for (RCTEventAnimation *driver in driversForKey) {
+      [self stopAnimationsForNode:driver.valueNode];
       [driver updateWithEvent:event];
     }
 

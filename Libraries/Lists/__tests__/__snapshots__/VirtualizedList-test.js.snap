@@ -124,7 +124,14 @@ exports[`VirtualizedList handles nested lists 1`] = `
         <View>
           <View
             onLayout={[Function]}
-            style={null}
+            style={
+              Array [
+                Object {
+                  "flexDirection": "row",
+                },
+                null,
+              ]
+            }
           >
             <item
               title="outer1:inner0"
@@ -132,7 +139,14 @@ exports[`VirtualizedList handles nested lists 1`] = `
           </View>
           <View
             onLayout={[Function]}
-            style={null}
+            style={
+              Array [
+                Object {
+                  "flexDirection": "row",
+                },
+                null,
+              ]
+            }
           >
             <item
               title="outer1:inner1"
@@ -427,13 +441,13 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollEnd={[Function]}
-  onRefresh={[Function]}
+  onRefresh={[MockFunction]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   refreshControl={
     <RefreshControlMock
-      onRefresh={[Function]}
+      onRefresh={[MockFunction]}
       progressViewOffset={undefined}
       refreshing={false}
     />
@@ -476,13 +490,18 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
       style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+        Array [
+          Object {
+            "flexDirection": "column-reverse",
+          },
+          Object {
+            "transform": Array [
+              Object {
+                "scaleY": -1,
+              },
+            ],
+          },
+        ]
       }
     >
       <item
@@ -493,13 +512,18 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
       style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+        Array [
+          Object {
+            "flexDirection": "column-reverse",
+          },
+          Object {
+            "transform": Array [
+              Object {
+                "scaleY": -1,
+              },
+            ],
+          },
+        ]
       }
     >
       <item
@@ -510,13 +534,18 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
       style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+        Array [
+          Object {
+            "flexDirection": "column-reverse",
+          },
+          Object {
+            "transform": Array [
+              Object {
+                "scaleY": -1,
+              },
+            ],
+          },
+        ]
       }
     >
       <item
@@ -527,13 +556,18 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
       style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+        Array [
+          Object {
+            "flexDirection": "column-reverse",
+          },
+          Object {
+            "transform": Array [
+              Object {
+                "scaleY": -1,
+              },
+            ],
+          },
+        ]
       }
     >
       <item
@@ -544,13 +578,18 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
       style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+        Array [
+          Object {
+            "flexDirection": "column-reverse",
+          },
+          Object {
+            "transform": Array [
+              Object {
+                "scaleY": -1,
+              },
+            ],
+          },
+        ]
       }
     >
       <item

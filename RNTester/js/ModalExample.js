@@ -16,6 +16,7 @@ var ReactNative = require('react-native');
 var {
   Modal,
   Picker,
+  Platform,
   StyleSheet,
   Switch,
   Text,
@@ -30,7 +31,7 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-class Button extends React.Component {
+class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     active: false,
   };
@@ -69,7 +70,7 @@ const supportedOrientationsPickerValues = [
   [],
 ];
 
-class ModalExample extends React.Component {
+class ModalExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animationType: 'none',
     modalVisible: false,
@@ -90,6 +91,15 @@ class ModalExample extends React.Component {
   _toggleTransparent = () => {
     this.setState({transparent: !this.state.transparent});
   };
+
+  renderSwitch() {
+    if (Platform.isTVOS) {
+      return null;
+    }
+    return (
+      <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+    );
+  }
 
   render() {
     var modalBackgroundStyle = {
@@ -140,9 +150,21 @@ class ModalExample extends React.Component {
 
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>
-          <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+          {this.renderSwitch()}
         </View>
-
+        {this.renderPickers()}
+        <Button onPress={this._setModalVisible.bind(this, true)}>
+          Present
+        </Button>
+      </View>
+    );
+  }
+  renderPickers() {
+    if (Platform.isTVOS) {
+      return null;
+    }
+    return (
+      <View>
         <View>
           <Text style={styles.rowTitle}>Presentation style</Text>
           <Picker
@@ -173,14 +195,11 @@ class ModalExample extends React.Component {
             <Item label="Default supportedOrientations" value={5} />
           </Picker>
         </View>
-
-        <Button onPress={this._setModalVisible.bind(this, true)}>
-          Present
-        </Button>
       </View>
     );
   }
 }
+
 
 exports.examples = [
   {

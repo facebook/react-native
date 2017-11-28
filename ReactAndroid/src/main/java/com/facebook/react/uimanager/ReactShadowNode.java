@@ -1,25 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
-
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.ArrayList;
-
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaDisplay;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -28,446 +19,179 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import javax.annotation.Nullable;
 
 /**
- * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link YogaNode} to allow that. They also help with handling
+ * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily for
+ * layouting therefore it extends {@link YogaNode} to allow that. They also help with handling
  * Common base subclass of {@link YogaNode} for all layout nodes for react-based view. It extends
  * {@link YogaNode} by adding additional capabilities.
  *
- * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
- * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
- * corresponds to a particular view type.
+ * <p>Instances of this class receive property updates from JS via @{link UIManagerModule}.
+ * Subclasses may use {@link #updateShadowNode} to persist some of the updated fields in the node
+ * instance that corresponds to a particular view type.
  *
- * Subclasses of {@link ReactShadowNode} should be created only from {@link ViewManager} that
+ * <p>Subclasses of {@link ReactShadowNode} should be created only from {@link ViewManager} that
  * corresponds to a certain type of native view. They will be updated and accessed only from JS
  * thread. Subclasses of {@link ViewManager} may choose to use base class {@link ReactShadowNode} or
  * custom subclass of it if necessary.
  *
- * The primary use-case for {@link ReactShadowNode} nodes is to calculate layouting. Although this
- * might be extended. For some examples please refer to ARTGroupYogaNode or ReactTextYogaNode.
+ * <p>The primary use-case for {@link ReactShadowNode} nodes is to calculate layouting. Although
+ * this might be extended. For some examples please refer to ARTGroupYogaNode or ReactTextYogaNode.
  *
- * This class allows for the native view hierarchy to not be an exact copy of the hierarchy received
- * from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and separately native
- * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
- * information.
+ * <p>This class allows for the native view hierarchy to not be an exact copy of the hierarchy
+ * received from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and
+ * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
+ * NativeViewHierarchyOptimizer} for more information.
  */
-@ReactPropertyHolder
-public class ReactShadowNode {
-
-  private int mReactTag;
-  private @Nullable String mViewClassName;
-  private @Nullable ReactShadowNode mRootNode;
-  private @Nullable ThemedReactContext mThemedContext;
-  private boolean mShouldNotifyOnLayout;
-  private boolean mNodeUpdated = true;
-  private @Nullable ArrayList<ReactShadowNode> mChildren;
-  private @Nullable ReactShadowNode mParent;
-
-  // layout-only nodes
-  private boolean mIsLayoutOnly;
-  private int mTotalNativeChildren = 0;
-  private @Nullable ReactShadowNode mNativeParent;
-  private @Nullable ArrayList<ReactShadowNode> mNativeChildren;
-  private int mScreenX;
-  private int mScreenY;
-  private int mScreenWidth;
-  private int mScreenHeight;
-  private final Spacing mDefaultPadding = new Spacing(0);
-  private final float[] mPadding = new float[Spacing.ALL + 1];
-  private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
-  private final YogaNode mYogaNode;
-  private static YogaConfig sYogaConfig;
-
-  public ReactShadowNode() {
-    if (!isVirtual()) {
-      YogaNode node = YogaNodePool.get().acquire();
-      if (sYogaConfig == null) {
-        sYogaConfig = new YogaConfig();
-        sYogaConfig.setPointScaleFactor(0f);
-        sYogaConfig.setUseLegacyStretchBehaviour(true);
-      }
-      if (node == null) {
-        node = new YogaNode(sYogaConfig);
-      }
-      mYogaNode = node;
-      Arrays.fill(mPadding, YogaConstants.UNDEFINED);
-    } else {
-      mYogaNode = null;
-    }
-  }
+public interface ReactShadowNode<T extends ReactShadowNode> {
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
    * mapped into native views (e.g. nested text node). By default this method returns {@code false}.
    */
-  public boolean isVirtual() {
-    return false;
-  }
+  boolean isVirtual();
 
   /**
    * Nodes that return {@code true} will be treated as a root view for the virtual nodes tree. It
    * means that {@link NativeViewHierarchyManager} will not try to perform {@code manageChildren}
-   * operation on such views. Good example is {@code InputText} view that may have children
-   * {@code Text} nodes but this whole hierarchy will be mapped to a single android {@link EditText}
-   * view.
+   * operation on such views. Good example is {@code InputText} view that may have children {@code
+   * Text} nodes but this whole hierarchy will be mapped to a single android {@link EditText} view.
    */
-  public boolean isVirtualAnchor() {
-    return false;
-  }
+  boolean isVirtualAnchor();
 
-  public final String getViewClass() {
-    return Assertions.assertNotNull(mViewClassName);
-  }
+  /**
+   * Nodes that return {@code true} will not manage (and and remove) child Yoga nodes. For example
+   * {@link ReactTextInputShadowNode} or {@link ReactTextShadowNode} have child nodes, which do not
+   * want Yoga to lay out, so in the eyes of Yoga it is a leaf node. Override this method in
+   * subclass to enforce this requirement.
+   */
+  boolean isYogaLeafNode();
 
-  public final boolean hasUpdates() {
-    return mNodeUpdated || hasNewLayout() || isDirty();
-  }
+  String getViewClass();
 
-  public final void markUpdateSeen() {
-    mNodeUpdated = false;
-    if (hasNewLayout()) {
-      markLayoutSeen();
-    }
-  }
+  boolean hasUpdates();
 
-  public void markUpdated() {
-    if (mNodeUpdated) {
-      return;
-    }
-    mNodeUpdated = true;
-    ReactShadowNode parent = getParent();
-    if (parent != null) {
-      parent.markUpdated();
-    }
-  }
+  void markUpdateSeen();
 
-  public final boolean hasUnseenUpdates() {
-    return mNodeUpdated;
-  }
+  void markUpdated();
 
-  public void dirty() {
-    if (!isVirtual()) {
-      mYogaNode.dirty();
-    }
-  }
+  boolean hasUnseenUpdates();
 
-  public final boolean isDirty() {
-    return mYogaNode != null && mYogaNode.isDirty();
-  }
+  void dirty();
 
-  public void addChildAt(ReactShadowNode child, int i) {
-    if (child.mParent != null) {
-      throw new IllegalViewOperationException(
-        "Tried to add child that already has a parent! Remove it from its parent first.");
-    }
-    if (mChildren == null) {
-      mChildren = new ArrayList<ReactShadowNode>(4);
-    }
-    mChildren.add(i, child);
-    child.mParent = this;
+  boolean isDirty();
 
-    // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
-    // more, it asserts that you don't add children to nodes with measure functions.
-    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
-      YogaNode childYogaNode = child.mYogaNode;
-      if (childYogaNode == null) {
-        throw new RuntimeException(
-          "Cannot add a child that doesn't have a YogaNode to a parent without a measure " +
-            "function! (Trying to add a '" + child.getClass().getSimpleName() + "' to a '" +
-            getClass().getSimpleName() + "')");
-      }
-      mYogaNode.addChildAt(childYogaNode, i);
-    }
-    markUpdated();
+  void addChildAt(T child, int i);
 
-    int increase = child.mIsLayoutOnly ? child.mTotalNativeChildren : 1;
-    mTotalNativeChildren += increase;
+  T removeChildAt(int i);
 
-    updateNativeChildrenCountInParent(increase);
-  }
+  int getChildCount();
 
-  public ReactShadowNode removeChildAt(int i) {
-    if (mChildren == null) {
-      throw new ArrayIndexOutOfBoundsException(
-        "Index " + i + " out of bounds: node has no children");
-    }
-    ReactShadowNode removed = mChildren.remove(i);
-    removed.mParent = null;
+  T getChildAt(int i);
 
-    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
-      mYogaNode.removeChildAt(i);
-    }
-    markUpdated();
+  int indexOf(T child);
 
-    int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
-    mTotalNativeChildren -= decrease;
-    updateNativeChildrenCountInParent(-decrease);
-    return removed;
-  }
-
-  public final int getChildCount() {
-    return mChildren == null ? 0 : mChildren.size();
-  }
-
-  public final ReactShadowNode getChildAt(int i) {
-    if (mChildren == null) {
-      throw new ArrayIndexOutOfBoundsException(
-        "Index " + i + " out of bounds: node has no children");
-    }
-    return mChildren.get(i);
-  }
-
-  public final int indexOf(ReactShadowNode child) {
-    return mChildren == null ? -1 : mChildren.indexOf(child);
-  }
-
-  public void removeAndDisposeAllChildren() {
-    if (getChildCount() == 0) {
-      return;
-    }
-
-    int decrease = 0;
-    for (int i = getChildCount() - 1; i >= 0; i--) {
-      if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
-        mYogaNode.removeChildAt(i);
-      }
-      ReactShadowNode toRemove = getChildAt(i);
-      toRemove.mParent = null;
-      toRemove.dispose();
-
-      decrease += toRemove.mIsLayoutOnly ? toRemove.mTotalNativeChildren : 1;
-    }
-    Assertions.assertNotNull(mChildren).clear();
-    markUpdated();
-
-    mTotalNativeChildren -= decrease;
-    updateNativeChildrenCountInParent(-decrease);
-  }
-
-  private void updateNativeChildrenCountInParent(int delta) {
-    if (mIsLayoutOnly) {
-      ReactShadowNode parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += delta;
-        if (!parent.mIsLayoutOnly) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
-  }
+  void removeAndDisposeAllChildren();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
-   * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()}
-   * or require layouting (marked with {@link #dirty()}).
+   * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
+   * require layouting (marked with {@link #dirty()}).
    */
-  public void onBeforeLayout() {
-  }
+  void onBeforeLayout();
 
-  public final void updateProperties(ReactStylesDiffMap props) {
-    ViewManagerPropertyUpdater.updateProps(this, props);
-    onAfterUpdateTransaction();
-  }
+  void updateProperties(ReactStylesDiffMap props);
 
-  public void onAfterUpdateTransaction() {
-    // no-op
-  }
+  void onAfterUpdateTransaction();
 
   /**
    * Called after layout step at the end of the UI batch from {@link UIManagerModule}. May be used
-   * to enqueue additional ui operations for the native view. Will only be called on nodes marked
-   * as updated either with {@link #dirty()} or {@link #markUpdated()}.
+   * to enqueue additional ui operations for the native view. Will only be called on nodes marked as
+   * updated either with {@link #dirty()} or {@link #markUpdated()}.
    *
    * @param uiViewOperationQueue interface for enqueueing UI operations
    */
-  public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
-  }
+  void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue);
 
-  /**
-   * @return true if layout (position or dimensions) changed, false otherwise.
-   */
+  /** @return true if layout (position or dimensions) changed, false otherwise. */
+
   /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
-    if (mNodeUpdated) {
-      onCollectExtraUpdates(uiViewOperationQueue);
-    }
+      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
 
-    if (hasNewLayout()) {
-      float layoutX = getLayoutX();
-      float layoutY = getLayoutY();
-      int newAbsoluteLeft = Math.round(absoluteX + layoutX);
-      int newAbsoluteTop = Math.round(absoluteY + layoutY);
-      int newAbsoluteRight = Math.round(absoluteX + layoutX + getLayoutWidth());
-      int newAbsoluteBottom = Math.round(absoluteY + layoutY + getLayoutHeight());
+  int getReactTag();
 
-      int newScreenX = Math.round(layoutX);
-      int newScreenY = Math.round(layoutY);
-      int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
-      int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
+  void setReactTag(int reactTag);
 
-      boolean layoutHasChanged =
-          newScreenX != mScreenX ||
-          newScreenY != mScreenY ||
-          newScreenWidth != mScreenWidth ||
-          newScreenHeight != mScreenHeight;
+  T getRootNode();
 
-      mScreenX = newScreenX;
-      mScreenY = newScreenY;
-      mScreenWidth = newScreenWidth;
-      mScreenHeight = newScreenHeight;
+  void setRootNode(T rootNode);
 
-      if (layoutHasChanged) {
-        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-      }
+  void setViewClassName(String viewClassName);
 
-      return layoutHasChanged;
-    } else {
-      return false;
-    }
-  }
-
-  public final int getReactTag() {
-    return mReactTag;
-  }
-
-  public void setReactTag(int reactTag) {
-    mReactTag = reactTag;
-  }
-
-  public final ReactShadowNode getRootNode() {
-    return Assertions.assertNotNull(mRootNode);
-  }
-
-  /* package */ final void setRootNode(ReactShadowNode rootNode) {
-    mRootNode = rootNode;
-  }
-
-  /* package */ final void setViewClassName(String viewClassName) {
-    mViewClassName = viewClassName;
-  }
-
-  public final @Nullable ReactShadowNode getParent() {
-    return mParent;
-  }
+  @Nullable
+  T getParent();
 
   /**
    * Get the {@link ThemedReactContext} associated with this {@link ReactShadowNode}. This will
    * never change during the lifetime of a {@link ReactShadowNode} instance, but different instances
    * can have different contexts; don't cache any calculations based on theme values globally.
    */
-  public final ThemedReactContext getThemedContext() {
-    return Assertions.assertNotNull(mThemedContext);
-  }
+  ThemedReactContext getThemedContext();
 
-  public void setThemedContext(ThemedReactContext themedContext) {
-    mThemedContext = themedContext;
-  }
+  void setThemedContext(ThemedReactContext themedContext);
 
-  public final boolean shouldNotifyOnLayout() {
-    return mShouldNotifyOnLayout;
-  }
+  boolean shouldNotifyOnLayout();
 
-  public void calculateLayout() {
-    mYogaNode.calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
-  }
+  void calculateLayout();
 
-  public final boolean hasNewLayout() {
-    return mYogaNode != null && mYogaNode.hasNewLayout();
-  }
+  boolean hasNewLayout();
 
-  public final void markLayoutSeen() {
-    if (mYogaNode != null) {
-      mYogaNode.markLayoutSeen();
-    }
-  }
+  void markLayoutSeen();
 
   /**
    * Adds a child that the native view hierarchy will have at this index in the native view
    * corresponding to this node.
    */
-  public final void addNativeChildAt(ReactShadowNode child, int nativeIndex) {
-    Assertions.assertCondition(!mIsLayoutOnly);
-    Assertions.assertCondition(!child.mIsLayoutOnly);
+  void addNativeChildAt(T child, int nativeIndex);
 
-    if (mNativeChildren == null) {
-      mNativeChildren = new ArrayList<>(4);
-    }
+  T removeNativeChildAt(int i);
 
-    mNativeChildren.add(nativeIndex, child);
-    child.mNativeParent = this;
-  }
+  void removeAllNativeChildren();
 
-  public final ReactShadowNode removeNativeChildAt(int i) {
-    Assertions.assertNotNull(mNativeChildren);
-    ReactShadowNode removed = mNativeChildren.remove(i);
-    removed.mNativeParent = null;
-    return removed;
-  }
+  int getNativeChildCount();
 
-  public final void removeAllNativeChildren() {
-    if (mNativeChildren != null) {
-      for (int i = mNativeChildren.size() - 1; i >= 0; i--) {
-        mNativeChildren.get(i).mNativeParent = null;
-      }
-      mNativeChildren.clear();
-    }
-  }
+  int indexOfNativeChild(T nativeChild);
 
-  public final int getNativeChildCount() {
-    return mNativeChildren == null ? 0 : mNativeChildren.size();
-  }
-
-  public final int indexOfNativeChild(ReactShadowNode nativeChild) {
-    Assertions.assertNotNull(mNativeChildren);
-    return mNativeChildren.indexOf(nativeChild);
-  }
-
-  public final @Nullable ReactShadowNode getNativeParent() {
-    return mNativeParent;
-  }
+  @Nullable
+  T getNativeParent();
 
   /**
-   * Sets whether this node only contributes to the layout of its children without doing any
-   * drawing or functionality itself.
+   * Sets whether this node only contributes to the layout of its children without doing any drawing
+   * or functionality itself.
    */
-  public final void setIsLayoutOnly(boolean isLayoutOnly) {
-    Assertions.assertCondition(getParent() == null, "Must remove from no opt parent first");
-    Assertions.assertCondition(mNativeParent == null, "Must remove from native parent first");
-    Assertions.assertCondition(getNativeChildCount() == 0, "Must remove all native children first");
-    mIsLayoutOnly = isLayoutOnly;
-  }
+  void setIsLayoutOnly(boolean isLayoutOnly);
 
-  public final boolean isLayoutOnly() {
-    return mIsLayoutOnly;
-  }
+  boolean isLayoutOnly();
 
-  public final int getTotalNativeChildren() {
-    return mTotalNativeChildren;
-  }
+  int getTotalNativeChildren();
 
-  public boolean isDescendantOf(ReactShadowNode ancestorNode) {
-    ReactShadowNode parentNode = getParent();
+  boolean isDescendantOf(T ancestorNode);
 
-    boolean isDescendant = false;
-
-    while (parentNode != null) {
-      if (parentNode == ancestorNode) {
-        isDescendant = true;
-        break;
-      } else {
-        parentNode = parentNode.getParent();
-      }
-    }
-
-    return isDescendant;
-  }
+  /*
+   * In some cases we need a way to specify some environmental data to shadow node
+   * to improve layout (or do something similar), so {@code localData} serves these needs.
+   * For example, any stateful embedded native views may benefit from this.
+   * Have in mind that this data is not supposed to interfere with the state of
+   * the shadow node.
+   * Please respect one-directional data flow of React.
+   * Use  {@link UIManagerModule#setViewLocalData} to set this property
+   * (to provide local/environmental data for a shadow node) from the main thread.
+   */
+  public void setLocalData(Object data);
 
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
@@ -477,360 +201,144 @@ public class ReactShadowNode {
    * in this subtree (which means that the given child will be a sibling of theirs in the final
    * native hierarchy since they'll get attached to the same native parent).
    *
-   * Basically, a view might have children that have been optimized away by
-   * {@link NativeViewHierarchyOptimizer}. Since those children will then add their native children
-   * to this view, we now have ranges of native children that correspond to single unoptimized
-   * children. The purpose of this method is to return the index within the native children that
-   * corresponds to the **start** of the native children that belong to the given child. Also, note
-   * that all of the children of a view might be optimized away, so this could return the same value
-   * for multiple different children.
+   * <p>Basically, a view might have children that have been optimized away by {@link
+   * NativeViewHierarchyOptimizer}. Since those children will then add their native children to this
+   * view, we now have ranges of native children that correspond to single unoptimized children. The
+   * purpose of this method is to return the index within the native children that corresponds to
+   * the **start** of the native children that belong to the given child. Also, note that all of the
+   * children of a view might be optimized away, so this could return the same value for multiple
+   * different children.
    *
-   * Example. Native children are represented by (N) where N is the no-opt child they came from. If
-   * no children are optimized away it'd look like this: (0) (1) (2) (3) ... (n)
+   * <p>Example. Native children are represented by (N) where N is the no-opt child they came from.
+   * If no children are optimized away it'd look like this: (0) (1) (2) (3) ... (n)
    *
-   * In case some children are optimized away, it might look like this:
-   * (0) (1) (1) (1) (3) (3) (4)
+   * <p>In case some children are optimized away, it might look like this: (0) (1) (1) (1) (3) (3)
+   * (4)
    *
-   * In that case:
-   * getNativeOffsetForChild(Node 0) => 0
-   * getNativeOffsetForChild(Node 1) => 1
-   * getNativeOffsetForChild(Node 2) => 4
-   * getNativeOffsetForChild(Node 3) => 4
-   * getNativeOffsetForChild(Node 4) => 6
+   * <p>In that case: getNativeOffsetForChild(Node 0) => 0 getNativeOffsetForChild(Node 1) => 1
+   * getNativeOffsetForChild(Node 2) => 4 getNativeOffsetForChild(Node 3) => 4
+   *
+   * <p>getNativeOffsetForChild(Node 4) => 6
    */
-  public final int getNativeOffsetForChild(ReactShadowNode child) {
-    int index = 0;
-    boolean found = false;
-    for (int i = 0; i < getChildCount(); i++) {
-      ReactShadowNode current = getChildAt(i);
-      if (child == current) {
-        found = true;
-        break;
-      }
-      index += (current.mIsLayoutOnly ? current.getTotalNativeChildren() : 1);
-    }
-    if (!found) {
-      throw new RuntimeException("Child " + child.mReactTag + " was not a child of " + mReactTag);
-    }
-    return index;
-  }
+  int getNativeOffsetForChild(T child);
 
-  public final float getLayoutX() {
-    return mYogaNode.getLayoutX();
-  }
+  float getLayoutX();
 
-  public final float getLayoutY() {
-    return mYogaNode.getLayoutY();
-  }
+  float getLayoutY();
 
-  public final float getLayoutWidth() {
-    return mYogaNode.getLayoutWidth();
-  }
+  float getLayoutWidth();
 
-  public final float getLayoutHeight() {
-    return mYogaNode.getLayoutHeight();
-  }
+  float getLayoutHeight();
 
-  /**
-   * @return the x position of the corresponding view on the screen, rounded to pixels
-   */
-  public int getScreenX() {
-    return mScreenX;
-  }
+  /** @return the x position of the corresponding view on the screen, rounded to pixels */
+  int getScreenX();
 
-  /**
-   * @return the y position of the corresponding view on the screen, rounded to pixels
-   */
-  public int getScreenY() {
-    return mScreenY;
-  }
+  /** @return the y position of the corresponding view on the screen, rounded to pixels */
+  int getScreenY();
 
-  /**
-   * @return width corrected for rounding to pixels.
-   */
-  public int getScreenWidth() {
-    return mScreenWidth;
-  }
+  /** @return width corrected for rounding to pixels. */
+  int getScreenWidth();
 
-  /**
-   * @return height corrected for rounding to pixels.
-   */
-  public int getScreenHeight() {
-    return mScreenHeight;
-  }
+  /** @return height corrected for rounding to pixels. */
+  int getScreenHeight();
 
-  public final YogaDirection getLayoutDirection() {
-    return mYogaNode.getLayoutDirection();
-  }
+  YogaDirection getLayoutDirection();
 
-  public void setLayoutDirection(YogaDirection direction) {
-    mYogaNode.setDirection(direction);
-  }
+  void setLayoutDirection(YogaDirection direction);
 
-  public final YogaValue getStyleWidth() {
-    return mYogaNode.getWidth();
-  }
+  YogaValue getStyleWidth();
 
-  public void setStyleWidth(float widthPx) {
-    mYogaNode.setWidth(widthPx);
-  }
+  void setStyleWidth(float widthPx);
 
-  public void setStyleWidthPercent(float percent) {
-    mYogaNode.setWidthPercent(percent);
-  }
+  void setStyleWidthPercent(float percent);
 
-  public void setStyleWidthAuto() {
-    mYogaNode.setWidthAuto();
-  }
+  void setStyleWidthAuto();
 
-  public void setStyleMinWidth(float widthPx) {
-    mYogaNode.setMinWidth(widthPx);
-  }
+  void setStyleMinWidth(float widthPx);
 
-  public void setStyleMinWidthPercent(float percent) {
-    mYogaNode.setMinWidthPercent(percent);
-  }
+  void setStyleMinWidthPercent(float percent);
 
-  public void setStyleMaxWidth(float widthPx) {
-    mYogaNode.setMaxWidth(widthPx);
-  }
+  void setStyleMaxWidth(float widthPx);
 
-  public void setStyleMaxWidthPercent(float percent) {
-    mYogaNode.setMaxWidthPercent(percent);
-  }
+  void setStyleMaxWidthPercent(float percent);
 
-  public final YogaValue getStyleHeight() {
-    return mYogaNode.getHeight();
-  }
+  YogaValue getStyleHeight();
 
-  public void setStyleHeight(float heightPx) {
-    mYogaNode.setHeight(heightPx);
-  }
+  void setStyleHeight(float heightPx);
 
-  public void setStyleHeightPercent(float percent) {
-    mYogaNode.setHeightPercent(percent);
-  }
+  void setStyleHeightPercent(float percent);
 
-  public void setStyleHeightAuto() {
-    mYogaNode.setHeightAuto();
-  }
+  void setStyleHeightAuto();
 
-  public void setStyleMinHeight(float widthPx) {
-    mYogaNode.setMinHeight(widthPx);
-  }
+  void setStyleMinHeight(float widthPx);
 
-  public void setStyleMinHeightPercent(float percent) {
-    mYogaNode.setMinHeightPercent(percent);
-  }
+  void setStyleMinHeightPercent(float percent);
 
-  public void setStyleMaxHeight(float widthPx) {
-    mYogaNode.setMaxHeight(widthPx);
-  }
+  void setStyleMaxHeight(float widthPx);
 
-  public void setStyleMaxHeightPercent(float percent) {
-    mYogaNode.setMaxHeightPercent(percent);
-  }
+  void setStyleMaxHeightPercent(float percent);
 
-  public void setFlex(float flex) {
-    mYogaNode.setFlex(flex);
-  }
+  void setFlex(float flex);
 
-  public void setFlexGrow(float flexGrow) {
-    mYogaNode.setFlexGrow(flexGrow);
-  }
+  void setFlexGrow(float flexGrow);
 
-  public void setFlexShrink(float flexShrink) {
-    mYogaNode.setFlexShrink(flexShrink);
-  }
+  void setFlexShrink(float flexShrink);
 
-  public void setFlexBasis(float flexBasis) {
-    mYogaNode.setFlexBasis(flexBasis);
-  }
+  void setFlexBasis(float flexBasis);
 
-  public void setFlexBasisAuto() {
-    mYogaNode.setFlexBasisAuto();
-  }
+  void setFlexBasisAuto();
 
-  public void setFlexBasisPercent(float percent) {
-    mYogaNode.setFlexBasisPercent(percent);
-  }
+  void setFlexBasisPercent(float percent);
 
-  public void setStyleAspectRatio(float aspectRatio) {
-    mYogaNode.setAspectRatio(aspectRatio);
-  }
+  void setStyleAspectRatio(float aspectRatio);
 
-  public void setFlexDirection(YogaFlexDirection flexDirection) {
-    mYogaNode.setFlexDirection(flexDirection);
-  }
+  void setFlexDirection(YogaFlexDirection flexDirection);
 
-  public void setFlexWrap(YogaWrap wrap) {
-    mYogaNode.setWrap(wrap);
-  }
+  void setFlexWrap(YogaWrap wrap);
 
-  public void setAlignSelf(YogaAlign alignSelf) {
-    mYogaNode.setAlignSelf(alignSelf);
-  }
+  void setAlignSelf(YogaAlign alignSelf);
 
-  public void setAlignItems(YogaAlign alignItems) {
-    mYogaNode.setAlignItems(alignItems);
-  }
+  void setAlignItems(YogaAlign alignItems);
 
-  public void setAlignContent(YogaAlign alignContent) {
-    mYogaNode.setAlignContent(alignContent);
-  }
+  void setAlignContent(YogaAlign alignContent);
 
-  public void setJustifyContent(YogaJustify justifyContent) {
-    mYogaNode.setJustifyContent(justifyContent);
-  }
+  void setJustifyContent(YogaJustify justifyContent);
 
-  public void setOverflow(YogaOverflow overflow) {
-    mYogaNode.setOverflow(overflow);
-  }
+  void setOverflow(YogaOverflow overflow);
 
-  public void setDisplay(YogaDisplay display) {
-    mYogaNode.setDisplay(display);
-  }
+  void setDisplay(YogaDisplay display);
 
-  public void setMargin(int spacingType, float margin) {
-    mYogaNode.setMargin(YogaEdge.fromInt(spacingType), margin);
-  }
+  void setMargin(int spacingType, float margin);
 
-  public void setMarginPercent(int spacingType, float percent) {
-    mYogaNode.setMarginPercent(YogaEdge.fromInt(spacingType), percent);
-  }
+  void setMarginPercent(int spacingType, float percent);
 
-  public void setMarginAuto(int spacingType) {
-    mYogaNode.setMarginAuto(YogaEdge.fromInt(spacingType));
-  }
+  void setMarginAuto(int spacingType);
 
-  public final float getPadding(int spacingType) {
-    return mYogaNode.getLayoutPadding(YogaEdge.fromInt(spacingType));
-  }
+  float getPadding(int spacingType);
 
-  public final YogaValue getStylePadding(int spacingType) {
-    return mYogaNode.getPadding(YogaEdge.fromInt(spacingType));
-  }
+  YogaValue getStylePadding(int spacingType);
 
-  public void setDefaultPadding(int spacingType, float padding) {
-    mDefaultPadding.set(spacingType, padding);
-    updatePadding();
-  }
+  void setDefaultPadding(int spacingType, float padding);
 
-  public void setPadding(int spacingType, float padding) {
-    mPadding[spacingType] = padding;
-    mPaddingIsPercent[spacingType] = false;
-    updatePadding();
-  }
+  void setPadding(int spacingType, float padding);
 
-  public void setPaddingPercent(int spacingType, float percent) {
-    mPadding[spacingType] = percent;
-    mPaddingIsPercent[spacingType] = !YogaConstants.isUndefined(percent);
-    updatePadding();
-  }
+  void setPaddingPercent(int spacingType, float percent);
 
-  private void updatePadding() {
-    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
-      if (spacingType == Spacing.LEFT ||
-          spacingType == Spacing.RIGHT ||
-          spacingType == Spacing.START ||
-          spacingType == Spacing.END) {
-        if (YogaConstants.isUndefined(mPadding[spacingType]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.HORIZONTAL]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
-          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
-          continue;
-        }
-      } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
-        if (YogaConstants.isUndefined(mPadding[spacingType]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.VERTICAL]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
-          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
-          continue;
-        }
-      } else {
-        if (YogaConstants.isUndefined(mPadding[spacingType])) {
-          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
-          continue;
-        }
-      }
+  void setBorder(int spacingType, float borderWidth);
 
-      if (mPaddingIsPercent[spacingType]) {
-        mYogaNode.setPaddingPercent(YogaEdge.fromInt(spacingType), mPadding[spacingType]);
-      } else {
-        mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mPadding[spacingType]);
-      }
-    }
-  }
+  void setPosition(int spacingType, float position);
 
-  public void setBorder(int spacingType, float borderWidth) {
-    mYogaNode.setBorder(YogaEdge.fromInt(spacingType), borderWidth);
-  }
+  void setPositionPercent(int spacingType, float percent);
 
-  public void setPosition(int spacingType, float position) {
-    mYogaNode.setPosition(YogaEdge.fromInt(spacingType), position);
-  }
+  void setPositionType(YogaPositionType positionType);
 
-  public void setPositionPercent(int spacingType, float percent) {
-    mYogaNode.setPositionPercent(YogaEdge.fromInt(spacingType), percent);
-  }
+  void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout);
 
-  public void setPositionType(YogaPositionType positionType) {
-    mYogaNode.setPositionType(positionType);
-  }
+  void setBaselineFunction(YogaBaselineFunction baselineFunction);
 
-  public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
-    mShouldNotifyOnLayout = shouldNotifyOnLayout;
-  }
+  void setMeasureFunction(YogaMeasureFunction measureFunction);
 
-  public void setMeasureFunction(YogaMeasureFunction measureFunction) {
-    if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) &&
-        getChildCount() != 0) {
-      throw new RuntimeException(
-        "Since a node with a measure function does not add any native yoga children, it's " +
-          "not safe to transition to/from having a measure function unless a node has no children");
-    }
-    mYogaNode.setMeasureFunction(measureFunction);
-  }
+  boolean isMeasureDefined();
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    toStringWithIndentation(sb, 0);
-    return sb.toString();
-  }
-
-  private void toStringWithIndentation(StringBuilder result, int level) {
-    // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
-    for (int i = 0; i < level; ++i) {
-      result.append("__");
-    }
-
-    result
-      .append(getClass().getSimpleName())
-      .append(" ");
-    if (mYogaNode != null) {
-      result
-        .append(getLayoutWidth())
-        .append(",")
-        .append(getLayoutHeight());
-    } else {
-      result.append("(virtual node)");
-    }
-    result.append("\n");
-
-    if (getChildCount() == 0) {
-      return;
-    }
-
-    for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).toStringWithIndentation(result, level + 1);
-    }
-  }
-
-  public void dispose() {
-    if (mYogaNode != null) {
-      mYogaNode.reset();
-      YogaNodePool.get().release(mYogaNode);
-    }
-  }
+  void dispose();
 }

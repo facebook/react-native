@@ -9,7 +9,6 @@
 
 package com.facebook.react.bridge.queue;
 
-import javax.annotation.Nullable;
 
 /**
  * Specifies which {@link MessageQueueThread}s must be used to run the various contexts of
@@ -22,8 +21,6 @@ import javax.annotation.Nullable;
  */
 public interface ReactQueueConfiguration {
   MessageQueueThread getUIQueueThread();
-  @Nullable
-  MessageQueueThread getUIBackgroundQueueThread();
   MessageQueueThread getNativeModulesQueueThread();
   MessageQueueThread getJSQueueThread();
   void destroy();

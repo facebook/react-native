@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 prebuilt_jar(
     name = "android-support-annotations",
     binary_jar = ":support-annotations-binary-aar",

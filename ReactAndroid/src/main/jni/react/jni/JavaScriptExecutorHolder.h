@@ -2,9 +2,8 @@
 
 #include <memory>
 
+#include <cxxreact/JSExecutor.h>
 #include <fb/fbjni.h>
-
-#include <cxxreact/Executor.h>
 
 namespace facebook {
 namespace react {

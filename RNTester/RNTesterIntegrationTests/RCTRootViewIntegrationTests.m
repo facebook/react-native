@@ -117,7 +117,7 @@ static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeF
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"IntegrationTests/RCTRootViewIntegrationTestApp", nil);
+  _runner = RCTInitRunnerForApp(@"IntegrationTests/RCTRootViewIntegrationTestApp", nil, nil);
 }
 
 #pragma mark Logic Tests

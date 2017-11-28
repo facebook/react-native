@@ -77,60 +77,15 @@ export type ButtonsArray = Array<{
 }>;
 
 /**
- * @description
- * `AlertIOS` provides functionality to create an iOS alert dialog with a
- * message or create a prompt for user input.
+ * Use `AlertIOS` to display an alert dialog with a message or to create a prompt for user input on iOS. If you don't need to prompt for user input, we recommend using `Alert.alert() for cross-platform support.
  *
- * Creating an iOS alert:
- *
- * ```
- * AlertIOS.alert(
- *  'Sync Complete',
- *  'All your data are belong to us.'
- * );
- * ```
- *
- * Creating an iOS prompt:
- *
- * ```
- * AlertIOS.prompt(
- *   'Enter a value',
- *   null,
- *   text => console.log("You entered "+text)
- * );
- * ```
- *
- * We recommend using the [`Alert.alert`](docs/alert.html) method for
- * cross-platform support if you don't need to create iOS-only prompts.
- *
+ * See http://facebook.github.io/react-native/docs/alertios.html
  */
 class AlertIOS {
   /**
    * Create and display a popup alert.
-   * @static
-   * @method alert
-   * @param title The dialog's title.
-   * @param message An optional message that appears below
-   *     the dialog's title.
-   * @param callbackOrButtons This optional argument should
-   *    be either a single-argument function or an array of buttons. If passed
-   *    a function, it will be called when the user taps 'OK'.
    *
-   *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys. `style`
-   *    should be one of 'default', 'cancel' or 'destructive'.
-   * @param type Deprecated, do not use.
-   *
-   * @example <caption>Example with custom buttons</caption>
-   *
-   * AlertIOS.alert(
-   *  'Update available',
-   *  'Keep your app up to date to enjoy the latest features',
-   *  [
-   *    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-   *    {text: 'Install', onPress: () => console.log('Install Pressed')},
-   *  ],
-   * );
+   * See http://facebook.github.io/react-native/docs/alertios.html#alert
    */
   static alert(
     title: ?string,
@@ -148,48 +103,8 @@ class AlertIOS {
 
   /**
    * Create and display a prompt to enter some text.
-   * @static
-   * @method prompt
-   * @param title The dialog's title.
-   * @param message An optional message that appears above the text
-   *    input.
-   * @param callbackOrButtons This optional argument should
-   *    be either a single-argument function or an array of buttons. If passed
-   *    a function, it will be called with the prompt's value when the user
-   *    taps 'OK'.
-   *
-   *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys (see
-   *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
-   * @param type This configures the text input. One of 'plain-text',
-   *    'secure-text' or 'login-password'.
-   * @param defaultValue The default text in text input.
-   * @param keyboardType The keyboard type of first text field(if exists).
-   *    One of 'default', 'email-address', 'numeric', 'phone-pad',
-   *    'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',
-   *    'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.
-   *
-   * @example <caption>Example with custom buttons</caption>
-   *
-   * AlertIOS.prompt(
-   *   'Enter password',
-   *   'Enter your password to claim your $1.5B in lottery winnings',
-   *   [
-   *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-   *     {text: 'OK', onPress: password => console.log('OK Pressed, password: ' + password)},
-   *   ],
-   *   'secure-text'
-   * );
-   *
-   * @example <caption>Example with the default button and a custom callback</caption>
-   *
-   * AlertIOS.prompt(
-   *   'Update username',
-   *   null,
-   *   text => console.log("Your username is "+text),
-   *   null,
-   *   'default'
-   * );
+   * 
+   * See http://facebook.github.io/react-native/docs/alertios.html#prompt
    */
   static prompt(
     title: ?string,
@@ -209,7 +124,7 @@ class AlertIOS {
       var callback = type;
       var defaultValue = message;
       RCTAlertManager.alertWithArgs({
-        title: title || undefined,
+        title: title || '',
         type: 'plain-text',
         defaultValue,
       }, (id, value) => {
@@ -242,7 +157,7 @@ class AlertIOS {
     }
 
     RCTAlertManager.alertWithArgs({
-      title: title || undefined,
+      title: title || '',
       message: message || undefined,
       buttons,
       type: type || undefined,

@@ -60,15 +60,15 @@ typedef int (*YGLogger)(const YGConfigRef config,
                         YGLogLevel level,
                         const char *format,
                         va_list args);
-
-typedef void *(*YGMalloc)(size_t size);
-typedef void *(*YGCalloc)(size_t count, size_t size);
-typedef void *(*YGRealloc)(void *ptr, size_t size);
-typedef void (*YGFree)(void *ptr);
+typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
+                                 YGNodeRef newNode,
+                                 YGNodeRef parent,
+                                 int childIndex);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
+WIN_EXPORT YGNodeRef YGNodeClone(const YGNodeRef node);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
@@ -78,6 +78,7 @@ WIN_EXPORT void YGNodeInsertChild(const YGNodeRef node,
                                   const YGNodeRef child,
                                   const uint32_t index);
 WIN_EXPORT void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child);
+WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(const YGNodeRef node);
@@ -112,7 +113,7 @@ WIN_EXPORT bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                               const float lastComputedHeight,
                                               const float marginRow,
                                               const float marginColumn,
-                                              YGConfigRef config);
+                                              const YGConfigRef config);
 
 WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode);
 
@@ -215,6 +216,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Bottom);
 YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
+YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if
@@ -263,13 +265,13 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
 WIN_EXPORT void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled);
 WIN_EXPORT bool YGConfigGetUseWebDefaults(const YGConfigRef config);
 
+WIN_EXPORT void YGConfigSetNodeClonedFunc(const YGConfigRef config,
+                                          const YGNodeClonedFunc callback);
+
 // Export only for C#
 WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 
 WIN_EXPORT void YGConfigSetContext(const YGConfigRef config, void *context);
 WIN_EXPORT void *YGConfigGetContext(const YGConfigRef config);
-
-WIN_EXPORT void
-YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
 
 YG_EXTERN_C_END

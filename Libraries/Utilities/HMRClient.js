@@ -33,10 +33,12 @@ const HMRClient = {
       ? `${host}:${port}`
       : host;
 
+    bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
+
     // Build the websocket url
     const wsUrl = `ws://${wsHostPort}/hot?` +
       `platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+      `bundleEntry=${bundleEntry}`;
 
     const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
