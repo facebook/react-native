@@ -28,6 +28,12 @@ import type {
 } from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
+export type SeparatorsObj = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
+
 type RequiredProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
@@ -58,11 +64,7 @@ type RequiredProps<ItemT> = {
   renderItem: (info: {
     item: ItemT,
     index: number,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-    },
+    separators: SeparatorsObj,
   }) => ?React.Element<any>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
