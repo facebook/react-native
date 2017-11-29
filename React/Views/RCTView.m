@@ -155,6 +155,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+- (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  NSMutableArray *actions = [NSMutableArray array];
+  for (NSString * action in _accessibilityActions)
+  {
+    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action target:self selector:@selector(didActivateCustomAction:)]];
+  }
+
+  return actions.count > 0 ? [actions copy] : nil; // return nil if there are no actions
+}
+
+- (BOOL)didActivateCustomAction:(UIAccessibilityCustomAction *)action
+{
+  if (_onAccessibilityAction) {
+      _onAccessibilityAction(@{@"action": action.name,
+                               @"target": self.reactTag});
+    return YES;
+  } else {
+    return NO;
+  }
+}
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
   _pointerEvents = pointerEvents;
