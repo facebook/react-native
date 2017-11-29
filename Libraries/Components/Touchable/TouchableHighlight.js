@@ -14,6 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
+const Platform = require('Platform');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -264,9 +265,10 @@ var TouchableHighlight = createReactClass({
 
   touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
-    this._showUnderlay();
-    this._hideTimeout = this.setTimeout(this._hideUnderlay,
-      this.props.delayPressOut || 100);
+    if (!Platform.isTVOS) {
+      this._showUnderlay();
+      this._hideTimeout = this.setTimeout(this._hideUnderlay, this.props.delayPressOut || 100);
+		}
     this.props.onPress && this.props.onPress(e);
   },
 
