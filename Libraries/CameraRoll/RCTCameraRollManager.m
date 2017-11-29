@@ -247,10 +247,10 @@ RCT_EXPORT_METHOD(deletePhotos:(NSArray<NSString *>*)assets
     }
   completionHandler:^(BOOL success, NSError *error) {
       if (success == YES) {
-	resolve(@(success));
+     	    resolve(@(success));
       }
       else {
-	reject(@"Couldn't delete", @"Couldn't delete assets", error);
+	        reject(@"Couldn't delete", @"Couldn't delete assets", error);
       }
     }
     ];
