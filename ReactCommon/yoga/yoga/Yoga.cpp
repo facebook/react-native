@@ -98,11 +98,15 @@ static int YGAndroidLog(const YGConfigRef config,
   return result;
 }
 #else
+#define YG_UNUSED(x) (void)(x);
+
 static int YGDefaultLog(const YGConfigRef config,
                         const YGNodeRef node,
                         YGLogLevel level,
                         const char *format,
                         va_list args) {
+  YG_UNUSED(config);
+  YG_UNUSED(node);
   switch (level) {
     case YGLogLevelError:
     case YGLogLevelFatal:
@@ -115,6 +119,8 @@ static int YGDefaultLog(const YGConfigRef config,
       return vprintf(format, args);
   }
 }
+
+#undef YG_UNUSED
 #endif
 
 bool YGFloatIsUndefined(const float value) {
