@@ -16,7 +16,7 @@ require('../../setupBabel')();
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const ReactPackager = require('metro');
+const Metro = require('metro');
 
 const HmrServer = require('metro/src/HmrServer');
 
@@ -31,14 +31,14 @@ const attachWebsocketServer = require('./util/attachWebsocketServer');
  * run Flow. */
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const defaultAssetExts = require('metro/src/defaults').assetExts;
-const defaultSourceExts = require('metro/src/defaults').sourceExts;
-const defaultPlatforms = require('metro/src/defaults').platforms;
+const defaultAssetExts = Metro.defaults.assetExts;
+const defaultSourceExts = Metro.defaults.sourceExts;
+const defaultPlatforms = Metro.defaults.platforms;
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const defaultProvidesModuleNodeModules = require('metro/src/defaults')
-  .providesModuleNodeModules;
+const defaultProvidesModuleNodeModules =
+  Metro.defaults.providesModuleNodeModules;
 const fs = require('fs');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
@@ -178,7 +178,7 @@ function getPackagerServer(args, config, reporter) {
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
-  return ReactPackager.createServer({
+  return Metro.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
