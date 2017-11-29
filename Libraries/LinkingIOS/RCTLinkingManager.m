@@ -89,12 +89,13 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  BOOL opened = [RCTSharedApplication() openURL:URL];
-  if (opened) {
-    resolve(nil);
-  } else {
-    reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-  }
+  [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
+    if (success) {
+      resolve(nil);
+    } else {
+      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
