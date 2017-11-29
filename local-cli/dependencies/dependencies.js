@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const ReactPackager = require('metro-bundler');
+const ReactPackager = require('metro');
 
 const denodeify = require('denodeify');
 const fs = require('fs');

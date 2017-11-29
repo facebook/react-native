@@ -11,7 +11,7 @@
 
 /**
   * This file is a copy of the reference `DeltaPatcher`, located in
-  * metro-bundler. The reason to not reuse that file is that in this context
+  * metro. The reason to not reuse that file is that in this context
   * we cannot have flow annotations or CJS syntax (since this file is directly)
   * injected into a static HTML page.
   *
