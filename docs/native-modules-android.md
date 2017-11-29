@@ -171,6 +171,8 @@ ToastExample.show('Awesome', ToastExample.SHORT);
 Native modules also support a special kind of argument - a callback. In most cases it is used to provide the function call result to JavaScript.
 
 ```java
+import com.facebook.react.bridge.Callback;
+
 public class UIManagerModule extends ReactContextBaseJavaModule {
 
 ...
