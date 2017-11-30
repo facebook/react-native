@@ -4,6 +4,7 @@ const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeImportPatch = require('./patches/makeImportPatch');
 const makePackagePatch = require('./patches/makePackagePatch');
+const makeNamePatch = require('./patches/makeNamePatch');
 
 module.exports = function registerNativeAndroidModule(
   name,
@@ -11,6 +12,8 @@ module.exports = function registerNativeAndroidModule(
   params,
   projectConfig
 ) {
+  name = makeNamePatch(name);
+
   const buildPatch = makeBuildPatch(name);
 
   applyPatch(

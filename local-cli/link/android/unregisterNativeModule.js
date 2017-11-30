@@ -7,12 +7,15 @@ const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
 const makeImportPatch = require('./patches/makeImportPatch');
 const makePackagePatch = require('./patches/makePackagePatch');
+const makeNamePatch = require('./patches/makeNamePatch');
 
 module.exports = function unregisterNativeAndroidModule(
   name,
   androidConfig,
   projectConfig
 ) {
+  name = makeNamePatch(name);
+
   const buildPatch = makeBuildPatch(name);
   const strings = fs.readFileSync(projectConfig.stringsPath, 'utf8');
   var params = {};
