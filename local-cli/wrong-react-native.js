@@ -9,8 +9,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var script = process.argv[1];
-var installedGlobally = script.indexOf('node_modules/.bin/react-native') === -1;
+const fs = require('fs');
+const path = require('path');
+
+const isWindows = process.platform === 'win32';
+
+var installedGlobally;
+if (isWindows) {
+  installedGlobally = !(fs.existsSync(path.join(__dirname, '../../../package.json')));
+} else {
+  var script = process.argv[1];
+  installedGlobally = script.indexOf('node_modules/.bin/react-native') === -1;
+}
+
 
 if (installedGlobally) {
   const chalk = require('chalk');
