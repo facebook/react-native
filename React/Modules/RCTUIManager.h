@@ -86,7 +86,7 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * Use `UIViewNoIntrinsicMetric` to ignore a dimension.
  * The `size` must NOT include padding and border.
  */
-- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(UIView *)view;
 
 /**
  * Update the background color of a view. The source of truth for
