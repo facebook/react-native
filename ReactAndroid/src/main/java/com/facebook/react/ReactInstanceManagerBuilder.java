@@ -231,7 +231,7 @@ public class ReactInstanceManagerBuilder {
    * <li> {@link #setApplication}
    * <li> {@link #setCurrentActivity} if the activity has already resumed
    * <li> {@link #setDefaultHardwareBackBtnHandler} if the activity has already resumed
-   * <li> {@link #setJSBundleFile} or {@link #setJSMainModuleName}
+   * <li> {@link #setJSBundleFile} or {@link #setJSMainModulePath}
    * </ul>
    */
   public ReactInstanceManager build() {
