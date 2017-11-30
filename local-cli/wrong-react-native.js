@@ -16,8 +16,10 @@ const isWindows = process.platform === 'win32';
 
 var installedGlobally;
 if (isWindows) {
+  // On Windows, assume we are installed globally if we can't find a package.json above node_modules.
   installedGlobally = !(fs.existsSync(path.join(__dirname, '../../../package.json')));
 } else {
+  // On non-windows, assume we are installed globally if we are called from outside of the node_mobules/.bin/react-native executable.
   var script = process.argv[1];
   installedGlobally = script.indexOf('node_modules/.bin/react-native') === -1;
 }
