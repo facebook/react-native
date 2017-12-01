@@ -1,0 +1,230 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>PushNotificationIOS · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="PushNotificationIOS · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="Handle push notifications for your app, including permission handling and"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.27</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.27/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>APIs</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/pixelratio.html">PixelRatio</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.27/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.26/pushnotificationios.md" target="_blank">Edit</a><h1>PushNotificationIOS</h1></header><article><div><span><p>Handle push notifications for your app, including permission handling and
+icon badge number.</p>
+<p>To get up and running, <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6">configure your notifications with Apple</a>
+and your server-side system. To get an idea, <a href="https://parse.com/tutorials/ios-push-notifications">this is the Parse guide</a>.</p>
+<p><a href="/react-native/docs/0.27/linking-libraries-ios.html#manual-linking">Manually link</a> the PushNotificationIOS library</p>
+<ul>
+<li>Be sure to add the following to your <code>Header Search Paths</code>:
+<code>$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS</code></li>
+<li>Set the search to <code>recursive</code></li>
+</ul>
+<p>Finally, to enable support for <code>notification</code> and <code>register</code> events you need to augment your AppDelegate.</p>
+<p>At the top of your <code>AppDelegate.m</code>:</p>
+<p><code>#import &quot;RCTPushNotificationManager.h&quot;</code></p>
+<p>And then in your AppDelegate implementation add the following:</p>
+<pre><code class="hljs"> <span class="hljs-comment">// Required to register for notifications</span>
+ - (<span class="hljs-keyword">void</span>)<span class="hljs-string">application:</span>(UIApplication *)application <span class="hljs-string">didRegisterUserNotificationSettings:</span>(UIUserNotificationSettings *)notificationSettings
+ {
+  [RCTPushNotificationManager <span class="hljs-string">didRegisterUserNotificationSettings:</span>notificationSettings];
+ }
+ <span class="hljs-comment">// Required for the register event.</span>
+ - (<span class="hljs-keyword">void</span>)<span class="hljs-string">application:</span>(UIApplication *)application <span class="hljs-string">didRegisterForRemoteNotificationsWithDeviceToken:</span>(NSData *)deviceToken
+ {
+  [RCTPushNotificationManager <span class="hljs-string">didRegisterForRemoteNotificationsWithDeviceToken:</span>deviceToken];
+ }
+ <span class="hljs-comment">// Required for the notification event.</span>
+ - (<span class="hljs-keyword">void</span>)<span class="hljs-string">application:</span>(UIApplication *)application <span class="hljs-string">didReceiveRemoteNotification:</span>(NSDictionary *)notification
+ {
+  [RCTPushNotificationManager <span class="hljs-string">didReceiveRemoteNotification:</span>notification];
+ }
+ <span class="hljs-comment">// Required for the localNotification event.</span>
+ - (<span class="hljs-keyword">void</span>)<span class="hljs-string">application:</span>(UIApplication *)application <span class="hljs-string">didReceiveLocalNotification:</span>(UILocalNotification *)notification
+ {
+  [RCTPushNotificationManager <span class="hljs-string">didReceiveLocalNotification:</span>notification];
+ }
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
+<ul>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#presentlocalnotification"><code>presentLocalNotification</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#schedulelocalnotification"><code>scheduleLocalNotification</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#cancelalllocalnotifications"><code>cancelAllLocalNotifications</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#setapplicationiconbadgenumber"><code>setApplicationIconBadgeNumber</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getapplicationiconbadgenumber"><code>getApplicationIconBadgeNumber</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#cancellocalnotifications"><code>cancelLocalNotifications</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#addeventlistener"><code>addEventListener</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#requestpermissions"><code>requestPermissions</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#abandonpermissions"><code>abandonPermissions</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#checkpermissions"><code>checkPermissions</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#removeeventlistener"><code>removeEventListener</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#popinitialnotification"><code>popInitialNotification</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#constructor"><code>constructor</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getmessage"><code>getMessage</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getsound"><code>getSound</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getalert"><code>getAlert</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getbadgecount"><code>getBadgeCount</code></a></li>
+<li><a href="/react-native/docs/0.27/pushnotificationios.html#getdata"><code>getData</code></a></li>
+</ul>
+<hr>
+<h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" name="presentlocalnotification"></a><a href="#presentlocalnotification" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>presentLocalNotification()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> presentLocalNotification(details)
+</code></pre>
+<p>Schedules the localNotification for immediate presentation.</p>
+<p>details is an object containing:</p>
+<ul>
+<li><code>alertBody</code> : The message displayed in the notification alert.</li>
+<li><code>alertAction</code> : The &quot;action&quot; displayed beneath an actionable notification. Defaults to &quot;view&quot;;</li>
+<li><code>soundName</code> : The sound played when the notification is fired (optional).</li>
+<li><code>category</code>  : The category of this notification, required for actionable notifications (optional).</li>
+<li><code>userInfo</code>  : An optional object containing additional notification data.</li>
+<li><code>applicationIconBadgeNumber</code> (optional) : The number to display as the app’s icon badge. The default value of this property is 0, which means that no badge is displayed.</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="schedulelocalnotification"></a><a href="#schedulelocalnotification" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scheduleLocalNotification()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> scheduleLocalNotification(details)
+</code></pre>
+<p>Schedules the localNotification for future presentation.</p>
+<p>details is an object containing:</p>
+<ul>
+<li><code>fireDate</code> : The date and time when the system should deliver the notification.</li>
+<li><code>alertBody</code> : The message displayed in the notification alert.</li>
+<li><code>alertAction</code> : The &quot;action&quot; displayed beneath an actionable notification. Defaults to &quot;view&quot;;</li>
+<li><code>soundName</code> : The sound played when the notification is fired (optional).</li>
+<li><code>category</code>  : The category of this notification, required for actionable notifications (optional).</li>
+<li><code>userInfo</code> : An optional object containing additional notification data.</li>
+<li><code>applicationIconBadgeNumber</code> (optional) : The number to display as the app’s icon badge. Setting the number to 0 removes the icon badge.</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="cancelalllocalnotifications"></a><a href="#cancelalllocalnotifications" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cancelAllLocalNotifications()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> cancelAllLocalNotifications()
+</code></pre>
+<p>Cancels all scheduled localNotifications</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="setapplicationiconbadgenumber"></a><a href="#setapplicationiconbadgenumber" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setApplicationIconBadgeNumber()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> setApplicationIconBadgeNumber(number)
+</code></pre>
+<p>Sets the badge number for the app icon on the home screen</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getapplicationiconbadgenumber"></a><a href="#getapplicationiconbadgenumber" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getApplicationIconBadgeNumber()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getApplicationIconBadgeNumber(callback)
+</code></pre>
+<p>Gets the current badge number for the app icon on the home screen</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="cancellocalnotifications"></a><a href="#cancellocalnotifications" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cancelLocalNotifications()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> cancelLocalNotifications(userInfo)
+</code></pre>
+<p>Cancel local notifications.</p>
+<p>Optionally restricts the set of canceled notifications to those
+notifications whose <code>userInfo</code> fields match the corresponding fields
+in the <code>userInfo</code> argument.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="addeventlistener"></a><a href="#addeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addEventListener()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> addEventListener(type, handler)
+</code></pre>
+<p>Attaches a listener to remote or local notification events while the app is running
+in the foreground or the background.</p>
+<p>Valid events are:</p>
+<ul>
+<li><code>notification</code> : Fired when a remote notification is received. The
+handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
+<li><code>localNotification</code> : Fired when a local notification is received. The
+handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
+<li><code>register</code>: Fired when the user registers for remote notifications. The
+handler will be invoked with a hex string representing the deviceToken.</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="requestpermissions"></a><a href="#requestpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestPermissions()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> requestPermissions(permissions?)
+</code></pre>
+<p>Requests notification permissions from iOS, prompting the user's
+dialog box. By default, it will request all notification permissions, but
+a subset of these can be requested by passing a map of requested
+permissions.
+The following permissions are supported:</p>
+<ul>
+<li><code>alert</code></li>
+<li><code>badge</code></li>
+<li><code>sound</code></li>
+</ul>
+<p>If a map is provided to the method, only the permissions with truthy values
+will be requested.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="abandonpermissions"></a><a href="#abandonpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>abandonPermissions()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> abandonPermissions()
+</code></pre>
+<p>Unregister for all remote notifications received via Apple Push Notification service.</p>
+<p>You should call this method in rare circumstances only, such as when a new version of
+the app removes support for all types of remote notifications. Users can temporarily
+prevent apps from receiving remote notifications through the Notifications section of
+the Settings app. Apps unregistered through this method can always re-register.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="checkpermissions"></a><a href="#checkpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>checkPermissions()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> checkPermissions(callback)
+</code></pre>
+<p>See what push permissions are currently enabled. <code>callback</code> will be
+invoked with a <code>permissions</code> object:</p>
+<ul>
+<li><code>alert</code> :boolean</li>
+<li><code>badge</code> :boolean</li>
+<li><code>sound</code> :boolean</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> removeEventListener(type, handler)
+</code></pre>
+<p>Removes the event listener. Do this in <code>componentWillUnmount</code> to prevent
+memory leaks</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="popinitialnotification"></a><a href="#popinitialnotification" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>popInitialNotification()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> popInitialNotification()
+</code></pre>
+<p>An initial notification will be available if the app was cold-launched
+from a notification.</p>
+<p>The first caller of <code>popInitialNotification</code> will get the initial
+notification object, or <code>null</code>. Subsequent invocations will return null.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="constructor"></a><a href="#constructor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>constructor()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>(nativeNotif)
+</code></pre>
+<p>You will never need to instantiate <code>PushNotificationIOS</code> yourself.
+Listening to the <code>notification</code> event and invoking
+<code>popInitialNotification</code> is sufficient</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getmessage"></a><a href="#getmessage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getMessage()</code></h3>
+<pre><code class="hljs css javascript">getMessage()
+</code></pre>
+<p>An alias for <code>getAlert</code> to get the notification's main message string</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getsound"></a><a href="#getsound" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSound()</code></h3>
+<pre><code class="hljs css javascript">getSound()
+</code></pre>
+<p>Gets the sound string from the <code>aps</code> object</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getalert"></a><a href="#getalert" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAlert()</code></h3>
+<pre><code class="hljs css javascript">getAlert()
+</code></pre>
+<p>Gets the notification's main message from the <code>aps</code> object</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getbadgecount"></a><a href="#getbadgecount" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getBadgeCount()</code></h3>
+<pre><code class="hljs css javascript">getBadgeCount()
+</code></pre>
+<p>Gets the badge count number from the <code>aps</code> object</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getdata"></a><a href="#getdata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getData()</code></h3>
+<pre><code class="hljs css javascript">getData()
+</code></pre>
+<p>Gets the data object on the notif</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="pixelratio.html">← PixelRatio</a><a class="docs-next button" href="settings.html">Settings →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.27"],"hitsPerPage":5}
+              });
+            </script></body></html>

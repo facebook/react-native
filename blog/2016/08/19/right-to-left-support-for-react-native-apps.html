@@ -1,102 +1,268 @@
-<!DOCTYPE html><html><head><title>Right-to-Left Layout Support For React Native Apps - React Native</title><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><meta property="fb:app_id" content="1677033832619985"><meta property="fb:admins" content="121800083"><meta property="og:site_name" content="React Native"><meta property="og:title" content="Right-to-Left Layout Support For React Native Apps - React Native"><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html"><meta property="og:image" content="https://facebook.github.io/react-native/img/opengraph.png"><meta property="og:description" content="After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary."><meta name="twitter:site" content="@reactnative"><meta name="twitter:card" content="summary_large_image"><meta property="og:type" content="article"><meta property="article:author" content="Mengjue (Mandy) Wang"><base href="/react-native/releases/next/"><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"><link rel="shortcut icon" href="img/favicon.png?2"><link rel="stylesheet" href="css/react-native.css"><link rel="stylesheet" href="css/prism.css"><link rel="alternate" type="application/rss+xml" title="React Native Blog" href="https://facebook.github.io/react-native/blog/feed.xml"><link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css"><script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script><script type="text/javascript">try{Typekit.load();}catch(e){}</script></head><body><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));</script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><div class="container"><div class="nav-main"><div class="wrap"><a class="nav-home" href=""><img src="img/header_logo.png">React Native</a><a class="nav-version" href="/react-native/versions.html">next</a><div class="nav-site-wrapper"><ul class="nav-site nav-site-internal"><li><a href="docs/getting-started.html" class="" data-target=".nav-docs">Docs</a></li><li><a href="/react-native/support.html" class="">Community</a></li><li><a href="/react-native/blog/" class="active">Blog</a></li></ul><div class="algolia-search-wrapper"><input id="algolia-doc-search" tabindex="0" type="text" placeholder="Search docs..."></div><ul class="nav-site nav-site-external"><li><a href="https://github.com/facebook/react-native" class="">GitHub</a></li><li><a href="http://facebook.github.io/react" class="">React</a></li></ul></div></div></div><section class="content wrap documentationContent"><article class="entry-body"><header class="entry-header"><h4 class="entry-authordate"><a href="https://github.com/MengjueW" target="_blank" class="author">Mengjue (Mandy) Wang</a> — <time class="date">August 19, 2016</time></h4><h1 class="entry-title">Right-to-Left Layout Support For React Native Apps</h1></header><div class="entry-content"><div><p>After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.</p><p>We&#x27;re glad to announce that React Native has been improved to support RTL layouts. This is now available in the <a href="https://github.com/facebook/react-native" target="_blank">react-native</a> master branch today, and will be available in the next RC: <a href="https://github.com/facebook/react-native/releases" target="_blank"><code>v0.33.0-rc</code></a>.</p><p>This involved changing <a href="https://github.com/facebook/css-layout" target="_blank">css-layout</a>, the core layout engine used by RN, and RN core implementation, as well as specific OSS JS components to support RTL.</p><p>To battle test the RTL support in production, the latest version of the <strong>Facebook Ads Manager</strong> app (the first cross-platform 100% RN app) is now available in Arabic and Hebrew with RTL layouts for both <a href="https://itunes.apple.com/app/id964397083" target="_blank">iOS</a> and <a href="https://play.google.com/store/apps/details?id=com.facebook.adsmanager" target="_blank">Android</a>. Here is how it looks like in those RTL languages:</p><span><p align="center">
-  <img src="/react-native/blog/img/rtl-ama-ios-arabic.png" width="280" style="margin:10px">
-  <img src="/react-native/blog/img/rtl-ama-android-hebrew.png" width="280" style="margin:10px">
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Right-to-Left Layout Support For React Native Apps · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Right-to-Left Layout Support For React Native Apps · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html"/><meta property="og:description" content="After launching an app to the app stores, internationalization is the next step"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.51</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html">Right-to-Left Layout Support For React Native Apps</a></h1><p class="post-meta">August 19, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/MengjueW" target="_blank">Mengjue (Mandy) Wang</a>Software Engineer Intern at Facebook</p><div class="authorPhoto authorPhoto-big"><a href="https://github.com/MengjueW" target="_blank"><img src="https://avatars0.githubusercontent.com/u/13987140?v=3&amp;s=128"/></a></div></div></header><div><span><p>After launching an app to the app stores, internationalization is the next step
+to further your audience reach. Over 20 countries and numerous people around the
+world use Right-to-Left (RTL) languages. Thus, making your app support RTL for
+them is necessary.</p>
+<p>We're glad to announce that React Native has been improved to support RTL
+layouts. This is now available in the
+<a href="https://github.com/facebook/react-native">react-native</a> master branch today,
+and will be available in the next RC:
+<a href="https://github.com/facebook/react-native/releases"><code>v0.33.0-rc</code></a>.</p>
+<p>This involved changing <a href="https://github.com/facebook/css-layout">css-layout</a>, the
+core layout engine used by RN, and RN core implementation, as well as specific
+OSS JS components to support RTL.</p>
+<p>To battle test the RTL support in production, the latest version of the
+<strong>Facebook Ads Manager</strong> app (the first cross-platform 100% RN app) is now
+available in Arabic and Hebrew with RTL layouts for both
+<a href="https://itunes.apple.com/app/id964397083">iOS</a> and
+<a href="https://play.google.com/store/apps/details?id=com.facebook.adsmanager">Android</a>.
+Here is how it looks like in those RTL languages:</p>
+<p align="center">
+  <img src="/react-native/blog/assets/rtl-ama-ios-arabic.png" width="280" style="margin:10px">
+  <img src="/react-native/blog/assets/rtl-ama-android-hebrew.png" width="280" style="margin:10px">
 </p>
-
-</span><h2><a class="anchor" name="overview-changes-in-rn-for-rtl-support"></a>Overview Changes in RN for RTL support <a class="hash-link" href="#overview-changes-in-rn-for-rtl-support">#</a></h2><p><a href="https://github.com/facebook/css-layout" target="_blank">css-layout</a> already has a concept of <code>start</code> and <code>end</code> for the layout. In the Left-to-Right (LTR) layout, <code>start</code> means <code>left</code>, and <code>end</code> means <code>right</code>. But in RTL, <code>start</code> means <code>right</code>, and <code>end</code> means <code>left</code>. This means we can make RN depend on the <code>start</code> and <code>end</code> calculation to compute the correct layout, which includes <code>position</code>, <code>padding</code>, and <code>margin</code>.</p><p>In addition, <a href="https://github.com/facebook/css-layout" target="_blank">css-layout</a> already makes each component&#x27;s direction inherits from its parent. This means, we simply need to set the direction of the root component to RTL, and the entire app will flip.</p><p>The diagram below describes the changes at high level:</p><p><img src="/react-native/blog/img/rtl-rn-core-updates.png" alt=""></p><p>These include:</p><ul><li><a href="https://github.com/facebook/css-layout/commit/46c842c71a1232c3c78c4215275d104a389a9a0f" target="_blank">css-layout RTL support for absolute positioning</a></li><li>mapping <code>left</code> and <code>right</code> to <code>start</code> and <code>end</code> in RN core implementation for shadow nodes</li><li>and exposing a <a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js" target="_blank">bridged utility module</a> to help control the RTL layout</li></ul><p>With this update, when you allow RTL layout for your app:</p><ul><li>every component layout will flip horizontally</li><li>some gestures and animations will automatically have RTL layout, if you are using RTL-ready OSS components</li><li>minimal additional effort may be needed to make your app fully RTL-ready</li></ul><h2><a class="anchor" name="making-an-app-rtl-ready"></a>Making an App RTL-ready <a class="hash-link" href="#making-an-app-rtl-ready">#</a></h2><ol><li><p>To support RTL, you should first add the RTL language bundles to your app.</p><ul><li>See the general guides from <a href="https://developer.apple.com/library/ios/documentation/MacOSX/Conceptual/BPInternational/LocalizingYourApp/LocalizingYourApp.html#//apple_ref/doc/uid/10000171i-CH5-SW1" target="_blank">iOS</a> and <a href="https://developer.android.com/training/basics/supporting-devices/languages.html" target="_blank">Android</a>.</li></ul></li><li><p>Allow RTL layout for your app by calling the <code>allowRTL()</code> function at the beginning of native code. We provided this utility to only apply to an RTL layout when your app is ready. Here is an example:</p><p>iOS:</p><div class="prism language-objc"><span class="token comment" spellcheck="true"> // in AppDelegate.m
-</span>   <span class="token punctuation">[</span><span class="token punctuation">[</span>RCTI18nUtil sharedInstance<span class="token punctuation">]</span> allowRTL<span class="token punctuation">:</span>YES<span class="token punctuation">]</span><span class="token punctuation">;</span></div><p>Android:</p><div class="prism language-java"><span class="token comment" spellcheck="true"> // in MainActivity.java
-</span>   I18nUtil sharedI18nUtilInstance <span class="token operator">=</span> I18nUtil<span class="token punctuation">.</span><span class="token function">getInstance<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-   sharedI18nUtilInstance<span class="token punctuation">.</span><span class="token function">allowRTL<span class="token punctuation">(</span></span>context<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div></li><li><p>For Android, you need add <code>android:supportsRtl=&quot;true&quot;</code> to the <a href="http://developer.android.com/guide/topics/manifest/application-element.html" target="_blank"><code>&lt;application&gt;</code></a> element in <code>AndroidManifest.xml</code> file.</p></li></ol><p>Now, when you recompile your app and change the device language to an RTL language (e.g. Arabic or Hebrew), your app layout should change to RTL automatically.</p><h2><a class="anchor" name="writing-rtl-ready-components"></a>Writing RTL-ready Components <a class="hash-link" href="#writing-rtl-ready-components">#</a></h2><p>In general, most components are already RTL-ready, for example:</p><ul><li><p>Left-to-Right Layout</p><span><p align="left">
-  <img src="/react-native/blog/img/rtl-demo-listitem-ltr.png" width="300">
+<h2><a class="anchor" aria-hidden="true" name="overview-changes-in-rn-for-rtl-support"></a><a href="#overview-changes-in-rn-for-rtl-support" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Overview Changes in RN for RTL support</h2>
+<p><a href="https://github.com/facebook/css-layout">css-layout</a> already has a concept of
+<code>start</code> and <code>end</code> for the layout. In the Left-to-Right (LTR) layout, <code>start</code>
+means <code>left</code>, and <code>end</code> means <code>right</code>. But in RTL, <code>start</code> means <code>right</code>, and
+<code>end</code> means <code>left</code>. This means we can make RN depend on the <code>start</code> and <code>end</code>
+calculation to compute the correct layout, which includes <code>position</code>, <code>padding</code>,
+and <code>margin</code>.</p>
+<p>In addition, <a href="https://github.com/facebook/css-layout">css-layout</a> already makes
+each component's direction inherits from its parent. This means, we simply need
+to set the direction of the root component to RTL, and the entire app will flip.</p>
+<p>The diagram below describes the changes at high level:</p>
+<p><img src="/react-native/blog/assets/rtl-rn-core-updates.png" alt=""></p>
+<p>These include:</p>
+<ul>
+<li><a href="https://github.com/facebook/css-layout/commit/46c842c71a1232c3c78c4215275d104a389a9a0f">css-layout RTL support for absolute positioning</a></li>
+<li>mapping <code>left</code> and <code>right</code> to <code>start</code> and <code>end</code> in RN core implementation for
+shadow nodes</li>
+<li>and exposing a
+<a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js">bridged utility module</a>
+to help control the RTL layout</li>
+</ul>
+<p>With this update, when you allow RTL layout for your app:</p>
+<ul>
+<li>every component layout will flip horizontally</li>
+<li>some gestures and animations will automatically have RTL layout, if you are
+using RTL-ready OSS components</li>
+<li>minimal additional effort may be needed to make your app fully RTL-ready</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" name="making-an-app-rtl-ready"></a><a href="#making-an-app-rtl-ready" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Making an App RTL-ready</h2>
+<ol>
+<li><p>To support RTL, you should first add the RTL language bundles to your app.</p>
+<ul>
+<li>See the general guides from
+<a href="https://developer.apple.com/library/ios/documentation/MacOSX/Conceptual/BPInternational/LocalizingYourApp/LocalizingYourApp.html#//apple_ref/doc/uid/10000171i-CH5-SW1">iOS</a>
+and
+<a href="https://developer.android.com/training/basics/supporting-devices/languages.html">Android</a>.</li>
+</ul></li>
+<li><p>Allow RTL layout for your app by calling the <code>allowRTL()</code> function at the
+beginning of native code. We provided this utility to only apply to an RTL
+layout when your app is ready. Here is an example:</p>
+<p>iOS:</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// in AppDelegate.m</span>
+     [[RCTI18nUtil sharedInstance] allowRTL:<span class="hljs-literal">YES</span>];
+</code></pre>
+<p>Android:</p>
+<pre><code class="hljs css java"><span class="hljs-comment">// in MainActivity.java</span>
+     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+     sharedI18nUtilInstance.allowRTL(context, <span class="hljs-keyword">true</span>);
+</code></pre></li>
+<li><p>For Android, you need add <code>android:supportsRtl=&quot;true&quot;</code> to the
+<a href="http://developer.android.com/guide/topics/manifest/application-element.html"><code>&lt;application&gt;</code></a>
+element in <code>AndroidManifest.xml</code> file.</p></li>
+</ol>
+<p>Now, when you recompile your app and change the device language to an RTL
+language (e.g. Arabic or Hebrew), your app layout should change to RTL
+automatically.</p>
+<h2><a class="anchor" aria-hidden="true" name="writing-rtl-ready-components"></a><a href="#writing-rtl-ready-components" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Writing RTL-ready Components</h2>
+<p>In general, most components are already RTL-ready, for example:</p>
+<ul>
+<li><p>Left-to-Right Layout</p>
+<p><p align="left">
+<img src="/react-native/blog/assets/rtl-demo-listitem-ltr.png" width="300"></p></li>
+</ul>
 </p>
-</span></li><li><p>Right-to-Left Layout</p><span><p align="left">
-  <img src="/react-native/blog/img/rtl-demo-listitem-rtl.png" width="300">
+<ul>
+<li><p>Right-to-Left Layout</p>
+<p><p align="left">
+<img src="/react-native/blog/assets/rtl-demo-listitem-rtl.png" width="300"></p></li>
+</ul>
 </p>
-
-</span></li></ul><p>However, there are several cases to be aware of, for which you will need the <a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js" target="_blank"><code>I18nManager</code></a>. In <a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js" target="_blank"><code>I18nManager</code></a>, there is a constant <code>isRTL</code> to tell if layout of app is RTL or not, so that you can make the necessary changes according to the layout.</p><h4><a class="anchor" name="icons-with-directional-meaning"></a>Icons with Directional Meaning <a class="hash-link" href="#icons-with-directional-meaning">#</a></h4><p>If your component has icons or images, they will be displayed the same way in LTR and RTL layout, because RN will not flip your source image. Therefore, you should flip them according to the layout style.</p><ul><li><p>Left-to-Right Layout</p><span><p align="left">
-  <img src="/react-native/blog/img/rtl-demo-icon-ltr.png" width="300">
+<p>However, there are several cases to be aware of, for which you will need the
+<a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js"><code>I18nManager</code></a>.
+In
+<a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js"><code>I18nManager</code></a>,
+there is a constant <code>isRTL</code> to tell if layout of app is RTL or not, so that you
+can make the necessary changes according to the layout.</p>
+<h4><a class="anchor" aria-hidden="true" name="icons-with-directional-meaning"></a><a href="#icons-with-directional-meaning" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Icons with Directional Meaning</h4>
+<p>If your component has icons or images, they will be displayed the same way in
+LTR and RTL layout, because RN will not flip your source image. Therefore, you
+should flip them according to the layout style.</p>
+<ul>
+<li><p>Left-to-Right Layout</p>
+<p><p align="left">
+<img src="/react-native/blog/assets/rtl-demo-icon-ltr.png" width="300"></p></li>
+</ul>
 </p>
-</span></li><li><p>Right-to-Left Layout</p><span><p align="left">
-  <img src="/react-native/blog/img/rtl-demo-icon-rtl.png" width="300">
+<ul>
+<li><p>Right-to-Left Layout</p>
+<p><p align="left">
+<img src="/react-native/blog/assets/rtl-demo-icon-rtl.png" width="300"></p></li>
+</ul>
 </p>
-
-</span></li></ul><p>Here are two ways to flip the icon according to the direction:</p><ul><li><p>Adding a <code>transform</code> style to the image component:</p><div class="prism language-js"><span class="token operator">&lt;</span>Image
-  source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">...</span><span class="token punctuation">}</span>
-  style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>transform<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>scaleX<span class="token punctuation">:</span> I18nManager<span class="token punctuation">.</span>isRTL <span class="token operator">?</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
-<span class="token operator">/</span><span class="token operator">&gt;</span></div></li><li><p>Or, changing the image source according to the direction:</p><div class="prism language-js"><span class="token keyword">let</span> imageSource <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#x27;./back.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span>I18nManager<span class="token punctuation">.</span>isRTL<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    imageSource <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#x27;./forward.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">return</span> <span class="token punctuation">(</span>
-  <span class="token operator">&lt;</span>Image source<span class="token operator">=</span><span class="token punctuation">{</span>imageSource<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span></div></li></ul><h4><a class="anchor" name="gestures-and-animations"></a>Gestures and Animations <a class="hash-link" href="#gestures-and-animations">#</a></h4><p>In iOS and Android development, when you change to RTL layout, the gestures and animations are the opposite of LTR layout. Currently, in RN, gestures and animations are not supported on RN core code level, but on components level. The good news is, some of these components already support RTL today, such as <a href="https://github.com/facebook/react-native/blob/38a6eec0db85a5204e85a9a92b4dee2db9641671/Libraries/Experimental/SwipeableRow/SwipeableRow.js" target="_blank"><code>SwipeableRow</code></a> and <a href="https://github.com/facebook/react-native/tree/master/Libraries/NavigationExperimental" target="_blank"><code>NavigationExperimental</code></a>. However, other components with gestures will need to support RTL manually.</p><p>A good example to illustrate gesture RTL support is <a href="https://github.com/facebook/react-native/blob/38a6eec0db85a5204e85a9a92b4dee2db9641671/Libraries/Experimental/SwipeableRow/SwipeableRow.js" target="_blank"><code>SwipeableRow</code></a>.</p><span><p align="center">
-  <img src="/react-native/blog/img/rtl-demo-swipe-ltr.png" width="280" style="margin:10px">
-  <img src="/react-native/blog/img/rtl-demo-swipe-rtl.png" width="280" style="margin:10px">
+<p>Here are two ways to flip the icon according to the direction:</p>
+<ul>
+<li><p>Adding a <code>transform</code> style to the image component:</p>
+<pre><code class="hljs css js">&lt;Image
+  source={...}
+  style={{<span class="hljs-attr">transform</span>: [{<span class="hljs-attr">scaleX</span>: I18nManager.isRTL ? <span class="hljs-number">-1</span> : <span class="hljs-number">1</span>}]}}
+/&gt;
+</code></pre></li>
+<li><p>Or, changing the image source according to the direction:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./back.png"</span>);
+<span class="hljs-keyword">if</span> (I18nManager.isRTL) {
+  imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./forward.png"</span>);
+}
+<span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Image</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{imageSource}</span> /&gt;</span>;
+</span></code></pre></li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" name="gestures-and-animations"></a><a href="#gestures-and-animations" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Gestures and Animations</h4>
+<p>In iOS and Android development, when you change to RTL layout, the gestures and
+animations are the opposite of LTR layout. Currently, in RN, gestures and
+animations are not supported on RN core code level, but on components level. The
+good news is, some of these components already support RTL today, such as
+<a href="https://github.com/facebook/react-native/blob/38a6eec0db85a5204e85a9a92b4dee2db9641671/Libraries/Experimental/SwipeableRow/SwipeableRow.js"><code>SwipeableRow</code></a>
+and
+<a href="https://github.com/facebook/react-native/tree/master/Libraries/NavigationExperimental"><code>NavigationExperimental</code></a>.
+However, other components with gestures will need to support RTL manually.</p>
+<p>A good example to illustrate gesture RTL support is
+<a href="https://github.com/facebook/react-native/blob/38a6eec0db85a5204e85a9a92b4dee2db9641671/Libraries/Experimental/SwipeableRow/SwipeableRow.js"><code>SwipeableRow</code></a>.</p>
+<p align="center">
+  <img src="/react-native/blog/assets/rtl-demo-swipe-ltr.png" width="280" style="margin:10px">
+  <img src="/react-native/blog/assets/rtl-demo-swipe-rtl.png" width="280" style="margin:10px">
 </p>
-
-
-</span><h5><a class="anchor" name="gestures-example"></a>Gestures Example <a class="hash-link" href="#gestures-example">#</a></h5><div class="prism language-js"><span class="token comment" spellcheck="true">// SwipeableRow.js
-</span><span class="token function">_isSwipingExcessivelyRightFromClosedPosition</span><span class="token punctuation">(</span>gestureState<span class="token punctuation">:</span> Object<span class="token punctuation">)</span><span class="token punctuation">:</span> boolean <span class="token punctuation">{</span>
- <span class="token comment" spellcheck="true"> // ...
-</span>  <span class="token keyword">const</span> gestureStateDx <span class="token operator">=</span> IS_RTL <span class="token operator">?</span> <span class="token operator">-</span>gestureState<span class="token punctuation">.</span>dx <span class="token punctuation">:</span> gestureState<span class="token punctuation">.</span>dx<span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_isSwipingRightFromClosed</span><span class="token punctuation">(</span>gestureState<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
-    gestureStateDx <span class="token operator">&gt;</span> RIGHT_SWIPE_THRESHOLD
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span></div><h5><a class="anchor" name="animation-example"></a>Animation Example <a class="hash-link" href="#animation-example">#</a></h5><div class="prism language-js"><span class="token comment" spellcheck="true">// SwipeableRow.js
-</span><span class="token function">_animateBounceBack</span><span class="token punctuation">(</span>duration<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token keyword">void</span> <span class="token punctuation">{</span>
- <span class="token comment" spellcheck="true"> // ...
-</span>  <span class="token keyword">const</span> swipeBounceBackDistance <span class="token operator">=</span> IS_RTL <span class="token operator">?</span>
-    <span class="token operator">-</span>RIGHT_SWIPE_BOUNCE_BACK_DISTANCE <span class="token punctuation">:</span>
-    RIGHT_SWIPE_BOUNCE_BACK_DISTANCE<span class="token punctuation">;</span>
-  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_animateTo</span><span class="token punctuation">(</span>
-    <span class="token operator">-</span>swipeBounceBackDistance<span class="token punctuation">,</span>
-    duration<span class="token punctuation">,</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>_animateToClosedPositionDuringBounce<span class="token punctuation">,</span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span></div><h2><a class="anchor" name="maintaining-your-rtl-ready-app"></a>Maintaining Your RTL-ready App <a class="hash-link" href="#maintaining-your-rtl-ready-app">#</a></h2><p>Even after the initial RTL-compatible app release, you will likely need to iterate on new features. To improve development efficiency, <a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js" target="_blank"><code>I18nManager</code></a> provides the <code>forceRTL()</code> function for faster RTL testing without changing the test device language. You might want to provide a simple switch for this in your app. Here&#x27;s an example from the RTL example in the RNTester:</p><span><p align="center">
-  <img src="/react-native/blog/img/rtl-demo-forcertl.png" width="300">
+<h5><a class="anchor" aria-hidden="true" name="gestures-example"></a><a href="#gestures-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Gestures Example</h5>
+<pre><code class="hljs css js"><span class="hljs-comment">// SwipeableRow.js</span>
+_isSwipingExcessivelyRightFromClosedPosition(gestureState: <span class="hljs-built_in">Object</span>): boolean {
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">const</span> gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
+  <span class="hljs-keyword">return</span> (
+    <span class="hljs-keyword">this</span>._isSwipingRightFromClosed(gestureState) &amp;&amp;
+    gestureStateDx &gt; RIGHT_SWIPE_THRESHOLD
+  );
+},
+</code></pre>
+<h5><a class="anchor" aria-hidden="true" name="animation-example"></a><a href="#animation-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Animation Example</h5>
+<pre><code class="hljs css js"><span class="hljs-comment">// SwipeableRow.js</span>
+_animateBounceBack(duration: number): <span class="hljs-keyword">void</span> {
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">const</span> swipeBounceBackDistance = IS_RTL ?
+    -RIGHT_SWIPE_BOUNCE_BACK_DISTANCE :
+    RIGHT_SWIPE_BOUNCE_BACK_DISTANCE;
+  <span class="hljs-keyword">this</span>._animateTo(
+    -swipeBounceBackDistance,
+    duration,
+    <span class="hljs-keyword">this</span>._animateToClosedPositionDuringBounce,
+  );
+},
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="maintaining-your-rtl-ready-app"></a><a href="#maintaining-your-rtl-ready-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Maintaining Your RTL-ready App</h2>
+<p>Even after the initial RTL-compatible app release, you will likely need to
+iterate on new features. To improve development efficiency,
+<a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js"><code>I18nManager</code></a>
+provides the <code>forceRTL()</code> function for faster RTL testing without changing the
+test device language. You might want to provide a simple switch for this in your
+app. Here's an example from the RTL example in the RNTester:</p>
+<p align="center">
+  <img src="/react-native/blog/assets/rtl-demo-forcertl.png" width="300">
 </p>
+<pre><code class="hljs css js">&lt;RNTesterBlock title={<span class="hljs-string">"Quickly Test RTL Layout"</span>}&gt;
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.flexDirectionRow}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.switchRowTextView}</span>&gt;</span>forceRTL<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.switchRowSwitchView}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Switch</span>
+        <span class="hljs-attr">onValueChange</span>=<span class="hljs-string">{this._onDirectionChange}</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.rightAlignStyle}</span>
+        <span class="hljs-attr">value</span>=<span class="hljs-string">{this.state.isRTL}</span>
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">RNTesterBlock</span>&gt;</span></span>;
 
-</span><div class="prism language-js"><span class="token operator">&lt;</span>RNTesterBlock title<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&#x27;Quickly Test RTL Layout&#x27;</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-  <span class="token operator">&lt;</span>View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>flexDirectionRow<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-    <span class="token operator">&lt;</span>Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>switchRowTextView<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-      forceRTL
-    <span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-    <span class="token operator">&lt;</span>View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>switchRowSwitchView<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-      <span class="token operator">&lt;</span>Switch
-        onValueChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onDirectionChange<span class="token punctuation">}</span>
-        style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>rightAlignStyle<span class="token punctuation">}</span>
-        value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
-    <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">&gt;</span>
-  <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">&gt;</span>
-<span class="token operator">&lt;</span><span class="token operator">/</span>RNTesterBlock<span class="token operator">&gt;</span>
+_onDirectionChange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  I18nManager.forceRTL(!<span class="hljs-keyword">this</span>.state.isRTL);
+  <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">isRTL</span>: !<span class="hljs-keyword">this</span>.state.isRTL });
+  Alert.alert(
+    <span class="hljs-string">"Reload this page"</span>,
+    <span class="hljs-string">"Please reload this page to change the UI direction! "</span> +
+      <span class="hljs-string">"All examples in this app will be affected. "</span> +
+      <span class="hljs-string">"Check them out to see what they look like in RTL layout."</span>
+  );
+};
+</code></pre>
+<p>When working on a new feature, you can easily toggle this button and reload the
+app to see RTL layout. The benefit is you won't need to change the language
+setting to test, however some text alignment won't change, as explained in the
+next section. Therefore, it's always a good idea to test your app in the RTL
+language before launching.</p>
+<h2><a class="anchor" aria-hidden="true" name="limitations-and-future-plan"></a><a href="#limitations-and-future-plan" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Limitations and Future Plan</h2>
+<p>The RTL support should cover most of the UX in your app; however, there are some
+limitations for now:</p>
+<ul>
+<li>Text alignment behaviors differ in iOS and Android
+<ul>
+<li>In iOS, the default text alignment depends on the active language bundle,
+they are consistently on one side. In Android, the default text alignment
+depends on the language of the text content, i.e. English will be
+left-aligned and Arabic will be right-aligned.</li>
+<li>In theory, this should be made consistent across platform, but some people
+may prefer one behavior to another when using an app. More user experience
+research may be needed to find out the best practice for text alignment.</li>
+</ul></li>
+</ul>
+<ul>
+<li><p>There is no &quot;true&quot; left/right</p>
+<p>As discussed before, we map the <code>left</code>/<code>right</code> styles from the JS side to
+<code>start</code>/<code>end</code>, all <code>left</code> in code for RTL layout becomes &quot;right&quot; on screen,
+and <code>right</code> in code becomes &quot;left&quot; on screen. This is convenient because you
+don't need to change your product code too much, but it means there is no way
+to specify &quot;true left&quot; or &quot;true right&quot; in the code. In the future, allowing a
+component to control its direction regardless of the language may be
+necessary.</p></li>
+<li><p>Make RTL support for gestures and animations more developer friendly</p>
+<p>Currently, there is still some programming effort required to make gestures
+and animations RTL compatible. In the future, it would be ideal to find a way
+to make gestures and animations RTL support more developer friendly.</p></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" name="try-it-out"></a><a href="#try-it-out" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Try it Out!</h2>
+<p>Check out the
+<a href="https://github.com/facebook/react-native/blob/master/RNTester/js/RTLExample.js"><code>RTLExample</code></a>
+in the <code>RNTester</code> to understand more about RTL support, and let us know how it
+works for you!</p>
+<p>Finally, thank you for reading! We hope that the RTL support for React Native
+helps you grow your apps for international audience!</p>
+</span></div></div><div><aside class="entry-share"><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="Right-to-Left Layout Support For React Native Apps" data-url="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html" data-related="reactnative" data-show-count="false">Tweet</a></div></aside></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-_onDirectionChange <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-  I18nManager<span class="token punctuation">.</span><span class="token function">forceRTL</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>isRTL<span class="token punctuation">:</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>isRTL<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  Alert<span class="token punctuation">.</span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">&#x27;Reload this page&#x27;</span><span class="token punctuation">,</span>
-   <span class="token string">&#x27;Please reload this page to change the UI direction! &#x27;</span> <span class="token operator">+</span>
-   <span class="token string">&#x27;All examples in this app will be affected. &#x27;</span> <span class="token operator">+</span>
-   <span class="token string">&#x27;Check them out to see what they look like in RTL layout.&#x27;</span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span></div><p>When working on a new feature, you can easily toggle this button and reload the app to see RTL layout. The benefit is you won&#x27;t need to change the language setting to test, however some text alignment won&#x27;t change, as explained in the next section. Therefore, it&#x27;s always a good idea to test your app in the RTL language before launching.</p><h2><a class="anchor" name="limitations-and-future-plan"></a>Limitations and Future Plan <a class="hash-link" href="#limitations-and-future-plan">#</a></h2><p>The RTL support should cover most of the UX in your app; however, there are some limitations for now:</p><ul><li>Text alignment behaviors differ in iOS and Android<ul><li>In iOS, the default text alignment depends on the active language bundle, they are consistently on one side. In Android, the default text alignment depends on the language of the text content, i.e. English will be left-aligned and Arabic will be right-aligned.</li><li>In theory, this should be made consistent across platform, but some people may prefer one behavior to another when using an app. More user experience research may be needed to find out the best practice for text alignment.</li></ul></li></ul><ul><li><p>There is no &quot;true&quot; left/right</p><p>  As discussed before, we map the <code>left</code>/<code>right</code> styles from the JS side to <code>start</code>/<code>end</code>, all <code>left</code> in code for RTL layout becomes &quot;right&quot; on screen, and <code>right</code> in code becomes &quot;left&quot; on screen. This is convenient because you don&#x27;t need to change your product code too much, but it means there is no way to specify &quot;true left&quot; or &quot;true right&quot; in the code. In the future, allowing a component to control its direction regardless of the language may be necessary.</p></li><li><p>Make RTL support for gestures and animations more developer friendly</p><p> Currently, there is still some programming effort required to make gestures and animations RTL compatible.
- In the future, it would be ideal to find a way to make gestures and animations RTL support more developer friendly.</p></li></ul><h2><a class="anchor" name="try-it-out"></a>Try it Out! <a class="hash-link" href="#try-it-out">#</a></h2><p>Check out the <a href="https://github.com/facebook/react-native/blob/master/RNTester/js/RTLExample.js" target="_blank"><code>RTLExample</code></a> in the <code>RNTester</code> to understand more about RTL support, and let us know how it works for you!</p><p>Finally, thank you for reading! We hope that the RTL support for React Native helps you grow your apps for international audience!</p></div></div><div><aside class="author-info"><div class="author-image"><span class="the-image" style="background-image:url(https://avatars0.githubusercontent.com/u/13987140?v=3&amp;s=128);"></span></div><p class="posted-on">Posted on <time class="date">August 19, 2016</time></p><p class="name-title"><a href="https://github.com/MengjueW" target="_blank">Mengjue (Mandy) Wang</a>, <span class="title">Software Engineer Intern at Facebook</span></p></aside><aside class="entry-share"><h3 class="small-title">Share this post</h3><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="Right-to-Left Layout Support For React Native Apps" data-url="http://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html" data-related="reactnative" data-show-count="false">Tweet</a></div></aside></div></article></section><footer class="nav-footer"><section class="sitemap"><a href="/react-native" class="nav-home"><img src="img/header_logo.png" alt="React Native" width="66" height="58"></a><div><h5><a href="docs/">Docs</a></h5><a href="docs/getting-started.html">Getting Started</a><a href="docs/tutorial.html">Learn the Basics</a><a href="docs/components-and-apis.html">Components and APIs</a><a href="docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/support.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/support.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://facebook.github.io/react/" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><section class="newsletter"><div id="mc_embed_signup"><form action="//reactnative.us10.list-manage.com/subscribe/post?u=db0dd948e2b729ee62625b1a8&amp;id=47cd41008f" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate><div id="mc_embed_signup_scroll"><label for="mce-EMAIL"><h5>Get the React Native Newsletter</h5></label><input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required><div style="position:absolute;left:-5000px;" aria-hidden="true"><input type="text" name="b_db0dd948e2b729ee62625b1a8_47cd41008f" tabindex="-1" value=""></div><div class="clear"><input type="submit" value="Sign up" name="subscribe" id="mc-embedded-subscribe" class="button"></div></div></form></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><div id="fb-root"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            ga('create', 'UA-41298772-2', 'facebook.github.io');
-            ga('send', 'pageview');
-
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)
-            ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-
-            docsearch({
-              apiKey: '2c98749b4a1e588efec53b2acec13025',
-              indexName: 'react-native-versions',
-              inputSelector: '#algolia-doc-search',
-              algoliaOptions: { facetFilters: [ "tags:master" ], hitsPerPage: 5 }
-            });
-          </script><script src="js/scripts.js"></script><script type="text/javascript" src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"></script><script type="text/javascript">(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';}(jQuery));var $mcj = jQuery.noConflict(true);</script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script async defer src="https://buttons.github.io/buttons.js"></script></body></html>
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.51"],"hitsPerPage":5}
+              });
+            </script></body></html>

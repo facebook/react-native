@@ -1,0 +1,210 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Custom WebView · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Custom WebView · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="While the built-in web view has a lot of features, it is not possible to handle every use-case in React Native. You can, however, extend the web view with native code without forking React Native or duplicating all the existing web view code."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.6</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.6/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/custom-webview-ios.md" target="_blank">Edit</a><h1>Custom WebView</h1></header><article><div><span><p>While the built-in web view has a lot of features, it is not possible to handle every use-case in React Native. You can, however, extend the web view with native code without forking React Native or duplicating all the existing web view code.</p>
+<p>Before you do this, you should be familiar with the concepts in <a href="native-components-ios">native UI components</a>. You should also familiarise yourself with the <a href="https://github.com/facebook/react-native/blob/master/React/Views/RCTWebViewManager.m">native code for web views</a>, as you will have to use this as a reference when implementing new features—although a deep understanding is not required.</p>
+<h2><a class="anchor" aria-hidden="true" name="native-code"></a><a href="#native-code" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Native Code</h2>
+<p>Like for regular native components, you need a view manager and an web view.</p>
+<p>For the view, you'll need to make a subclass of <code>RCTWebView</code>.</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTCustomWebView.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTWebView.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTCustomWebView</span> : <span class="hljs-title">RCTWebView</span></span>
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-comment">// RCTCustomWebView.m</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTCustomWebView.h"</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTCustomWebView</span> ()</span>
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTCustomWebView</span> </span>{ }
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>For the view manager, you need to make a subclass <code>RCTWebViewManager</code>. You must still include:</p>
+<ul>
+<li><code>(UIView *)view</code> that returns your custom view</li>
+<li>The <code>RCT_EXPORT_MODULE()</code> tag</li>
+</ul>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTCustomWebViewManager.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTWebViewManager.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTCustomWebViewManager</span> : <span class="hljs-title">RCTWebViewManager</span></span>
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-comment">// RCTCustomWebViewManager.m</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTCustomWebViewManager.h"</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTCustomWebView.h"</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTCustomWebViewManager</span> () &lt;<span class="hljs-title">RCTWebViewDelegate</span>&gt;</span>
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTCustomWebViewManager</span> </span>{ }
+
+RCT_EXPORT_MODULE()
+
+- (<span class="hljs-built_in">UIView</span> *)view
+{
+  RCTCustomWebView *webView = [RCTCustomWebView new];
+  webView.delegate = <span class="hljs-keyword">self</span>;
+  <span class="hljs-keyword">return</span> webView;
+}
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="adding-new-events-and-properties"></a><a href="#adding-new-events-and-properties" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding New Events and Properties</h3>
+<p>Adding new properties and events is the same as regular UI components. For properties, you define an <code>@property</code> in the header. For events, you define a <code>RCTDirectEventBlock</code> in the view's <code>@interface</code>.</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTCustomWebView.h</span>
+<span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">copy</span>) <span class="hljs-built_in">NSString</span> *finalUrl;
+
+<span class="hljs-comment">// RCTCustomWebView.m</span>
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTCustomWebView</span> ()</span>
+
+<span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">copy</span>) RCTDirectEventBlock onNavigationCompleted;
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>Then expose it in the view manager's <code>@implementation</code>.</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTCustomWebViewManager.m</span>
+RCT_EXPORT_VIEW_PROPERTY(onNavigationCompleted, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="extending-existing-events"></a><a href="#extending-existing-events" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Extending Existing Events</h3>
+<p>You should refer to  <a href="https://github.com/facebook/react-native/blob/master/React/Views/RCTWebView.m">RCTWebView.m</a> in the React Native codebase to see what handlers are available and how they are implemented. You can extend any methods here to provide extra functionality.</p>
+<p>By default, most methods aren't exposed from RCTWebView. If you need to expose them, you need to create an <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/CustomizingExistingClasses/CustomizingExistingClasses.html">Objective C category</a>, and then expose all the methods you need to use.</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTWebView+Custom.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTWebView.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTWebView</span> (<span class="hljs-title">Custom</span>)</span>
+- (<span class="hljs-built_in">BOOL</span>)webView:(__unused <span class="hljs-built_in">UIWebView</span> *)webView shouldStartLoadWithRequest:(<span class="hljs-built_in">NSURLRequest</span> *)request navigationType:(<span class="hljs-built_in">UIWebViewNavigationType</span>)navigationType;
+- (<span class="hljs-built_in">NSMutableDictionary</span>&lt;<span class="hljs-built_in">NSString</span> *, <span class="hljs-keyword">id</span>&gt; *)baseEvent;
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>Once these are exposed, you can reference them in your custom web view class.</p>
+<pre><code class="hljs css objc"><span class="hljs-comment">// RCTCustomWebView.m</span>
+
+<span class="hljs-comment">// Remember to import the category file.</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTWebView+Custom.h"</span></span>
+
+- (<span class="hljs-built_in">BOOL</span>)webView:(__unused <span class="hljs-built_in">UIWebView</span> *)webView shouldStartLoadWithRequest:(<span class="hljs-built_in">NSURLRequest</span> *)request
+ navigationType:(<span class="hljs-built_in">UIWebViewNavigationType</span>)navigationType
+{
+  <span class="hljs-built_in">BOOL</span> allowed = [<span class="hljs-keyword">super</span> webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+
+  <span class="hljs-keyword">if</span> (allowed) {
+    <span class="hljs-built_in">NSString</span>* url = request.URL.absoluteString;
+    <span class="hljs-keyword">if</span> (url &amp;&amp; [url isEqualToString:_finalUrl]) {
+      <span class="hljs-keyword">if</span> (_onNavigationCompleted) {
+        <span class="hljs-built_in">NSMutableDictionary</span>&lt;<span class="hljs-built_in">NSString</span> *, <span class="hljs-keyword">id</span>&gt; *event = [<span class="hljs-keyword">self</span> baseEvent];
+        _onNavigationCompleted(event);
+      }
+    }
+  }
+
+  <span class="hljs-keyword">return</span> allowed;
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="javascript-interface"></a><a href="#javascript-interface" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JavaScript Interface</h2>
+<p>To use your custom web view, you'll need to create a class for it. Your class must:</p>
+<ul>
+<li>Export all the prop types from <code>WebView.propTypes</code></li>
+<li>Return a <code>WebView</code> component with the prop <code>nativeConfig.component</code> set to your native component (see below)</li>
+</ul>
+<p>To get your native component, you must use <code>requireNativeComponent</code>: the same as for regular custom components. However, you must pass in an extra third argument, <code>WebView.extraNativeComponentConfig</code>. This third argument contains prop types that are only required for native code.</p>
+<pre><code class="hljs css js">
+<span class="hljs-keyword">import</span> React, { Component, PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { WebView, requireNativeComponent, NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">const</span> { CustomWebViewManager } = NativeModules; 
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomWebView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">static</span> propTypes = WebView.propTypes
+
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">WebView</span>
+        {<span class="hljs-attr">...this.props</span>}
+        <span class="hljs-attr">nativeConfig</span>=<span class="hljs-string">{{</span> 
+          <span class="hljs-attr">component:</span> <span class="hljs-attr">RCTCustomWebView</span>,
+          <span class="hljs-attr">viewManager:</span> <span class="hljs-attr">CustomWebViewManager</span>
+        }}
+      /&gt;</span>
+    );
+  }
+}
+
+const RCTCustomWebView = requireNativeComponent(
+  'RCTCustomWebView',
+  CustomWebView,
+  WebView.extraNativeComponentConfig
+);
+
+</span></code></pre>
+<p>If you want to add custom props to your native component, you can use <code>nativeConfig.props</code> on the web view. For iOS, you should also set the <code>nativeConfig.viewManager</code> prop with your custom WebView ViewManager as in the example above.</p>
+<p>For events, the event handler must always be set to a function. This means it isn't safe to use the event handler directly from <code>this.props</code>, as the user might not have provided one. The standard approach is to create a event handler in your class, and then invoking the event handler given in <code>this.props</code> if it exists.</p>
+<p>If you are unsure how something should be implemented from the JS side, look at <a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/WebView/WebView.ios.js">WebView.ios.js</a> in the React Native source.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomWebView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">static</span> propTypes = {
+    ...WebView.propTypes,
+    <span class="hljs-attr">finalUrl</span>: PropTypes.string,
+    <span class="hljs-attr">onNavigationCompleted</span>: PropTypes.func,
+  };
+
+  <span class="hljs-keyword">static</span> defaultProps = {
+    <span class="hljs-attr">finalUrl</span>: <span class="hljs-string">'about:blank'</span>,
+  };
+
+  _onNavigationCompleted = <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> { onNavigationCompleted } = <span class="hljs-keyword">this</span>.props;
+    onNavigationCompleted &amp;&amp; onNavigationCompleted(event);
+  }
+
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">WebView</span>
+        {<span class="hljs-attr">...this.props</span>}
+        <span class="hljs-attr">nativeConfig</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">component:</span> <span class="hljs-attr">RCTCustomWebView</span>,
+          <span class="hljs-attr">props:</span> {
+            <span class="hljs-attr">finalUrl:</span> <span class="hljs-attr">this.props.finalUrl</span>,
+            <span class="hljs-attr">onNavigationCompleted:</span> <span class="hljs-attr">this._onNavigationCompleted</span>,
+          },
+          <span class="hljs-attr">viewManager:</span> <span class="hljs-attr">CustomWebViewManager</span>
+        }}
+      /&gt;</span>
+    );
+  }
+}
+</span></code></pre>
+<p>Just like for regular native components, you must provide all your prop types in the component to have them forwarded on to the native component. However, if you have some prop types that are only used internally in component, you can add them to the <code>nativeOnly</code> property of the third argument previously mentioned. For event handlers, you have to use the value <code>true</code> instead of a regular prop type.</p>
+<p>For example, if you wanted to add an internal event handler called <code>onScrollToBottom</code>, you would use,</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">const</span> RCTCustomWebView = requireNativeComponent(
+  <span class="hljs-string">'RCTCustomWebView'</span>,
+  CustomWebView,
+  {
+    ...WebView.extraNativeComponentConfig,
+    <span class="hljs-attr">nativeOnly</span>: {
+      ...WebView.extraNativeComponentConfig.nativeOnly,
+      <span class="hljs-attr">onScrollToBottom</span>: <span class="hljs-literal">true</span>,
+    },
+  }
+);
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.6"],"hitsPerPage":5}
+              });
+            </script></body></html>

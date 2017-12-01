@@ -1,0 +1,399 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Native UI Components · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Native UI Components · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="There are tons of native UI widgets out there ready to be used in the latest apps - some of them are part of the platform, others are available as third-party libraries, and still more might be in use in your very own portfolio.  React Native has several of the most critical platform components already wrapped, like `ScrollView` and `TextInput`, but not all of them, and certainly not ones you might have written yourself for a previous app.  Fortunately, it&#x27;s quite easy to wrap up these existing components for seamless integration with your React Native application."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.41</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.41/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Guides (iOS)</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/native-modules-ios.html">Native Modules</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.41/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/activityindicator.html">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/button.html">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/keyboardavoidingview.html">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/alert.html">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/alertios.html">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/appregistry.html">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/keyboard.html">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/permissionsandroid.html">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/share.html">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/systrace.html">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.41/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/native-components-ios.md" target="_blank">Edit</a><h1>Native UI Components</h1></header><article><div><span><p>There are tons of native UI widgets out there ready to be used in the latest apps - some of them are part of the platform, others are available as third-party libraries, and still more might be in use in your very own portfolio.  React Native has several of the most critical platform components already wrapped, like <code>ScrollView</code> and <code>TextInput</code>, but not all of them, and certainly not ones you might have written yourself for a previous app.  Fortunately, it's quite easy to wrap up these existing components for seamless integration with your React Native application.</p>
+<p>Like the native module guide, this too is a more advanced guide that assumes you are somewhat familiar with iOS programming.  This guide will show you how to build a native UI component, walking you through the implementation of a subset of the existing <code>MapView</code> component available in the core React Native library.</p>
+<h2><a class="anchor" aria-hidden="true" name="ios-mapview-example"></a><a href="#ios-mapview-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS MapView example</h2>
+<p>Let's say we want to add an interactive Map to our app - might as well use <a href="https://developer.apple.com/library/prerelease/mac/documentation/MapKit/Reference/MKMapView_Class/index.html"><code>MKMapView</code></a>, we just need to make it usable from JavaScript.</p>
+<p>Native views are created and manipulated by subclasses of <code>RCTViewManager</code>.  These subclasses are similar in function to view controllers, but are essentially singletons - only one instance of each is created by the bridge.  They expose native views to the <code>RCTUIManager</code>, which delegates back to them to set and update the properties of the views as necessary.  The <code>RCTViewManager</code>s are also typically the delegates for the views, sending events back to JavaScript via the bridge.</p>
+<p>Exposing a view is simple:</p>
+<ul>
+<li>Subclass <code>RCTViewManager</code> to create a manager for your component.</li>
+<li>Add the <code>RCT_EXPORT_MODULE()</code> marker macro.</li>
+<li>Implement the <code>-(UIView *)view</code> method.</li>
+</ul>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RNTMapManager.m</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;MapKit/MapKit.h&gt;</span></span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTViewManager.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RNTMapManager</span> : <span class="hljs-title">RCTViewManager</span></span>
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RNTMapManager</span></span>
+
+RCT_EXPORT_MODULE()
+
+- (<span class="hljs-built_in">UIView</span> *)view
+{
+  <span class="hljs-keyword">return</span> [[<span class="hljs-built_in">MKMapView</span> alloc] init];
+}
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p><strong>Note:</strong> Do not attempt to set the <code>frame</code> or <code>backgroundColor</code> properties on the <code>UIView</code> instance that you expose through the <code>-view</code> method. React Native will overwrite the values set by your custom class in order to match your JavaScript component's layout props. If you need this granularity of control it might be better to wrap the <code>UIView</code> instance you want to style in another <code>UIView</code> and return the wrapper <code>UIView</code> instead. See <a href="https://github.com/facebook/react-native/issues/2948">Issue 2948</a> for more context.</p>
+<blockquote>
+<p>In the example above, we prefixed our class name with <code>RNT</code>. Prefixes are used to avoid name collisions with other frameworks. Apple frameworks use two-letter prefixes, and React Native uses <code>RCT</code> as a prefix. In order to avoid name collisions, we recommend using a three-letter prefix other than <code>RCT</code> in your own classes.</p>
+</blockquote>
+<p>Then you just need a little bit of JavaScript to make this a usable React component:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// MapView.js</span>
+
+<span class="hljs-keyword">import</span> { requireNativeComponent } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-comment">// requireNativeComponent automatically resolves 'RNTMap' to 'RNTMapManager'</span>
+<span class="hljs-built_in">module</span>.exports = requireNativeComponent(<span class="hljs-string">'RNTMap'</span>, <span class="hljs-literal">null</span>);
+
+<span class="hljs-comment">// MyApp.js</span>
+
+<span class="hljs-keyword">import</span> MapView <span class="hljs-keyword">from</span> <span class="hljs-string">'./MapView.js'</span>;
+
+...
+
+render() {
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MapView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span> }} /&gt;</span>;
+}
+</span></code></pre>
+<p>Make sure to use <code>RNTMap</code> here. We want to require the manager here, which will expose the view of our manager for use in Javascript.</p>
+<p><strong>Note:</strong> When rendering, don't forget to stretch the view, otherwise you'll be staring at a blank screen.</p>
+<pre><code class="hljs css javascript">  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MapView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>}} /&gt;</span>;
+  }
+</span></code></pre>
+<p>This is now a fully-functioning native map view component in JavaScript, complete with pinch-zoom and other native gesture support.  We can't really control it from JavaScript yet, though :(</p>
+<h2><a class="anchor" aria-hidden="true" name="properties"></a><a href="#properties" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h2>
+<p>The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable zooming and specify the visible region. Disabling zoom is a simple boolean, so we add this one line:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RNTMapManager.m</span>
+RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, <span class="hljs-built_in">BOOL</span>)
+</code></pre>
+<p>Note that we explicitly specify the type as <code>BOOL</code> - React Native uses <code>RCTConvert</code> under the hood to convert all sorts of different data types when talking over the bridge, and bad values will show convenient &quot;RedBox&quot; errors to let you know there is an issue ASAP. When things are straightforward like this, the whole implementation is taken care of for you by this macro.</p>
+<p>Now to actually disable zooming, we set the property in JS:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// MyApp.js</span>
+&lt;MapView
+  zoomEnabled={<span class="hljs-literal">false</span>}
+  style={{ <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span> }}
+/&gt;;
+</code></pre>
+<p>To document the properties (and which values they accept) of our MapView component we'll add a wrapper component and document the interface with React <code>PropTypes</code>:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// MapView.js</span>
+<span class="hljs-keyword">import</span> PropTypes <span class="hljs-keyword">from</span> <span class="hljs-string">'prop-types'</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { requireNativeComponent } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MapView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RNTMap</span> {<span class="hljs-attr">...this.props</span>} /&gt;</span>;
+  }
+}
+
+MapView.propTypes = {
+  /**
+   * A Boolean value that determines whether the user may use pinch
+   * gestures to zoom in and out of the map.
+   */
+  zoomEnabled: PropTypes.bool,
+};
+
+var RNTMap = requireNativeComponent('RNTMap', MapView);
+
+module.exports = MapView;
+</span></code></pre>
+<p>Now we have a nicely documented wrapper component that is easy to work with.  Note that we changed the second argument to <code>requireNativeComponent</code> from <code>null</code> to the new <code>MapView</code> wrapper component.  This allows the infrastructure to verify that the propTypes match the native props to reduce the chances of mismatches between the ObjC and JS code.</p>
+<p>Next, let's add the more complex <code>region</code> prop.  We start by adding the native code:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RNTMapManager.m</span>
+RCT_CUSTOM_VIEW_PROPERTY(region, <span class="hljs-built_in">MKCoordinateRegion</span>, <span class="hljs-built_in">MKMapView</span>)
+{
+  [view setRegion:json ? [RCTConvert <span class="hljs-built_in">MKCoordinateRegion</span>:json] : defaultView.region animated:<span class="hljs-literal">YES</span>];
+}
+</code></pre>
+<p>Ok, this is more complicated than the simple <code>BOOL</code> case we had before.  Now we have a <code>MKCoordinateRegion</code> type that needs a conversion function, and we have custom code so that the view will animate when we set the region from JS.  Within the function body that we provide, <code>json</code> refers to the raw value that has been passed from JS.  There is also a <code>view</code> variable which gives us access to the manager's view instance, and a <code>defaultView</code> that we use to reset the property back to the default value if JS sends us a null sentinel.</p>
+<p>You could write any conversion function you want for your view - here is the implementation for <code>MKCoordinateRegion</code> via a category on <code>RCTConvert</code>. It uses an already existing category of ReactNative <code>RCTConvert+CoreLocation</code>:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RNTMapManager.m</span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTConvert+Mapkit.m"</span></span>
+
+<span class="hljs-comment">// RCTConvert+Mapkit.h</span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;MapKit/MapKit.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;CoreLocation/CoreLocation.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert+CoreLocation.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCTConvert</span> (<span class="hljs-title">Mapkit</span>)</span>
+
++ (<span class="hljs-built_in">MKCoordinateSpan</span>)<span class="hljs-built_in">MKCoordinateSpan</span>:(<span class="hljs-keyword">id</span>)json;
++ (<span class="hljs-built_in">MKCoordinateRegion</span>)<span class="hljs-built_in">MKCoordinateRegion</span>:(<span class="hljs-keyword">id</span>)json;
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTConvert</span>(<span class="hljs-title">MapKit</span>)</span>
+
++ (<span class="hljs-built_in">MKCoordinateSpan</span>)<span class="hljs-built_in">MKCoordinateSpan</span>:(<span class="hljs-keyword">id</span>)json
+{
+  json = [<span class="hljs-keyword">self</span> <span class="hljs-built_in">NSDictionary</span>:json];
+  <span class="hljs-keyword">return</span> (<span class="hljs-built_in">MKCoordinateSpan</span>){
+    [<span class="hljs-keyword">self</span> <span class="hljs-built_in">CLLocationDegrees</span>:json[<span class="hljs-string">@"latitudeDelta"</span>]],
+    [<span class="hljs-keyword">self</span> <span class="hljs-built_in">CLLocationDegrees</span>:json[<span class="hljs-string">@"longitudeDelta"</span>]]
+  };
+}
+
++ (<span class="hljs-built_in">MKCoordinateRegion</span>)<span class="hljs-built_in">MKCoordinateRegion</span>:(<span class="hljs-keyword">id</span>)json
+{
+  <span class="hljs-keyword">return</span> (<span class="hljs-built_in">MKCoordinateRegion</span>){
+    [<span class="hljs-keyword">self</span> <span class="hljs-built_in">CLLocationCoordinate2D</span>:json],
+    [<span class="hljs-keyword">self</span> <span class="hljs-built_in">MKCoordinateSpan</span>:json]
+  };
+}
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>These conversion functions are designed to safely process any JSON that the JS might throw at them by displaying &quot;RedBox&quot; errors and returning standard initialization values when missing keys or other developer errors are encountered.</p>
+<p>To finish up support for the <code>region</code> prop, we need to document it in <code>propTypes</code> (or we'll get an error that the native prop is undocumented), then we can set it just like any other prop:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// MapView.js</span>
+
+MapView.propTypes = {
+  <span class="hljs-comment">/**
+   * A Boolean value that determines whether the user may use pinch
+   * gestures to zoom in and out of the map.
+   */</span>
+  zoomEnabled: PropTypes.bool,
+
+  <span class="hljs-comment">/**
+   * The region to be displayed by the map.
+   *
+   * The region is defined by the center coordinates and the span of
+   * coordinates to display.
+   */</span>
+  region: PropTypes.shape({
+    <span class="hljs-comment">/**
+     * Coordinates for the center of the map.
+     */</span>
+    latitude: PropTypes.number.isRequired,
+    <span class="hljs-attr">longitude</span>: PropTypes.number.isRequired,
+
+    <span class="hljs-comment">/**
+     * Distance between the minimum and the maximum latitude/longitude
+     * to be displayed.
+     */</span>
+    latitudeDelta: PropTypes.number.isRequired,
+    <span class="hljs-attr">longitudeDelta</span>: PropTypes.number.isRequired,
+  }),
+};
+
+<span class="hljs-comment">// MyApp.js</span>
+
+render() {
+  <span class="hljs-keyword">var</span> region = {
+    <span class="hljs-attr">latitude</span>: <span class="hljs-number">37.48</span>,
+    <span class="hljs-attr">longitude</span>: <span class="hljs-number">-122.16</span>,
+    <span class="hljs-attr">latitudeDelta</span>: <span class="hljs-number">0.1</span>,
+    <span class="hljs-attr">longitudeDelta</span>: <span class="hljs-number">0.1</span>,
+  };
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MapView</span>
+      <span class="hljs-attr">region</span>=<span class="hljs-string">{region}</span>
+      <span class="hljs-attr">zoomEnabled</span>=<span class="hljs-string">{false}</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span> }}
+    /&gt;</span>
+  );
+}
+</span></code></pre>
+<p>Here you can see that the shape of the region is explicit in the JS documentation - ideally we could codegen some of this stuff, but that's not happening yet.</p>
+<p>Sometimes your native component will have some special properties that you don't want to be part of the API for the associated React component. For example, <code>Switch</code> has a custom <code>onChange</code> handler for the raw native event, and exposes an <code>onValueChange</code> handler property that is invoked with just the boolean value rather than the raw event. Since you don't want these native only properties to be part of the API, you don't want to put them in <code>propTypes</code>, but if you don't you'll get an error. The solution is simply to add them to the <code>nativeOnly</code> option, e.g.</p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">var</span> RCTSwitch = requireNativeComponent(<span class="hljs-string">'RCTSwitch'</span>, Switch, {
+  <span class="hljs-attr">nativeOnly</span>: { <span class="hljs-attr">onChange</span>: <span class="hljs-literal">true</span> }
+});
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="events"></a><a href="#events" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h2>
+<p>So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?</p>
+<p>Until now we've just returned a <code>MKMapView</code> instance from our manager's <code>-(UIView *)view</code> method. We can't add new properties to <code>MKMapView</code> so we have to create a new subclass from <code>MKMapView</code> which we use for our View. We can then add a <code>onRegionChange</code> callback on this subclass:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RNTMapView.h</span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;MapKit/MapKit.h&gt;</span></span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTComponent.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RNTMapView</span>: <span class="hljs-title">MKMapView</span></span>
+
+<span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">copy</span>) RCTBubblingEventBlock onRegionChange;
+
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-comment">// RNTMapView.m</span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RNTMapView.h"</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RNTMapView</span></span>
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>Next, declare an event handler property on <code>RNTMapManager</code>, make it a delegate for all the views it exposes, and forward events to JS by calling the event handler block from the native view.</p>
+<pre><code class="hljs css objectivec{9,17,31-48}"><span class="hljs-comment">// RNTMapManager.m</span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;MapKit/MapKit.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTViewManager.h&gt;</span></span>
+
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RNTMapView.h"</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"RCTConvert+Mapkit.m"</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RNTMapManager</span> : <span class="hljs-title">RCTViewManager</span> &lt;<span class="hljs-title">MKMapViewDelegate</span>&gt;</span>
+<span class="hljs-keyword">@end</span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RNTMapManager</span></span>
+
+RCT_EXPORT_MODULE()
+
+RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, <span class="hljs-built_in">BOOL</span>)
+RCT_EXPORT_VIEW_PROPERTY(onRegionChange, RCTBubblingEventBlock)
+
+RCT_CUSTOM_VIEW_PROPERTY(region, <span class="hljs-built_in">MKCoordinateRegion</span>, <span class="hljs-built_in">MKMapView</span>)
+{
+    [view setRegion:json ? [RCTConvert <span class="hljs-built_in">MKCoordinateRegion</span>:json] : defaultView.region animated:<span class="hljs-literal">YES</span>];
+}
+
+- (<span class="hljs-built_in">UIView</span> *)view
+{
+  RNTMapView *map = [RNTMapView new];
+  map.delegate = <span class="hljs-keyword">self</span>;
+  <span class="hljs-keyword">return</span> map;
+}
+
+<span class="hljs-meta">#pragma mark MKMapViewDelegate</span>
+
+- (<span class="hljs-keyword">void</span>)mapView:(RNTMapView *)mapView regionDidChangeAnimated:(<span class="hljs-built_in">BOOL</span>)animated
+{
+  <span class="hljs-keyword">if</span> (!mapView.onRegionChange) {
+    <span class="hljs-keyword">return</span>;
+  }
+
+  <span class="hljs-built_in">MKCoordinateRegion</span> region = mapView.region;
+  mapView.onRegionChange(@{
+    <span class="hljs-string">@"region"</span>: @{
+      <span class="hljs-string">@"latitude"</span>: @(region.center.latitude),
+      <span class="hljs-string">@"longitude"</span>: @(region.center.longitude),
+      <span class="hljs-string">@"latitudeDelta"</span>: @(region.span.latitudeDelta),
+      <span class="hljs-string">@"longitudeDelta"</span>: @(region.span.longitudeDelta),
+    }
+  });
+}
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>In the delegate method <code>-mapView:regionDidChangeAnimated:</code> the event handler block is called on the corresponding view with the region data. Calling the <code>onRegionChange</code> event handler block results in calling the same callback prop in JavaScript. This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// MapView.js</span>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MapView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  _onRegionChange = <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.props.onRegionChange) {
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">// process raw event...</span>
+    <span class="hljs-keyword">this</span>.props.onRegionChange(event.nativeEvent);
+  }
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;RNTMap
+        {...this.props}
+        onRegionChange={this._onRegionChange}
+      /&gt;
+    );
+  }
+}
+MapView.propTypes = {
+  /**
+   * Callback that is called continuously when the user is dragging the map.
+   */
+  onRegionChange: PropTypes.func,
+  ...
+};
+
+// MyApp.js
+
+class MyApp extends React.Component {
+  onRegionChange(event) {
+    // Do stuff with event.region.latitude, etc.
+  }
+
+  render() {
+    var region = {
+      latitude: 37.48,
+      longitude: -122.16,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    };
+    return (
+      &lt;MapView
+        region={region}
+        zoomEnabled={false}
+        onRegionChange={this.onRegionChange}
+      /&gt;
+    );
+  }  
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="styles"></a><a href="#styles" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Styles</h2>
+<p>Since all our native react views are subclasses of <code>UIView</code>, most style attributes will work like you would expect out of the box.  Some components will want a default style, however, for example <code>UIDatePicker</code> which is a fixed size.  This default style is important for the layout algorithm to work as expected, but we also want to be able to override the default style when using the component. <code>DatePickerIOS</code> does this by wrapping the native component in an extra view, which has flexible styling, and using a fixed style (which is generated with constants passed in from native) on the inner native component:</p>
+<pre><code class="hljs css javascript"><span class="hljs-comment">// DatePickerIOS.ios.js</span>
+
+<span class="hljs-keyword">import</span> { UIManager } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">var</span> RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
+...
+  render: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{this.props.style}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">RCTDatePickerIOS</span>
+          <span class="hljs-attr">ref</span>=<span class="hljs-string">{DATEPICKER}</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.rkDatePickerIOS}</span>
+          <span class="hljs-attr">...</span>
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    );
+  }
+});
+
+var styles = StyleSheet.create({
+  rkDatePickerIOS: {
+    height: RCTDatePickerIOSConsts.ComponentHeight,
+    width: RCTDatePickerIOSConsts.ComponentWidth,
+  },
+});
+</span></code></pre>
+<p>The <code>RCTDatePickerIOSConsts</code> constants are exported from native by grabbing the actual frame of the native component like so:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// RCTDatePickerManager.m</span>
+
+- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
+{
+  <span class="hljs-built_in">UIDatePicker</span> *dp = [[<span class="hljs-built_in">UIDatePicker</span> alloc] init];
+  [dp layoutIfNeeded];
+
+  <span class="hljs-keyword">return</span> @{
+    <span class="hljs-string">@"ComponentHeight"</span>: @(<span class="hljs-built_in">CGRectGetHeight</span>(dp.frame)),
+    <span class="hljs-string">@"ComponentWidth"</span>: @(<span class="hljs-built_in">CGRectGetWidth</span>(dp.frame)),
+    <span class="hljs-string">@"DatePickerModes"</span>: @{
+      <span class="hljs-string">@"time"</span>: @(<span class="hljs-built_in">UIDatePickerModeTime</span>),
+      <span class="hljs-string">@"date"</span>: @(<span class="hljs-built_in">UIDatePickerModeDate</span>),
+      <span class="hljs-string">@"datetime"</span>: @(<span class="hljs-built_in">UIDatePickerModeDateAndTime</span>),
+    }
+  };
+}
+</code></pre>
+<p>This guide covered many of the aspects of bridging over custom native components, but there is even more you might need to consider, such as custom hooks for inserting and laying out subviews. If you want to go even deeper, check out the <a href="https://github.com/facebook/react-native/blob/master/React/Views">source code</a> of some of the implemented components.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="native-modules-ios.html">← Native Modules</a><a class="docs-next button" href="linking-libraries-ios.html">Linking Libraries →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.41"],"hitsPerPage":5}
+              });
+            </script></body></html>

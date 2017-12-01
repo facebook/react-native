@@ -1,0 +1,387 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Native Modules · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Native Modules · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="Sometimes an app needs access to a platform API that React Native doesn&#x27;t have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.37</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.37/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Guides (Android)</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.37/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/activityindicator.html">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/button.html">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/keyboardavoidingview.html">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/alert.html">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/alertios.html">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/appregistry.html">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/keyboard.html">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/permissionsandroid.html">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/share.html">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/systrace.html">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.37/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/native-modules-android.md" target="_blank">Edit</a><h1>Native Modules</h1></header><article><div><span><p>Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.</p>
+<p>We designed React Native such that it is possible for you to write real native code and have access to the full power of the platform. This is a more advanced feature and we don't expect it to be part of the usual development process, however it is essential that it exists. If React Native doesn't support a native feature that you need, you should be able to build it yourself.</p>
+<h3><a class="anchor" aria-hidden="true" name="enable-gradle"></a><a href="#enable-gradle" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enable Gradle</h3>
+<p>If you plan to make changes in Java code, we recommend enabling <a href="https://docs.gradle.org/2.9/userguide/gradle_daemon.html">Gradle Daemon</a> to speed up builds.</p>
+<h2><a class="anchor" aria-hidden="true" name="the-toast-module"></a><a href="#the-toast-module" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Toast Module</h2>
+<p>This guide will use the <a href="http://developer.android.com/reference/android/widget/Toast.html">Toast</a> example. Let's say we would like to be able to create a toast message from JavaScript.</p>
+<p>We start by creating a native module. A native module is a Java class that usually extends the <code>ReactContextBaseJavaModule</code> class and implements the functionality required by the JavaScript. Our goal here is to be able to write <code>ToastExample.show('Awesome', ToastExample.SHORT);</code> from JavaScript to display a short toast on the screen.</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">package</span> com.facebook.react.modules.toast;
+
+<span class="hljs-keyword">import</span> android.widget.Toast;
+
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.NativeModule;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactApplicationContext;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactContext;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactContextBaseJavaModule;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactMethod;
+
+<span class="hljs-keyword">import</span> java.util.Map;
+<span class="hljs-keyword">import</span> java.util.HashMap; 
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToastModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String DURATION_SHORT_KEY = <span class="hljs-string">"SHORT"</span>;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String DURATION_LONG_KEY = <span class="hljs-string">"LONG"</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ToastModule</span><span class="hljs-params">(ReactApplicationContext reactContext)</span> </span>{
+    <span class="hljs-keyword">super</span>(reactContext);
+  }
+}
+</code></pre>
+<p><code>ReactContextBaseJavaModule</code> requires that a method called <code>getName</code> is implemented. The purpose of this method is to return the string name of the <code>NativeModule</code> which represents this class in JavaScript. So here we will call this <code>ToastExample</code> so that we can access it through <code>React.NativeModules.ToastExample</code> in JavaScript.</p>
+<pre><code class="hljs css java">  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"ToastExample"</span>;
+  }
+</code></pre>
+<p>An optional method called <code>getConstants</code> returns the constant values exposed to JavaScript. Its implementation is not required but is very useful to key pre-defined values that need to be communicated from JavaScript to Java in sync.</p>
+<pre><code class="hljs css java">  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> Map&lt;String, Object&gt; <span class="hljs-title">getConstants</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">final</span> Map&lt;String, Object&gt; constants = <span class="hljs-keyword">new</span> HashMap&lt;&gt;();
+    constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
+    constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
+    <span class="hljs-keyword">return</span> constants;
+  }
+</code></pre>
+<p>To expose a method to JavaScript a Java method must be annotated using <code>@ReactMethod</code>. The return type of bridge methods is always <code>void</code>. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).</p>
+<pre><code class="hljs css java">  <span class="hljs-meta">@ReactMethod</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">show</span><span class="hljs-params">(String message, <span class="hljs-keyword">int</span> duration)</span> </span>{
+    Toast.makeText(getReactApplicationContext(), message, duration).show();
+  }
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="argument-types"></a><a href="#argument-types" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argument Types</h3>
+<p>The following argument types are supported for methods annotated with <code>@ReactMethod</code> and they directly map to their JavaScript equivalents</p>
+<pre><code class="hljs">B<span class="hljs-function"><span class="hljs-title">oolean</span> -&gt;</span> Bool
+I<span class="hljs-function"><span class="hljs-title">nteger</span> -&gt;</span> Number
+D<span class="hljs-function"><span class="hljs-title">ouble</span> -&gt;</span> Number
+F<span class="hljs-function"><span class="hljs-title">loat</span> -&gt;</span> Number
+S<span class="hljs-function"><span class="hljs-title">tring</span> -&gt;</span> String
+C<span class="hljs-function"><span class="hljs-title">allback</span> -&gt;</span> function
+R<span class="hljs-function"><span class="hljs-title">eadableMap</span> -&gt;</span> Object
+R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;</span> Array
+</code></pre>
+<p>Read more about <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableMap.java">ReadableMap</a> and <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableArray.java">ReadableArray</a></p>
+<h3><a class="anchor" aria-hidden="true" name="register-the-module"></a><a href="#register-the-module" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Register the Module</h3>
+<p>The last step within Java is to register the Module; this happens in the <code>createNativeModules</code> of your apps package. If a module is not registered it will not be available from JavaScript.</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">package</span> com.facebook.react.modules.toast;
+
+<span class="hljs-keyword">import</span> com.facebook.react.ReactPackage;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.NativeModule;
+<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactApplicationContext;
+<span class="hljs-keyword">import</span> com.facebook.react.uimanager.ViewManager;
+
+<span class="hljs-keyword">import</span> java.util.ArrayList;
+<span class="hljs-keyword">import</span> java.util.Collections;
+<span class="hljs-keyword">import</span> java.util.List;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AnExampleReactPackage</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ReactPackage</span> </span>{
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;ViewManager&gt; <span class="hljs-title">createViewManagers</span><span class="hljs-params">(ReactApplicationContext reactContext)</span> </span>{
+    <span class="hljs-keyword">return</span> Collections.emptyList();
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;NativeModule&gt; <span class="hljs-title">createNativeModules</span><span class="hljs-params">(
+                              ReactApplicationContext reactContext)</span> </span>{
+    List&lt;NativeModule&gt; modules = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+
+    modules.add(<span class="hljs-keyword">new</span> ToastModule(reactContext));
+
+    <span class="hljs-keyword">return</span> modules;
+  }
+
+}
+</code></pre>
+<p>The package needs to be provided in the <code>getPackages</code> method of the <code>MainApplication.java</code> file. This file exists under the android folder in your react-native application directory. The path to this file is: <code>android/app/src/main/java/com/your-app-name/MainApplication.java</code>.</p>
+<pre><code class="hljs css java"><span class="hljs-function"><span class="hljs-keyword">protected</span> List&lt;ReactPackage&gt; <span class="hljs-title">getPackages</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> Arrays.&lt;ReactPackage&gt;asList(
+            <span class="hljs-keyword">new</span> MainReactPackage(),
+            <span class="hljs-keyword">new</span> AnExampleReactPackage()); <span class="hljs-comment">// &lt;-- Add this line with your package name.</span>
+}
+</code></pre>
+<p>To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of <code>NativeModules</code> each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.</p>
+<pre><code class="hljs css js"><span class="hljs-comment">/**
+ * This exposes the native ToastExample module as a JS module. This has a
+ * function 'show' which takes the following parameters:
+ *
+ * 1. String message: A string with the text to toast
+ * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
+ *    ToastExample.LONG
+ */</span>
+<span class="hljs-keyword">import</span> { NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-built_in">module</span>.exports = NativeModules.ToastExample;
+</code></pre>
+<p>Now, from your other JavaScript file you can call the method like this:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">import</span> ToastExample <span class="hljs-keyword">from</span> <span class="hljs-string">'./ToastExample'</span>;
+
+ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT);
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="beyond-toasts"></a><a href="#beyond-toasts" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Beyond Toasts</h2>
+<h3><a class="anchor" aria-hidden="true" name="callbacks"></a><a href="#callbacks" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callbacks</h3>
+<p>Native modules also support a special kind of argument - a callback. In most cases it is used to provide the function call result to JavaScript.</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UIManagerModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
+
+...
+
+  <span class="hljs-meta">@ReactMethod</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">measureLayout</span><span class="hljs-params">(
+      <span class="hljs-keyword">int</span> tag,
+      <span class="hljs-keyword">int</span> ancestorTag,
+      Callback errorCallback,
+      Callback successCallback)</span> </span>{
+    <span class="hljs-keyword">try</span> {
+      measureLayout(tag, ancestorTag, mMeasureBuffer);
+      <span class="hljs-keyword">float</span> relativeX = PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">0</span>]);
+      <span class="hljs-keyword">float</span> relativeY = PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">1</span>]);
+      <span class="hljs-keyword">float</span> width = PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">2</span>]);
+      <span class="hljs-keyword">float</span> height = PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">3</span>]);
+      successCallback.invoke(relativeX, relativeY, width, height);
+    } <span class="hljs-keyword">catch</span> (IllegalViewOperationException e) {
+      errorCallback.invoke(e.getMessage());
+    }
+  }
+
+...
+</code></pre>
+<p>This method would be accessed in JavaScript using:</p>
+<pre><code class="hljs css js">UIManager.measureLayout(
+  <span class="hljs-number">100</span>,
+  <span class="hljs-number">100</span>,
+  (msg) =&gt; {
+    <span class="hljs-built_in">console</span>.log(msg);
+  },
+  (x, y, width, height) =&gt; {
+    <span class="hljs-built_in">console</span>.log(x + <span class="hljs-string">':'</span> + y + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
+  }
+);
+</code></pre>
+<p>A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.</p>
+<p>It is very important to highlight that the callback is not invoked immediately after the native function completes - remember that bridge communication is asynchronous, and this too is tied to the run loop.</p>
+<h3><a class="anchor" aria-hidden="true" name="promises"></a><a href="#promises" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Promises</h3>
+<p>Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's <code>async/await</code> syntax. When the last parameter of a bridged native method is a <code>Promise</code>, its corresponding JS method will return a JS Promise object.</p>
+<p>Refactoring the above code to use a promise instead of callbacks looks like this:</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">import</span> com.facebook.react.bridge.Promise;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UIManagerModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
+
+...
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String E_LAYOUT_ERROR = <span class="hljs-string">"E_LAYOUT_ERROR"</span>;
+  <span class="hljs-meta">@ReactMethod</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">measureLayout</span><span class="hljs-params">(
+      <span class="hljs-keyword">int</span> tag,
+      <span class="hljs-keyword">int</span> ancestorTag,
+      Promise promise)</span> </span>{
+    <span class="hljs-keyword">try</span> {
+      measureLayout(tag, ancestorTag, mMeasureBuffer);
+
+      WritableMap map = Arguments.createMap();
+
+      map.putDouble(<span class="hljs-string">"relativeX"</span>, PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">0</span>]));
+      map.putDouble(<span class="hljs-string">"relativeY"</span>, PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">1</span>]));
+      map.putDouble(<span class="hljs-string">"width"</span>, PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">2</span>]));
+      map.putDouble(<span class="hljs-string">"height"</span>, PixelUtil.toDIPFromPixel(mMeasureBuffer[<span class="hljs-number">3</span>]));
+
+      promise.resolve(map);
+    } <span class="hljs-keyword">catch</span> (IllegalViewOperationException e) {
+      promise.reject(E_LAYOUT_ERROR, e);
+    }
+  }
+
+...
+</code></pre>
+<p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">var</span> {
+      relativeX,
+      relativeY,
+      width,
+      height,
+    } = <span class="hljs-keyword">await</span> UIManager.measureLayout(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>);
+
+    <span class="hljs-built_in">console</span>.log(relativeX + <span class="hljs-string">':'</span> + relativeY + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
+  } <span class="hljs-keyword">catch</span> (e) {
+    <span class="hljs-built_in">console</span>.error(e);
+  }
+}
+
+measureLayout();
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="threading"></a><a href="#threading" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Threading</h3>
+<p>Native modules should not have any assumptions about what thread they are being called on, as the current assignment is subject to change in the future. If a blocking call is required, the heavy work should be dispatched to an internally managed worker thread, and any callbacks distributed from there.</p>
+<h3><a class="anchor" aria-hidden="true" name="sending-events-to-javascript"></a><a href="#sending-events-to-javascript" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sending Events to JavaScript</h3>
+<p>Native modules can signal events to JavaScript without being invoked directly. The easiest way to do this is to use the <code>RCTDeviceEventEmitter</code> which can be obtained from the <code>ReactContext</code> as in the code snippet below.</p>
+<pre><code class="hljs css java">...
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sendEvent</span><span class="hljs-params">(ReactContext reactContext,
+                       String eventName,
+                       @Nullable WritableMap params)</span> </span>{
+  reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
+}
+...
+WritableMap params = Arguments.createMap();
+...
+sendEvent(reactContext, <span class="hljs-string">"keyboardWillShow"</span>, params);
+</code></pre>
+<p>JavaScript modules can then register to receive events by <code>addListenerOn</code> using the <code>Subscribable</code> mixin.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { DeviceEventEmitter } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+...
+
+var ScrollResponderMixin = {
+  <span class="hljs-attr">mixins</span>: [Subscribable.Mixin],
+
+
+  <span class="hljs-attr">componentWillMount</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    ...
+    this.addListenerOn(DeviceEventEmitter,
+                       <span class="hljs-string">'keyboardWillShow'</span>,
+                       <span class="hljs-keyword">this</span>.scrollResponderKeyboardWillShow);
+    ...
+  },
+  <span class="hljs-attr">scrollResponderKeyboardWillShow</span>:<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e: Event</span>) </span>{
+    <span class="hljs-keyword">this</span>.keyboardWillOpenTo = e;
+    <span class="hljs-keyword">this</span>.props.onKeyboardWillShow &amp;&amp; <span class="hljs-keyword">this</span>.props.onKeyboardWillShow(e);
+  },
+</code></pre>
+<p>You can also directly use the <code>DeviceEventEmitter</code> module to listen for events.</p>
+<pre><code class="hljs css js">...
+componentWillMount: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  DeviceEventEmitter.addListener(<span class="hljs-string">'keyboardWillShow'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e: Event</span>) </span>{
+    <span class="hljs-comment">// handle event.</span>
+  });
+}
+...
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="getting-activity-result-from-startactivityforresult"></a><a href="#getting-activity-result-from-startactivityforresult" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting activity result from <code>startActivityForResult</code></h3>
+<p>You'll need to listen to <code>onActivityResult</code> if you want to get results from an activity you started with <code>startActivityForResult</code>. To do this, you must extend <code>BaseActivityEventListener</code> or implement <code>ActivityEventListener</code>. The former is preferred as it is more resilient to API changes. Then, you need to register the listener in the module's constructor,</p>
+<pre><code class="hljs css java">reactContext.addActivityEventListener(mActivityResultListener);
+</code></pre>
+<p>Now you can listen to <code>onActivityResult</code> by implementing the following method:</p>
+<pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onActivityResult</span><span class="hljs-params">(
+  <span class="hljs-keyword">final</span> Activity activity,
+  <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> requestCode,
+  <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> resultCode,
+  <span class="hljs-keyword">final</span> Intent intent)</span> </span>{
+  <span class="hljs-comment">// Your logic here</span>
+}
+</code></pre>
+<p>We will implement a simple image picker to demonstrate this. The image picker will expose the method <code>pickImage</code> to JavaScript, which will return the path of the image when called.</p>
+<pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ImagePickerModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> IMAGE_PICKER_REQUEST = <span class="hljs-number">467081</span>;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String E_ACTIVITY_DOES_NOT_EXIST = <span class="hljs-string">"E_ACTIVITY_DOES_NOT_EXIST"</span>;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String E_PICKER_CANCELLED = <span class="hljs-string">"E_PICKER_CANCELLED"</span>;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String E_FAILED_TO_SHOW_PICKER = <span class="hljs-string">"E_FAILED_TO_SHOW_PICKER"</span>;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String E_NO_IMAGE_DATA_FOUND = <span class="hljs-string">"E_NO_IMAGE_DATA_FOUND"</span>;
+
+  <span class="hljs-keyword">private</span> Promise mPickerPromise;
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ActivityEventListener mActivityEventListener = <span class="hljs-keyword">new</span> BaseActivityEventListener() {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onActivityResult</span><span class="hljs-params">(Activity activity, <span class="hljs-keyword">int</span> requestCode, <span class="hljs-keyword">int</span> resultCode, Intent intent)</span> </span>{
+      <span class="hljs-keyword">if</span> (requestCode == IMAGE_PICKER_REQUEST) {
+        <span class="hljs-keyword">if</span> (mPickerPromise != <span class="hljs-keyword">null</span>) {
+          <span class="hljs-keyword">if</span> (resultCode == Activity.RESULT_CANCELED) {
+            mPickerPromise.reject(E_PICKER_CANCELLED, <span class="hljs-string">"Image picker was cancelled"</span>);
+          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (resultCode == Activity.RESULT_OK) {
+            Uri uri = intent.getData();
+
+            <span class="hljs-keyword">if</span> (uri == <span class="hljs-keyword">null</span>) {
+              mPickerPromise.reject(E_NO_IMAGE_DATA_FOUND, <span class="hljs-string">"No image data found"</span>);
+            } <span class="hljs-keyword">else</span> {
+              mPickerPromise.resolve(uri.toString());
+            }
+          }
+
+          mPickerPromise = <span class="hljs-keyword">null</span>;
+        }
+      }
+    }
+  };
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ImagePickerModule</span><span class="hljs-params">(ReactApplicationContext reactContext)</span> </span>{
+    <span class="hljs-keyword">super</span>(reactContext);
+
+    <span class="hljs-comment">// Add the listener for `onActivityResult`</span>
+    reactContext.addActivityEventListener(mActivityEventListener);
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"ImagePickerModule"</span>;
+  }
+
+  <span class="hljs-meta">@ReactMethod</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">pickImage</span><span class="hljs-params">(<span class="hljs-keyword">final</span> Promise promise)</span> </span>{
+    Activity currentActivity = getCurrentActivity();
+
+    <span class="hljs-keyword">if</span> (currentActivity == <span class="hljs-keyword">null</span>) {
+      promise.reject(E_ACTIVITY_DOES_NOT_EXIST, <span class="hljs-string">"Activity doesn't exist"</span>);
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">// Store the promise to resolve/reject when picker returns data</span>
+    mPickerPromise = promise;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">final</span> Intent galleryIntent = <span class="hljs-keyword">new</span> Intent(Intent.ACTION_PICK);
+
+      galleryIntent.setType(<span class="hljs-string">"image/*"</span>);
+
+      <span class="hljs-keyword">final</span> Intent chooserIntent = Intent.createChooser(galleryIntent, <span class="hljs-string">"Pick an image"</span>);
+
+      currentActivity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST);
+    } <span class="hljs-keyword">catch</span> (Exception e) {
+      mPickerPromise.reject(E_FAILED_TO_SHOW_PICKER, e);
+      mPickerPromise = <span class="hljs-keyword">null</span>;
+    }
+  }
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="listening-to-lifecycle-events"></a><a href="#listening-to-lifecycle-events" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Listening to LifeCycle events</h3>
+<p>Listening to the activity's LifeCycle events such as <code>onResume</code>, <code>onPause</code> etc. is very similar to how we implemented <code>ActivityEventListener</code>. The module must implement <code>LifecycleEventListener</code>. Then, you need to register a listener in the module's constructor,</p>
+<pre><code class="hljs css java">reactContext.addLifecycleEventListener(<span class="hljs-keyword">this</span>);
+</code></pre>
+<p>Now you can listen to the activity's LifeCycle events by implementing the following methods:</p>
+<pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onHostResume</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Activity `onResume`</span>
+}
+
+<span class="hljs-meta">@Override</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onHostPause</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Activity `onPause`</span>
+}
+
+<span class="hljs-meta">@Override</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onHostDestroy</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Activity `onDestroy`</span>
+}
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="app-extensions.html">← App Extensions</a><a class="docs-next button" href="native-components-android.html">Native UI Components →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.37"],"hitsPerPage":5}
+              });
+            </script></body></html>

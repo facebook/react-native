@@ -1,0 +1,528 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>FlatList · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="FlatList · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="A performant interface for rendering simple, flat lists, supporting the most handy features:"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.47</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.47/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Components</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/activityindicator.html">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/button.html">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.47/flatlist.html">FlatList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/keyboardavoidingview.html">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/listview.html">ListView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/sectionlist.html">SectionList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/view.html">View</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/virtualizedlist.html">VirtualizedList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/accessibilityinfo.html">AccessibilityInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/alert.html">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/alertios.html">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/appregistry.html">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/backandroid.html">BackAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/backhandler.html">BackHandler</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/keyboard.html">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/listviewdatasource.html">ListViewDataSource</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/permissionsandroid.html">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/share.html">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/systrace.html">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.47/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.47/flatlist.md" target="_blank">Edit</a><h1>FlatList</h1></header><article><div><span><p>A performant interface for rendering simple, flat lists, supporting the most handy features:</p>
+<ul>
+<li>Fully cross-platform.</li>
+<li>Optional horizontal mode.</li>
+<li>Configurable viewability callbacks.</li>
+<li>Header support.</li>
+<li>Footer support.</li>
+<li>Separator support.</li>
+<li>Pull to Refresh.</li>
+<li>Scroll loading.</li>
+<li>ScrollToIndex support.</li>
+</ul>
+<p>If you need section support, use <a href="/react-native/docs/0.47/sectionlist.html"><code>&lt;SectionList&gt;</code></a>.</p>
+<p>Minimal Example:</p>
+<pre><code class="hljs">&lt;FlatList
+  data={[{key: 'a'}, {key: 'b'}]}
+  renderItem={({item}) =&gt; &lt;Text&gt;{item.key}&lt;/Text&gt;}
+/&gt;
+</code></pre>
+<p>More complex example demonstrating <code>PureComponent</code> usage for perf optimization and avoiding bugs.</p>
+<ul>
+<li>By binding the <code>onPressItem</code> handler, the props will remain <code>===</code> and <code>PureComponent</code> will
+prevent wasteful re-renders unless the actual <code>id</code>, <code>selected</code>, or <code>title</code> props change, even
+if the inner <code>SomeOtherWidget</code> has no such optimizations.</li>
+<li>By passing <code>extraData={this.state}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render
+when the <code>state.selected</code> changes. Without setting this prop, <code>FlatList</code> would not know it
+needs to re-render any items because it is also a <code>PureComponent</code> and the prop comparison will
+not show any changes.</li>
+<li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys.</li>
+</ul>
+<pre><code class="hljs">class MyListItem extends React.PureComponent {
+  _onPress = () =&gt; {
+    this.props.onPressItem(this.props.id);
+  };
+
+  render() {
+    return (
+      &lt;SomeOtherWidget
+        {...this.props}
+        onPress={this._onPress}
+      /&gt;
+    )
+  }
+}
+
+class MyList extends React.PureComponent {
+  state = {selected: (new Map(): Map&lt;string, boolean&gt;)};
+
+  _keyExtractor = (item, index) =&gt; item.id;
+
+  _onPressItem = (id: string) =&gt; {
+    // updater functions are preferred for transactional updates
+    this.setState((state) =&gt; {
+      // copy the map rather than modifying state.
+      const selected = new Map(state.selected);
+      selected.set(id, !selected.get(id)); // toggle
+      return {selected};
+    });
+  };
+
+  _renderItem = ({item}) =&gt; (
+    &lt;MyListItem
+      id={item.id}
+      onPressItem={this._onPressItem}
+      selected={!!this.state.selected.get(item.id)}
+      title={item.title}
+    /&gt;
+  );
+
+  render() {
+    return (
+      &lt;FlatList
+        data={this.props.data}
+        extraData={this.state}
+        keyExtractor={this._keyExtractor}
+        renderItem={this._renderItem}
+      /&gt;
+    );
+  }
+}
+</code></pre>
+<p>This is a convenience wrapper around <a href="/react-native/docs/0.47/virtualizedlist.html"><code>&lt;VirtualizedList&gt;</code></a>,
+and thus inherits its props (as well as those of <code>ScrollView</code>) that aren't explicitly listed
+here, along with the following caveats:</p>
+<ul>
+<li>Internal state is not preserved when content scrolls out of the render window. Make sure all
+your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
+<li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-
+equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop
+(e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on
+changes. This includes the <code>data</code> prop and parent component state.</li>
+<li>In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
+offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
+and we are working on improving it behind the scenes.</li>
+<li>By default, the list looks for a <code>key</code> prop on each item and uses that for the React key.
+Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
+<ul>
+<li><a href="/react-native/docs/0.47/flatlist.html#keyextractor"><code>keyExtractor</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#data"><code>data</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#initialnumtorender"><code>initialNumToRender</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#numcolumns"><code>numColumns</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#renderitem"><code>renderItem</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#itemseparatorcomponent"><code>ItemSeparatorComponent</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#extradata"><code>extraData</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#getitemlayout"><code>getItemLayout</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#horizontal"><code>horizontal</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#listfootercomponent"><code>ListFooterComponent</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#initialscrollindex"><code>initialScrollIndex</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#inverted"><code>inverted</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#listemptycomponent"><code>ListEmptyComponent</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#legacyimplementation"><code>legacyImplementation</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#listheadercomponent"><code>ListHeaderComponent</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#onendreached"><code>onEndReached</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#onendreachedthreshold"><code>onEndReachedThreshold</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#onrefresh"><code>onRefresh</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#onviewableitemschanged"><code>onViewableItemsChanged</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#refreshing"><code>refreshing</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#columnwrapperstyle"><code>columnWrapperStyle</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#viewabilityconfig"><code>viewabilityConfig</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#progressviewoffset"><code>progressViewOffset</code></a></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
+<ul>
+<li><a href="/react-native/docs/0.47/flatlist.html#scrolltoend"><code>scrollToEnd</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#scrolltoindex"><code>scrollToIndex</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#scrolltoitem"><code>scrollToItem</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#scrolltooffset"><code>scrollToOffset</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#recordinteraction"><code>recordInteraction</code></a></li>
+<li><a href="/react-native/docs/0.47/flatlist.html#flashscrollindicators"><code>flashScrollIndicators</code></a></li>
+</ul>
+<hr>
+<h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<h3><a class="anchor" aria-hidden="true" name="keyextractor"></a><a href="#keyextractor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyExtractor</code></h3>
+<p>Used to extract a unique key for a given item at the specified index. Key is used for caching
+and as the react key to track item re-ordering. The default extractor checks <code>item.key</code>, then
+falls back to using the index, like React does.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>(item: ItemT, index: number) =&gt; string</td><td>Yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="data"></a><a href="#data" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>data</code></h3>
+<p>For simplicity, data is just a plain array. If you want to use something else, like an
+immutable list, use the underlying <code>VirtualizedList</code> directly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[$ReadOnlyArray<ItemT>]</td><td>Yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="initialnumtorender"></a><a href="#initialnumtorender" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>initialNumToRender</code></h3>
+<p>How many items to render in the initial batch. This should be enough to fill the screen but not
+much more. Note these items will never be unmounted as part of the windowed rendering in order
+to improve perceived performance of scroll-to-top actions.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>Yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="numcolumns"></a><a href="#numcolumns" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>numColumns</code></h3>
+<p>Multiple columns can only be rendered with <code>horizontal={false}</code> and will zig-zag like a
+<code>flexWrap</code> layout. Items should all be the same height - masonry layouts are not supported.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>Yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="renderitem"></a><a href="#renderitem" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>renderItem</code></h3>
+<p>Takes an item from <code>data</code> and renders it into the list. Example usage:</p>
+<pre><code class="hljs">&lt;FlatList
+  ItemSeparatorComponent={Platform.OS !== 'android' &amp;&amp; ({highlighted}) =&gt; (
+    &lt;View style={[style.separator, highlighted &amp;&amp; {marginLeft: 0}]} /&gt;
+  )}
+  data={[{title: 'Title Text', key: 'item1'}]}
+  renderItem={({item, separators}) =&gt; (
+    &lt;TouchableHighlight
+      onPress={() =&gt; this._onPress(item)}
+      onShowUnderlay={separators.highlight}
+      onHideUnderlay={separators.unhighlight}&gt;
+      &lt;View style={{backgroundColor: 'white'}}&gt;
+        &lt;Text&gt;{item.title}}&lt;/Text&gt;
+      &lt;/View&gt;
+    &lt;/TouchableHighlight&gt;
+  )}
+/&gt;
+</code></pre>
+<p>Provides additional metadata like <code>index</code> if you need it, as well as a more generic
+<code>separators.updateProps</code> function which let's you set whatever props you want to change the
+rendering of either the leading separator or trailing separator in case the more common
+<code>highlight</code> and <code>unhighlight</code> (which set the <code>highlighted: boolean</code> prop) are insufficient for
+your use-case.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>(info: {</td></tr>
+</tbody>
+</table>
+<p>item: ItemT,
+index: number,
+separators: {
+highlight: () =&gt; void,
+unhighlight: () =&gt; void,
+updateProps: (select: 'leading' | 'trailing', newProps: Object) =&gt; void,
+},
+}) =&gt; ?React.Element<any> | Yes |</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="itemseparatorcomponent"></a><a href="#itemseparatorcomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ItemSeparatorComponent</code></h3>
+<p>Rendered in between each item, but not at the top or bottom. By default, <code>highlighted</code> and
+<code>leadingItem</code> props are provided. <code>renderItem</code> provides <code>separators.highlight</code>/<code>unhighlight</code>
+which will update the <code>highlighted</code> prop, but you can also add custom props with
+<code>separators.updateProps</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[ReactClass<any>]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="extradata"></a><a href="#extradata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>extraData</code></h3>
+<p>A marker property for telling the list to re-render (since it implements <code>PureComponent</code>). If
+any of your <code>renderItem</code>, Header, Footer, etc. functions depend on anything outside of the
+<code>data</code> prop, stick it here and treat it immutably.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>any</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getitemlayout"></a><a href="#getitemlayout" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItemLayout</code></h3>
+<p><code>getItemLayout</code> is an optional optimizations that let us skip measurement of dynamic content if
+you know the height of items a priori. <code>getItemLayout</code> is the most efficient, and is easy to
+use if you have fixed height items, for example:</p>
+<pre><code class="hljs">getItemLayout={(data, index) =&gt; (
+  {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+)}
+</code></pre>
+<p>Remember to include separator length (height or width) in your offset calculation if you
+specify <code>ItemSeparatorComponent</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>(</td></tr>
+</tbody>
+</table>
+<p>data: ?Array<ItemT>,
+index: number,
+) =&gt; {length: number, offset: number, index: number} | No |</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="horizontal"></a><a href="#horizontal" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>horizontal</code></h3>
+<p>If true, renders items next to each other horizontally instead of stacked vertically.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[boolean]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listfootercomponent"></a><a href="#listfootercomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListFooterComponent</code></h3>
+<p>Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[ReactClass<any> ‖ ,React.Element<any>]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="initialscrollindex"></a><a href="#initialscrollindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>initialScrollIndex</code></h3>
+<p>Instead of starting at the top with the first item, start at <code>initialScrollIndex</code>. This
+disables the &quot;scroll to top&quot; optimization that keeps the first <code>initialNumToRender</code> items
+always rendered and immediately renders the items starting at this initial index. Requires
+<code>getItemLayout</code> to be implemented.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[number]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="inverted"></a><a href="#inverted" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>inverted</code></h3>
+<p>Reverses the direction of scroll. Uses scale transforms of -1.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[boolean]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listemptycomponent"></a><a href="#listemptycomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListEmptyComponent</code></h3>
+<p>Rendered when the list is empty. Can be a React Component Class, a render function, or
+a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[ReactClass<any> ‖ ,React.Element<any>]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="legacyimplementation"></a><a href="#legacyimplementation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>legacyImplementation</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[boolean]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listheadercomponent"></a><a href="#listheadercomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListHeaderComponent</code></h3>
+<p>Rendered at the top of all the items. Can be a React Component Class, a render function, or
+a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[ReactClass<any> ‖ ,React.Element<any>]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onendreached"></a><a href="#onendreached" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onEndReached</code></h3>
+<p>Called once when the scroll position gets within <code>onEndReachedThreshold</code> of the rendered
+content.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[(info: {distanceFromEnd: number}) =&gt; void]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onendreachedthreshold"></a><a href="#onendreachedthreshold" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onEndReachedThreshold</code></h3>
+<p>How far from the end (in units of visible length of the list) the bottom edge of the
+list must be from the end of the content to trigger the <code>onEndReached</code> callback.
+Thus a value of 0.5 will trigger <code>onEndReached</code> when the end of the content is
+within half the visible length of the list.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[number]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onrefresh"></a><a href="#onrefresh" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onRefresh</code></h3>
+<p>If provided, a standard RefreshControl will be added for &quot;Pull to Refresh&quot; functionality. Make
+sure to also set the <code>refreshing</code> prop correctly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[() =&gt; void]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onviewableitemschanged"></a><a href="#onviewableitemschanged" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onViewableItemsChanged</code></h3>
+<p>Called when the viewability of rows changes, as defined by the <code>viewabilityConfig</code> prop.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[(info: {</td></tr>
+</tbody>
+</table>
+<p>viewableItems: Array<ViewToken>,
+changed: Array<ViewToken>,
+}) =&gt; void] | No |</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="refreshing"></a><a href="#refreshing" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>refreshing</code></h3>
+<p>Set this true while waiting for new data from a refresh.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>[boolean]</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="removeclippedsubviews"></a><a href="#removeclippedsubviews" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeClippedSubviews</code></h3>
+<p>Note: may have bugs (missing content) in some circumstances - use at your own risk.</p>
+<p>This may improve scroll performance for large lists.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="columnwrapperstyle"></a><a href="#columnwrapperstyle" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>columnWrapperStyle</code></h3>
+<p>Optional custom style for multi-item rows generated when numColumns &gt; 1.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>StyleObj</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="viewabilityconfig"></a><a href="#viewabilityconfig" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>viewabilityConfig</code></h3>
+<p>See <code>ViewabilityHelper</code> for flow type and further documentation.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>ViewabilityConfig</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="progressviewoffset"></a><a href="#progressviewoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>progressViewOffset</code></h3>
+<p>Set this when offset is needed for the loading indicator to show correctly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" name="scrolltoend"></a><a href="#scrolltoend" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToEnd()</code></h3>
+<pre><code class="hljs css javascript">scrollToEnd([params]: object)
+</code></pre>
+<p>Scrolls to the end of the content. May be janky without <code>getItemLayout</code> prop.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="scrolltoindex"></a><a href="#scrolltoindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToIndex()</code></h3>
+<pre><code class="hljs css javascript">scrollToIndex(params: object)
+</code></pre>
+<p>Scrolls to the item at a the specified index such that it is positioned in the viewable area
+such that <code>viewPosition</code> 0 places it at the top, 1 at the bottom, and 0.5 centered in the
+middle. <code>viewOffset</code> is a fixed number of pixels to offset the final target position.</p>
+<p>Note: cannot scroll to locations outside the render window without specifying the
+<code>getItemLayout</code> prop.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="scrolltoitem"></a><a href="#scrolltoitem" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToItem()</code></h3>
+<pre><code class="hljs css javascript">scrollToItem(params: object)
+</code></pre>
+<p>Requires linear scan through data - use <code>scrollToIndex</code> instead if possible.</p>
+<p>Note: cannot scroll to locations outside the render window without specifying the
+<code>getItemLayout</code> prop.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="scrolltooffset"></a><a href="#scrolltooffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToOffset()</code></h3>
+<pre><code class="hljs css javascript">scrollToOffset(params: object)
+</code></pre>
+<p>Scroll to a specific content pixel offset in the list.</p>
+<p>Check out <a href="/react-native/docs/0.47/virtualizedlist.html#scrolltooffset">scrollToOffset</a> of VirtualizedList</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="recordinteraction"></a><a href="#recordinteraction" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>recordInteraction()</code></h3>
+<pre><code class="hljs css javascript">recordInteraction()
+</code></pre>
+<p>Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by
+taps on items or by navigation actions.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="flashscrollindicators"></a><a href="#flashscrollindicators" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flashScrollIndicators()</code></h3>
+<pre><code class="hljs css javascript">flashScrollIndicators()
+</code></pre>
+<p>Displays the scroll indicators momentarily.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="drawerlayoutandroid.html">← DrawerLayoutAndroid</a><a class="docs-next button" href="image.html">Image →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.47"],"hitsPerPage":5}
+              });
+            </script></body></html>

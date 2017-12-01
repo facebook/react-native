@@ -1,0 +1,277 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>What to Expect from Maintainers · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="What to Expect from Maintainers · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="So you have read through the [contributor&#x27;s guide](/react-native/docs/0.49/contributing.html) and you&#x27;re getting ready to send your first pull request. Perhaps you&#x27;ve found an issue in React Native and want to work with the maintainers to land a fix. Here&#x27;s what you can expect to happen when you open an issue or send a pull request."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.49</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.49/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Contributing</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/contributing.html">How to Contribute</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.49/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/activityindicator.html">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/button.html">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/flatlist.html">FlatList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/keyboardavoidingview.html">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/listview.html">ListView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/maskedviewios.html">MaskedViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/sectionlist.html">SectionList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/view.html">View</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/virtualizedlist.html">VirtualizedList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/accessibilityinfo.html">AccessibilityInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/alert.html">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/alertios.html">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/appregistry.html">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/backandroid.html">BackAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/backhandler.html">BackHandler</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/keyboard.html">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/listviewdatasource.html">ListViewDataSource</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/permissionsandroid.html">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/share.html">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/systrace.html">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/maintainers.md" target="_blank">Edit</a><h1>What to Expect from Maintainers</h1></header><article><div><span><p>So you have read through the <a href="/react-native/docs/0.49/contributing.html">contributor's guide</a> and you're getting ready to send your first pull request. Perhaps you've found an issue in React Native and want to work with the maintainers to land a fix. Here's what you can expect to happen when you open an issue or send a pull request.</p>
+<blockquote>
+<p>The following is adapted from the excellent <a href="https://opensource.guide/">Open Source Guide</a> from GitHub and reflects how the maintainers of React Native are encouraged to handle your contributions.</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" name="handling-issues"></a><a href="#handling-issues" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Handling Issues</h2>
+<p>We see dozens of new issues being created every day. In order to help maintainers focus on what is actionable, maintainers ask contributors to do a bit of work prior to opening a new issue:</p>
+<ul>
+<li>New issues should follow the <a href="https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md">Issue Template</a>.</li>
+<li>Issues should provide clear, easy to follow steps alongside sample code to reproduce the issue. Ideally, provide a <a href="http://snack.expo.io/">Snack</a>.</li>
+</ul>
+<p>Issues that do not meet the above criteria can be closed immediately, with a link to the <a href="/react-native/docs/0.49/contributing.html">contributor's guide</a>.</p>
+<h3><a class="anchor" aria-hidden="true" name="new-issue-runbook"></a><a href="#new-issue-runbook" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>New issue runbook</h3>
+<p>You have gathered all the information required to open a new issue, and you are confident it meets the <a href="/react-native/docs/0.49/contributing.html">contributor guidelines</a>. Once you post an issue, this is what our maintainers will consider when deciding how to move forward:</p>
+<ul>
+<li><p><strong>Is this issue a feature request?</strong></p>
+<p>Some features may not be a good fit for the core React Native library. This is usually the case for *<em>new modules</em> that Facebook does not use in production. In this case, a maintainer will explain that this should be released to npm as a separate module, allowing users to easily pull in the module in their projects.</p>
+<p>Even if the feature does belong in the core library, adding it means maintaining it. A maintainer will encourage you to submit a pull request or otherwise post your request to <a href="https://react-native.canny.io/feature-requests">Canny</a> by issuing the <code>@facebook-github-bot feature</code> command, closing the issue.</p>
+<p>An exception can be made for proposals and long-running discussions, though these should be rare. If you have been contributing to the project long enough, you will probably already have access to the <a href="https://www.facebook.com/groups/reactnativeoss/">React Native Core Contributors</a> Facebook Group, where this sort of discussion is usually held.</p></li>
+<li><p><strong>Is this issue a request for help?</strong></p>
+<p>Questions should absolutely be asked on Stack Overflow rather than GitHub. Maintainers may encourage you to ask on Stack Overflow by issuing the <code>@facebook-github-bot stack-overflow</code> command, closing the issue.
+Feel free to also answer some <a href="stackoverflow.com/questions/tagged/react-native">questions on Stack Overflow</a>, you'll get rep!</p></li>
+<li><p><strong>Was the <a href="https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md">Issue Template</a> used to fill out the issue? Did the author answer Yes to both questions at the top?</strong></p>
+<p>If not, the maintainer will ask you to provide more information by issuing the <code>@facebook-github-bot no-template</code> command, closing the issue.</p></li>
+<li><p><strong>Is the issue a duplicate of an existing, open issue?</strong></p>
+<p>A maintainer will use the <code>@facebook-github-bot duplicate #123</code> command to mark the issue as a duplicate of issue #123, closing it.</p></li>
+<li><p><strong>Does the issue include a Snack or list of steps to reproduce the issue?</strong></p>
+<p>Issues should be relatively easy to reproduce. Sometimes the issue affects a particular app but a minimal repro is not provided, perhaps a crash is seen in the logs and the author is not sure where its coming from, maybe the issue is sporadic.</p>
+<p>As it happens, if a maintainer cannot easily reproduce the issue, one cannot reasonably expect them to be able to work on a fix. These issues can be closed by issuing the <code>@facebook-github-bot needs-repro</code> command.</p>
+<p>Exceptions can be made if multiple people appear to be affected by the issue, especially right after a new React Native release is cut.</p></li>
+<li><p><strong>Is the issue for an old release of React Native?</strong></p>
+<p>If so, expect to be asked if the issue can be reproduced in the latest release candidate.</p></li>
+<li><p><strong>Can the issue be reliably reproduced?</strong></p>
+<p>If not, a maintainer may issue the <code>@facebook-github-bot cannot-repro</code> command, closing the issue.</p></li>
+<li><p><strong>Does the issue need more information?</strong></p>
+<p>Some issues need additional information in order to reproduce them. Maintainers should explain what additional information is needed, using the <code>@facebook-github-bot label Needs more information</code> command to label the issue as such.</p>
+<p>Issues with the 'Needs more information' label that have been open for more than a week without a response from the author can be closed using <code>@facebook-github-bot no-reply</code>.</p></li>
+<li><p><strong>Has the issue been resolved already in the comments?</strong></p>
+<p>Sometimes another contributor has already provided a solution in the comments. Maintainers may issue the <code>@facebook-github-bot answered</code> command to close the issue.</p></li>
+</ul>
+<blockquote>
+<p><strong>Reopening a closed issue:</strong> Sometimes it's necessary to reopen an issue. For example, if an issue was closed waiting for the author, then the author replied and it turns out this is indeed a bug, you can comment <code>@facebook-github-bot reopen</code> to reopen it.</p>
+</blockquote>
+<p>Valid bug reports with good repro steps are some of the best issues! Maintainers should thank the author for finding the issue, then explain that React Native is a community project and <strong>ask them if they would be up for sending a fix</strong>.</p>
+<h3><a class="anchor" aria-hidden="true" name="triaging-issues"></a><a href="#triaging-issues" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Triaging issues</h3>
+<p>If a issue is still open after going through all of the checks above, it will move on to the triage stage. A maintainer will then do the following:</p>
+<ol>
+<li>Add relevant labels. For example, if this is an issue that affects Android, use the <code>@facebook-github-bot label Android</code> command.</li>
+<li>Leave a comment saying the issue has been triaged.</li>
+<li>Tag the relevant people.</li>
+</ol>
+<p>You can generally figure out who may be relevant for a given issue by looking at the <a href="https://github.com/facebook/react-native/blob/master/.github/CODEOWNERS">CODEOWNERS</a> file.</p>
+<h4><a class="anchor" aria-hidden="true" name="what-are-all-the-available-commands-for-the-bot"></a><a href="#what-are-all-the-available-commands-for-the-bot" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What are all the available commands for the bot?</h4>
+<p>You can find the full command reference in the <a href="/maintainers.md#facebook-github-bot">Facebook GitHub Bot</a> section below.</p>
+<h3><a class="anchor" aria-hidden="true" name="stale-issues"></a><a href="#stale-issues" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Stale issues</h3>
+<p>Issues in the &quot;Needs more information&quot; state may be closed after a week with no followup from the author. Issues that have have had no activity in the last two months may be closed periodically. If your issue gets closed in this manner, it's nothing personal. If you strongly believe that the issue should remain open, just let us know why.</p>
+<p>Simply commenting that the issue still exists is not very compelling (it's rare for critical, release blocking issues to have no activity for two months!). In order to make a good case for reopening the issue, you may need to do a bit of work:</p>
+<ul>
+<li>Can the issue be reproduced on the latest release candidate? Post a comment with the version you tested.</li>
+<li>If so, is there any information missing from the bug report? Post a comment with all the information required by the <a href="https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md">issue template</a>.</li>
+<li>Is there a pull request that addressed this issue? Post a comment with the PR number so we can follow up.</li>
+</ul>
+<p>A couple of contributors making a good case may be all that is needed to reopen the issue.</p>
+<h2><a class="anchor" aria-hidden="true" name="handling-pull-requests"></a><a href="#handling-pull-requests" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Handling pull requests</h2>
+<p>The core team will be monitoring for pull requests. When we get one, we'll run some Facebook-specific integration tests on it first. From here, we'll need to get another person to sign off on the changes and then merge the pull request. For API changes we may need to fix internal uses, which could cause some delay. We'll do our best to provide updates and feedback throughout the process.</p>
+<h3><a class="anchor" aria-hidden="true" name="how-we-prioritize-pull-requests"></a><a href="#how-we-prioritize-pull-requests" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How we prioritize pull requests</h3>
+<p>We use the <a href="https://github.com/hzoo/contributors-on-github">Contributors Chrome extension</a> to help us understand who is sending a pull request. Pull requests opened by contributors that have a history of having their PRs merged are more likely to be looked at first. Aside from that, we try to go through pull requests on a chronological order.</p>
+<h3><a class="anchor" aria-hidden="true" name="how-we-review-pull-requests"></a><a href="#how-we-review-pull-requests" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How we review pull requests</h3>
+<p>Reviewing a PR can sometimes require more time from a maintainer than it took you to write the code. Maintainers need to consider all the ramifications of importing your patch into the codebase. Does it potentially introduce breaking changes? What are the performance considerations of adding a new dependency? Will the docs need to be updated as well? Does this belong in core, or would it be a better fit as a third party package?</p>
+<p>Once you open a pull request, this is how you can expect maintainers to review it:</p>
+<ul>
+<li><p><strong>Is the pull request missing information?</strong></p>
+<p>A test plan is required! Add the labels 'Needs revision' and 'Needs response from author'. You can then follow up with a response like:</p>
+<blockquote>
+<p>Hey @author, thanks for sending the pull request.
+Can you please add all the info specified in the <a href="https://github.com/facebook/react-native/blob/master/.github/PULL_REQUEST_TEMPLATE.md">template</a>? This is necessary for people to be able to understand and review your pull request.</p>
+</blockquote></li>
+<li><p><strong>Does the code style match the <a href="/react-native/docs/0.49/contributing.html#style-guide">Style guide</a>?</strong></p>
+<p>If not, link to the style guide and add the label 'Needs revision'.</p></li>
+<li><p><strong>Does the pull request add a completely new feature we don't want to add to the core and maintain?</strong></p>
+<p>Ask the author to release it a separate npm module and close the pull request.</p></li>
+<li><p><strong>Does the pull request do several unrelated things at the same time?</strong></p>
+<p>Ask the author to split it.</p></li>
+<li><p><strong>Is the pull request old and need rebasing?</strong></p>
+<p>Ask the author &quot;Can you rebase please?&quot; and add the label 'Needs response from author'.</p></li>
+<li><p><strong>Is a pull request waiting for a response from author?</strong></p>
+<p>Pull requests like these usually have the label 'Needs response from author'. If there has been no reply in the last 30 days, close it with a response like the following:</p>
+<blockquote>
+<p>Thanks for making the pull request, but we are closing it due to inactivity. If you want to get your proposed changes merged, please rebase your branch with master and send a new pull request.</p>
+</blockquote></li>
+<li><p><strong>Is the pull request old and waiting for review?</strong></p>
+<p>Review it or cc someone who might be able to review. Finding the right person to review a pull request can sometimes be tricky. A pull request may simultaneously touch iOS, Java, and JavaScript code. If a pull request has been waiting for review for a while, you can help out by looking at the blame history for the files you're touching. Is there anyone that appears to be knowledgeable in the part of the codebase the PR is touching?</p></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="closing-pull-requests"></a><a href="#closing-pull-requests" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Closing pull requests</h3>
+<p>Sometimes a maintainer may decide that a pull request will not be accepted. Maybe the pull request is out of scope for the project, or the idea is good but the implementation is poor. Whatever the reason, when closing a pull request maintainers should keep the conversation friendly:</p>
+<ul>
+<li><strong>Thank</strong> them for their contribution.</li>
+<li><strong>Explain why</strong> it doesn't fit into the scope of the project.</li>
+<li><strong>Link to relevant documentation</strong>, if you have it.</li>
+<li><strong>Close</strong> the request.</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" name="defusing-situations"></a><a href="#defusing-situations" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Defusing situations</h2>
+<p>Sometimes when a maintainer says no to a pull request or close an issue, a contributor may get upset and criticize your decision. Maintainers will take steps to defuse the situation.</p>
+<p>If a contributor becomes hostile or disrespectful, they will be referred to the <a href="https://code.facebook.com/codeofconduct">Code of Conduct</a>. Negative users will be blocked, and inappropriate comments will be deleted.</p>
+<h2><a class="anchor" aria-hidden="true" name="facebook-github-bot"></a><a href="#facebook-github-bot" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Facebook GitHub Bot</h2>
+<p>The Facebook GitHub Bot allows members of the community to perform administrative actions such as labeling and closing issues.
+To have access to the bot, please add your GitHub username to the first line of <a href="https://github.com/facebook/react-native/blob/master/bots/IssueCommands.txt">IssueCommands.txt</a>, in alphabetical order, by submitting a Pull Request.</p>
+<h3><a class="anchor" aria-hidden="true" name="using-the-facebook-github-bot"></a><a href="#using-the-facebook-github-bot" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using the Facebook GitHub Bot</h3>
+<p>The bot can be triggered by adding any of the following commands as a standalone comment on an issue:</p>
+<div class="botActions">
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> no-template
+    </h4>
+    <div><p>
+      Use this when more information is needed, especially if the issue does not adhere to the <a href="https://raw.githubusercontent.com/facebook/react-native/master/.github/ISSUE_TEMPLATE.md">issue template</a>. The bot will <strong>close</strong> the issue after adding the "Needs more information" label.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> stack-overflow
+    </h4>
+    <div><p>
+      Mark issues that do not belong in the bug tracker, and redirect to Stack Overflow. The bot will <strong>close</strong> the issue after adding the "For Stack Overflow" label.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> needs-repro
+    </h4>
+    <div><p>
+      Prompts the author to provide a reproducible example or <a href="http://snack.expo.io">Snack</a>. The bot will apply the "Needs more information" label.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> cannot-repro
+    </h4>
+    <div><p>
+      Use this when the issue cannot be reproduced, either because it affects a particular app but no minimal repro was provided, or the issue describes something sporadic that is unlikely to be reproduced by a community member. The bot will <strong>close</strong> the issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> duplicate (#[0-9]+)
+    </h4>
+    <div><p>
+      Marks an issue as a duplicate. Requires a issue number to be provided. The bot will <strong>close</strong> the issue.
+    </p>
+    <p>
+      Example: <code>@facebook-github-bot duplicate #42</code>
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> label (.*)
+    </h4>
+    <div><p>
+      Use this command to add a <a href="https://github.com/facebook/react-native/labels">label</a>, such as "iOS" or "Android", to an issue.
+    </p><p>
+      Example: <code>@facebook-github-bot label Android</code>
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> feature
+    </h4>
+    <div><p>
+      Use this when an issue describes a feature request, as opposed to a reproducible bug. The bot will point the author to the feature request tracker, add the "Feature Request" label, then <strong>close</strong> the issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> expected
+    </h4>
+    <div><p>
+      Use this when an issue describes a type of expected behavior. The bot will <strong>close</strong> the issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> answered
+    </h4>
+    <div><p>
+      Use this when an issue appears to be a question that has already been answered by someone on the thread. The bot will <strong>close</strong> the issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> close
+    </h4>
+    <div><p>
+      <strong>Closes</strong> an issue without providing a particular explanation.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> reopen
+    </h4>
+    <div><p>
+      <strong>Re-opens</strong> a previously closed issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> bugfix
+    </h4>
+    <div><p>
+      Mark issues that describe a reproducible bug and encourage the author to send a pull request. The bot will add the "Help Wanted" label.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> no-reply
+    </h4>
+    <div><p>
+      Use this when an issue requires more information from the author but they have not added a comment in a while. The bot will <strong>close</strong> the issue.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> icebox
+    </h4>
+    <div><p>
+      Use this when an issue has been open for over 30 days with no activity and no community member has volunteered to work on a fix. The bot will <strong>close</strong> the issue after adding the "Icebox" label.
+    </p></div>
+  </div>
+</div>
+<p>Additionally, the following commands can be used on a pull request:</p>
+<div class="botActions">
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> cla
+    </h4>
+    <div><p>
+      Remind the author that the CLA needs to be signed.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> shipit
+    </h4>
+    <div><p>
+      Flag the PR for merging. If used by a core contributor, the bot will attempt to import the pull request. In general, core contributors are those who have consistently submitted high quality contributions to the project. Access control for this command is configured internally in Facebook, outside of the IssueCommands.txt file mentioned above.
+    </p></div>
+  </div>
+  <div class="botAction">
+    <h4 class="botCommand">
+      <span class="botMentionName">@facebook-github-bot</span> large-pr
+    </h4>
+    <div><p>
+      Flag PRs that change too many files at once. These PRs are extremely unlikely to be reviewed. The bot will leave a helpful message indicating next steps such as splitting the PR. The bot will <strong>close</strong> the PR after adding the "Large PR" label.
+    </p></div>
+  </div>
+</div>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="contributing.html">← How to Contribute</a><a class="docs-next button" href="testing.html">Testing your Changes →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.49"],"hitsPerPage":5}
+              });
+            </script></body></html>

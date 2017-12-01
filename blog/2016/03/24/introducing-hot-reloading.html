@@ -1,90 +1,260 @@
-<!DOCTYPE html><html><head><title>Introducing Hot Reloading - React Native</title><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><meta property="fb:app_id" content="1677033832619985"><meta property="fb:admins" content="121800083"><meta property="og:site_name" content="React Native"><meta property="og:title" content="Introducing Hot Reloading - React Native"><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html"><meta property="og:image" content="https://facebook.github.io/react-native/img/opengraph.png"><meta property="og:description" content="React Native&#x27;s goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows."><meta name="twitter:site" content="@reactnative"><meta name="twitter:card" content="summary_large_image"><meta property="og:type" content="article"><meta property="article:author" content="Martín Bigio"><meta name="twitter:creator" content="@martinbigio"><base href="/react-native/releases/next/"><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"><link rel="shortcut icon" href="img/favicon.png?2"><link rel="stylesheet" href="css/react-native.css"><link rel="stylesheet" href="css/prism.css"><link rel="alternate" type="application/rss+xml" title="React Native Blog" href="https://facebook.github.io/react-native/blog/feed.xml"><link href="//cdn-images.mailchimp.com/embedcode/horizontal-slim-10_7.css" rel="stylesheet" type="text/css"><script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script><script type="text/javascript">try{Typekit.load();}catch(e){}</script></head><body><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));</script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><div class="container"><div class="nav-main"><div class="wrap"><a class="nav-home" href=""><img src="img/header_logo.png">React Native</a><a class="nav-version" href="/react-native/versions.html">next</a><div class="nav-site-wrapper"><ul class="nav-site nav-site-internal"><li><a href="docs/getting-started.html" class="" data-target=".nav-docs">Docs</a></li><li><a href="/react-native/support.html" class="">Community</a></li><li><a href="/react-native/blog/" class="active">Blog</a></li></ul><div class="algolia-search-wrapper"><input id="algolia-doc-search" tabindex="0" type="text" placeholder="Search docs..."></div><ul class="nav-site nav-site-external"><li><a href="https://github.com/facebook/react-native" class="">GitHub</a></li><li><a href="http://facebook.github.io/react" class="">React</a></li></ul></div></div></div><section class="content wrap documentationContent"><article class="entry-body"><header class="entry-header"><h4 class="entry-authordate"><a href="https://twitter.com/martinbigio" target="_blank" class="author">Martín Bigio</a> — <time class="date">March 24, 2016</time></h4><h1 class="entry-title">Introducing Hot Reloading</h1></header><div class="entry-content"><div><p>React Native&#x27;s goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.</p><p>We got close to this ideal via three main features:</p><ul><li>Use JavaScript as the language doesn&#x27;t have a long compilation cycle time.</li><li>Implement a tool called Packager that transforms es6/flow/jsx files into normal JavaScript that the VM can understand. It was designed as a server that keeps intermediate state in memory to enable fast incremental changes and uses multiple cores.</li><li>Build a feature called Live Reload that reloads the app on save.</li></ul><p>At this point, the bottleneck for developers is no longer the time it takes to reload the app but losing the state of your app. A common scenario is to work on a feature that is multiple screens away from the launch screen. Every time you reload, you&#x27;ve got to click on the same path again and again to get back to your feature, making the cycle multiple-seconds long.</p><h2><a class="anchor" name="hot-reloading"></a>Hot Reloading <a class="hash-link" href="#hot-reloading">#</a></h2><p>The idea behind hot reloading is to keep the app running and to inject new versions of the files that you edited at runtime. This way, you don&#x27;t lose any of your state which is especially useful if you are tweaking the UI.</p><p>A video is worth a thousand words. Check out the difference between Live Reload (current) and Hot Reload (new).</p><span><iframe width="100%" height="315" src="https://www.youtube.com/embed/2uQzVi-KFuc" frameborder="0" allowfullscreen></iframe>
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Introducing Hot Reloading · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Introducing Hot Reloading · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html"/><meta property="og:description" content="React Native&#x27;s goal is to give you the best possible developer experience. A big"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.51</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2016/03/24/introducing-hot-reloading.html">Introducing Hot Reloading</a></h1><p class="post-meta">March 24, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://twitter.com/martinbigio" target="_blank">Martín Bigio</a>Software Engineer at Instagram</p><div class="authorPhoto authorPhoto-big"><a href="https://twitter.com/martinbigio" target="_blank"><img src="https://avatars3.githubusercontent.com/u/535661?v=3&amp;s=128"/></a></div></div></header><div><span><p>React Native's goal is to give you the best possible developer experience. A big
+part of it is the time it takes between you save a file and be able to see the
+changes. Our goal is to get this feedback loop to be under 1 second, even as
+your app grows.</p>
+<p>We got close to this ideal via three main features:</p>
+<ul>
+<li>Use JavaScript as the language doesn't have a long compilation cycle time.</li>
+<li>Implement a tool called Packager that transforms es6/flow/jsx files into
+normal JavaScript that the VM can understand. It was designed as a server that
+keeps intermediate state in memory to enable fast incremental changes and uses
+multiple cores.</li>
+<li>Build a feature called Live Reload that reloads the app on save.</li>
+</ul>
+<p>At this point, the bottleneck for developers is no longer the time it takes to
+reload the app but losing the state of your app. A common scenario is to work on
+a feature that is multiple screens away from the launch screen. Every time you
+reload, you've got to click on the same path again and again to get back to your
+feature, making the cycle multiple-seconds long.</p>
+<h2><a class="anchor" aria-hidden="true" name="hot-reloading"></a><a href="#hot-reloading" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hot Reloading</h2>
+<p>The idea behind hot reloading is to keep the app running and to inject new
+versions of the files that you edited at runtime. This way, you don't lose any
+of your state which is especially useful if you are tweaking the UI.</p>
+<p>A video is worth a thousand words. Check out the difference between Live Reload
+(current) and Hot Reload (new).</p>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/2uQzVi-KFuc" frameborder="0" allowfullscreen></iframe>
+<p>If you look closely, you can notice that it is possible to recover from a red
+box and you can also start importing modules that were not previously there
+without having to do a full reload.</p>
+<p><strong>Word of warning:</strong> because JavaScript is a very stateful language, hot
+reloading cannot be perfectly implemented. In practice, we found out that the
+current setup is working well for a large amount of usual use cases and a full
+reload is always available in case something gets messed up.</p>
+<p>Hot reloading is available as of 0.22, you can enable it:</p>
+<ul>
+<li>Open the developer menu</li>
+<li>Tap on &quot;Enable Hot Reloading&quot;</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" name="implementation-in-a-nutshell"></a><a href="#implementation-in-a-nutshell" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Implementation in a nutshell</h2>
+<p>Now that we've seen why we want it and how to use it, the fun part begins: how
+it actually works.</p>
+<p>Hot Reloading is built on top of a feature
+<a href="https://webpack.github.io/hot-module-replacement-with-webpack.md">Hot Module Replacement</a>,
+or HMR. It was first introduced by Webpack and we implemented it inside of React
+Native Packager. HMR makes the Packager watch for file changes and send HMR
+updates to a thin HMR runtime included on the app.</p>
+<p>In a nutshell, the HMR update contains the new code of the JS modules that
+changed. When the runtime receives them, it replaces the old modules' code with
+the new one:</p>
+<p><img src="/react-native/blog/assets/hmr-architecture.png" alt=""></p>
+<p>The HMR update contains a bit more than just the module's code we want to change
+because replacing it, it's not enough for the runtime to pick up the changes.
+The problem is that the module system may have already cached the <em>exports</em> of
+the module we want to update. For instance, say you have an app composed of
+these two modules:</p>
+<pre><code class="hljs"><span class="hljs-comment">// log.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span>(<span class="hljs-params">message</span>) </span>{
+  <span class="hljs-keyword">const</span> time = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./time'</span>);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`[<span class="hljs-subst">${time()}</span>] <span class="hljs-subst">${message}</span>`</span>);
+}
 
-</span><p>If you look closely, you can notice that it is possible to recover from a red box and you can also start importing modules that were not previously there without having to do a full reload.</p><p><strong>Word of warning:</strong> because JavaScript is a very stateful language, hot reloading cannot be perfectly implemented. In practice, we found out that the current setup is working well for a large amount of usual use cases and a full reload is always available in case something gets messed up.</p><p>Hot reloading is available as of 0.22, you can enable it:</p><ul><li>Open the developer menu</li><li>Tap on &quot;Enable Hot Reloading&quot;</li></ul><h2><a class="anchor" name="implementation-in-a-nutshell"></a>Implementation in a nutshell <a class="hash-link" href="#implementation-in-a-nutshell">#</a></h2><p>Now that we&#x27;ve seen why we want it and how to use it, the fun part begins: how it actually works.</p><p>Hot Reloading is built on top of a feature <a href="https://webpack.github.io/docs/hot-module-replacement-with-webpack.html" target="_blank">Hot Module Replacement</a>, or HMR. It was first introduced by Webpack and we implemented it inside of React Native Packager. HMR makes the Packager watch for file changes and send HMR updates to a thin HMR runtime included on the app.</p><p>In a nutshell, the HMR update contains the new code of the JS modules that changed. When the runtime receives them, it replaces the old modules&#x27; code with the new one:</p><p><img src="/react-native/blog/img/hmr-architecture.png" alt=""></p><p>The HMR update contains a bit more than just the module&#x27;s code we want to change because replacing it, it&#x27;s not enough for the runtime to pick up the changes. The problem is that the module system may have already cached the <em>exports</em> of the module we want to update. For instance, say you have an app composed of these two modules:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// log.js
-</span><span class="token keyword">function</span> <span class="token function">log</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> time <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#x27;./time&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`[</span><span class="token interpolation"><span class="token interpolation-punctuation">${</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token interpolation-punctuation">}</span></span><span class="token string">] </span><span class="token interpolation"><span class="token interpolation-punctuation">${</span>message<span class="token interpolation-punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="hljs-built_in">module</span>.exports = log;
+</code></pre>
+<pre><code class="hljs"><span class="hljs-comment">// time.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">time</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
+}
 
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> log<span class="token punctuation">;</span></div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// time.js
-</span><span class="token keyword">function</span> <span class="token function">time</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="hljs-built_in">module</span>.exports = time;
+</code></pre>
+<p>The module <code>log</code>, prints out the provided message including the current date
+provided by the module <code>time</code>.</p>
+<p>When the app is bundled, React Native registers each module on the module system
+using the <code>__d</code> function. For this app, among many <code>__d</code> definitions, there will
+one for <code>log</code>:</p>
+<pre><code class="hljs">__d(<span class="hljs-string">'log'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  ... <span class="hljs-comment">// module's code</span>
+});
+</code></pre>
+<p>This invocation wraps each module's code into an anonymous function which we
+generally refer to as the factory function. The module system runtime keeps
+track of each module's factory function, whether it has already been executed,
+and the result of such execution (exports). When a module is required, the
+module system either provides the already cached exports or executes the
+module's factory function for the first time and saves the result.</p>
+<p>So say you start your app and require <code>log</code>. At this point, neither <code>log</code> nor
+<code>time</code>'s factory functions have been executed so no exports have been cached.
+Then, the user modifies <code>time</code> to return the date in <code>MM/DD</code>:</p>
+<pre><code class="hljs"><span class="hljs-comment">// time.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bar</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">var</span> <span class="hljs-built_in">date</span> = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+  <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${date.getMonth() + 1}</span>/<span class="hljs-subst">${date.getDate()}</span>`</span>;
+}
 
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> time<span class="token punctuation">;</span></div><p>The module <code>log</code>, prints out the provided message including the current date provided by the module <code>time</code>.</p><p>When the app is bundled, React Native registers each module on the module system using the <code>__d</code> function. For this app, among many <code>__d</code> definitions, there will one for <code>log</code>:</p><div class="prism language-javascript"><span class="token function">__d</span><span class="token punctuation">(</span><span class="token string">&#x27;log&#x27;</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token operator">...</span><span class="token comment" spellcheck="true"> // module&#x27;s code
-</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>This invocation wraps each module&#x27;s code into an anonymous function which we generally refer to as the factory function. The module system runtime keeps track of each module&#x27;s factory function, whether it has already been executed, and the result of such execution (exports). When a module is required, the module system either provides the already cached exports or executes the module&#x27;s factory function for the first time and saves the result.</p><p>So say you start your app and require <code>log</code>. At this point, neither <code>log</code> nor <code>time</code>&#x27;s factory functions have been executed so no exports have been cached.  Then, the user modifies <code>time</code> to return the date in <code>MM/DD</code>:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// time.js
-</span><span class="token keyword">function</span> <span class="token function">bar</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">var</span> date <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation">${</span>date<span class="token punctuation">.</span><span class="token function">getMonth</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token interpolation-punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation">${</span>date<span class="token punctuation">.</span><span class="token function">getDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token interpolation-punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="hljs-built_in">module</span>.exports = bar;
+</code></pre>
+<p>The Packager will send time's new code to the runtime (step 1), and when <code>log</code>
+gets eventually required the exported function gets executed it will do so with
+<code>time</code>'s changes (step 2):</p>
+<p><img src="/react-native/blog/assets/hmr-step.png" alt=""></p>
+<p>Now say the code of <code>log</code> requires <code>time</code> as a top level require:</p>
+<pre><code class="hljs"><span class="hljs-keyword">const</span> time = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./time'</span>); <span class="hljs-comment">// top level require</span>
 
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> bar<span class="token punctuation">;</span></div><p>The Packager will send time&#x27;s new code to the runtime (step 1), and when <code>log</code> gets eventually required the exported function gets executed it will do so with <code>time</code>&#x27;s changes (step 2):</p><p><img src="/react-native/blog/img/hmr-step.png" alt=""></p><p>Now say the code of <code>log</code> requires <code>time</code> as a top level require:</p><div class="prism language-javascript"><span class="token keyword">const</span> time <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#x27;./time&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // top level require
-</span><span class="token comment" spellcheck="true">
-// log.js
-</span><span class="token keyword">function</span> <span class="token function">log</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`[</span><span class="token interpolation"><span class="token interpolation-punctuation">${</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token interpolation-punctuation">}</span></span><span class="token string">] </span><span class="token interpolation"><span class="token interpolation-punctuation">${</span>message<span class="token interpolation-punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<span class="hljs-comment">// log.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span>(<span class="hljs-params">message</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`[<span class="hljs-subst">${time()}</span>] <span class="hljs-subst">${message}</span>`</span>);
+}
 
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> log<span class="token punctuation">;</span></div><p>When <code>log</code> is required, the runtime will cache its exports and <code>time</code>&#x27;s one. (step 1). Then, when <code>time</code> is modified, the HMR process cannot simply finish after replacing <code>time</code>&#x27;s code. If it did, when <code>log</code> gets executed, it would do so with a cached copy of <code>time</code> (old code).</p><p>For <code>log</code> to pick up <code>time</code> changes, we&#x27;ll need to clear its cached exports because one of the modules it depends on was hot swapped (step 3). Finally, when <code>log</code> gets required again, its factory function will get executed requiring <code>time</code> and getting its new code.</p><p><img src="/react-native/blog/img/hmr-log.png" alt=""></p><h2><a class="anchor" name="hmr-api"></a>HMR API <a class="hash-link" href="#hmr-api">#</a></h2><p>HMR in React Native extends the module system by introducing the <code>hot</code> object. This API is based on <a href="https://webpack.github.io/docs/hot-module-replacement.html" target="_blank">Webpack</a>&#x27;s one. The <code>hot</code> object exposes a function called <code>accept</code> which allows you to define a callback that will be executed when the module needs to be hot swapped. For instance, if we would change <code>time</code>&#x27;s code as follows, every time we save time, we&#x27;ll see “time changed” in the console:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// time.js
-</span><span class="token keyword">function</span> <span class="token function">time</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token operator">...</span><span class="token comment" spellcheck="true"> // new code
-</span><span class="token punctuation">}</span>
+<span class="hljs-built_in">module</span>.exports = log;
+</code></pre>
+<p>When <code>log</code> is required, the runtime will cache its exports and <code>time</code>'s one.
+(step 1). Then, when <code>time</code> is modified, the HMR process cannot simply finish
+after replacing <code>time</code>'s code. If it did, when <code>log</code> gets executed, it would do
+so with a cached copy of <code>time</code> (old code).</p>
+<p>For <code>log</code> to pick up <code>time</code> changes, we'll need to clear its cached exports
+because one of the modules it depends on was hot swapped (step 3). Finally, when
+<code>log</code> gets required again, its factory function will get executed requiring
+<code>time</code> and getting its new code.</p>
+<p><img src="/react-native/blog/assets/hmr-log.png" alt=""></p>
+<h2><a class="anchor" aria-hidden="true" name="hmr-api"></a><a href="#hmr-api" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>HMR API</h2>
+<p>HMR in React Native extends the module system by introducing the <code>hot</code> object.
+This API is based on
+<a href="https://webpack.github.io/hot-module-replacement.md">Webpack</a>'s one. The <code>hot</code>
+object exposes a function called <code>accept</code> which allows you to define a callback
+that will be executed when the module needs to be hot swapped. For instance, if
+we would change <code>time</code>'s code as follows, every time we save time, we'll see
+“time changed” in the console:</p>
+<pre><code class="hljs"><span class="hljs-comment">// time.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">time</span>(<span class="hljs-params"></span>) </span>{
+  ... <span class="hljs-comment">// new code</span>
+}
 
-module<span class="token punctuation">.</span>hot<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&#x27;time changed&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-built_in">module</span>.hot.accept(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'time changed'</span>);
+});
 
-module<span class="token punctuation">.</span>exports <span class="token operator">=</span> time<span class="token punctuation">;</span></div><p>Note that only in rare cases you would need to use this API manually. Hot Reloading should work out of the box for the most common use cases.</p><h2><a class="anchor" name="hmr-runtime"></a>HMR Runtime <a class="hash-link" href="#hmr-runtime">#</a></h2><p>As we&#x27;ve seen before, sometimes it&#x27;s not enough only accepting the HMR update because a module that uses the one being hot swapped may have been already executed and its imports cached. For instance, suppose the dependency tree for the movies app example had a top-level <code>MovieRouter</code> that depended on the <code>MovieSearch</code> and <code>MovieScreen</code> views, which depended on the <code>log</code> and <code>time</code> modules from the previous examples:</p><p><img src="/react-native/blog/img/hmr-diamond.png" alt=""></p><p>If the user accesses the movies&#x27; search view but not the other one, all the modules except for <code>MovieScreen</code> would have cached exports. If a change is made to module <code>time</code>, the runtime will have to clear the exports of <code>log</code> for it to pick up <code>time</code>&#x27;s changes. The process wouldn&#x27;t finish there: the runtime will repeat this process recursively up until all the parents have been accepted. So, it&#x27;ll grab the modules that depend on <code>log</code> and try to accept them. For <code>MovieScreen</code> it can bail, as it hasn&#x27;t been required yet. For <code>MovieSearch</code>, it will have to clear its exports and process its parents recursively. Finally, it will do the same thing for <code>MovieRouter</code> and finish there as no modules depends on it.</p><p>In order to walk the dependency tree, the runtime receives the inverse dependency tree from the Packager on the HMR update. For this example the runtime will receive a JSON object like this one:</p><div class="prism language-javascript"><span class="token punctuation">{</span>
-  modules<span class="token punctuation">:</span> <span class="token punctuation">[</span>
-    <span class="token punctuation">{</span>
-      name<span class="token punctuation">:</span> <span class="token string">&#x27;time&#x27;</span><span class="token punctuation">,</span>
-      code<span class="token punctuation">:</span> <span class="token comment" spellcheck="true">/* time&#x27;s new code */</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">]</span><span class="token punctuation">,</span>
-  inverseDependencies<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    MovieRouter<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-    MovieScreen<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&#x27;MovieRouter&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-    MovieSearch<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&#x27;MovieRouter&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-    log<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&#x27;MovieScreen&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;MovieSearch&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-    time<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&#x27;log&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span></div><h2><a class="anchor" name="react-components"></a>React Components <a class="hash-link" href="#react-components">#</a></h2><p>React components are a bit harder to get to work with Hot Reloading. The problem is that we can&#x27;t simply replace the old code with the new one as we&#x27;d loose the component&#x27;s state. For React web applications, <a href="https://twitter.com/dan_abramov" target="_blank">Dan Abramov</a> implemented a babel <a href="http://gaearon.github.io/react-hot-loader/" target="_blank">transform</a> that uses Webpack&#x27;s HMR API to solve this issue. In a nutshell, his solution works by creating a proxy for every single React component on <em>transform time</em>. The proxies hold the component&#x27;s state and delegate the lifecycle methods to the actual components, which are the ones we hot reload:</p><p><img src="/react-native/blog/img/hmr-proxy.png" alt=""></p><p>Besides creating the proxy component, the transform also defines the <code>accept</code> function with a piece of code to force React to re-render the component. This way, we can hot reload rendering code without losing any of the app&#x27;s state.</p><p>The default <a href="https://github.com/facebook/react-native/blob/master/packager/transformer.js#L92-L95" target="_blank">transformer</a> that comes with React Native uses the <code>babel-preset-react-native</code>, which is <a href="https://github.com/facebook/react-native/blob/master/babel-preset/configs/hmr.js#L24-L31" target="_blank">configured</a> to use <code>react-transform</code> the same way you&#x27;d use it on a React web project that uses Webpack.</p><h2><a class="anchor" name="redux-stores"></a>Redux Stores <a class="hash-link" href="#redux-stores">#</a></h2><p>To enable Hot Reloading on <a href="http://redux.js.org/" target="_blank">Redux</a> stores you will just need to use the HMR API similarly to what you&#x27;d do on a web project that uses Webpack:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// configureStore.js
-</span><span class="token keyword">import</span> <span class="token punctuation">{</span> createStore<span class="token punctuation">,</span> applyMiddleware<span class="token punctuation">,</span> compose <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&#x27;redux&#x27;</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> thunk <span class="token keyword">from</span> <span class="token string">&#x27;redux-thunk&#x27;</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> reducer <span class="token keyword">from</span> <span class="token string">&#x27;../reducers&#x27;</span><span class="token punctuation">;</span>
+<span class="hljs-built_in">module</span>.exports = time;
+</code></pre>
+<p>Note that only in rare cases you would need to use this API manually. Hot
+Reloading should work out of the box for the most common use cases.</p>
+<h2><a class="anchor" aria-hidden="true" name="hmr-runtime"></a><a href="#hmr-runtime" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>HMR Runtime</h2>
+<p>As we've seen before, sometimes it's not enough only accepting the HMR update
+because a module that uses the one being hot swapped may have been already
+executed and its imports cached. For instance, suppose the dependency tree for
+the movies app example had a top-level <code>MovieRouter</code> that depended on the
+<code>MovieSearch</code> and <code>MovieScreen</code> views, which depended on the <code>log</code> and <code>time</code>
+modules from the previous examples:</p>
+<p><img src="/react-native/blog/assets/hmr-diamond.png" alt=""></p>
+<p>If the user accesses the movies' search view but not the other one, all the
+modules except for <code>MovieScreen</code> would have cached exports. If a change is made
+to module <code>time</code>, the runtime will have to clear the exports of <code>log</code> for it to
+pick up <code>time</code>'s changes. The process wouldn't finish there: the runtime will
+repeat this process recursively up until all the parents have been accepted. So,
+it'll grab the modules that depend on <code>log</code> and try to accept them. For
+<code>MovieScreen</code> it can bail, as it hasn't been required yet. For <code>MovieSearch</code>, it
+will have to clear its exports and process its parents recursively. Finally, it
+will do the same thing for <code>MovieRouter</code> and finish there as no modules depends
+on it.</p>
+<p>In order to walk the dependency tree, the runtime receives the inverse
+dependency tree from the Packager on the HMR update. For this example the
+runtime will receive a JSON object like this one:</p>
+<pre><code class="hljs">{
+  <span class="hljs-attribute">modules</span>: [
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'time'</span>,
+      <span class="hljs-attribute">code</span>: <span class="hljs-comment">/* time's new code */</span>
+    }
+  ],
+  <span class="hljs-attribute">inverseDependencies</span>: {
+    <span class="hljs-attribute">MovieRouter</span>: [],
+    <span class="hljs-attribute">MovieScreen</span>: [<span class="hljs-string">'MovieRouter'</span>],
+    <span class="hljs-attribute">MovieSearch</span>: [<span class="hljs-string">'MovieRouter'</span>],
+    <span class="hljs-attribute">log</span>: [<span class="hljs-string">'MovieScreen'</span>, <span class="hljs-string">'MovieSearch'</span>],
+    <span class="hljs-attribute">time</span>: [<span class="hljs-string">'log'</span>],
+  }
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="react-components"></a><a href="#react-components" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>React Components</h2>
+<p>React components are a bit harder to get to work with Hot Reloading. The problem
+is that we can't simply replace the old code with the new one as we'd loose the
+component's state. For React web applications,
+<a href="https://twitter.com/dan_abramov">Dan Abramov</a> implemented a babel
+<a href="http://gaearon.github.io/react-hot-loader/">transform</a> that uses Webpack's HMR
+API to solve this issue. In a nutshell, his solution works by creating a proxy
+for every single React component on <em>transform time</em>. The proxies hold the
+component's state and delegate the lifecycle methods to the actual components,
+which are the ones we hot reload:</p>
+<p><img src="/react-native/blog/assets/hmr-proxy.png" alt=""></p>
+<p>Besides creating the proxy component, the transform also defines the <code>accept</code>
+function with a piece of code to force React to re-render the component. This
+way, we can hot reload rendering code without losing any of the app's state.</p>
+<p>The default
+<a href="https://github.com/facebook/react-native/blob/master/packager/transformer.js#L92-L95">transformer</a>
+that comes with React Native uses the <code>babel-preset-react-native</code>, which is
+<a href="https://github.com/facebook/react-native/blob/master/babel-preset/configs/hmr.js#L24-L31">configured</a>
+to use <code>react-transform</code> the same way you'd use it on a React web project that
+uses Webpack.</p>
+<h2><a class="anchor" aria-hidden="true" name="redux-stores"></a><a href="#redux-stores" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Redux Stores</h2>
+<p>To enable Hot Reloading on <a href="http://redux.js.org/">Redux</a> stores you will just
+need to use the HMR API similarly to what you'd do on a web project that uses
+Webpack:</p>
+<pre><code class="hljs"><span class="hljs-comment">// configureStore.js</span>
+<span class="hljs-keyword">import</span> { createStore, applyMiddleware, compose } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+<span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span>;
+<span class="hljs-keyword">import</span> reducer <span class="hljs-keyword">from</span> <span class="hljs-string">'../reducers'</span>;
 
-<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">configureStore</span><span class="token punctuation">(</span>initialState<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span>
-    reducer<span class="token punctuation">,</span>
-    initialState<span class="token punctuation">,</span>
-    <span class="token function">applyMiddleware</span><span class="token punctuation">(</span>thunk<span class="token punctuation">)</span><span class="token punctuation">,</span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">configureStore</span>(<span class="hljs-params">initialState</span>) </span>{
+  <span class="hljs-keyword">const</span> store = createStore(
+    reducer,
+    initialState,
+    applyMiddleware(thunk),
+  );
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>module<span class="token punctuation">.</span>hot<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    module<span class="token punctuation">.</span>hot<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-      <span class="token keyword">const</span> nextRootReducer <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#x27;../reducers/index&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">default</span><span class="token punctuation">;</span>
-      store<span class="token punctuation">.</span><span class="token function">replaceReducer</span><span class="token punctuation">(</span>nextRootReducer<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">module</span>.hot) {
+    <span class="hljs-built_in">module</span>.hot.accept(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> nextRootReducer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../reducers/index'</span>).default;
+      store.replaceReducer(nextRootReducer);
+    });
+  }
 
-  <span class="token keyword">return</span> store<span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span></div><p>When you change a reducer, the code to accept that reducer will be sent to the client. Then the client will realize that the reducer doesn&#x27;t know how to accept itself, so it will look for all the modules that refer it and try to accept them. Eventually, the flow will get to the single store, the <code>configureStore</code> module, which will accept the HMR update.</p><h2><a class="anchor" name="conclusion"></a>Conclusion <a class="hash-link" href="#conclusion">#</a></h2><p>If you are interested in helping making hot reloading better, I encourage you to read <a href="https://medium.com/@dan_abramov/hot-reloading-in-react-1140438583bf#.jmivpvmz4" target="_blank">Dan Abramov&#x27;s post around the future of hot reloading</a> and to contribute. For example, Johny Days is going to <a href="https://github.com/facebook/react-native/pull/6179" target="_blank">make it work with multiple connected clients</a>. We&#x27;re relying on you all to maintain and improve this feature.</p><p>With React Native, we have the opportunity to rethink the way we build apps in order to make it a great developer experience. Hot reloading is only one piece of the puzzle, what other crazy hacks can we do to make it better?</p></div></div><div><aside class="author-info"><div class="author-image"><span class="the-image" style="background-image:url(https://avatars3.githubusercontent.com/u/535661?v=3&amp;s=128);"></span></div><p class="posted-on">Posted on <time class="date">March 24, 2016</time></p><p class="name-title"><a href="https://twitter.com/martinbigio" target="_blank">Martín Bigio</a>, <span class="title">Software Engineer at Instagram</span></p></aside><aside class="entry-share"><h3 class="small-title">Share this post</h3><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="Introducing Hot Reloading" data-url="http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html" data-via="martinbigio" data-related="reactnative" data-show-count="false">Tweet</a></div></aside></div></article></section><footer class="nav-footer"><section class="sitemap"><a href="/react-native" class="nav-home"><img src="img/header_logo.png" alt="React Native" width="66" height="58"></a><div><h5><a href="docs/">Docs</a></h5><a href="docs/getting-started.html">Getting Started</a><a href="docs/tutorial.html">Learn the Basics</a><a href="docs/components-and-apis.html">Components and APIs</a><a href="docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/support.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/support.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://facebook.github.io/react/" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><section class="newsletter"><div id="mc_embed_signup"><form action="//reactnative.us10.list-manage.com/subscribe/post?u=db0dd948e2b729ee62625b1a8&amp;id=47cd41008f" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate><div id="mc_embed_signup_scroll"><label for="mce-EMAIL"><h5>Get the React Native Newsletter</h5></label><input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required><div style="position:absolute;left:-5000px;" aria-hidden="true"><input type="text" name="b_db0dd948e2b729ee62625b1a8_47cd41008f" tabindex="-1" value=""></div><div class="clear"><input type="submit" value="Sign up" name="subscribe" id="mc-embedded-subscribe" class="button"></div></div></form></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><div id="fb-root"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            ga('create', 'UA-41298772-2', 'facebook.github.io');
-            ga('send', 'pageview');
+  <span class="hljs-keyword">return</span> store;
+};
+</code></pre>
+<p>When you change a reducer, the code to accept that reducer will be sent to the
+client. Then the client will realize that the reducer doesn't know how to accept
+itself, so it will look for all the modules that refer it and try to accept
+them. Eventually, the flow will get to the single store, the <code>configureStore</code>
+module, which will accept the HMR update.</p>
+<h2><a class="anchor" aria-hidden="true" name="conclusion"></a><a href="#conclusion" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Conclusion</h2>
+<p>If you are interested in helping making hot reloading better, I encourage you to
+read
+<a href="https://medium.com/@dan_abramov/hot-reloading-in-react-1140438583bf#.jmivpvmz4">Dan Abramov's post around the future of hot reloading</a>
+and to contribute. For example, Johny Days is going to
+<a href="https://github.com/facebook/react-native/pull/6179">make it work with multiple connected clients</a>.
+We're relying on you all to maintain and improve this feature.</p>
+<p>With React Native, we have the opportunity to rethink the way we build apps in
+order to make it a great developer experience. Hot reloading is only one piece
+of the puzzle, what other crazy hacks can we do to make it better?</p>
+</span></div></div><div><aside class="entry-share"><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="Introducing Hot Reloading" data-url="https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html" data-related="reactnative" data-via="martinbigio" data-show-count="false">Tweet</a></div></aside></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)
-            ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-
-            docsearch({
-              apiKey: '2c98749b4a1e588efec53b2acec13025',
-              indexName: 'react-native-versions',
-              inputSelector: '#algolia-doc-search',
-              algoliaOptions: { facetFilters: [ "tags:master" ], hitsPerPage: 5 }
-            });
-          </script><script src="js/scripts.js"></script><script type="text/javascript" src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"></script><script type="text/javascript">(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';}(jQuery));var $mcj = jQuery.noConflict(true);</script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script async defer src="https://buttons.github.io/buttons.js"></script></body></html>
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.51"],"hitsPerPage":5}
+              });
+            </script></body></html>

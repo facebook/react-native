@@ -1,0 +1,136 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>PanResponder · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="PanResponder · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="`PanResponder` reconciles several touches into a single gesture. It makes"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.8</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.8/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/panresponder.md" target="_blank">Edit</a><h1>PanResponder</h1></header><article><div><span><p><code>PanResponder</code> reconciles several touches into a single gesture. It makes
+single-touch gestures resilient to extra touches, and can be used to
+recognize simple multi-touch gestures.</p>
+<p>By default, <code>PanResponder</code> holds an <code>InteractionManager</code> handle to block
+long-running JS events from interrupting active gestures.</p>
+<p>It provides a predictable wrapper of the responder handlers provided by the
+<a href="/react-native/docs/0.8/gesture-responder-system.html">gesture responder system</a>.
+For each handler, it provides a new <code>gestureState</code> object alongside the
+native event object:</p>
+<pre><code class="hljs">onPanResponderMove: <span class="hljs-function"><span class="hljs-params">(event, gestureState)</span> =&gt;</span> {}
+</code></pre>
+<p>A native event is a synthetic touch event with the following form:</p>
+<ul>
+<li><code>nativeEvent</code>
+<ul>
+<li><code>changedTouches</code> - Array of all touch events that have changed since the last event</li>
+<li><code>identifier</code> - The ID of the touch</li>
+<li><code>locationX</code> - The X position of the touch, relative to the element</li>
+<li><code>locationY</code> - The Y position of the touch, relative to the element</li>
+<li><code>pageX</code> - The X position of the touch, relative to the root element</li>
+<li><code>pageY</code> - The Y position of the touch, relative to the root element</li>
+<li><code>target</code> - The node id of the element receiving the touch event</li>
+<li><code>timestamp</code> - A time identifier for the touch, useful for velocity calculation</li>
+<li><code>touches</code> - Array of all current touches on the screen</li>
+</ul></li>
+</ul>
+<p>A <code>gestureState</code> object has the following:</p>
+<ul>
+<li><code>stateID</code> - ID of the gestureState- persisted as long as there at least
+one touch on screen</li>
+<li><code>moveX</code> - the latest screen coordinates of the recently-moved touch</li>
+<li><code>moveY</code> - the latest screen coordinates of the recently-moved touch</li>
+<li><code>x0</code> - the screen coordinates of the responder grant</li>
+<li><code>y0</code> - the screen coordinates of the responder grant</li>
+<li><code>dx</code> - accumulated distance of the gesture since the touch started</li>
+<li><code>dy</code> - accumulated distance of the gesture since the touch started</li>
+<li><code>vx</code> - current velocity of the gesture</li>
+<li><code>vy</code> - current velocity of the gesture</li>
+<li><code>numberActiveTouches</code> - Number of touches currently on screen</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="basic-usage"></a><a href="#basic-usage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Usage</h3>
+<pre><code class="hljs">  componentWillMount: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">this</span>._panResponder = PanResponder.create({
+      <span class="hljs-comment">// Ask to be the responder:</span>
+      onStartShouldSetPanResponder: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onStartShouldSetPanResponderCapture</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onMoveShouldSetPanResponder</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onMoveShouldSetPanResponderCapture</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+
+      <span class="hljs-attr">onPanResponderGrant</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> {
+        <span class="hljs-comment">// The gesture has started. Show visual feedback so the user knows</span>
+        <span class="hljs-comment">// what is happening!</span>
+
+        <span class="hljs-comment">// gestureState.d{x,y} will be set to zero now</span>
+      },
+      <span class="hljs-attr">onPanResponderMove</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> {
+        <span class="hljs-comment">// The most recent move distance is gestureState.move{X,Y}</span>
+
+        <span class="hljs-comment">// The accumulated gesture distance since becoming responder is</span>
+        <span class="hljs-comment">// gestureState.d{x,y}</span>
+      },
+      <span class="hljs-attr">onPanResponderTerminationRequest</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> {
+        <span class="hljs-comment">// The user has released all touches while this view is the</span>
+        <span class="hljs-comment">// responder. This typically means a gesture has succeeded</span>
+      },
+      <span class="hljs-attr">onPanResponderTerminate</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> {
+        <span class="hljs-comment">// Another component has become the responder, so this gesture</span>
+        <span class="hljs-comment">// should be cancelled</span>
+      },
+      <span class="hljs-attr">onShouldBlockNativeResponder</span>: <span class="hljs-function">(<span class="hljs-params">evt, gestureState</span>) =&gt;</span> {
+        <span class="hljs-comment">// Returns whether this component should block native components from becoming the JS</span>
+        <span class="hljs-comment">// responder. Returns true by default. Is currently only supported on android.</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+      },
+    });
+  },
+
+  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> {<span class="hljs-attr">...this._panResponder.panHandlers</span>} /&gt;</span>
+    );
+  },
+
+</span></code></pre>
+<h3><a class="anchor" aria-hidden="true" name="working-example"></a><a href="#working-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Working Example</h3>
+<p>To see it in action, try the
+<a href="https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js">PanResponder example in RNTester</a></p>
+<h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
+<ul>
+<li><a href="/react-native/docs/0.8/panresponder.html#create"><code>create</code></a></li>
+</ul>
+<hr>
+<h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" name="create"></a><a href="#create" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>create()</code></h3>
+<pre><code class="hljs css javascript">PanResponder.create(config)
+</code></pre>
+<p>Enhanced versions of all of the responder callbacks
+that provide not only the typical <code>ResponderSyntheticEvent</code>, but also the <code>PanResponder</code> gesture state.  Simply replace the word <code>Responder</code> with
+<code>PanResponder</code> in each of the typical <code>onResponder*</code> callbacks.</p>
+<p>For example, the <code>config</code> object would look like:</p>
+<ul>
+<li><code>onMoveShouldSetPanResponder: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onMoveShouldSetPanResponderCapture: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onStartShouldSetPanResponder: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onStartShouldSetPanResponderCapture: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderReject: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderGrant: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderStart: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderEnd: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderRelease: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderMove: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderTerminate: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onPanResponderTerminationRequest: (e, gestureState) =&gt; {...}</code></li>
+<li><code>onShouldBlockNativeResponder: (e, gestureState) =&gt; {...}</code></li>
+</ul>
+<p>In general, for events that have capture equivalents, we update the gestureState once in the capture phase and can use it in the bubble phase as well.</p>
+<p>Be careful with onStartShould* callbacks. They only reflect updated <code>gestureState</code> for start/end events that bubble/capture to the Node. Once the node is the responder, you can rely on every start/end event  being processed by the gesture and <code>gestureState</code> being updated accordingly. (numberActiveTouches) may not be totally accurate unless you are the responder.</p>
+</span></div></article></div><div class="docs-prevnext"></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.8"],"hitsPerPage":5}
+              });
+            </script></body></html>

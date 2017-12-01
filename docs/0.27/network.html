@@ -1,0 +1,224 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Networking · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Networking · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="Many mobile apps need to load resources from a remote URL. You may want to make"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.27</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.27/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>The Basics</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/using-a-listview.html">Using List Views</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.27/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.27/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/network.md" target="_blank">Edit</a><h1>Networking</h1></header><article><div><span><p>Many mobile apps need to load resources from a remote URL. You may want to make
+a POST request to a REST API, or you may simply need to fetch a chunk of static
+content from another server.</p>
+<h2><a class="anchor" aria-hidden="true" name="using-fetch"></a><a href="#using-fetch" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using Fetch</h2>
+<p>React Native provides the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch API</a> for your
+networking needs. Fetch will seem familiar if you have used <code>XMLHttpRequest</code> or
+other networking APIs before. You may refer to MDN's guide on
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch">Using Fetch</a>
+for additional information.</p>
+<h4><a class="anchor" aria-hidden="true" name="making-requests"></a><a href="#making-requests" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Making requests</h4>
+<p>In order to fetch content from an arbitrary URL, just pass the URL to fetch:</p>
+<pre><code class="hljs css js">fetch(<span class="hljs-string">"https://mywebsite.com/mydata.json"</span>);
+</code></pre>
+<p>Fetch also takes an optional second argument that allows you to customize the
+HTTP request. You may want to specify additional headers, or make a POST
+request:</p>
+<pre><code class="hljs css js">fetch(<span class="hljs-string">"https://mywebsite.com/endpoint/"</span>, {
+  <span class="hljs-attr">method</span>: <span class="hljs-string">"POST"</span>,
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-attr">Accept</span>: <span class="hljs-string">"application/json"</span>,
+    <span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"application/json"</span>
+  },
+  <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify({
+    <span class="hljs-attr">firstParam</span>: <span class="hljs-string">"yourValue"</span>,
+    <span class="hljs-attr">secondParam</span>: <span class="hljs-string">"yourOtherValue"</span>
+  })
+});
+</code></pre>
+<p>Take a look at the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Request">Fetch Request docs</a>
+for a full list of properties.</p>
+<h4><a class="anchor" aria-hidden="true" name="handling-the-response"></a><a href="#handling-the-response" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Handling the response</h4>
+<p>The above examples show how you can make a request. In many cases, you will want
+to do something with the response.</p>
+<p>Networking is an inherently asynchronous operation. Fetch methods will return a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>
+that makes it straightforward to write code that works in an asynchronous
+manner:</p>
+<pre><code class="hljs css js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMoviesFromApiAsync</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">"https://facebook.github.io/react-native/movies.json"</span>)
+    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json())
+    .then(<span class="hljs-function"><span class="hljs-params">responseJson</span> =&gt;</span> {
+      <span class="hljs-keyword">return</span> responseJson.movies;
+    })
+    .catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+      <span class="hljs-built_in">console</span>.error(error);
+    });
+}
+</code></pre>
+<p>You can also use the proposed ES2017 <code>async</code>/<code>await</code> syntax in a React Native
+app:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMoviesFromApi</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">await</span> fetch(
+      <span class="hljs-string">"https://facebook.github.io/react-native/movies.json"</span>
+    );
+    <span class="hljs-keyword">let</span> responseJson = <span class="hljs-keyword">await</span> response.json();
+    <span class="hljs-keyword">return</span> responseJson.movies;
+  } <span class="hljs-keyword">catch</span> (error) {
+    <span class="hljs-built_in">console</span>.error(error);
+  }
+}
+</code></pre>
+<p>Don't forget to catch any errors that may be thrown by <code>fetch</code>, otherwise they
+will be dropped silently.</p>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { ActivityIndicator, ListView, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Movies</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(props) {
+    <span class="hljs-keyword">super</span>(props);
+    <span class="hljs-keyword">this</span>.state = {
+      <span class="hljs-attr">isLoading</span>: <span class="hljs-literal">true</span>
+    }
+  }
+
+  componentDidMount() {
+    <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">'https://facebook.github.io/react-native/movies.json'</span>)
+      .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json())
+      .then(<span class="hljs-function">(<span class="hljs-params">responseJson</span>) =&gt;</span> {
+        <span class="hljs-keyword">let</span> ds = <span class="hljs-keyword">new</span> ListView.DataSource({<span class="hljs-attr">rowHasChanged</span>: <span class="hljs-function">(<span class="hljs-params">r1, r2</span>) =&gt;</span> r1 !== r2});
+        <span class="hljs-keyword">this</span>.setState({
+          <span class="hljs-attr">isLoading</span>: <span class="hljs-literal">false</span>,
+          <span class="hljs-attr">dataSource</span>: ds.cloneWithRows(responseJson.movies),
+        }, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+          <span class="hljs-comment">// do something with new state</span>
+        });
+      })
+      .catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+        <span class="hljs-built_in">console</span>.error(error);
+      });
+  }
+
+  render() {
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.state.isLoading) {
+      <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">paddingTop:</span> <span class="hljs-attr">20</span>}}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+      );
+    }
+
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">paddingTop:</span> <span class="hljs-attr">20</span>}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">ListView</span>
+          <span class="hljs-attr">dataSource</span>=<span class="hljs-string">{this.state.dataSource}</span>
+          <span class="hljs-attr">renderRow</span>=<span class="hljs-string">{(rowData)</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{rowData.title}, {rowData.releaseYear}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>}
+        /&gt;
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    );
+  }
+}
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Fetch Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20ActivityIndicator%2C%20ListView%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Movies%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20isLoading%3A%20true%0A%20%20%20%20%7D%0A%20%20%7D%0A%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20return%20fetch('https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fmovies.json')%0A%20%20%20%20%20%20.then((response)%20%3D%3E%20response.json())%0A%20%20%20%20%20%20.then((responseJson)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20let%20ds%20%3D%20new%20ListView.DataSource(%7BrowHasChanged%3A%20(r1%2C%20r2)%20%3D%3E%20r1%20!%3D%3D%20r2%7D)%3B%0A%20%20%20%20%20%20%20%20this.setState(%7B%0A%20%20%20%20%20%20%20%20%20%20isLoading%3A%20false%2C%0A%20%20%20%20%20%20%20%20%20%20dataSource%3A%20ds.cloneWithRows(responseJson.movies)%2C%0A%20%20%20%20%20%20%20%20%7D%2C%20function()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%2F%2F%20do%20something%20with%20new%20state%0A%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%7D)%0A%20%20%20%20%20%20.catch((error)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20console.error(error)%3B%0A%20%20%20%20%20%20%7D)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20if%20(this.state.isLoading)%20%7B%0A%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20paddingTop%3A%2020%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CActivityIndicator%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20)%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20paddingTop%3A%2020%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CListView%0A%20%20%20%20%20%20%20%20%20%20dataSource%3D%7Bthis.state.dataSource%7D%0A%20%20%20%20%20%20%20%20%20%20renderRow%3D%7B(rowData)%20%3D%3E%20%3CText%3E%7BrowData.title%7D%2C%20%7BrowData.releaseYear%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-platform="ios"
+        data-snack-preview="true"
+        data-snack-sdk-version="23.0.0"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 880px;
+        "
+      ></div></div></div><blockquote>
+<p>By default, iOS will block any request that's not encrypted using SSL. If you
+need to fetch from a cleartext URL (one that begins with <code>http</code>) you will
+first need to add an App Transport Security exception. If you know ahead of
+time what domains you will need access to, it is more secure to add exceptions
+just for those domains; if the domains are not known until runtime you can
+<a href="/react-native/docs/0.27/integration-with-existing-apps.html#app-transport-security">disable ATS completely</a>.
+Note however that from January 2017,
+<a href="https://forums.developer.apple.com/thread/48979">Apple's App Store review will require reasonable justification for disabling ATS</a>.
+See
+<a href="https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33">Apple's documentation</a>
+for more information.</p>
+</blockquote>
+<h3><a class="anchor" aria-hidden="true" name="using-other-networking-libraries"></a><a href="#using-other-networking-libraries" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using Other Networking Libraries</h3>
+<p>The
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest">XMLHttpRequest API</a>
+is built in to React Native. This means that you can use third party libraries
+such as <a href="https://github.com/niftylettuce/frisbee">frisbee</a> or
+<a href="https://github.com/mzabriskie/axios">axios</a> that depend on it, or you can use
+the XMLHttpRequest API directly if you prefer.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">var</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+request.onreadystatechange = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-keyword">if</span> (request.readyState !== <span class="hljs-number">4</span>) {
+    <span class="hljs-keyword">return</span>;
+  }
+
+  <span class="hljs-keyword">if</span> (request.status === <span class="hljs-number">200</span>) {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"success"</span>, request.responseText);
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-built_in">console</span>.warn(<span class="hljs-string">"error"</span>);
+  }
+};
+
+request.open(<span class="hljs-string">"GET"</span>, <span class="hljs-string">"https://mywebsite.com/endpoint/"</span>);
+request.send();
+</code></pre>
+<blockquote>
+<p>The security model for XMLHttpRequest is different than on web as there is no
+concept of <a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>
+in native apps.</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" name="websocket-support"></a><a href="#websocket-support" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>WebSocket Support</h2>
+<p>React Native also supports
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSockets</a>, a
+protocol which provides full-duplex communication channels over a single TCP
+connection.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">var</span> ws = <span class="hljs-keyword">new</span> WebSocket(<span class="hljs-string">"ws://host.com/path"</span>);
+
+ws.onopen = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-comment">// connection opened</span>
+  ws.send(<span class="hljs-string">"something"</span>); <span class="hljs-comment">// send a message</span>
+};
+
+ws.onmessage = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-comment">// a message was received</span>
+  <span class="hljs-built_in">console</span>.log(e.data);
+};
+
+ws.onerror = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-comment">// an error occurred</span>
+  <span class="hljs-built_in">console</span>.log(e.message);
+};
+
+ws.onclose = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-comment">// connection closed</span>
+  <span class="hljs-built_in">console</span>.log(e.code, e.reason);
+};
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="high-five"></a><a href="#high-five" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>High Five!</h2>
+<p>If you've gotten here by reading linearly through the tutorial, then you are a
+pretty impressive human being. Congratulations. Next, you might want to check
+out
+<a href="/react-native/docs/0.27/more-resources.html">all the cool stuff the community does with React Native</a>.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="using-a-listview.html">← Using List Views</a><a class="docs-next button" href="more-resources.html">More Resources →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.27"],"hitsPerPage":5}
+              });
+            </script></body></html>

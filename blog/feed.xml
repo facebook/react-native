@@ -1,299 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://facebook.github.io/react-native/blog/</id>
-    <title>React Native Blog</title>
-    <updated>2017-11-06T00:00:00Z</updated>
-    <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
-    <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
-    <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
-    <rights>Copyright © 2017 Facebook Inc.</rights>
-    <generator>Feed for Node.js</generator>
-    <entry>
-        <title type="html"><![CDATA[React Native Monthly #5]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/11/06/react-native-monthly-5.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/11/06/react-native-monthly-5.html">
-        </link>
-        <updated>2017-11-06T00:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! Let's see what our teams are up to.]]></summary>
-        <author>
-            <name>Tomislav Tenodi</name>
-            <uri>https://github.com/tenodi</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native Monthly #4]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html">
-        </link>
-        <updated>2017-09-21T00:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! Here are the notes from each team:]]></summary>
-        <author>
-            <name>Mike Grabowski</name>
-            <uri>https://github.com/grabbou</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native Monthly #3]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/08/30/react-native-monthly-3.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/08/30/react-native-monthly-3.html">
-        </link>
-        <updated>2017-08-30T00:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at React Native EU conference in Wroclaw, Poland. Make sure to grab a ticket and see you there in person! Meanwhile, let's see what our teams are up to.]]></summary>
-        <author>
-            <name>Mike Grabowski</name>
-            <uri>https://github.com/grabbou</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native Performance in Marketplace]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">
-        </link>
-        <updated>2017-08-07T00:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, Marketplace. It is available in a dozen or so countries and enables users to discover products and services provided by other users.]]></summary>
-        <author>
-            <name>Aaron Chiu</name>
-            <uri>https://www.facebook.com/aaronechiu</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native Monthly #2]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html">
-        </link>
-        <updated>2017-07-28T00:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! On this session, we were joined by Infinite Red, great minds behind Chain React, the React Native Conference. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week later. Talks from the conference have been posted online and I encourage you to check them out. So, let's see what our teams are up to.]]></summary>
-        <author>
-            <name>Tomislav Tenodi</name>
-            <uri>https://github.com/tenodi</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native Monthly #1]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html">
-        </link>
-        <updated>2017-06-21T00:00:00Z</updated>
-        <summary type="html"><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></summary>
-        <author>
-            <name>Tomislav Tenodi</name>
-            <uri>https://github.com/tenodi</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
-        </link>
-        <updated>2017-03-13T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></summary>
-        <author>
-            <name>Adam Perry</name>
-            <uri>https://github.com/dikaiosune</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[idx: The Existential Function]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
-        </link>
-        <updated>2017-03-13T00:00:00Z</updated>
-        <summary type="html"><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.]]></summary>
-        <author>
-            <name>Timothy Yung</name>
-            <uri>https://github.com/yungsters</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Better List Views in React Native]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html">
-        </link>
-        <updated>2017-03-13T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></summary>
-        <author>
-            <name>Spencer Ahrens</name>
-            <uri>https://github.com/sahrens</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Using Native Driver for Animated]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html">
-        </link>
-        <updated>2017-02-14T00:00:00Z</updated>
-        <summary type="html"><![CDATA[For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers to create performant animations without having to worry about some of their code causing it to lag.]]></summary>
-        <author>
-            <name>Janic Duplessis</name>
-            <uri>https://twitter.com/janicduplessis</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html">
-        </link>
-        <updated>2017-01-07T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release of our production iOS apps, so we decided to release the open source versions at the same pace. Now, many of the Facebook apps ship once per week, especially on Android. Because we ship from master weekly, we need to keep it quite stable. So the bi-weekly release cadence doesn't even benefit internal contributors anymore.]]></summary>
-        <author>
-            <name>Eric Vicenti</name>
-            <uri>https://twitter.com/EricVicenti</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Easier Upgrades Thanks to Git]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html">
-        </link>
-        <updated>2016-12-05T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Upgrading to new versions of React Native has been difficult. You might have seen something like this before:]]></summary>
-        <author>
-            <name>Nicolas Cuillery</name>
-            <uri>https://twitter.com/ncuillery</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html">
-        </link>
-        <updated>2016-11-08T00:00:00Z</updated>
-        <summary type="html"><![CDATA[We have heard from many people that there is so much work happening with React Native, it can be tough to keep track of what's going on. To help communicate what work is in progress, we are now publishing a roadmap for React Native. At a high level, this work can be broken down into three priorities:]]></summary>
-        <author>
-            <name>Héctor Ramos</name>
-            <uri>https://twitter.com/hectorramos</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[0.36: Headless JS, the Keyboard API, & more]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/10/25/0-36-headless-js-the-keyboard-api-and-more.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/10/25/0-36-headless-js-the-keyboard-api-and-more.html">
-        </link>
-        <updated>2016-10-25T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Today we are releasing React Native 0.36. Read on to learn more about what's new.]]></summary>
-        <author>
-            <name>Héctor Ramos</name>
-            <uri>https://twitter.com/hectorramos</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Expo Talks: Adam on Unraveling Navigation]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/09/08/exponent-talks-unraveling-navigation.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/09/08/exponent-talks-unraveling-navigation.html">
-        </link>
-        <updated>2016-09-08T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Adam Miskiewicz from Expo talks about mobile navigation and the ex-navigation React Native library at Expo's office hours last week.]]></summary>
-        <author>
-            <name>Héctor Ramos</name>
-            <uri>https://twitter.com/hectorramos</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Right-to-Left Layout Support For React Native Apps]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html">
-        </link>
-        <updated>2016-08-19T00:00:00Z</updated>
-        <summary type="html"><![CDATA[After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.]]></summary>
-        <author>
-            <name>Mengjue (Mandy) Wang</name>
-            <uri>https://github.com/MengjueW</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[San Francisco Meetup Recap]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/08/12/react-native-meetup-san-francisco.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/08/12/react-native-meetup-san-francisco.html">
-        </link>
-        <updated>2016-08-12T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Last week I had the opportunity to attend the React Native Meetup at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.]]></summary>
-        <author>
-            <name>Héctor Ramos</name>
-            <uri>https://twitter.com/hectorramos</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Toward Better Documentation]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/07/06/toward-better-documentation.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/07/06/toward-better-documentation.html">
-        </link>
-        <updated>2016-07-06T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better based on your feedback, and we wanted to share some of the improvements we've made.]]></summary>
-        <author>
-            <name>Kevin Lacker</name>
-            <uri>https://twitter.com/lacker</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native: A year in review]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/04/13/react-native-a-year-in-review.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/04/13/react-native-a-year-in-review.html">
-        </link>
-        <updated>2016-04-13T00:00:00Z</updated>
-        <summary type="html"><![CDATA[It's been one year since we open-sourced React Native. What started as an idea with a handful of engineers is now a framework being used by product teams across Facebook and beyond. Today at F8 we announced that Microsoft is bringing React Native to the Windows ecosystem, giving developers the potential to build React Native on Windows PC, Phone, and Xbox. It will also provide open source tools and services such as a React Native extension for Visual Studio Code and CodePush to help developers create React Native apps on the Windows platform. In addition, Samsung is building React Native for its hybrid platform, which will empower developers to build apps for millions of SmartTVs and mobile and wearable devices. We also released the Facebook SDK for React Native, which makes it easier for developers to incorporate Facebook social features like Login, Sharing, App Analytics, and Graph APIs into their apps. In one year, React Native has changed the way developers build on every major platform.]]></summary>
-        <author>
-            <name>Martin Konicek</name>
-            <uri>https://github.com/mkonicek</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Dive into React Native Performance]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html">
-        </link>
-        <updated>2016-03-28T00:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native allows you to build iOS and Android apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across multiple platforms. You can ship faster and focus on details that really matter, making your app look and feel fantastic. Optimizing performance is a big part of this. Here is the story of how we made React Native app startup twice as fast.]]></summary>
-        <author>
-            <name>Pieter De Baets</name>
-            <uri>https://github.com/javache</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Introducing Hot Reloading]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html">
-        </link>
-        <updated>2016-03-24T00:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.]]></summary>
-        <author>
-            <name>Martín Bigio</name>
-            <uri>https://twitter.com/martinbigio</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Making React Native apps accessible]]></title>
-        <id>https://facebook.github.io/react-native/blog/2015/11/23/making-react-native-apps-accessible.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2015/11/23/making-react-native-apps-accessible.html">
-        </link>
-        <updated>2015-11-23T00:00:00Z</updated>
-        <summary type="html"><![CDATA[With the recent launch of React on web and React Native on mobile, we've provided a new front-end framework for developers to build products. One key aspect of building a robust product is ensuring that anyone can use it, including people who have vision loss or other disabilities. The Accessibility API for React and React Native enables you to make any React-powered experience usable by someone who may use assistive technology, like a screen reader for the blind and visually impaired.]]></summary>
-        <author>
-            <name>Georgiy Kassabli</name>
-            <uri>https://www.facebook.com/georgiy.kassabli</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native for Android: How we built the first cross-platform React Native app]]></title>
-        <id>https://facebook.github.io/react-native/blog/2015/09/14/react-native-for-android.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2015/09/14/react-native-for-android.html">
-        </link>
-        <updated>2015-09-14T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Earlier this year, we introduced React Native for iOS. React Native brings what developers are used to from React on the web — declarative self-contained UI components and fast development cycles — to the mobile platform, while retaining the speed, fidelity, and feel of native applications. Today, we're happy to release React Native for Android.]]></summary>
-        <author>
-            <name>Daniel Witte</name>
-            <uri>https://www.facebook.com/drwitte</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[React Native: Bringing modern web techniques to mobile]]></title>
-        <id>https://facebook.github.io/react-native/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html">
-        </link>
-        <updated>2015-03-26T00:00:00Z</updated>
-        <summary type="html"><![CDATA[We introduced React to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web projects at Facebook are commonly built using React in one form or another, and it's being broadly adopted across the industry. Engineers are choosing to use React every day because it enables them to spend more time focusing on their products and less time fighting with their framework. It wasn't until we'd been building with React for a while, though, that we started to understand what makes it so powerful.]]></summary>
-        <author>
-            <name>Tom Occhino</name>
-            <uri>https://github.com/tomocchino</uri>
-        </author>
-    </entry>
-</feed>
+<rss version="2.0">
+    <channel>
+        <title>React Native Blog</title>
+        <link>https://facebook.github.io/blog</link>
+        <description>The best place to stay up-to-date with the latest React Native news and events.</description>
+        <lastBuildDate>Mon, 06 Nov 2017 06:00:00 GMT</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>Feed for Node.js</generator>
+        <image>
+            <title>React Native Blog</title>
+            <url>https://facebook.github.ioimg/header_logo.png</url>
+            <link>https://facebook.github.io/blog</link>
+        </image>
+        <item>
+            <title><![CDATA[React Native Monthly #5]]></title>
+            <link>https://facebook.github.io/blog/2017/11/06/react-native-monthly-5.html</link>
+            <guid>https://facebook.github.io/blog/2017/11/06/react-native-monthly-5.html</guid>
+            <pubDate>Mon, 06 Nov 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! Let's see what our teams are up to.
+
+### Callstack
+
+- We’ve been working on React Native CI. Most importantly, we have migrated from Travis to Circle, leaving React Native with a single, unified CI pipeline]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #4]]></title>
+            <link>https://facebook.github.io/blog/2017/09/21/react-native-monthly-4.html</link>
+            <guid>https://facebook.github.io/blog/2017/09/21/react-native-monthly-4.html</guid>
+            <pubDate>Thu, 21 Sep 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! Here are the notes from each team:
+
+### Callstack
+
+- [React Native EU](https://react-native.eu) is over. More than 300 participants from 33 countries have visited Wroclaw. Talks can be found [on Youtube](ht]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #3]]></title>
+            <link>https://facebook.github.io/blog/2017/08/30/react-native-monthly-3.html</link>
+            <guid>https://facebook.github.io/blog/2017/08/30/react-native-monthly-3.html</guid>
+            <pubDate>Wed, 30 Aug 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at [React Native EU](https://react-native.eu/) conference in Wroclaw, Poland. Make sure to grab a ticket an]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Performance in Marketplace]]></title>
+            <link>https://facebook.github.io/blog/2017/08/07/react-native-performance-in-marketplace.html</link>
+            <guid>https://facebook.github.io/blog/2017/08/07/react-native-performance-in-marketplace.html</guid>
+            <pubDate>Mon, 07 Aug 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[React Native is used in multiple places across multiple apps in the Facebook
+family including a top level tab in the main Facebook apps. Our focus for this
+post is a highly visible product,
+[Marketplace](https://newsroom.fb.com/news/2016/10/introduci]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #2]]></title>
+            <link>https://facebook.github.io/blog/2017/07/28/react-native-monthly-2.html</link>
+            <guid>https://facebook.github.io/blog/2017/07/28/react-native-monthly-2.html</guid>
+            <pubDate>Fri, 28 Jul 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[The React Native monthly meeting continues! On this session, we were joined by
+[Infinite Red](https://infinite.red/), great minds behind
+[Chain React, the React Native Conference](https://infinite.red/ChainReactConf).
+As most of the people here were ]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native Monthly #1]]></title>
+            <link>https://facebook.github.io/blog/2017/06/21/react-native-monthly-1.html</link>
+            <guid>https://facebook.github.io/blog/2017/06/21/react-native-monthly-1.html</guid>
+            <pubDate>Wed, 21 Jun 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[At [Shoutem](https://shoutem.github.io/), we've been fortunate enough to work
+with React Native from its very beginnings. We decided we wanted to be part of
+the amazing community from day one. Soon enough, we realized it's almost
+impossible to keep u]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Create React Native App]]></title>
+            <link>https://facebook.github.io/blog/2017/03/13/introducing-create-react-native-app.html</link>
+            <guid>https://facebook.github.io/blog/2017/03/13/introducing-create-react-native-app.html</guid>
+            <pubDate>Mon, 13 Mar 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[Today we’re announcing [Create React Native App](https://github.com/react-community/create-react-native-app): a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create Rea]]></description>
+        </item>
+        <item>
+            <title><![CDATA[idx: The Existential Function]]></title>
+            <link>https://facebook.github.io/blog/2017/03/13/idx-the-existential-function.html</link>
+            <guid>https://facebook.github.io/blog/2017/03/13/idx-the-existential-function.html</guid>
+            <pubDate>Mon, 13 Mar 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Better List Views in React Native]]></title>
+            <link>https://facebook.github.io/blog/2017/03/13/better-list-views.html</link>
+            <guid>https://facebook.github.io/blog/2017/03/13/better-list-views.html</guid>
+            <pubDate>Mon, 13 Mar 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[Many of you have started playing with some of our new List components already after our [teaser announcement in the community group](https://www.facebook.com/groups/react.native.community/permalink/921378591331053), but we are officially announcing t]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Using Native Driver for Animated]]></title>
+            <link>https://facebook.github.io/blog/2017/02/14/using-native-driver-for-animated.html</link>
+            <guid>https://facebook.github.io/blog/2017/02/14/using-native-driver-for-animated.html</guid>
+            <pubDate>Tue, 14 Feb 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[For the past year, we've been working on improving performance of animations
+that use the Animated library. Animations are very important to create a
+beautiful user experience but can also be hard to do right. We want to make it
+easy for developers t]]></description>
+        </item>
+        <item>
+            <title><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
+            <link>https://facebook.github.io/blog/2017/01/07/monthly-release-cadence.html</link>
+            <guid>https://facebook.github.io/blog/2017/01/07/monthly-release-cadence.html</guid>
+            <pubDate>Sat, 07 Jan 2017 06:00:00 GMT</pubDate>
+            <description><![CDATA[Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release o]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Easier Upgrades Thanks to Git]]></title>
+            <link>https://facebook.github.io/blog/2016/12/05/easier-upgrades.html</link>
+            <guid>https://facebook.github.io/blog/2016/12/05/easier-upgrades.html</guid>
+            <pubDate>Mon, 05 Dec 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[Upgrading to new versions of React Native has been difficult. You might have
+seen something like this before:
+
+![](/react-native/blog/assets/git-upgrade-conflict.png)
+
+None of those options is ideal. By overwriting the file we lose our local
+changes.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
+            <link>https://facebook.github.io/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</link>
+            <guid>https://facebook.github.io/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</guid>
+            <pubDate>Tue, 08 Nov 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[We have heard from many people that there is so much work happening with React
+Native, it can be tough to keep track of what's going on. To help communicate
+what work is in progress, we are now publishing a
+[roadmap for React Native](https://github.c]]></description>
+        </item>
+        <item>
+            <title><![CDATA[0.36: Headless JS, the Keyboard API, & more]]></title>
+            <link>https://facebook.github.io/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html</link>
+            <guid>https://facebook.github.io/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html</guid>
+            <pubDate>Tue, 25 Oct 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[Today we are releasing [React Native 0.36](https://github.com/facebook/react-native/releases/tag/v0.36.0). Read on to learn more about what's new.
+
+## Headless JS
+
+Headless JS is a way to run tasks in JavaScript while your app is in the background. I]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Expo Talks: Adam on Unraveling Navigation]]></title>
+            <link>https://facebook.github.io/blog/2016/09/08/exponent-talks-unraveling-navigation.html</link>
+            <guid>https://facebook.github.io/blog/2016/09/08/exponent-talks-unraveling-navigation.html</guid>
+            <pubDate>Thu, 08 Sep 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[[Adam Miskiewicz](https://twitter.com/skevy) from [Expo](https://expo.io/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponent/ex-navigation) React Native library at Expo's office hours last week.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Right-to-Left Layout Support For React Native Apps]]></title>
+            <link>https://facebook.github.io/blog/2016/08/19/right-to-left-support-for-react-native-apps.html</link>
+            <guid>https://facebook.github.io/blog/2016/08/19/right-to-left-support-for-react-native-apps.html</guid>
+            <pubDate>Fri, 19 Aug 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[After launching an app to the app stores, internationalization is the next step
+to further your audience reach. Over 20 countries and numerous people around the
+world use Right-to-Left (RTL) languages. Thus, making your app support RTL for
+them is ne]]></description>
+        </item>
+        <item>
+            <title><![CDATA[San Francisco Meetup Recap]]></title>
+            <link>https://facebook.github.io/blog/2016/08/12/react-native-meetup-san-francisco.html</link>
+            <guid>https://facebook.github.io/blog/2016/08/12/react-native-meetup-san-francisco.html</guid>
+            <pubDate>Fri, 12 Aug 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[Last week I had the opportunity to attend the
+[React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854)
+at Zynga’s San Francisco office. With around 200 people in attendance, it served
+as a great place to meet]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Toward Better Documentation]]></title>
+            <link>https://facebook.github.io/blog/2016/07/06/toward-better-documentation.html</link>
+            <guid>https://facebook.github.io/blog/2016/07/06/toward-better-documentation.html</guid>
+            <pubDate>Wed, 06 Jul 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better ]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native: A year in review]]></title>
+            <link>https://facebook.github.io/blog/2016/04/13/react-native-a-year-in-review.html</link>
+            <guid>https://facebook.github.io/blog/2016/04/13/react-native-a-year-in-review.html</guid>
+            <pubDate>Wed, 13 Apr 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[It's been one year since we open-sourced React Native. What started as an idea with a handful of engineers is now a framework being used by product teams across Facebook and beyond. Today at F8 we announced that Microsoft is bringing [React Native to]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Dive into React Native Performance]]></title>
+            <link>https://facebook.github.io/blog/2016/03/28/dive-into-react-native-performance.html</link>
+            <guid>https://facebook.github.io/blog/2016/03/28/dive-into-react-native-performance.html</guid>
+            <pubDate>Mon, 28 Mar 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[React Native allows you to build iOS and Android apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across ]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Introducing Hot Reloading]]></title>
+            <link>https://facebook.github.io/blog/2016/03/24/introducing-hot-reloading.html</link>
+            <guid>https://facebook.github.io/blog/2016/03/24/introducing-hot-reloading.html</guid>
+            <pubDate>Thu, 24 Mar 2016 06:00:00 GMT</pubDate>
+            <description><![CDATA[React Native's goal is to give you the best possible developer experience. A big
+part of it is the time it takes between you save a file and be able to see the
+changes. Our goal is to get this feedback loop to be under 1 second, even as
+your app grow]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Making React Native apps accessible]]></title>
+            <link>https://facebook.github.io/blog/2015/11/23/making-react-native-apps-accessible.html</link>
+            <guid>https://facebook.github.io/blog/2015/11/23/making-react-native-apps-accessible.html</guid>
+            <pubDate>Mon, 23 Nov 2015 06:00:00 GMT</pubDate>
+            <description><![CDATA[With the recent launch of React on web and React Native on mobile, we've provided a new front-end framework for developers to build products. One key aspect of building a robust product is ensuring that anyone can use it, including people who have vi]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native for Android: How we built the first cross-platform React Native app]]></title>
+            <link>https://facebook.github.io/blog/2015/09/14/react-native-for-android.html</link>
+            <guid>https://facebook.github.io/blog/2015/09/14/react-native-for-android.html</guid>
+            <pubDate>Mon, 14 Sep 2015 06:00:00 GMT</pubDate>
+            <description><![CDATA[Earlier this year, we introduced [React Native for iOS](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/). React Native brings what developers are used to from React on the web — declarative self]]></description>
+        </item>
+        <item>
+            <title><![CDATA[React Native: Bringing modern web techniques to mobile]]></title>
+            <link>https://facebook.github.io/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html</link>
+            <guid>https://facebook.github.io/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html</guid>
+            <pubDate>Thu, 26 Mar 2015 06:00:00 GMT</pubDate>
+            <description><![CDATA[We introduced [React](https://code.facebook.com/projects/176988925806765/react/) to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web proje]]></description>
+        </item>
+    </channel>
+</rss>

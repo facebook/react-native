@@ -1,0 +1,454 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Image · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Image · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="A React component for displaying different types of images,"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.49</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.49/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Components</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/activityindicator.html">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/button.html">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/flatlist.html">FlatList</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.49/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/keyboardavoidingview.html">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/listview.html">ListView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/maskedviewios.html">MaskedViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/picker.html">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pickerios.html">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/refreshcontrol.html">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/sectionlist.html">SectionList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/slider.html">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/statusbar.html">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/view.html">View</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/virtualizedlist.html">VirtualizedList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/accessibilityinfo.html">AccessibilityInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/alert.html">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/alertios.html">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/appregistry.html">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/appstate.html">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/asyncstorage.html">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/backandroid.html">BackAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/backhandler.html">BackHandler</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/clipboard.html">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/datepickerandroid.html">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imageeditor.html">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/imagestore.html">ImageStore</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/keyboard.html">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/linking.html">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/listviewdatasource.html">ListViewDataSource</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/panresponder.html">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/permissionsandroid.html">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/shadow-props.html">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/share.html">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/systrace.html">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/timepickerandroid.html">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/vibration.html">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.49/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.48/image.md" target="_blank">Edit</a><h1>Image</h1></header><article><div><span><p>A React component for displaying different types of images,
+including network images, static resources, temporary local images, and
+images from local disk, such as the camera roll.</p>
+<p>This example shows fetching and displaying an image from local storage
+as well as one from network and even from data provided in the <code>'data:'</code> uri scheme.</p>
+<blockquote>
+<p>Note that for network and data images, you will need to manually specify the dimensions of your image!</p>
+</blockquote>
+<div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, Image } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;View&gt;
+        &lt;Image
+          source={require('/react-native/img/favicon.png')}
+        /&gt;
+        &lt;Image
+          style={{width: 50, height: 50}}
+          source={{uri: 'https://facebook.github.io/react/assets/logo_og.png'}}
+        /&gt;
+        &lt;Image
+          style={{width: 66, height: 58}}
+          source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}
+        /&gt;
+      &lt;/View&gt;
+    );
+  }
+}
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
+</code></pre><iframe style="margin-top: 4" width="880" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%2Freact-native%2Fimg%2Ffavicon.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact%2Fassets%2Flogo_og.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%2066%2C%20height%3A%2058%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB%2B2%2Fab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw%2BP%2FeMrC5UTVAAAAABJRU5ErkJggg%3D%3D'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('DisplayAnImage'%2C%20()%20%3D%3E%20DisplayAnImage)%3B%0A" frame-border="0"></iframe></div>
+
+<p>You can also add <code>style</code> to an image:</p>
+<div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { AppRegistry, View, Image, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">stretch</span>: {
+    <span class="hljs-attr">width</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span>
+  }
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DisplayAnImageWithStyle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.stretch}</span>
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'/<span class="hljs-attr">react-native</span>/<span class="hljs-attr">img</span>/<span class="hljs-attr">favicon.png</span>')}
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    );
+  }
+}
+
+// skip these lines if using Create React Native App
+AppRegistry.registerComponent(
+  'DisplayAnImageWithStyle',
+  () =&gt; DisplayAnImageWithStyle
+);
+</span></code></pre><iframe style="margin-top: 4" width="880" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%2Freact-native%2Fimg%2Ffavicon.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20these%20lines%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent(%0A%20%20'DisplayAnImageWithStyle'%2C%0A%20%20()%20%3D%3E%20DisplayAnImageWithStyle%0A)%3B%0A" frame-border="0"></iframe></div>
+
+<h3><a class="anchor" aria-hidden="true" name="gif-and-webp-support-on-android"></a><a href="#gif-and-webp-support-on-android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>GIF and WebP support on Android</h3>
+<p>When building your own native code, GIF and WebP are not supported by default on Android.</p>
+<p>You will need to add some optional modules in <code>android/app/build.gradle</code>, depending on the needs of your app.</p>
+<pre><code class="hljs"><span class="hljs-keyword">dependencies</span> {
+  <span class="hljs-comment">// If your app supports Android versions before Ice Cream Sandwich (API level 14)</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-base-support:1.3.0'</span>
+
+  <span class="hljs-comment">// For animated GIF support</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-gif:1.3.0'</span>
+
+  <span class="hljs-comment">// For WebP support, including animated WebP</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-webp:1.3.0'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.3.0'</span>
+
+  <span class="hljs-comment">// For WebP support, without animations</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.3.0'</span>
+}
+</code></pre>
+<p>Also, if you use GIF with ProGuard, you will need to add this rule in <code>proguard-rules.pro</code> :</p>
+<pre><code class="hljs">-keep <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">com</span>.<span class="hljs-title">facebook</span>.<span class="hljs-title">imagepipeline</span>.<span class="hljs-title">animated</span>.<span class="hljs-title">factory</span>.<span class="hljs-title">AnimatedFactoryImpl</span> {</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">AnimatedFactoryImpl</span><span class="hljs-params">(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier)</span></span>;
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
+<ul>
+<li><a href="/react-native/docs/0.49/image.html#style"><code>style</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#blurradius"><code>blurRadius</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onlayout"><code>onLayout</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onload"><code>onLoad</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onloadend"><code>onLoadEnd</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onloadstart"><code>onLoadStart</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#resizemode"><code>resizeMode</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#source"><code>source</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onerror"><code>onError</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#testid"><code>testID</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#resizemethod"><code>resizeMethod</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#accessibilitylabel"><code>accessibilityLabel</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#accessible"><code>accessible</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#capinsets"><code>capInsets</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#defaultsource"><code>defaultSource</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onpartialload"><code>onPartialLoad</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#onprogress"><code>onProgress</code></a></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
+<ul>
+<li><a href="/react-native/docs/0.49/image.html#getsize"><code>getSize</code></a></li>
+<li><a href="/react-native/docs/0.49/image.html#prefetch"><code>prefetch</code></a></li>
+</ul>
+<hr>
+<h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<h3><a class="anchor" aria-hidden="true" name="style"></a><a href="#style" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>style</code></h3>
+<blockquote>
+<p><code>ImageResizeMode</code> is an <code>Enum</code> for different image resizing modes, set via the
+<code>resizeMode</code> style property on <code>Image</code> components. The values are <code>contain</code>, <code>cover</code>,
+<code>stretch</code>, <code>center</code>, <code>repeat</code>.</p>
+</blockquote>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>style</td><td>No</td></tr>
+</tbody>
+</table>
+<ul>
+<li><p><a href="/react-native/docs/0.49/layout-props.html#props">Layout Props...</a></p></li>
+<li><p><a href="/react-native/docs/0.49/shadow-props.html#props">Shadow Props...</a></p></li>
+<li><p><a href="/react-native/docs/0.49/transforms.html#props">Transforms...</a></p></li>
+<li><p><strong><code>borderTopRightRadius</code></strong>: number</p></li>
+<li><p><strong><code>backfaceVisibility</code></strong>: enum('visible', 'hidden')</p></li>
+<li><p><strong><code>borderBottomLeftRadius</code></strong>: number</p></li>
+<li><p><strong><code>borderBottomRightRadius</code></strong>: number</p></li>
+<li><p><strong><code>borderColor</code></strong>: <a href="/react-native/docs/0.49/colors.html">color</a></p></li>
+<li><p><strong><code>borderRadius</code></strong>: number</p></li>
+<li><p><strong><code>borderTopLeftRadius</code></strong>: number</p></li>
+<li><p><strong><code>backgroundColor</code></strong>: <a href="/react-native/docs/0.49/colors.html">color</a></p></li>
+<li><p><strong><code>borderWidth</code></strong>: number</p></li>
+<li><p><strong><code>opacity</code></strong>: number</p></li>
+<li><p><strong><code>overflow</code></strong>: enum('visible', 'hidden')</p></li>
+<li><p><strong><code>resizeMode</code></strong>: Object.keys(ImageResizeMode)</p></li>
+<li><p><strong><code>tintColor</code></strong>: <a href="/react-native/docs/0.49/colors.html">color</a></p>
+<p>Changes the color of all the non-transparent pixels to the tintColor.</p></li>
+<li><p><strong><code>overlayColor</code></strong>: string (<em>Android</em>)</p>
+<p>When the image has rounded corners, specifying an overlayColor will
+cause the remaining space in the corners to be filled with a solid color.
+This is useful in cases which are not supported by the Android
+implementation of rounded corners:</p>
+<ul>
+<li>Certain resize modes, such as 'contain'</li>
+<li>Animated GIFs</li>
+</ul>
+<p>A typical way to use this prop is with images displayed on a solid
+background and setting the <code>overlayColor</code> to the same color
+as the background.</p>
+<p>For details of how this works under the hood, see
+<a href="http://frescolib.org/rounded-corners-and-circles.md">http://frescolib.org/rounded-corners-and-circles.md</a></p></li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="blurradius"></a><a href="#blurradius" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>blurRadius</code></h3>
+<p>blurRadius: the blur radius of the blur filter added to the image</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onlayout"></a><a href="#onlayout" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLayout</code></h3>
+<p>Invoked on mount and layout changes with
+<code>{nativeEvent: {layout: {x, y, width, height}}}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onload"></a><a href="#onload" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLoad</code></h3>
+<p>Invoked when load completes successfully.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onloadend"></a><a href="#onloadend" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLoadEnd</code></h3>
+<p>Invoked when load either succeeds or fails.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onloadstart"></a><a href="#onloadstart" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onLoadStart</code></h3>
+<p>Invoked on load start.</p>
+<p>e.g., <code>onLoadStart={(e) =&gt; this.setState({loading: true})}</code></p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="resizemode"></a><a href="#resizemode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resizeMode</code></h3>
+<p>Determines how to resize the image when the frame doesn't match the raw
+image dimensions.</p>
+<ul>
+<li><p><code>cover</code>: Scale the image uniformly (maintain the image's aspect ratio)
+so that both dimensions (width and height) of the image will be equal
+to or larger than the corresponding dimension of the view (minus padding).</p></li>
+<li><p><code>contain</code>: Scale the image uniformly (maintain the image's aspect ratio)
+so that both dimensions (width and height) of the image will be equal to
+or less than the corresponding dimension of the view (minus padding).</p></li>
+<li><p><code>stretch</code>: Scale width and height independently, This may change the
+aspect ratio of the src.</p></li>
+<li><p><code>repeat</code>: Repeat the image to cover the frame of the view. The
+image will keep it's size and aspect ratio. (iOS only)</p></li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('cover', 'contain', 'stretch', 'repeat', 'center')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="source"></a><a href="#source" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>source</code></h3>
+<p>The image source (either a remote URL or a local file resource).</p>
+<p>This prop can also contain several remote URLs, specified together with
+their width and height and potentially with scale/other URI arguments.
+The native side will then choose the best <code>uri</code> to display based on the
+measured size of the image container. A <code>cache</code> property can be added to
+control how networked request interacts with the local cache.</p>
+<p>The currently supported formats are <code>png</code>, <code>jpg</code>, <code>jpeg</code>, <code>bmp</code>, <code>gif</code>,
+<code>webp</code> (Android only), <code>psd</code> (iOS only).</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>ImageSourcePropType</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onerror"></a><a href="#onerror" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onError</code></h3>
+<p>Invoked on load error with <code>{nativeEvent: {error}}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="testid"></a><a href="#testid" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>testID</code></h3>
+<p>A unique identifier for this element to be used in UI Automation
+testing scripts.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="resizemethod"></a><a href="#resizemethod" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resizeMethod</code></h3>
+<p>The mechanism that should be used to resize the image when the image's dimensions
+differ from the image view's dimensions. Defaults to <code>auto</code>.</p>
+<ul>
+<li><p><code>auto</code>: Use heuristics to pick between <code>resize</code> and <code>scale</code>.</p></li>
+<li><p><code>resize</code>: A software operation which changes the encoded image in memory before it
+gets decoded. This should be used instead of <code>scale</code> when the image is much larger
+than the view.</p></li>
+<li><p><code>scale</code>: The image gets drawn downscaled or upscaled. Compared to <code>resize</code>, <code>scale</code> is
+faster (usually hardware accelerated) and produces higher quality images. This
+should be used if the image is smaller than the view. It should also be used if the
+image is slightly bigger than the view.</p></li>
+</ul>
+<p>More details about <code>resize</code> and <code>scale</code> can be found at <a href="http://frescolib.org/resizing-rotating.md">http://frescolib.org/resizing-rotating.md</a>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'resize', 'scale')</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="accessibilitylabel"></a><a href="#accessibilitylabel" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityLabel</code></h3>
+<p>The text that's read by the screen reader when the user interacts with
+the image.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>node</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="accessible"></a><a href="#accessible" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessible</code></h3>
+<p>When true, indicates the image is an accessibility element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="capinsets"></a><a href="#capinsets" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>capInsets</code></h3>
+<p>When the image is resized, the corners of the size specified
+by <code>capInsets</code> will stay a fixed size, but the center content and borders
+of the image will be stretched.  This is useful for creating resizable
+rounded buttons, shadows, and other resizable assets.  More info in the
+<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets">official Apple documentation</a>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="defaultsource"></a><a href="#defaultsource" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>defaultSource</code></h3>
+<p>A static image to display while loading the image source.</p>
+<ul>
+<li><code>uri</code> - a string representing the resource identifier for the image, which
+should be either a local file path or the name of a static image resource
+(which should be wrapped in the <code>require('./path/to/image.png')</code> function).</li>
+<li><code>width</code>, <code>height</code> - can be specified if known at build time, in which case
+these will be used to set the default <code>&lt;Image/&gt;</code> component dimensions.</li>
+<li><code>scale</code> - used to indicate the scale factor of the image. Defaults to 1.0 if
+unspecified, meaning that one image pixel equates to one display point / DIP.</li>
+<li><code>number</code> - Opaque type returned by something like <code>require('./image.jpg')</code>.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {uri: string,width: number,height: number,scale: number}, ,number</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onpartialload"></a><a href="#onpartialload" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onPartialLoad</code></h3>
+<p>Invoked when a partial load of the image is complete. The definition of
+what constitutes a &quot;partial load&quot; is loader specific though this is meant
+for progressive JPEG loads.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onprogress"></a><a href="#onprogress" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onProgress</code></h3>
+<p>Invoked on download progress with <code>{nativeEvent: {loaded, total}}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" name="getsize"></a><a href="#getsize" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSize()</code></h3>
+<pre><code class="hljs css javascript">static getSize(uri: string, success: function, [failure]: function): 
+</code></pre>
+<p>Retrieve the width and height (in pixels) of an image prior to displaying it.
+This method can fail if the image cannot be found, or fails to download.</p>
+<p>In order to retrieve the image dimensions, the image may first need to be
+loaded or downloaded, after which it will be cached. This means that in
+principle you could use this method to preload images, however it is not
+optimized for that purpose, and may in future be implemented in a way that
+does not fully load/download the image data. A proper, supported way to
+preload images will be provided as a separate API.</p>
+<p>Does not work for static image resources.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>uri</td><td>string</td><td>Yes</td><td>The location of the image.</td></tr>
+<tr><td>success</td><td>function</td><td>Yes</td><td>The function that will be called if the image was successfully found and widthand height retrieved.</td></tr>
+<tr><td>failure</td><td>function</td><td>No</td><td>The function that will be called if there was an error, such as failing toto retrieve the image.</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="prefetch"></a><a href="#prefetch" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>prefetch()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> prefetch(url: string): 
+</code></pre>
+<p>Prefetches a remote image for later use by downloading it to the disk
+cache</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>string</td><td>Yes</td><td>The remote location of the image.</td></tr>
+</tbody>
+</table>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="flatlist.html">← FlatList</a><a class="docs-next button" href="keyboardavoidingview.html">KeyboardAvoidingView →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.49"],"hitsPerPage":5}
+              });
+            </script></body></html>

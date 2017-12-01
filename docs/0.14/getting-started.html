@@ -1,0 +1,712 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Getting Started · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Getting Started · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="&lt;style&gt;"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.14</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.14/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>The Basics</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.14/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/drawerlayoutandroid.html">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/modal.html">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/progressbarandroid.html">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/snapshotviewios.html">SnapshotViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/switch.html">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/toolbarandroid.html">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/touchablenativefeedback.html">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/viewpagerandroid.html">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/animated.html">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/easing.html">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/imagepickerios.html">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/layoutanimation.html">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/toastandroid.html">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.14/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/getting-started.md" target="_blank">Edit</a><h1>Getting Started</h1></header><article><div><span><style>
+  .toggler li {
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    padding: 10px;
+    margin: 0px 2px 0px 2px;
+    border: 1px solid #05A5D1;
+    border-bottom-color: transparent;
+    border-radius: 3px 3px 0px 0px;
+    color: #05A5D1;
+    background-color: transparent;
+    font-size: 0.99em;
+    cursor: pointer;
+  }
+  .toggler li:first-child {
+    margin-left: 0;
+  }
+  .toggler li:last-child {
+    margin-right: 0;
+  }
+  .toggler ul {
+    width: 100%;
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    border-bottom: 1px solid #05A5D1;
+    cursor: default;
+  }
+  @media screen and (max-width: 960px) {
+    .toggler li,
+    .toggler li:first-child,
+    .toggler li:last-child {
+      display: block;
+      border-bottom-color: #05A5D1;
+      border-radius: 3px;
+      margin: 2px 0px 2px 0px;
+    }
+    .toggler ul {
+      border-bottom: 0;
+    }
+  }
+  .toggler a {
+    display: inline-block;
+    padding: 10px 5px;
+    margin: 2px;
+    border: 1px solid #05A5D1;
+    border-radius: 3px;
+    text-decoration: none !important;
+  }
+  .display-guide-quickstart .toggler .button-quickstart,
+  .display-guide-native .toggler .button-native,
+  .display-os-mac .toggler .button-mac,
+  .display-os-linux .toggler .button-linux,
+  .display-os-windows .toggler .button-windows,
+  .display-platform-ios .toggler .button-ios,
+  .display-platform-android .toggler .button-android {
+    background-color: #05A5D1;
+    color: white;
+  }
+  block { display: none; }
+  .display-guide-quickstart.display-platform-ios.display-os-mac .quickstart.ios.mac,
+  .display-guide-quickstart.display-platform-ios.display-os-linux .quickstart.ios.linux,
+  .display-guide-quickstart.display-platform-ios.display-os-windows .quickstart.ios.windows,
+  .display-guide-quickstart.display-platform-android.display-os-mac .quickstart.android.mac,
+  .display-guide-quickstart.display-platform-android.display-os-linux .quickstart.android.linux,
+  .display-guide-quickstart.display-platform-android.display-os-windows .quickstart.android.windows,    .display-guide-native.display-platform-ios.display-os-mac .native.ios.mac,
+  .display-guide-native.display-platform-ios.display-os-linux .native.ios.linux,
+  .display-guide-native.display-platform-ios.display-os-windows .native.ios.windows,
+  .display-guide-native.display-platform-android.display-os-mac .native.android.mac,
+  .display-guide-native.display-platform-android.display-os-linux .native.android.linux,
+  .display-guide-native.display-platform-android.display-os-windows .native.android.windows {
+    display: block;
+  }
+</style>
+<p>This page will help you install and build your first React Native app. If you
+already have React Native installed, you can skip ahead to the
+<a href="/react-native/docs/0.14/tutorial.html">Tutorial</a>.</p>
+<div class="toggler">
+  <ul role="tablist" >
+    <li id="quickstart" class="button-quickstart" aria-selected="false" role="tab" tabindex="0" aria-controls="quickstarttab" onclick="displayTab('guide', 'quickstart')">
+      Quick Start
+    </li>
+    <li id="native" class="button-native" aria-selected="false" role="tab" tabindex="-1" aria-controls="nativetab" onclick="displayTab('guide', 'native')">
+      Building Projects with Native Code
+    </li>
+  </ul>
+</div>
+<p><block class="quickstart mac windows linux ios android" /></p>
+<p><a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>
+is the easiest way to start building a new React Native application. It allows
+you to start a project without installing or configuring any tools to build
+native code - no Xcode or Android Studio installation required (see
+<a href="/react-native/docs/0.14/getting-started.html#caveats">Caveats</a>).</p>
+<p>Assuming that you have <a href="https://nodejs.org/en/download/">Node</a> installed, you
+can use npm to install the <code>create-react-native-app</code> command line utility:</p>
+<pre><code class="hljs"><span class="hljs-string">npm </span><span class="hljs-string">install </span>-g <span class="hljs-built_in">create-react-native-app</span>
+</code></pre>
+<p>Then run the following commands to create a new React Native project called
+&quot;AwesomeProject&quot;:</p>
+<pre><code class="hljs"><span class="hljs-built_in">create-react-native-app</span> <span class="hljs-string">AwesomeProject
+</span>
+<span class="hljs-string">cd </span><span class="hljs-string">AwesomeProject
+</span><span class="hljs-string">npm </span><span class="hljs-string">start
+</span></code></pre>
+<p>This will start a development server for you, and print a QR code in your
+terminal.</p>
+<h2><a class="anchor" aria-hidden="true" name="running-your-react-native-application"></a><a href="#running-your-react-native-application" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running your React Native application</h2>
+<p>Install the <a href="https://expo.io">Expo</a> client app on your iOS or Android phone and
+connect to the same wireless network as your computer. Using the Expo app, scan
+the QR code from your terminal to open your project.</p>
+<h3><a class="anchor" aria-hidden="true" name="modifying-your-app"></a><a href="#modifying-your-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Modifying your app</h3>
+<p>Now that you have successfully run the app, let's modify it. Open <code>App.js</code> in
+your text editor of choice and edit some lines. The application should reload
+automatically once you save your changes.</p>
+<h3><a class="anchor" aria-hidden="true" name="that-s-it"></a><a href="#that-s-it" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>That's it!</h3>
+<p>Congratulations! You've successfully run and modified your first React Native
+app.</p>
+<p><center><img src="/react-native/assets/GettingStartedCongratulations.png" width="150"></img></center></p>
+<h2><a class="anchor" aria-hidden="true" name="now-what"></a><a href="#now-what" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Now what?</h2>
+<ul>
+<li><p>Create React Native App also has a
+<a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md">user guide</a>
+you can reference if you have questions specific to the tool.</p></li>
+<li><p>If you can't get this to work, see the
+<a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting">Troubleshooting</a>
+section in the README for Create React Native App.</p></li>
+</ul>
+<p>If you're curious to learn more about React Native, continue on to the
+<a href="/react-native/docs/0.14/tutorial.html">Tutorial</a>.</p>
+<h3><a class="anchor" aria-hidden="true" name="running-your-app-on-a-simulator-or-virtual-device"></a><a href="#running-your-app-on-a-simulator-or-virtual-device" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running your app on a simulator or virtual device</h3>
+<p>Create React Native App makes it really easy to run your React Native app on a
+physical device without setting up a development environment. If you want to run
+your app on the iOS Simulator or an Android Virtual Device, please refer to the
+instructions for building projects with native code to learn how to install
+Xcode and set up your Android development environment.</p>
+<p>Once you've set these up, you can launch your app on an Android Virtual Device
+by running <code>npm run android</code>, or on the iOS Simulator by running <code>npm run ios</code>
+(macOS only).</p>
+<h3><a class="anchor" aria-hidden="true" name="caveats"></a><a href="#caveats" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Caveats</h3>
+<p>Because you don't build any native code when using Create React Native App to
+create a project, it's not possible to include custom native modules beyond the
+React Native APIs and components that are available in the Expo client app.</p>
+<p>If you know that you'll eventually need to include your own native code, Create
+React Native App is still a good way to get started. In that case you'll just
+need to
+&quot;<a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app">eject</a>&quot;
+eventually to create your own native builds. If you do eject, the &quot;Building
+Projects with Native Code&quot; instructions will be required to continue working on
+your project.</p>
+<p>Create React Native App configures your project to use the most recent React
+Native version that is supported by the Expo client app. The Expo client app
+usually gains support for a given React Native version about a week after the
+React Native version is released as stable. You can check
+<a href="https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md">this document</a>
+to find out what versions are supported.</p>
+<p>If you're integrating React Native into an existing project, you'll want to skip
+Create React Native App and go directly to setting up the native build
+environment. Select &quot;Building Projects with Native Code&quot; above for instructions
+on configuring a native build environment for React Native.</p>
+<p><block class="native mac windows linux ios android" /></p>
+<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="getting-started.md" onclick="displayTab('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
+<p>The instructions are a bit different depending on your development operating
+system, and whether you want to start developing for iOS or Android. If you want
+to develop for both iOS and Android, that's fine - you just have to pick one to
+start with, since the setup is a bit different.</p>
+<div class="toggler">
+  <span>Development OS:</span>
+  <a href="javascript:void(0);" class="button-mac" onclick="displayTab('os', 'mac')">macOS</a>
+  <a href="javascript:void(0);" class="button-windows" onclick="displayTab('os', 'windows')">Windows</a>
+  <a href="javascript:void(0);" class="button-linux" onclick="displayTab('os', 'linux')">Linux</a>
+  <span>Target OS:</span>
+  <a href="javascript:void(0);" class="button-ios" onclick="displayTab('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-android" onclick="displayTab('platform', 'android')">Android</a>
+</div>
+<p><block class="native linux windows ios" /></p>
+<h2><a class="anchor" aria-hidden="true" name="unsupported"></a><a href="#unsupported" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Unsupported</h2>
+<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="getting-started.md" onclick="displayTab('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
+<p><block class="native mac ios" /></p>
+<h2><a class="anchor" aria-hidden="true" name="installing-dependencies"></a><a href="#installing-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing dependencies</h2>
+<p>You will need Node, Watchman, the React Native command line interface, and
+Xcode.</p>
+<p>While you can use any editor of your choice to develop your app, you will need
+to install Xcode in order to set up the necessary tooling to build your React
+Native app for iOS.</p>
+<p><block class="native mac android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="installing-dependencies"></a><a href="#installing-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing dependencies</h2>
+<p>You will need Node, Watchman, the React Native command line interface, a JDK,
+and Android Studio.</p>
+<p><block class="native linux android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="installing-dependencies"></a><a href="#installing-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing dependencies</h2>
+<p>You will need Node, the React Native command line interface, a JDK, and Android
+Studio.</p>
+<p><block class="native windows android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="installing-dependencies"></a><a href="#installing-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing dependencies</h2>
+<p>You will need Node, the React Native command line interface, Python2, a JDK, and
+Android Studio.</p>
+<p><block class="native mac windows linux android" /></p>
+<p>While you can use any editor of your choice to develop your app, you will need
+to install Android Studio in order to set up the necessary tooling to build your
+React Native app for Android.</p>
+<p><block class="native mac ios android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="node-watchman"></a><a href="#node-watchman" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Node, Watchman</h3>
+<p>We recommend installing Node and Watchman using <a href="http://brew.sh/">Homebrew</a>. Run
+the following commands in a Terminal after installing Homebrew:</p>
+<pre><code class="hljs">brew install <span class="hljs-keyword">node</span>
+<span class="hljs-title">brew</span> install watchman
+</code></pre>
+<p>If you have already installed Node on your system, make sure it is version 4 or
+newer.</p>
+<p><a href="https://facebook.github.io/watchman">Watchman</a> is a tool by Facebook for
+watching changes in the filesystem. It is highly recommended you install it for
+better performance.</p>
+<p><block class="native linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="node"></a><a href="#node" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Node</h3>
+<p>Follow the
+<a href="https://nodejs.org/en/download/package-manager/">installation instructions for your Linux distribution</a>
+to install Node 6 or newer.</p>
+<p><block class='native windows android' /></p>
+<h3><a class="anchor" aria-hidden="true" name="node-python2-jdk"></a><a href="#node-python2-jdk" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Node, Python2, JDK</h3>
+<p>We recommend installing Node and Python2 via
+<a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
+<p>React Native also requires a recent version of the
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SE Development Kit (JDK)</a>,
+as well as Python 2. Both can be installed using Chocolatey.</p>
+<p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run
+as Administrator&quot;), then run the following command:</p>
+<pre><code class="hljs css powershell">choco install -y nodejs.install python2 jdk8
+</code></pre>
+<p>If you have already installed Node on your system, make sure it is version 4 or
+newer. If you already have a JDK on your system, make sure it is version 8 or
+newer.</p>
+<blockquote>
+<p>You can find additional installation options on
+<a href="https://nodejs.org/en/download/">Node's Downloads page</a>.</p>
+</blockquote>
+<p><block class="native mac ios android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="the-react-native-cli"></a><a href="#the-react-native-cli" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native CLI</h3>
+<p>Node comes with npm, which lets you install the React Native command line
+interface.</p>
+<p>Run the following command in a Terminal:</p>
+<pre><code class="hljs"><span class="hljs-built_in">npm</span> install -g react-<span class="hljs-keyword">native</span>-cli
+</code></pre>
+<blockquote>
+<p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm
+directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
+</blockquote>
+<p><block class="native windows linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="the-react-native-cli"></a><a href="#the-react-native-cli" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native CLI</h3>
+<p>Node comes with npm, which lets you install the React Native command line
+interface.</p>
+<p>Run the following command in a Command Prompt or shell:</p>
+<pre><code class="hljs css powershell">npm install -g react-native-cli
+</code></pre>
+<blockquote>
+<p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm
+directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
+</blockquote>
+<p><block class="native mac ios" /></p>
+<h3><a class="anchor" aria-hidden="true" name="xcode"></a><a href="#xcode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Xcode</h3>
+<p>The easiest way to install Xcode is via the
+<a href="https://itunes.apple.com/us/app/xcode/id497799835?mt=12">Mac App Store</a>.
+Installing Xcode will also install the iOS Simulator and all the necessary tools
+to build your iOS app.</p>
+<p>If you have already installed Xcode on your system, make sure it is version 8 or
+higher.</p>
+<h4><a class="anchor" aria-hidden="true" name="command-line-tools"></a><a href="#command-line-tools" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Command Line Tools</h4>
+<p>You will also need to install the Xcode Command Line Tools. Open Xcode, then
+choose &quot;Preferences...&quot; from the Xcode menu. Go to the Locations panel and
+install the tools by selecting the most recent version in the Command Line Tools
+dropdown.</p>
+<p><img src="/react-native/assets/GettingStartedXcodeCommandLineTools.png" alt="Xcode Command Line Tools"></p>
+<p><block class="native mac linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="java-development-kit"></a><a href="#java-development-kit" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Java Development Kit</h3>
+<p>React Native requires a recent version of the Java SE Development Kit (JDK).
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install JDK 8 or newer</a>
+if needed.</p>
+<p><block class="native mac linux windows android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="android-development-environment"></a><a href="#android-development-environment" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android development environment</h3>
+<p>Setting up your development environment can be somewhat tedious if you're new to
+Android development. If you're already familiar with Android development, there
+are a few things you may need to configure. In either case, please make sure to
+carefully follow the next few steps.</p>
+<p><block class="native mac windows linux android" /></p>
+<h4><a class="anchor" aria-hidden="true" name="1-install-android-studio"></a><a href="#1-install-android-studio" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Install Android Studio</h4>
+<p><a href="https://developer.android.com/studio/index.html">Download and install Android Studio</a>.
+Choose a &quot;Custom&quot; setup when prompted to select an installation type. Make sure
+the boxes next to all of the following are checked:</p>
+<p><block class="native mac windows android" /></p>
+<ul>
+<li><code>Android SDK</code></li>
+<li><code>Android SDK Platform</code></li>
+<li><code>Performance (Intel ® HAXM)</code></li>
+<li><code>Android Virtual Device</code></li>
+</ul>
+<p><block class="native linux android" /></p>
+<ul>
+<li><code>Android SDK</code></li>
+<li><code>Android SDK Platform</code></li>
+<li><code>Android Virtual Device</code></li>
+</ul>
+<p><block class="native mac windows linux android" /></p>
+<p>Then, click &quot;Next&quot; to install all of these components.</p>
+<blockquote>
+<p>If the checkboxes are grayed out, you will have a chance to install these
+components later on.</p>
+</blockquote>
+<p>Once setup has finalized and you're presented with the Welcome screen, proceed
+to the next step.</p>
+<h4><a class="anchor" aria-hidden="true" name="2-install-the-android-sdk"></a><a href="#2-install-the-android-sdk" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Install the Android SDK</h4>
+<p>Android Studio installs the latest Android SDK by default. Building a React
+Native app with native code, however, requires the <code>Android 6.0 (Marshmallow)</code>
+SDK in particular. Additional Android SDKs can be installed through the SDK
+Manager in Android Studio.</p>
+<p>The SDK Manager can be accessed from the &quot;Welcome to Android Studio&quot; screen.
+Click on &quot;Configure&quot;, then select &quot;SDK Manager&quot;.</p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidStudioWelcomeMacOS.png" alt="Android Studio Welcome"></p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidStudioWelcomeWindows.png" alt="Android Studio Welcome"></p>
+<p><block class="native mac windows linux android" /></p>
+<blockquote>
+<p>The SDK Manager can also be found within the Android Studio &quot;Preferences&quot;
+dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android
+SDK</strong>.</p>
+</blockquote>
+<p>Select the &quot;SDK Platforms&quot; tab from within the SDK Manager, then check the box
+next to &quot;Show Package Details&quot; in the bottom right corner. Look for and expand
+the <code>Android 6.0 (Marshmallow)</code> entry, then make sure the following items are
+all checked:</p>
+<ul>
+<li><code>Google APIs</code></li>
+<li><code>Android SDK Platform 23</code></li>
+<li><code>Intel x86 Atom_64 System Image</code></li>
+<li><code>Google APIs Intel x86 Atom_64 System Image</code></li>
+</ul>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerMacOS.png" alt="Android SDK Manager"></p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerWindows.png" alt="Android SDK Manager"></p>
+<p><block class="native windows mac linux android" /></p>
+<p>Next, select the &quot;SDK Tools&quot; tab and check the box next to &quot;Show Package
+Details&quot; here as well. Look for and expand the &quot;Android SDK Build-Tools&quot; entry,
+then make sure that <code>23.0.1</code> is selected.</p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerSDKToolsMacOS.png" alt="Android SDK Manager - 23.0.1 Build Tools"></p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerSDKToolsWindows.png" alt="Android SDK Manager - 23.0.1 Build Tools"></p>
+<p><block class="native windows mac linux android" /></p>
+<p>Finally, click &quot;Apply&quot; to download and install the Android SDK and related build
+tools.</p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerInstallsMacOS.png" alt="Android SDK Manager - Installs"></p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSDKManagerInstallsWindows.png" alt="Android SDK Manager - Installs"></p>
+<p><block class="native mac windows linux android" /></p>
+<h4><a class="anchor" aria-hidden="true" name="3-configure-the-android-home-environment-variable"></a><a href="#3-configure-the-android-home-environment-variable" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure the ANDROID_HOME environment variable</h4>
+<p>The React Native tools require some environment variables to be set up in order
+to build apps with native code.</p>
+<p><block class="native mac linux android" /></p>
+<p>Add the following lines to your <code>$HOME/.bash_profile</code> config file:</p>
+<p><block class="native mac android" /></p>
+<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">ANDROID_HOME</span>=<span class="hljs-variable">$HOME</span>/Library/Android/sdk
+<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools
+<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/platform-tools
+</code></pre>
+<p><block class="native linux android" /></p>
+<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">ANDROID_HOME</span>=<span class="hljs-variable">$HOME</span>/Android/Sdk
+<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools
+<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/platform-tools
+</code></pre>
+<p><block class="native mac linux android" /></p>
+<blockquote>
+<p><code>.bash_profile</code> is specific to <code>bash</code>. If you're using another shell, you will
+need to edit the appropriate shell-specific config file.</p>
+</blockquote>
+<p>Type <code>source $HOME/.bash_profile</code> to load the config into your current shell.
+Verify that ANDROID_HOME has been added to your path by running <code>echo $PATH</code>.</p>
+<blockquote>
+<p>Please make sure you use the correct Android SDK path. You can find the actual
+location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under
+<strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
+</blockquote>
+<p><block class="native windows android" /></p>
+<p>Open the System pane under <strong>System and Security</strong> in the Control Panel, then
+click on <strong>Change settings...</strong>. Open the <strong>Advanced</strong> tab and click on
+<strong>Environment Variables...</strong>. Click on <strong>New...</strong> to create a new <code>ANDROID_HOME</code>
+user variable that points to the path to your Android SDK:</p>
+<p><img src="/react-native/assets/GettingStartedAndroidEnvironmentVariableANDROID_HOME.png" alt="ANDROID_HOME Environment Variable"></p>
+<p>The SDK is installed, by default, at the following location:</p>
+<pre><code class="hljs css powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
+</code></pre>
+<p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot;
+dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
+<p>Open a new Command Prompt window to ensure the new environment variable is
+loaded before proceeding to the next step.</p>
+<p><block class="native linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="watchman-optional"></a><a href="#watchman-optional" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Watchman (optional)</h3>
+<p>Follow the
+<a href="https://facebook.github.io/watchman/install.md#build-install">Watchman installation guide</a>
+to compile and install Watchman from source.</p>
+<blockquote>
+<p><a href="https://facebook.github.io/watchman/install.md">Watchman</a> is a tool by
+Facebook for watching changes in the filesystem. It is highly recommended you
+install it for better performance, but it's alright to skip this if you find
+the process to be tedious.</p>
+</blockquote>
+<p><block class="native mac ios" /></p>
+<h2><a class="anchor" aria-hidden="true" name="creating-a-new-application"></a><a href="#creating-a-new-application" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a new application</h2>
+<p>Use the React Native command line interface to generate a new React Native
+project called &quot;AwesomeProject&quot;:</p>
+<pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject
+</code></pre>
+<p>This is not necessary if you are integrating React Native into an existing
+application, if you &quot;ejected&quot; from Create React Native App, or if you're adding
+iOS support to an existing React Native project (see
+<a href="/react-native/docs/0.14/platform-specific-code.html">Platform Specific Code</a>).</p>
+<p><block class="native mac windows linux android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="creating-a-new-application"></a><a href="#creating-a-new-application" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a new application</h2>
+<p>Use the React Native command line interface to generate a new React Native
+project called &quot;AwesomeProject&quot;:</p>
+<pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject
+</code></pre>
+<p>This is not necessary if you are integrating React Native into an existing
+application, if you &quot;ejected&quot; from Create React Native App, or if you're adding
+Android support to an existing React Native project (see
+<a href="/react-native/docs/0.14/platform-specific-code.html">Platform Specific Code</a>).</p>
+<p><block class="native mac windows linux android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="preparing-the-android-device"></a><a href="#preparing-the-android-device" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Preparing the Android device</h2>
+<p>You will need an Android device to run your React Native Android app. This can
+be either a physical Android device, or more commonly, you can use an Android
+Virtual Device which allows you to emulate an Android device on your computer.</p>
+<p>Either way, you will need to prepare the device to run Android apps for
+development.</p>
+<h3><a class="anchor" aria-hidden="true" name="using-a-physical-device"></a><a href="#using-a-physical-device" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using a physical device</h3>
+<p>If you have a physical Android device, you can use it for development in place
+of an AVD by plugging it in to your computer using a USB cable and following the
+instructions <a href="/react-native/docs/0.14/running-on-device.html">here</a>.</p>
+<h3><a class="anchor" aria-hidden="true" name="using-a-virtual-device"></a><a href="#using-a-virtual-device" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using a virtual device</h3>
+<p>You can see the list of available Android Virtual Devices (AVDs) by opening the
+&quot;AVD Manager&quot; from within Android Studio. Look for an icon that looks like this:</p>
+<p><img src="/react-native/assets/GettingStartedAndroidStudioAVD.png" alt="Android Studio AVD Manager"></p>
+<p>If you have just installed Android Studio, you will likely need to
+<a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>.
+Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click
+&quot;Next&quot;.</p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedCreateAVDWindows.png" alt="Android Studio AVD Manager"></p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedCreateAVDMacOS.png" alt="Android Studio AVD Manager"></p>
+<p><block class="native mac windows linux android" /></p>
+<p>Select the &quot;x86 Images&quot; tab, then look for the <strong>Marshmallow</strong> API Level 23,
+x86_64 ABI image with a Android 6.0 (Google APIs) target.</p>
+<p><block class="native linux android" /></p>
+<blockquote>
+<p>We recommend configuring
+<a href="https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux">VM acceleration</a>
+on your system to improve performance. Once you've followed those
+instructions, go back to the AVD Manager.</p>
+</blockquote>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedCreateAVDx86Windows.png" alt="Install HAXM"></p>
+<blockquote>
+<p>If you don't have HAXM installed, click on &quot;Install HAXM&quot; or follow
+<a href="https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows">these instructions</a>
+to set it up, then go back to the AVD Manager.</p>
+</blockquote>
+<p><img src="/react-native/assets/GettingStartedAVDManagerWindows.png" alt="AVD List"></p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedCreateAVDx86MacOS.png" alt="Install HAXM"></p>
+<blockquote>
+<p>If you don't have HAXM installed, follow
+<a href="https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x">these instructions</a>
+to set it up, then go back to the AVD Manager.</p>
+</blockquote>
+<p><img src="/react-native/assets/GettingStartedAVDManagerMacOS.png" alt="AVD List"></p>
+<p><block class="native mac windows linux android" /></p>
+<p>Click &quot;Next&quot; then &quot;Finish&quot; to create your AVD. At this point you should be able
+to click on the green triangle button next to your AVD to launch it, then
+proceed to the next step.</p>
+<p><block class="native mac ios" /></p>
+<h2><a class="anchor" aria-hidden="true" name="running-your-react-native-application"></a><a href="#running-your-react-native-application" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running your React Native application</h2>
+<p>Run <code>react-native run-ios</code> inside your React Native project folder:</p>
+<pre><code class="hljs">cd AwesomeProject
+react-native <span class="hljs-keyword">run</span><span class="bash">-ios
+</span></code></pre>
+<p>You should see your new app running in the iOS Simulator shortly.</p>
+<p><img src="/react-native/assets/GettingStartediOSSuccess.png" alt="AwesomeProject on iOS"></p>
+<p><code>react-native run-ios</code> is just one way to run your app. You can also run it
+directly from within Xcode or <a href="https://nuclide.io/">Nuclide</a>.</p>
+<blockquote>
+<p>If you can't get this to work, see the
+<a href="/react-native/docs/0.14/troubleshooting.html#content">Troubleshooting</a> page.</p>
+</blockquote>
+<h3><a class="anchor" aria-hidden="true" name="running-on-a-device"></a><a href="#running-on-a-device" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running on a device</h3>
+<p>The above command will automatically run your app on the iOS Simulator by
+default. If you want to run the app on an actual physical iOS device, please
+follow the instructions <a href="/react-native/docs/0.14/running-on-device.html">here</a>.</p>
+<p><block class="native mac windows linux android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="running-your-react-native-application"></a><a href="#running-your-react-native-application" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running your React Native application</h2>
+<p>Run <code>react-native run-android</code> inside your React Native project folder:</p>
+<pre><code class="hljs">cd AwesomeProject
+react-native <span class="hljs-keyword">run</span><span class="bash">-android
+</span></code></pre>
+<p>If everything is set up correctly, you should see your new app running in your
+Android emulator shortly.</p>
+<p><block class="native mac android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSuccessMacOS.png" alt="AwesomeProject on Android"></p>
+<p><block class="native windows android" /></p>
+<p><img src="/react-native/assets/GettingStartedAndroidSuccessWindows.png" alt="AwesomeProject on Android"></p>
+<p><block class="native mac windows linux android" /></p>
+<p><code>react-native run-android</code> is just one way to run your app - you can also run it
+directly from within Android Studio or <a href="https://nuclide.io/">Nuclide</a>.</p>
+<blockquote>
+<p>If you can't get this to work, see the
+<a href="/react-native/docs/0.14/troubleshooting.html#content">Troubleshooting</a> page.</p>
+</blockquote>
+<p><block class="native mac ios android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="modifying-your-app"></a><a href="#modifying-your-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Modifying your app</h3>
+<p>Now that you have successfully run the app, let's modify it.</p>
+<p><block class="native mac ios" /></p>
+<ul>
+<li>Open <code>App.js</code> in your text editor of choice and edit some lines.</li>
+<li>Hit <code>⌘R</code> in your iOS Simulator to reload the app and see your changes!</li>
+</ul>
+<p><block class="native mac android" /></p>
+<ul>
+<li>Open <code>App.js</code> in your text editor of choice and edit some lines.</li>
+<li>Press the <code>R</code> key twice or select <code>Reload</code> from the Developer Menu (<code>⌘M</code>) to
+see your changes!</li>
+</ul>
+<p><block class="native windows linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="modifying-your-app"></a><a href="#modifying-your-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Modifying your app</h3>
+<p>Now that you have successfully run the app, let's modify it.</p>
+<ul>
+<li>Open <code>App.js</code> in your text editor of choice and edit some lines.</li>
+<li>Press the <code>R</code> key twice or select <code>Reload</code> from the Developer Menu (<code>Ctrl + M</code>) to see your changes!</li>
+</ul>
+<p><block class="native mac ios android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="that-s-it"></a><a href="#that-s-it" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>That's it!</h3>
+<p>Congratulations! You've successfully run and modified your first React Native
+app.</p>
+<p><center><img src="/react-native/assets/GettingStartedCongratulations.png" width="150"></img></center></p>
+<p><block class="native windows linux android" /></p>
+<h3><a class="anchor" aria-hidden="true" name="that-s-it"></a><a href="#that-s-it" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>That's it!</h3>
+<p>Congratulations! You've successfully run and modified your first React Native
+app.</p>
+<p><center><img src="/react-native/assets/GettingStartedCongratulations.png" width="150"></img></center></p>
+<p><block class="native mac ios" /></p>
+<h2><a class="anchor" aria-hidden="true" name="now-what"></a><a href="#now-what" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Now what?</h2>
+<ul>
+<li><p>Turn on <a href="/react-native/docs/0.14/debugging.html#reloading-javascript">Live Reload</a> in the Developer
+Menu. Your app will now reload automatically whenever you save any changes!</p></li>
+<li><p>If you want to add this new React Native code to an existing application,
+check out the <a href="/react-native/docs/0.14/integration-with-existing-apps.html">Integration guide</a>.</p></li>
+</ul>
+<p>If you're curious to learn more about React Native, continue on to the
+<a href="/react-native/docs/0.14/tutorial.html">Tutorial</a>.</p>
+<p><block class="native windows linux mac android" /></p>
+<h2><a class="anchor" aria-hidden="true" name="now-what"></a><a href="#now-what" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Now what?</h2>
+<ul>
+<li><p>Turn on <a href="/react-native/docs/0.14/debugging.html#reloading-javascript">Live Reload</a> in the Developer
+Menu. Your app will now reload automatically whenever you save any changes!</p></li>
+<li><p>If you want to add this new React Native code to an existing application,
+check out the <a href="/react-native/docs/0.14/integration-with-existing-apps.html">Integration guide</a>.</p></li>
+</ul>
+<p>If you're curious to learn more about React Native, continue on to the
+<a href="/react-native/docs/0.14/tutorial.html">Tutorial</a>.</p>
+<script>
+  function displayTab(type, value) {
+    var container = document.getElementsByTagName('block')[0].parentNode;
+    container.className = 'display-' + type + '-' + value + ' ' +
+      container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
+    event && event.preventDefault();
+  }
+  function convertBlocks() {
+    // Convert <div>...<span><block /></span>...</div>
+    // Into <div>...<block />...</div>
+    var blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      var span = blocks[i].parentNode;
+      var container = span.parentNode;
+      container.insertBefore(block, span);
+      container.removeChild(span);
+    }
+    // Convert <div>...<block />content<block />...</div>
+    // Into <div>...<block>content</block><block />...</div>
+    blocks = document.querySelectorAll('block');
+    for (var i = 0; i < blocks.length; ++i) {
+      var block = blocks[i];
+      while (
+        block.nextSibling &&
+        block.nextSibling.tagName !== 'BLOCK'
+      ) {
+        block.appendChild(block.nextSibling);
+      }
+    }
+  }
+  function guessPlatformAndOS() {
+    if (!document.querySelector('block')) {
+      return;
+    }
+    // If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+    // us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+    var foundHash = false;
+    if (
+      window.location.hash !== '' &&
+      window.location.hash !== 'content'
+    ) {
+      // content is default
+      var hashLinks = document.querySelectorAll(
+        'a.hash-link'
+      );
+      for (
+        var i = 0;
+        i < hashLinks.length && !foundHash;
+        ++i
+      ) {
+        if (hashLinks[i].hash === window.location.hash) {
+          var parent = hashLinks[i].parentElement;
+          while (parent) {
+            if (parent.tagName === 'BLOCK') {
+              // Could be more than one target os and dev platform, but just choose some sort of order
+              // of priority here.
+              // Dev OS
+              if (parent.className.indexOf('mac') > -1) {
+                displayTab('os', 'mac');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('linux') > -1
+              ) {
+                displayTab('os', 'linux');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('windows') > -1
+              ) {
+                displayTab('os', 'windows');
+                foundHash = true;
+              } else {
+                break;
+              }
+              // Target Platform
+              if (parent.className.indexOf('ios') > -1) {
+                displayTab('platform', 'ios');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('android') > -1
+              ) {
+                displayTab('platform', 'android');
+                foundHash = true;
+              } else {
+                break;
+              }
+              // Guide
+              if (parent.className.indexOf('native') > -1) {
+                displayTab('guide', 'native');
+                foundHash = true;
+              } else if (
+                parent.className.indexOf('quickstart') > -1
+              ) {
+                displayTab('guide', 'quickstart');
+                foundHash = true;
+              } else {
+                break;
+              }
+              break;
+            }
+            parent = parent.parentElement;
+          }
+        }
+      }
+    }
+    // Do the default if there is no matching hash
+    if (!foundHash) {
+      var isMac = navigator.platform === 'MacIntel';
+      var isWindows = navigator.platform === 'Win32';
+      displayTab('platform', isMac ? 'ios' : 'android');
+      displayTab(
+        'os',
+        isMac ? 'mac' : isWindows ? 'windows' : 'linux'
+      );
+      displayTab('guide', 'quickstart');
+      displayTab('language', 'objc');
+    }
+  }
+  convertBlocks();
+  guessPlatformAndOS();
+</script>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="tutorial.html">Learn the Basics →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.14"],"hitsPerPage":5}
+              });
+            </script></body></html>

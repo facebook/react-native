@@ -1,0 +1,371 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Native Modules · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Native Modules · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="Sometimes an app needs access to platform API, and React Native doesn&#x27;t have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.7</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.7/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Guides (iOS)</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>The Basics</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/getting-started.html">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/tutorial.html">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/props.html">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/state.html">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/style.html">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/height-and-width.html">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/flexbox.html">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/handling-text-input.html">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/handling-touches.html">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/using-a-scrollview.html">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/using-a-listview.html">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/network.html">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/more-resources.html">More Resources</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/components-and-apis.html">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/platform-specific-code.html">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/navigation.html">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/images.html">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/animations.html">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/accessibility.html">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/improvingux.html">Improving User Experience</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/timers.html">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/debugging.html">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/performance.html">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/gesture-responder-system.html">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/javascript-environment.html">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/direct-manipulation.html">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/colors.html">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/integration-with-existing-apps.html">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/running-on-device.html">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/upgrading.html">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/troubleshooting.html">Troubleshooting</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (iOS)</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/docs/0.7/native-modules-ios.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/native-components-ios.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/linking-libraries-ios.html">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/running-on-simulator-ios.html">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/communication-ios.html">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/building-for-apple-tv.html">Building For Apple TV</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/app-extensions.html">App Extensions</a></li></ul></div><div class="navGroup navGroupActive"><h3>Guides (Android)</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/native-modules-android.html">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/native-components-android.html">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/headless-js-android.html">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/signed-apk-android.html">Generating Signed APK</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/android-building-from-source.html">Building React Native from source</a></li></ul></div><div class="navGroup navGroupActive"><h3>Contributing</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/contributing.html">How to Contribute</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/maintainers.html">What to Expect from Maintainers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/testing.html">Testing your Changes</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/understanding-cli.html">Understanding the CLI</a></li></ul></div><div class="navGroup navGroupActive"><h3>Components</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/datepickerios.html">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/image.html">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/navigatorios.html">NavigatorIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/progressviewios.html">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/scrollview.html">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/segmentedcontrolios.html">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/tabbarios.html">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/tabbarios-item.html">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/text.html">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/textinput.html">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/touchablehighlight.html">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/touchableopacity.html">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/touchablewithoutfeedback.html">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/webview.html">WebView</a></li></ul></div><div class="navGroup navGroupActive"><h3>APIs</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/actionsheetios.html">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/cameraroll.html">CameraRoll</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/dimensions.html">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/geolocation.html">Geolocation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/image-style-props.html">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/interactionmanager.html">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/layout-props.html">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/netinfo.html">NetInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/pixelratio.html">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/pushnotificationios.html">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/settings.html">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/statusbarios.html">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/stylesheet.html">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/text-style-props.html">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/transforms.html">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/vibrationios.html">VibrationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.7/view-style-props.html">View Style Props</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/native-modules-ios.md" target="_blank">Edit</a><h1>Native Modules</h1></header><article><div><span><p>Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.</p>
+<p>We designed React Native such that it is possible for you to write real native code and have access to the full power of the platform. This is a more advanced feature and we don't expect it to be part of the usual development process, however it is essential that it exists. If React Native doesn't support a native feature that you need, you should be able to build it yourself.</p>
+<p>This is a more advanced guide that shows how to build a native module. It assumes the reader knows Objective-C or Swift and core libraries (Foundation, UIKit).</p>
+<h2><a class="anchor" aria-hidden="true" name="ios-calendar-module-example"></a><a href="#ios-calendar-module-example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS Calendar Module Example</h2>
+<p>This guide will use the <a href="https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html">iOS Calendar API</a> example. Let's say we would like to be able to access the iOS calendar from JavaScript.</p>
+<p>A native module is just an Objective-C class that implements the <code>RCTBridgeModule</code> protocol. If you are wondering, RCT is an abbreviation of ReaCT.</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManager.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">CalendarManager</span> : <span class="hljs-title">NSObject</span> &lt;<span class="hljs-title">RCTBridgeModule</span>&gt;</span>
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>In addition to implementing the <code>RCTBridgeModule</code> protocol, your class must also include the <code>RCT_EXPORT_MODULE()</code> macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name. If the Objective-C class name begins with RCT, the JavaScript module name will exclude the RCT prefix.</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManager.m</span>
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
+
+<span class="hljs-comment">// To export a module named CalendarManager</span>
+RCT_EXPORT_MODULE();
+
+<span class="hljs-comment">// This would name the module AwesomeCalendarManager instead</span>
+<span class="hljs-comment">// RCT_EXPORT_MODULE(AwesomeCalendarManager);</span>
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>React Native will not expose any methods of <code>CalendarManager</code> to JavaScript unless explicitly told to. This is done using the <code>RCT_EXPORT_METHOD()</code> macro:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTLog.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
+
+RCT_EXPORT_MODULE();
+
+RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location)
+{
+  RCTLogInfo(<span class="hljs-string">@"Pretending to create an event %@ at %@"</span>, name, location);
+}
+</code></pre>
+<p>Now, from your JavaScript file you can call the method like this:</p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">var</span> CalendarManager = NativeModules.CalendarManager;
+CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>);
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: JavaScript method names</p>
+<p>The name of the method exported to JavaScript is the native method's name up to the first colon. React Native also defines a macro called <code>RCT_REMAP_METHOD()</code> to specify the JavaScript method's name. This is useful when multiple native methods are the same up to the first colon and would have conflicting JavaScript names.</p>
+</blockquote>
+<p>The CalendarManager module is instantiated on the Objective-C side using a [CalendarManager new] call. The return type of bridge methods is always <code>void</code>. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).</p>
+<h2><a class="anchor" aria-hidden="true" name="argument-types"></a><a href="#argument-types" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argument Types</h2>
+<p><code>RCT_EXPORT_METHOD</code> supports all standard JSON object types, such as:</p>
+<ul>
+<li>string (<code>NSString</code>)</li>
+<li>number (<code>NSInteger</code>, <code>float</code>, <code>double</code>, <code>CGFloat</code>, <code>NSNumber</code>)</li>
+<li>boolean (<code>BOOL</code>, <code>NSNumber</code>)</li>
+<li>array (<code>NSArray</code>) of any types from this list</li>
+<li>object (<code>NSDictionary</code>) with string keys and values of any type from this list</li>
+<li>function (<code>RCTResponseSenderBlock</code>)</li>
+</ul>
+<p>But it also works with any type that is supported by the <code>RCTConvert</code> class (see <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h"><code>RCTConvert</code></a> for details). The <code>RCTConvert</code> helper functions all accept a JSON value as input and map it to a native Objective-C type or class.</p>
+<p>In our <code>CalendarManager</code> example, we need to pass the event date to the native method. We can't send JavaScript Date objects over the bridge, so we need to convert the date to a string or number. We could write our native function like this:</p>
+<pre><code class="hljs css objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSNumber</span> *)secondsSinceUnixEpoch)
+{
+  <span class="hljs-built_in">NSDate</span> *date = [RCTConvert <span class="hljs-built_in">NSDate</span>:secondsSinceUnixEpoch];
+}
+</code></pre>
+<p>or like this:</p>
+<pre><code class="hljs css objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSString</span> *)ISO8601DateString)
+{
+  <span class="hljs-built_in">NSDate</span> *date = [RCTConvert <span class="hljs-built_in">NSDate</span>:ISO8601DateString];
+}
+</code></pre>
+<p>But by using the automatic type conversion feature, we can skip the manual conversion step completely, and just write:</p>
+<pre><code class="hljs css objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSDate</span> *)date)
+{
+  <span class="hljs-comment">// Date is ready to use!</span>
+}
+</code></pre>
+<p>You would then call this from JavaScript by using either:</p>
+<pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>, date.getTime()); <span class="hljs-comment">// passing date as number of milliseconds since Unix epoch</span>
+</code></pre>
+<p>or</p>
+<pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>, date.toISOString()); <span class="hljs-comment">// passing date as ISO-8601 string</span>
+</code></pre>
+<p>And both values would get converted correctly to the native <code>NSDate</code>.  A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>
+<p>As <code>CalendarManager.addEvent</code> method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert.h&gt;</span></span>
+
+RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name details:(<span class="hljs-built_in">NSDictionary</span> *)details)
+{
+  <span class="hljs-built_in">NSString</span> *location = [RCTConvert <span class="hljs-built_in">NSString</span>:details[<span class="hljs-string">@"location"</span>]];
+  <span class="hljs-built_in">NSDate</span> *time = [RCTConvert <span class="hljs-built_in">NSDate</span>:details[<span class="hljs-string">@"time"</span>]];
+  ...
+}
+</code></pre>
+<p>and call it from JavaScript:</p>
+<pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, {
+  <span class="hljs-attr">location</span>: <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
+  <span class="hljs-attr">time</span>: date.getTime(),
+  <span class="hljs-attr">description</span>: <span class="hljs-string">'...'</span>
+})
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: About array and map</p>
+<p>Objective-C doesn't provide any guarantees about the types of values in these structures. Your native module might expect an array of strings, but if JavaScript calls your method with an array containing numbers and strings, you'll get an <code>NSArray</code> containing a mix of <code>NSNumber</code> and <code>NSString</code>. For arrays, <code>RCTConvert</code> provides some typed collections you can use in your method declaration, such as <code>NSStringArray</code>, or <code>UIColorArray</code>. For maps, it is the developer's responsibility to check the value types individually by manually calling <code>RCTConvert</code> helper methods.</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" name="callbacks"></a><a href="#callbacks" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callbacks</h2>
+<blockquote>
+<p><strong>WARNING</strong></p>
+<p>This section is more experimental than others because we don't have a solid set of best practices around callbacks yet.</p>
+</blockquote>
+<p>Native modules also supports a special kind of argument- a callback. In most cases it is used to provide the function call result to JavaScript.</p>
+<pre><code class="hljs css objectivec">RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
+{
+  <span class="hljs-built_in">NSArray</span> *events = ...
+  callback(@[[<span class="hljs-built_in">NSNull</span> null], events]);
+}
+</code></pre>
+<p><code>RCTResponseSenderBlock</code> accepts only one argument - an array of parameters to pass to the JavaScript callback. In this case we use Node's convention to make the first parameter an error object (usually <code>null</code> when there is no error) and the rest are the results of the function.</p>
+<pre><code class="hljs css javascript">CalendarManager.findEvents(<span class="hljs-function">(<span class="hljs-params">error, events</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (error) {
+    <span class="hljs-built_in">console</span>.error(error);
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">events</span>: events});
+  }
+})
+</code></pre>
+<p>A native module should invoke its callback exactly once. It's okay to store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates - see <a href="https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m"><code>RCTAlertManager</code></a> for an example. If the callback is never invoked, some memory is leaked. If both <code>onSuccess</code> and <code>onFail</code> callbacks are passed, you should only invoke one of them.</p>
+<p>If you want to pass error-like objects to JavaScript, use <code>RCTMakeError</code> from <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h"><code>RCTUtils.h</code></a>.  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript <code>Error</code> objects in the future.</p>
+<h2><a class="anchor" aria-hidden="true" name="promises"></a><a href="#promises" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Promises</h2>
+<p>Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's <code>async/await</code> syntax. When the last parameters of a bridged native method are an <code>RCTPromiseResolveBlock</code> and <code>RCTPromiseRejectBlock</code>, its corresponding JS method will return a JS Promise object.</p>
+<p>Refactoring the above code to use a promise instead of callbacks looks like this:</p>
+<pre><code class="hljs css objectivec">RCT_REMAP_METHOD(findEvents,
+                 findEventsWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  <span class="hljs-built_in">NSArray</span> *events = ...
+  <span class="hljs-keyword">if</span> (events) {
+    resolve(events);
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-built_in">NSError</span> *error = ...
+    reject(<span class="hljs-string">@"no_events"</span>, <span class="hljs-string">@"There were no events"</span>, error);
+  }
+}
+</code></pre>
+<p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEvents</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">var</span> events = <span class="hljs-keyword">await</span> CalendarManager.findEvents();
+
+    <span class="hljs-keyword">this</span>.setState({ events });
+  } <span class="hljs-keyword">catch</span> (e) {
+    <span class="hljs-built_in">console</span>.error(e);
+  }
+}
+
+updateEvents();
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="threading"></a><a href="#threading" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Threading</h2>
+<p>The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change.  The <code>- (dispatch_queue_t)methodQueue</code> method allows the native module to specify which queue its methods should be run on.  For example, if it needs to use a main-thread-only iOS API, it should specify this via:</p>
+<pre><code class="hljs css objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
+{
+  <span class="hljs-keyword">return</span> dispatch_get_main_queue();
+}
+</code></pre>
+<p>Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the <code>RCTAsyncLocalStorage</code> module creates its own queue so the React queue isn't blocked waiting on potentially slow disk access:</p>
+<pre><code class="hljs css objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
+{
+  <span class="hljs-keyword">return</span> dispatch_queue_create(<span class="hljs-string">"com.facebook.React.AsyncLocalStorageQueue"</span>, DISPATCH_QUEUE_SERIAL);
+}
+</code></pre>
+<p>The specified <code>methodQueue</code> will be shared by all of the methods in your module. If <em>just one</em> of your methods is long-running (or needs to be run on a different queue than the others for some reason), you can use <code>dispatch_async</code> inside the method to perform that particular method's code on another queue, without affecting the others:</p>
+<pre><code class="hljs css objectivec">RCT_EXPORT_METHOD(doSomethingExpensive:(<span class="hljs-built_in">NSString</span> *)param callback:(RCTResponseSenderBlock)callback)
+{
+  <span class="hljs-built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="hljs-number">0</span>), ^{
+    <span class="hljs-comment">// Call long-running code on background thread</span>
+    ...
+    <span class="hljs-comment">// You can invoke callback from any thread/queue</span>
+    callback(@[...]);
+  });
+}
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: Sharing dispatch queues between modules</p>
+<p>The <code>methodQueue</code> method will be called once when the module is initialized, and then retained by the bridge, so there is no need to retain the queue yourself, unless you wish to make use of it within your module. However, if you wish to share the same queue between multiple modules then you will need to ensure that you retain and return the same queue instance for each of them; merely returning a queue of the same name for each won't work.</p>
+</blockquote>
+<h2><a class="anchor" aria-hidden="true" name="dependency-injection"></a><a href="#dependency-injection" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Dependency Injection</h2>
+<p>The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).</p>
+<p>You can do this by creating a class that implements the RCTBridgeDelegate Protocol, initializing an RCTBridge with the delegate as an argument and initialising a RCTRootView with the initialized bridge.</p>
+<pre><code class="hljs css objectivec"><span class="hljs-keyword">id</span>&lt;RCTBridgeDelegate&gt; moduleInitialiser = [[classThatImplementsRCTBridgeDelegate alloc] init];
+
+RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:<span class="hljs-literal">nil</span>];
+
+RCTRootView *rootView = [[RCTRootView alloc]
+                        initWithBridge:bridge
+                            moduleName:kModuleName
+                     initialProperties:<span class="hljs-literal">nil</span>];
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="exporting-constants"></a><a href="#exporting-constants" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exporting Constants</h2>
+<p>A native module can export constants that are immediately available to JavaScript at runtime. This is useful for communicating static data that would otherwise require a round-trip through the bridge.</p>
+<pre><code class="hljs css objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
+{
+  <span class="hljs-keyword">return</span> @{ <span class="hljs-string">@"firstDayOfTheWeek"</span>: <span class="hljs-string">@"Monday"</span> };
+}
+</code></pre>
+<p>JavaScript can use this value right away, synchronously:</p>
+<pre><code class="hljs css javascript"><span class="hljs-built_in">console</span>.log(CalendarManager.firstDayOfTheWeek);
+</code></pre>
+<p>Note that the constants are exported only at initialization time, so if you change <code>constantsToExport</code> values at runtime it won't affect the JavaScript environment.</p>
+<h3><a class="anchor" aria-hidden="true" name="enum-constants"></a><a href="#enum-constants" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enum Constants</h3>
+<p>Enums that are defined via <code>NS_ENUM</code> cannot be used as method arguments without first extending RCTConvert.</p>
+<p>In order to export the following <code>NS_ENUM</code> definition:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">NS_ENUM</span>(<span class="hljs-built_in">NSInteger</span>, <span class="hljs-built_in">UIStatusBarAnimation</span>) {
+    <span class="hljs-built_in">UIStatusBarAnimationNone</span>,
+    <span class="hljs-built_in">UIStatusBarAnimationFade</span>,
+    <span class="hljs-built_in">UIStatusBarAnimationSlide</span>,
+};
+</code></pre>
+<p>You must create a class extension of RCTConvert like so:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTConvert</span> (<span class="hljs-title">StatusBarAnimation</span>)</span>
+  RCT_ENUM_CONVERTER(<span class="hljs-built_in">UIStatusBarAnimation</span>, (@{ <span class="hljs-string">@"statusBarAnimationNone"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationNone</span>),
+                                               <span class="hljs-string">@"statusBarAnimationFade"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationFade</span>),
+                                               <span class="hljs-string">@"statusBarAnimationSlide"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationSlide</span>)}),
+                      <span class="hljs-built_in">UIStatusBarAnimationNone</span>, integerValue)
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>You can then define methods and export your enum constants like this:</p>
+<pre><code class="hljs css objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
+{
+  <span class="hljs-keyword">return</span> @{ <span class="hljs-string">@"statusBarAnimationNone"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationNone</span>),
+            <span class="hljs-string">@"statusBarAnimationFade"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationFade</span>),
+            <span class="hljs-string">@"statusBarAnimationSlide"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationSlide</span>) };
+};
+
+RCT_EXPORT_METHOD(updateStatusBarAnimation:(<span class="hljs-built_in">UIStatusBarAnimation</span>)animation
+                                completion:(RCTResponseSenderBlock)callback)
+</code></pre>
+<p>Your enum will then be automatically unwrapped using the selector provided (<code>integerValue</code> in the above example) before being passed to your exported method.</p>
+<h2><a class="anchor" aria-hidden="true" name="sending-events-to-javascript"></a><a href="#sending-events-to-javascript" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sending Events to JavaScript</h2>
+<p>The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass <code>RCTEventEmitter</code>, implement <code>supportedEvents</code> and call <code>self sendEventWithName</code>:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManager.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTEventEmitter.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">CalendarManager</span> : <span class="hljs-title">RCTEventEmitter</span> &lt;<span class="hljs-title">RCTBridgeModule</span>&gt;</span>
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManager.m</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
+
+RCT_EXPORT_MODULE();
+
+- (<span class="hljs-built_in">NSArray</span>&lt;<span class="hljs-built_in">NSString</span> *&gt; *)supportedEvents
+{
+  <span class="hljs-keyword">return</span> @[<span class="hljs-string">@"EventReminder"</span>];
+}
+
+- (<span class="hljs-keyword">void</span>)calendarEventReminderReceived:(<span class="hljs-built_in">NSNotification</span> *)notification
+{
+  <span class="hljs-built_in">NSString</span> *eventName = notification.userInfo[<span class="hljs-string">@"name"</span>];
+  [<span class="hljs-keyword">self</span> sendEventWithName:<span class="hljs-string">@"EventReminder"</span> body:@{<span class="hljs-string">@"name"</span>: eventName}];
+}
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>JavaScript code can subscribe to these events by creating a new <code>NativeEventEmitter</code> instance around your module.</p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { NativeEventEmitter, NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">const</span> { CalendarManager } = NativeModules;
+
+<span class="hljs-keyword">const</span> calendarManagerEmitter = <span class="hljs-keyword">new</span> NativeEventEmitter(CalendarManager);
+
+<span class="hljs-keyword">const</span> subscription = calendarManagerEmitter.addListener(
+  <span class="hljs-string">'EventReminder'</span>,
+  (reminder) =&gt; <span class="hljs-built_in">console</span>.log(reminder.name)
+);
+...
+<span class="hljs-comment">// Don't forget to unsubscribe, typically in componentWillUnmount</span>
+subscription.remove();
+</code></pre>
+<p>For more examples of sending events to JavaScript, see <a href="https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m"><code>RCTLocationObserver</code></a>.</p>
+<h3><a class="anchor" aria-hidden="true" name="optimizing-for-zero-listeners"></a><a href="#optimizing-for-zero-listeners" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Optimizing for zero listeners</h3>
+<p>You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override <code>startObserving</code> and <code>stopObserving</code> in your <code>RCTEventEmitter</code> subclass.</p>
+<pre><code class="hljs css objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
+{
+  <span class="hljs-keyword">bool</span> hasListeners;
+}
+
+<span class="hljs-comment">// Will be called when this module's first listener is added.</span>
+-(<span class="hljs-keyword">void</span>)startObserving {
+    hasListeners = <span class="hljs-literal">YES</span>;
+    <span class="hljs-comment">// Set up any upstream listeners or background tasks as necessary</span>
+}
+
+<span class="hljs-comment">// Will be called when this module's last listener is removed, or on dealloc.</span>
+-(<span class="hljs-keyword">void</span>)stopObserving {
+    hasListeners = <span class="hljs-literal">NO</span>;
+    <span class="hljs-comment">// Remove upstream listeners, stop unnecessary background tasks</span>
+}
+
+- (<span class="hljs-keyword">void</span>)calendarEventReminderReceived:(<span class="hljs-built_in">NSNotification</span> *)notification
+{
+  <span class="hljs-built_in">NSString</span> *eventName = notification.userInfo[<span class="hljs-string">@"name"</span>];
+  <span class="hljs-keyword">if</span> (hasListeners) { <span class="hljs-comment">// Only send events if anyone is listening</span>
+    [<span class="hljs-keyword">self</span> sendEventWithName:<span class="hljs-string">@"EventReminder"</span> body:@{<span class="hljs-string">@"name"</span>: eventName}];
+  }
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="exporting-swift"></a><a href="#exporting-swift" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exporting Swift</h2>
+<p>Swift doesn't have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.</p>
+<p>Let's say we have the same <code>CalendarManager</code> but as a Swift class:</p>
+<pre><code class="hljs css swift"><span class="hljs-comment">// CalendarManager.swift</span>
+
+<span class="hljs-meta">@objc</span>(<span class="hljs-type">CalendarManager</span>)
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CalendarManager</span>: <span class="hljs-title">NSObject</span> </span>{
+
+  <span class="hljs-meta">@objc</span>(addEvent:location:date:)
+  <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">addEvent</span><span class="hljs-params">(name: String, location: String, date: NSNumber)</span></span> -&gt; <span class="hljs-type">Void</span> {
+    <span class="hljs-comment">// Date is ready to use!</span>
+  }
+  
+  <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">constantsToExport</span><span class="hljs-params">()</span></span> -&gt; [<span class="hljs-type">String</span>: <span class="hljs-type">Any</span>]! {
+    <span class="hljs-keyword">return</span> [<span class="hljs-string">"someKey"</span>: <span class="hljs-string">"someValue"</span>]
+  }
+
+}
+</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.</p>
+</blockquote>
+<p>Then create a private implementation file that will register the required information with the React Native bridge:</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManagerBridge.m</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCT_EXTERN_MODULE</span>(<span class="hljs-title">CalendarManager</span>, <span class="hljs-title">NSObject</span>)</span>
+
+RCT_EXTERN_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSNumber</span> *)date)
+
+<span class="hljs-keyword">@end</span>
+</code></pre>
+<p>For those of you new to Swift and Objective-C, whenever you <a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html">mix the two languages in an iOS project</a>, you will also need an additional bridging file, known as a bridging header, to expose the Objective-C files to Swift. Xcode will offer to create this header file for you if you add your Swift file to your app through the Xcode <code>File&gt;New File</code> menu option. You will need to import <code>RCTBridgeModule.h</code> in this header file.</p>
+<pre><code class="hljs css objectivec"><span class="hljs-comment">// CalendarManager-Bridging-Header.h</span>
+<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
+</code></pre>
+<p>You can also use <code>RCT_EXTERN_REMAP_MODULE</code> and <code>_RCT_EXTERN_REMAP_METHOD</code> to alter the JavaScript name of the module or methods you are exporting. For more information see <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h"><code>RCTBridgeModule</code></a>.</p>
+<blockquote>
+<p><strong>Important when making third party modules</strong>: Static libraries with Swift are only supported in Xcode 9 and later. In order for the Xcode project to build when you use Swift in the iOS static library you include in the module, your main app project must contain Swift code and a bridging header itself. If your app project does not contain any Swift code, a workaround can be a single empty .swift file and an empty bridging header.</p>
+</blockquote>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="troubleshooting.html">← Troubleshooting</a><a class="docs-next button" href="native-components-ios.html">Native UI Components →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.7"],"hitsPerPage":5}
+              });
+            </script></body></html>

@@ -1,0 +1,167 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>ListViewDataSource · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="ListViewDataSource · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/index.html"/><meta property="og:description" content="Provides efficient data processing and access to the"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.22</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/0.22/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/version-0.5/listviewdatasource.md" target="_blank">Edit</a><h1>ListViewDataSource</h1></header><article><div><span><p>Provides efficient data processing and access to the
+<code>ListView</code> component.  A <code>ListViewDataSource</code> is created with functions for
+extracting data from the input blob, and comparing elements (with default
+implementations for convenience).  The input blob can be as simple as an
+array of strings, or an object with rows nested inside section objects.</p>
+<p>To update the data in the datasource, use <code>cloneWithRows</code> (or
+<code>cloneWithRowsAndSections</code> if you care about sections).  The data in the
+data source is immutable, so you can't modify it directly.  The clone methods
+suck in the new data and compute a diff for each row so ListView knows
+whether to re-render it or not.</p>
+<p>In this example, a component receives data in chunks, handled by
+<code>_onDataArrived</code>, which concats the new data onto the old data and updates the
+data source.  We use <code>concat</code> to create a new array - mutating <code>this._data</code>,
+e.g. with <code>this._data.push(newRowData)</code>, would be an error. <code>_rowHasChanged</code>
+understands the shape of the row data and knows how to efficiently compare
+it.</p>
+<pre><code class="hljs">getInitialState: function() {
+  <span class="hljs-keyword">var</span> ds = new ListView.DataSource({rowHasChanged: <span class="hljs-keyword">this</span>._rowHasChanged});
+  <span class="hljs-keyword">return</span> {ds};
+},
+_onDataArrived(newData) {
+  <span class="hljs-keyword">this</span>._data = <span class="hljs-keyword">this</span>._data.concat(newData);
+  <span class="hljs-keyword">this</span>.setState({
+    ds: <span class="hljs-keyword">this</span>.state.ds.cloneWithRows(<span class="hljs-keyword">this</span>._data)
+  });
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
+<ul>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#constructor"><code>constructor</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#clonewithrows"><code>cloneWithRows</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#clonewithrowsandsections"><code>cloneWithRowsAndSections</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getrowcount"><code>getRowCount</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getrowandsectioncount"><code>getRowAndSectionCount</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#rowshouldupdate"><code>rowShouldUpdate</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getrowdata"><code>getRowData</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getrowidforflatindex"><code>getRowIDForFlatIndex</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getsectionidforflatindex"><code>getSectionIDForFlatIndex</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getsectionlengths"><code>getSectionLengths</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#sectionheadershouldupdate"><code>sectionHeaderShouldUpdate</code></a></li>
+<li><a href="/react-native/docs/0.22/listviewdatasource.html#getsectionheaderdata"><code>getSectionHeaderData</code></a></li>
+</ul>
+<hr>
+<h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" name="constructor"></a><a href="#constructor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>constructor()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>(params)
+</code></pre>
+<p>You can provide custom extraction and <code>hasChanged</code> functions for section
+headers and rows.  If absent, data will be extracted with the
+<code>defaultGetRowData</code> and <code>defaultGetSectionHeaderData</code> functions.</p>
+<p>The default extractor expects data of one of the following forms:</p>
+<pre><code class="hljs"> { sectionID_1: { rowID_1: &lt;rowData1&gt;, ... }, ... }
+</code></pre>
+<p>or</p>
+<pre><code class="hljs"> { sectionID_1: [ &lt;rowData1&gt;, &lt;rowData2&gt;, ... ], ... }
+</code></pre>
+<p>or</p>
+<pre><code class="hljs"> [ [ &lt;rowData1&gt;, &lt;rowData2&gt;, ... ], ... ]
+</code></pre>
+<p>The constructor takes in a params argument that can contain any of the
+following:</p>
+<ul>
+<li>getRowData(dataBlob, sectionID, rowID);</li>
+<li>getSectionHeaderData(dataBlob, sectionID);</li>
+<li>rowHasChanged(prevRowData, nextRowData);</li>
+<li>sectionHeaderHasChanged(prevSectionData, nextSectionData);</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="clonewithrows"></a><a href="#clonewithrows" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cloneWithRows()</code></h3>
+<pre><code class="hljs css javascript">cloneWithRows(dataBlob, rowIdentities)
+</code></pre>
+<p>Clones this <code>ListViewDataSource</code> with the specified <code>dataBlob</code> and
+<code>rowIdentities</code>. The <code>dataBlob</code> is just an arbitrary blob of data. At
+construction an extractor to get the interesting information was defined
+(or the default was used).</p>
+<p>The <code>rowIdentities</code> is a 2D array of identifiers for rows.
+ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
+assumed that the keys of the section data are the row identities.</p>
+<p>Note: This function does NOT clone the data in this data source. It simply
+passes the functions defined at construction to a new data source with
+the data specified. If you wish to maintain the existing data you must
+handle merging of old and new data separately and then pass that into
+this function as the <code>dataBlob</code>.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="clonewithrowsandsections"></a><a href="#clonewithrowsandsections" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cloneWithRowsAndSections()</code></h3>
+<pre><code class="hljs css javascript">cloneWithRowsAndSections(dataBlob, sectionIdentities, rowIdentities)
+</code></pre>
+<p>This performs the same function as the <code>cloneWithRows</code> function but here
+you also specify what your <code>sectionIdentities</code> are. If you don't care
+about sections you should safely be able to use <code>cloneWithRows</code>.</p>
+<p><code>sectionIdentities</code> is an array of identifiers for sections.
+ie. ['s1', 's2', ...].  The identifiers should correspond to the keys or array indexes
+of the data you wish to include.  If not provided, it's assumed that the
+keys of dataBlob are the section identities.</p>
+<p>Note: this returns a new object!</p>
+<pre><code class="hljs">const dataSource = ds.cloneWithRowsAndSections({
+  addresses: [<span class="hljs-string">'row 1'</span>, <span class="hljs-string">'row 2'</span>],
+  phone_numbers: [<span class="hljs-string">'data 1'</span>, <span class="hljs-string">'data 2'</span>],
+}, [<span class="hljs-string">'phone_numbers'</span>]);
+</code></pre>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getrowcount"></a><a href="#getrowcount" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRowCount()</code></h3>
+<pre><code class="hljs css javascript">getRowCount()
+</code></pre>
+<p>Returns the total number of rows in the data source.</p>
+<p>If you are specifying the rowIdentities or sectionIdentities, then <code>getRowCount</code> will return the number of rows in the filtered data source.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getrowandsectioncount"></a><a href="#getrowandsectioncount" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRowAndSectionCount()</code></h3>
+<pre><code class="hljs css javascript">getRowAndSectionCount()
+</code></pre>
+<p>Returns the total number of rows in the data source (see <code>getRowCount</code> for how this is calculated) plus the number of sections in the data.</p>
+<p>If you are specifying the rowIdentities or sectionIdentities, then <code>getRowAndSectionCount</code> will return the number of rows &amp; sections in the filtered data source.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="rowshouldupdate"></a><a href="#rowshouldupdate" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>rowShouldUpdate()</code></h3>
+<pre><code class="hljs css javascript">rowShouldUpdate(sectionIndex, rowIndex)
+</code></pre>
+<p>Returns if the row is dirtied and needs to be rerendered</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getrowdata"></a><a href="#getrowdata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRowData()</code></h3>
+<pre><code class="hljs css javascript">getRowData(sectionIndex, rowIndex)
+</code></pre>
+<p>Gets the data required to render the row.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getrowidforflatindex"></a><a href="#getrowidforflatindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getRowIDForFlatIndex()</code></h3>
+<pre><code class="hljs css javascript">getRowIDForFlatIndex(index)
+</code></pre>
+<p>Gets the rowID at index provided if the dataSource arrays were flattened,
+or null of out of range indexes.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getsectionidforflatindex"></a><a href="#getsectionidforflatindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSectionIDForFlatIndex()</code></h3>
+<pre><code class="hljs css javascript">getSectionIDForFlatIndex(index)
+</code></pre>
+<p>Gets the sectionID at index provided if the dataSource arrays were flattened,
+or null for out of range indexes.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getsectionlengths"></a><a href="#getsectionlengths" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSectionLengths()</code></h3>
+<pre><code class="hljs css javascript">getSectionLengths()
+</code></pre>
+<p>Returns an array containing the number of rows in each section</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="sectionheadershouldupdate"></a><a href="#sectionheadershouldupdate" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>sectionHeaderShouldUpdate()</code></h3>
+<pre><code class="hljs css javascript">sectionHeaderShouldUpdate(sectionIndex)
+</code></pre>
+<p>Returns if the section header is dirtied and needs to be rerendered</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getsectionheaderdata"></a><a href="#getsectionheaderdata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSectionHeaderData()</code></h3>
+<pre><code class="hljs css javascript">getSectionHeaderData(sectionIndex)
+</code></pre>
+<p>Gets the data required to render the section header</p>
+</span></div></article></div><div class="docs-prevnext"></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="//cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+              var search = docsearch({
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.22"],"hitsPerPage":5}
+              });
+            </script></body></html>
