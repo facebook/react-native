@@ -9,13 +9,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-const fs = require('fs');
-const path = require('path');
-
 const isWindows = process.platform === 'win32';
 
 var installedGlobally;
 if (isWindows) {
+  const fs = require('fs');
+  const path = require('path');
   // On Windows, assume we are installed globally if we can't find a package.json above node_modules.
   installedGlobally = !(fs.existsSync(path.join(__dirname, '../../../package.json')));
 } else {
