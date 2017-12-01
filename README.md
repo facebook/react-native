@@ -30,7 +30,7 @@ Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/
 
 ## Documentation
 
-[The website’s documentation](https://facebook.github.io/react-native/docs/) is divided into multiple sections.
+[The website’s documentation](https://facebook.github.io/react-native/docs/getting-started.html) is divided into multiple sections.
 - There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
 - The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Button`](https://facebook.github.io/react-native/docs/button.html).
 - The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
