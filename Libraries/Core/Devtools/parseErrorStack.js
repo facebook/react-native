@@ -18,20 +18,25 @@ export type StackFrame = {
   methodName: string,
 };
 
-var stacktraceParser = require('stacktrace-parser');
+export type ExtendedError = Error & {
+  framesToPop?: number,
+};
 
-function parseErrorStack(e: Error): Array<StackFrame> {
+function parseErrorStack(e: ExtendedError): Array<StackFrame> {
   if (!e || !e.stack) {
     return [];
   }
 
-  var stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
+  const stacktraceParser = require('stacktrace-parser');
+  const stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
 
-  var framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
+  let framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
   while (framesToPop--) {
     stack.shift();
   }
-
   return stack;
 }
 

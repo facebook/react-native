@@ -12,12 +12,14 @@
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/Button.js',
+  '../Libraries/Components/CheckBox/CheckBox.android.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Lists/FlatList.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/Lists/ListView/ListView.js',
+  '../Libraries/Components/MaskedView/MaskedViewIOS.ios.js',
   '../Libraries/Modal/Modal.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
@@ -50,7 +52,6 @@ const components = [
 const apis = [
   '../Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js',
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Alert/Alert.js',
   '../Libraries/Alert/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
@@ -74,7 +75,6 @@ const apis = [
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/Lists/ListView/ListViewDataSource.js',
-  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
@@ -91,17 +91,18 @@ const apis = [
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
-const stylesWithPermalink = [
-  '../Libraries/StyleSheet/LayoutPropTypes.js',
-  '../Libraries/StyleSheet/TransformPropTypes.js',
-  '../Libraries/Components/View/ShadowPropTypesIOS.js',
-];
-
 const stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
+
+const stylesWithPermalink = [
+  '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/StyleSheet/TransformPropTypes.js',
+  '../Libraries/Components/View/ShadowPropTypesIOS.js',
+  '../Libraries/Components/View/ViewPropTypes.js',
+].concat(stylesForEmbed);
 
 const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';
 

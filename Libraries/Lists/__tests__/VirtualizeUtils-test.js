@@ -6,12 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ *
+ * @format
+ * @emails oncall+react_native
  */
 'use strict';
 
-jest.unmock('VirtualizeUtils');
-
-const { elementsThatOverlapOffsets, newRangeCount } = require('VirtualizeUtils');
+const {elementsThatOverlapOffsets, newRangeCount} = require('VirtualizeUtils');
 
 describe('newRangeCount', function() {
   it('handles subset', function() {
@@ -46,10 +47,15 @@ describe('elementsThatOverlapOffsets', function() {
     function getFrameMetrics(index: number) {
       return {
         length: 100,
-        offset: (100 * index),
+        offset: 100 * index,
       };
     }
-    expect(elementsThatOverlapOffsets(offsets, 100, getFrameMetrics)).toEqual([0, 2, 3, 4]);
+    expect(elementsThatOverlapOffsets(offsets, 100, getFrameMetrics)).toEqual([
+      0,
+      2,
+      3,
+      4,
+    ]);
   });
   it('handles variable length', function() {
     const offsets = [150, 250, 900];
@@ -60,7 +66,9 @@ describe('elementsThatOverlapOffsets', function() {
       {offset: 850, length: 100},
       {offset: 950, length: 150},
     ];
-    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1,1,3]);
+    expect(
+      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]),
+    ).toEqual([1, 1, 3]);
   });
   it('handles out of bounds', function() {
     const offsets = [150, 900];
@@ -69,6 +77,8 @@ describe('elementsThatOverlapOffsets', function() {
       {offset: 50, length: 150},
       {offset: 250, length: 100},
     ];
-    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1]);
+    expect(
+      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]),
+    ).toEqual([1]);
   });
 });

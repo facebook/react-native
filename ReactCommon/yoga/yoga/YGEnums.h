@@ -62,11 +62,9 @@ typedef YG_ENUM_BEGIN(YGEdge) {
 } YG_ENUM_END(YGEdge);
 WIN_EXPORT const char *YGEdgeToString(const YGEdge value);
 
-#define YGExperimentalFeatureCount 3
+#define YGExperimentalFeatureCount 1
 typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
-  YGExperimentalFeatureRounding,
   YGExperimentalFeatureWebFlexBasis,
-  YGExperimentalFeatureMinFlexFix,
 } YG_ENUM_END(YGExperimentalFeature);
 WIN_EXPORT const char *YGExperimentalFeatureToString(const YGExperimentalFeature value);
 
@@ -79,23 +77,25 @@ typedef YG_ENUM_BEGIN(YGFlexDirection) {
 } YG_ENUM_END(YGFlexDirection);
 WIN_EXPORT const char *YGFlexDirectionToString(const YGFlexDirection value);
 
-#define YGJustifyCount 5
-typedef YG_ENUM_BEGIN(YGJustify) {
-  YGJustifyFlexStart,
-  YGJustifyCenter,
-  YGJustifyFlexEnd,
-  YGJustifySpaceBetween,
-  YGJustifySpaceAround,
+#define YGJustifyCount 6
+typedef YG_ENUM_BEGIN(YGJustify){
+    YGJustifyFlexStart,
+    YGJustifyCenter,
+    YGJustifyFlexEnd,
+    YGJustifySpaceBetween,
+    YGJustifySpaceAround,
+    YGJustifySpaceEvenly,
 } YG_ENUM_END(YGJustify);
 WIN_EXPORT const char *YGJustifyToString(const YGJustify value);
 
-#define YGLogLevelCount 5
+#define YGLogLevelCount 6
 typedef YG_ENUM_BEGIN(YGLogLevel) {
   YGLogLevelError,
   YGLogLevelWarn,
   YGLogLevelInfo,
   YGLogLevelDebug,
   YGLogLevelVerbose,
+  YGLogLevelFatal,
 } YG_ENUM_END(YGLogLevel);
 WIN_EXPORT const char *YGLogLevelToString(const YGLogLevel value);
 
@@ -106,6 +106,13 @@ typedef YG_ENUM_BEGIN(YGMeasureMode) {
   YGMeasureModeAtMost,
 } YG_ENUM_END(YGMeasureMode);
 WIN_EXPORT const char *YGMeasureModeToString(const YGMeasureMode value);
+
+#define YGNodeTypeCount 2
+typedef YG_ENUM_BEGIN(YGNodeType) {
+  YGNodeTypeDefault,
+  YGNodeTypeText,
+} YG_ENUM_END(YGNodeType);
+WIN_EXPORT const char *YGNodeTypeToString(const YGNodeType value);
 
 #define YGOverflowCount 3
 typedef YG_ENUM_BEGIN(YGOverflow) {

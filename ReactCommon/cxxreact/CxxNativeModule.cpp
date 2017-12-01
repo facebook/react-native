@@ -4,26 +4,27 @@
 #include "Instance.h"
 
 #include <iterator>
-
+#include <glog/logging.h>
 #include <folly/json.h>
 
-#include <cxxreact/JsArgumentHelpers.h>
+#include "JsArgumentHelpers.h"
+#include "SystraceSection.h"
+#include "MessageQueueThread.h"
 
 using facebook::xplat::module::CxxModule;
-
 namespace facebook {
 namespace react {
 
 std::function<void(folly::dynamic)> makeCallback(
-    std::weak_ptr<Instance> instance, ExecutorToken token, const folly::dynamic& callbackId) {
-  if (!callbackId.isInt()) {
+    std::weak_ptr<Instance> instance, const folly::dynamic& callbackId) {
+  if (!callbackId.isNumber()) {
     throw std::invalid_argument("Expected callback(s) as final argument");
   }
 
-  auto id = callbackId.getInt();
-  return [winstance = std::move(instance), token, id](folly::dynamic args) {
+  auto id = callbackId.asInt();
+  return [winstance = std::move(instance), id](folly::dynamic args) {
     if (auto instance = winstance.lock()) {
-      instance->callJSCallback(token, id, std::move(args));
+      instance->callJSCallback(id, std::move(args));
     }
   };
 }
@@ -55,8 +56,7 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
 
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
-    assert(method.func || method.syncFunc);
-    descs.emplace_back(method.name, method.func ? "async" : "sync");
+    descs.emplace_back(method.name, method.getType());
   }
   return descs;
 }
@@ -75,12 +75,7 @@ folly::dynamic CxxNativeModule::getConstants() {
   return constants;
 }
 
-bool CxxNativeModule::supportsWebWorkers() {
-  // TODO(andrews): web worker support in cxxmodules
-  return false;
-}
-
-void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
+void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) {
   if (reactMethodId >= methods_.size()) {
     throw std::invalid_argument(folly::to<std::string>("methodId ", reactMethodId,
         " out of range [0..", methods_.size(), "]"));
@@ -106,10 +101,10 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   }
 
   if (method.callbacks == 1) {
-    first = convertCallback(makeCallback(instance_, token, params[params.size() - 1]));
+    first = convertCallback(makeCallback(instance_, params[params.size() - 1]));
   } else if (method.callbacks == 2) {
-    first = convertCallback(makeCallback(instance_, token, params[params.size() - 2]));
-    second = convertCallback(makeCallback(instance_, token, params[params.size() - 1]));
+    first = convertCallback(makeCallback(instance_, params[params.size() - 2]));
+    second = convertCallback(makeCallback(instance_, params[params.size() - 1]));
   }
 
   params.resize(params.size() - method.callbacks);
@@ -133,21 +128,31 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   // stack.  I'm told that will be possible in the future.  TODO
   // mhorowitz #7128529: convert C++ exceptions to Java
 
-  messageQueueThread_->runOnQueue([method, params=std::move(params), first, second] () {
+  messageQueueThread_->runOnQueue([method, params=std::move(params), first, second, callId] () {
+  #ifdef WITH_FBSYSTRACE
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+    }
+  #endif
+    SystraceSection s(method.name.c_str());
     try {
       method.func(std::move(params), first, second);
     } catch (const facebook::xplat::JsArgumentException& ex) {
       throw;
+    } catch (std::exception& e) {
+      LOG(ERROR) << "std::exception. Method call " << method.name.c_str() << " failed: " << e.what();
+      std::terminate();
+    } catch (std::string& error) {
+      LOG(ERROR) << "std::string. Method call " << method.name.c_str() << " failed: " << error.c_str();
+      std::terminate();
     } catch (...) {
-      // This means some C++ code is buggy.  As above, we fail hard so the C++
-      // developer can debug and fix it.
+      LOG(ERROR) << "Method call " << method.name.c_str() << " failed. unknown error";
       std::terminate();
     }
   });
 }
 
-MethodCallResult CxxNativeModule::callSerializableNativeHook(
-    ExecutorToken token, unsigned int hookId, folly::dynamic&& args) {
+MethodCallResult CxxNativeModule::callSerializableNativeHook(unsigned int hookId, folly::dynamic&& args) {
   if (hookId >= methods_.size()) {
     throw std::invalid_argument(
       folly::to<std::string>("methodId ", hookId, " out of range [0..", methods_.size(), "]"));

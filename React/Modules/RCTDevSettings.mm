@@ -15,34 +15,36 @@
 
 #import <jschelpers/JavaScriptCore.h>
 
-#import "JSCSamplingProfiler.h"
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTJSCSamplingProfiler.h"
 #import "RCTLog.h"
+#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
-NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
-NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
-NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
-NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
-NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingIsJSCProfilingEnabled = @"RCTJSCProfilerEnabled";
-NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
+static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
+static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
+static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
+static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
+static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+
+#if ENABLE_PACKAGER_CONNECTION
+#import "RCTPackagerConnection.h"
+#endif
+
+#if RCT_ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
+#endif
 
 #if RCT_DEV
-#if __has_include("RCTPackagerClient.h")
-#import "RCTPackagerClient.h"
-#import "RCTReloadPackagerMethod.h"
-#import "RCTSamplingProfilerPackagerMethod.h"
-#endif
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -109,6 +111,10 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
   NSURLSessionDataTask *_liveReloadUpdateTask;
   NSURL *_liveReloadURL;
   BOOL _isJSLoaded;
+#if ENABLE_PACKAGER_CONNECTION
+  RCTHandlerToken _reloadToken;
+  RCTHandlerToken _pokeSamplingProfilerToken;
+#endif
 }
 
 @property (nonatomic, strong) Class executorClass;
@@ -121,6 +127,11 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES; // RCT_DEV-only
+}
 
 - (instancetype)init
 {
@@ -136,6 +147,7 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _dataSource = dataSource;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
@@ -144,10 +156,75 @@ RCT_EXPORT_MODULE()
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _synchronizeAllSettings];
-      [self connectPackager];
     });
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
+  _bridge = bridge;
+
+#if ENABLE_PACKAGER_CONNECTION
+  RCTBridge *__weak weakBridge = bridge;
+  _reloadToken =
+  [[RCTPackagerConnection sharedPackagerConnection]
+   addNotificationHandler:^(id params) {
+     if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+       weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+     }
+     [weakBridge reload];
+   }
+   queue:dispatch_get_main_queue()
+   forMethod:@"reload"];
+
+  _pokeSamplingProfilerToken =
+  [[RCTPackagerConnection sharedPackagerConnection]
+   addRequestHandler:^(NSDictionary<NSString *, id> *params, RCTPackagerClientResponder *responder) {
+     pokeSamplingProfiler(weakBridge, responder);
+   }
+   queue:dispatch_get_main_queue()
+   forMethod:@"pokeSamplingProfiler"];
+#endif
+
+#if RCT_ENABLE_INSPECTOR
+  // we need this dispatch back to the main thread because even though this
+  // is executed on the main thread, at this point the bridge is not yet
+  // finished with its initialisation. But it does finish by the time it
+  // relinquishes control of the main thread, so only queue on the JS thread
+  // after the current main thread operation is done.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [bridge dispatchBlock:^{
+      [RCTInspectorDevServerHelper connectForContext:bridge.jsContextRef
+                                       withBundleURL:bridge.bundleURL];
+    } queue:RCTJSThread];
+  });
+#endif
+}
+
+static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientResponder *const responder)
+{
+  if (!bridge) {
+    [responder respondWithError:@"The bridge is nil. Try again."];
+    return;
+  }
+
+  JSGlobalContextRef globalContext = bridge.jsContextRef;
+  if (!JSC_JSSamplingProfilerEnabled(globalContext)) {
+    [responder respondWithError:@"The JSSamplingProfiler is disabled. See 'iOS specific setup' section here https://fburl.com/u4lw7xeq for some help"];
+    return;
+  }
+
+  // JSPokeSamplingProfiler() toggles the profiling process
+  JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
+  if (JSC_JSValueGetType(globalContext, jsResult) == kJSTypeNull) {
+    [responder respondWithResult:@"started"];
+  } else {
+    JSContext *context = [JSC_JSContext(globalContext) contextWithJSGlobalContextRef:globalContext];
+    NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
+    [responder respondWithResult:results];
+  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -158,6 +235,10 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [_liveReloadUpdateTask cancel];
+#if ENABLE_PACKAGER_CONNECTION
+  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
+  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_pokeSamplingProfilerToken];
+#endif
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -197,9 +278,9 @@ RCT_EXPORT_METHOD(reload)
   [_bridge reload];
 }
 
-- (void)setIsShakeToShowDevMenuEnabled:(BOOL)isShakeToShowDevMenuEnabled
+RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled:(BOOL)enabled)
 {
-  [self _updateSettingWithValue:@(isShakeToShowDevMenuEnabled) forKey:kRCTDevSettingShakeToShowDevMenu];
+  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingShakeToShowDevMenu];
 }
 
 - (BOOL)isShakeToShowDevMenuEnabled
@@ -280,23 +361,15 @@ RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
 
 RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
-  [self _hotLoadingSettingDidChange];
+  if (self.isHotLoadingEnabled != enabled) {
+    [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
+    [_bridge reload];
+  }
 }
 
 - (BOOL)isHotLoadingEnabled
 {
   return [[self settingForKey:kRCTDevSettingHotLoadingEnabled] boolValue];
-}
-
-- (void)_hotLoadingSettingDidChange
-{
-  BOOL hotLoadingEnabled = self.isHotLoadingAvailable && self.isHotLoadingEnabled;
-  if (RCTGetURLQueryParam(_bridge.bundleURL, @"hot").boolValue != hotLoadingEnabled) {
-    _bridge.bundleURL = RCTURLByReplacingQueryParam(_bridge.bundleURL, @"hot",
-                                                    hotLoadingEnabled ? @"true" : nil);
-    [_bridge reload];
-  }
 }
 
 RCT_EXPORT_METHOD(toggleElementInspector)
@@ -314,14 +387,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
 - (void)toggleJSCSamplingProfiler
 {
-  JSContext *context = _bridge.jsContext;
-  JSGlobalContextRef globalContext = context.JSGlobalContextRef;
+  JSGlobalContextRef globalContext = _bridge.jsContextRef;
   // JSPokeSamplingProfiler() toggles the profiling process
   JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
 
   if (JSC_JSValueGetType(globalContext, jsResult) != kJSTypeNull) {
+    JSContext *context = [JSC_JSContext(globalContext) contextWithJSGlobalContextRef:globalContext];
     NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
-    JSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[JSCSamplingProfiler class]];
+    RCTJSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[RCTJSCSamplingProfiler class]];
     [profilerModule operationCompletedWithResults:results];
   }
 }
@@ -339,16 +412,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setIsJSCProfilingEnabled:(BOOL)isJSCProfilingEnabled
-{
-  [self _updateSettingWithValue:@(isJSCProfilingEnabled) forKey:kRCTDevSettingIsJSCProfilingEnabled];
-}
-
-- (BOOL)isJSCProfilingEnabled
-{
-  return [[self settingForKey:kRCTDevSettingIsJSCProfilingEnabled] boolValue];
 }
 
 - (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
@@ -380,7 +443,18 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-#pragma mark - internal
+#if RCT_DEV
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
+{
+#if ENABLE_PACKAGER_CONNECTION
+  [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
+#endif
+}
+
+#endif
+
+#pragma mark - Internal
 
 /**
  *  Query the data source for all possible settings and make sure we're doing the right
@@ -388,7 +462,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
  */
 - (void)_synchronizeAllSettings
 {
-  [self _hotLoadingSettingDidChange];
   [self _liveReloadSettingDidChange];
   [self _remoteDebugSettingDidChange];
   [self _profilingSettingDidChange];
@@ -457,64 +530,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 #pragma clang diagnostic pop
     }
   });
-}
-
-#pragma mark - RCTWebSocketObserver
-
-- (NSURL *)packagerURL
-{
-#if !__has_include("RCTWebSocketObserver.h")
-  return nil;
-#else
-  NSString *host = [_bridge.bundleURL host];
-  NSString *scheme = [_bridge.bundleURL scheme];
-  if (!host) {
-    host = @"localhost";
-    scheme = @"http";
-  }
-
-  NSNumber *port = [_bridge.bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
-  }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
-#endif
-}
-
-// TODO: Move non-UI logic into separate RCTDevSettings module
-- (void)connectPackager
-{
-  RCTAssertMainQueue();
-
-  NSURL *url = [self packagerURL];
-  if (!url) {
-    return;
-  }
-
-#if __has_include("RCTPackagerClient.h")
-  // The jsPackagerClient is a static map that holds different packager clients per the packagerURL
-  // In case many instances of DevMenu are created, the latest instance that use the same URL as
-  // previous instances will override given packager client's method handlers
-  static NSMutableDictionary<NSString *, RCTPackagerClient *> *jsPackagerClients = nil;
-  if (jsPackagerClients == nil) {
-    jsPackagerClients = [NSMutableDictionary new];
-  }
-
-  NSString *key = [url absoluteString];
-  RCTPackagerClient *packagerClient = jsPackagerClients[key];
-  if (!packagerClient) {
-    packagerClient = [[RCTPackagerClient alloc] initWithURL:url];
-    jsPackagerClients[key] = packagerClient;
-  } else {
-    [packagerClient stop];
-  }
-
-  [packagerClient addHandler:[[RCTReloadPackagerMethod alloc] initWithBridge:_bridge]
-                   forMethod:@"reload"];
-  [packagerClient addHandler:[[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:_bridge]
-                   forMethod:@"pokeSamplingProfiler"];
-  [packagerClient start];
-#endif
 }
 
 @end

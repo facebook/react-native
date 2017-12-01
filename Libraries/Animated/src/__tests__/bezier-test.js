@@ -2,15 +2,15 @@
  * BezierEasing - use bezier curve for transition easing function
  * https://github.com/gre/bezier-easing
  *
- * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
+ * @copyright 2014-2015 Gaetan Renaudeau. MIT License.
  * @noflow
+ * @emails oncall+react_native
  */
 
 /* eslint-disable */
 
 'use strict';
 
-jest.unmock('bezier');
 var bezier = require('bezier');
 
 var identity = function (x) { return x; };

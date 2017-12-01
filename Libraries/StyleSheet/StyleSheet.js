@@ -11,29 +11,41 @@
  */
 'use strict';
 
-var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('PixelRatio');
+const ReactNativePropRegistry = require('ReactNativePropRegistry');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const StyleSheetValidation = require('StyleSheetValidation');
 
-var flatten = require('flattenStyle');
+const flatten = require('flattenStyle');
 
-export type Styles = {[key: string]: Object};
-export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
+import type {
+  StyleSheetStyle as _StyleSheetStyle,
+  Styles as _Styles,
+  StyleSheet as _StyleSheet,
+  StyleValue as _StyleValue,
+  StyleObj,
+} from 'StyleSheetTypes';
 
-var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+export type StyleProp = StyleObj;
+export type Styles = _Styles;
+export type StyleSheet<S> = _StyleSheet<S>;
+export type StyleValue = _StyleValue;
+export type StyleSheetStyle = _StyleSheetStyle;
+
+let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
 const absoluteFillObject = {
-  position: 'absolute',
+  position: ('absolute': 'absolute'),
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: typeof absoluteFillObject =
+  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -41,7 +53,7 @@ const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // Th
  * Create a new StyleSheet:
  *
  * ```
- * var styles = StyleSheet.create({
+ * const styles = StyleSheet.create({
  *   container: {
  *     borderRadius: 4,
  *     borderWidth: 0.5,
@@ -135,7 +147,7 @@ module.exports = {
    *
    * Example:
    * ```
-   * var styles = StyleSheet.create({
+   * const styles = StyleSheet.create({
    *   listItem: {
    *     flex: 1,
    *     fontSize: 16,
@@ -195,10 +207,10 @@ module.exports = {
    * Creates a StyleSheet style reference from the given object.
    */
   create<S: Styles>(obj: S): StyleSheet<S> {
-    const result: StyleSheet<S> = {};
-    for (var key in obj) {
+    const result = {};
+    for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
-      result[key] = ReactNativePropRegistry.register(obj[key]);
+      result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);
     }
     return result;
   },

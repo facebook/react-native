@@ -5,11 +5,13 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+react_native
  */
 'use strict';
 
 jest
-  .disableAutomock()
+  .clearAllMocks()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
@@ -55,11 +57,6 @@ describe('Native Animated', () => {
     nativeAnimatedModule.startListeningToAnimatedNodeValue = jest.fn();
     nativeAnimatedModule.stopAnimation = jest.fn();
     nativeAnimatedModule.stopListeningToAnimatedNodeValue = jest.fn();
-
-    // jest environment doesn't have cancelAnimationFrame :(
-    if (!global.cancelAnimationFrame) {
-      global.cancelAnimationFrame = jest.fn();
-    }
   });
 
   describe('Animated Value', () => {
@@ -600,12 +597,38 @@ describe('Native Animated', () => {
         jasmine.any(Number),
         {
           type: 'spring',
-          friction: 16,
+          stiffness: 679.08,
+          damping: 16,
+          mass: 1,
           initialVelocity: 0,
           overshootClamping: false,
           restDisplacementThreshold: 0.001,
           restSpeedThreshold: 0.001,
-          tension: 679.08,
+          toValue: 10,
+          iterations: 1,
+        },
+        jasmine.any(Function)
+      );
+
+      Animated.spring(anim, {
+        toValue: 10,
+        stiffness: 1000,
+        damping: 500,
+        mass: 3,
+        useNativeDriver: true
+      }).start();
+      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+        jasmine.any(Number),
+        jasmine.any(Number),
+        {
+          type: 'spring',
+          stiffness: 1000,
+          damping: 500,
+          mass: 3,
+          initialVelocity: 0,
+          overshootClamping: false,
+          restDisplacementThreshold: 0.001,
+          restSpeedThreshold: 0.001,
           toValue: 10,
           iterations: 1,
         },
@@ -618,12 +641,13 @@ describe('Native Animated', () => {
         jasmine.any(Number),
         {
           type: 'spring',
-          friction: 23.05223140901191,
+          damping: 23.05223140901191,
           initialVelocity: 0,
           overshootClamping: false,
           restDisplacementThreshold: 0.001,
           restSpeedThreshold: 0.001,
-          tension: 299.61882352941177,
+          stiffness: 299.61882352941177,
+          mass: 1,
           toValue: 10,
           iterations: 1,
         },

@@ -12,14 +12,13 @@
 'use strict';
 
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
+var ViewPropTypes = require('ViewPropTypes');
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
-
-var ReactPropTypes = React.PropTypes;
 
 var VIEWPAGER_REF = 'viewPager';
 
@@ -38,7 +37,7 @@ export type ViewPagerScrollState = $Enum<{
  *
  * It is important all children are `<View>`s and not composite components.
  * You can set style properties like `padding` or `backgroundColor` for each
- * child.
+ * child. It is also important that each child have a `key` prop.
  *
  * Example:
  *
@@ -48,10 +47,10 @@ export type ViewPagerScrollState = $Enum<{
  *     <ViewPagerAndroid
  *       style={styles.viewPager}
  *       initialPage={0}>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="1">
  *         <Text>First page</Text>
  *       </View>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="2">
  *         <Text>Second page</Text>
  *       </View>
  *     </ViewPagerAndroid>
@@ -62,6 +61,9 @@ export type ViewPagerScrollState = $Enum<{
  *
  * var styles = {
  *   ...
+ *   viewPager: {
+ *     flex: 1
+ *   },
  *   pageStyle: {
  *     alignItems: 'center',
  *     padding: 20,
@@ -69,24 +71,23 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
      * update the page, and `onPageSelected` to monitor page changes
      */
-    initialPage: ReactPropTypes.number,
+    initialPage: PropTypes.number,
 
     /**
      * Executed when transitioning between pages (ether because of animation for
@@ -97,7 +98,7 @@ class ViewPagerAndroid extends React.Component {
      *    Value x means that (1 - x) fraction of the page at "position" index is
      *    visible, and x fraction of the next page is visible.
      */
-    onPageScroll: ReactPropTypes.func,
+    onPageScroll: PropTypes.func,
 
     /**
      * Function called when the page scrolling state has changed.
@@ -107,7 +108,7 @@ class ViewPagerAndroid extends React.Component {
      * - settling, meaning that there was an interaction with the page scroller, and the
      *   page scroller is now finishing it's closing or opening animation
      */
-    onPageScrollStateChanged: ReactPropTypes.func,
+    onPageScrollStateChanged: PropTypes.func,
 
     /**
      * This callback will be called once ViewPager finish navigating to selected page
@@ -115,20 +116,20 @@ class ViewPagerAndroid extends React.Component {
      * callback will have following fields:
      *  - position - index of page that has been selected
      */
-    onPageSelected: ReactPropTypes.func,
+    onPageSelected: PropTypes.func,
 
     /**
      * Blank space to show between pages. This is only visible while scrolling, pages are still
      * edge-to-edge.
      */
-    pageMargin: ReactPropTypes.number,
+    pageMargin: PropTypes.number,
 
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
      *   - 'on-drag', the keyboard is dismissed when a drag begins.
      */
-    keyboardDismissMode: ReactPropTypes.oneOf([
+    keyboardDismissMode: PropTypes.oneOf([
       'none', // default
       'on-drag',
     ]),
@@ -137,7 +138,13 @@ class ViewPagerAndroid extends React.Component {
     * When false, the content does not scroll.
     * The default value is true.
     */
-    scrollEnabled: ReactPropTypes.bool,
+    scrollEnabled: PropTypes.bool,
+
+    /**
+     * Whether enable showing peekFraction or not. If this is true, the preview of
+     * last and next page will show in current screen. Defaults to false.
+     */
+     peekEnabled: PropTypes.bool,
   };
 
   componentDidMount() {

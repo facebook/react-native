@@ -15,14 +15,28 @@
 #define FB_REFERENCE_IMAGE_DIR ""
 #endif
 
+#define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                          \
+{                                                                                                 \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                      \
+  NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
+  while ((CONDITION)) {                                                                           \
+    [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) {                                                    \
+      XCTFail(@"Runloop timed out before condition was met");                                     \
+      break;                                                                                      \
+    }                                                                                             \
+  }                                                                                               \
+}
+
 /**
  * Use the RCTInitRunnerForApp macro for typical usage. See FBSnapshotTestCase.h for more information
  * on how to configure the snapshotting system.
  */
-#define RCTInitRunnerForApp(app__, moduleProvider__) \
+#define RCTInitRunnerForApp(app__, moduleProvider__, scriptURL__) \
 [[RCTTestRunner alloc] initWithApp:(app__) \
                 referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
-                    moduleProvider:(moduleProvider__)]
+                    moduleProvider:(moduleProvider__) \
+                    scriptURL: scriptURL__]
 
 @protocol RCTBridgeModule;
 @class RCTBridge;
@@ -36,6 +50,10 @@
  * otherwise, the UI will be compared to the existing snapshot.
  */
 @property (nonatomic, assign) BOOL recordMode;
+
+@property (nonatomic, assign, readwrite) BOOL useBundler;
+
+@property (nonatomic, assign, readwrite) BOOL useJSDebugger;
 
 @property (nonatomic, copy) NSString *testSuffix;
 
@@ -51,7 +69,8 @@
  */
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleListProvider)block NS_DESIGNATED_INITIALIZER;
+             moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

@@ -1,0 +1,59 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+#pragma once
+
+#include <cxxreact/JSExecutor.h>
+#include <fb/fbjni.h>
+#include <jni.h>
+#include <jni/GlobalReference.h>
+#include "OnLoad.h"
+
+namespace facebook {
+namespace react {
+
+/**
+ * This executor factory can only create a single executor instance because it moves
+ * executorInstance global reference to the executor instance it creates.
+ */
+class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
+public:
+  ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance) :
+    m_executor(std::move(executorInstance)) {}
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<MessageQueueThread> queue) override;
+
+private:
+  jni::global_ref<jobject> m_executor;
+};
+
+class ProxyExecutor : public JSExecutor {
+public:
+  ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
+                std::shared_ptr<ExecutorDelegate> delegate);
+  virtual ~ProxyExecutor() override;
+  virtual void loadApplicationScript(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) override;
+  virtual void setBundleRegistry(
+    std::unique_ptr<RAMBundleRegistry> bundle) override;
+  virtual void registerBundle(
+    uint32_t bundleId, const std::string& bundlePath) override;
+  virtual void callFunction(
+    const std::string& moduleId,
+    const std::string& methodId,
+    const folly::dynamic& arguments) override;
+  virtual void invokeCallback(
+    const double callbackId,
+    const folly::dynamic& arguments) override;
+  virtual void setGlobalVariable(
+    std::string propName,
+    std::unique_ptr<const JSBigString> jsonValue) override;
+  virtual std::string getDescription() override;
+
+private:
+  jni::global_ref<jobject> m_executor;
+  std::shared_ptr<ExecutorDelegate> m_delegate;
+};
+
+} }

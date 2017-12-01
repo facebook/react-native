@@ -12,9 +12,11 @@
 
 #import <objc/runtime.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#if RCT_ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
+#endif
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -26,6 +28,10 @@ NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillS
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
+NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -245,13 +251,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (void)whitelistedModulesDidChange
-{
-  [self.batchedBridge whitelistedModulesDidChange];
-}
-
 - (void)reload
 {
+  #if RCT_ENABLE_INSPECTOR
+  // Disable debugger to resume the JsVM & avoid thread locks while reloading
+  [RCTInspectorDevServerHelper disableDebugger];
+  #endif
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
+
   /**
    * Any thread
    */
@@ -284,10 +292,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     } else {
       implClass = batchedBridgeClass;
     }
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
   } else if (cxxBridgeClass != nil) {
     implClass = cxxBridgeClass;
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
@@ -319,6 +327,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  if ([self.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
+    _embeddedBundleURL = [self.delegate embeddedBundleURLForBridge:self];
+    _embeddedBundleURL = [RCTConvert NSURL:_embeddedBundleURL.absoluteString];
+  }
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
@@ -353,6 +366,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
+{
+  [self.batchedBridge registerAdditionalModuleClasses:modules];
+}
+
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
   NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
@@ -379,13 +397,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
-@end
-
-@implementation RCTBridge (JavaScriptCore)
-
-- (JSContext *)jsContext
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  return [self.batchedBridge jsContext];
+  [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
 - (JSGlobalContextRef)jsContextRef

@@ -10,40 +10,7 @@
  */
 'use strict';
 
-import type Bundle from '../../packager/src/Bundler/Bundle';
-import type {Unbundle} from '../../packager/src/Bundler/Bundle';
-import type ModuleTransport from '../../packager/src/lib/ModuleTransport';
-import type {MixedSourceMap} from '../../packager/src/lib/SourceMap';
-
-export type {Bundle, ModuleTransport, MixedSourceMap as SourceMap, Unbundle};
-
-export type ModuleGroups = {|
-  groups: Map<number, Set<number>>,
-  modulesById: Map<number, ModuleTransport>,
-  modulesInGroups: Set<number>,
-|};
-
-export type ModuleTransportLike = {
-  code: string,
-  id: number,
-  map?: $PropertyType<ModuleTransport, 'map'>,
-  +name?: string,
-};
-
-export type OutputOptions = {
-  bundleOutput: string,
-  bundleEncoding?: 'utf8' | 'utf16le' | 'ascii',
-  dev?: boolean,
-  platform: string,
-  sourcemapOutput?: string,
-  sourcemapSourcesRoot?: string,
-  sourcemapUseAbsolutePath?: boolean,
-};
-
-export type RequestOptions = {|
-  entryFile: string,
-  sourceMapUrl?: string,
-  dev?: boolean,
-  minify: boolean,
-  platform: string,
-|};
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+export type {OutputOptions, RequestOptions} from 'metro/src/shared/types.flow';

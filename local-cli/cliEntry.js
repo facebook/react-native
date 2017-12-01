@@ -13,8 +13,14 @@
 const config = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 const childProcess = require('child_process');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const commander = require('commander');
 const commands = require('./commands');
 const init = require('./init/init');
@@ -22,7 +28,7 @@ const path = require('path');
 const pkg = require('../package.json');
 
 import type {CommandT} from './commands';
-import type {ConfigT} from './core';
+import type {RNConfig} from './core';
 
 commander.version(pkg.version);
 
@@ -91,7 +97,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: CommandT, cfg: ConfigT) => {
+const addCommand = (command: CommandT, cfg: RNConfig) => {
   const options = command.options || [];
 
   const cmd = commander

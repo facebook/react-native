@@ -9,21 +9,21 @@
 'use strict';
 
 var React = require('React');
+var PropTypes = require('prop-types');
 var Site = require('Site');
 
-var support = React.createClass({
-  childContextTypes: {
-    permalink: React.PropTypes.string
-  },
+class support extends React.Component {
+  getChildContext() {
+    return { permalink: 'support.html' };
+  }
 
-  getChildContext: function() {
-    return {permalink: 'support.html'};
-  },
-  render: function() {
+  render() {
     return (
-      <Site section="support" title="Help">
+      <Site section="support" title="Community">
 
-        <section className="content wrap documentationContent helpSection nosidebar">
+        <section
+          className="content wrap documentationContent helpSection nosidebar"
+        >
           <div className="helpSection inner-content">
             <h1>Need help?</h1>
             <p>
@@ -40,46 +40,32 @@ var support = React.createClass({
 
                 <ul>
                   <li className="help-list-entry">
-                    <a href="/react-native/docs/getting-started.html">Getting Started</a>
+                    <a
+                      href="/react-native/docs/getting-started.html"
+                    >
+                      Getting Started
+                    </a>
                   </li>
                   <li className="help-list-entry">
-                    <a href="/react-native/docs/tutorial.html">The Basics Tutorial</a>
+                    <a
+                      href="/react-native/docs/tutorial.html"
+                    >
+                      The Basics Tutorial
+                    </a>
                   </li>
                   <li className="help-list-entry">
-                    <a href="/react-native/docs/integration-with-existing-apps.html">Integration With Existing Apps</a>
-                  </li>
-                </ul>
-                <h2>Explore samples</h2>
-                <p>
-                  Take apart these fully built applications, and get some inspiration for your own.
-                </p>
-
-                <ul>
-                  <li className="help-list-entry">
-                    <a href="http://makeitopen.com/">Building the F8 2016 App</a>
+                    <a
+                      href="/react-native/docs/components-and-apis.html"
+                    >
+                      Components and APIs
+                    </a>
                   </li>
                   <li className="help-list-entry">
-                    <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer">UIExplorer</a>
-                  </li>
-                  <li className="help-list-entry">
-                    <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>
-                  </li>
-                </ul>
-
-                <h2>Stay up to date</h2>
-                <p>
-                  Find out what's happening in the world of React Native.
-                </p>
-
-                <ul>
-                  <li className="help-list-entry">
-                    <a href="https://twitter.com/reactnative">React Native on Twitter</a>
-                  </li>
-                  <li className="help-list-entry">
-                    <a href="/react-native/blog/">News and Updates</a>
-                  </li>
-                  <li className="help-list-entry">
-                    <a href="https://github.com/facebook/react-native/releases">Latest Releases</a>
+                    <a
+                      href="/react-native/docs/integration-with-existing-apps.html"
+                    >
+                      Integrating with Existing Apps
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -90,64 +76,98 @@ var support = React.createClass({
                   Connect with other React Native developers. Show off your project, or ask how other people solved similar problems.
                 </p>
 
-                <ul className="help-list">
+                <ul>
                   <li className="help-list-entry">
-                    <h3>Frequently Asked Questions</h3>
-                    <p>
-                      Many React Native users are active on Stack Overflow. Browse <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a>, or ask your own technical question.
-                    </p>
+                    <a
+                      href="http://stackoverflow.com/questions/tagged/react-native?sort=frequent"
+                    >
+                      Stack Overflow
+                    </a>
                   </li>
                   <li className="help-list-entry">
-                    <h3>React Native Community</h3>
-                    <p>
-                      If you have an open-ended question or you just want to get a general sense of what React Native folks talk about, check out the <a href="https://www.facebook.com/groups/react.native.community">React Native Community</a> Facebook group. It has thousands of developers and almost all posts get a response.
-                    </p>
+                    <a
+                      href="https://www.facebook.com/groups/react.native.community"
+                    >
+                      React Native Community
+                    </a>
                   </li>
                   <li className="help-list-entry">
-                    <h3>Reactiflux Chat</h3>
-                    <p>
-                      If you need an answer right away, check out the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native</a> channel. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
-                    </p>
+                    <a
+                      href="https://discord.gg/0ZcbPKXt5bZjGY5n"
+                    >
+                      Reactiflux Chat
+                    </a>
                   </li>
                 </ul>
               </div>
 
               <div className="help-col">
-                <h2>Contribute</h2>
+                <h2>Stay up to date</h2>
                 <p>
-                  React Native is open source! Issues and pull requests are welcome.
+                  Find out what's happening in the world of React Native.
                 </p>
 
-                <ul className="help-list">
+                <ul>
                   <li className="help-list-entry">
-                    <h3>Get Involved</h3>
-                    <p>
-                      If you want to contribute, take a look at the list of <a href="https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Task%22">good first tasks</a> on GitHub.
-                    </p>
+                    <a
+                      href="https://twitter.com/reactnative"
+                    >
+                      React Native on Twitter
+                    </a>
                   </li>
-
                   <li className="help-list-entry">
-                    <h3>Feature Requests</h3>
-                    <p>
-                      If you have a feature request, <a href="https://react-native.canny.io/feature-requests">add it to the list</a> or upvote a similar one. The voting system helps surface which issues are most important to the community.
-                    </p>
+                    <a href="/react-native/blog/">
+                      The React Native Blog
+                    </a>
                   </li>
-
                   <li className="help-list-entry">
-                    <h3>Report a Bug</h3>
-                    <p>
-                      If you have discovered a bug in React Native, consider submitting a <a href="https://github.com/facebook/react-native/">pull request</a> with a fix. If you don't think you can fix it yourself, you can <a href="https://github.com/facebook/react-native/issues">open an issue</a> on GitHub.
-                    </p>
+                    <a
+                      href="https://github.com/facebook/react-native/releases"
+                    >
+                      Release notes
+                    </a>
                   </li>
                 </ul>
               </div>
             </div>
+            <p>
+              React Native is
+              {' '}
+              <a
+                href="https://github.com/facebook/react-native"
+              >
+                open source
+              </a>
+              ! If you want to contribute, read the <a href="/react-native/docs/contributing.html">Contributor's Guide</a>, then take a look at the
+              {' '}
+              <a
+                href="https://github.com/facebook/react-native/wiki/Roadmap"
+              >
+                Roadmap
+              </a>
+              {' '}
+              to learn more about what people are working on, or check out the list of
+              {' '}
+              <a
+                href="https://react-native.canny.io/feature-requests"
+              >
+                most popular features
+              </a>
+              {' '}
+              requested by the community.
+              {' '}
+            </p>
+
           </div>
         </section>
 
       </Site>
     );
   }
-});
+}
+
+support.childContextTypes = {
+  permalink: PropTypes.string,
+};
 
 module.exports = support;

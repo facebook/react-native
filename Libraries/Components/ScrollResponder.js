@@ -13,19 +13,25 @@
 
 var Dimensions = require('Dimensions');
 var FrameRateLogger = require('FrameRateLogger');
-var Platform = require('Platform');
 var Keyboard = require('Keyboard');
 var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
-var warning = require('fbjs/lib/warning');
-
-var { getInstanceFromNode } = require('ReactNativeComponentTree');
-var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
+var nullthrows = require('fbjs/lib/nullthrows');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var performanceNow = require('fbjs/lib/performanceNow');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+var warning = require('fbjs/lib/warning');
+
+var { ScrollViewManager } = require('NativeModules');
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -255,6 +261,16 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Invoke this from an `onTouchCancel` event.
+   *
+   * @param {SyntheticEvent} e Event.
+   */
+  scrollResponderHandleTouchCancel: function(e: Event) {
+    this.state.isTouching = false;
+    this.props.onTouchCancel && this.props.onTouchCancel(e);
+  },
+
+  /**
    * Invoke this from an `onResponderRelease` event.
    */
   scrollResponderHandleResponderRelease: function(e: Event) {
@@ -412,7 +428,7 @@ var ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
     UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
+      nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
@@ -463,6 +479,17 @@ var ScrollResponderMixin = {
       console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
     ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+  },
+
+  /**
+   * Displays the scroll indicators momentarily.
+   */
+  scrollResponderFlashScrollIndicators: function() {
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      []
+    );
   },
 
   /**
@@ -531,7 +558,7 @@ var ScrollResponderMixin = {
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',
       `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
-      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? 'always' : 'never'}"' instead`
     );
 
     this.keyboardWillOpenTo = null;

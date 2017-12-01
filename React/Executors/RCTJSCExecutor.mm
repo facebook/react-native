@@ -19,7 +19,6 @@
 
 #import <cxxreact/JSBundleType.h>
 #import <jschelpers/JavaScriptCore.h>
-#import <React/JSCSamplingProfiler.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDefines.h>
@@ -31,16 +30,12 @@
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
-#import "RCTJSCProfiler.h"
-
 #if (RCT_PROFILE || RCT_DEV) && __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
 #endif
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
-RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
-RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
@@ -167,34 +162,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 RCT_EXPORT_MODULE()
 
-#if RCT_DEV
-static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
-{
-#if __has_include("RCTDevMenu.h")
-  __weak RCTBridge *weakBridge = bridge;
-  __weak RCTDevSettings *devSettings = bridge.devSettings;
-  if (RCTJSCProfilerIsSupported()) {
-    [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isJSCProfilingEnabled ? @"Stop Profiling" : @"Start Profiling";
-    } handler:^{
-      BOOL shouldStart = !devSettings.isJSCProfilingEnabled;
-      devSettings.isJSCProfilingEnabled = shouldStart;
-      if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
-        if (shouldStart) {
-          RCTJSCProfilerStart(context);
-        } else {
-          NSString *outputFile = RCTJSCProfilerStop(context);
-          NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
-          RCTProfileSendResult(weakBridge, @"cpu-profile", profileData);
-        }
-      }
-    }]];
-  }
-#endif
-}
-
-#endif
-
 + (void)runRunLoopThread
 {
   @autoreleasepool {
@@ -320,7 +287,7 @@ static NSThread *newJavaScriptThread(void)
           @"StartSamplingProfilerOnInit": @(self->_bridge.devSettings.startSamplingProfilerOnLaunch)
         }, NULL).UTF8String);
       }
-      contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
+      contextRef = JSC_JSGlobalContextCreateInGroup((bool)self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
       // We release the global context reference here to balance retainCount after JSGlobalContextCreateInGroup.
       // The global context _is not_ going to be released since the JSContext keeps the strong reference to it.
@@ -330,12 +297,6 @@ static NSThread *newJavaScriptThread(void)
                                                           object:context];
 
       installBasicSynchronousHooksOnContext(context);
-    }
-
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    if (!threadDictionary[RCTFBJSContextClassKey] || !threadDictionary[RCTFBJSValueClassKey]) {
-      threadDictionary[RCTFBJSContextClassKey] = JSC_JSContext(contextRef);
-      threadDictionary[RCTFBJSValueClassKey] = JSC_JSValue(contextRef);
     }
 
     RCTFBQuickPerformanceLoggerConfigureHooks(context.JSGlobalContextRef);
@@ -429,8 +390,6 @@ static NSThread *newJavaScriptThread(void)
 #endif
 
 #if RCT_DEV
-    RCTInstallJSCProfiler(self->_bridge, context.JSGlobalContextRef);
-
     // Inject handler used by HMR
     context[@"nativeInjectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
       RCTJSCExecutor *strongSelf = weakSelf;
@@ -637,7 +596,11 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)contextName)
       }
     } else {
       if (!errorJSRef && JSC_JSValueGetType(ctx, batchedBridgeRef) == kJSTypeUndefined) {
-        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
+        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined. This can happen "
+                                    "if you try to execute JS and the bridge has not set up, for example if it encountered "
+                                    "an incomplete bundle or a fatal script execution error during startup. Verify that a "
+                                    "valid JS bundle is included with your app and that it loaded correctly, or try "
+                                    "reinstalling the app.");
       }
     }
 
@@ -1004,7 +967,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   if (_useCustomJSCLibrary) {
     JSC_configureJSCForIOS(true, "{}");
   }
-  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(_useCustomJSCLibrary, nullptr, nullptr);
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup((bool)_useCustomJSCLibrary, nullptr, nullptr);
   _context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);

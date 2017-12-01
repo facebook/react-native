@@ -20,7 +20,7 @@
 {
   NSNumber *_connectedViewTag;
   NSString *_connectedViewName;
-  RCTUIManager *_uiManager;
+  __weak RCTUIManager *_uiManager;
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
 }
 
@@ -44,6 +44,13 @@
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
+  _connectedViewTag = nil;
+  _connectedViewName = nil;
+  _uiManager = nil;
+}
+
+- (void)restoreDefaultValues
+{
   // Restore the default value for all props that were modified by this node.
   for (NSString *key in _propsDictionary.allKeys) {
     _propsDictionary[key] = [NSNull null];
@@ -54,10 +61,6 @@
                                          viewName:_connectedViewName
                                             props:_propsDictionary];
   }
-
-  _connectedViewTag = nil;
-  _connectedViewName = nil;
-  _uiManager = nil;
 }
 
 - (NSString *)propertyNameForParentTag:(NSNumber *)parentTag
@@ -82,18 +85,18 @@
   if (!_connectedViewTag) {
     return;
   }
-
-  [self.parentNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber *_Nonnull parentTag, RCTAnimatedNode *_Nonnull parentNode, BOOL *_Nonnull stop) {
-
+  
+  for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
+    RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
       [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-
+      
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
       CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
       self->_propsDictionary[property] = @(value);
     }
-  }];
+  }
 
   if (_propsDictionary.count) {
     [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag

@@ -61,7 +61,7 @@ queue = queue.then(function() {
 
     mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
     fs.writeFileSync(targetFile, feed.render('atom-1.0'));
-    console.log('Generated RSS feed')
+    console.log('Generated RSS feed');
     resolve();
   });
 });

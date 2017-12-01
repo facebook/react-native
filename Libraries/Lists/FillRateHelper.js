@@ -8,40 +8,44 @@
  *
  * @providesModule FillRateHelper
  * @flow
+ * @format
  */
+
+/* eslint-disable no-console */
 
 'use strict';
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const performanceNow = require('fbjs/lib/performanceNow');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
-export type FillRateExceededInfo = {
-  event: {
-    sample_type: string,
-    blankness: number,
-    blank_pixels_top: number,
-    blank_pixels_bottom: number,
-    scroll_offset: number,
-    visible_length: number,
-    scroll_speed: number,
-    first_frame: Object,
-    last_frame: Object,
-  },
-  aggregate: {
-    avg_blankness: number,
-    min_speed_when_blank: number,
-    avg_speed_when_blank: number,
-    avg_blankness_when_any_blank: number,
-    fraction_any_blank: number,
-    all_samples_timespan_sec: number,
-    fill_rate_sample_counts: {[key: string]: number},
-  },
-};
+export type FillRateInfo = Info;
+
+class Info {
+  any_blank_count = 0;
+  any_blank_ms = 0;
+  any_blank_speed_sum = 0;
+  mostly_blank_count = 0;
+  mostly_blank_ms = 0;
+  pixels_blank = 0;
+  pixels_sampled = 0;
+  pixels_scrolled = 0;
+  total_time_spent = 0;
+  sample_count = 0;
+}
 
 type FrameMetrics = {inLayout?: boolean, length: number, offset: number};
 
-let _listeners: Array<(FillRateExceededInfo) => void> = [];
-let _sampleRate = null;
+const DEBUG = false;
+
+let _listeners: Array<(Info) => void> = [];
+let _minSampleCount = 10;
+let _sampleRate = DEBUG ? 1 : null;
 
 /**
  * A helper class for detecting when the maximem fill rate of `VirtualizedList` is exceeded.
@@ -52,25 +56,22 @@ let _sampleRate = null;
  * `SceneTracker.getActiveScene` to determine the context of the events.
  */
 class FillRateHelper {
+  _anyBlankStartTime = (null: ?number);
+  _enabled = false;
   _getFrameMetrics: (index: number) => ?FrameMetrics;
-  _anyBlankCount = 0;
-  _anyBlankMinSpeed = Infinity;
-  _anyBlankSpeedSum = 0;
-  _sampleCounts = {};
-  _fractionBlankSum = 0;
-  _samplesStartTime = 0;
+  _info = new Info();
+  _mostlyBlankStartTime = (null: ?number);
+  _samplesStartTime = (null: ?number);
 
-  static addFillRateExceededListener(
-    callback: (FillRateExceededInfo) => void
-  ): {remove: () => void} {
+  static addListener(callback: FillRateInfo => void): {remove: () => void} {
     warning(
       _sampleRate !== null,
-      'Call `FillRateHelper.setSampleRate` before `addFillRateExceededListener`.'
+      'Call `FillRateHelper.setSampleRate` before `addListener`.',
     );
     _listeners.push(callback);
     return {
       remove: () => {
-        _listeners = _listeners.filter((listener) => callback !== listener);
+        _listeners = _listeners.filter(listener => callback !== listener);
       },
     };
   }
@@ -79,16 +80,66 @@ class FillRateHelper {
     _sampleRate = sampleRate;
   }
 
-  static enabled(): boolean {
-    return (_sampleRate || 0) > 0.0;
+  static setMinSampleCount(minSampleCount: number) {
+    _minSampleCount = minSampleCount;
   }
 
   constructor(getFrameMetrics: (index: number) => ?FrameMetrics) {
     this._getFrameMetrics = getFrameMetrics;
+    this._enabled = (_sampleRate || 0) > Math.random();
+    this._resetData();
   }
 
-  computeInfoSampled(
-    sampleType: string,
+  activate() {
+    if (this._enabled && this._samplesStartTime == null) {
+      DEBUG && console.debug('FillRateHelper: activate');
+      this._samplesStartTime = performanceNow();
+    }
+  }
+
+  deactivateAndFlush() {
+    if (!this._enabled) {
+      return;
+    }
+    const start = this._samplesStartTime; // const for flow
+    if (start == null) {
+      DEBUG &&
+        console.debug('FillRateHelper: bail on deactivate with no start time');
+      return;
+    }
+    if (this._info.sample_count < _minSampleCount) {
+      // Don't bother with under-sampled events.
+      this._resetData();
+      return;
+    }
+    const total_time_spent = performanceNow() - start;
+    const info: any = {
+      ...this._info,
+      total_time_spent,
+    };
+    if (DEBUG) {
+      const derived = {
+        avg_blankness: this._info.pixels_blank / this._info.pixels_sampled,
+        avg_speed: this._info.pixels_scrolled / (total_time_spent / 1000),
+        avg_speed_when_any_blank:
+          this._info.any_blank_speed_sum / this._info.any_blank_count,
+        any_blank_per_min:
+          this._info.any_blank_count / (total_time_spent / 1000 / 60),
+        any_blank_time_frac: this._info.any_blank_ms / total_time_spent,
+        mostly_blank_per_min:
+          this._info.mostly_blank_count / (total_time_spent / 1000 / 60),
+        mostly_blank_time_frac: this._info.mostly_blank_ms / total_time_spent,
+      };
+      for (const key in derived) {
+        derived[key] = Math.round(1000 * derived[key]) / 1000;
+      }
+      console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});
+    }
+    _listeners.forEach(listener => listener(info));
+    this._resetData();
+  }
+
+  computeBlankness(
     props: {
       data: Array<any>,
       getItemCount: (data: Array<any>) => number,
@@ -99,22 +150,39 @@ class FillRateHelper {
       last: number,
     },
     scrollMetrics: {
+      dOffset: number,
       offset: number,
       velocity: number,
       visibleLength: number,
     },
-  ): ?FillRateExceededInfo {
-    if (!FillRateHelper.enabled() || (_sampleRate || 0) <= Math.random()) {
-      return null;
+  ): number {
+    if (
+      !this._enabled ||
+      props.getItemCount(props.data) === 0 ||
+      this._samplesStartTime == null
+    ) {
+      return 0;
     }
-    const start = performanceNow();
-    if (props.getItemCount(props.data) === 0) {
-      return null;
+    const {dOffset, offset, velocity, visibleLength} = scrollMetrics;
+
+    // Denominator metrics that we track for all events - most of the time there is no blankness and
+    // we want to capture that.
+    this._info.sample_count++;
+    this._info.pixels_sampled += Math.round(visibleLength);
+    this._info.pixels_scrolled += Math.round(Math.abs(dOffset));
+    const scrollSpeed = Math.round(Math.abs(velocity) * 1000); // px / sec
+
+    // Whether blank now or not, record the elapsed time blank if we were blank last time.
+    const now = performanceNow();
+    if (this._anyBlankStartTime != null) {
+      this._info.any_blank_ms += now - this._anyBlankStartTime;
     }
-    if (!this._samplesStartTime) {
-      this._samplesStartTime = start;
+    this._anyBlankStartTime = null;
+    if (this._mostlyBlankStartTime != null) {
+      this._info.mostly_blank_ms += now - this._mostlyBlankStartTime;
     }
-    const {offset, velocity, visibleLength} = scrollMetrics;
+    this._mostlyBlankStartTime = null;
+
     let blankTop = 0;
     let first = state.first;
     let firstFrame = this._getFrameMetrics(first);
@@ -122,8 +190,13 @@ class FillRateHelper {
       firstFrame = this._getFrameMetrics(first);
       first++;
     }
-    if (firstFrame) {
-      blankTop = Math.min(visibleLength, Math.max(0, firstFrame.offset - offset));
+    // Only count blankTop if we aren't rendering the first item, otherwise we will count the header
+    // as blank.
+    if (firstFrame && first > 0) {
+      blankTop = Math.min(
+        visibleLength,
+        Math.max(0, firstFrame.offset - offset),
+      );
     }
     let blankBottom = 0;
     let last = state.last;
@@ -132,47 +205,41 @@ class FillRateHelper {
       lastFrame = this._getFrameMetrics(last);
       last--;
     }
-    if (lastFrame) {
+    // Only count blankBottom if we aren't rendering the last item, otherwise we will count the
+    // footer as blank.
+    if (lastFrame && last < props.getItemCount(props.data) - 1) {
       const bottomEdge = lastFrame.offset + lastFrame.length;
-      blankBottom = Math.min(visibleLength, Math.max(0, offset + visibleLength - bottomEdge));
+      blankBottom = Math.min(
+        visibleLength,
+        Math.max(0, offset + visibleLength - bottomEdge),
+      );
     }
-    this._sampleCounts.all = (this._sampleCounts.all || 0) + 1;
-    this._sampleCounts[sampleType] = (this._sampleCounts[sampleType] || 0) + 1;
-    const blankness = (blankTop + blankBottom) / visibleLength;
+    const pixels_blank = Math.round(blankTop + blankBottom);
+    const blankness = pixels_blank / visibleLength;
     if (blankness > 0) {
-      const scrollSpeed = Math.abs(velocity);
-      if (scrollSpeed && sampleType === 'onScroll') {
-        this._anyBlankMinSpeed = Math.min(this._anyBlankMinSpeed, scrollSpeed);
+      this._anyBlankStartTime = now;
+      this._info.any_blank_speed_sum += scrollSpeed;
+      this._info.any_blank_count++;
+      this._info.pixels_blank += pixels_blank;
+      if (blankness > 0.5) {
+        this._mostlyBlankStartTime = now;
+        this._info.mostly_blank_count++;
       }
-      this._anyBlankSpeedSum += scrollSpeed;
-      this._anyBlankCount++;
-      this._fractionBlankSum += blankness;
-      const event = {
-        sample_type: sampleType,
-        blankness: blankness,
-        blank_pixels_top: blankTop,
-        blank_pixels_bottom: blankBottom,
-        scroll_offset: offset,
-        visible_length: visibleLength,
-        scroll_speed: scrollSpeed,
-        first_frame: {...firstFrame},
-        last_frame: {...lastFrame},
-      };
-      const aggregate = {
-        avg_blankness: this._fractionBlankSum / this._sampleCounts.all,
-        min_speed_when_blank: this._anyBlankMinSpeed,
-        avg_speed_when_blank: this._anyBlankSpeedSum / this._anyBlankCount,
-        avg_blankness_when_any_blank: this._fractionBlankSum / this._anyBlankCount,
-        fraction_any_blank: this._anyBlankCount / this._sampleCounts.all,
-        all_samples_timespan_sec: (performanceNow() - this._samplesStartTime) / 1000.0,
-        fill_rate_sample_counts: {...this._sampleCounts},
-        compute_time: performanceNow() - start,
-      };
-      const info = {event, aggregate};
-      _listeners.forEach((listener) => listener(info));
-      return info;
+    } else if (scrollSpeed < 0.01 || Math.abs(dOffset) < 1) {
+      this.deactivateAndFlush();
     }
-    return null;
+    return blankness;
+  }
+
+  enabled(): boolean {
+    return this._enabled;
+  }
+
+  _resetData() {
+    this._anyBlankStartTime = null;
+    this._info = new Info();
+    this._mostlyBlankStartTime = null;
+    this._samplesStartTime = null;
   }
 }
 

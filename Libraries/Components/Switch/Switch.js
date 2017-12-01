@@ -15,12 +15,12 @@ var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
-
-var { PropTypes } = React;
 
 type DefaultProps = {
   value: boolean,
@@ -38,8 +38,8 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
-var Switch = React.createClass({
+var Switch = createReactClass({
+  displayName: 'Switch',
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -92,6 +92,9 @@ var Switch = React.createClass({
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
     //Change the props after the native props are set in case the props change removes the component
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
@@ -111,6 +114,9 @@ var Switch = React.createClass({
     return (
       <RCTSwitch
         {...props}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         ref={(ref) => { this._rctSwitch = ref; }}
         onChange={this._onChange}
       />
