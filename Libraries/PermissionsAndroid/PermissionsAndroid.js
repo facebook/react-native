@@ -38,8 +38,7 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  * permissions.
  *
  * On devices before SDK version 23, the permissions are automatically granted
- * if they appear in the manifest, so `check` and `request`
- * should always be true.
+ * if they appear in the manifest, so `check` should always be true.
  *
  * If a user has previously turned off a permission that you prompt for, the OS
  * will advise your app to show a rationale for needing the permission. The
