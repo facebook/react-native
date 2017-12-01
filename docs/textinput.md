@@ -174,7 +174,8 @@ or control this param programmatically with native code.
 
 - [`isFocused`](docs/textinput.html#isfocused)
 - [`clear`](docs/textinput.html#clear)
-
+- [`focus`](docs/textinput.html#focus)
+- [`blur`](docus/textinput.html#blur)
 
 
 
@@ -981,6 +982,31 @@ clear()
 ```
 
 Removes all text from the `TextInput`.
+
+
+
+---
+
+### `focus()`
+
+```javascript
+focus()
+```
+
+Focuses the `TextInput`.
+
+
+
+---
+
+### `blur()`
+
+```javascript
+blur()
+```
+
+Removes focus from the `TextInput`.
+
 
 
 
