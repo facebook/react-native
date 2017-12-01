@@ -874,7 +874,7 @@ public class UIViewOperationQueue {
       }
 
       // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-      // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+      // destroyed. In this case it's no longer important to align to frames, but it is important to make
       // sure any late-arriving UI commands are executed.
       if (!mIsDispatchUIFrameCallbackEnqueued) {
         UiThreadUtil.runOnUiThread(
