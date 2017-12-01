@@ -12,6 +12,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -232,6 +233,27 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     }
     reject(kErrorUnableToLoad, nil, error);
   }];
+}
+
+RCT_EXPORT_METHOD(deletePhotos:(NSArray<NSString *>*)assets
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSArray<NSURL *> *assets_ = [RCTConvert NSURLArray:assets];
+  [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+      PHFetchResult<PHAsset *> *fetched =
+        [PHAsset fetchAssetsWithALAssetURLs:assets_ options:nil];
+      [PHAssetChangeRequest deleteAssets:fetched];
+    }
+  completionHandler:^(BOOL success, NSError *error) {
+      if (success == YES) {
+     	    resolve(@(success));
+      }
+      else {
+	        reject(@"Couldn't delete", @"Couldn't delete assets", error);
+      }
+    }
+    ];
 }
 
 static void checkPhotoLibraryConfig()

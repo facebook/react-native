@@ -111,12 +111,6 @@ static NSURL *serverRootWithHost(NSString *host)
   return nil;
 }
 
-- (NSURL *)packagerServerURL
-{
-  NSString *const host = [self packagerServerHost];
-  return host ? serverRootWithHost(host) : nil;
-}
-
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
   NSString *packagerServerHost = [self packagerServerHost];

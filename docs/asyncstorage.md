@@ -7,6 +7,7 @@ permalink: docs/asyncstorage.html
 next: backandroid
 previous: appstate
 ---
+
 `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app.  It should be used instead of LocalStorage.
 
 It is recommended that you use an abstraction on top of `AsyncStorage` instead of `AsyncStorage` directly for anything more than light usage since it operates globally.
@@ -39,120 +40,7 @@ try {
 }
 ```
 
-### Methods
-
-- [`getItem`](docs/asyncstorage.html#getitem)
-- [`setItem`](docs/asyncstorage.html#setitem)
-- [`removeItem`](docs/asyncstorage.html#removeitem)
-- [`mergeItem`](docs/asyncstorage.html#mergeitem)
-- [`clear`](docs/asyncstorage.html#clear)
-- [`getAllKeys`](docs/asyncstorage.html#getallkeys)
-
-The following batched functions are useful for executing a lot of operations at once, allowing for native optimizations and provide the convenience of a single callback after all operations are complete.
-
-These functions return arrays of errors, potentially one for every key. For key-specific errors, the Error object will have a key property to indicate which key caused the error.
-
-- [`flushGetRequests`](docs/asyncstorage.html#flushgetrequests)
-- [`multiGet`](docs/asyncstorage.html#multiget)
-- [`multiSet`](docs/asyncstorage.html#multiset)
-- [`multiRemove`](docs/asyncstorage.html#multiremove)
-- [`multiMerge`](docs/asyncstorage.html#multimerge)
-
-
-
-
----
-
-# Reference
-
-## Methods
-
-### `getItem()`
-
-```javascript
-static getItem(key: string, [callback]: ?(error: ?Error, result: ?string) => void)
-```
-
-Fetches an item for a `key` and invokes a callback upon completion.
-Returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| key | string | Yes | Key of the item to fetch. |
-| callback | ?(error: ?Error, result: ?string) => void | No | Function that will be called with a result if found or   any error. |
-
-
-
-
----
-
-### `setItem()`
-
-```javascript
-static setItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
-```
-
-Sets the value for a `key` and invokes a callback upon completion. 
-
-Returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| key | string | Yes | Key of the item to set. |
-| value | string | Yes | Value to set for the `key`. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
-
-
-
-
----
-
-### `removeItem()`
-
-```javascript
-static removeItem(key: string, [callback]: ?(error: ?Error) => void)
-```
-
-Removes an item for a `key` and invokes a callback upon completion.
-Returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| key | string | Yes | Key of the item to remove. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
-
-
-
-
----
-
-### `mergeItem()`
-
-```javascript
-static mergeItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
-```
-
-Merges an existing `key` value with an input value, assuming both values are stringified JSON. Returns a `Promise` object.
-
-> Note: 
-> This is not supported by all native implementations.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| key | string | Yes | Key of the item to modify. |
-| value | string | Yes | New value to merge for the `key`. |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
-
-
-Example:
+Merging data:
 
 ```javascript
 let UID123_object = {
@@ -179,181 +67,8 @@ AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
 //    {'shoe_size':10,'hair':'brown','eyes':'blue'}}
 ```
 
----
 
-### `clear()`
-
-```javascript
-static clear([callback]: ?(error: ?Error) => void)
-```
-
-Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably don't want to call this; use `removeItem` or `multiRemove` to clear only your app's keys. Returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| callback | ?(error: ?Error) => void | No | Function that will be called with any error. |
-
-
-
-
----
-
-### `getAllKeys()`
-
-```javascript
-static getAllKeys([callback]: ?(error: ?Error, keys: ?Array<string>) => void)
-```
-
-Gets *all* keys known to your app; for all callers, libraries, etc.
-Returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| callback | ?(error: ?Error, keys: ?Array<string>) => void | No | Function that will be called the keys found and any error. |
-
-
-
-
----
-
-### `flushGetRequests()`
-
-```javascript
-static flushGetRequests(): [object Object]
-```
-
-Flushes any pending requests using a single batch call to get the data.
-
----
-
-### `multiGet()`
-
-```javascript
-static multiGet(keys: Array<string>, [callback]: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void)
-```
-
-This allows you to batch the fetching of items given an array of `key` inputs. Your callback will be invoked with an array of corresponding key-value pairs found:
-
-```
-multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
-```
-
-The method returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| keys | Array<string> | Yes | Array of key for the items to get. |
-| callback | ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void | No | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
-
-
-Example:
-
-```javascript
-AsyncStorage.getAllKeys((err, keys) => {
-  AsyncStorage.multiGet(keys, (err, stores) => {
-   stores.map((result, i, store) => {
-     // get at each store's key/value so you can work with it
-     let key = store[i][0];
-     let value = store[i][1];
-    });
-  });
-});
-```
-
-
-
----
-
-### `multiSet()`
-
-```javascript
-static multiSet(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
-```
-
-Use this as a batch operation for storing multiple key-value pairs. When
-the operation completes you'll get a single callback with any errors:
-
-```
-multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
-```
-
-The method returns a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to set. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
-
-
-
-
----
-
-### `multiRemove()`
-
-```javascript
-static multiRemove(keys: Array<string>, [callback]: ?(errors: ?Array<Error>) => void)
-```
-
-Call this to batch the deletion of all keys in the `keys` array. Returns
-a `Promise` object.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| keys | Array<string> | Yes | Array of key for the items to delete. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called an array of any key-specific   errors found. |
-
-
-
-
-Example:
-
-```javascript
-
-let keys = ['k1', 'k2'];
-AsyncStorage.multiRemove(keys, (err) => {
-  // keys k1 & k2 removed, if they existed
-  // do most stuff after removal (if you want)
-});
-```
-
-
-
----
-
-### `multiMerge()`
-
-```javascript
-static multiMerge(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
-```
-
-Batch operation to merge in existing and new values for a given set of
-keys. This assumes that the values are stringified JSON. Returns a
-`Promise` object.
-
-**NOTE**: This is not supported by all native implementations.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-| - | - | - | - |
-| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to merge. |
-| callback | ?(errors: ?Array<Error>) => void | No | Function that will be called with an array of any   key-specific errors found. |
-
-
-
-
-Example:
+Multi merge example:
 
 ```javascript
 
@@ -403,5 +118,287 @@ AsyncStorage.multiSet(multi_set_pairs, (err) => {
 // => UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}
 ```
 
+Fetching multiple items:
+
+```javascript
+AsyncStorage.getAllKeys((err, keys) => {
+  AsyncStorage.multiGet(keys, (err, stores) => {
+   stores.map((result, i, store) => {
+     // get at each store's key/value so you can work with it
+     let key = store[i][0];
+     let value = store[i][1];
+    });
+  });
+});
+```
+
+Removing multiple items:
+
+```javascript
+
+let keys = ['k1', 'k2'];
+AsyncStorage.multiRemove(keys, (err) => {
+  // keys k1 & k2 removed, if they existed
+  // do most stuff after removal (if you want)
+});
+```
+
+
+
+### Methods
+
+- [`getItem`](docs/asyncstorage.html#getitem)
+- [`setItem`](docs/asyncstorage.html#setitem)
+- [`removeItem`](docs/asyncstorage.html#removeitem)
+- [`mergeItem`](docs/asyncstorage.html#mergeitem)
+- [`clear`](docs/asyncstorage.html#clear)
+- [`getAllKeys`](docs/asyncstorage.html#getallkeys)
+
+The following batched functions are useful for executing a lot of operations at once, allowing for native optimizations and provide the convenience of a single callback after all operations are complete.
+
+These functions return arrays of errors, potentially one for every key. For key-specific errors, the Error object will have a key property to indicate which key caused the error.
+
+- [`flushGetRequests`](docs/asyncstorage.html#flushgetrequests)
+- [`multiGet`](docs/asyncstorage.html#multiget)
+- [`multiSet`](docs/asyncstorage.html#multiset)
+- [`multiRemove`](docs/asyncstorage.html#multiremove)
+- [`multiMerge`](docs/asyncstorage.html#multimerge)
+
+
+
+
+---
+
+# Reference
+
+## Methods
+
+### `getItem()`
+
+```javascript
+AsyncStorage.getItem(key, [callback])
+```
+
+Fetches an item for a `key` and invokes a callback upon completion.
+Returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| key | string | Yes | Key of the item to fetch. |
+| callback | (error, result) => void | No | Function that will be called with a result if found or any error. |
+
+
+
+
+---
+
+### `setItem()`
+
+```javascript
+AsyncStorage.setItem(key, value, [callback])
+```
+
+Sets the value for a `key` and invokes a callback upon completion. 
+
+Returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| key | string | Yes | Key of the item to set. |
+| value | string | Yes | Value to set for the `key`. |
+| callback | (error) => void | No | Function that will be called with any error. |
+
+
+
+
+---
+
+### `removeItem()`
+
+```javascript
+AsyncStorage.removeItem(key, [callback])
+```
+
+Removes an item for a `key` and invokes a callback upon completion.
+Returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| key | string | Yes | Key of the item to remove. |
+| callback | (error) => void | No | Function that will be called with any error. |
+
+
+---
+
+### `mergeItem()`
+
+```javascript
+AsyncStorage.mergeItem(key, value, [callback])
+```
+
+Merges an existing `key` value with an input value, assuming both values are stringified JSON. Returns a `Promise` object.
+
+> Note:
+> This is not supported by all native implementations.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| key | string | Yes | Key of the item to modify. |
+| value | string | Yes | New value to merge for the `key`. |
+| callback | (error) => void | No | Function that will be called with any error. |
+
+
+---
+
+### `clear()`
+
+```javascript
+AsyncStorage.clear([callback])
+```
+
+Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably don't want to call this; use `removeItem` or `multiRemove` to clear only your app's keys. Returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| callback | (error) => void | No | Function that will be called with any error. |
+
+
+
+
+---
+
+### `getAllKeys()`
+
+```javascript
+AsyncStorage.getAllKeys([callback])
+```
+
+Gets *all* keys known to your app; for all callers, libraries, etc.
+Returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| callback | (error, keys) => void | No | Function that will be called with an array of keys found, and any error. |
+
+
+
+
+---
+
+### `flushGetRequests()`
+
+```javascript
+AsyncStorage.flushGetRequests()
+```
+
+Flushes any pending requests using a single batch call to get the data.
+
+---
+
+### `multiGet()`
+
+```javascript
+AsyncStorage.multiGet(keys, [callback])
+```
+
+This allows you to batch the fetching of items given an array of `key` inputs. Your callback will be invoked with an array of corresponding key-value pairs found:
+
+```
+multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
+```
+
+The method returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| keys | Array<string> | Yes | Array of key for the items to get. |
+| callback | (errors, result) => void | No | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
+
+
+
+
+
+---
+
+### `multiSet()`
+
+```javascript
+AsyncStorage.multiSet(keyValuePairs, [callback])
+```
+
+Use this as a batch operation for storing multiple key-value pairs. When
+the operation completes you'll get a single callback with any errors:
+
+```
+multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
+```
+
+The method returns a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to set. |
+| callback | (errors) => void | No | Function that will be called with an array of any key-specific errors found. |
+
+
+
+
+---
+
+### `multiRemove()`
+
+```javascript
+AsyncStorage.multiRemove(keys, [callback])
+```
+
+Call this to batch the deletion of all keys in the `keys` array. Returns
+a `Promise` object.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| keys | Array<string> | Yes | Array of key for the items to delete. |
+| callback | (errors) => void | No | Function that will be called an array of any key-specific errors found. |
+
+
+
+
+---
+
+### `multiMerge()`
+
+```javascript
+AsyncStorage.multiMerge(keyValuePairs, [callback])
+```
+
+Batch operation to merge in existing and new values for a given set of
+keys. This assumes that the values are stringified JSON. Returns a
+`Promise` object.
+
+**NOTE**: This is not supported by all native implementations.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+| - | - | - | - |
+| keyValuePairs | Array<Array<string>> | Yes | Array of key-value array for the items to merge. |
+| callback | (errors) => void | No | Function that will be called with an array of any key-specific errors found. |
 
 

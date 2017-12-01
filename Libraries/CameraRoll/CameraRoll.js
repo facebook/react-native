@@ -133,6 +133,10 @@ class CameraRoll {
     return this.saveToCameraRoll(tag, 'photo');
   }
 
+  static deletePhotos(photos: Array<string>) {
+    return RCTCameraRollManager.deletePhotos(photos);
+  }
+
   /**
    * Saves the photo or video to the camera roll / gallery.
    *
@@ -215,8 +219,8 @@ class CameraRoll {
    *              - `speed`: {number}
    * - `page_info` : {object} : An object with the following shape:
    *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {boolean}
-   *      - `end_cursor`: {boolean}
+   *      - `start_cursor`: {string}
+   *      - `end_cursor`: {string}
    *
    * Loading images:
    * ```

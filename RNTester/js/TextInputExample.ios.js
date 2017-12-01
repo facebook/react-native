@@ -284,7 +284,7 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 
   selectRandom() {
-    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort((a, b) => a - b);
     this.select(...positions);
   }
 

@@ -3,8 +3,8 @@
 
 #if RCT_DEV
 
-#include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JavaScriptCore.h>
+#include <jsinspector/InspectorInterfaces.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
