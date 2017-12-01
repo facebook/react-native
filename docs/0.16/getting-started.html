@@ -577,7 +577,6 @@ check out the <a href="/react-native/docs/0.16/integration-with-existing-apps.ht
     var container = document.getElementsByTagName('block')[0].parentNode;
     container.className = 'display-' + type + '-' + value + ' ' +
       container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-    event && event.preventDefault();
   }
   function convertBlocks() {
     // Convert <div>...<span><block /></span>...</div>
