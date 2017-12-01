@@ -121,6 +121,8 @@ const char *YGJustifyToString(const YGJustify value){
       return "space-between";
     case YGJustifySpaceAround:
       return "space-around";
+    case YGJustifySpaceEvenly:
+      return "space-evenly";
   }
   return "unknown";
 }

@@ -7,11 +7,11 @@ cxx_library(
     srcs = [
         "glog_init.cpp",
     ],
+    exported_headers = ["fb/glog_init.h"],
     compiler_flags = [
         "-fexceptions",
         "-fno-omit-frame-pointer",
     ],
-    exported_headers = ["fb/glog_init.h"],
     linker_flags = [
         "-llog",
     ],

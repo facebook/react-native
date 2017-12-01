@@ -17,7 +17,8 @@ public enum YogaJustify {
   CENTER(1),
   FLEX_END(2),
   SPACE_BETWEEN(3),
-  SPACE_AROUND(4);
+  SPACE_AROUND(4),
+  SPACE_EVENLY(5);
 
   private int mIntValue;
 
@@ -36,6 +37,8 @@ public enum YogaJustify {
       case 2: return FLEX_END;
       case 3: return SPACE_BETWEEN;
       case 4: return SPACE_AROUND;
+      case 5:
+        return SPACE_EVENLY;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const ReactPackager = require('metro-bundler');
+const Metro = require('metro');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -63,7 +63,7 @@ function dependencies(argv, config, args, packagerInstance) {
 
   return Promise.resolve((packagerInstance ?
     packagerInstance.getOrderedDependencyPaths(options) :
-    ReactPackager.getOrderedDependencyPaths(packageOpts, options)).then(
+    Metro.getOrderedDependencyPaths(packageOpts, options)).then(
     deps => {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.

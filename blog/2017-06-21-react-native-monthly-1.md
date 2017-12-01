@@ -44,7 +44,7 @@ As teams' plans might be of interest to a broader audience, we'll be sharing the
 
 - Looking into improving the release process by using [Detox](https://github.com/wix/detox) for E2E testing. Pull request should land soon.
 - Blob pull request they have been working on has been merged, subsequent pull requests coming up.
-- Increasing [Haul](https://github.com/callstack-io/haul) adoption across internal projects to see how it performs compared to [Metro Bundler](http://github.com/facebook/metro-bundler). Working on better multi-threaded performance with the Webpack team.
+- Increasing [Haul](https://github.com/callstack-io/haul) adoption across internal projects to see how it performs compared to [Metro](http://github.com/facebook/metro). Working on better multi-threaded performance with the Webpack team.
 - Internally, they have implemented a better infrastructure to manage open source projects. Plans to be getting more stuff out in upcoming weeks.
 - The React Native Europe conference is coming along, nothing interesting yet, but y'all invited!
 - Stepped back from [react-navigation](https://github.com/react-community/react-navigation) for a while to investigate alternatives (especially native navigations).
@@ -58,7 +58,7 @@ As teams' plans might be of interest to a broader audience, we'll be sharing the
 
 ### Facebook
 
-- React Native's packager is now [Metro Bundler](https://github.com/facebook/metro-bundler), in an independent repo. The Metro Bundler team in London is excited to address the needs of the community, improve modularity for additional use-cases beyond React Native, and increase responsiveness on issues and PRs.
+- React Native's packager is now [Metro](https://github.com/facebook/metro), in an independent repo. The Metro Bundler team in London is excited to address the needs of the community, improve modularity for additional use-cases beyond React Native, and increase responsiveness on issues and PRs.
 - In the coming months, the React Native team will work on refining the APIs of primitive components. Expect improvements in layout quirks, accessibility, and flow typing.
 - The React Native team also plans on improving core modularity this year, by refactoring to fully support 3rd party platforms such as Windows and macOS.
 
@@ -84,7 +84,7 @@ As teams' plans might be of interest to a broader audience, we'll be sharing the
 ### Wix
 
 - Working internally to adopt [Detox](https://github.com/wix/detox) to move significant parts of the Wix app to "zero manual QA". As a result, Detox is being used heavily in a production setting by dozens of developers and maturing rapidly.
-- Working to add support to the [Metro Bundler](https://github.com/facebook/metro-bundler) for overriding any file extension during the build. Instead of just "ios" and "android", it would support any custom extension like "e2e" or "detox". Plans to use this for E2E mocking. There's already a library out called [react-native-repackager](https://github.com/wix/react-native-repackager), now working on a PR.
+- Working to add support to the [Metro](https://github.com/facebook/metro) for overriding any file extension during the build. Instead of just "ios" and "android", it would support any custom extension like "e2e" or "detox". Plans to use this for E2E mocking. There's already a library out called [react-native-repackager](https://github.com/wix/react-native-repackager), now working on a PR.
 - Investigating automation of performance tests. This is a new repo called [DetoxInstruments](https://github.com/wix/DetoxInstruments). You can take a look, it's being developed open source.
 - Working with a contributor from KPN on Detox for Android and supporting real devices.
 - Thinking about "Detox as a platform" to allow building other tools that need to automate the simulator/device. An example is [Storybook](https://github.com/storybooks/react-native-storybook) for React Native or Ram's idea for integration testing.
