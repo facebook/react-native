@@ -51,6 +51,10 @@ module.exports = [
     command: '--assets-dest [string]',
     description: 'Directory name where to store assets referenced in the bundle',
   }, {
+    command: '--asset-exts [list]',
+    description: 'Specify any additional asset extentions to be used by the packager',
+    parse: (val) => val.split(','),
+  }, {
     command: '--verbose',
     description: 'Enables logging',
     default: false,

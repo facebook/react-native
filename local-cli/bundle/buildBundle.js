@@ -53,6 +53,7 @@ const defaultProvidesModuleNodeModules = defaults.providesModuleNodeModules;
 async function buildBundle(
   args: OutputOptions & {
     assetsDest: mixed,
+    assetExts: Array<string>,
     entryFile: string,
     maxWorkers: number,
     resetCache: boolean,
@@ -83,7 +84,7 @@ async function buildBundle(
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
-    const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const assetExts = ((config.getAssetExts && config.getAssetExts()) || []).concat(args.assetExts);
     const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
