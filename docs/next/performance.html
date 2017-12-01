@@ -31,7 +31,7 @@ necessary to generate that frame within the allotted 16.67ms, then you will
 <p>Now to confuse the matter a little bit, open up the developer menu in your app
 and toggle <code>Show Perf Monitor</code>. You will notice that there are two different
 frame rates.</p>
-<p><img src="/react-native/assets/PerfUtil.png" alt=""></p>
+<p><img src="/react-native/docs/assets/PerfUtil.png" alt=""></p>
 <h3><a class="anchor" aria-hidden="true" name="js-frame-rate-javascript-thread"></a><a href="#js-frame-rate-javascript-thread" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JS frame rate (JavaScript thread)</h3>
 <p>For most React Native applications, your business logic will run on the
 JavaScript thread. This is where your React application lives, API calls are
@@ -234,13 +234,13 @@ you can open in your browser.</p>
 <h4><a class="anchor" aria-hidden="true" name="2-reading-the-trace"></a><a href="#2-reading-the-trace" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Reading the trace</h4>
 <p>After opening the trace in your browser (preferably Chrome), you should see
 something like this:</p>
-<p><img src="/react-native/assets/SystraceExample.png" alt="Example"></p>
+<p><img src="/react-native/docs/assets/SystraceExample.png" alt="Example"></p>
 <blockquote>
 <p><strong>HINT</strong>: Use the WASD keys to strafe and zoom</p>
 </blockquote>
 <p>If your trace .html file isn't opening correctly, check your browser console for
 the following:</p>
-<p><img src="/react-native/assets/ObjectObserveError.png" alt="ObjectObserveError"></p>
+<p><img src="/react-native/docs/assets/ObjectObserveError.png" alt="ObjectObserveError"></p>
 <p>Since <code>Object.observe</code> was deprecated in recent browsers, you may have to open
 the file from the Google Chrome Tracing tool. You can do so by:</p>
 <ul>
@@ -252,7 +252,7 @@ the file from the Google Chrome Tracing tool. You can do so by:</p>
 <p><strong>Enable VSync highlighting</strong></p>
 <p>Check this checkbox at the top right of the screen to highlight the 16ms frame
 boundaries:</p>
-<p><img src="/react-native/assets/SystraceHighlightVSync.png" alt="Enable VSync Highlighting"></p>
+<p><img src="/react-native/docs/assets/SystraceHighlightVSync.png" alt="Enable VSync Highlighting"></p>
 <p>You should see zebra stripes as in the screenshot above. If you don't, try
 profiling on a different device: Samsung has been known to have issues
 displaying vsyncs while the Nexus series is generally pretty reliable.</p>
@@ -272,38 +272,38 @@ thread name on the right will be your package name (in my case
 book.adsmanager) or UI Thread. The events that you see on this thread should
 look something like this and have to do with <code>Choreographer</code>, <code>traversals</code>,
 and <code>DispatchUI</code>:</p>
-<p><img src="/react-native/assets/SystraceUIThreadExample.png" alt="UI Thread Example"></p></li>
+<p><img src="/react-native/docs/assets/SystraceUIThreadExample.png" alt="UI Thread Example"></p></li>
 <li><p><strong>JS Thread.</strong> This is where JavaScript is executed. The thread name will be
 either <code>mqt_js</code> or <code>&lt;...&gt;</code> depending on how cooperative the kernel on your
 device is being. To identify it if it doesn't have a name, look for things
 like <code>JSCall</code>, <code>Bridge.executeJSCall</code>, etc:</p>
-<p><img src="/react-native/assets/SystraceJSThreadExample.png" alt="JS Thread Example"></p></li>
+<p><img src="/react-native/docs/assets/SystraceJSThreadExample.png" alt="JS Thread Example"></p></li>
 <li><p><strong>Native Modules Thread.</strong> This is where native module calls (e.g. the
 <code>UIManager</code>) are executed. The thread name will be either <code>mqt_native_modules</code>
 or <code>&lt;...&gt;</code>. To identify it in the latter case, look for things like
 <code>NativeCall</code>, <code>callJavaModuleMethod</code>, and <code>onBatchComplete</code>:</p>
-<p><img src="/react-native/assets/SystraceNativeModulesThreadExample.png" alt="Native Modules Thread Example"></p></li>
+<p><img src="/react-native/docs/assets/SystraceNativeModulesThreadExample.png" alt="Native Modules Thread Example"></p></li>
 <li><p><strong>Bonus: Render Thread.</strong> If you're using Android L (5.0) and up, you will
 also have a render thread in your application. This thread generates the
 actual OpenGL commands used to draw your UI. The thread name will be either
 <code>RenderThread</code> or <code>&lt;...&gt;</code>. To identify it in the latter case, look for things
 like <code>DrawFrame</code> and <code>queueBuffer</code>:</p>
-<p><img src="/react-native/assets/SystraceRenderThreadExample.png" alt="Render Thread Example"></p></li>
+<p><img src="/react-native/docs/assets/SystraceRenderThreadExample.png" alt="Render Thread Example"></p></li>
 </ul>
 <h4><a class="anchor" aria-hidden="true" name="identifying-a-culprit"></a><a href="#identifying-a-culprit" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Identifying a culprit</h4>
 <p>A smooth animation should look something like the following:</p>
-<p><img src="/react-native/assets/SystraceWellBehaved.png" alt="Smooth Animation"></p>
+<p><img src="/react-native/docs/assets/SystraceWellBehaved.png" alt="Smooth Animation"></p>
 <p>Each change in color is a frame -- remember that in order to display a frame,
 all our UI work needs to be done by the end of that 16ms period. Notice that no
 thread is working close to the frame boundary. An application rendering like
 this is rendering at 60 FPS.</p>
 <p>If you noticed chop, however, you might see something like this:</p>
-<p><img src="/react-native/assets/SystraceBadJS.png" alt="Choppy Animation from JS"></p>
+<p><img src="/react-native/docs/assets/SystraceBadJS.png" alt="Choppy Animation from JS"></p>
 <p>Notice that the JS thread is executing basically all the time, and across frame
 boundaries! This app is not rendering at 60 FPS. In this case, <strong>the problem
 lies in JS</strong>.</p>
 <p>You might also see something like this:</p>
-<p><img src="/react-native/assets/SystraceBadUI.png" alt="Choppy Animation from UI"></p>
+<p><img src="/react-native/docs/assets/SystraceBadUI.png" alt="Choppy Animation from UI"></p>
 <p>In this case, the UI and render threads are the ones that have work crossing
 frame boundaries. The UI that we're trying to render on each frame is requiring
 too much work to be done. In this case, <strong>the problem lies in the native views
@@ -329,7 +329,7 @@ new content during a scroll).</li>
 <h5><a class="anchor" aria-hidden="true" name="too-much-gpu-work"></a><a href="#too-much-gpu-work" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Too much GPU work</h5>
 <p>In the first scenario, you'll see a trace that has the UI thread and/or Render
 Thread looking like this:</p>
-<p><img src="/react-native/assets/SystraceBadUI.png" alt="Overloaded GPU"></p>
+<p><img src="/react-native/docs/assets/SystraceBadUI.png" alt="Overloaded GPU"></p>
 <p>Notice the long amount of time spent in <code>DrawFrame</code> that crosses frame
 boundaries. This is time spent waiting for the GPU to drain its command buffer
 from the previous frame.</p>
@@ -347,7 +347,7 @@ doing, you can check out
 <a href="http://developer.android.com/tools/help/gltracer.html">Tracer for OpenGL ES</a>.</p>
 <h5><a class="anchor" aria-hidden="true" name="creating-new-views-on-the-ui-thread"></a><a href="#creating-new-views-on-the-ui-thread" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating new views on the UI thread</h5>
 <p>In the second scenario, you'll see something more like this:</p>
-<p><img src="/react-native/assets/SystraceBadCreateUI.png" alt="Creating Views"></p>
+<p><img src="/react-native/docs/assets/SystraceBadCreateUI.png" alt="Creating Views"></p>
 <p>Notice that first the JS thread thinks for a bit, then you see some work done on
 the native modules thread, followed by an expensive traversal on the UI thread.</p>
 <p>There isn't an easy way to mitigate this unless you're able to postpone creating

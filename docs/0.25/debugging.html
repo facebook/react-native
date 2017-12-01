@@ -8,7 +8,7 @@
 <p>React Native supports a few keyboard shortcuts in the iOS Simulator. They are described below. To enable them, open the Hardware menu, select Keyboard, and make sure that &quot;Connect Hardware Keyboard&quot; is checked.</p>
 <h2><a class="anchor" aria-hidden="true" name="accessing-the-in-app-developer-menu"></a><a href="#accessing-the-in-app-developer-menu" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Accessing the In-App Developer Menu</h2>
 <p>You can access the developer menu by shaking your device or by selecting &quot;Shake Gesture&quot; inside the Hardware menu in the iOS Simulator. You can also use the <code>⌘D</code> keyboard shortcut when your app is running in the iOS Simulator, or <code>⌘M</code> when running in an Android emulator. Alternatively for Android, you can run the command <code>adb shell input keyevent 82</code> to open the dev menu (82 being the Menu key code).</p>
-<p><img src="/react-native/assets/DeveloperMenu.png" alt=""></p>
+<p><img src="/react-native/docs/assets/DeveloperMenu.png" alt=""></p>
 <blockquote>
 <p>The Developer Menu is disabled in release (production) builds.</p>
 </blockquote>
@@ -56,23 +56,23 @@
 <p>Now run <code>react-devtools</code> from the terminal to launch the standalone DevTools app:</p>
 <pre><code class="hljs"><span class="hljs-attribute">react-devtools</span>
 </code></pre>
-<p><img src="/react-native/assets/ReactDevTools.png" alt="React DevTools"></p>
+<p><img src="/react-native/docs/assets/ReactDevTools.png" alt="React DevTools"></p>
 <p>It should connect to your simulator within a few seconds.</p>
 <blockquote>
 <p>Note: if you prefer to avoid global installations, you can add <code>react-devtools</code> as a project dependency. Add the <code>react-devtools</code> package to your project using <code>npm install --save-dev react-devtools</code>, then add <code>&quot;react-devtools&quot;: &quot;react-devtools&quot;</code> to the <code>scripts</code> section in your <code>package.json</code>, and then run <code>npm run react-devtools</code> from your project folder to open the DevTools.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" name="integration-with-react-native-inspector"></a><a href="#integration-with-react-native-inspector" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Integration with React Native Inspector</h3>
 <p>Open the in-app developer menu and choose &quot;Show Inspector&quot;. It will bring up an overlay that lets you tap on any UI element and see information about it:</p>
-<p><img src="/react-native/assets/Inspector.png" alt="React Native Inspector"></p>
+<p><img src="/react-native/docs/assets/Inspector.png" alt="React Native Inspector"></p>
 <p>However, when <code>react-devtools</code> is running, Inspector will enter a special collapsed mode, and instead use the DevTools as primary UI. In this mode, clicking on something in the simulator will bring up the relevant components in the DevTools:</p>
-<p><img src="/react-native/assets/ReactDevToolsInspector.png" alt="React DevTools Inspector Integration"></p>
+<p><img src="/react-native/docs/assets/ReactDevToolsInspector.png" alt="React DevTools Inspector Integration"></p>
 <p>You can choose &quot;Hide Inspector&quot; in the same menu to exit this mode.</p>
 <h3><a class="anchor" aria-hidden="true" name="inspecting-component-instances"></a><a href="#inspecting-component-instances" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Inspecting Component Instances</h3>
 <p>When debugging JavaScript in Chrome, you can inspect the props and state of the React components in the browser console.</p>
 <p>First, follow the instructions for debugging in Chrome to open the Chrome console.</p>
 <p>Make sure that the dropdown in the top left corner of the Chrome console says <code>debuggerWorker.js</code>. <strong>This step is essential.</strong></p>
 <p>Then select a React component in React DevTools. There is a search box at the top that helps you find one by name. As soon as you select it, it will be available as <code>$r</code> in the Chrome console, letting you inspect its props, state, and instance properties.</p>
-<p><img src="/react-native/assets/ReactDevToolsDollarR.png" alt="React DevTools Chrome Console Integration"></p>
+<p><img src="/react-native/docs/assets/ReactDevToolsDollarR.png" alt="React DevTools Chrome Console Integration"></p>
 <h2><a class="anchor" aria-hidden="true" name="performance-monitor"></a><a href="#performance-monitor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Performance Monitor</h2>
 <p>You can enable a performance overlay to help you debug performance problems by selecting &quot;Perf Monitor&quot; in the Developer Menu.</p>
 <hr style="margin-top:25px; margin-bottom:25px;"/>
