@@ -51,7 +51,7 @@ public class ReactTextViewManager
   }
 
   @Override
-  public Class<ReactTextShadowNode> getShadowNodeClass() {
+  public Class<? extends ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
   }
 
