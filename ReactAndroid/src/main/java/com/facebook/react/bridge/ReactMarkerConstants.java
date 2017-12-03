@@ -54,6 +54,7 @@ public enum ReactMarkerConstants {
   UNPACKING_JS_BUNDLE_LOADER_CHECK_START,
   UNPACKING_JS_BUNDLE_LOADER_CHECK_END,
   UNPACKING_JS_BUNDLE_LOADER_EXTRACTED,
+  UNPACKING_JS_BUNDLE_LOADER_BLOCKED,
   loadApplicationScript_startStringConvert,
   loadApplicationScript_endStringConvert,
   PRE_SETUP_REACT_CONTEXT_START,

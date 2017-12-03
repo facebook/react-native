@@ -59,6 +59,15 @@ RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii,
   };
 }
 
+static UIEdgeInsets RCTRoundInsetsToPixel(UIEdgeInsets edgeInsets) {
+    edgeInsets.top = RCTRoundPixelValue(edgeInsets.top);
+    edgeInsets.bottom = RCTRoundPixelValue(edgeInsets.bottom);
+    edgeInsets.left = RCTRoundPixelValue(edgeInsets.left);
+    edgeInsets.right = RCTRoundPixelValue(edgeInsets.right);
+
+    return edgeInsets;
+}
+
 static void RCTPathAddEllipticArc(CGMutablePathRef path,
                                   const CGAffineTransform *m,
                                   CGPoint origin,
@@ -194,6 +203,11 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
 {
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
+
+  // Incorrect render for borders that are not proportional to device pixel: borders get stretched and become
+  // significantly bigger than expected.
+  // Rdar: http://www.openradar.me/15959788
+  borderInsets = RCTRoundInsetsToPixel(borderInsets);
 
   const BOOL makeStretchable =
   (borderInsets.left + cornerInsets.topLeft.width +

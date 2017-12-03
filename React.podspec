@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
 
   s.subspec "Core" do |ss|
     ss.dependency             "yoga", "#{package["version"]}.React"
-    ss.source_files         = "React/**/*.{c,h,m,mm,S}"
+    ss.source_files         = "React/**/*.{c,h,m,mm,S,cpp}"
     ss.exclude_files        = "**/__tests__/*",
                               "IntegrationTests/*",
                               "React/DevSupport/*",
@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
                               "React/Cxx*/*",
                               "React/Base/RCTBatchedBridge.mm",
                               "React/Executors/*"
-    ss.ios.exclude_files    = "React/**/RCTTVView.*"
+    ss.ios.exclude_files    = "React/**/RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
                               "React/Views/RCTDatePicker*",
                               "React/Views/RCTPicker*",
@@ -90,18 +90,25 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTVView.{h, m}"
+    ss.source_files         = "React/**/RCTTV*.{h, m}"
   end
 
   s.subspec "jschelpers_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
-    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.h"
+    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
+    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
     ss.framework            = "JavaScriptCore"
   end
 
+  s.subspec "jsinspector_legacy" do |ss|
+    ss.source_files         = "ReactCommon/jsinspector/{InspectorInterfaces}.{cpp,h}"
+    ss.private_header_files = "ReactCommon/jsinspector/{InspectorInterfaces}.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+  end
+
   s.subspec "cxxreact_legacy" do |ss|
     ss.dependency             "React/jschelpers_legacy"
+    ss.dependency             "React/jsinspector_legacy"
     ss.source_files         = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}"
     ss.private_header_files = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
@@ -117,6 +124,12 @@ Pod::Spec.new do |s|
     ss.framework            = "JavaScriptCore"
   end
 
+  s.subspec "jsinspector" do |ss|
+    ss.source_files         = "ReactCommon/jsinspector/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/jsinspector/*.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+  end
+
   s.subspec "PrivateDatabase" do |ss|
     ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/privatedata/*.h"
@@ -125,6 +138,7 @@ Pod::Spec.new do |s|
 
   s.subspec "cxxreact" do |ss|
     ss.dependency             "React/jschelpers"
+    ss.dependency             "React/jsinspector"
     ss.dependency             "boost"
     ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags

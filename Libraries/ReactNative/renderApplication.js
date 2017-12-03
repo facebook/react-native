@@ -38,7 +38,7 @@ function renderApplication<Props: Object>(
 
   // If the root component is async, the user probably wants the initial render
   // to be async also. To do this, wrap AppContainer with an async marker.
-  // For more info see https://fburl.com/tjpe0gpx
+  // For more info see https://fb.me/is-component-async
   if (
     RootComponent.prototype != null &&
     RootComponent.prototype.unstable_isAsyncReactComponent === true

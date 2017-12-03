@@ -61,10 +61,8 @@ function getScriptURL(): ?string {
 }
 
 function getEmbeddedBundledURL(): ?string {
-  if (_embeddedBundleURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.embeddedBundleURL;
-    _embeddedBundleURL = _coerceLocalScriptURL(scriptURL);
-  }
+  const scriptURL = NativeModules.SourceCode.embeddedBundleURL;
+  _embeddedBundleURL = _coerceLocalScriptURL(scriptURL);
   return _embeddedBundleURL;
 }
 

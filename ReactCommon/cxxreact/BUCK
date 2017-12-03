@@ -143,6 +143,7 @@ rn_xplat_cxx_library(
         "xplat//fbsystrace:fbsystrace",
         "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
     ] + JSC_DEPS,
 )
