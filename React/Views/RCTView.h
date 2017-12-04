@@ -30,7 +30,7 @@
 /**
  * Accessibility properties
  */
-@property (nonatomic) NSArray <NSString *> *accessibilityActions;
+@property (nonatomic, copy) NSArray <NSString *> *accessibilityActions;
 
 /**
  * Used to control how touch events are processed.
