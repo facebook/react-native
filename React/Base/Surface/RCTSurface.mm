@@ -211,6 +211,7 @@
 
 - (void)_setStage:(RCTSurfaceStage)stage
 {
+  RCTSurfaceStage updatedStage;
   {
     std::lock_guard<std::mutex> lock(_mutex);
 
@@ -218,10 +219,11 @@
       return;
     }
 
-    _stage = (RCTSurfaceStage)(_stage | stage);
+    updatedStage = (RCTSurfaceStage)(_stage | stage);
+    _stage = updatedStage;
   }
 
-  [self _propagateStageChange:stage];
+  [self _propagateStageChange:updatedStage];
 }
 
 - (void)_propagateStageChange:(RCTSurfaceStage)stage
