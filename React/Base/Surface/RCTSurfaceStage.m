@@ -12,11 +12,11 @@
 BOOL RCTSurfaceStageIsRunning(RCTSurfaceStage stage) {
   return
     (stage & RCTSurfaceStageSurfaceDidInitialLayout) &&
-    !(stage & RCTSurfaceStageSurfaceDidInvalidate);
+    !(stage & RCTSurfaceStageSurfaceDidStop);
 }
 
 BOOL RCTSurfaceStageIsPreparing(RCTSurfaceStage stage) {
   return
     !(stage & RCTSurfaceStageSurfaceDidInitialLayout) &&
-    !(stage & RCTSurfaceStageSurfaceDidInvalidate);
+    !(stage & RCTSurfaceStageSurfaceDidStop);
 }

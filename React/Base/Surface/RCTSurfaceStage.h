@@ -22,7 +22,7 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   RCTSurfaceStageSurfaceDidInitialRendering = 1 << 4,  // UIManager created the first shadow views
   RCTSurfaceStageSurfaceDidInitialLayout = 1 << 5,     // UIManager completed the first layout pass
   RCTSurfaceStageSurfaceDidInitialMounting = 1 << 6,   // UIManager completed the first mounting pass
-  RCTSurfaceStageSurfaceDidInvalidate = 1 << 7,        // Surface received `invalidate` message
+  RCTSurfaceStageSurfaceDidStop = 1 << 7,              // Surface stopped
 };
 
 /**

@@ -85,7 +85,7 @@
       _stage = _stage | RCTSurfaceStageBridgeDidLoad;
     }
 
-    [self _registerRootViewTag];
+    [self _registerRootView];
     [self _run];
   }
 
@@ -94,6 +94,7 @@
 
 - (void)dealloc
 {
+  [self _stop];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -297,7 +298,18 @@
   [self _setStage:RCTSurfaceStageSurfaceDidRun];
 }
 
-- (void)_registerRootViewTag
+- (void)_stop
+{
+  RCTBridge *batchedBridge = self._batchedBridge;
+  [batchedBridge enqueueJSCall:@"AppRegistry"
+                        method:@"unmountApplicationComponentAtRootTag"
+                          args:@[self->_rootViewTag]
+                    completion:NULL];
+
+  [self _setStage:RCTSurfaceStageSurfaceDidStop];
+}
+
+- (void)_registerRootView
 {
   RCTBridge *batchedBridge;
   CGSize minimumSize;
