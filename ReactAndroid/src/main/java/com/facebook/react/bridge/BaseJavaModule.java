@@ -29,7 +29,7 @@ import java.util.Map;
  * 3/ {@link ReadableArray} mapped from JS Array
  * 4/ {@link ReadableMap} mapped from JS Object
  * 5/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
- * case when it express success & error callback pair as two last arguments respecively.
+ * case when it express success & error callback pair as two last arguments respectively.
  *
  * All methods exposed as native to JS with {@link ReactMethod} annotation must return
  * {@code void}.
