@@ -201,9 +201,7 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
 
     public void onCookiesModified() {
-      if (USES_LEGACY_STORE) {
-        mHandler.sendEmptyMessageDelayed(MSG_PERSIST_COOKIES, TIMEOUT);
-      }
+      mHandler.sendEmptyMessageDelayed(MSG_PERSIST_COOKIES, TIMEOUT);
     }
 
     public void persistCookies() {
