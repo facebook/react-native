@@ -21,7 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Tracks errors connecting to or received from the debug derver.
+ * Tracks errors connecting to or received from the debug server.
  * The debug server returns errors as json objects. This exception represents that error.
  */
 public class DebugServerException extends RuntimeException {
