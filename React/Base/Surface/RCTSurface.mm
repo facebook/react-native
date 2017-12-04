@@ -311,7 +311,7 @@
   }
 
   RCTUIManager *uiManager = batchedBridge.uiManager;
-  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+  RCTExecuteOnUIManagerQueue(^{
     [uiManager registerRootViewTag:self->_rootViewTag];
 
     RCTSurfaceRootShadowView *rootShadowView =
