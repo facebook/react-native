@@ -54,7 +54,7 @@ import org.json.JSONObject;
  *
  * One can use 'debug_http_host' shared preferences key to provide a host name for the debug server.
  * If the setting is empty we support and detect two basic configuration that works well for android
- * emulators connectiong to debug server running on emulator's host:
+ * emulators connection to debug server running on emulator's host:
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */

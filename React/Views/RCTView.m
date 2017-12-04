@@ -149,8 +149,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
-  if (super.accessibilityLabel) {
-    return super.accessibilityLabel;
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
   }
   return RCTRecursiveAccessibilityLabel(self);
 }

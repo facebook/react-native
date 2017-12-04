@@ -161,7 +161,9 @@ const Systrace = {
         }
         if (_canInstallReactHook) {
           if (_useFiber) {
-            global.performance = enabled ? userTimingPolyfill : undefined;
+            if (enabled && global.performance === undefined) {
+              global.performance = userTimingPolyfill;
+            }
           } else {
             const ReactDebugTool = require('ReactDebugTool');
             if (enabled) {

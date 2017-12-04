@@ -575,7 +575,7 @@ public class DevSupportManagerImpl implements
         PackageInfo thisPackage = mApplicationContext.getPackageManager()
             .getPackageInfo(packageName, 0);
         if (mJSBundleTempFile.lastModified() > thisPackage.lastUpdateTime) {
-          // Base APK has not been updated since we donwloaded JS, but if app is using exopackage
+          // Base APK has not been updated since we downloaded JS, but if app is using exopackage
           // it may only be a single dex that has been updated. We check for exopackage dir update
           // time in that case.
           File exopackageDir = new File(

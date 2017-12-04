@@ -1592,8 +1592,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
                          widthMeasureMode == YGMeasureModeAtMost)
                             ? measuredSize.width + paddingAndBorderAxisRow
                             : availableWidth - marginAxisRow,
-                        availableWidth,
-                        availableWidth);
+                        parentWidth,
+                        parentWidth);
     node->layout.measuredDimensions[YGDimensionHeight] =
         YGNodeBoundAxis(node,
                         YGFlexDirectionColumn,
@@ -1601,8 +1601,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
                          heightMeasureMode == YGMeasureModeAtMost)
                             ? measuredSize.height + paddingAndBorderAxisColumn
                             : availableHeight - marginAxisColumn,
-                        availableHeight,
-                        availableWidth);
+                        parentHeight,
+                        parentWidth);
   }
 }
 

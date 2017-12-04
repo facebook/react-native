@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTSurface;
 
-typedef UIView *(^RCTSurfaceActivityIndicatorViewFactory)();
-
 /**
  * UIView instance which represents the Surface
  */
@@ -22,7 +20,6 @@ typedef UIView *(^RCTSurfaceActivityIndicatorViewFactory)();
 
 - (instancetype)initWithSurface:(RCTSurface *)surface NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, copy, nullable) RCTSurfaceActivityIndicatorViewFactory activityIndicatorViewFactory;
 @property (nonatomic, weak, readonly, nullable) RCTSurface *surface;
 
 @end

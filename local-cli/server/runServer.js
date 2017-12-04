@@ -89,8 +89,6 @@ function runServer(
   var wsProxy = null;
   var ms = null;
 
-  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
-   * instance of a net.Socket (a local socket, not network). */
   const terminal = new Terminal(process.stdout);
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
