@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
@@ -153,9 +154,13 @@ class Button extends React.Component<{
       accessibilityTraits.push('disabled');
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      if (bordered) buttonStyles.push(styles.buttonBordered, styles.buttonBorderedDisabled);
+      if (bordered) {
+        buttonStyles.push(styles.buttonBordered, styles.buttonBorderedDisabled);
+      }
       if (isAndroid) {
-        if (transparent) buttonStyles.push(styles.buttonTransparentDisabledAndroid);
+        if (transparent) {
+          buttonStyles.push(styles.buttonTransparentDisabledAndroid);
+        }
       }
     } else {
       if (transparent && isAndroid) {
@@ -165,11 +170,18 @@ class Button extends React.Component<{
         buttonStyles.push(styles.buttonBordered);
       }
       if (color) {
-        if (bordered) buttonStyles.push({ borderColor: color });
-        if (isIOS || (isAndroid && (transparent || bordered))) textStyles.push({ color });
-        else if (!transparent) buttonStyles.push({ backgroundColor: color }); // isAndroid on this line
+        if (bordered) {
+          buttonStyles.push({ borderColor: color });
+        }
+        if (isIOS || (isAndroid && (transparent || bordered))) {
+          textStyles.push({ color });
+        } else if (!transparent) {
+          buttonStyles.push({ backgroundColor: color }); // isAndroid on this line
+        }
       } else {
-        if (isAndroid && (transparent || bordered)) textStyles.push(styles.textBorderedAndroid);
+        if (isAndroid && (transparent || bordered)) {
+          textStyles.push(styles.textBorderedAndroid);
+        }
       }
       if (noShadow && isAndroid && !bordered && !transparent) {
         buttonStyles.push(styles.buttonUnelevatedAndroid);
@@ -195,7 +207,7 @@ class Button extends React.Component<{
             </Animated.View>
           </TouchableWithoutFeedback>
         </View>
-      )
+      );
     } else {
       return (
         <Touchable accessibilityComponentType="button" accessibilityLabel={accessibilityLabel} accessibilityTraits={accessibilityTraits} disabled={disabled} hasTVPreferredFocus={hasTVPreferredFocus} onPress={onPress} testID={testID}>
@@ -203,7 +215,7 @@ class Button extends React.Component<{
             <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
           </View>
         </Touchable>
-      )
+      );
     }
   }
 
