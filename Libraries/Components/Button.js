@@ -19,6 +19,7 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const View = require('View');
 
 const invariant = require('fbjs/lib/invariant');
@@ -52,14 +53,20 @@ const invariant = require('fbjs/lib/invariant');
  */
 
 class Button extends React.Component<{
-  title: string,
-  onPress: () => any,
-  color?: ?string,
   accessibilityLabel?: ?string,
+  bold?: ?boolean,
+  bordered?: ?boolean,
+  color?: ?string,
   disabled?: ?boolean,
-  testID?: ?string,
   hasTVPreferredFocus?: ?boolean,
-}> {
+  noShadow?: ?boolean,
+  onPress: () => any,
+  testID?: ?string,
+  title: string,
+  transparent?: ?boolean,
+}, {
+    activeAnim: typeof Animated.Value
+  }> {
   static propTypes = {
     /**
      * Text to display inside the button
@@ -91,96 +98,217 @@ class Button extends React.Component<{
      * @platform ios
      */
     hasTVPreferredFocus: PropTypes.bool,
+    /**
+     * *(iOS only)* If true, title will be be bold (on Android the title is always bold regardless of this prop).
+     *
+     * @platform ios
+     */
+    bold: PropTypes.bool,
+    /**
+     * *(Android only)* If true color will affect the title, and background will be transparent. On iOS the background is always transparent regardless of this. If set transparent to true, you cannot set bordered to true.
+     *
+     * @platform android
+     */
+    transparent: PropTypes.bool,
+    /**
+     * *(Android only)* If true, no shadow is drawn.
+     *
+     * @platform android
+     */
+    noShadow: PropTypes.bool,
+    /**
+     * The border and title will be same as "color". On Android, the background is white, and on iOS the background remains transparent. iOS also has a different onPressIn and onPressOut animation where the text goes to white and the background goes to "color".
+     */
+    bordered: PropTypes.bool,
   };
+
+  state = {
+    activeAnim: new Animated.Value(0)
+  }
 
   render() {
     const {
       accessibilityLabel,
+      bold,
+      bordered,
       color,
-      onPress,
-      title,
-      hasTVPreferredFocus,
       disabled,
+      hasTVPreferredFocus,
+      noShadow,
+      onPress,
       testID,
+      title,
+      transparent
     } = this.props;
+    const { activeAnim } = this.state;
+
+    const isIOS = Platform.OS === 'ios';
+    const isAndroid = !isIOS;
+
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
-    if (color) {
-      if (Platform.OS === 'ios') {
-        textStyles.push({color: color});
-      } else {
-        buttonStyles.push({backgroundColor: color});
-      }
-    }
     const accessibilityTraits = ['button'];
+
     if (disabled) {
+      accessibilityTraits.push('disabled');
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityTraits.push('disabled');
+      if (bordered) buttonStyles.push(styles.buttonBordered, styles.buttonBorderedDisabled);
+      if (isAndroid) {
+        if (transparent) buttonStyles.push(styles.buttonTransparentDisabledAndroid);
+      }
+    } else {
+      if (transparent && isAndroid) {
+        buttonStyles.push(styles.buttonTransparentAndroid);
+      }
+      if (bordered && !(isAndroid && transparent)) {
+        buttonStyles.push(styles.buttonBordered);
+      }
+      if (color) {
+        if (bordered) buttonStyles.push({ borderColor: color });
+        if (isIOS || (isAndroid && (transparent || bordered))) textStyles.push({ color });
+        else if (!transparent) buttonStyles.push({ backgroundColor: color }); // isAndroid on this line
+      } else {
+        if (isAndroid && (transparent || bordered)) textStyles.push(styles.textBorderedAndroid);
+      }
+      if (noShadow && isAndroid && !bordered && !transparent) {
+        buttonStyles.push(styles.buttonUnelevatedAndroid);
+      }
+    }
+
+    if (bold && isIOS) {
+      textStyles.push(styles.textBold);
     }
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
-    const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
-    return (
-      <Touchable
-        accessibilityComponentType="button"
-        accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={accessibilityTraits}
-        hasTVPreferredFocus={hasTVPreferredFocus}
-        testID={testID}
-        disabled={disabled}
-        onPress={onPress}>
+    const formattedTitle = isAndroid ? title.toUpperCase() : title;
+    const Touchable = isAndroid ? TouchableNativeFeedback : TouchableOpacity;
+    if (isIOS && bordered) {
+      return (
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          <TouchableWithoutFeedback accessibilityComponentType="button" accessibilityLabel={accessibilityLabel} accessibilityTraits={accessibilityTraits} disabled={disabled} hasTVPreferredFocus={hasTVPreferredFocus} onPress={onPress} onPressIn={this.activateIOS} onPressOut={this.deactivateIOS} testID={testID}>
+            <Animated.View style={[{ opacity: activeAnim }, styles.buttonBorderedActiveIOS, color && { backgroundColor: color }]}>
+              <Text style={[styles.text, styles.textBorderedActiveIOS, bold && styles.textBold]}>{formattedTitle}</Text>
+            </Animated.View>
+          </TouchableWithoutFeedback>
         </View>
-      </Touchable>
-    );
+      )
+    } else {
+      return (
+        <Touchable accessibilityComponentType="button" accessibilityLabel={accessibilityLabel} accessibilityTraits={accessibilityTraits} disabled={disabled} hasTVPreferredFocus={hasTVPreferredFocus} onPress={onPress} testID={testID}>
+          <View style={buttonStyles}>
+            <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          </View>
+        </Touchable>
+      )
+    }
+  }
+
+  activateIOS = () => {
+    const { activeAnim } = this.state;
+    activeAnim.stopAnimation();
+    Animated.timing(activeAnim, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+  }
+  deactivateIOS = () => {
+    const { activeAnim } = this.state;
+    activeAnim.stopAnimation();
+    Animated.timing(activeAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start();
   }
 }
 
 const styles = StyleSheet.create({
   button: Platform.select({
-    ios: {},
+    ios: undefined,
     android: {
       elevation: 4,
-      // Material design blue from https://material.google.com/style/color.html#color-color-palette
-      backgroundColor: '#2196F3',
-      borderRadius: 2,
-    },
+      backgroundColor: '#2196F3', // Material design blue from https://material.google.com/style/color.html#color-color-palette
+      borderRadius: 2
+    }
   }),
-  text: Platform.select({
+  buttonTransparentAndroid: {
+    backgroundColor: 'transparent',
+    elevation: 0
+  },
+  buttonBordered: Platform.select({
     ios: {
-      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
-      color: '#007AFF',
-      textAlign: 'center',
-      padding: 8,
-      fontSize: 18,
+      borderWidth: 1,
+      borderColor: '#007AFF',
+      borderRadius: 6,
+      overflow: 'hidden' // otherwse backgroundColor onPress messes up borderRadius
     },
-    android: {
-      color: 'white',
-      textAlign: 'center',
-      padding: 8,
-      fontWeight: '500',
-    },
-  }),
-  buttonDisabled: Platform.select({
-    ios: {},
     android: {
       elevation: 0,
-      backgroundColor: '#dfdfdf',
+      borderColor: '#2196F3',
+      borderWidth: 1,
+      backgroundColor: '#FFFFFF'
     }
   }),
-  textDisabled: Platform.select({
+  buttonUnelevatedAndroid: {
+    elevation: 0
+  },
+  text: Platform.select({
     ios: {
-      color: '#cdcdcd',
+      color: '#007AFF', // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+      textAlign: 'center',
+      padding: 8,
+      paddingVertical: 12,
+      fontSize: 18
     },
     android: {
-      color: '#a1a1a1',
+      color: '#FFFFFF',
+      textAlign: 'center',
+      padding: 8,
+      fontWeight: '500'
     }
   }),
+  textBold: Platform.select({
+    ios: {
+      fontWeight: '500'
+    },
+    android: undefined
+  }),
+  textBorderedAndroid: {
+    color: '#2196F3'
+  },
+  buttonDisabled: Platform.select({
+    ios: undefined,
+    android: {
+      elevation: 0,
+      backgroundColor: '#DFDFDF'
+    }
+  }),
+  buttonBorderedDisabled: Platform.select({
+    ios: {
+      borderColor: '#CDCDCD'
+    },
+    android: {
+      borderColor: '#DFDFDF',
+      backgroundColor: '#FFFFFF'
+    }
+  }),
+  buttonTransparentDisabledAndroid: {
+    backgroundColor: 'transparent'
+  },
+  textDisabled: Platform.select({
+    ios: {
+      color: '#CDCDCD'
+    },
+    android: {
+      color: '#A1A1A1'
+    }
+  }),
+  textBorderedActiveIOS: {
+    color: '#FFFFFF'
+  },
+  buttonBorderedActiveIOS: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#007AFF'
+  }
 });
 
 module.exports = Button;
