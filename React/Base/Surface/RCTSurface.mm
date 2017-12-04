@@ -323,6 +323,7 @@
   }
 
   RCTUIManager *uiManager = batchedBridge.uiManager;
+
   RCTExecuteOnUIManagerQueue(^{
     [uiManager registerRootViewTag:self->_rootViewTag];
 
