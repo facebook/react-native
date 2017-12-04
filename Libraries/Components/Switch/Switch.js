@@ -70,7 +70,8 @@ var Switch = createReactClass({
      */
     onTintColor: ColorPropType,
     /**
-     * Color of the foreground switch grip.
+     * Color of the foreground switch grip. If this is set on iOS,
+     * the switch grip will lose its drop shadow.
      */
     thumbTintColor: ColorPropType,
   },
