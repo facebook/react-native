@@ -82,7 +82,7 @@
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
     if (!bridge.loading) {
-      _stage = (RCTSurfaceStage)(_stage | RCTSurfaceStageBridgeDidLoad);
+      _stage = _stage | RCTSurfaceStageBridgeDidLoad;
     }
 
     [self _registerRootViewTag];

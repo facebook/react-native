@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTDefines.h>
+
 /**
  * The stage of the Surface
  */
@@ -22,3 +24,13 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   RCTSurfaceStageSurfaceDidInitialMounting = 1 << 6,   // UIManager completed the first mounting pass
   RCTSurfaceStageSurfaceDidInvalidate = 1 << 7,        // Surface received `invalidate` message
 };
+
+/**
+ * Returns `YES` if the stage is suitable for displaying normal React Native app.
+ */
+RCT_EXTERN BOOL RCTSurfaceStageIsRunning(RCTSurfaceStage stage);
+
+/**
+ * Returns `YES` if the stage is suitable for displaying activity indicator.
+ */
+RCT_EXTERN BOOL RCTSurfaceStageIsPreparing(RCTSurfaceStage stage);
