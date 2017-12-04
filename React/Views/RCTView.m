@@ -157,25 +157,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  NSMutableArray *actions = [NSMutableArray array];
-  for (NSString * action in _accessibilityActions)
-  {
-    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action target:self selector:@selector(didActivateCustomAction:)]];
+  if (!_accessibilityActions.count) {
+    return nil;
   }
 
-  return actions.count > 0 ? [actions copy] : nil; // return nil if there are no actions
+  NSMutableArray *actions = [NSMutableArray array];
+  for (NSString *action in _accessibilityActions) {
+    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
+                                                                  target:self
+                                                                selector:@selector(didActivateAccessibilityCustomAction:)]];
+  }
+
+  return [actions copy];
 }
 
-- (BOOL)didActivateCustomAction:(UIAccessibilityCustomAction *)action
+- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  if (_onAccessibilityAction) {
-      _onAccessibilityAction(@{@"action": action.name,
-                               @"target": self.reactTag});
-    return YES;
-  } else {
+  if (!_onAccessibilityAction) {
     return NO;
   }
+
+  _onAccessibilityAction(@{
+    @"action": action.name,
+    @"target": self.reactTag
+  });
+
+  return YES;
 }
+
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
   _pointerEvents = pointerEvents;
