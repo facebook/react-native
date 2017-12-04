@@ -1087,7 +1087,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
     if (first > 0 || last < itemCount - 1) {
-      const distTop = offset - this._getFrameMetricsApprox(first).offset;
+      const distTop = offset - (this._getFrameMetricsApprox(first).offset - this._getFrameMetricsApprox(0).offset);
       const distBottom =
         this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
       const scrollingThreshold =
