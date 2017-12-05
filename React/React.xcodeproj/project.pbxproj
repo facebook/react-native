@@ -1003,6 +1003,8 @@
 		590D7BFE1EBD458B00D8A370 /* RCTShadowView+Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
 		590D7BFF1EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
 		590D7C001EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
+		59283CA01FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
+		59283CA11FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
 		594F0A321FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
 		594F0A331FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
 		594F0A341FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */; };
@@ -2150,6 +2152,7 @@
 		58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDatePickerManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTShadowView+Layout.h"; sourceTree = "<group>"; };
 		590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTShadowView+Layout.m"; sourceTree = "<group>"; };
+		59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSurfaceStage.m; sourceTree = "<group>"; };
 		594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSurfaceHostingView.h; sourceTree = "<group>"; };
 		594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSurfaceHostingView.mm; sourceTree = "<group>"; };
 		594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSurfaceSizeMeasureMode.h; sourceTree = "<group>"; };
@@ -2769,6 +2772,7 @@
 				599FAA301FB274970058CCF6 /* RCTSurfaceRootView.h */,
 				599FAA311FB274970058CCF6 /* RCTSurfaceRootView.mm */,
 				599FAA321FB274970058CCF6 /* RCTSurfaceStage.h */,
+				59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */,
 				599FAA341FB274970058CCF6 /* RCTSurfaceView.h */,
 				599FAA351FB274970058CCF6 /* RCTSurfaceView.mm */,
 				599FAA331FB274970058CCF6 /* RCTSurfaceView+Internal.h */,
@@ -4160,6 +4164,7 @@
 				2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */,
 				2D3B5EC51D9B094D00451313 /* RCTProfileTrampoline-i386.S in Sources */,
 				657734951EE8356100A0E9EA /* RCTInspectorPackagerConnection.m in Sources */,
+				59283CA11FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */,
 				2D3B5EC41D9B094B00451313 /* RCTProfileTrampoline-arm64.S in Sources */,
 				2D3B5EBB1D9B092300451313 /* RCTI18nManager.m in Sources */,
 				2D3B5EBE1D9B092D00451313 /* RCTUIManager.m in Sources */,
@@ -4351,6 +4356,7 @@
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
 				657734851EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */,
 				130E3D891E6A082100ACE484 /* RCTDevSettings.mm in Sources */,
+				59283CA01FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				3D7BFD171EA8E351008DFB7A /* RCTPackagerClient.m in Sources */,
