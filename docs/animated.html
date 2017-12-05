@@ -329,9 +329,9 @@ then calls <code>setValue</code> on the mapped outputs.  e.g.</p>
  ...
  onPanResponderMove: Animated.event([
    <span class="hljs-literal">null</span>,                <span class="hljs-comment">// raw event arg ignored</span>
-   {<span class="hljs-attr">dx</span>: <span class="hljs-keyword">this</span>._panX},    <span class="hljs-comment">// gestureState arg</span>
+   {<span class="hljs-attr">dx</span>: <span class="hljs-keyword">this</span>._panX}],   <span class="hljs-comment">// gestureState arg</span>
 {<span class="hljs-attr">listener</span>: <span class="hljs-function">(<span class="hljs-params">event, gestureState</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(event, gestureState)}, <span class="hljs-comment">// Optional async listener</span>
- ]),
+ ),
 </code></pre>
 <p>Config is an object that may have the following options:</p>
 <ul>
