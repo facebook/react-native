@@ -5,9 +5,6 @@
 ; Ignore templates for 'react-native init'
 .*/local-cli/templates/.*
 
-; Ignore the website subdir
-<PROJECT_ROOT>/website/.*
-
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/danger/dangerfile.js
 
