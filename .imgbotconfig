@@ -1,0 +1,5 @@
+{
+    "ignoredFiles": [
+    	"RNTester/RNTesterIntegrationTests/ReferenceImages/*"
+    ]
+}
