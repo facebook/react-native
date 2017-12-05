@@ -272,7 +272,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)abort:(NSString *)message
     withCause:(NSError *)cause
 {
-  RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  RCTLogTrace(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
 
   [self closeAllConnections];
   [self disposeWebSocket];
