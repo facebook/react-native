@@ -9,6 +9,46 @@ a controlled component, so you must hook in to the <code>onDateChange</code> cal
 and update the <code>date</code> prop in order for the component to update, otherwise
 the user's change will be reverted immediately to reflect <code>props.date</code> as the
 source of truth.</p>
+<h3><a class="anchor" aria-hidden="true" name="example"></a><a href="#example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+<span class="hljs-keyword">import</span> {
+  DatePickerIOS,
+  View,
+  StyleSheet,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(props) {
+    <span class="hljs-keyword">super</span>(props);
+    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">chosenDate</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>() };
+
+    <span class="hljs-keyword">this</span>.setDate = <span class="hljs-keyword">this</span>.setDate.bind(<span class="hljs-keyword">this</span>);
+  }
+
+  setDate(newDate) {
+    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">chosenDate</span>: newDate})
+  }
+
+  render() {
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">DatePickerIOS</span>
+          <span class="hljs-attr">date</span>=<span class="hljs-string">{this.state.chosenDate}</span>
+          <span class="hljs-attr">onDateChange</span>=<span class="hljs-string">{this.setDate}</span>
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    )
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center'
+  },
+})
+</span></code></pre>
+<p><img src="/react-native/docs/assets/DatePickerIOS/example.gif" alt=""></p>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
 <ul>
 <li><a href="/react-native/docs/next/view.html#props">View props...</a></li>
@@ -61,6 +101,8 @@ date and time.</p>
 <tr><td>Date</td><td>No</td></tr>
 </tbody>
 </table>
+<p>Example with <code>maximumDate</code> set to December 31, 2017:
+<img src="/react-native/docs/assets/DatePickerIOS/maximumDate.gif" alt=""></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="minimumdate"></a><a href="#minimumdate" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>minimumDate</code></h3>
 <p>Minimum date.</p>
@@ -73,6 +115,7 @@ date and time.</p>
 <tr><td>Date</td><td>No</td></tr>
 </tbody>
 </table>
+<p>See <a href="/react-native/docs/next/datepickerios.html#maximumdate"><code>maximumDate</code></a> for an example image.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="minuteinterval"></a><a href="#minuteinterval" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>minuteInterval</code></h3>
 <p>The interval at which minutes can be selected.</p>
@@ -84,6 +127,8 @@ date and time.</p>
 <tr><td>enum(1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30)</td><td>No</td></tr>
 </tbody>
 </table>
+<p>Example with <code>minuteInterval</code> set to <code>10</code>:
+<img src="/react-native/docs/assets/DatePickerIOS/minuteInterval.png" alt=""></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="mode"></a><a href="#mode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>mode</code></h3>
 <p>The date picker mode.</p>
@@ -95,6 +140,8 @@ date and time.</p>
 <tr><td>enum('date', 'time', 'datetime')</td><td>No</td></tr>
 </tbody>
 </table>
+<p>Example with <code>mode</code> set to <code>date</code>, <code>time</code>, and <code>datetime</code>:
+<img src="/react-native/docs/assets/DatePickerIOS/mode.png" alt=""></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="timezoneoffsetinminutes"></a><a href="#timezoneoffsetinminutes" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>timeZoneOffsetInMinutes</code></h3>
 <p>Timezone offset in minutes.</p>
