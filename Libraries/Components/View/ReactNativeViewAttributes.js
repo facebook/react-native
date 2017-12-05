@@ -18,6 +18,7 @@ var ReactNativeViewAttributes = {};
 ReactNativeViewAttributes.UIView = {
   pointerEvents: true,
   accessible: true,
+  accessibilityActions: true,
   accessibilityLabel: true,
   accessibilityComponentType: true,
   accessibilityLiveRegion: true,
@@ -28,6 +29,7 @@ ReactNativeViewAttributes.UIView = {
   renderToHardwareTextureAndroid: true,
   shouldRasterizeIOS: true,
   onLayout: true,
+  onAccessibilityAction: true,
   onAccessibilityTap: true,
   onMagicTap: true,
   collapsable: true,
