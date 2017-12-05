@@ -110,6 +110,9 @@ public class DevSupportManagerImpl implements
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
 
+  public static final String EMOJI_HUNDRED_POINTS_SYMBOL = " \uD83D\uDCAF";
+  public static final String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " \uD83D\uDE45";
+
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
@@ -395,16 +398,36 @@ public class DevSupportManagerImpl implements
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
     /* register standard options */
     options.put(
-        mApplicationContext.getString(R.string.catalyst_reloadjs), new DevOptionHandler() {
+        mApplicationContext.getString(R.string.catalyst_reloadjs),
+        new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             handleReloadJS();
           }
         });
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      // The concatenation is applied directly here because XML isn't emoji-friendly
+      String nuclideJsDebugMenuItemTitle =
+          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide)
+              + EMOJI_HUNDRED_POINTS_SYMBOL;
+      options.put(
+          nuclideJsDebugMenuItemTitle,
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+            }
+          });
+    }
+    String remoteJsDebugMenuItemTitle =
+        mDevSettings.isRemoteJSDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_debugjs_off)
+            : mApplicationContext.getString(R.string.catalyst_debugjs);
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
+    }
     options.put(
-        mDevSettings.isRemoteJSDebugEnabled() ?
-            mApplicationContext.getString(R.string.catalyst_debugjs_off) :
-            mApplicationContext.getString(R.string.catalyst_debugjs),
+        remoteJsDebugMenuItemTitle,
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
