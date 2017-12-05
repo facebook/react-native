@@ -1681,14 +1681,14 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(const YGNodeRef node,
   return false;
 }
 
-static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
+static void YGZeroOutLayoutRecursively(const YGNodeRef node) {
   memset(&(node->layout), 0, sizeof(YGLayout));
   node->hasNewLayout = true;
   YGCloneChildrenIfNeeded(node);
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
-    YGZeroOutLayoutRecursivly(child);
+    YGZeroOutLayoutRecursively(child);
   }
 }
 
@@ -1956,7 +1956,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
     if (child->style.display == YGDisplayNone) {
-      YGZeroOutLayoutRecursivly(child);
+      YGZeroOutLayoutRecursively(child);
       child->hasNewLayout = true;
       child->isDirty = false;
       continue;
