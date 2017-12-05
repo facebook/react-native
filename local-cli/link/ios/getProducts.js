@@ -4,7 +4,6 @@
  * project static library
  */
 module.exports = function getProducts(project) {
-  debugger;
   let nativeTargetSection = project.pbxNativeTargetSection();
   var results = [];
   for (var key in nativeTargetSection) {
@@ -13,15 +12,13 @@ module.exports = function getProducts(project) {
       let configurationList = project.pbxXCConfigurationList()[configurationListId];
       let buildConfigurationId = configurationList.buildConfigurations[0].value;
       let buildConfiguration = project.pbxXCBuildConfigurationSection()[buildConfigurationId];
-      if ( !buildConfiguration.buildSettings.SDKROOT || buildConfiguration.buildSettings.SDKROOT.indexOf('appletv') === -1) {
-        results.push(nativeTargetSection[key].productReference_comment);
-      }
+      results.push({
+        target: nativeTargetSection[key],
+        uuid: key,
+        name: nativeTargetSection[key].productReference_comment,
+        isTVOS: (buildConfiguration.buildSettings.SDKROOT && (buildConfiguration.buildSettings.SDKROOT.indexOf('appletv') !== -1)) || false
+      });
     }
   }
   return results;
-//  return project
-//    .pbxGroupByName('Products')
-//    .children
-//    .map(c => c.comment)
-//    .filter(c => c.indexOf('.a') > -1);
 };
