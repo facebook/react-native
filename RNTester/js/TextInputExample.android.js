@@ -642,6 +642,19 @@ exports.examples = [
     }
   },
   {
+    title: 'Letter spacing',
+    platform: 'android',
+    render: function() {
+      return (
+        <View>
+          <TextInput lineSpacing={1.2}
+           placeholder="Line spacing of 1.2"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Auto-expanding',
     render: function() {
       return (

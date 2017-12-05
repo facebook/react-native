@@ -348,6 +348,20 @@ public class ReactTextInputPropertyTest {
   }
 
   @Test
+  public void testLetterSpacing() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getLetterSpacing()).isEqualTo(0.0);
+
+    mManager.updateProperties(view, buildStyles("numberOfLines", 0.5));
+    assertThat(view.getLetterSpacing()).isEqualTo(0.5);
+
+    mManager.updateProperties(view, buildStyles("numberOfLines", 1.2));
+    assertThat(view.getLetterSpacing()).isEqualTo(1.2);
+  }
+
+  @Test
   public void testMaxLength() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
     InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };

@@ -128,6 +128,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, YogaMea
               getPadding(Spacing.TOP),
               getPadding(Spacing.END),
               getPadding(Spacing.BOTTOM),
+              getLetterSpacing(),
               UNSET);
       // TODO: the Float.NaN should be replaced with the real line height see D3592781
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

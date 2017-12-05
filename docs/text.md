@@ -493,7 +493,7 @@ default is `true`.
 
   - **`fontVariant`**: array of enum('small-caps', 'oldstyle-nums', 'lining-nums', 'tabular-nums', 'proportional-nums') (_iOS_)
 
-  - **`letterSpacing`**: number (_iOS_)
+  - **`letterSpacing`**: number
 
   - **`textDecorationColor`**: [color](docs/colors.html) (_iOS_)
 

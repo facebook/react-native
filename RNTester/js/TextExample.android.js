@@ -309,6 +309,20 @@ class TextExample extends React.Component<{}> {
             right right right right right right right right right right right right right
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Letter Spacing">
+          <Text style={{letterSpacing: 0}}>
+            letterSpacing = 0
+          </Text>
+          <Text style={{letterSpacing: 2, marginTop: 5}}>
+            letterSpacing = 2
+          </Text>
+          <Text style={{letterSpacing: 9, marginTop: 5}}>
+            letterSpacing = 9
+          </Text>
+          <Text style={{letterSpacing: -1, marginTop: 5}}>
+            letterSpacing = -1
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Unicode">
           <View>
             <View style={{flexDirection: 'row'}}>

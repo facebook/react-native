@@ -12,6 +12,7 @@ package com.facebook.react.views.textinput;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -421,6 +422,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setGravityVertical(Gravity.CENTER_VERTICAL);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
+    }
+  }
+
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0.0f)
+  public void setLetterSpacing(ReactEditText view, float spacing) {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      // Only set letter spacing on Android 21 and up devices, not available otherwise
+      view.setLetterSpacing(spacing);
     }
   }
 

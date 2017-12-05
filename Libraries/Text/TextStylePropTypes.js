@@ -49,7 +49,8 @@ const TextStylePropTypes = {
   textShadowRadius: ReactPropTypes.number,
   textShadowColor: ColorPropType,
   /**
-   * @platform ios
+   * Specifies the letter spacing (kerning). Defaults to 0.0 (no kerning) and is supported on iOS and 
+   * only on Android Lollipop (21) and greater.
    */
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,

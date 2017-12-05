@@ -33,6 +33,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private int mDefaultGravityVertical;
   private boolean mTextIsSelectable;
   private float mLineHeight = Float.NaN;
+  private float mLetterSpacing = Float.NaN;
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
@@ -61,6 +62,17 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       (int) Math.floor(update.getPaddingTop()),
       (int) Math.floor(update.getPaddingRight()),
       (int) Math.floor(update.getPaddingBottom()));
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float nextLetterSpacing = update.getLetterSpacing();
+      if (Float.isNaN(nextLetterSpacing)) {
+        nextLetterSpacing = 0.0f;
+      }
+
+      if(getLetterSpacing() != nextLetterSpacing) {
+        setLetterSpacing(nextLetterSpacing);
+      }
+    }
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {
