@@ -35,6 +35,15 @@ const ASSET_TYPE_OPTIONS = {
   Photos: 'Photos',
 };
 
+type GetPhotosParams = {
+  first: number,
+  after?: string,
+  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
+  groupName?: string,
+  assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
+  mimeTypes?: Array<string>,
+};
+
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
@@ -72,6 +81,35 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
    */
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
+
+type GetPhotosReturn = Promise<{
+  edges: Array<{
+    node: {
+      type: string,
+      group_name: string,
+      image: {
+        uri: string,
+        height: number,
+        width: number,
+        isStored?: boolean,
+        playableDuration: number,
+      },
+      timestamp: number,
+      location?: {
+        latitude?: number,
+        longitude?: number,
+        altitude?: number,
+        heading?: number,
+        speed?: number,
+      },
+    },
+  }>,
+  page_info: {
+    has_next_page: boolean,
+    start_cursor?: string,
+    end_cursor?: string,
+  },
+}>;
 
 /**
  * Shape of the return value of the `getPhotos` function.
@@ -162,8 +200,8 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      // $FlowFixMe(>=0.28.0)
-      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
+        'unknown'}`,
     );
 
     let mediaType = 'photo';
@@ -259,11 +297,7 @@ class CameraRoll {
    * }
    * ```
    */
-  /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an error
-   * caught by Flow 0.59 which was not caught before. Most likely, this error
-   * is because an exported function parameter is missing an annotation.
-   * Without an annotation, these parameters are uncovered by Flow. */
-  static getPhotos(params) {
+  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},
