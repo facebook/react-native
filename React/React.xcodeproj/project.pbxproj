@@ -50,7 +50,6 @@
 		131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */; };
 		133957881DF76D3500EC27BE /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		133957891DF76D3500EC27BE /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
-		1339578A1DF76D3500EC27BE /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		1339578B1DF76D3500EC27BE /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		133CAE8E1B8E5CFD00F6AD92 /* RCTDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */; };
 		13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */; };
@@ -962,8 +961,6 @@
 		3DC159E41E83E1AE007B1282 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */; };
 		3DC159E51E83E1E9007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
 		3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
-		3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
-		3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		3DDEC1521DDCE0CA0020BBDF /* RCTJSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* RCTJSCSamplingProfiler.m */; };
 		3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
@@ -975,7 +972,6 @@
 		3DF1BE851F26577300068F1A /* JSCTracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1BE801F26576400068F1A /* JSCTracing.cpp */; };
 		3DFE0D161DF8574D00459392 /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		3DFE0D171DF8574D00459392 /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
-		3DFE0D181DF8574D00459392 /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		3DFE0D191DF8574D00459392 /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
@@ -988,8 +984,6 @@
 		53D123971FBF1DF5001B8A10 /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libyoga.a */; };
 		53D1239A1FBF1EF2001B8A10 /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */; };
 		53D1239B1FBF1EF4001B8A10 /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */; };
-		53D1239C1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */; };
-		53D1239D1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */; };
 		53D1239E1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
@@ -1477,7 +1471,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
 				3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */,
 				3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */,
@@ -1703,7 +1696,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */,
 				3DE4F8691DF85D8E00B9E5A0 /* YGMacros.h in Copy Headers */,
 				3DE4F86A1DF85D8E00B9E5A0 /* Yoga.h in Copy Headers */,
@@ -1828,7 +1820,6 @@
 		130443D71E401AD800D93A67 /* RCTTVView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVView.m; sourceTree = "<group>"; };
 		130A77031DF767AF001F9587 /* YGEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGEnums.h; sourceTree = "<group>"; };
 		130A77041DF767AF001F9587 /* YGMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGMacros.h; sourceTree = "<group>"; };
-		130A77061DF767AF001F9587 /* YGNodeList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGNodeList.h; sourceTree = "<group>"; };
 		130A77081DF767AF001F9587 /* Yoga.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Yoga.h; sourceTree = "<group>"; };
 		130E3D861E6A082100ACE484 /* RCTDevSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDevSettings.h; sourceTree = "<group>"; };
 		130E3D871E6A082100ACE484 /* RCTDevSettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevSettings.mm; sourceTree = "<group>"; };
@@ -2140,7 +2131,6 @@
 		53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yoga-internal.h"; sourceTree = "<group>"; };
 		53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGEnums.cpp; sourceTree = "<group>"; };
 		53CBF1871FB4FE80002CBB31 /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Yoga.cpp; sourceTree = "<group>"; };
-		53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGNodeList.cpp; sourceTree = "<group>"; };
 		53D123831FBF1D49001B8A10 /* libyoga.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyoga.a; path = "../../../../../../../../../Library/Developer/Xcode/DerivedData/yoga-hdfifpwsinitsibujacpiefkjfdy/Build/Products/Debug/libyoga.a"; sourceTree = "<group>"; };
 		58114A121AAE854800E7D092 /* RCTPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPicker.h; sourceTree = "<group>"; };
 		58114A131AAE854800E7D092 /* RCTPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPicker.m; sourceTree = "<group>"; };
@@ -2310,12 +2300,10 @@
 				5376C5E11FC6DDB20083513D /* YGNodePrint.cpp */,
 				5376C5E01FC6DDB20083513D /* YGNodePrint.h */,
 				53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */,
-				53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */,
 				53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */,
 				53CBF1871FB4FE80002CBB31 /* Yoga.cpp */,
 				130A77031DF767AF001F9587 /* YGEnums.h */,
 				130A77041DF767AF001F9587 /* YGMacros.h */,
-				130A77061DF767AF001F9587 /* YGNodeList.h */,
 				130A77081DF767AF001F9587 /* Yoga.h */,
 			);
 			name = yoga;
@@ -3217,7 +3205,6 @@
 				53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
 				3DFE0D161DF8574D00459392 /* YGEnums.h in Headers */,
 				3DFE0D171DF8574D00459392 /* YGMacros.h in Headers */,
-				3DFE0D181DF8574D00459392 /* YGNodeList.h in Headers */,
 				5376C5E71FC6DDC20083513D /* YGNodePrint.h in Headers */,
 				3DFE0D191DF8574D00459392 /* Yoga.h in Headers */,
 			);
@@ -3295,7 +3282,6 @@
 				53D1239E1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
 				133957881DF76D3500EC27BE /* YGEnums.h in Headers */,
 				1339578B1DF76D3500EC27BE /* Yoga.h in Headers */,
-				1339578A1DF76D3500EC27BE /* YGNodeList.h in Headers */,
 				5376C5E61FC6DDC10083513D /* YGNodePrint.h in Headers */,
 				133957891DF76D3500EC27BE /* YGMacros.h in Headers */,
 			);
@@ -4228,7 +4214,6 @@
 			files = (
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				53D1239A1FBF1EF2001B8A10 /* YGEnums.cpp in Sources */,
-				53D1239C1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */,
 				5376C5E41FC6DDBC0083513D /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4239,7 +4224,6 @@
 			files = (
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				53D1239B1FBF1EF4001B8A10 /* YGEnums.cpp in Sources */,
-				53D1239D1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */,
 				5376C5E51FC6DDBD0083513D /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
