@@ -167,9 +167,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected ReactShadowNode createShadowNode(String className) {
-    ReactShadowNode cssNode = super.createShadowNode(className);
-    if (cssNode instanceof FlatShadowNode || cssNode.isVirtual()) {
-      return cssNode;
+    ReactShadowNode shadowNode = super.createShadowNode(className);
+    if (shadowNode instanceof FlatShadowNode || shadowNode.isVirtual()) {
+      return shadowNode;
     }
 
     ViewManager viewManager = resolveViewManager(className);
@@ -178,11 +178,11 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void handleCreateView(
-    ReactShadowNode cssNode,
+    ReactShadowNode shadowNode,
     int rootViewTag,
     @Nullable ReactStylesDiffMap styles) {
-    if (cssNode instanceof FlatShadowNode) {
-      FlatShadowNode node = (FlatShadowNode) cssNode;
+    if (shadowNode instanceof FlatShadowNode) {
+      FlatShadowNode node = (FlatShadowNode) shadowNode;
 
       if (styles != null) {
         node.handleUpdateProperties(styles);
@@ -192,17 +192,17 @@ public class FlatUIImplementation extends UIImplementation {
         mStateBuilder.enqueueCreateOrUpdateView(node, styles);
       }
     } else {
-      super.handleCreateView(cssNode, rootViewTag, styles);
+      super.handleCreateView(shadowNode, rootViewTag, styles);
     }
   }
 
   @Override
   protected void handleUpdateView(
-    ReactShadowNode cssNode,
+    ReactShadowNode shadowNode,
     String className,
     ReactStylesDiffMap styles) {
-    if (cssNode instanceof FlatShadowNode) {
-      FlatShadowNode node = (FlatShadowNode) cssNode;
+    if (shadowNode instanceof FlatShadowNode) {
+      FlatShadowNode node = (FlatShadowNode) shadowNode;
 
       node.handleUpdateProperties(styles);
 
@@ -210,7 +210,7 @@ public class FlatUIImplementation extends UIImplementation {
         mStateBuilder.enqueueCreateOrUpdateView(node, styles);
       }
     } else {
-      super.handleUpdateView(cssNode, className, styles);
+      super.handleUpdateView(shadowNode, className, styles);
     }
   }
 
@@ -572,10 +572,10 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void applyUpdatesRecursive(
-    ReactShadowNode cssNode,
+    ReactShadowNode shadowNode,
     float absoluteX,
     float absoluteY) {
-    mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
+    mStateBuilder.applyUpdates((FlatRootShadowNode) shadowNode);
   }
 
   @Override

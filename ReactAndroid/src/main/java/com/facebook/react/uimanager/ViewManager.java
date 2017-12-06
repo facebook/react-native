@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
- * responsible for creating and updating CSSNodeDEPRECATED subclasses used for calculating position and size
- * for the corresponding native view.
+ * responsible for creating and updating shadow node subclasses used for calculating position and
+ * size for the corresponding native view.
  */
 @ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>

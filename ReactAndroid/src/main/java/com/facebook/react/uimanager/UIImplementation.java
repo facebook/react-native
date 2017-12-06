@@ -117,13 +117,13 @@ public class UIImplementation {
   }
 
   protected ReactShadowNode createRootShadowNode() {
-    ReactShadowNode rootCSSNode = new ReactShadowNodeImpl();
+    ReactShadowNode rootShadowNode = new ReactShadowNodeImpl();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setLayoutDirection(YogaDirection.RTL);
+      rootShadowNode.setLayoutDirection(YogaDirection.RTL);
     }
-    rootCSSNode.setViewClassName("Root");
-    return rootCSSNode;
+    rootShadowNode.setViewClassName("Root");
+    return rootShadowNode;
   }
 
   protected ReactShadowNode createShadowNode(String className) {
@@ -148,12 +148,12 @@ public class UIImplementation {
    * parameters.
    */
   public void updateRootView(int tag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootCSSNode = mShadowNodeRegistry.getNode(tag);
-    if (rootCSSNode == null) {
+    ReactShadowNode rootShadowNode = mShadowNodeRegistry.getNode(tag);
+    if (rootShadowNode == null) {
       FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + tag);
       return;
     }
-    updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
+    updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
   }
 
   /**
@@ -161,18 +161,18 @@ public class UIImplementation {
    * parameters.
    */
   public void updateRootView(
-      ReactShadowNode rootCSSNode, int widthMeasureSpec, int heightMeasureSpec) {
+      ReactShadowNode rootShadowNode, int widthMeasureSpec, int heightMeasureSpec) {
     int widthMode = MeasureSpec.getMode(widthMeasureSpec);
     int widthSize = MeasureSpec.getSize(widthMeasureSpec);
     switch (widthMode) {
       case EXACTLY:
-        rootCSSNode.setStyleWidth(widthSize);
+        rootShadowNode.setStyleWidth(widthSize);
         break;
       case AT_MOST:
-        rootCSSNode.setStyleMaxWidth(widthSize);
+        rootShadowNode.setStyleMaxWidth(widthSize);
         break;
       case UNSPECIFIED:
-        rootCSSNode.setStyleWidthAuto();
+        rootShadowNode.setStyleWidthAuto();
         break;
     }
 
@@ -180,13 +180,13 @@ public class UIImplementation {
     int heightSize = MeasureSpec.getSize(heightMeasureSpec);
     switch (heightMode) {
       case EXACTLY:
-        rootCSSNode.setStyleHeight(heightSize);
+        rootShadowNode.setStyleHeight(heightSize);
         break;
       case AT_MOST:
-        rootCSSNode.setStyleMaxHeight(heightSize);
+        rootShadowNode.setStyleMaxHeight(heightSize);
         break;
       case UNSPECIFIED:
-        rootCSSNode.setStyleHeightAuto();
+        rootShadowNode.setStyleHeightAuto();
         break;
     }
   }
@@ -197,15 +197,15 @@ public class UIImplementation {
    */
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> void registerRootView(
       T rootView, int tag, ThemedReactContext context) {
-    final ReactShadowNode rootCSSNode = createRootShadowNode();
-    rootCSSNode.setReactTag(tag);
-    rootCSSNode.setThemedContext(context);
+    final ReactShadowNode rootShadowNode = createRootShadowNode();
+    rootShadowNode.setReactTag(tag);
+    rootShadowNode.setThemedContext(context);
 
     int widthMeasureSpec = rootView.getWidthMeasureSpec();
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
-    updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
+    updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
 
-    mShadowNodeRegistry.addRootNode(rootCSSNode);
+    mShadowNodeRegistry.addRootNode(rootShadowNode);
 
     // register it within NativeViewHierarchyManager
     mOperationsQueue.addRootView(tag, rootView, context);
@@ -234,15 +234,15 @@ public class UIImplementation {
       int nodeViewTag,
       int newWidth,
       int newHeight) {
-    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
-    if (cssNode == null) {
+    ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (shadowNode == null) {
       FLog.w(
         ReactConstants.TAG,
         "Tried to update size of non-existent tag: " + nodeViewTag);
       return;
     }
-    cssNode.setStyleWidth(newWidth);
-    cssNode.setStyleHeight(newHeight);
+    shadowNode.setStyleWidth(newWidth);
+    shadowNode.setStyleHeight(newHeight);
 
     dispatchViewUpdatesIfNeeded();
   }
@@ -274,30 +274,30 @@ public class UIImplementation {
    * Invoked by React to create a new node with a given tag, class name and properties.
    */
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
-    ReactShadowNode cssNode = createShadowNode(className);
+    ReactShadowNode shadowNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
-    cssNode.setReactTag(tag);
-    cssNode.setViewClassName(className);
-    cssNode.setRootNode(rootNode);
-    cssNode.setThemedContext(rootNode.getThemedContext());
+    shadowNode.setReactTag(tag);
+    shadowNode.setViewClassName(className);
+    shadowNode.setRootNode(rootNode);
+    shadowNode.setThemedContext(rootNode.getThemedContext());
 
-    mShadowNodeRegistry.addNode(cssNode);
+    mShadowNodeRegistry.addNode(shadowNode);
 
     ReactStylesDiffMap styles = null;
     if (props != null) {
       styles = new ReactStylesDiffMap(props);
-      cssNode.updateProperties(styles);
+      shadowNode.updateProperties(styles);
     }
 
-    handleCreateView(cssNode, rootViewTag, styles);
+    handleCreateView(shadowNode, rootViewTag, styles);
   }
 
   protected void handleCreateView(
-      ReactShadowNode cssNode,
+      ReactShadowNode shadowNode,
       int rootViewTag,
       @Nullable ReactStylesDiffMap styles) {
-    if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
+    if (!shadowNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleCreateView(shadowNode, shadowNode.getThemedContext(), styles);
     }
   }
 
@@ -309,15 +309,15 @@ public class UIImplementation {
     if (viewManager == null) {
       throw new IllegalViewOperationException("Got unknown view type: " + className);
     }
-    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
-    if (cssNode == null) {
+    ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(tag);
+    if (shadowNode == null) {
       throw new IllegalViewOperationException("Trying to update non-existent view with tag " + tag);
     }
 
     if (props != null) {
       ReactStylesDiffMap styles = new ReactStylesDiffMap(props);
-      cssNode.updateProperties(styles);
-      handleUpdateView(cssNode, className, styles);
+      shadowNode.updateProperties(styles);
+      handleUpdateView(shadowNode, className, styles);
     }
   }
 
@@ -333,11 +333,11 @@ public class UIImplementation {
   }
 
   protected void handleUpdateView(
-      ReactShadowNode cssNode,
+      ReactShadowNode shadowNode,
       String className,
       ReactStylesDiffMap styles) {
-    if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
+    if (!shadowNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleUpdateView(shadowNode, className, styles);
     }
   }
 
@@ -357,7 +357,7 @@ public class UIImplementation {
       @Nullable ReadableArray addChildTags,
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
-    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+    ReactShadowNode shadowNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
     int numToMove = moveFrom == null ? 0 : moveFrom.size();
     int numToAdd = addChildTags == null ? 0 : addChildTags.size();
@@ -382,7 +382,7 @@ public class UIImplementation {
       Assertions.assertNotNull(moveTo);
       for (int i = 0; i < numToMove; i++) {
         int moveFromIndex = moveFrom.getInt(i);
-        int tagToMove = cssNodeToManage.getChildAt(moveFromIndex).getReactTag();
+        int tagToMove = shadowNodeToManage.getChildAt(moveFromIndex).getReactTag();
         viewsToAdd[i] = new ViewAtIndex(
             tagToMove,
             moveTo.getInt(i));
@@ -405,7 +405,7 @@ public class UIImplementation {
       Assertions.assertNotNull(removeFrom);
       for (int i = 0; i < numToRemove; i++) {
         int indexToRemove = removeFrom.getInt(i);
-        int tagToRemove = cssNodeToManage.getChildAt(indexToRemove).getReactTag();
+        int tagToRemove = shadowNodeToManage.getChildAt(indexToRemove).getReactTag();
         indicesToRemove[numToMove + i] = indexToRemove;
         tagsToRemove[numToMove + i] = tagToRemove;
         tagsToDelete[i] = tagToRemove;
@@ -424,7 +424,7 @@ public class UIImplementation {
     Arrays.sort(viewsToAdd, ViewAtIndex.COMPARATOR);
     Arrays.sort(indicesToRemove);
 
-    // Apply changes to CSSNodeDEPRECATED hierarchy
+    // Apply changes to shadow node hierarchy
     int lastIndexRemoved = -1;
     for (int i = indicesToRemove.length - 1; i >= 0; i--) {
       int indexToRemove = indicesToRemove[i];
@@ -432,23 +432,23 @@ public class UIImplementation {
         throw new IllegalViewOperationException("Repeated indices in Removal list for view tag: "
             + viewTag);
       }
-      cssNodeToManage.removeChildAt(indicesToRemove[i]);
+      shadowNodeToManage.removeChildAt(indicesToRemove[i]);
       lastIndexRemoved = indicesToRemove[i];
     }
 
     for (int i = 0; i < viewsToAdd.length; i++) {
       ViewAtIndex viewAtIndex = viewsToAdd[i];
-      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(viewAtIndex.mTag);
-      if (cssNodeToAdd == null) {
+      ReactShadowNode shadowNodeToAdd = mShadowNodeRegistry.getNode(viewAtIndex.mTag);
+      if (shadowNodeToAdd == null) {
         throw new IllegalViewOperationException("Trying to add unknown view tag: "
             + viewAtIndex.mTag);
       }
-      cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex);
+      shadowNodeToManage.addChildAt(shadowNodeToAdd, viewAtIndex.mIndex);
     }
 
-    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+    if (!shadowNodeToManage.isVirtual() && !shadowNodeToManage.isVirtualAnchor()) {
       mNativeViewHierarchyOptimizer.handleManageChildren(
-          cssNodeToManage,
+          shadowNodeToManage,
           indicesToRemove,
           tagsToRemove,
           viewsToAdd,
@@ -471,20 +471,20 @@ public class UIImplementation {
     int viewTag,
     ReadableArray childrenTags) {
 
-    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+    ReactShadowNode shadowNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
     for (int i = 0; i < childrenTags.size(); i++) {
-      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
-      if (cssNodeToAdd == null) {
+      ReactShadowNode shadowNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (shadowNodeToAdd == null) {
         throw new IllegalViewOperationException("Trying to add unknown view tag: "
           + childrenTags.getInt(i));
       }
-      cssNodeToManage.addChildAt(cssNodeToAdd, i);
+      shadowNodeToManage.addChildAt(shadowNodeToAdd, i);
     }
 
-    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+    if (!shadowNodeToManage.isVirtual() && !shadowNodeToManage.isVirtualAnchor()) {
       mNativeViewHierarchyOptimizer.handleSetChildren(
-        cssNodeToManage,
+        shadowNodeToManage,
         childrenTags);
     }
   }
@@ -923,14 +923,14 @@ public class UIImplementation {
     }
   }
 
-  private void notifyOnBeforeLayoutRecursive(ReactShadowNode cssNode) {
-    if (!cssNode.hasUpdates()) {
+  private void notifyOnBeforeLayoutRecursive(ReactShadowNode shadowNode) {
+    if (!shadowNode.hasUpdates()) {
       return;
     }
-    for (int i = 0; i < cssNode.getChildCount(); i++) {
-      notifyOnBeforeLayoutRecursive(cssNode.getChildAt(i));
+    for (int i = 0; i < shadowNode.getChildCount(); i++) {
+      notifyOnBeforeLayoutRecursive(shadowNode.getChildAt(i));
     }
-    cssNode.onBeforeLayout();
+    shadowNode.onBeforeLayout();
   }
 
   protected void calculateRootLayout(ReactShadowNode cssRoot) {
@@ -947,25 +947,25 @@ public class UIImplementation {
   }
 
   protected void applyUpdatesRecursive(
-      ReactShadowNode cssNode,
+      ReactShadowNode shadowNode,
       float absoluteX,
       float absoluteY) {
-    if (!cssNode.hasUpdates()) {
+    if (!shadowNode.hasUpdates()) {
       return;
     }
 
-    if (!cssNode.isVirtualAnchor()) {
-      for (int i = 0; i < cssNode.getChildCount(); i++) {
+    if (!shadowNode.isVirtualAnchor()) {
+      for (int i = 0; i < shadowNode.getChildCount(); i++) {
         applyUpdatesRecursive(
-            cssNode.getChildAt(i),
-            absoluteX + cssNode.getLayoutX(),
-            absoluteY + cssNode.getLayoutY());
+            shadowNode.getChildAt(i),
+            absoluteX + shadowNode.getLayoutX(),
+            absoluteY + shadowNode.getLayoutY());
       }
     }
 
-    int tag = cssNode.getReactTag();
+    int tag = shadowNode.getReactTag();
     if (!mShadowNodeRegistry.isRootNode(tag)) {
-      boolean frameDidChange = cssNode.dispatchUpdates(
+      boolean frameDidChange = shadowNode.dispatchUpdates(
           absoluteX,
           absoluteY,
           mOperationsQueue,
@@ -974,17 +974,17 @@ public class UIImplementation {
       // Notify JS about layout event if requested
       // and if the position or dimensions actually changed
       // (consistent with iOS).
-      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
+      if (frameDidChange && shadowNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
                 tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
+                shadowNode.getScreenX(),
+                shadowNode.getScreenY(),
+                shadowNode.getScreenWidth(),
+                shadowNode.getScreenHeight()));
       }
     }
-    cssNode.markUpdateSeen();
+    shadowNode.markUpdateSeen();
   }
 
   public void addUIBlock(UIBlock block) {

@@ -100,7 +100,7 @@ public class UIViewOperationQueue {
   /**
    * Operation for updating native view's position and size. The operation is not created directly
    * by a {@link UIManagerModule} call from JS. Instead it gets inflated using computed position
-   * and size values by CSSNodeDEPRECATED hierarchy.
+   * and size values by shadow node hierarchy.
    */
   private final class UpdateLayoutOperation extends ViewOperation {
 

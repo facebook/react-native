@@ -60,12 +60,12 @@ import javax.annotation.Nullable;
  * hierarchy through {@link NativeViewHierarchyManager} at the end of each transaction.
  *
  * <p>
- * <h2>== CSSNodes ==</h2>
+ * <h2>== Shadow Nodes ==</h2>
  * In order to allow layout and measurement to occur on a non-UI thread, this module also
- * operates on intermediate CSSNodeDEPRECATED objects that correspond to a native view. These CSSNodeDEPRECATED are able
- * to calculate layout according to their styling rules, and then the resulting x/y/width/height of
- * that layout is scheduled as an operation that will be applied to native view hierarchy at the end
- * of current batch.
+ * operates on intermediate shadow node objects that correspond to a native view. These shadow nodes
+ * are able to calculate layout according to their styling rules, and then the resulting
+ * x/y/width/height of that layout is scheduled as an operation that will be applied to native view
+ * hierarchy at the end of current batch.
  * </p>
  *
  * TODO(5241856): Investigate memory usage of creating many small objects in UIManageModule and
@@ -752,7 +752,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.dispatchViewUpdates(-1);
   }
 
-  /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */
+  /** Listener that drops the shadow node pool on low memory when the app is backgrounded. */
   private class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override

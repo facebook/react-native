@@ -19,12 +19,12 @@ import com.facebook.react.common.SingleThreadAsserter;
  */
 public class ShadowNodeRegistry {
 
-  private final SparseArray<ReactShadowNode> mTagsToCSSNodes;
+  private final SparseArray<ReactShadowNode> mTagsToShadowNodes;
   private final SparseBooleanArray mRootTags;
   private final SingleThreadAsserter mThreadAsserter;
 
   public ShadowNodeRegistry() {
-    mTagsToCSSNodes = new SparseArray<>();
+    mTagsToShadowNodes = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
     mThreadAsserter = new SingleThreadAsserter();
   }
@@ -34,7 +34,7 @@ public class ShadowNodeRegistry {
     // thread-unsafe and calls this on the wrong thread.
     //mThreadAsserter.assertNow();
     int tag = node.getReactTag();
-    mTagsToCSSNodes.put(tag, node);
+    mTagsToShadowNodes.put(tag, node);
     mRootTags.put(tag, true);
   }
 
@@ -45,13 +45,13 @@ public class ShadowNodeRegistry {
           "View with tag " + tag + " is not registered as a root view");
     }
 
-    mTagsToCSSNodes.remove(tag);
+    mTagsToShadowNodes.remove(tag);
     mRootTags.delete(tag);
   }
 
   public void addNode(ReactShadowNode node) {
     mThreadAsserter.assertNow();
-    mTagsToCSSNodes.put(node.getReactTag(), node);
+    mTagsToShadowNodes.put(node.getReactTag(), node);
   }
 
   public void removeNode(int tag) {
@@ -60,12 +60,12 @@ public class ShadowNodeRegistry {
       throw new IllegalViewOperationException(
           "Trying to remove root node " + tag + " without using removeRootNode!");
     }
-    mTagsToCSSNodes.remove(tag);
+    mTagsToShadowNodes.remove(tag);
   }
 
   public ReactShadowNode getNode(int tag) {
     mThreadAsserter.assertNow();
-    return mTagsToCSSNodes.get(tag);
+    return mTagsToShadowNodes.get(tag);
   }
 
   public boolean isRootNode(int tag) {
