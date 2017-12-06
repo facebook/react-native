@@ -7,7 +7,6 @@ LOCAL_MODULE := yogacore
 LOCAL_SRC_FILES := \
   yoga/Yoga.cpp \
   yoga/YGEnums.cpp \
-  yoga/YGNodeList.cpp \
 	yoga/YGNodePrint.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)

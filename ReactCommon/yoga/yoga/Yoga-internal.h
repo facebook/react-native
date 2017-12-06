@@ -8,8 +8,11 @@
  */
 
 #pragma once
-#include "YGNodeList.h"
+#include <vector>
+
 #include "Yoga.h"
+
+using YGVector = std::vector<YGNodeRef>;
 
 YG_EXTERN_C_BEGIN
 
@@ -101,7 +104,7 @@ typedef struct YGNode {
   uint32_t lineIndex;
 
   YGNodeRef parent;
-  YGNodeListRef children;
+  YGVector children;
 
   struct YGNode* nextChild;
 
@@ -205,7 +208,7 @@ static const YGNode gYGNodeDefaults = {
     .layout = gYGNodeLayoutDefaults,
     .lineIndex = 0,
     .parent = nullptr,
-    .children = nullptr,
+    .children = YGVector(),
     .nextChild = nullptr,
     .measure = nullptr,
     .baseline = nullptr,

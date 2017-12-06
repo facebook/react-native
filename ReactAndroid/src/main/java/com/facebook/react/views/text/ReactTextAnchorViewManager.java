@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
  * TextEdit}.
  *
  * <p>This is a "shadowing" view manager, which means that the {@link NativeViewHierarchyManager}
- * will NOT manage children of native {@link TextView} instances instanciated by this manager.
+ * will NOT manage children of native {@link TextView} instances instantiated by this manager.
  * Instead we use @{link ReactBaseTextShadowNode} hierarchy to calculate a {@link Spannable} text
  * represented the whole text subtree.
  */

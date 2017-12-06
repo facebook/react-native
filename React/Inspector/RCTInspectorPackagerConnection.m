@@ -272,7 +272,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)abort:(NSString *)message
     withCause:(NSError *)cause
 {
-  RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  // Don't log ECONNREFUSED at all; it's expected in cases where the server isn't listening.
+  if (![cause.domain isEqual:NSPOSIXErrorDomain] || cause.code != ECONNREFUSED) {
+    RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  }
 
   [self closeAllConnections];
   [self disposeWebSocket];

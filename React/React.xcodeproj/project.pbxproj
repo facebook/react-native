@@ -50,7 +50,6 @@
 		131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */; };
 		133957881DF76D3500EC27BE /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		133957891DF76D3500EC27BE /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
-		1339578A1DF76D3500EC27BE /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		1339578B1DF76D3500EC27BE /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		133CAE8E1B8E5CFD00F6AD92 /* RCTDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */; };
 		13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */; };
@@ -962,8 +961,6 @@
 		3DC159E41E83E1AE007B1282 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */; };
 		3DC159E51E83E1E9007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
 		3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
-		3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
-		3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		3DDEC1521DDCE0CA0020BBDF /* RCTJSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* RCTJSCSamplingProfiler.m */; };
 		3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
@@ -975,7 +972,6 @@
 		3DF1BE851F26577300068F1A /* JSCTracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1BE801F26576400068F1A /* JSCTracing.cpp */; };
 		3DFE0D161DF8574D00459392 /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		3DFE0D171DF8574D00459392 /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
-		3DFE0D181DF8574D00459392 /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		3DFE0D191DF8574D00459392 /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
@@ -988,8 +984,6 @@
 		53D123971FBF1DF5001B8A10 /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libyoga.a */; };
 		53D1239A1FBF1EF2001B8A10 /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */; };
 		53D1239B1FBF1EF4001B8A10 /* YGEnums.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */; };
-		53D1239C1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */; };
-		53D1239D1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */; };
 		53D1239E1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
@@ -1003,6 +997,32 @@
 		590D7BFE1EBD458B00D8A370 /* RCTShadowView+Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
 		590D7BFF1EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
 		590D7C001EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
+		59283CA01FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
+		59283CA11FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
+		594F0A321FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
+		594F0A331FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
+		594F0A341FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */; };
+		594F0A351FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */; };
+		594F0A361FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */; };
+		594F0A371FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */; };
+		594F0A381FD233A2007FBE96 /* RCTSurface.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2A1FB274970058CCF6 /* RCTSurface.h */; };
+		594F0A391FD233A2007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2C1FB274970058CCF6 /* RCTSurfaceDelegate.h */; };
+		594F0A3A1FD233A2007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2D1FB274970058CCF6 /* RCTSurfaceRootShadowView.h */; };
+		594F0A3B1FD233A2007FBE96 /* RCTSurfaceRootShadowViewDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2F1FB274970058CCF6 /* RCTSurfaceRootShadowViewDelegate.h */; };
+		594F0A3C1FD233A2007FBE96 /* RCTSurfaceRootView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA301FB274970058CCF6 /* RCTSurfaceRootView.h */; };
+		594F0A3D1FD233A2007FBE96 /* RCTSurfaceStage.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA321FB274970058CCF6 /* RCTSurfaceStage.h */; };
+		594F0A3E1FD233A2007FBE96 /* RCTSurfaceView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA341FB274970058CCF6 /* RCTSurfaceView.h */; };
+		594F0A3F1FD233A2007FBE96 /* RCTSurfaceHostingView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
+		594F0A401FD233A2007FBE96 /* RCTSurfaceSizeMeasureMode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */; };
+		594F0A411FD233BD007FBE96 /* RCTSurface.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2A1FB274970058CCF6 /* RCTSurface.h */; };
+		594F0A421FD233BD007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2C1FB274970058CCF6 /* RCTSurfaceDelegate.h */; };
+		594F0A431FD233BD007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2D1FB274970058CCF6 /* RCTSurfaceRootShadowView.h */; };
+		594F0A441FD233BD007FBE96 /* RCTSurfaceRootShadowViewDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA2F1FB274970058CCF6 /* RCTSurfaceRootShadowViewDelegate.h */; };
+		594F0A451FD233BD007FBE96 /* RCTSurfaceRootView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA301FB274970058CCF6 /* RCTSurfaceRootView.h */; };
+		594F0A461FD233BD007FBE96 /* RCTSurfaceStage.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA321FB274970058CCF6 /* RCTSurfaceStage.h */; };
+		594F0A471FD233BD007FBE96 /* RCTSurfaceView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599FAA341FB274970058CCF6 /* RCTSurfaceView.h */; };
+		594F0A481FD233BD007FBE96 /* RCTSurfaceHostingView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
+		594F0A491FD233BD007FBE96 /* RCTSurfaceSizeMeasureMode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */; };
 		59500D431F71C63F00B122B7 /* RCTUIManagerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 59500D411F71C63700B122B7 /* RCTUIManagerUtils.h */; };
 		59500D441F71C63F00B122B7 /* RCTUIManagerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 59500D411F71C63700B122B7 /* RCTUIManagerUtils.h */; };
 		59500D451F71C63F00B122B7 /* RCTUIManagerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 59500D421F71C63F00B122B7 /* RCTUIManagerUtils.m */; };
@@ -1307,6 +1327,15 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				594F0A411FD233BD007FBE96 /* RCTSurface.h in Copy Headers */,
+				594F0A421FD233BD007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */,
+				594F0A431FD233BD007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */,
+				594F0A441FD233BD007FBE96 /* RCTSurfaceRootShadowViewDelegate.h in Copy Headers */,
+				594F0A451FD233BD007FBE96 /* RCTSurfaceRootView.h in Copy Headers */,
+				594F0A461FD233BD007FBE96 /* RCTSurfaceStage.h in Copy Headers */,
+				594F0A471FD233BD007FBE96 /* RCTSurfaceView.h in Copy Headers */,
+				594F0A481FD233BD007FBE96 /* RCTSurfaceHostingView.h in Copy Headers */,
+				594F0A491FD233BD007FBE96 /* RCTSurfaceSizeMeasureMode.h in Copy Headers */,
 				2D16E68E1FA4FD3900B85C8A /* RCTTVNavigationEventEmitter.h in Copy Headers */,
 				59500D481F71C67600B122B7 /* RCTUIManagerUtils.h in Copy Headers */,
 				3D0E37901F1CC5E100DCAC9F /* RCTWebSocketModule.h in Copy Headers */,
@@ -1442,7 +1471,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
 				3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */,
 				3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */,
@@ -1529,6 +1557,15 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				594F0A381FD233A2007FBE96 /* RCTSurface.h in Copy Headers */,
+				594F0A391FD233A2007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */,
+				594F0A3A1FD233A2007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */,
+				594F0A3B1FD233A2007FBE96 /* RCTSurfaceRootShadowViewDelegate.h in Copy Headers */,
+				594F0A3C1FD233A2007FBE96 /* RCTSurfaceRootView.h in Copy Headers */,
+				594F0A3D1FD233A2007FBE96 /* RCTSurfaceStage.h in Copy Headers */,
+				594F0A3E1FD233A2007FBE96 /* RCTSurfaceView.h in Copy Headers */,
+				594F0A3F1FD233A2007FBE96 /* RCTSurfaceHostingView.h in Copy Headers */,
+				594F0A401FD233A2007FBE96 /* RCTSurfaceSizeMeasureMode.h in Copy Headers */,
 				59500D471F71C66700B122B7 /* RCTUIManagerUtils.h in Copy Headers */,
 				3D0E378F1F1CC5CF00DCAC9F /* RCTWebSocketModule.h in Copy Headers */,
 				5960C1BD1F0804DF0066FD5B /* RCTLayoutAnimation.h in Copy Headers */,
@@ -1659,7 +1696,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */,
 				3DE4F8691DF85D8E00B9E5A0 /* YGMacros.h in Copy Headers */,
 				3DE4F86A1DF85D8E00B9E5A0 /* Yoga.h in Copy Headers */,
@@ -1784,7 +1820,6 @@
 		130443D71E401AD800D93A67 /* RCTTVView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVView.m; sourceTree = "<group>"; };
 		130A77031DF767AF001F9587 /* YGEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGEnums.h; sourceTree = "<group>"; };
 		130A77041DF767AF001F9587 /* YGMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGMacros.h; sourceTree = "<group>"; };
-		130A77061DF767AF001F9587 /* YGNodeList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGNodeList.h; sourceTree = "<group>"; };
 		130A77081DF767AF001F9587 /* Yoga.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Yoga.h; sourceTree = "<group>"; };
 		130E3D861E6A082100ACE484 /* RCTDevSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDevSettings.h; sourceTree = "<group>"; };
 		130E3D871E6A082100ACE484 /* RCTDevSettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevSettings.mm; sourceTree = "<group>"; };
@@ -2096,7 +2131,6 @@
 		53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Yoga-internal.h"; sourceTree = "<group>"; };
 		53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGEnums.cpp; sourceTree = "<group>"; };
 		53CBF1871FB4FE80002CBB31 /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Yoga.cpp; sourceTree = "<group>"; };
-		53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGNodeList.cpp; sourceTree = "<group>"; };
 		53D123831FBF1D49001B8A10 /* libyoga.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyoga.a; path = "../../../../../../../../../Library/Developer/Xcode/DerivedData/yoga-hdfifpwsinitsibujacpiefkjfdy/Build/Products/Debug/libyoga.a"; sourceTree = "<group>"; };
 		58114A121AAE854800E7D092 /* RCTPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPicker.h; sourceTree = "<group>"; };
 		58114A131AAE854800E7D092 /* RCTPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPicker.m; sourceTree = "<group>"; };
@@ -2108,6 +2142,10 @@
 		58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDatePickerManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTShadowView+Layout.h"; sourceTree = "<group>"; };
 		590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTShadowView+Layout.m"; sourceTree = "<group>"; };
+		59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSurfaceStage.m; sourceTree = "<group>"; };
+		594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSurfaceHostingView.h; sourceTree = "<group>"; };
+		594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSurfaceHostingView.mm; sourceTree = "<group>"; };
+		594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSurfaceSizeMeasureMode.h; sourceTree = "<group>"; };
 		59500D411F71C63700B122B7 /* RCTUIManagerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManagerUtils.h; sourceTree = "<group>"; };
 		59500D421F71C63F00B122B7 /* RCTUIManagerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerUtils.m; sourceTree = "<group>"; };
 		5960C1B11F0804A00066FD5B /* RCTLayoutAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTLayoutAnimation.h; sourceTree = "<group>"; };
@@ -2262,12 +2300,10 @@
 				5376C5E11FC6DDB20083513D /* YGNodePrint.cpp */,
 				5376C5E01FC6DDB20083513D /* YGNodePrint.h */,
 				53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */,
-				53CBF1881FB4FE80002CBB31 /* YGNodeList.cpp */,
 				53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */,
 				53CBF1871FB4FE80002CBB31 /* Yoga.cpp */,
 				130A77031DF767AF001F9587 /* YGEnums.h */,
 				130A77041DF767AF001F9587 /* YGMacros.h */,
-				130A77061DF767AF001F9587 /* YGNodeList.h */,
 				130A77081DF767AF001F9587 /* Yoga.h */,
 			);
 			name = yoga;
@@ -2702,6 +2738,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		594F0A2E1FD23228007FBE96 /* SurfaceHostingView */ = {
+			isa = PBXGroup;
+			children = (
+				594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */,
+				594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */,
+				594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */,
+			);
+			path = SurfaceHostingView;
+			sourceTree = "<group>";
+		};
 		599FAA291FB274970058CCF6 /* Surface */ = {
 			isa = PBXGroup;
 			children = (
@@ -2714,9 +2760,11 @@
 				599FAA301FB274970058CCF6 /* RCTSurfaceRootView.h */,
 				599FAA311FB274970058CCF6 /* RCTSurfaceRootView.mm */,
 				599FAA321FB274970058CCF6 /* RCTSurfaceStage.h */,
-				599FAA331FB274970058CCF6 /* RCTSurfaceView+Internal.h */,
+				59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */,
 				599FAA341FB274970058CCF6 /* RCTSurfaceView.h */,
 				599FAA351FB274970058CCF6 /* RCTSurfaceView.mm */,
+				599FAA331FB274970058CCF6 /* RCTSurfaceView+Internal.h */,
+				594F0A2E1FD23228007FBE96 /* SurfaceHostingView */,
 			);
 			path = Surface;
 			sourceTree = "<group>";
@@ -3024,6 +3072,7 @@
 				3D302F351DF828F800D6DDAE /* RCTErrorCustomizer.h in Headers */,
 				3D302F361DF828F800D6DDAE /* RCTErrorInfo.h in Headers */,
 				3D302F371DF828F800D6DDAE /* RCTEventDispatcher.h in Headers */,
+				594F0A371FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h in Headers */,
 				3D302F381DF828F800D6DDAE /* RCTFrameUpdate.h in Headers */,
 				3D302F391DF828F800D6DDAE /* RCTImageSource.h in Headers */,
 				597633391F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */,
@@ -3103,6 +3152,7 @@
 				1384E20A1E806D5700545659 /* RCTNativeModule.h in Headers */,
 				3D302F7C1DF828F800D6DDAE /* RCTModalHostViewController.h in Headers */,
 				3D302F7D1DF828F800D6DDAE /* RCTModalHostViewManager.h in Headers */,
+				594F0A331FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */,
 				3D302F7E1DF828F800D6DDAE /* RCTNavigator.h in Headers */,
 				3D302F7F1DF828F800D6DDAE /* RCTNavigatorManager.h in Headers */,
 				130443DD1E401AF500D93A67 /* RCTConvert+Transform.h in Headers */,
@@ -3155,7 +3205,6 @@
 				53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
 				3DFE0D161DF8574D00459392 /* YGEnums.h in Headers */,
 				3DFE0D171DF8574D00459392 /* YGMacros.h in Headers */,
-				3DFE0D181DF8574D00459392 /* YGNodeList.h in Headers */,
 				5376C5E71FC6DDC20083513D /* YGNodePrint.h in Headers */,
 				3DFE0D191DF8574D00459392 /* Yoga.h in Headers */,
 			);
@@ -3233,7 +3282,6 @@
 				53D1239E1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
 				133957881DF76D3500EC27BE /* YGEnums.h in Headers */,
 				1339578B1DF76D3500EC27BE /* Yoga.h in Headers */,
-				1339578A1DF76D3500EC27BE /* YGNodeList.h in Headers */,
 				5376C5E61FC6DDC10083513D /* YGNodePrint.h in Headers */,
 				133957891DF76D3500EC27BE /* YGMacros.h in Headers */,
 			);
@@ -3344,6 +3392,7 @@
 				3D80DA361DF820620028D040 /* RCTModuleMethod.h in Headers */,
 				3D80DA371DF820620028D040 /* RCTMultipartDataTask.h in Headers */,
 				3D80DA381DF820620028D040 /* RCTMultipartStreamReader.h in Headers */,
+				594F0A361FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h in Headers */,
 				53D123B21FBF220F001B8A10 /* Yoga.h in Headers */,
 				3D80DA391DF820620028D040 /* RCTNullability.h in Headers */,
 				3D80DA3A1DF820620028D040 /* RCTParserUtils.h in Headers */,
@@ -3416,6 +3465,7 @@
 				13134C9C1E296B2A00B9F3CB /* RCTCxxModule.h in Headers */,
 				3D80DA731DF820620028D040 /* RCTNavigator.h in Headers */,
 				3D80DA741DF820620028D040 /* RCTNavigatorManager.h in Headers */,
+				594F0A321FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */,
 				3D80DA751DF820620028D040 /* RCTNavItem.h in Headers */,
 				3D80DA761DF820620028D040 /* RCTNavItemManager.h in Headers */,
 				3D80DA771DF820620028D040 /* RCTPicker.h in Headers */,
@@ -4035,6 +4085,7 @@
 				2D3B5EED1D9B09D700451313 /* RCTTabBarManager.m in Sources */,
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
+				594F0A351FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */,
 				2D3B5EE11D9B09B000451313 /* RCTScrollView.m in Sources */,
 				130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */,
 				2D3B5ED81D9B098A00451313 /* RCTNavigatorManager.m in Sources */,
@@ -4099,6 +4150,7 @@
 				2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */,
 				2D3B5EC51D9B094D00451313 /* RCTProfileTrampoline-i386.S in Sources */,
 				657734951EE8356100A0E9EA /* RCTInspectorPackagerConnection.m in Sources */,
+				59283CA11FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */,
 				2D3B5EC41D9B094B00451313 /* RCTProfileTrampoline-arm64.S in Sources */,
 				2D3B5EBB1D9B092300451313 /* RCTI18nManager.m in Sources */,
 				2D3B5EBE1D9B092D00451313 /* RCTUIManager.m in Sources */,
@@ -4162,7 +4214,6 @@
 			files = (
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				53D1239A1FBF1EF2001B8A10 /* YGEnums.cpp in Sources */,
-				53D1239C1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */,
 				5376C5E41FC6DDBC0083513D /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4173,7 +4224,6 @@
 			files = (
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				53D1239B1FBF1EF4001B8A10 /* YGEnums.cpp in Sources */,
-				53D1239D1FBF1EF7001B8A10 /* YGNodeList.cpp in Sources */,
 				5376C5E51FC6DDBD0083513D /* YGNodePrint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4265,6 +4315,7 @@
 				001BFCD01D8381DE008E587E /* RCTMultipartStreamReader.m in Sources */,
 				133CAE8E1B8E5CFD00F6AD92 /* RCTDatePicker.m in Sources */,
 				14C2CA761B3AC64F00E6CBB2 /* RCTFrameUpdate.m in Sources */,
+				594F0A341FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */,
 				13134C861E296B2A00B9F3CB /* RCTCxxBridge.mm in Sources */,
 				13B07FEF1A69327A00A75B9A /* RCTAlertManager.m in Sources */,
 				599FAA4C1FB274980058CCF6 /* RCTSurfaceView.mm in Sources */,
@@ -4289,6 +4340,7 @@
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
 				657734851EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */,
 				130E3D891E6A082100ACE484 /* RCTDevSettings.mm in Sources */,
+				59283CA01FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				3D7BFD171EA8E351008DFB7A /* RCTPackagerClient.m in Sources */,

@@ -10,17 +10,6 @@ aliases:
       - node_modules
     key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
 
-  - &restore-cache-website
-    keys:
-      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
-      # Fallback in case checksum fails
-      - v1-website-dependencies-{{ arch }}-{{ .Branch }}-
-
-  - &save-cache-website
-    paths:
-      - website/node_modules
-    key: v1-website-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "website/package.json" }}
-
   - &restore-cache-analysis
     keys:
       - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
@@ -275,52 +264,6 @@ jobs:
       - save-cache: *save-node-cache
       - run: ./scripts/process-podspecs.sh
       
-  # Tests website
-  test-website:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: |
-            cd website
-            npm install --no-package-lock --no-spin --no-progress
-      - run:
-          name: Test Website
-          command: |
-            cd website
-            npm test
-      - run:
-          name: Test Build Static Website
-          command: cd website && node ./server/generate.js
-
-  # Deploys website 
-  deploy-website:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: |
-            cd website
-            npm install --no-package-lock --no-spin --no-progress
-      - run:
-          name: Build and Deploy Static Website
-          command: |
-            if [[ $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then
-              git config --global user.email "reactjs-bot@users.noreply.github.com"
-              git config --global user.name "Website Deployment Script"
-              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-              echo "Deploying website..."
-              cd website && GIT_USER=reactjs-bot npm run gh-pages
-            else
-              echo "Skipping deploy."
-            fi
-
   # Publishes new version onto npm
   deploy:
     <<: *android_defaults
@@ -354,7 +297,7 @@ jobs:
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
               git config --global user.email "reactjs-bot@users.noreply.github.com"
-              git config --global user.name "Website Deployment Script"
+              git config --global user.name "npm Deployment Script"
               echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
               node ./scripts/publish-npm.js
             else
@@ -534,10 +477,6 @@ workflows:
           filters: *filter-ignore-gh-pages
       - test-objc-e2e:
           filters: *filter-ignore-gh-pages
-
-      # Test website
-      - test-website:
-          filters: *filter-ignore-gh-pages
     
       # If we are on a stable branch, deploy to `npm`
       - hold:
@@ -547,11 +486,5 @@ workflows:
           requires:
             - hold
       
-      # If we are on a master / stable branch, deploy docs
-      - deploy-website:
-          filters: *filter-only-master-stable
-          requires:
-            - test-website
-
       - analyze-pull-request:
           filters: *filter-ignore-master-stable
