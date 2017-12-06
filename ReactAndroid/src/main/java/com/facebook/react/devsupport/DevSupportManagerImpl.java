@@ -29,10 +29,8 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.FallbackJSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
@@ -122,7 +120,7 @@ public class DevSupportManagerImpl implements
   private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions =
       new LinkedHashMap<>();
-  private final ReactInstanceManager mReactInstanceManager;
+  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
@@ -180,13 +178,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
     Context applicationContext,
-    ReactInstanceManager reactInstanceManager,
+    ReactInstanceManagerDevHelper reactInstanceManagerHelper,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     int minNumShakes) {
 
     this(applicationContext,
-      reactInstanceManager,
+      reactInstanceManagerHelper,
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
@@ -196,13 +194,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceManager reactInstanceManager,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes) {
-    mReactInstanceManager = reactInstanceManager;
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
@@ -246,7 +244,8 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController = new DevLoadingViewController(applicationContext, reactInstanceManager);
+    mDevLoadingViewController =
+            new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
   }
 
   @Override
@@ -369,7 +368,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              Context context = mReactInstanceManager.getCurrentActivity();
+              Context context = mReactInstanceManagerHelper.getCurrentActivity();
               if (context == null) {
                 FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " +
                         "is not available, here is the error that redbox would've displayed: " + message);
@@ -450,7 +449,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceManager.toggleElementInspector();
+            mReactInstanceManagerHelper.toggleElementInspector();
           }
         });
     options.put(
@@ -462,7 +461,7 @@ public class DevSupportManagerImpl implements
         public void onOptionSelected() {
           if (!mDevSettings.isFpsDebugEnabled()) {
             // Request overlay permission if needed when "Show Perf Monitor" option is selected
-            Context context = mReactInstanceManager.getCurrentActivity();
+            Context context = mReactInstanceManagerHelper.getCurrentActivity();
             if (context == null) {
               FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
             } else {
@@ -496,7 +495,7 @@ public class DevSupportManagerImpl implements
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
-    Context context = mReactInstanceManager.getCurrentActivity();
+    Context context = mReactInstanceManagerHelper.getCurrentActivity();
     if (context == null) {
       FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " +
               "isn't available");
@@ -863,7 +862,7 @@ public class DevSupportManagerImpl implements
         }
       }
     };
-    mReactInstanceManager.onReloadWithJSDebugger(factory);
+    mReactInstanceManagerHelper.onReloadWithJSDebugger(factory);
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
@@ -910,7 +909,7 @@ public class DevSupportManagerImpl implements
                   @Override
                   public void run() {
                     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManager.onJSBundleLoadedFromServer();
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }

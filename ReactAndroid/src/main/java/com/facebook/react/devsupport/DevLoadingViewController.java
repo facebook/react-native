@@ -14,14 +14,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
@@ -39,7 +37,7 @@ public class DevLoadingViewController {
 
   private static boolean sEnabled = true;
   private final Context mContext;
-  private final ReactInstanceManager mReactInstanceManager;
+  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final TextView mDevLoadingView;
   private @Nullable PopupWindow mDevLoadingPopup;
 
@@ -47,9 +45,9 @@ public class DevLoadingViewController {
     sEnabled = enabled;
   }
 
-  public DevLoadingViewController(Context context, ReactInstanceManager reactInstanceManager) {
+  public DevLoadingViewController(Context context, ReactInstanceManagerDevHelper reactInstanceManagerHelper) {
     mContext = context;
-    mReactInstanceManager = reactInstanceManager;
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
     LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mDevLoadingView = (TextView) inflater.inflate(R.layout.dev_loading_view, null);
   }
@@ -142,7 +140,7 @@ public class DevLoadingViewController {
       return;
     }
 
-    Activity currentActivity = mReactInstanceManager.getCurrentActivity();
+    Activity currentActivity = mReactInstanceManagerHelper.getCurrentActivity();
     if (currentActivity == null) {
       FLog.e(ReactConstants.TAG, "Unable to display loading message because react " +
               "activity isn't available");
