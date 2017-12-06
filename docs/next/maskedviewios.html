@@ -5,32 +5,48 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/website/versioned_docs/maskedviewios.md" target="_blank">Edit</a><h1>MaskedViewIOS</h1></header><article><div><span><p>Renders the child view with a mask specified in the <code>maskElement</code> prop.</p>
-<pre><code class="hljs"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { MaskedViewIOS, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<h2><a class="anchor" aria-hidden="true" name="example"></a><a href="#example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> <span class="hljs-type">React</span> from <span class="hljs-symbol">'reac</span>t';
+<span class="hljs-keyword">import</span> { <span class="hljs-type">MaskedViewIOS</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">View</span> } from <span class="hljs-symbol">'react</span>-native';
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyMaskedView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MaskedViewIOS</span>
-        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span> }}
-        <span class="hljs-attr">maskElement</span>=<span class="hljs-string">{</span>
-          &lt;<span class="hljs-attr">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.maskContainerStyle}</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.maskTextStyle}</span>&gt;</span>
-              Basic Mask
-            <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+      <span class="hljs-comment">// Determines shape of the mask</span>
+      &lt;<span class="hljs-type">MaskedViewIOS</span>
+        style={{ flex: <span class="hljs-number">1</span>, flexDirection: <span class="hljs-symbol">'ro</span>w', height: <span class="hljs-symbol">'100</span>%' }}
+        maskElement={
+          &lt;<span class="hljs-type">View</span> style={{
+            <span class="hljs-comment">// Transparent background because mask is based off alpha channel.</span>
+            backgroundColor: <span class="hljs-symbol">'transparen</span>t',
+            flex: <span class="hljs-number">1</span>,
+            justifyContent: <span class="hljs-symbol">'cente</span>r',
+            alignItems: <span class="hljs-symbol">'cente</span>r',
+          }}&gt;
+            &lt;<span class="hljs-type">Text</span> style={{
+              fontSize: <span class="hljs-number">60</span>,
+              color: <span class="hljs-symbol">'blac</span>k',
+              fontWeight: <span class="hljs-symbol">'bol</span>d',
+            }}&gt;
+              <span class="hljs-type">Basic</span> <span class="hljs-type">Mask</span>
+            &lt;/<span class="hljs-type">Text</span>&gt;
+          &lt;/<span class="hljs-type">View</span>&gt;
         }
       &gt;
-        <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">backgroundColor:</span> '<span class="hljs-attr">blue</span>' }} /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">MaskedViewIOS</span>&gt;</span>
+        { <span class="hljs-comment">/* Shows behind the mask, you can put anything here, such as an image */</span> }
+        &lt;<span class="hljs-type">View</span> style={{ flex: <span class="hljs-number">1</span>, height: <span class="hljs-symbol">'100</span>%', backgroundColor: '#<span class="hljs-number">324376</span>' }} /&gt;
+        &lt;<span class="hljs-type">View</span> style={{ flex: <span class="hljs-number">1</span>, height: <span class="hljs-symbol">'100</span>%', backgroundColor: '#<span class="hljs-type">F5DD90</span>' }} /&gt;
+        &lt;<span class="hljs-type">View</span> style={{ flex: <span class="hljs-number">1</span>, height: <span class="hljs-symbol">'100</span>%', backgroundColor: '#<span class="hljs-type">F76C5E</span>' }} /&gt;
+      &lt;/<span class="hljs-type">MaskedViewIOS</span>&gt;
     );
   }
 }
-</span></code></pre>
-<p>The above example will render a view with a blue background that fills its
-parent, and then mask that view with text that says &quot;Basic Mask&quot;.</p>
-<p>The alpha channel of the view rendered by the <code>maskElement</code> prop determines how
-much of the view's content and background shows through. Fully or partially
+</code></pre>
+<p>The following image demonstrates that you can put almost anything behind the mask.
+The three examples shown are masked <code>&lt;View&gt;</code>, <code>&lt;Text&gt;</code>, and <code>&lt;Image&gt;</code>.</p>
+<p><center><img src="/react-native/docs/assets/MaskedViewIOS/example.png" width="200"></img></center></p>
+<p><strong>The alpha channel of the view rendered by the <code>maskElement</code> prop determines how
+much of the view's content and background shows through.</strong> Fully or partially
 opaque pixels allow the underlying content to show through but fully
 transparent pixels block that content.</p>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>

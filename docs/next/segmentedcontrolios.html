@@ -10,6 +10,7 @@
 selectedIndex prop to a state variable, then changing that variable.
 Note that the state variable would need to be updated as the user
 selects a value and changes the index, as shown in the example below.</p>
+<h2><a class="anchor" aria-hidden="true" name="example"></a><a href="#example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h2>
 <pre><code class="hljs">&lt;SegmentedControlIOS
   values={[<span class="hljs-string">'One'</span>, <span class="hljs-string">'Two'</span>]}
   selectedIndex={this.state.selectedIndex}
@@ -18,6 +19,7 @@ selects a value and changes the index, as shown in the example below.</p>
   }}
 /&gt;
 </code></pre>
+<p><center><img src="/react-native/docs/assets/SegmentedControlIOS/example.gif" width="360"></img></center></p>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
 <ul>
 <li><a href="/react-native/docs/next/view.html#props">View props...</a></li>
@@ -45,6 +47,7 @@ Default value is true.</p>
 <tr><td>bool</td><td>No</td></tr>
 </tbody>
 </table>
+<p><center><img src="/react-native/docs/assets/SegmentedControlIOS/enabled.png" width="360"></img></center></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="momentary"></a><a href="#momentary" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>momentary</code></h3>
 <p>If true, then selecting a segment won't persist visually.
@@ -57,6 +60,7 @@ The <code>onValueChange</code> callback will still work as expected.</p>
 <tr><td>bool</td><td>No</td></tr>
 </tbody>
 </table>
+<p><center><img src="/react-native/docs/assets/SegmentedControlIOS/momentary.gif" width="360"></img></center></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="onchange"></a><a href="#onchange" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onChange</code></h3>
 <p>Callback that is called when the user taps a segment;
@@ -103,6 +107,7 @@ passes the segment's value as an argument</p>
 <tr><td>string</td><td>No</td></tr>
 </tbody>
 </table>
+<p><center><img src="/react-native/docs/assets/SegmentedControlIOS/tintColor.png" width="360"></img></center></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="values"></a><a href="#values" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>values</code></h3>
 <p>The labels for the control's segment buttons, in order.</p>
