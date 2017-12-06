@@ -4,5 +4,5 @@
  * https://github.com/facebook/react-native/issues/17029
  */
 module.exports = function makeNamePatch(name) {
-  return name.replace(/\\/g, ':');
+  return name.replace(/\//g, ':');
 };
