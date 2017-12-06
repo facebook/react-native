@@ -12,8 +12,10 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
@@ -54,7 +56,7 @@ import org.json.JSONObject;
  *
  * One can use 'debug_http_host' shared preferences key to provide a host name for the debug server.
  * If the setting is empty we support and detect two basic configuration that works well for android
- * emulators connectiong to debug server running on emulator's host:
+ * emulators connection to debug server running on emulator's host:
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
@@ -73,6 +75,7 @@ public class DevServerHelper {
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
+  private static final String INSPECTOR_ATTACH_URL_FORMAT = "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
   private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
 
@@ -224,6 +227,36 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
+  public void attachDebugger(final Context context, final String title) {
+    new AsyncTask<Void, String, Boolean>() {
+      @Override
+      protected Boolean doInBackground(Void... ignore) {
+        return doSync();
+      }
+
+      public boolean doSync() {
+        try {
+          String attachToNuclideUrl = getInspectorAttachUrl(title);
+          OkHttpClient client = new OkHttpClient();
+          Request request = new Request.Builder().url(attachToNuclideUrl).build();
+          client.newCall(request).execute();
+          return true;
+        } catch (IOException e) {
+          FLog.e(ReactConstants.TAG, "Failed to send attach request to Inspector", e);
+          return false;
+        }
+      }
+
+      @Override
+      protected void onPostExecute(Boolean result) {
+        if (!result) {
+          String message = context.getString(R.string.catalyst_debugjs_nuclide_failure);
+          Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        }
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
   public void symbolicateStackTrace(
       Iterable<StackFrame> stackFrames,
       final SymbolicationListener listener) {
@@ -319,6 +352,16 @@ public class DevServerHelper {
         mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName(),
         mPackageName);
+  }
+
+  public String getInspectorAttachUrl(String title) {
+    return String.format(
+        Locale.US,
+        INSPECTOR_ATTACH_URL_FORMAT,
+        AndroidInfoHelpers.getServerHost(),
+        title,
+        mPackageName,
+        AndroidInfoHelpers.getFriendlyDeviceName());
   }
 
   public BundleDownloader getBundleDownloader() {

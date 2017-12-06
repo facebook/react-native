@@ -205,7 +205,7 @@ void YGNodeToString(
   }
   appendFormatedString(str, ">");
 
-  const uint32_t childCount = YGNodeListCount(node->children);
+  const uint32_t childCount = node->children.size();
   if (options & YGPrintOptionsChildren && childCount > 0) {
     for (uint32_t i = 0; i < childCount; i++) {
       appendFormatedString(str, "\n");

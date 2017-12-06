@@ -17,6 +17,10 @@
 
 #if RCT_DEV
 
+#if RCT_ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
+#endif
+
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
@@ -199,6 +203,14 @@ RCT_EXPORT_MODULE()
     [bridge reload];
   }]];
 
+  if (devSettings.isNuclideDebuggingAvailable) {
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"Debug JS in Nuclide %@", @"\U0001F4AF"] handler:^{
+#if RCT_ENABLE_INSPECTOR
+      [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
+#endif
+    }]];
+  }
+
   if (!devSettings.isRemoteDebuggingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
       UIAlertController *alertController = [UIAlertController
@@ -209,7 +221,12 @@ RCT_EXPORT_MODULE()
     }]];
   } else {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
+      NSString *title = devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
+      if (devSettings.isNuclideDebuggingAvailable) {
+        return [NSString stringWithFormat:@"%@ %@", title, @"\U0001F645"];
+      } else {
+        return title;
+      }
     } handler:^{
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
     }]];

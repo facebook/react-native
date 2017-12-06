@@ -7,12 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include "Yoga.h"
 #include <string.h>
-
-#include "YGNodeList.h"
+#include <algorithm>
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
-#include "Yoga.h"
 
 #ifdef _MSC_VER
 #include <float.h>
@@ -65,6 +64,16 @@ static YGConfig gYGConfigDefaults = {
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
 
 static YGValue YGValueZero = {.value = 0, .unit = YGUnitPoint};
+
+static bool YGNodeListDelete(YGVector& list, const YGNodeRef node) {
+  std::vector<YGNodeRef>::iterator p =
+      std::find(list.begin(), list.end(), node);
+  if (p != list.end()) {
+    list.erase(p);
+    return true;
+  }
+  return false;
+}
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -195,14 +204,11 @@ YGNodeRef YGNodeNew(void) {
   return YGNodeNewWithConfig(&gYGConfigDefaults);
 }
 
-YGNodeRef YGNodeClone(const YGNodeRef oldNode) {
-  const YGNodeRef node = (const YGNodeRef)malloc(sizeof(YGNode));
+YGNodeRef YGNodeClone(YGNodeRef oldNode) {
+  YGNodeRef node = new YGNode(*oldNode);
   YGAssertWithConfig(
       oldNode->config, node != nullptr, "Could not allocate memory for node");
   gNodeInstanceCount++;
-
-  memcpy(node, oldNode, sizeof(YGNode));
-  node->children = YGNodeListClone(oldNode->children);
   node->parent = nullptr;
   return node;
 }
@@ -219,7 +225,8 @@ void YGNodeFree(const YGNodeRef node) {
     child->parent = nullptr;
   }
 
-  YGNodeListFree(node->children);
+  node->children.clear();
+  node->children.shrink_to_fit();
   free(node);
   gNodeInstanceCount--;
 }
@@ -246,7 +253,8 @@ void YGNodeReset(const YGNodeRef node) {
       node->parent == nullptr,
       "Cannot reset a node still attached to a parent");
 
-  YGNodeListFree(node->children);
+  node->children.clear();
+  node->children.shrink_to_fit();
 
   const YGConfigRef config = node->config;
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
@@ -333,6 +341,7 @@ static void YGCloneChildrenIfNeeded(const YGNodeRef parent) {
     // This is an empty set. Nothing to clone.
     return;
   }
+
   const YGNodeRef firstChild = YGNodeGetChild(parent, 0);
   if (firstChild->parent == parent) {
     // If the first child has this node as its parent, we assume that it is already unique.
@@ -341,12 +350,12 @@ static void YGCloneChildrenIfNeeded(const YGNodeRef parent) {
     // We also assume that all its sibling are cloned as well.
     return;
   }
+
   const YGNodeClonedFunc cloneNodeCallback = parent->config->cloneNodeCallback;
-  const YGNodeListRef children = parent->children;
   for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef oldChild = YGNodeListGet(children, i);
+    const YGNodeRef oldChild = parent->children[i];
     const YGNodeRef newChild = YGNodeClone(oldChild);
-    YGNodeListReplace(children, i, newChild);
+    parent->children[i] = newChild;
     newChild->parent = parent;
     if (cloneNodeCallback) {
       cloneNodeCallback(oldChild, newChild, parent, i);
@@ -365,8 +374,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
       "Cannot add child: Nodes with measure functions cannot have children.");
 
   YGCloneChildrenIfNeeded(node);
-
-  YGNodeListInsert(&node->children, child, index);
+  node->children.insert(node->children.begin() + index, child);
   child->parent = node;
   YGNodeMarkDirtyInternal(node);
 }
@@ -374,6 +382,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
 void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
   // This algorithm is a forked variant from YGCloneChildrenIfNeeded that excludes a child.
   const uint32_t childCount = YGNodeGetChildCount(parent);
+
   if (childCount == 0) {
     // This is an empty set. Nothing to remove.
     return;
@@ -382,7 +391,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
   if (firstChild->parent == parent) {
     // If the first child has this node as its parent, we assume that it is already unique.
     // We can now try to delete a child in this list.
-    if (YGNodeListDelete(parent->children, excludedChild) != nullptr) {
+    if (YGNodeListDelete(parent->children, excludedChild)) {
       excludedChild->layout = gYGNodeDefaults.layout; // layout is no longer valid
       excludedChild->parent = nullptr;
       YGNodeMarkDirtyInternal(parent);
@@ -393,10 +402,9 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
   // We don't want to simply clone all children, because then the host will need to free
   // the clone of the child that was just deleted.
   const YGNodeClonedFunc cloneNodeCallback = parent->config->cloneNodeCallback;
-  const YGNodeListRef children = parent->children;
   uint32_t nextInsertIndex = 0;
   for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef oldChild = YGNodeListGet(children, i);
+    const YGNodeRef oldChild = parent->children[i];
     if (excludedChild == oldChild) {
       // Ignore the deleted child. Don't reset its layout or parent since it is still valid
       // in the other parent. However, since this parent has now changed, we need to mark it
@@ -405,7 +413,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       continue;
     }
     const YGNodeRef newChild = YGNodeClone(oldChild);
-    YGNodeListReplace(children, nextInsertIndex, newChild);
+    parent->children[nextInsertIndex] = newChild;
     newChild->parent = parent;
     if (cloneNodeCallback) {
       cloneNodeCallback(oldChild, newChild, parent, nextInsertIndex);
@@ -413,7 +421,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
     nextInsertIndex++;
   }
   while (nextInsertIndex < childCount) {
-    YGNodeListRemove(children, nextInsertIndex);
+    parent->children.erase(parent->children.begin() + nextInsertIndex);
     nextInsertIndex++;
   }
 }
@@ -432,17 +440,21 @@ void YGNodeRemoveAllChildren(const YGNodeRef parent) {
       oldChild->layout = gYGNodeDefaults.layout; // layout is no longer valid
       oldChild->parent = nullptr;
     }
-    YGNodeListRemoveAll(parent->children);
+    parent->children.clear();
+    parent->children.shrink_to_fit();
     YGNodeMarkDirtyInternal(parent);
     return;
   }
   // Otherwise, we are not the owner of the child set. We don't have to do anything to clear it.
-  parent->children = nullptr;
+  parent->children = YGVector();
   YGNodeMarkDirtyInternal(parent);
 }
 
 YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
-  return YGNodeListGet(node->children, index);
+  if (index < node->children.size()) {
+    return node->children[index];
+  }
+  return nullptr;
 }
 
 YGNodeRef YGNodeGetParent(const YGNodeRef node) {
@@ -450,7 +462,7 @@ YGNodeRef YGNodeGetParent(const YGNodeRef node) {
 }
 
 uint32_t YGNodeGetChildCount(const YGNodeRef node) {
-  return YGNodeListCount(node->children);
+  return node->children.size();
 }
 
 void YGNodeMarkDirty(const YGNodeRef node) {
@@ -1687,7 +1699,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   YGCloneChildrenIfNeeded(node);
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef child = YGNodeListGet(node->children, i);
+    const YGNodeRef child = node->children[i];
     YGZeroOutLayoutRecursivly(child);
   }
 }
@@ -1834,7 +1846,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
-  const uint32_t childCount = YGNodeListCount(node->children);
+  const uint32_t childCount = node->children.size();
   if (childCount == 0) {
     YGNodeEmptyContainerSetMeasuredDimensions(node,
                                               availableWidth,
@@ -1954,7 +1966,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef child = YGNodeListGet(node->children, i);
+    const YGNodeRef child = node->children[i];
     if (child->style.display == YGDisplayNone) {
       YGZeroOutLayoutRecursivly(child);
       child->hasNewLayout = true;
@@ -2053,7 +2065,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
     // Add items to the current line until it's full or we run out of items.
     for (uint32_t i = startOfLineIndex; i < childCount; i++, endOfLineIndex++) {
-      const YGNodeRef child = YGNodeListGet(node->children, i);
+      const YGNodeRef child = node->children[i];
       if (child->style.display == YGDisplayNone) {
         continue;
       }
@@ -2431,7 +2443,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
     int numberOfAutoMarginsOnCurrentLine = 0;
     for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
-      const YGNodeRef child = YGNodeListGet(node->children, i);
+      const YGNodeRef child = node->children[i];
       if (child->style.positionType == YGPositionTypeRelative) {
         if (YGMarginLeadingValue(child, mainAxis)->unit == YGUnitAuto) {
           numberOfAutoMarginsOnCurrentLine++;
@@ -2476,7 +2488,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     float crossDim = 0;
 
     for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
-      const YGNodeRef child = YGNodeListGet(node->children, i);
+      const YGNodeRef child = node->children[i];
       if (child->style.display == YGDisplayNone) {
         continue;
       }
@@ -2561,7 +2573,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // We can skip child alignment if we're just measuring the container.
     if (performLayout) {
       for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
-        const YGNodeRef child = YGNodeListGet(node->children, i);
+        const YGNodeRef child = node->children[i];
         if (child->style.display == YGDisplayNone) {
           continue;
         }
@@ -2726,7 +2738,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       float maxAscentForCurrentLine = 0;
       float maxDescentForCurrentLine = 0;
       for (ii = startIndex; ii < childCount; ii++) {
-        const YGNodeRef child = YGNodeListGet(node->children, ii);
+        const YGNodeRef child = node->children[ii];
         if (child->style.display == YGDisplayNone) {
           continue;
         }
@@ -2757,7 +2769,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
       if (performLayout) {
         for (ii = startIndex; ii < endIndex; ii++) {
-          const YGNodeRef child = YGNodeListGet(node->children, ii);
+          const YGNodeRef child = node->children[ii];
           if (child->style.display == YGDisplayNone) {
             continue;
           }
@@ -2914,7 +2926,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
       for (uint32_t i = 0; i < childCount; i++) {
-        const YGNodeRef child = YGNodeListGet(node->children, i);
+        const YGNodeRef child = node->children[i];
         if (child->style.display == YGDisplayNone) {
           continue;
         }
@@ -3359,7 +3371,7 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
                               (textRounding && !hasFractionalHeight)) -
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
-  const uint32_t childCount = YGNodeListCount(node->children);
+  const uint32_t childCount = node->children.size();
   for (uint32_t i = 0; i < childCount; i++) {
     YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }

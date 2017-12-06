@@ -474,6 +474,9 @@ var ScrollResponderMixin = {
   ) {
     invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
     if ('animated' in rect) {
+      /* $FlowFixMe(>=0.60.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.60 was deployed. To see the error delete this
+       * comment and run Flow. */
       var { animated, ...rect } = rect;
     } else if (typeof animated !== 'undefined') {
       console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');

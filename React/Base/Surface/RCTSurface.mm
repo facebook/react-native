@@ -82,10 +82,10 @@
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
     if (!bridge.loading) {
-      _stage = (RCTSurfaceStage)(_stage | RCTSurfaceStageBridgeDidLoad);
+      _stage = _stage | RCTSurfaceStageBridgeDidLoad;
     }
 
-    [self _registerRootViewTag];
+    [self _registerRootView];
     [self _run];
   }
 
@@ -94,6 +94,7 @@
 
 - (void)dealloc
 {
+  [self _stop];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -211,6 +212,7 @@
 
 - (void)_setStage:(RCTSurfaceStage)stage
 {
+  RCTSurfaceStage updatedStage;
   {
     std::lock_guard<std::mutex> lock(_mutex);
 
@@ -218,10 +220,11 @@
       return;
     }
 
-    _stage = (RCTSurfaceStage)(_stage | stage);
+    updatedStage = (RCTSurfaceStage)(_stage | stage);
+    _stage = updatedStage;
   }
 
-  [self _propagateStageChange:stage];
+  [self _propagateStageChange:updatedStage];
 }
 
 - (void)_propagateStageChange:(RCTSurfaceStage)stage
@@ -295,7 +298,18 @@
   [self _setStage:RCTSurfaceStageSurfaceDidRun];
 }
 
-- (void)_registerRootViewTag
+- (void)_stop
+{
+  RCTBridge *batchedBridge = self._batchedBridge;
+  [batchedBridge enqueueJSCall:@"AppRegistry"
+                        method:@"unmountApplicationComponentAtRootTag"
+                          args:@[self->_rootViewTag]
+                    completion:NULL];
+
+  [self _setStage:RCTSurfaceStageSurfaceDidStop];
+}
+
+- (void)_registerRootView
 {
   RCTBridge *batchedBridge;
   CGSize minimumSize;
@@ -309,7 +323,8 @@
   }
 
   RCTUIManager *uiManager = batchedBridge.uiManager;
-  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+
+  RCTExecuteOnUIManagerQueue(^{
     [uiManager registerRootViewTag:self->_rootViewTag];
 
     RCTSurfaceRootShadowView *rootShadowView =
