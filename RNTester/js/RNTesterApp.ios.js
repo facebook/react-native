@@ -11,6 +11,8 @@
  */
 'use strict';
 
+require('MessageQueue').spy(true);
+
 const AsyncStorage = require('AsyncStorage');
 const BackHandler = require('BackHandler');
 const Linking = require('Linking');
