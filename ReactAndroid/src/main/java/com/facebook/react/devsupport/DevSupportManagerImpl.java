@@ -724,6 +724,16 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
+  public void onPackagerConnected() {
+    // No-op
+  }
+
+  @Override
+  public void onPackagerDisconnected() {
+    // No-op
+  }
+
+  @Override
   public void onPackagerReloadCommand() {
     // Disable debugger to resume the JsVM & avoid thread locks while reloading
     mDevServerHelper.disableDebugger();

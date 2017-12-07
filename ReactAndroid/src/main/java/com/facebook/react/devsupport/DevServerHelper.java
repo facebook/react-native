@@ -25,6 +25,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
@@ -92,6 +93,8 @@ public class DevServerHelper {
   }
 
   public interface PackagerCommandListener {
+    void onPackagerConnected();
+    void onPackagerDisconnected();
     void onPackagerReloadCommand();
     void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
@@ -163,10 +166,24 @@ public class DevServerHelper {
         });
         handlers.putAll(new FileIoHandler().handlers());
 
+        ConnectionCallback onPackagerConnectedCallback =
+          new ConnectionCallback() {
+              @Override
+              public void onConnected() {
+                commandListener.onPackagerConnected();
+              }
+
+              @Override
+              public void onDisconnected() {
+                commandListener.onPackagerDisconnected();
+              }
+            };
+
         mPackagerClient = new JSPackagerClient(
             clientId,
             mSettings.getPackagerConnectionSettings(),
-            handlers);
+            handlers,
+            onPackagerConnectedCallback);
         mPackagerClient.init();
 
         return null;
