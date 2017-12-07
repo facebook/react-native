@@ -22,7 +22,7 @@
 <span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactMethod;
 
 <span class="hljs-keyword">import</span> java.util.Map;
-<span class="hljs-keyword">import</span> java.util.HashMap; 
+<span class="hljs-keyword">import</span> java.util.HashMap;
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToastModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
 
@@ -107,7 +107,7 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 }
 </code></pre>
 <p>To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of <code>NativeModules</code> each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.</p>
-<pre><code class="hljs css js"><span class="hljs-comment">/**
+<pre><code class="hljs css javascript"><span class="hljs-comment">/**
  * This exposes the native ToastExample module as a JS module. This has a
  * function 'show' which takes the following parameters:
  *
@@ -115,11 +115,11 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
  * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
  *    ToastExample.LONG
  */</span>
-<span class="hljs-keyword">import</span> { NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> {NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-built_in">module</span>.exports = NativeModules.ToastExample;
 </code></pre>
 <p>Now, from your other JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> ToastExample <span class="hljs-keyword">from</span> <span class="hljs-string">'./ToastExample'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> ToastExample <span class="hljs-keyword">from</span> <span class="hljs-string">'./ToastExample'</span>;
 
 ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT);
 </code></pre>
@@ -153,10 +153,10 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 ...
 </code></pre>
 <p>This method would be accessed in JavaScript using:</p>
-<pre><code class="hljs css js">UIManager.measureLayout(
+<pre><code class="hljs css javascript">UIManager.measureLayout(
   <span class="hljs-number">100</span>,
   <span class="hljs-number">100</span>,
-  (msg) =&gt; {
+  msg =&gt; {
     <span class="hljs-built_in">console</span>.log(msg);
   },
   (x, y, width, height) =&gt; {
@@ -199,14 +199,12 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 ...
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
+<pre><code class="hljs css javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
-    <span class="hljs-keyword">var</span> {
-      relativeX,
-      relativeY,
-      width,
-      height,
-    } = <span class="hljs-keyword">await</span> UIManager.measureLayout(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>);
+    <span class="hljs-keyword">var</span> {relativeX, relativeY, width, height} = <span class="hljs-keyword">await</span> UIManager.measureLayout(
+      <span class="hljs-number">100</span>,
+      <span class="hljs-number">100</span>
+    );
 
     <span class="hljs-built_in">console</span>.log(relativeX + <span class="hljs-string">':'</span> + relativeY + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
   } <span class="hljs-keyword">catch</span> (e) {
@@ -234,7 +232,7 @@ WritableMap params = Arguments.createMap();
 sendEvent(reactContext, <span class="hljs-string">"keyboardWillShow"</span>, params);
 </code></pre>
 <p>JavaScript modules can then register to receive events by <code>addListenerOn</code> using the <code>Subscribable</code> mixin.</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { DeviceEventEmitter } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { DeviceEventEmitter } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 ...
 
 var ScrollResponderMixin = {
@@ -254,7 +252,7 @@ var ScrollResponderMixin = {
   },
 </code></pre>
 <p>You can also directly use the <code>DeviceEventEmitter</code> module to listen for events.</p>
-<pre><code class="hljs css js">...
+<pre><code class="hljs css javascript">...
 componentWillMount: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
   DeviceEventEmitter.addListener(<span class="hljs-string">'keyboardWillShow'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e: Event</span>) </span>{
     <span class="hljs-comment">// handle event.</span>

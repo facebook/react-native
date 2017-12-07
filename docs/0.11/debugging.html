@@ -145,7 +145,7 @@
              .newBuilder()
              .addNetworkInterceptor(<span class="hljs-keyword">new</span> StethoInterceptor())
              .build();
-      
+
       OkHttpClientProvider.replaceOkHttpClient(client);
     }
 }
@@ -155,7 +155,7 @@
 <pre><code class="hljs css java">  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span><span class="hljs-params">()</span> </span>{
       <span class="hljs-keyword">super</span>.onCreate();
 
-      <span class="hljs-keyword">if</span> (BuildConfig.DEBUG) {      
+      <span class="hljs-keyword">if</span> (BuildConfig.DEBUG) {
           StethoWrapper.initialize(<span class="hljs-keyword">this</span>);
           StethoWrapper.addInterceptor();
       }

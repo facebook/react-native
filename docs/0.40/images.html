@@ -5,17 +5,11 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/images.md" target="_blank">Edit</a><h1>Images</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" name="static-image-resources"></a><a href="#static-image-resources" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Static Image Resources</h2>
-<p>React Native provides a unified way of managing images and other media assets in
-your iOS and Android apps. To add a static image to your app, place it somewhere
-in your source code tree and reference it like this:</p>
-<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">"./my-icon.png"</span>)} /&gt;;
+<p>React Native provides a unified way of managing images and other media assets in your iOS and Android apps. To add a static image to your app, place it somewhere in your source code tree and reference it like this:</p>
+<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">'./my-icon.png'</span>)} /&gt;
 </code></pre>
-<p>The image name is resolved the same way JS modules are resolved. In the example
-above, the packager will look for <code>my-icon.png</code> in the same folder as the
-component that requires it. Also, if you have <code>my-icon.ios.png</code> and
-<code>my-icon.android.png</code>, the packager will pick the correct file for the platform.</p>
-<p>You can also use the <code>@2x</code> and <code>@3x</code> suffixes to provide images for different
-screen densities. If you have the following file structure:</p>
+<p>The image name is resolved the same way JS modules are resolved. In the example above, the packager will look for <code>my-icon.png</code> in the same folder as the component that requires it. Also, if you have <code>my-icon.ios.png</code> and <code>my-icon.android.png</code>, the packager will pick the correct file for the platform.</p>
+<p>You can also use the <code>@2x</code> and <code>@3x</code> suffixes to provide images for different screen densities. If you have the following file structure:</p>
 <pre><code class="hljs">.
 ├── <span class="hljs-selector-tag">button</span><span class="hljs-selector-class">.js</span>
 └── <span class="hljs-selector-tag">img</span>
@@ -23,81 +17,50 @@ screen densities. If you have the following file structure:</p>
     └── check@<span class="hljs-number">3</span>x<span class="hljs-selector-class">.png</span>
 </code></pre>
 <p>...and <code>button.js</code> code contains:</p>
-<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">"./assets/check.png"</span>)} /&gt;;
+<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">'./assets/check.png'</span>)} /&gt;
 </code></pre>
-<p>...the packager will bundle and serve the image corresponding to device's screen
-density. For example, <code>check@2x.png</code>, will be used on an iPhone 7,
-while<code>check@3x.png</code> will be used on an iPhone 7 Plus or a Nexus 5. If there is
-no image matching the screen density, the closest best option will be selected.</p>
-<p>On Windows, you might need to restart the packager if you add new images to your
-project.</p>
+<p>...the packager will bundle and serve the image corresponding to device's screen density. For example, <code>check@2x.png</code>, will be used on an iPhone 7, while<code>check@3x.png</code> will be used on an iPhone 7 Plus or a Nexus 5. If there is no image matching the screen density, the closest best option will be selected.</p>
+<p>On Windows, you might need to restart the packager if you add new images to your project.</p>
 <p>Here are some benefits that you get:</p>
 <ol>
 <li>Same system on iOS and Android.</li>
-<li>Images live in the same folder as your JavaScript code. Components are
-self-contained.</li>
+<li>Images live in the same folder as your JavaScript code. Components are self-contained.</li>
 <li>No global namespace, i.e. you don't have to worry about name collisions.</li>
 <li>Only the images that are actually used will be packaged into your app.</li>
-<li>Adding and changing images doesn't require app recompilation, just refresh
-the simulator as you normally do.</li>
+<li>Adding and changing images doesn't require app recompilation, just refresh the simulator as you normally do.</li>
 <li>The packager knows the image dimensions, no need to duplicate it in the code.</li>
 <li>Images can be distributed via <a href="https://www.npmjs.com/">npm</a> packages.</li>
 </ol>
-<p>In order for this to work, the image name in <code>require</code> has to be known
-statically.</p>
+<p>In order for this to work, the image name in <code>require</code> has to be known statically.</p>
 <pre><code class="hljs css javascript"><span class="hljs-comment">// GOOD</span>
-&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">"./my-icon.png"</span>)} /&gt;;
+&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">'./my-icon.png'</span>)} /&gt;;
 
 <span class="hljs-comment">// BAD</span>
-<span class="hljs-keyword">var</span> icon = <span class="hljs-keyword">this</span>.props.active ? <span class="hljs-string">"my-icon-active"</span> : <span class="hljs-string">"my-icon-inactive"</span>;
-&lt;Image source={require("./" + icon + ".png")} /&gt;;
+<span class="hljs-keyword">var</span> icon = <span class="hljs-keyword">this</span>.props.active ? <span class="hljs-string">'my-icon-active'</span> : <span class="hljs-string">'my-icon-inactive'</span>;
+&lt;Image source={require('./' + icon + '.png')} /&gt;;
 
 // GOOD
 var icon = this.props.active
-  ? require("./my-icon-active.png")
-  : require("./my-icon-inactive.png");
+  ? require('./my-icon-active.png')
+  : require('./my-icon-inactive.png');
 &lt;Image source={icon} /&gt;;
 </code></pre>
-<p>Note that image sources required this way include size (width, height) info for
-the Image. If you need to scale the image dynamically (i.e. via flex), you may
-need to manually set <code>{ width: undefined, height: undefined }</code> on the style
-attribute.</p>
+<p>Note that image sources required this way include size (width, height) info for the Image. If you need to scale the image dynamically (i.e. via flex), you may need to manually set <code>{ width: undefined, height: undefined }</code> on the style attribute.</p>
 <h2><a class="anchor" aria-hidden="true" name="static-non-image-resources"></a><a href="#static-non-image-resources" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Static Non-Image Resources</h2>
-<p>The <code>require</code> syntax described above can be used to statically include audio,
-video or document files in your project as well. Most common file types are
-supported including <code>.mp3</code>, <code>.wav</code>, <code>.mp4</code>, <code>.mov</code>, <code>.html</code> and <code>.pdf</code>. See
-<a href="https://github.com/facebook/metro/blob/master/packages/metro/src/defaults.js#L13-L18">packager defaults</a>
-for the full list.</p>
-<p>You can add support for other types by creating a packager config file (see the
-<a href="https://github.com/facebook/react-native/blob/master/local-cli/util/Config.js#L34-L39">packager config file</a>
-for the full list of configuration options).</p>
-<p>A caveat is that videos must use absolute positioning instead of <code>flexGrow</code>,
-since size info is not currently passed for non-image assets. This limitation
-doesn't occur for videos that are linked directly into Xcode or the Assets
-folder for Android.</p>
+<p>The <code>require</code> syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including <code>.mp3</code>, <code>.wav</code>, <code>.mp4</code>, <code>.mov</code>, <code>.html</code> and <code>.pdf</code>. See <a href="https://github.com/facebook/metro/blob/master/packages/metro/src/defaults.js#L13-L18">packager defaults</a> for the full list.</p>
+<p>You can add support for other types by creating a packager config file (see the <a href="https://github.com/facebook/react-native/blob/master/local-cli/util/Config.js#L34-L39">packager config file</a> for the full list of configuration options).</p>
+<p>A caveat is that videos must use absolute positioning instead of <code>flexGrow</code>, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.</p>
 <h2><a class="anchor" aria-hidden="true" name="images-from-hybrid-app-s-resources"></a><a href="#images-from-hybrid-app-s-resources" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Images From Hybrid App's Resources</h2>
-<p>If you are building a hybrid app (some UIs in React Native, some UIs in platform
-code) you can still use images that are already bundled into the app.</p>
-<p>For images included via Xcode asset catalogs or in the Android drawable folder,
-use the image name without the extension:</p>
-<pre><code class="hljs css javascript">&lt;Image source={{ <span class="hljs-attr">uri</span>: <span class="hljs-string">"app_icon"</span> }} style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">40</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">40</span> }} /&gt;;
+<p>If you are building a hybrid app (some UIs in React Native, some UIs in platform code) you can still use images that are already bundled into the app.</p>
+<p>For images included via Xcode asset catalogs or in the Android drawable folder, use the image name without the extension:</p>
+<pre><code class="hljs css javascript">&lt;Image source={{<span class="hljs-attr">uri</span>: <span class="hljs-string">'app_icon'</span>}} style={{<span class="hljs-attr">width</span>: <span class="hljs-number">40</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>}} /&gt;
 </code></pre>
 <p>For images in the Android assets folder, use the <code>asset:/</code> scheme:</p>
-<pre><code class="hljs css javascript">&lt;Image
-  source={{ <span class="hljs-attr">uri</span>: <span class="hljs-string">"asset:/app_icon.png"</span> }}
-  style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">40</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">40</span> }}
-/&gt;;
+<pre><code class="hljs css javascript">&lt;Image source={{<span class="hljs-attr">uri</span>: <span class="hljs-string">'asset:/app_icon.png'</span>}} style={{<span class="hljs-attr">width</span>: <span class="hljs-number">40</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>}} /&gt;
 </code></pre>
-<p>These approaches provide no safety checks. It's up to you to guarantee that
-those images are available in the application. Also you have to specify image
-dimensions manually.</p>
+<p>These approaches provide no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.</p>
 <h2><a class="anchor" aria-hidden="true" name="network-images"></a><a href="#network-images" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Network Images</h2>
-<p>Many of the images you will display in your app will not be available at compile
-time, or you will want to load some dynamically to keep the binary size down.
-Unlike with static resources, <em>you will need to manually specify the dimensions
-of your image</em>. It's highly recommended that you use https as well in order to
-satisfy <a href="/react-native/docs/0.40/running-on-device.html#app-transport-security">App Transport Security</a>
-requirements on iOS.</p>
+<p>Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, <em>you will need to manually specify the dimensions of your image</em>. It's highly recommended that you use https as well in order to satisfy <a href="/react-native/docs/0.40/running-on-device.html#app-transport-security">App Transport Security</a> requirements on iOS.</p>
 <pre><code class="hljs css javascript"><span class="hljs-comment">// GOOD</span>
 &lt;Image source={{<span class="hljs-attr">uri</span>: <span class="hljs-string">'https://facebook.github.io/react/logo-og.png'</span>}}
        style={{<span class="hljs-attr">width</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">400</span>}} /&gt;
@@ -106,116 +69,72 @@ requirements on iOS.</p>
 &lt;Image source={{<span class="hljs-attr">uri</span>: <span class="hljs-string">'https://facebook.github.io/react/logo-og.png'</span>}} /&gt;
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" name="network-requests-for-images"></a><a href="#network-requests-for-images" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Network Requests for Images</h3>
-<p>If you would like to set such things as the HTTP-Verb, Headers or a Body along
-with the image request, you may do this by defining these properties on the
-source object:</p>
+<p>If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:</p>
 <pre><code class="hljs css javascript">&lt;Image
   source={{
-    <span class="hljs-attr">uri</span>: <span class="hljs-string">"https://facebook.github.io/react/logo-og.png"</span>,
-    <span class="hljs-attr">method</span>: <span class="hljs-string">"POST"</span>,
+    <span class="hljs-attr">uri</span>: <span class="hljs-string">'https://facebook.github.io/react/logo-og.png'</span>,
+    <span class="hljs-attr">method</span>: <span class="hljs-string">'POST'</span>,
     <span class="hljs-attr">headers</span>: {
-      <span class="hljs-attr">Pragma</span>: <span class="hljs-string">"no-cache"</span>
+      <span class="hljs-attr">Pragma</span>: <span class="hljs-string">'no-cache'</span>,
     },
-    <span class="hljs-attr">body</span>: <span class="hljs-string">"Your Body goes here"</span>
+    <span class="hljs-attr">body</span>: <span class="hljs-string">'Your Body goes here'</span>,
   }}
-  style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">400</span> }}
-/&gt;;
+  style={{<span class="hljs-attr">width</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">400</span>}}
+/&gt;
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="uri-data-images"></a><a href="#uri-data-images" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Uri Data Images</h2>
-<p>Sometimes, you might be getting encoded image data from a REST API call. You can
-use the <code>'data:'</code> uri scheme to use these images. Same as for network resources,
-<em>you will need to manually specify the dimensions of your image</em>.</p>
+<p>Sometimes, you might be getting encoded image data from a REST API call. You can use the <code>'data:'</code> uri scheme to use these images. Same as for network resources, <em>you will need to manually specify the dimensions of your image</em>.</p>
 <blockquote>
-<p>This is recommended for very small and dynamic images only, like icons in a
-list from a DB.</p>
+<p>This is recommended for very small and dynamic images only, like icons in a list from a DB.</p>
 </blockquote>
 <pre><code class="hljs css javascript"><span class="hljs-comment">// include at least width and height!</span>
 &lt;Image
-  style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">51</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">51</span>, <span class="hljs-attr">resizeMode</span>: Image.resizeMode.contain }}
+  style={{
+    <span class="hljs-attr">width</span>: <span class="hljs-number">51</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">51</span>,
+    <span class="hljs-attr">resizeMode</span>: Image.resizeMode.contain,
+  }}
   source={{
     <span class="hljs-attr">uri</span>:
-      <span class="hljs-string">"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=="</span>
+      <span class="hljs-string">'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='</span>,
   }}
-/&gt;;
+/&gt;
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" name="cache-control-ios-only"></a><a href="#cache-control-ios-only" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Cache Control (iOS Only)</h3>
-<p>In some cases you might only want to display an image if it is already in the
-local cache, i.e. a low resolution placeholder until a higher resolution is
-available. In other cases you do not care if the image is outdated and are
-willing to display an outdated image to save bandwidth. The <code>cache</code> source
-property gives you control over how the network layer interacts with the cache.</p>
+<p>In some cases you might only want to display an image if it is already in the local cache, i.e. a low resolution placeholder until a higher resolution is available. In other cases you do not care if the image is outdated and are willing to display an outdated image to save bandwidth. The <code>cache</code> source property gives you control over how the network layer interacts with the cache.</p>
 <ul>
 <li><code>default</code>: Use the native platforms default strategy.</li>
-<li><code>reload</code>: The data for the URL will be loaded from the originating source. No
-existing cache data should be used to satisfy a URL load request.</li>
-<li><code>force-cache</code>: The existing cached data will be used to satisfy the request,
-regardless of its age or expiration date. If there is no existing data in the
-cache corresponding the request, the data is loaded from the originating
-source.</li>
-<li><code>only-if-cached</code>: The existing cache data will be used to satisfy a request,
-regardless of its age or expiration date. If there is no existing data in the
-cache corresponding to a URL load request, no attempt is made to load the data
-from the originating source, and the load is considered to have failed.</li>
+<li><code>reload</code>: The data for the URL will be loaded from the originating source. No existing cache data should be used to satisfy a URL load request.</li>
+<li><code>force-cache</code>: The existing cached data will be used to satisfy the request, regardless of its age or expiration date. If there is no existing data in the cache corresponding the request, the data is loaded from the originating source.</li>
+<li><code>only-if-cached</code>: The existing cache data will be used to satisfy a request, regardless of its age or expiration date. If there is no existing data in the cache corresponding to a URL load request, no attempt is made to load the data from the originating source, and the load is considered to have failed.</li>
 </ul>
 <pre><code class="hljs css javascript">&lt;Image
   source={{
-    <span class="hljs-attr">uri</span>: <span class="hljs-string">"https://facebook.github.io/react/logo-og.png"</span>,
-    <span class="hljs-attr">cache</span>: <span class="hljs-string">"only-if-cached"</span>
+    <span class="hljs-attr">uri</span>: <span class="hljs-string">'https://facebook.github.io/react/logo-og.png'</span>,
+    <span class="hljs-attr">cache</span>: <span class="hljs-string">'only-if-cached'</span>,
   }}
-  style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">400</span> }}
-/&gt;;
+  style={{<span class="hljs-attr">width</span>: <span class="hljs-number">400</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">400</span>}}
+/&gt;
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="local-filesystem-images"></a><a href="#local-filesystem-images" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Local Filesystem Images</h2>
-<p>See <a href="/react-native/docs/0.40/cameraroll.html">CameraRoll</a> for an example of using local resources that are
-outside of <code>Images.xcassets</code>.</p>
+<p>See <a href="/react-native/docs/0.40/cameraroll.html">CameraRoll</a> for an example of using local resources that are outside of <code>Images.xcassets</code>.</p>
 <h3><a class="anchor" aria-hidden="true" name="best-camera-roll-image"></a><a href="#best-camera-roll-image" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Best Camera Roll Image</h3>
-<p>iOS saves multiple sizes for the same image in your Camera Roll, it is very
-important to pick the one that's as close as possible for performance reasons.
-You wouldn't want to use the full quality 3264x2448 image as source when
-displaying a 200x200 thumbnail. If there's an exact match, React Native will
-pick it, otherwise it's going to use the first one that's at least 50% bigger in
-order to avoid blur when resizing from a close size. All of this is done by
-default so you don't have to worry about writing the tedious (and error prone)
-code to do it yourself.</p>
+<p>iOS saves multiple sizes for the same image in your Camera Roll, it is very important to pick the one that's as close as possible for performance reasons. You wouldn't want to use the full quality 3264x2448 image as source when displaying a 200x200 thumbnail. If there's an exact match, React Native will pick it, otherwise it's going to use the first one that's at least 50% bigger in order to avoid blur when resizing from a close size. All of this is done by default so you don't have to worry about writing the tedious (and error prone) code to do it yourself.</p>
 <h2><a class="anchor" aria-hidden="true" name="why-not-automatically-size-everything"></a><a href="#why-not-automatically-size-everything" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Why Not Automatically Size Everything?</h2>
-<p><em>In the browser</em> if you don't give a size to an image, the browser is going to
-render a 0x0 element, download the image, and then render the image based with
-the correct size. The big issue with this behavior is that your UI is going to
-jump all around as images load, this makes for a very bad user experience.</p>
-<p><em>In React Native</em> this behavior is intentionally not implemented. It is more
-work for the developer to know the dimensions (or aspect ratio) of the remote
-image in advance, but we believe that it leads to a better user experience.
-Static images loaded from the app bundle via the <code>require('./my-icon.png')</code>
-syntax <em>can be automatically sized</em> because their dimensions are available
-immediately at the time of mounting.</p>
+<p><em>In the browser</em> if you don't give a size to an image, the browser is going to render a 0x0 element, download the image, and then render the image based with the correct size. The big issue with this behavior is that your UI is going to jump all around as images load, this makes for a very bad user experience.</p>
+<p><em>In React Native</em> this behavior is intentionally not implemented. It is more work for the developer to know the dimensions (or aspect ratio) of the remote image in advance, but we believe that it leads to a better user experience. Static images loaded from the app bundle via the <code>require('./my-icon.png')</code> syntax <em>can be automatically sized</em> because their dimensions are available immediately at the time of mounting.</p>
 <p>For example, the result of <code>require('./my-icon.png')</code> might be:</p>
 <pre><code class="hljs css javascript">{<span class="hljs-string">"__packager_asset"</span>:<span class="hljs-literal">true</span>,<span class="hljs-string">"uri"</span>:<span class="hljs-string">"my-icon.png"</span>,<span class="hljs-string">"width"</span>:<span class="hljs-number">591</span>,<span class="hljs-string">"height"</span>:<span class="hljs-number">573</span>}
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="source-as-an-object"></a><a href="#source-as-an-object" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Source as an object</h2>
-<p>In React Native, one interesting decision is that the <code>src</code> attribute is named
-<code>source</code> and doesn't take a string but an object with a <code>uri</code> attribute.</p>
-<pre><code class="hljs css javascript">&lt;Image source={{ <span class="hljs-attr">uri</span>: <span class="hljs-string">"something.jpg"</span> }} /&gt;;
+<p>In React Native, one interesting decision is that the <code>src</code> attribute is named <code>source</code> and doesn't take a string but an object with a <code>uri</code> attribute.</p>
+<pre><code class="hljs css javascript">&lt;Image source={{<span class="hljs-attr">uri</span>: <span class="hljs-string">'something.jpg'</span>}} /&gt;
 </code></pre>
-<p>On the infrastructure side, the reason is that it allows us to attach metadata
-to this object. For example if you are using <code>require('./my-icon.png')</code>, then we
-add information about its actual location and size (don't rely on this fact, it
-might change in the future!). This is also future proofing, for example we may
-want to support sprites at some point, instead of outputting <code>{uri: ...}</code>, we
-can output <code>{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}</code> and
-transparently support spriting on all the existing call sites.</p>
-<p>On the user side, this lets you annotate the object with useful attributes such
-as the dimension of the image in order to compute the size it's going to be
-displayed in. Feel free to use it as your data structure to store more
-information about your image.</p>
+<p>On the infrastructure side, the reason is that it allows us to attach metadata to this object. For example if you are using <code>require('./my-icon.png')</code>, then we add information about its actual location and size (don't rely on this fact, it might change in the future!). This is also future proofing, for example we may want to support sprites at some point, instead of outputting <code>{uri: ...}</code>, we can output <code>{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}</code> and transparently support spriting on all the existing call sites.</p>
+<p>On the user side, this lets you annotate the object with useful attributes such as the dimension of the image in order to compute the size it's going to be displayed in. Feel free to use it as your data structure to store more information about your image.</p>
 <h2><a class="anchor" aria-hidden="true" name="background-image-via-nesting"></a><a href="#background-image-via-nesting" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Background Image via Nesting</h2>
-<p>A common feature request from developers familiar with the web is
-<code>background-image</code>. To handle this use case, you can use the <code>&lt;ImageBackground&gt;</code>
-component, which has the same props as <code>&lt;Image&gt;</code>, and add whatever children to
-it you would like to layer on top of it.</p>
-<p>You might not want to use <code>&lt;ImageBackground&gt;</code> in some cases, since the
-implementation is very simple. Refer to <code>&lt;ImageBackground&gt;</code>'s
-<a href="https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js">source code</a>
-for more insight, and create your own custom component when needed.</p>
+<p>A common feature request from developers familiar with the web is <code>background-image</code>. To handle this use case, you can use the <code>&lt;ImageBackground&gt;</code> component, which has the same props as <code>&lt;Image&gt;</code>, and add whatever children to it you would like to layer on top of it.</p>
+<p>You might not want to use <code>&lt;ImageBackground&gt;</code> in some cases, since the implementation is very simple. Refer to <code>&lt;ImageBackground&gt;</code>'s <a href="https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js">source code</a> for more insight, and create your own custom component when needed.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">return</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ImageBackground</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{...}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
@@ -223,8 +142,7 @@ for more insight, and create your own custom component when needed.</p>
 );
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="ios-border-radius-styles"></a><a href="#ios-border-radius-styles" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS Border Radius Styles</h2>
-<p>Please note that the following corner specific, border radius style properties
-are currently ignored by iOS's image component:</p>
+<p>Please note that the following corner specific, border radius style properties are currently ignored by iOS's image component:</p>
 <ul>
 <li><code>borderTopLeftRadius</code></li>
 <li><code>borderTopRightRadius</code></li>
@@ -232,12 +150,7 @@ are currently ignored by iOS's image component:</p>
 <li><code>borderBottomRightRadius</code></li>
 </ul>
 <h2><a class="anchor" aria-hidden="true" name="off-thread-decoding"></a><a href="#off-thread-decoding" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Off-thread Decoding</h2>
-<p>Image decoding can take more than a frame-worth of time. This is one of the
-major sources of frame drops on the web because decoding is done in the main
-thread. In React Native, image decoding is done in a different thread. In
-practice, you already need to handle the case when the image is not downloaded
-yet, so displaying the placeholder for a few more frames while it is decoding
-does not require any code change.</p>
+<p>Image decoding can take more than a frame-worth of time. This is one of the major sources of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="navigation.html">← Navigating Between Screens</a><a class="docs-next button" href="animations.html">Animations →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

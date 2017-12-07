@@ -17,33 +17,23 @@
 <h3><a class="anchor" aria-hidden="true" name="set"></a><a href="#set" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>set()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> set(dims)
 </code></pre>
-<p>This should only be called from native code by sending the
-didUpdateDimensions event.</p>
+<p>This should only be called from native code by sending the didUpdateDimensions event.</p>
 <p>@param {object} dims Simple string-keyed object of dimensions to set</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="get"></a><a href="#get" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>get()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> get(dim)
 </code></pre>
-<p>Initial dimensions are set before <code>runApplication</code> is called so they should
-be available before any other require's are run, but may be updated later.</p>
-<p>Note: Although dimensions are available immediately, they may change (e.g
-due to device rotation) so any rendering logic or styles that depend on
-these constants should try to call this function on every render, rather
-than caching the value (for example, using inline styles rather than
-setting a value in a <code>StyleSheet</code>).</p>
+<p>Initial dimensions are set before <code>runApplication</code> is called so they should be available before any other require's are run, but may be updated later.</p>
+<p>Note: Although dimensions are available immediately, they may change (e.g due to device rotation) so any rendering logic or styles that depend on these constants should try to call this function on every render, rather than caching the value (for example, using inline styles rather than setting a value in a <code>StyleSheet</code>).</p>
 <p>Example: <code>var {height, width} = Dimensions.get('window');</code></p>
-<p>@param {string} dim Name of dimension as defined when calling <code>set</code>.
-@returns {Object?} Value for the dimension.</p>
+<p>@param {string} dim Name of dimension as defined when calling <code>set</code>. @returns {Object?} Value for the dimension.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="addeventlistener"></a><a href="#addeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addEventListener()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> addEventListener(type, handler)
 </code></pre>
 <p>Add an event handler. Supported events:</p>
 <ul>
-<li><code>change</code>: Fires when a property within the <code>Dimensions</code> object changes. The argument
-to the event handler is an object with <code>window</code> and <code>screen</code> properties whose values
-are the same as the return values of <code>Dimensions.get('window')</code> and
-<code>Dimensions.get('screen')</code>, respectively.</li>
+<li><code>change</code>: Fires when a property within the <code>Dimensions</code> object changes. The argument to the event handler is an object with <code>window</code> and <code>screen</code> properties whose values are the same as the return values of <code>Dimensions.get('window')</code> and <code>Dimensions.get('screen')</code>, respectively.</li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>

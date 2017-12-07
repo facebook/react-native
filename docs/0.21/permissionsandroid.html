@@ -8,30 +8,30 @@
     the Create React Native App repository.
   </p>
 </div>
-<p><code>PermissionsAndroid</code> provides access to Android M's new permissions model. Some permissions are granted by default when the application is installed so long as they appear in <code>AndroidManifest.xml</code>. However, &quot;dangerous&quot; permissions require a dialog prompt. You should use this module for those
-permissions.</p>
+<p><code>PermissionsAndroid</code> provides access to Android M's new permissions model. Some permissions are granted by default when the application is installed so long as they appear in <code>AndroidManifest.xml</code>. However, &quot;dangerous&quot; permissions require a dialog prompt. You should use this module for those permissions.</p>
 <p>On devices before SDK version 23, the permissions are automatically granted if they appear in the manifest, so <code>check</code> and <code>request</code> should always be true.</p>
 <p>If a user has previously turned off a permission that you prompt for, the OS will advise your app to show a rationale for needing the permission. The optional <code>rationale</code> argument will show a dialog prompt only if necessary - otherwise the normal permission prompt will appear.</p>
 <h3><a class="anchor" aria-hidden="true" name="example"></a><a href="#example" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { PermissionsAndroid } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {PermissionsAndroid} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">requestCameraPermission</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> granted = <span class="hljs-keyword">await</span> PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
       {
-        <span class="hljs-string">'title'</span>: <span class="hljs-string">'Cool Photo App Camera Permission'</span>,
-        <span class="hljs-string">'message'</span>: <span class="hljs-string">'Cool Photo App needs access to your camera '</span> +
-                   <span class="hljs-string">'so you can take awesome pictures.'</span>
+        <span class="hljs-attr">title</span>: <span class="hljs-string">'Cool Photo App Camera Permission'</span>,
+        <span class="hljs-attr">message</span>:
+          <span class="hljs-string">'Cool Photo App needs access to your camera '</span> +
+          <span class="hljs-string">'so you can take awesome pictures.'</span>,
       }
-    )
+    );
     <span class="hljs-keyword">if</span> (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"You can use the camera"</span>)
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'You can use the camera'</span>);
     } <span class="hljs-keyword">else</span> {
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Camera permission denied"</span>)
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Camera permission denied'</span>);
     }
   } <span class="hljs-keyword">catch</span> (err) {
-    <span class="hljs-built_in">console</span>.warn(err)
+    <span class="hljs-built_in">console</span>.warn(err);
   }
 }
 </code></pre>
@@ -48,11 +48,11 @@ permissions.</p>
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="constructor"></a><a href="#constructor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>constructor()</code></h3>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>()
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>();
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="check"></a><a href="#check" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>check()</code></h3>
-<pre><code class="hljs css javascript">check(permission)
+<pre><code class="hljs css javascript">check(permission);
 </code></pre>
 <p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted</p>
 <hr>
@@ -63,12 +63,12 @@ permissions.</p>
 <p>If the optional rationale argument is included (which is an object with a <code>title</code> and <code>message</code>), this function checks with the OS whether it is necessary to show a dialog <a href="https://developer.android.com/training/permissions/requesting.html#explain">explaining why the permission is needed</a> and then shows the system permission dialog</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="requestmultiple"></a><a href="#requestmultiple" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestMultiple()</code></h3>
-<pre><code class="hljs css javascript">requestMultiple(permissions)
+<pre><code class="hljs css javascript">requestMultiple(permissions);
 </code></pre>
 <p>Prompts the user to enable multiple permissions in the same dialog and returns an object with the permissions as keys and strings as values indicating whether the user allowed or denied the request</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="checkpermission"></a><a href="#checkpermission" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>checkPermission()</code></h3>
-<pre><code class="hljs css javascript">checkPermission(permission)
+<pre><code class="hljs css javascript">checkPermission(permission);
 </code></pre>
 <p><strong>DEPRECATED</strong> - use <a href="/react-native/docs/0.21/permissionsandroid.html#check">check</a></p>
 <p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted</p>

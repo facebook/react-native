@@ -21,7 +21,10 @@
 <h4><a class="anchor" aria-hidden="true" name="accessibilitylabel-ios-android"></a><a href="#accessibilitylabel-ios-android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityLabel (iOS, Android)</h4>
 <p>When a view is marked as accessible, it is a good practice to set an accessibilityLabel on the view, so that people who use VoiceOver know what element they have selected. VoiceOver will read this string when a user selects the associated element.</p>
 <p>To use, set the <code>accessibilityLabel</code> property to a custom string on your View:</p>
-<pre><code class="hljs css javascript">&lt;TouchableOpacity accessible={true} accessibilityLabel={'Tap me!'} onPress={this._onPress}&gt;
+<pre><code class="hljs css javascript">&lt;TouchableOpacity
+  accessible={true}
+  accessibilityLabel={'Tap me!'}
+  onPress={this._onPress}&gt;
   &lt;View style={styles.button}&gt;
     &lt;Text style={styles.buttonText}&gt;Press me!&lt;/Text&gt;
   &lt;/View&gt;
@@ -38,11 +41,11 @@
 <li><strong>header</strong> Used when an element acts as a header for a content section (e.g. the title of a navigation bar).</li>
 <li><strong>search</strong> Used when the text field element should also be treated as a search field.</li>
 <li><strong>image</strong> Used when the element should be treated as an image. Can be combined with button or link, for example.</li>
-<li><strong>selected</strong>  Used when the element is selected. For example, a selected row in a table or a selected button within a segmented control.</li>
+<li><strong>selected</strong> Used when the element is selected. For example, a selected row in a table or a selected button within a segmented control.</li>
 <li><strong>plays</strong> Used when the element plays its own sound when activated.</li>
 <li><strong>key</strong> Used when the element acts as a keyboard key.</li>
 <li><strong>text</strong> Used when the element should be treated as static text that cannot change.</li>
-<li><strong>summary</strong> Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches.  For example, when Weather first launches, the element with today's weather conditions is marked with this trait.</li>
+<li><strong>summary</strong> Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches. For example, when Weather first launches, the element with today's weather conditions is marked with this trait.</li>
 <li><strong>disabled</strong> Used when the control is not enabled and does not respond to user input.</li>
 <li><strong>frequentUpdates</strong> Used when the element frequently updates its label or value, but too often to send notifications. Allows an accessibility client to poll for changes. A stopwatch would be an example.</li>
 <li><strong>startsMedia</strong> Used when activating an element starts a media session (e.g. playing a movie, recording audio) that should not be interrupted by output from an assistive technology, like VoiceOver.</li>
@@ -52,8 +55,7 @@
 </ul>
 <h4><a class="anchor" aria-hidden="true" name="accessibilityviewismodal-ios"></a><a href="#accessibilityviewismodal-ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityViewIsModal (iOS)</h4>
 <p>A Boolean value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver.</p>
-<p>For example, in a window that contains sibling views <code>A</code> and <code>B</code>, setting <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>B</code> causes VoiceOver to ignore the elements in the view <code>A</code>.
-On the other hand, if view <code>B</code> contains a child view <code>C</code> and you set <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>C</code>, VoiceOver does not ignore the elements in view <code>A</code>.</p>
+<p>For example, in a window that contains sibling views <code>A</code> and <code>B</code>, setting <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>B</code> causes VoiceOver to ignore the elements in the view <code>A</code>. On the other hand, if view <code>B</code> contains a child view <code>C</code> and you set <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>C</code>, VoiceOver does not ignore the elements in view <code>A</code>.</p>
 <h4><a class="anchor" aria-hidden="true" name="onaccessibilitytap-ios"></a><a href="#onaccessibilitytap-ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onAccessibilityTap (iOS)</h4>
 <p>Use this property to assign a custom function to be called when someone activates an accessible element by double tapping on it while it's selected.</p>
 <h4><a class="anchor" aria-hidden="true" name="onmagictap-ios"></a><a href="#onmagictap-ios" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onMagicTap (iOS)</h4>

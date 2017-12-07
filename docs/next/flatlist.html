@@ -25,13 +25,8 @@
 </code></pre>
 <p>More complex, multi-select example demonstrating <code>PureComponent</code> usage for perf optimization and avoiding bugs.</p>
 <ul>
-<li>By binding the <code>onPressItem</code> handler, the props will remain <code>===</code> and <code>PureComponent</code> will
-prevent wasteful re-renders unless the actual <code>id</code>, <code>selected</code>, or <code>title</code> props change, even
-if the components rendered in <code>MyListItem</code> did not have such optimizations.</li>
-<li>By passing <code>extraData={this.state}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render
-when the <code>state.selected</code> changes. Without setting this prop, <code>FlatList</code> would not know it
-needs to re-render any items because it is also a <code>PureComponent</code> and the prop comparison will
-not show any changes.</li>
+<li>By binding the <code>onPressItem</code> handler, the props will remain <code>===</code> and <code>PureComponent</code> will prevent wasteful re-renders unless the actual <code>id</code>, <code>selected</code>, or <code>title</code> props change, even if the components rendered in <code>MyListItem</code> did not have such optimizations.</li>
+<li>By passing <code>extraData={this.state}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the <code>state.selected</code> changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is also a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
 <li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys instead of the default <code>key</code> property.</li>
 </ul>
 <pre><code class="hljs">class MyListItem extends React.PureComponent {
@@ -89,29 +84,43 @@ class MultiSelectList extends React.PureComponent {
   }
 }
 </code></pre>
-<p>This is a convenience wrapper around <a href="/react-native/docs/next/virtualizedlist.html"><code>&lt;VirtualizedList&gt;</code></a>,
-and thus inherits its props (as well as those of <a href="/react-native/docs/next/scrollview.html"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed
-here, along with the following caveats:</p>
+<p>This is a convenience wrapper around <a href="/react-native/docs/next/virtualizedlist.html"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/react-native/docs/next/scrollview.html"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
-<li>Internal state is not preserved when content scrolls out of the render window. Make sure all
-your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
-<li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-
-equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop
-(e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on
-changes. This includes the <code>data</code> prop and parent component state.</li>
-<li>In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
-offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
-blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
-and we are working on improving it behind the scenes.</li>
-<li>By default, the list looks for a <code>key</code> prop on each item and uses that for the React key.
-Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
+<li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
+<li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow- equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
+<li>In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.</li>
+<li>By default, the list looks for a <code>key</code> prop on each item and uses that for the React key. Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
 </ul>
 <p>Also inherits <a href="/react-native/docs/next/scrollview.html#props">ScrollView Props</a>, unless it is nested in another FlatList of same orientation.</p>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
 <ul>
+<li><a href="/react-native/docs/next/scrollview.html#props"><code>ScrollView</code> props...</a></li>
+<li><a href="/react-native/docs/next/virtualizedlist.html#props"><code>VirtualizedList</code> props...</a></li>
+<li><a href="/react-native/docs/next/flatlist.html#renderitem"><code>renderItem</code></a></li>
 <li><a href="/react-native/docs/next/flatlist.html#data"><code>data</code></a></li>
-<li><a href="/react-native/docs/next/flatlist.html#renderItem"><code>renderItem</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#itemseparatorcomponent"><code>ItemSeparatorComponent</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#listemptycomponent"><code>ListEmptyComponent</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#listfootercomponent"><code>ListFooterComponent</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#listheadercomponent"><code>ListHeaderComponent</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#columnwrapperstyle"><code>columnwrapperstyle</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#extradata"><code>extraData</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#getitemlayout"><code>getItemLayout</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#horizontal"><code>horizontal</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#initialnumtorender"><code>initialNumToRender</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#initialscrollindex"><code>initialScrollIndex</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#inverted"><code>inverted</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#keyextractor"><code>keyExtractor</code></a></li>
 <li><a href="/react-native/docs/next/flatlist.html#numcolumns"><code>numColumns</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#onendreached"><code>onEndReached</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#onendreachedthreshold"><code>onEndReachedThreshold</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#onrefresh"><code>onRefresh</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#onviewableitemschanged"><code>onViewableItemsChanged</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#progressviewoffset"><code>progressViewOffset</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#legacyimplementation"><code>legacyImplementation</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#refreshing"><code>refreshing</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#viewabilityconfig"><code>viewabilityConfig</code></a></li>
+<li><a href="/react-native/docs/next/flatlist.html#viewabilityconfigcallbackpairs"><code>viewabilityConfigCallbackPairs</code></a></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
@@ -122,100 +131,419 @@ Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
 <li><a href="/react-native/docs/next/flatlist.html#recordinteraction"><code>recordInteraction</code></a></li>
 <li><a href="/react-native/docs/next/flatlist.html#flashscrollindicators"><code>flashScrollIndicators</code></a></li>
 </ul>
-<h3><a class="anchor" aria-hidden="true" name="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h3>
-<ul>
-<li><a href="/react-native/docs/next/flatlist.html#props"><code>Props</code></a></li>
-<li><a href="/react-native/docs/next/flatlist.html#defaultprops"><code>DefaultProps</code></a></li>
-</ul>
 <hr>
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
-<h3><a class="anchor" aria-hidden="true" name="data"></a><a href="#data" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>data</code></h3>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td></td><td>No</td></tr>
-</tbody>
-</table>
 <h3><a class="anchor" aria-hidden="true" name="renderitem"></a><a href="#renderitem" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>renderItem</code></h3>
+<pre><code class="hljs css javascript">renderItem({ <span class="hljs-attr">item</span>: <span class="hljs-built_in">Object</span>, <span class="hljs-attr">index</span>: number, <span class="hljs-attr">separators</span>: { <span class="hljs-attr">highlight</span>: <span class="hljs-built_in">Function</span>, <span class="hljs-attr">unhighlight</span>: <span class="hljs-built_in">Function</span>, <span class="hljs-attr">updateProps</span>: <span class="hljs-built_in">Function</span>(select: string, <span class="hljs-attr">newProps</span>: <span class="hljs-built_in">Object</span>) } }) =&gt; ?React.Element
+</code></pre>
+<p>Takes an item from <code>data</code> and renders it into the list.</p>
+<p>Provides additional metadata like <code>index</code> if you need it, as well as a more generic <code>separators.updateProps</code> function which let you set whatever props you want to change the rendering of either the leading separator or trailing separator in case the more common <code>highlight</code> and <code>unhighlight</code> (which set the <code>highlighted: boolean</code> prop) are insufficient for your use case.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td></td><td>Yes</td></tr>
+<tr><td>function</td><td>Yes</td></tr>
 </tbody>
 </table>
-<h3><a class="anchor" aria-hidden="true" name="numcolumns"></a><a href="#numcolumns" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>numColumns</code></h3>
+<p>Example usage:</p>
+<pre><code class="hljs css javascript">&lt;FlatList
+  ItemSeparatorComponent={Platform.OS !== <span class="hljs-string">'android'</span> &amp;&amp; <span class="hljs-function">(<span class="hljs-params">{highlighted}</span>) =&gt;</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[style.separator,</span> <span class="hljs-attr">highlighted</span> &amp;&amp; {<span class="hljs-attr">marginLeft:</span> <span class="hljs-attr">0</span>}]} /&gt;</span>
+  )}
+  data={[{title: 'Title Text', key: 'item1'}]}
+  renderItem={({item, separators}) =&gt; (
+    <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+      <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> this._onPress(item)}
+      onShowUnderlay={separators.highlight}
+      onHideUnderlay={separators.unhighlight}&gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{backgroundColor:</span> '<span class="hljs-attr">white</span>'}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{item.title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
+  )}
+/&gt;
+</span></code></pre>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="data"></a><a href="#data" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>data</code></h3>
+<p>For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying <a href="/react-native/docs/next/virtualizedlist.html"><code>VirtualizedList</code></a> directly.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td></td><td>No</td></tr>
+<tr><td>array</td><td>Yes</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="itemseparatorcomponent"></a><a href="#itemseparatorcomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ItemSeparatorComponent</code></h3>
+<p>Rendered in between each item, but not at the top or bottom. By default, <code>highlighted</code> and <code>leadingItem</code> props are provided. <code>renderItem</code> provides <code>separators.highlight</code>/<code>unhighlight</code> which will update the <code>highlighted</code> prop, but you can also add custom props with <code>separators.updateProps</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>component</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listemptycomponent"></a><a href="#listemptycomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListEmptyComponent</code></h3>
+<p>Rendered when the list is empty. Can be a React Component Class, a render function, or a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>component, function, element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listfootercomponent"></a><a href="#listfootercomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListFooterComponent</code></h3>
+<p>Rendered at the bottom of all the items. Can be a React Component Class, a render function, or a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>component, function, element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="listheadercomponent"></a><a href="#listheadercomponent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListHeaderComponent</code></h3>
+<p>Rendered at the top of all the items. Can be a React Component Class, a render function, or a rendered element.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>component, function, element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="columnwrapperstyle"></a><a href="#columnwrapperstyle" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>columnWrapperStyle</code></h3>
+<p>Optional custom style for multi-item rows generated when <code>numColumns &gt; 1</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>style object</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="extradata"></a><a href="#extradata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>extraData</code></h3>
+<p>A marker property for telling the list to re-render (since it implements <code>PureComponent</code>). If any of your <code>renderItem</code>, Header, Footer, etc. functions depend on anything outside of the <code>data</code> prop, stick it here and treat it immutably.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>any</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="getitemlayout"></a><a href="#getitemlayout" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItemLayout</code></h3>
+<pre><code class="hljs css javascript">(data, index) =&gt; {<span class="hljs-attr">length</span>: number, <span class="hljs-attr">offset</span>: number, <span class="hljs-attr">index</span>: number}
+</code></pre>
+<p><code>getItemLayout</code> is an optional optimization that let us skip measurement of dynamic content if you know the height of items a priori. <code>getItemLayout</code> is the most efficient, and is easy to use if you have fixed height items, for example:</p>
+<pre><code class="hljs css javascript">  getItemLayout={(data, index) =&gt; (
+    {<span class="hljs-attr">length</span>: ITEM_HEIGHT, <span class="hljs-attr">offset</span>: ITEM_HEIGHT * index, index}
+  )}
+</code></pre>
+<p>Adding <code>getItemLayout</code> can be a great performance boost for lists of several hundred items. Remember to include separator length (height or width) in your offset calculation if you specify <code>ItemSeparatorComponent</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="horizontal"></a><a href="#horizontal" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>horizontal</code></h3>
+<p>If true, renders items next to each other horizontally instead of stacked vertically.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="initialnumtorender"></a><a href="#initialnumtorender" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>initialNumToRender</code></h3>
+<p>How many items to render in the initial batch. This should be enough to fill the screen but not much more. Note these items will never be unmounted as part of the windowed rendering in order to improve perceived performance of scroll-to-top actions.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="initialscrollindex"></a><a href="#initialscrollindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>initialScrollIndex</code></h3>
+<p>Instead of starting at the top with the first item, start at <code>initialScrollIndex</code>. This disables the &quot;scroll to top&quot; optimization that keeps the first <code>initialNumToRender</code> items always rendered and immediately renders the items starting at this initial index. Requires <code>getItemLayout</code> to be implemented.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="inverted"></a><a href="#inverted" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>inverted</code></h3>
+<p>Reverses the direction of scroll. Uses scale transforms of <code>-1</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="keyextractor"></a><a href="#keyextractor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyExtractor</code></h3>
+<pre><code class="hljs css javascript">(item: object, <span class="hljs-attr">index</span>: number) =&gt; string;
+</code></pre>
+<p>Used to extract a unique key for a given item at the specified index. Key is used for caching and as the react key to track item re-ordering. The default extractor checks <code>item.key</code>, then falls back to using the index, like React does.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="numcolumns"></a><a href="#numcolumns" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>numColumns</code></h3>
+<p>Multiple columns can only be rendered with <code>horizontal={false}</code> and will zig-zag like a <code>flexWrap</code> layout. Items should all be the same height - masonry layouts are not supported.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onendreached"></a><a href="#onendreached" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onEndReached</code></h3>
+<pre><code class="hljs css javascript">(info: {<span class="hljs-attr">distanceFromEnd</span>: number}) =&gt; <span class="hljs-keyword">void</span>
+</code></pre>
+<p>Called once when the scroll position gets within <code>onEndReachedThreshold</code> of the rendered content.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onendreachedthreshold"></a><a href="#onendreachedthreshold" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onEndReachedThreshold</code></h3>
+<p>How far from the end (in units of visible length of the list) the bottom edge of the list must be from the end of the content to trigger the <code>onEndReached</code> callback. Thus a value of 0.5 will trigger <code>onEndReached</code> when the end of the content is within half the visible length of the list.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onrefresh"></a><a href="#onrefresh" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onRefresh</code></h3>
+<pre><code class="hljs css javascript">() =&gt; <span class="hljs-keyword">void</span>
+</code></pre>
+<p>If provided, a standard RefreshControl will be added for &quot;Pull to Refresh&quot; functionality. Make sure to also set the <code>refreshing</code> prop correctly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onviewableitemschanged"></a><a href="#onviewableitemschanged" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onViewableItemsChanged</code></h3>
+<pre><code class="hljs css javascript">(info: {
+    <span class="hljs-attr">viewableItems</span>: array,
+    <span class="hljs-attr">changed</span>: array,
+  }) =&gt; <span class="hljs-keyword">void</span>
+</code></pre>
+<p>Called when the viewability of rows changes, as defined by the <code>viewabilityConfig</code> prop.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="progressviewoffset"></a><a href="#progressviewoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>progressViewOffset</code></h3>
+<p>Set this when offset is needed for the loading indicator to show correctly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="legacyimplementation"></a><a href="#legacyimplementation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>legacyImplementation</code></h3>
+<p>May not have full feature parity and is meant for debugging and performance comparison.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="refreshing"></a><a href="#refreshing" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>refreshing</code></h3>
+<p>Set this true while waiting for new data from a refresh.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="removeclippedsubviews"></a><a href="#removeclippedsubviews" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeClippedSubviews</code></h3>
+<p>This may improve scroll performance for large lists.</p>
+<blockquote>
+<p>Note: May have bugs (missing content) in some circumstances - use at your own risk.</p>
+</blockquote>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="viewabilityconfig"></a><a href="#viewabilityconfig" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>viewabilityConfig</code></h3>
+<p>See <code>ViewabilityHelper.js</code> for flow type and further documentation.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>ViewabilityConfig</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="viewabilityconfigcallbackpairs"></a><a href="#viewabilityconfigcallbackpairs" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>viewabilityConfigCallbackPairs</code></h3>
+<p>List of <code>ViewabilityConfig</code>/<code>onViewableItemsChanged</code> pairs. A specific <code>onViewableItemsChanged</code> will be called when its corresponding <code>ViewabilityConfig</code>'s conditions are met. See <code>ViewabilityHelper.js</code> for flow type and further documentation.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>array of ViewabilityConfigCallbackPair</td><td>No</td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="scrolltoend"></a><a href="#scrolltoend" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToEnd()</code></h3>
-<pre><code class="hljs css javascript">scrollToEnd([params]: object)
+<pre><code class="hljs css javascript">scrollToEnd([params]);
 </code></pre>
 <p>Scrolls to the end of the content. May be janky without <code>getItemLayout</code> prop.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>params</td><td>object</td><td>No</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>Valid <code>params</code> keys are:</p>
+<ul>
+<li>'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to <code>true</code>.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="scrolltoindex"></a><a href="#scrolltoindex" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToIndex()</code></h3>
-<pre><code class="hljs css javascript">scrollToIndex(params: object)
+<pre><code class="hljs css javascript">scrollToIndex(params);
 </code></pre>
-<p>Scrolls to the item at the specified index such that it is positioned in the viewable area
-such that <code>viewPosition</code> 0 places it at the top, 1 at the bottom, and 0.5 centered in the
-middle. <code>viewOffset</code> is a fixed number of pixels to offset the final target position.</p>
-<p>Note: cannot scroll to locations outside the render window without specifying the
-<code>getItemLayout</code> prop.</p>
+<p>Scrolls to the item at the specified index such that it is positioned in the viewable area such that <code>viewPosition</code> 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.</p>
+<blockquote>
+<p>Note: Cannot scroll to locations outside the render window without specifying the <code>getItemLayout</code> prop.</p>
+</blockquote>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>params</td><td>object</td><td>Yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>Valid <code>params</code> keys are:</p>
+<ul>
+<li>'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to <code>true</code>.</li>
+<li>'index' (number) - The index to scroll to. Required.</li>
+<li>'viewOffset' (number) - A fixed number of pixels to offset the final target position. Required.</li>
+<li>'viewPosition' (number) - A value of <code>0</code> places the item specified by index at the top, <code>1</code> at the bottom, and <code>0.5</code> centered in the middle.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="scrolltoitem"></a><a href="#scrolltoitem" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToItem()</code></h3>
-<pre><code class="hljs css javascript">scrollToItem(params: object)
+<pre><code class="hljs css javascript">scrollToItem(params);
 </code></pre>
 <p>Requires linear scan through data - use <code>scrollToIndex</code> instead if possible.</p>
-<p>Note: cannot scroll to locations outside the render window without specifying the
-<code>getItemLayout</code> prop.</p>
+<blockquote>
+<p>Note: Cannot scroll to locations outside the render window without specifying the <code>getItemLayout</code> prop.</p>
+</blockquote>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>params</td><td>object</td><td>Yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>Valid <code>params</code> keys are:</p>
+<ul>
+<li>'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to <code>true</code>.</li>
+<li>'item' (object) - The item to scroll to. Required.</li>
+<li>'viewPosition' (number)</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="scrolltooffset"></a><a href="#scrolltooffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToOffset()</code></h3>
-<pre><code class="hljs css javascript">scrollToOffset(params: object)
+<pre><code class="hljs css javascript">scrollToOffset(params);
 </code></pre>
 <p>Scroll to a specific content pixel offset in the list.</p>
-<p>Check out <a href="/react-native/docs/next/virtualizedlist.html#scrolltooffset">scrollToOffset</a> of VirtualizedList</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>params</td><td>object</td><td>Yes</td><td>See below.</td></tr>
+</tbody>
+</table>
+<p>Valid <code>params</code> keys are:</p>
+<ul>
+<li>'offset' (number) - The offset to scroll to. In case of <code>horizontal</code> being true, the offset is the x-value, in any other case the offset is the y-value. Required.</li>
+<li>'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to <code>true</code>.</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="recordinteraction"></a><a href="#recordinteraction" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>recordInteraction()</code></h3>
-<pre><code class="hljs css javascript">recordInteraction()
+<pre><code class="hljs css javascript">recordInteraction();
 </code></pre>
-<p>Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
-if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by
-taps on items or by navigation actions.</p>
+<p>Tells the list an interaction has occurred, which should trigger viewability calculations, e.g. if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="flashscrollindicators"></a><a href="#flashscrollindicators" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flashScrollIndicators()</code></h3>
-<pre><code class="hljs css javascript">flashScrollIndicators()
+<pre><code class="hljs css javascript">flashScrollIndicators();
 </code></pre>
 <p>Displays the scroll indicators momentarily.</p>
-<h2><a class="anchor" aria-hidden="true" name="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>
-<h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
-<table>
-<thead>
-<tr><th>Type</th></tr>
-</thead>
-<tbody>
-<tr><td>IntersectionTypeAnnotation</td></tr>
-</tbody>
-</table>
-<hr>
-<h3><a class="anchor" aria-hidden="true" name="defaultprops"></a><a href="#defaultprops" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DefaultProps</h3>
-<table>
-<thead>
-<tr><th>Type</th></tr>
-</thead>
-<tbody>
-<tr><td>TypeofTypeAnnotation</td></tr>
-</tbody>
-</table>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="drawerlayoutandroid.html">← DrawerLayoutAndroid</a><a class="docs-next button" href="image.html">Image →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

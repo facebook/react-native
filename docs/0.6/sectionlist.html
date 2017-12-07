@@ -11,8 +11,7 @@
 <li>Pull to Refresh.</li>
 <li>Scroll loading.</li>
 </ul>
-<p>If you don't need section support and want a simpler interface, use
-<a href="/react-native/docs/0.6/flatlist.html"><code>&lt;FlatList&gt;</code></a>.</p>
+<p>If you don't need section support and want a simpler interface, use <a href="/react-native/docs/0.6/flatlist.html"><code>&lt;FlatList&gt;</code></a>.</p>
 <p>Simple Examples:</p>
 <pre><code class="hljs css javascript">&lt;SectionList
   renderItem={({item}) =&gt; &lt;ListItem title={item} /&gt;}
@@ -32,9 +31,7 @@
   ]}
 /&gt;
 </code></pre>
-<p>This is a convenience wrapper around <a href="/react-native/docs/0.6/virtualizedlist.html"><code>VirtualizedList</code></a>,
-and thus inherits its props (as well as those of <code>ScrollView</code>) that aren't explicitly listed
-here, along with the following caveats:</p>
+<p>This is a convenience wrapper around <a href="/react-native/docs/0.6/virtualizedlist.html"><code>VirtualizedList</code></a>, and thus inherits its props (as well as those of <code>ScrollView</code>) that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
 <li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow- equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
@@ -49,8 +46,7 @@ here, along with the following caveats:</p>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#renderitem"><code>renderItem</code></a></li>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#itemseparatorcomponent"><code>ItemSeparatorComponent</code></a></li>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#listemptycomponent"><code>ListEmptyComponent</code></a></li>
-<li><a href="/react-native/docs/0.6/virtualizedlist.html#listfootercomponent"><code>ListFooterComponent</code></a>
-SectionSeparatorComponent</li>
+<li><a href="/react-native/docs/0.6/virtualizedlist.html#listfootercomponent"><code>ListFooterComponent</code></a> SectionSeparatorComponent</li>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#extradata"><code>extradata</code></a></li>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#initialnumtorender"><code>initialNumToRender</code></a></li>
 <li><a href="/react-native/docs/0.6/virtualizedlist.html#inverted"><code>inverted</code></a></li>
@@ -201,7 +197,7 @@ SectionSeparatorComponent</li>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="keyextractor"></a><a href="#keyextractor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyExtractor</code></h3>
-<pre><code class="hljs css javascript">(item: object, <span class="hljs-attr">index</span>: number) =&gt; string
+<pre><code class="hljs css javascript">(item: object, <span class="hljs-attr">index</span>: number) =&gt; string;
 </code></pre>
 <p>Used to extract a unique key for a given item at the specified index. Key is used for caching and as the react key to track item re-ordering. The default extractor checks item.key, then falls back to using the index, like react does. Note that this sets keys for each item, but each overall section still needs its own key.</p>
 <table>
@@ -280,8 +276,7 @@ SectionSeparatorComponent</li>
 <h3><a class="anchor" aria-hidden="true" name="removeclippedsubviews"></a><a href="#removeclippedsubviews" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeClippedSubviews</code></h3>
 <p>This may improve scroll performance for large lists.</p>
 <blockquote>
-<p>Note:
-May have bugs (missing content) in some circumstances - use at your own risk.</p>
+<p>Note: May have bugs (missing content) in some circumstances - use at your own risk.</p>
 </blockquote>
 <table>
 <thead>
@@ -330,25 +325,18 @@ May have bugs (missing content) in some circumstances - use at your own risk.</p
 </table>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="scrolltolocation"></a><a href="#scrolltolocation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToLocation()</code></h3>
-<pre><code class="hljs css javascript">scrollToLocation(params: object)
+<pre><code class="hljs css javascript">scrollToLocation((params: object));
 </code></pre>
-<p>Scrolls to the item at the specified <code>sectionIndex</code> and <code>itemIndex</code> (within the section)
-positioned in the viewable area such that <code>viewPosition</code> 0 places it at the top (and may be
-covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle. <code>viewOffset</code> is a
-fixed number of pixels to offset the final target position, e.g. to compensate for sticky
-headers.</p>
-<p>Note: cannot scroll to locations outside the render window without specifying the
-<code>getItemLayout</code> prop.</p>
+<p>Scrolls to the item at the specified <code>sectionIndex</code> and <code>itemIndex</code> (within the section) positioned in the viewable area such that <code>viewPosition</code> 0 places it at the top (and may be covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle. <code>viewOffset</code> is a fixed number of pixels to offset the final target position, e.g. to compensate for sticky headers.</p>
+<p>Note: cannot scroll to locations outside the render window without specifying the <code>getItemLayout</code> prop.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="recordinteraction"></a><a href="#recordinteraction" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>recordInteraction()</code></h3>
-<pre><code class="hljs css javascript">recordInteraction()
+<pre><code class="hljs css javascript">recordInteraction();
 </code></pre>
-<p>Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
-if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by
-taps on items or by navigation actions.</p>
+<p>Tells the list an interaction has occured, which should trigger viewability calculations, e.g. if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="flashscrollindicators"></a><a href="#flashscrollindicators" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flashScrollIndicators()</code></h3>
-<pre><code class="hljs css javascript">flashScrollIndicators()
+<pre><code class="hljs css javascript">flashScrollIndicators();
 </code></pre>
 <p>Displays the scroll indicators momentarily.</p>
 <h2><a class="anchor" aria-hidden="true" name="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>

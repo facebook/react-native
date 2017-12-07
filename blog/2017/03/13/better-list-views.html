@@ -52,19 +52,25 @@
 <li><p>These components are based on <code>PureComponent</code> which means that they will not re-render if <code>props</code> remains shallow-equal. Make sure that everything your <code>renderItem</code> function depends on directly is passed as a prop that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state. For example:</p>
 <pre><code class="hljs css javascript">&lt;FlatList
   data={<span class="hljs-keyword">this</span>.state.data}
-  renderItem={({item}) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
-    <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
-    <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> this.setState((oldState) =&gt; ({
-      selected: { // New instance breaks `===`
-        ...oldState.selected, // copy old data
-        [item.key]: !oldState.selected[item.key], // toggle
-      }}))
-    }
-    selected={
-      !!this.state.selected[item.key] // renderItem depends on state
-    }
-  /&gt;}
-  selected={ // Can be any prop that doesn't collide with existing props
+  renderItem={({ item }) =&gt; (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
+      <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
+      <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span>
+        this.setState(oldState =&gt; ({
+          selected: {
+            // New instance breaks `===`
+            ...oldState.selected, // copy old data
+            [item.key]: !oldState.selected[item.key] // toggle
+          }
+        }))
+      }
+      selected={
+        !!this.state.selected[item.key] // renderItem depends on state
+      }
+    /&gt;
+  )}
+  selected={
+    // Can be any prop that doesn't collide with existing props
     this.state.selected // A change to selected should re-render FlatList
   }
 /&gt;

@@ -8,20 +8,20 @@
 <h2><a class="anchor" aria-hidden="true" name="headless-js"></a><a href="#headless-js" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Headless JS</h2>
 <p>Headless JS is a way to run tasks in JavaScript while your app is in the background. It can be used, for example, to sync fresh data, handle push notifications, or play music. It is only available on Android, for now.</p>
 <p>To get started, define your async task in a dedicated file (e.g. <code>SomeTaskName.js</code>):</p>
-<pre><code class="hljs css javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> (taskData) =&gt; {
+<pre><code class="hljs css javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> taskData =&gt; {
   <span class="hljs-comment">// Perform your task here.</span>
-}
+};
 </code></pre>
 <p>Next, register your task in on <code>AppRegistry</code>:</p>
-<pre><code class="hljs css javascript">AppRegistry.registerHeadlessTask(<span class="hljs-string">'SomeTaskName'</span>, () =&gt; <span class="hljs-built_in">require</span>(<span class="hljs-string">'SomeTaskName'</span>));
+<pre><code class="hljs css javascript">AppRegistry.registerHeadlessTask(<span class="hljs-string">"SomeTaskName"</span>, () =&gt; <span class="hljs-built_in">require</span>(<span class="hljs-string">"SomeTaskName"</span>));
 </code></pre>
 <p>Using Headless JS does require some native Java code to be written in order to allow you to start up the service when needed. Take a look at our new <a href="/react-native/headless-js-android.md">Headless JS docs</a> to learn more!</p>
 <h2><a class="anchor" aria-hidden="true" name="the-keyboard-api"></a><a href="#the-keyboard-api" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Keyboard API</h2>
 <p>Working with the on-screen keyboard is now easier with <a href="/react-native/keyboard.md"><code>Keyboard</code></a>. You can now listen for native keyboard events and react to them. For example, to dismiss the active keyboard, simply call <code>Keyboard.dismiss()</code>:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { Keyboard } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>
+<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { Keyboard } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
 
 <span class="hljs-comment">// Hide that keyboard!</span>
-Keyboard.dismiss()
+Keyboard.dismiss();
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="animated-division"></a><a href="#animated-division" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Animated Division</h2>
 <p>Combining two animated values via addition, multiplication, and modulo are already supported by React Native. With version 0.36, combining two <a href="/react-native/animated.md#divide">animated values via division</a> is now possible. There are some cases where an animated value needs to invert another animated value for calculation. An example is inverting a scale (2x --&gt; 0.5x):</p>

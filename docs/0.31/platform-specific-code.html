@@ -13,15 +13,15 @@
 <p>Certain components may have properties that work on one platform only. All of these props are annotated with <code>@platform</code> and have a small badge next to them on the website.</p>
 <h2><a class="anchor" aria-hidden="true" name="platform-module"></a><a href="#platform-module" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Platform module</h2>
 <p>React Native provides a module that detects the platform in which the app is running. You can use the detection logic to implement platform-specific code. Use this option when only small parts of a component are platform-specific.</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { Platform, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {Platform, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
-  <span class="hljs-attr">height</span>: (Platform.OS === <span class="hljs-string">'ios'</span>) ? <span class="hljs-number">200</span> : <span class="hljs-number">100</span>,
+  <span class="hljs-attr">height</span>: Platform.OS === <span class="hljs-string">'ios'</span> ? <span class="hljs-number">200</span> : <span class="hljs-number">100</span>,
 });
 </code></pre>
 <p><code>Platform.OS</code> will be <code>ios</code> when running on iOS and <code>android</code> when running on Android.</p>
 <p>There is also a <code>Platform.select</code> method available, that given an object containing Platform.OS as keys, returns the value for the platform you are currently running on.</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { Platform, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {Platform, StyleSheet} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
@@ -48,7 +48,7 @@
 </span></code></pre>
 <h3><a class="anchor" aria-hidden="true" name="detecting-the-android-version"></a><a href="#detecting-the-android-version" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Detecting the Android version</h3>
 <p>On Android, the <code>Platform</code> module can also be used to detect the version of the Android Platform in which the app is running:</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { Platform } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {Platform} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">if</span> (Platform.Version === <span class="hljs-number">25</span>) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Running on Nougat!'</span>);
@@ -56,11 +56,11 @@
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" name="detecting-the-ios-version"></a><a href="#detecting-the-ios-version" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Detecting the iOS version</h3>
 <p>On iOS, the <code>Version</code> is a result of <code>-[UIDevice systemVersion]</code>, which is a string with the current version of the operating system. An example of the system version is &quot;10.3&quot;. For example, to detect the major version number on iOS:</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { Platform } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {Platform} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">const</span> majorVersionIOS = <span class="hljs-built_in">parseInt</span>(Platform.Version, <span class="hljs-number">10</span>);
 <span class="hljs-keyword">if</span> (majorVersionIOS &lt;= <span class="hljs-number">9</span>) {
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Work around a change in behavior'</span>); 
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Work around a change in behavior'</span>);
 }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="platform-specific-extensions"></a><a href="#platform-specific-extensions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Platform-specific extensions</h2>

@@ -8,12 +8,10 @@
     the Create React Native App repository.
   </p>
 </div>
-<p><code>Linking</code> gives you a general interface to interact with both incoming
-and outgoing app links.</p>
+<p><code>Linking</code> gives you a general interface to interact with both incoming and outgoing app links.</p>
 <h3><a class="anchor" aria-hidden="true" name="basic-usage"></a><a href="#basic-usage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Usage</h3>
 <h4><a class="anchor" aria-hidden="true" name="handling-deep-links"></a><a href="#handling-deep-links" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Handling deep links</h4>
-<p>If your app was launched from an external url registered to your app you can
-access and handle it from any component you want with</p>
+<p>If your app was launched from an external url registered to your app you can access and handle it from any component you want with</p>
 <pre><code class="hljs">componentDidMount() {
   Linking.getInitialURL().<span class="hljs-keyword">then</span>(<span class="hljs-function"><span class="hljs-params">(url)</span> =&gt;</span> {
     <span class="hljs-keyword">if</span> (url) {
@@ -22,20 +20,13 @@ access and handle it from any component you want with</p>
   }).<span class="hljs-keyword">catch</span>(err =&gt; <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'An error occurred'</span>, err));
 }
 </code></pre>
-<p>NOTE: For instructions on how to add support for deep linking on Android,
-refer to <a href="http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters">Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links</a>.</p>
-<p>If you wish to receive the intent in an existing instance of MainActivity,
-you may set the <code>launchMode</code> of MainActivity to <code>singleTask</code> in
-<code>AndroidManifest.xml</code>. See <a href="http://developer.android.com/guide/topics/manifest/activity-element.html"><code>&lt;activity&gt;</code></a>
-documentation for more information.</p>
+<p>NOTE: For instructions on how to add support for deep linking on Android, refer to <a href="http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters">Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links</a>.</p>
+<p>If you wish to receive the intent in an existing instance of MainActivity, you may set the <code>launchMode</code> of MainActivity to <code>singleTask</code> in <code>AndroidManifest.xml</code>. See <a href="http://developer.android.com/guide/topics/manifest/activity-element.html"><code>&lt;activity&gt;</code></a> documentation for more information.</p>
 <pre><code class="hljs">&lt;activity
   android:<span class="hljs-attribute">name</span>=<span class="hljs-string">".MainActivity"</span>
   android:<span class="hljs-attribute">launchMode</span>=<span class="hljs-string">"singleTask"</span>&gt;
 </code></pre>
-<p>NOTE: On iOS, you'll need to link <code>RCTLinking</code> to your project by following
-the steps described <a href="/react-native/docs/0.6/linking-libraries-ios.html#manual-linking">here</a>.
-If you also want to listen to incoming app links during your app's
-execution, you'll need to add the following lines to your <code>*AppDelegate.m</code>:</p>
+<p>NOTE: On iOS, you'll need to link <code>RCTLinking</code> to your project by following the steps described <a href="/react-native/docs/0.6/linking-libraries-ios.html#manual-linking">here</a>. If you also want to listen to incoming app links during your app's execution, you'll need to add the following lines to your <code>*AppDelegate.m</code>:</p>
 <pre><code class="hljs"><span class="hljs-comment">// iOS 9.x or newer</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTLinkingManager.h&gt;</span></span>
 
@@ -57,8 +48,7 @@ execution, you'll need to add the following lines to your <code>*AppDelegate.m</
                       sourceApplication:sourceApplication annotation:annotation];
 }
 </code></pre>
-<p>// If your app is using <a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html">Universal Links</a>,
-you'll need to add the following code as well:</p>
+<p>// If your app is using <a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html">Universal Links</a>, you'll need to add the following code as well:</p>
 <pre><code class="hljs"><span class="hljs-selector-tag">-</span> (BOOL)<span class="hljs-selector-tag">application</span><span class="hljs-selector-pseudo">:(UIApplication</span> *)<span class="hljs-selector-tag">application</span> <span class="hljs-selector-tag">continueUserActivity</span><span class="hljs-selector-pseudo">:(NSUserActivity</span> *)<span class="hljs-selector-tag">userActivity</span>
  <span class="hljs-selector-tag">restorationHandler</span><span class="hljs-selector-pseudo">:(void</span> (^)(NSArray * _Nullable))<span class="hljs-selector-tag">restorationHandler</span>
 {
@@ -67,8 +57,7 @@ you'll need to add the following code as well:</p>
                     restorationHandler:restorationHandler]</span>;
 }
 </code></pre>
-<p>And then on your React component you'll be able to listen to the events on
-<code>Linking</code> as follows</p>
+<p>And then on your React component you'll be able to listen to the events on <code>Linking</code> as follows</p>
 <pre><code class="hljs"><span class="hljs-selector-tag">componentDidMount</span>() {
   <span class="hljs-selector-tag">Linking</span><span class="hljs-selector-class">.addEventListener</span>(<span class="hljs-string">'url'</span>, this._handleOpenURL);
 },
@@ -105,30 +94,25 @@ you'll need to add the following code as well:</p>
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="constructor"></a><a href="#constructor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>constructor()</code></h3>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>()
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>();
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="addeventlistener"></a><a href="#addeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addEventListener()</code></h3>
-<pre><code class="hljs css javascript">addEventListener(type, handler)
+<pre><code class="hljs css javascript">addEventListener(type, handler);
 </code></pre>
-<p>Add a handler to Linking changes by listening to the <code>url</code> event type
-and providing the handler</p>
+<p>Add a handler to Linking changes by listening to the <code>url</code> event type and providing the handler</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>
-<pre><code class="hljs css javascript">removeEventListener(type, handler)
+<pre><code class="hljs css javascript">removeEventListener(type, handler);
 </code></pre>
 <p>Remove a handler by passing the <code>url</code> event type and the handler</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="openurl"></a><a href="#openurl" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>openURL()</code></h3>
-<pre><code class="hljs css javascript">openURL(url)
+<pre><code class="hljs css javascript">openURL(url);
 </code></pre>
 <p>Try to open the given <code>url</code> with any of the installed apps.</p>
-<p>You can use other URLs, like a location (e.g. &quot;geo:37.484847,-122.148386&quot; on Android
-or &quot;<a href="http://maps.apple.com/?ll=37.484847,-122.148386">http://maps.apple.com/?ll=37.484847,-122.148386</a>&quot; on iOS), a contact,
-or any other URL that can be opened with the installed apps.</p>
-<p>The method returns a <code>Promise</code> object. If the user confirms the open dialog or the
-url automatically opens, the promise is resolved.  If the user cancels the open dialog
-or there are no registered applications for the url, the promise is rejected.</p>
+<p>You can use other URLs, like a location (e.g. &quot;geo:37.484847,-122.148386&quot; on Android or &quot;<a href="http://maps.apple.com/?ll=37.484847,-122.148386">http://maps.apple.com/?ll=37.484847,-122.148386</a>&quot; on iOS), a contact, or any other URL that can be opened with the installed apps.</p>
+<p>The method returns a <code>Promise</code> object. If the user confirms the open dialog or the url automatically opens, the promise is resolved. If the user cancels the open dialog or there are no registered applications for the url, the promise is rejected.</p>
 <blockquote>
 <p>This method will fail if the system doesn't know how to open the specified URL. If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.</p>
 </blockquote>
@@ -137,15 +121,14 @@ or there are no registered applications for the url, the promise is rejected.</p
 </blockquote>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="canopenurl"></a><a href="#canopenurl" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>canOpenURL()</code></h3>
-<pre><code class="hljs css javascript">canOpenURL(url)
+<pre><code class="hljs css javascript">canOpenURL(url);
 </code></pre>
 <p>Determine whether or not an installed app can handle a given URL.</p>
 <blockquote>
 <p>For web URLs, the protocol (&quot;http://&quot;, &quot;https://&quot;) must be set accordingly!</p>
 </blockquote>
 <blockquote>
-<p>As of iOS 9, your app needs to provide the <code>LSApplicationQueriesSchemes</code> key
-inside <code>Info.plist</code> or canOpenURL will always return false.</p>
+<p>As of iOS 9, your app needs to provide the <code>LSApplicationQueriesSchemes</code> key inside <code>Info.plist</code> or canOpenURL will always return false.</p>
 </blockquote>
 <p><strong>Parameters:</strong></p>
 <table>
@@ -158,10 +141,9 @@ inside <code>Info.plist</code> or canOpenURL will always return false.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getinitialurl"></a><a href="#getinitialurl" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getInitialURL()</code></h3>
-<pre><code class="hljs css javascript">getInitialURL()
+<pre><code class="hljs css javascript">getInitialURL();
 </code></pre>
-<p>If the app launch was triggered by an app link,
-it will give the link url, otherwise it will give <code>null</code></p>
+<p>If the app launch was triggered by an app link, it will give the link url, otherwise it will give <code>null</code></p>
 <blockquote>
 <p>To support deep linking on Android, refer <a href="http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents">http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents</a></p>
 </blockquote>

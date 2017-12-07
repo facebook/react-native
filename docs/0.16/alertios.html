@@ -15,12 +15,19 @@
 </code></pre>
 <p>Example with custom buttons:</p>
 <pre><code class="hljs css javascript">AlertIOS.alert(
- <span class="hljs-string">'Update available'</span>,
- <span class="hljs-string">'Keep your app up to date to enjoy the latest features'</span>,
- [
-   {<span class="hljs-attr">text</span>: <span class="hljs-string">'Cancel'</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Cancel Pressed'</span>), <span class="hljs-attr">style</span>: <span class="hljs-string">'cancel'</span>},
-   {<span class="hljs-attr">text</span>: <span class="hljs-string">'Install'</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Install Pressed'</span>)},
- ],
+  <span class="hljs-string">'Update available'</span>,
+  <span class="hljs-string">'Keep your app up to date to enjoy the latest features'</span>,
+  [
+    {
+      <span class="hljs-attr">text</span>: <span class="hljs-string">'Cancel'</span>,
+      <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Cancel Pressed'</span>),
+      <span class="hljs-attr">style</span>: <span class="hljs-string">'cancel'</span>,
+    },
+    {
+      <span class="hljs-attr">text</span>: <span class="hljs-string">'Install'</span>,
+      <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Install Pressed'</span>),
+    },
+  ]
 );
 </code></pre>
 <p>Example with custom buttons:</p>
@@ -28,8 +35,15 @@
   <span class="hljs-string">'Enter password'</span>,
   <span class="hljs-string">'Enter your password to claim your $1.5B in lottery winnings'</span>,
   [
-    {<span class="hljs-attr">text</span>: <span class="hljs-string">'Cancel'</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Cancel Pressed'</span>), <span class="hljs-attr">style</span>: <span class="hljs-string">'cancel'</span>},
-    {<span class="hljs-attr">text</span>: <span class="hljs-string">'OK'</span>, <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">password</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'OK Pressed, password: '</span> + password)},
+    {
+      <span class="hljs-attr">text</span>: <span class="hljs-string">'Cancel'</span>,
+      <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Cancel Pressed'</span>),
+      <span class="hljs-attr">style</span>: <span class="hljs-string">'cancel'</span>,
+    },
+    {
+      <span class="hljs-attr">text</span>: <span class="hljs-string">'OK'</span>,
+      <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">password</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'OK Pressed, password: '</span> + password),
+    },
   ],
   <span class="hljs-string">'secure-text'</span>
 );
@@ -38,7 +52,7 @@
 <pre><code class="hljs css javascript">AlertIOS.prompt(
   <span class="hljs-string">'Update username'</span>,
   <span class="hljs-literal">null</span>,
-  text =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Your username is "</span>+text),
+  text =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Your username is '</span> + text),
   <span class="hljs-literal">null</span>,
   <span class="hljs-string">'default'</span>
 );
@@ -58,10 +72,10 @@
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="alert"></a><a href="#alert" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>alert()</code></h3>
-<pre><code class="hljs css javascript">AlertIOS.alert(title, [message], [callbackOrButtons])
+<pre><code class="hljs css javascript">AlertIOS.alert(title, [message], [callbackOrButtons]);
 </code></pre>
 <p>Create and display a popup alert with a title and an optional message.</p>
-<p>If passed a function in the <code>callbackOrButtons</code> param, it will be called when the user taps 'OK'. If passed an array of button configurations, each button should include  a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys. <code>style</code>   should be one of 'default', 'cancel' or 'destructive'. See <a href="/react-native/docs/0.16/alertios.html#buttonsarray">ButtonsArray</a></p>
+<p>If passed a function in the <code>callbackOrButtons</code> param, it will be called when the user taps 'OK'. If passed an array of button configurations, each button should include a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys. <code>style</code> should be one of 'default', 'cancel' or 'destructive'. See <a href="/react-native/docs/0.16/alertios.html#buttonsarray">ButtonsArray</a></p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -75,7 +89,14 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="prompt"></a><a href="#prompt" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>prompt()</code></h3>
-<pre><code class="hljs css javascript">AlertIOS.prompt(title, [message], [callbackOrButtons], [type], [defaultValue], [keyboardType])
+<pre><code class="hljs css javascript">AlertIOS.prompt(
+  title,
+  [message],
+  [callbackOrButtons],
+  [type],
+  [defaultValue],
+  [keyboardType]
+);
 </code></pre>
 <p>Create and display a prompt to enter some text.</p>
 <p><strong>Parameters:</strong></p>
@@ -85,11 +106,11 @@
 </thead>
 <tbody>
 <tr><td>title</td><td>string</td><td>Yes</td><td>The dialog's title.</td></tr>
-<tr><td>message</td><td>string</td><td>No</td><td>An optional message that appears above the text   input.</td></tr>
+<tr><td>message</td><td>string</td><td>No</td><td>An optional message that appears above the text input.</td></tr>
 <tr><td>callbackOrButtons</td><td>function, <a href="/react-native/docs/0.16/alertios.html#buttonsarray">ButtonsArray</a></td><td>No</td><td>This optional argument should be either a single-argument function or an <a href="/react-native/docs/0.16/alertios.html#buttonsarray">array of buttons</a>.</td></tr>
 <tr><td>type</td><td><a href="/react-native/docs/0.16/alertios.html#alerttype">AlertType</a></td><td>No</td><td>This configures the text input.</td></tr>
 <tr><td>defaultValue</td><td>string</td><td>No</td><td>The default text in text input.</td></tr>
-<tr><td>keyboardType</td><td>string</td><td>No</td><td>The keyboard type of first text field(if exists).   One of 'default', 'email-address', 'numeric', 'phone-pad',   'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',   'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.</td></tr>
+<tr><td>keyboardType</td><td>string</td><td>No</td><td>The keyboard type of first text field(if exists). One of 'default', 'email-address', 'numeric', 'phone-pad', 'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad', 'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.</td></tr>
 </tbody>
 </table>
 <h2><a class="anchor" aria-hidden="true" name="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>

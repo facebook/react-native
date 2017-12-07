@@ -90,7 +90,7 @@
 }
 </code></pre>
 <p>You can trigger the event in your web view client. You can hook existing handlers if your events are based on them.</p>
-<p>You should refer to  <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/views/webview/ReactWebViewManager.java">ReactWebViewManager.java</a> in the React Native codebase to see what handlers are available and how they are implemented. You can extend any methods here to provide extra functionality.</p>
+<p>You should refer to <a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/views/webview/ReactWebViewManager.java">ReactWebViewManager.java</a> in the React Native codebase to see what handlers are available and how they are implemented. You can extend any methods here to provide extra functionality.</p>
 <pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NavigationCompletedEvent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Event</span>&lt;<span class="hljs-title">NavigationCompletedEvent</span>&gt; </span>{
   <span class="hljs-keyword">private</span> WritableMap mParams;
 
@@ -150,18 +150,15 @@
 <li>Return a <code>WebView</code> component with the prop <code>nativeConfig.component</code> set to your native component (see below)</li>
 </ul>
 <p>To get your native component, you must use <code>requireNativeComponent</code>: the same as for regular custom components. However, you must pass in an extra third argument, <code>WebView.extraNativeComponentConfig</code>. This third argument contains prop types that are only required for native code.</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> React, { Component, PropTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { WebView, requireNativeComponent } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css js"><span class="hljs-keyword">import</span> React, {Component, PropTypes} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {WebView, requireNativeComponent} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomWebView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  <span class="hljs-keyword">static</span> propTypes = WebView.propTypes
+  <span class="hljs-keyword">static</span> propTypes = WebView.propTypes;
 
   render() {
     <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">WebView</span>
-        {<span class="hljs-attr">...this.props</span>}
-        <span class="hljs-attr">nativeConfig</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">component:</span> <span class="hljs-attr">RCTCustomWebView</span> }}
-      /&gt;</span>
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">WebView</span> {<span class="hljs-attr">...this.props</span>} <span class="hljs-attr">nativeConfig</span>=<span class="hljs-string">{{component:</span> <span class="hljs-attr">RCTCustomWebView</span>}} /&gt;</span>
     );
   }
 }
@@ -186,10 +183,10 @@ const RCTCustomWebView = requireNativeComponent(
     <span class="hljs-attr">finalUrl</span>: <span class="hljs-string">'about:blank'</span>,
   };
 
-  _onNavigationCompleted = <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
-    <span class="hljs-keyword">const</span> { onNavigationCompleted } = <span class="hljs-keyword">this</span>.props;
+  _onNavigationCompleted = <span class="hljs-function"><span class="hljs-params">event</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> {onNavigationCompleted} = <span class="hljs-keyword">this</span>.props;
     onNavigationCompleted &amp;&amp; onNavigationCompleted(event);
-  }
+  };
 
   render() {
     <span class="hljs-keyword">return</span> (
@@ -200,7 +197,7 @@ const RCTCustomWebView = requireNativeComponent(
           <span class="hljs-attr">props:</span> {
             <span class="hljs-attr">finalUrl:</span> <span class="hljs-attr">this.props.finalUrl</span>,
             <span class="hljs-attr">onNavigationCompleted:</span> <span class="hljs-attr">this._onNavigationCompleted</span>,
-          }
+          },
         }}
       /&gt;</span>
     );

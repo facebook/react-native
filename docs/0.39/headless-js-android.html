@@ -10,9 +10,9 @@
 <pre><code class="hljs css js">AppRegistry.registerHeadlessTask(<span class="hljs-string">'SomeTaskName'</span>, () =&gt; <span class="hljs-built_in">require</span>(<span class="hljs-string">'SomeTaskName'</span>));
 </code></pre>
 <p>Then, in <code>SomeTaskName.js</code>:</p>
-<pre><code class="hljs css js"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> (taskData) =&gt; {
+<pre><code class="hljs css js"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> taskData =&gt; {
   <span class="hljs-comment">// do stuff</span>
-}
+};
 </code></pre>
 <p>You can do anything in your task as long as it doesn't touch UI: network requests, timers and so on. Once your task completes (i.e. the promise is resolved), React Native will go into &quot;paused&quot; mode (unless there are other tasks running, or there is a foreground app).</p>
 <h2><a class="anchor" aria-hidden="true" name="the-java-api"></a><a href="#the-java-api" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Java API</h2>
@@ -72,7 +72,7 @@ getApplicationContext().startService(service);
         **/</span>
         <span class="hljs-keyword">if</span> (!isAppOnForeground((context))) {
             <span class="hljs-comment">/**
-              We will start our service and send extra info about 
+              We will start our service and send extra info about
               network connections
             **/</span>
             <span class="hljs-keyword">boolean</span> hasInternet = isNetworkAvailable(context);
@@ -89,14 +89,14 @@ getApplicationContext().startService(service);
          http://stackoverflow.com/questions/8489993/check-android-application-is-in-foreground-or-not
         **/</span>
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List&lt;ActivityManager.RunningAppProcessInfo&gt; appProcesses = 
+        List&lt;ActivityManager.RunningAppProcessInfo&gt; appProcesses =
         activityManager.getRunningAppProcesses();
         <span class="hljs-keyword">if</span> (appProcesses == <span class="hljs-keyword">null</span>) {
             <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
         }
         <span class="hljs-keyword">final</span> String packageName = context.getPackageName();
         <span class="hljs-keyword">for</span> (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            <span class="hljs-keyword">if</span> (appProcess.importance == 
+            <span class="hljs-keyword">if</span> (appProcess.importance ==
             ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &amp;&amp;
              appProcess.processName.equals(packageName)) {
                 <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
@@ -106,7 +106,7 @@ getApplicationContext().startService(service);
     }
 
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isNetworkAvailable</span><span class="hljs-params">(Context context)</span> </span>{
-        ConnectivityManager cm = (ConnectivityManager) 
+        ConnectivityManager cm = (ConnectivityManager)
         context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         <span class="hljs-keyword">return</span> (netInfo != <span class="hljs-keyword">null</span> &amp;&amp; netInfo.isConnected());

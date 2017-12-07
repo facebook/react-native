@@ -10,7 +10,12 @@
 <pre><code class="hljs css javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ViewColoredBoxesWithText</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
-      &lt;View style={{flexDirection: 'row', height: 100, padding: 20}}&gt;
+      &lt;View
+        style={{
+          flexDirection: 'row',
+          height: 100,
+          padding: 20,
+        }}&gt;
         &lt;View style={{backgroundColor: 'blue', flex: 0.3}} /&gt;
         &lt;View style={{backgroundColor: 'red', flex: 0.5}} /&gt;
         &lt;Text&gt;Hello World!&lt;/Text&gt;

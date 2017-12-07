@@ -9,13 +9,16 @@
     };
     <span class="hljs-keyword">this</span>.state.panResponder = PanResponder.create({
       <span class="hljs-attr">onStartShouldSetPanResponder</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-literal">true</span>,
-      <span class="hljs-attr">onPanResponderMove</span>: Animated.event([<span class="hljs-literal">null</span>, {
-        <span class="hljs-attr">dx</span>: <span class="hljs-keyword">this</span>.state.pan.x, <span class="hljs-comment">// x,y are Animated.Value</span>
-        dy: <span class="hljs-keyword">this</span>.state.pan.y,
-      }]),
+      <span class="hljs-attr">onPanResponderMove</span>: Animated.event([
+        <span class="hljs-literal">null</span>,
+        {
+          <span class="hljs-attr">dx</span>: <span class="hljs-keyword">this</span>.state.pan.x, <span class="hljs-comment">// x,y are Animated.Value</span>
+          dy: <span class="hljs-keyword">this</span>.state.pan.y,
+        },
+      ]),
       <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
         Animated.spring(
-          <span class="hljs-keyword">this</span>.state.pan,         <span class="hljs-comment">// Auto-multiplexed</span>
+          <span class="hljs-keyword">this</span>.state.pan, <span class="hljs-comment">// Auto-multiplexed</span>
           {<span class="hljs-attr">toValue</span>: {<span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>}} <span class="hljs-comment">// Back to zero</span>
         ).start();
       },
@@ -50,7 +53,7 @@
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="setvalue"></a><a href="#setvalue" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setValue()</code></h3>
-<pre><code class="hljs css javascript">setValue(value)
+<pre><code class="hljs css javascript">setValue(value);
 </code></pre>
 <p>Directly set the value. This will stop any animations running on the value and update all the bound properties.</p>
 <p><strong>Parameters:</strong></p>
@@ -64,7 +67,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="setoffset"></a><a href="#setoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setOffset()</code></h3>
-<pre><code class="hljs css javascript">setOffset(offset)
+<pre><code class="hljs css javascript">setOffset(offset);
 </code></pre>
 <p>Sets an offset that is applied on top of whatever value is set, whether via <code>setValue</code>, an animation, or <code>Animated.event</code>. Useful for compensating things like the start of a pan gesture.</p>
 <p><strong>Parameters:</strong></p>
@@ -78,19 +81,19 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="flattenoffset"></a><a href="#flattenoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flattenOffset()</code></h3>
-<pre><code class="hljs css javascript">flattenOffset()
+<pre><code class="hljs css javascript">flattenOffset();
 </code></pre>
 <p>Merges the offset value into the base value and resets the offset to zero. The final output of the value is unchanged.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="extractoffset"></a><a href="#extractoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>extractOffset()</code></h3>
-<pre><code class="hljs css javascript">extractOffset()
+<pre><code class="hljs css javascript">extractOffset();
 </code></pre>
 <p>Sets the offset value to the base value, and resets the base value to zero. The final output of the value is unchanged.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="addlistener"></a><a href="#addlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addListener()</code></h3>
-<pre><code class="hljs css javascript">addListener(callback)
+<pre><code class="hljs css javascript">addListener(callback);
 </code></pre>
-<p>Adds an asynchronous listener to the value so you can observe updates from animations.  This is useful because there is no way to synchronously read the value because it might be driven natively.</p>
+<p>Adds an asynchronous listener to the value so you can observe updates from animations. This is useful because there is no way to synchronously read the value because it might be driven natively.</p>
 <p>Returns a string that serves as an identifier for the listener.</p>
 <p><strong>Parameters:</strong></p>
 <table>
@@ -103,7 +106,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removelistener"></a><a href="#removelistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeListener()</code></h3>
-<pre><code class="hljs css javascript">removeListener(id)
+<pre><code class="hljs css javascript">removeListener(id);
 </code></pre>
 <p>Unregister a listener. The <code>id</code> param shall match the identifier previously returned by <code>addListener()</code>.</p>
 <p><strong>Parameters:</strong></p>
@@ -117,12 +120,12 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removealllisteners"></a><a href="#removealllisteners" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeAllListeners()</code></h3>
-<pre><code class="hljs css javascript">removeAllListeners()
+<pre><code class="hljs css javascript">removeAllListeners();
 </code></pre>
 <p>Remove all registered listeners.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="stopanimation"></a><a href="#stopanimation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>stopAnimation()</code></h3>
-<pre><code class="hljs css javascript">stopAnimation([callback])
+<pre><code class="hljs css javascript">stopAnimation([callback]);
 </code></pre>
 <p>Stops any running animation or tracking. <code>callback</code> is invoked with the final value after stopping the animation, which is useful for updating state to match the animation position with layout.</p>
 <p><strong>Parameters:</strong></p>
@@ -136,7 +139,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="resetanimation"></a><a href="#resetanimation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>resetAnimation()</code></h3>
-<pre><code class="hljs css javascript">resetAnimation([callback])
+<pre><code class="hljs css javascript">resetAnimation([callback]);
 </code></pre>
 <p>Stops any animation and resets the value to its original.</p>
 <p><strong>Parameters:</strong></p>
@@ -150,14 +153,14 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getlayout"></a><a href="#getlayout" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getLayout()</code></h3>
-<pre><code class="hljs css javascript">getLayout()
+<pre><code class="hljs css javascript">getLayout();
 </code></pre>
 <p>Converts <code>{x, y}</code> into <code>{left, top}</code> for use in style, e.g.</p>
 <pre><code class="hljs css javascript">style={<span class="hljs-keyword">this</span>.state.anim.getLayout()}
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="gettranslatetransform"></a><a href="#gettranslatetransform" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getTranslateTransform()</code></h3>
-<pre><code class="hljs css javascript">getTranslateTransform()
+<pre><code class="hljs css javascript">getTranslateTransform();
 </code></pre>
 <p>Converts <code>{x, y}</code> into a useable translation transform, e.g.</p>
 <pre><code class="hljs css javascript">style={{

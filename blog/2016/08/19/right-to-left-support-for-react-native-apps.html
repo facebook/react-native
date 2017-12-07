@@ -22,10 +22,8 @@ available in Arabic and Hebrew with RTL layouts for both
 <a href="https://itunes.apple.com/app/id964397083">iOS</a> and
 <a href="https://play.google.com/store/apps/details?id=com.facebook.adsmanager">Android</a>.
 Here is how it looks like in those RTL languages:</p>
-<p align="center">
-  <img src="/react-native/blog/assets/rtl-ama-ios-arabic.png" width="280" style="margin:10px">
-  <img src="/react-native/blog/assets/rtl-ama-android-hebrew.png" width="280" style="margin:10px">
-</p>
+<p><img src="/react-native/blog/assets/rtl-ama-ios-arabic.png" width="280" style="margin:10px"></p>
+<p><img src="/react-native/blog/assets/rtl-ama-android-hebrew.png" width="280" style="margin:10px"></p>
 <h2><a class="anchor" aria-hidden="true" name="overview-changes-in-rn-for-rtl-support"></a><a href="#overview-changes-in-rn-for-rtl-support" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Overview Changes in RN for RTL support</h2>
 <p><a href="https://github.com/facebook/css-layout">css-layout</a> already has a concept of
 <code>start</code> and <code>end</code> for the layout. In the Left-to-Right (LTR) layout, <code>start</code>
@@ -85,17 +83,13 @@ automatically.</p>
 <h2><a class="anchor" aria-hidden="true" name="writing-rtl-ready-components"></a><a href="#writing-rtl-ready-components" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Writing RTL-ready Components</h2>
 <p>In general, most components are already RTL-ready, for example:</p>
 <ul>
-<li><p>Left-to-Right Layout</p>
-<p><p align="left">
-<img src="/react-native/blog/assets/rtl-demo-listitem-ltr.png" width="300"></p></li>
+<li>Left-to-Right Layout</li>
 </ul>
-</p>
+<p><img src="/react-native/blog/assets/rtl-demo-listitem-ltr.png" width="300"></p>
 <ul>
-<li><p>Right-to-Left Layout</p>
-<p><p align="left">
-<img src="/react-native/blog/assets/rtl-demo-listitem-rtl.png" width="300"></p></li>
+<li>Right-to-Left Layout</li>
 </ul>
-</p>
+<p><img src="/react-native/blog/assets/rtl-demo-listitem-rtl.png" width="300"></p>
 <p>However, there are several cases to be aware of, for which you will need the
 <a href="https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js"><code>I18nManager</code></a>.
 In
@@ -107,27 +101,23 @@ can make the necessary changes according to the layout.</p>
 LTR and RTL layout, because RN will not flip your source image. Therefore, you
 should flip them according to the layout style.</p>
 <ul>
-<li><p>Left-to-Right Layout</p>
-<p><p align="left">
-<img src="/react-native/blog/assets/rtl-demo-icon-ltr.png" width="300"></p></li>
+<li>Left-to-Right Layout</li>
 </ul>
-</p>
+<p><img src="/react-native/blog/assets/rtl-demo-icon-ltr.png" width="300"></p>
 <ul>
-<li><p>Right-to-Left Layout</p>
-<p><p align="left">
-<img src="/react-native/blog/assets/rtl-demo-icon-rtl.png" width="300"></p></li>
+<li>Right-to-Left Layout</li>
 </ul>
-</p>
+<p><img src="/react-native/blog/assets/rtl-demo-icon-rtl.png" width="300"></p>
 <p>Here are two ways to flip the icon according to the direction:</p>
 <ul>
 <li><p>Adding a <code>transform</code> style to the image component:</p>
-<pre><code class="hljs css js">&lt;Image
+<pre><code class="hljs css javascript">&lt;Image
   source={...}
   style={{<span class="hljs-attr">transform</span>: [{<span class="hljs-attr">scaleX</span>: I18nManager.isRTL ? <span class="hljs-number">-1</span> : <span class="hljs-number">1</span>}]}}
 /&gt;
 </code></pre></li>
 <li><p>Or, changing the image source according to the direction:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">let</span> imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./back.png"</span>);
+<pre><code class="hljs css javascript"><span class="hljs-keyword">let</span> imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./back.png"</span>);
 <span class="hljs-keyword">if</span> (I18nManager.isRTL) {
   imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./forward.png"</span>);
 }

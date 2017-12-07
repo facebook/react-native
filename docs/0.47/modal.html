@@ -5,16 +5,14 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/modal.md" target="_blank">Edit</a><h1>Modal</h1></header><article><div><span><p>The Modal component is a simple way to present content above an enclosing view.</p>
-<p><em>Note: If you need more control over how to present modals over the rest of your app,
-then consider using a top-level Navigator.</em></p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Modal, Text, TouchableHighlight, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<p><em>Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator.</em></p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {Modal, Text, TouchableHighlight, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ModalExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-
   state = {
     <span class="hljs-attr">modalVisible</span>: <span class="hljs-literal">false</span>,
-  }
+  };
 
   setModalVisible(visible) {
     <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">modalVisible</span>: visible});
@@ -24,31 +22,32 @@ then consider using a top-level Navigator.</em></p>
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Modal</span>
-          <span class="hljs-attr">animationType</span>=<span class="hljs-string">{</span>"<span class="hljs-attr">slide</span>"}
+          <span class="hljs-attr">animationType</span>=<span class="hljs-string">{</span>'<span class="hljs-attr">slide</span>'}
           <span class="hljs-attr">transparent</span>=<span class="hljs-string">{false}</span>
           <span class="hljs-attr">visible</span>=<span class="hljs-string">{this.state.modalVisible}</span>
-          <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {alert("Modal has been closed.")}}
-          &gt;
-         <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+          <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+            alert('Modal has been closed.');
+          }}&gt;
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-            <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-              this.setModalVisible(!this.state.modalVisible)
-            }}&gt;
-              <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hide Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-            <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
-
+              <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+                <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}&gt;
+                <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hide Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-         <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">Modal</span>&gt;</span>
 
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-          this.setModalVisible(true)
-        }}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+            this.setModalVisible(true);
+          }}&gt;
           <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Show Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
-
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }
@@ -143,8 +142,7 @@ then consider using a top-level Navigator.</em></p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="onorientationchange"></a><a href="#onorientationchange" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onOrientationChange</code></h3>
-<p>The <code>onOrientationChange</code> callback is called when the orientation changes while the modal is being displayed.
-The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.</p>
+<p>The <code>onOrientationChange</code> callback is called when the orientation changes while the modal is being displayed. The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -155,8 +153,7 @@ The orientation provided is only 'portrait' or 'landscape'. This callback is als
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="presentationstyle"></a><a href="#presentationstyle" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>presentationStyle</code></h3>
-<p>The <code>presentationStyle</code> prop controls how the modal appears (generally on larger devices such as iPad or plus-sized iPhones).
-See <a href="https://developer.apple.com/reference/uikit/uimodalpresentationstyle">https://developer.apple.com/reference/uikit/uimodalpresentationstyle</a> for details.</p>
+<p>The <code>presentationStyle</code> prop controls how the modal appears (generally on larger devices such as iPad or plus-sized iPhones). See <a href="https://developer.apple.com/reference/uikit/uimodalpresentationstyle">https://developer.apple.com/reference/uikit/uimodalpresentationstyle</a> for details.</p>
 <ul>
 <li><code>fullScreen</code> covers the screen completely</li>
 <li><code>pageSheet</code> covers portrait-width view centered (only on larger devices)</li>
@@ -174,9 +171,7 @@ See <a href="https://developer.apple.com/reference/uikit/uimodalpresentationstyl
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="supportedorientations"></a><a href="#supportedorientations" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>supportedOrientations</code></h3>
-<p>The <code>supportedOrientations</code> prop allows the modal to be rotated to any of the specified orientations.
-On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
-When using <code>presentationStyle</code> of <code>pageSheet</code> or <code>formSheet</code>, this property will be ignored by iOS.</p>
+<p>The <code>supportedOrientations</code> prop allows the modal to be rotated to any of the specified orientations. On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field. When using <code>presentationStyle</code> of <code>pageSheet</code> or <code>formSheet</code>, this property will be ignored by iOS.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>

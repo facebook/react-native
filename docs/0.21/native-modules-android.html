@@ -22,7 +22,7 @@
 <span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactMethod;
 
 <span class="hljs-keyword">import</span> java.util.Map;
-<span class="hljs-keyword">import</span> java.util.HashMap; 
+<span class="hljs-keyword">import</span> java.util.HashMap;
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToastModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
 
@@ -115,7 +115,7 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
  * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
  *    ToastExample.LONG
  */</span>
-<span class="hljs-keyword">import</span> { NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> {NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-built_in">module</span>.exports = NativeModules.ToastExample;
 </code></pre>
 <p>Now, from your other JavaScript file you can call the method like this:</p>
@@ -154,7 +154,7 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 <pre><code class="hljs css js">UIManager.measureLayout(
   <span class="hljs-number">100</span>,
   <span class="hljs-number">100</span>,
-  (msg) =&gt; {
+  msg =&gt; {
     <span class="hljs-built_in">console</span>.log(msg);
   },
   (x, y, width, height) =&gt; {
@@ -199,12 +199,10 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
 <pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
-    <span class="hljs-keyword">var</span> {
-      relativeX,
-      relativeY,
-      width,
-      height,
-    } = <span class="hljs-keyword">await</span> UIManager.measureLayout(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>);
+    <span class="hljs-keyword">var</span> {relativeX, relativeY, width, height} = <span class="hljs-keyword">await</span> UIManager.measureLayout(
+      <span class="hljs-number">100</span>,
+      <span class="hljs-number">100</span>
+    );
 
     <span class="hljs-built_in">console</span>.log(relativeX + <span class="hljs-string">':'</span> + relativeY + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
   } <span class="hljs-keyword">catch</span> (e) {

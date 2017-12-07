@@ -22,8 +22,7 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:<span class="hljs-ke
 </span><span class="hljs-symbol">                                                 moduleName:</span>@<span class="hljs-string">"ImageBrowserApp"</span>
 <span class="hljs-symbol">                                          initialProperties:</span>props]<span class="hljs-comment">;</span>
 </code></pre>
-<pre><code class="hljs">
-<span class="hljs-keyword">import</span> <span class="hljs-type">React</span> from <span class="hljs-symbol">'reac</span>t';
+<pre><code class="hljs"><span class="hljs-keyword">import</span> <span class="hljs-type">React</span> from <span class="hljs-symbol">'reac</span>t';
 <span class="hljs-keyword">import</span> {
   <span class="hljs-type">AppRegistry</span>,
   <span class="hljs-type">View</span>,
@@ -56,8 +55,7 @@ rootView.appProperties = <span class="hljs-meta">@{</span><span class="hljs-meta
 <p>It is fine to update properties anytime. However, updates have to be performed on the main thread. You use the getter on any thread.</p>
 <p>There is no way to update only a few properties at a time. We suggest that you build it into your own wrapper instead.</p>
 <blockquote>
-<p><strong><em>Note:</em></strong>
-Currently, JS functions <code>componentWillReceiveProps</code> and <code>componentWillUpdateProps</code> of the top level RN component will not be called after a prop update. However, you can access the new props in <code>componentWillMount</code> function.</p>
+<p><strong><em>Note:</em></strong> Currently, JS functions <code>componentWillReceiveProps</code> and <code>componentWillUpdateProps</code> of the top level RN component will not be called after a prop update. However, you can access the new props in <code>componentWillMount</code> function.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" name="passing-properties-from-react-native-to-native"></a><a href="#passing-properties-from-react-native-to-native" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Passing properties from React Native to native</h3>
 <p>The problem exposing properties of native components is covered in detail in <a href="/react-native/docs/0.10/native-components-ios.html#properties">this article</a>. In short, export properties with <code>RCT_CUSTOM_VIEW_PROPERTY</code> macro in your custom native component, then just use them in React Native as if the component was an ordinary React Native component.</p>
@@ -82,8 +80,7 @@ Currently, JS functions <code>componentWillReceiveProps</code> and <code>compone
 <p>Although this solution is complex, it is used in <code>RCTUIManager</code>, which is an internal React Native class that manages all React Native views.</p>
 <p>Native modules can also be used to expose existing native libraries to JS. The <a href="https://github.com/facebook/react-native/tree/master/Libraries/Geolocation">Geolocation library</a> is a living example of the idea.</p>
 <blockquote>
-<p><strong><em>Warning</em></strong>:
-All native modules share the same namespace. Watch out for name collisions when creating new ones.</p>
+<p><strong><em>Warning</em></strong>: All native modules share the same namespace. Watch out for name collisions when creating new ones.</p>
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" name="layout-computation-flow"></a><a href="#layout-computation-flow" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Layout computation flow</h2>
 <p>When integrating native and React Native, we also need a way to consolidate two different layout systems. This section covers common layout problems and provides a brief description of mechanisms to address them.</p>
@@ -125,8 +122,7 @@ typedef <span class="hljs-type">NS_ENUM</span>(<span class="hljs-type">NSInteger
 </code></pre>
 <p><code>RCTRootViewSizeFlexibilityNone</code> is the default value, which makes a root view's size fixed (but it still can be updated with <code>setFrame:</code>). The other three modes allow us to track React Native content's size updates. For instance, setting mode to <code>RCTRootViewSizeFlexibilityHeight</code> will cause React Native to measure the content's height and pass that information back to <code>RCTRootView</code>'s delegate. An arbitrary action can be performed within the delegate, including setting the root view's frame, so the content fits. The delegate is called only when the size of the content has changed.</p>
 <blockquote>
-<p><strong><em>Warning:</em></strong>
-Making a dimension flexible in both JS and native leads to undefined behavior. For example - don't make a top-level React component's width flexible (with <code>flexbox</code>) while you're using <code>RCTRootViewSizeFlexibilityWidth</code> on the hosting <code>RCTRootView</code>.</p>
+<p><strong><em>Warning:</em></strong> Making a dimension flexible in both JS and native leads to undefined behavior. For example - don't make a top-level React component's width flexible (with <code>flexbox</code>) while you're using <code>RCTRootViewSizeFlexibilityWidth</code> on the hosting <code>RCTRootView</code>.</p>
 </blockquote>
 <p>Let's look at an example.</p>
 <pre><code class="hljs"><span class="hljs-comment">// FlexibleSizeExampleView.m</span>

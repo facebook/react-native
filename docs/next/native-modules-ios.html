@@ -42,7 +42,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 }
 </code></pre>
 <p>Now, from your JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-keyword">var</span> CalendarManager = NativeModules.CalendarManager;
 CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>);
 </code></pre>
@@ -81,12 +81,20 @@ CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <spa
 }
 </code></pre>
 <p>You would then call this from JavaScript by using either:</p>
-<pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>, date.getTime()); <span class="hljs-comment">// passing date as number of milliseconds since Unix epoch</span>
+<pre><code class="hljs css javascript">CalendarManager.addEvent(
+  <span class="hljs-string">'Birthday Party'</span>,
+  <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
+  date.getTime()
+); <span class="hljs-comment">// passing date as number of milliseconds since Unix epoch</span>
 </code></pre>
 <p>or</p>
-<pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>, date.toISOString()); <span class="hljs-comment">// passing date as ISO-8601 string</span>
+<pre><code class="hljs css javascript">CalendarManager.addEvent(
+  <span class="hljs-string">'Birthday Party'</span>,
+  <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
+  date.toISOString()
+); <span class="hljs-comment">// passing date as ISO-8601 string</span>
 </code></pre>
-<p>And both values would get converted correctly to the native <code>NSDate</code>.  A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>
+<p>And both values would get converted correctly to the native <code>NSDate</code>. A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>
 <p>As <code>CalendarManager.addEvent</code> method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:</p>
 <pre><code class="hljs css objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert.h&gt;</span></span>
 
@@ -101,8 +109,8 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 <pre><code class="hljs css javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, {
   <span class="hljs-attr">location</span>: <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
   <span class="hljs-attr">time</span>: date.getTime(),
-  <span class="hljs-attr">description</span>: <span class="hljs-string">'...'</span>
-})
+  <span class="hljs-attr">description</span>: <span class="hljs-string">'...'</span>,
+});
 </code></pre>
 <blockquote>
 <p><strong>NOTE</strong>: About array and map</p>
@@ -127,10 +135,10 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
   } <span class="hljs-keyword">else</span> {
     <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">events</span>: events});
   }
-})
+});
 </code></pre>
 <p>A native module should invoke its callback exactly once. It's okay to store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates - see <a href="https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m"><code>RCTAlertManager</code></a> for an example. If the callback is never invoked, some memory is leaked. If both <code>onSuccess</code> and <code>onFail</code> callbacks are passed, you should only invoke one of them.</p>
-<p>If you want to pass error-like objects to JavaScript, use <code>RCTMakeError</code> from <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h"><code>RCTUtils.h</code></a>.  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript <code>Error</code> objects in the future.</p>
+<p>If you want to pass error-like objects to JavaScript, use <code>RCTMakeError</code> from <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h"><code>RCTUtils.h</code></a>. Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript <code>Error</code> objects in the future.</p>
 <h2><a class="anchor" aria-hidden="true" name="promises"></a><a href="#promises" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Promises</h2>
 <p>Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's <code>async/await</code> syntax. When the last parameters of a bridged native method are an <code>RCTPromiseResolveBlock</code> and <code>RCTPromiseRejectBlock</code>, its corresponding JS method will return a JS Promise object.</p>
 <p>Refactoring the above code to use a promise instead of callbacks looks like this:</p>
@@ -148,11 +156,11 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 }
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEvents</span>(<span class="hljs-params"></span>) </span>{
+<pre><code class="hljs css javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEvents</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">var</span> events = <span class="hljs-keyword">await</span> CalendarManager.findEvents();
 
-    <span class="hljs-keyword">this</span>.setState({ events });
+    <span class="hljs-keyword">this</span>.setState({events});
   } <span class="hljs-keyword">catch</span> (e) {
     <span class="hljs-built_in">console</span>.error(e);
   }
@@ -161,7 +169,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 updateEvents();
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="threading"></a><a href="#threading" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Threading</h2>
-<p>The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change.  The <code>- (dispatch_queue_t)methodQueue</code> method allows the native module to specify which queue its methods should be run on.  For example, if it needs to use a main-thread-only iOS API, it should specify this via:</p>
+<p>The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change. The <code>- (dispatch_queue_t)methodQueue</code> method allows the native module to specify which queue its methods should be run on. For example, if it needs to use a main-thread-only iOS API, it should specify this via:</p>
 <pre><code class="hljs css objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
 {
   <span class="hljs-keyword">return</span> dispatch_get_main_queue();
@@ -324,7 +332,7 @@ subscription.remove();
   <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">addEvent</span><span class="hljs-params">(name: String, location: String, date: NSNumber)</span></span> -&gt; <span class="hljs-type">Void</span> {
     <span class="hljs-comment">// Date is ready to use!</span>
   }
-  
+
   <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">constantsToExport</span><span class="hljs-params">()</span></span> -&gt; [<span class="hljs-type">String</span>: <span class="hljs-type">Any</span>]! {
     <span class="hljs-keyword">return</span> [<span class="hljs-string">"someKey"</span>: <span class="hljs-string">"someValue"</span>]
   }

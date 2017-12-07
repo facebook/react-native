@@ -5,8 +5,7 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/navigation.md" target="_blank">Edit</a><h1>Navigating Between Screens</h1></header><article><div><span><p>Mobile apps are rarely made up of a single screen. Managing the presentation of, and transition between, multiple screens is typically handled by what is known as a navigator.</p>
-<p>This guide covers the various navigation components available in React Native.
-If you are just getting started with navigation, you will probably want to use <a href="/react-native/docs/0.46/navigation.html#react-navigation">React Navigation</a>. React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as <a href="https://reactnavigation.org/docs/guides/redux">redux</a>.</p>
+<p>This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use <a href="/react-native/docs/0.46/navigation.html#react-navigation">React Navigation</a>. React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as <a href="https://reactnavigation.org/docs/guides/redux">redux</a>.</p>
 <p>If you're only targeting iOS, you may want to also check out <a href="/react-native/docs/0.46/navigation.html#navigatorios">NavigatorIOS</a> as a way of providing a native look and feel with minimal configuration, as it provides a wrapper around the native <code>UINavigationController</code> class. This component will not work on Android, however.</p>
 <p>If you'd like to achieve a native look and feel on both iOS and Android, or you're integrating React Native into an app that already manages navigation natively, the following libraries provide native navigation on both platforms: <a href="http://airbnb.io/native-navigation/">native-navigation</a>, <a href="https://github.com/wix/react-native-navigation">react-native-navigation</a>.</p>
 <h2><a class="anchor" aria-hidden="true" name="react-navigation"></a><a href="#react-navigation" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>React Navigation</h2>
@@ -52,7 +51,7 @@ const App = StackNavigator({
   initialRoute={{
     <span class="hljs-attr">component</span>: MyScene,
     <span class="hljs-attr">title</span>: <span class="hljs-string">'My Initial Scene'</span>,
-    <span class="hljs-attr">passProps</span>: { <span class="hljs-attr">myProp</span>: <span class="hljs-string">'foo'</span> },
+    <span class="hljs-attr">passProps</span>: {<span class="hljs-attr">myProp</span>: <span class="hljs-string">'foo'</span>},
   }}
 /&gt;
 </code></pre>
@@ -60,7 +59,7 @@ const App = StackNavigator({
 <p>As <code>NavigatorIOS</code> leverages native UIKit navigation, it will automatically render a navigation bar with a back button and title.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> PropTypes <span class="hljs-keyword">from</span> <span class="hljs-string">'prop-types'</span>;
-<span class="hljs-keyword">import</span> { Button, NavigatorIOS, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> {Button, NavigatorIOS, Text, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NavigatorIOSApp</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   render() {
@@ -73,42 +72,42 @@ const App = StackNavigator({
         }}
         style={{flex: 1}}
       /&gt;
-    )
+    );
   }
 }
 
 class MyScene extends React.Component {
   static propTypes = {
     route: PropTypes.shape({
-      title: PropTypes.string.isRequired
+      title: PropTypes.string.isRequired,
     }),
     navigator: PropTypes.object.isRequired,
-  }
+  };
 
   constructor(props, context) {
     super(props, context);
     this._onForward = this._onForward.bind(this);
   }
-  
+
   _onForward() {
     let nextIndex = ++this.props.index;
     this.props.navigator.push({
       component: MyScene,
       title: 'Scene ' + nextIndex,
-      passProps: {index: nextIndex}
+      passProps: {index: nextIndex},
     });
   }
 
   render() {
     return (
       &lt;View&gt;
-        &lt;Text&gt;Current Scene: { this.props.title }&lt;/Text&gt;
+        &lt;Text&gt;Current Scene: {this.props.title}&lt;/Text&gt;
         &lt;Button
           onPress={this._onForward}
           title="Tap me to load the next scene"
         /&gt;
       &lt;/View&gt;
-    )
+    );
   }
 }
 </code></pre>

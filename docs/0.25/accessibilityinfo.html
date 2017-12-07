@@ -3,16 +3,16 @@
 <pre><code class="hljs css javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ScreenReaderStatusExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   state = {
     <span class="hljs-attr">screenReaderEnabled</span>: <span class="hljs-literal">false</span>,
-  }
+  };
 
   componentDidMount() {
     AccessibilityInfo.addEventListener(
       <span class="hljs-string">'change'</span>,
       <span class="hljs-keyword">this</span>._handleScreenReaderToggled
     );
-    AccessibilityInfo.fetch().done(<span class="hljs-function">(<span class="hljs-params">isEnabled</span>) =&gt;</span> {
+    AccessibilityInfo.fetch().done(<span class="hljs-function"><span class="hljs-params">isEnabled</span> =&gt;</span> {
       <span class="hljs-keyword">this</span>.setState({
-        <span class="hljs-attr">screenReaderEnabled</span>: isEnabled
+        <span class="hljs-attr">screenReaderEnabled</span>: isEnabled,
       });
     });
   }
@@ -24,17 +24,18 @@
     );
   }
 
-  _handleScreenReaderToggled = <span class="hljs-function">(<span class="hljs-params">isEnabled</span>) =&gt;</span> {
+  _handleScreenReaderToggled = <span class="hljs-function"><span class="hljs-params">isEnabled</span> =&gt;</span> {
     <span class="hljs-keyword">this</span>.setState({
       <span class="hljs-attr">screenReaderEnabled</span>: isEnabled,
     });
-  }
+  };
 
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>
-          The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
+          The screen reader is{' '}
+          {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
         <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
@@ -53,12 +54,12 @@
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" name="fetch"></a><a href="#fetch" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fetch()</code></h3>
-<pre><code class="hljs css javascript">AccessibilityInfo.fetch()
+<pre><code class="hljs css javascript">AccessibilityInfo.fetch();
 </code></pre>
 <p>Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when a screen reader is enabled and <code>false</code> otherwise.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="addeventlistener"></a><a href="#addeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addEventListener()</code></h3>
-<pre><code class="hljs css javascript">AccessibilityInfo.addEventListener(eventName, handler)
+<pre><code class="hljs css javascript">AccessibilityInfo.addEventListener(eventName, handler);
 </code></pre>
 <p>Add an event handler.</p>
 <table>
@@ -72,12 +73,8 @@
 </table>
 <p>Supported events:</p>
 <ul>
-<li><code>change</code>: Fires when the state of the screen reader changes. The argument
-to the event handler is a boolean. The boolean is <code>true</code> when a screen
-reader is enabled and <code>false</code> otherwise.</li>
-<li><code>announcementFinished</code>: iOS-only event. Fires when the screen reader has
-finished making an announcement. The argument to the event handler is a dictionary
-with these keys:
+<li><code>change</code>: Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when a screen reader is enabled and <code>false</code> otherwise.</li>
+<li><code>announcementFinished</code>: iOS-only event. Fires when the screen reader has finished making an announcement. The argument to the event handler is a dictionary with these keys:
 <ul>
 <li><code>announcement</code>: The string announced by the screen reader.</li>
 <li><code>success</code>: A boolean indicating whether the announcement was successfully made.</li>
@@ -85,7 +82,7 @@ with these keys:
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="setaccessibilityfocus"></a><a href="#setaccessibilityfocus" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setAccessibilityFocus()</code></h3>
-<pre><code class="hljs css javascript">AccessibilityInfo.setAccessibilityFocus(reactTag)
+<pre><code class="hljs css javascript">AccessibilityInfo.setAccessibilityFocus(reactTag);
 </code></pre>
 <p>Set accessibility focus to a React component.</p>
 <table>
@@ -106,7 +103,7 @@ with these keys:
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="announceforaccessibility"></a><a href="#announceforaccessibility" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>announceForAccessibility()</code></h3>
-<pre><code class="hljs css javascript">AccessibilityInfo.announceForAccessibility(announcement)
+<pre><code class="hljs css javascript">AccessibilityInfo.announceForAccessibility(announcement);
 </code></pre>
 <p>Post a string to be announced by the screen reader.</p>
 <table>
@@ -127,7 +124,7 @@ with these keys:
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>
-<pre><code class="hljs css javascript">AccessibilityInfo.removeEventListener(eventName, handler)
+<pre><code class="hljs css javascript">AccessibilityInfo.removeEventListener(eventName, handler);
 </code></pre>
 <p>Remove an event handler.</p>
 <table>

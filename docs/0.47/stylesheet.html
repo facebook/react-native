@@ -28,17 +28,13 @@
 </code></pre>
 <p>Code quality:</p>
 <ul>
-<li>By moving styles away from the render function, you're making the code
-easier to understand.</li>
-<li>Naming the styles is a good way to add meaning to the low level components
-in the render function.</li>
+<li>By moving styles away from the render function, you're making the code easier to understand.</li>
+<li>Naming the styles is a good way to add meaning to the low level components in the render function.</li>
 </ul>
 <p>Performance:</p>
 <ul>
-<li>Making a stylesheet from a style object makes it possible to refer to it
-by ID instead of creating a new style object every time.</li>
-<li>It also allows to send the style only once through the bridge. All
-subsequent uses are going to refer an id (not implemented yet).</li>
+<li>Making a stylesheet from a style object makes it possible to refer to it by ID instead of creating a new style object every time.</li>
+<li>It also allows to send the style only once through the bridge. All subsequent uses are going to refer an id (not implemented yet).</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
@@ -58,12 +54,8 @@ subsequent uses are going to refer an id (not implemented yet).</li>
 <h3><a class="anchor" aria-hidden="true" name="setstyleattributepreprocessor"></a><a href="#setstyleattributepreprocessor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setStyleAttributePreprocessor()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> setStyleAttributePreprocessor(property, process)
 </code></pre>
-<p>WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
-not be reliably announced. The whole thing might be deleted, who knows? Use
-at your own risk.</p>
-<p>Sets a function to use to pre-process a style property value. This is used
-internally to process color and transform values. You should not use this
-unless you really know what you are doing and have exhausted other options.</p>
+<p>WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will not be reliably announced. The whole thing might be deleted, who knows? Use at your own risk.</p>
+<p>Sets a function to use to pre-process a style property value. This is used internally to process color and transform values. You should not use this unless you really know what you are doing and have exhausted other options.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="create"></a><a href="#create" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>create()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> create(obj)

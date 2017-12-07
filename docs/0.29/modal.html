@@ -5,13 +5,11 @@
             nav.classList.toggle('docsSliderActive');
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/modal.md" target="_blank">Edit</a><h1>Modal</h1></header><article><div><span><p>The Modal component is a simple way to present content above an enclosing view.</p>
-<p><em>Note: If you need more control over how to present modals over the rest of your app,
-then consider using a top-level Navigator. Go <a href="navigator-comparison.md">here</a> to compare navigation options.</em></p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Modal, Text, TouchableHighlight, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<p><em>Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator. Go <a href="navigator-comparison.md">here</a> to compare navigation options.</em></p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {Modal, Text, TouchableHighlight, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ModalExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
- 
   <span class="hljs-keyword">constructor</span>(props) {
     <span class="hljs-keyword">super</span>(props);
     <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">modalVisible</span>: <span class="hljs-literal">false</span>};
@@ -25,31 +23,32 @@ then consider using a top-level Navigator. Go <a href="navigator-comparison.md">
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Modal</span>
-          <span class="hljs-attr">animationType</span>=<span class="hljs-string">{</span>"<span class="hljs-attr">slide</span>"}
+          <span class="hljs-attr">animationType</span>=<span class="hljs-string">{</span>'<span class="hljs-attr">slide</span>'}
           <span class="hljs-attr">transparent</span>=<span class="hljs-string">{false}</span>
           <span class="hljs-attr">visible</span>=<span class="hljs-string">{this.state.modalVisible}</span>
-          <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {alert("Modal has been closed.")}}
-          &gt;
-         <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+          <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+            alert('Modal has been closed.');
+          }}&gt;
+          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hello World!<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
 
-            <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-              this.setModalVisible(!this.state.modalVisible)
-            }}&gt;
-              <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hide Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-            <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
-
+              <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+                <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}&gt;
+                <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Hide Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+              <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
           <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-         <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">Modal</span>&gt;</span>
 
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-          this.setModalVisible(true)
-        }}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
+          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> {
+            this.setModalVisible(true);
+          }}&gt;
           <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Show Modal<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
-
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
     );
   }

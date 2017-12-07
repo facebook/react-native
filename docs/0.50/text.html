@@ -6,10 +6,7 @@
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank">Edit</a><h1>Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
-<p>In the following example, the nested title and body text will inherit the
-<code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own
-additional styles.  The title and body willstack on top of each other on
-account of the literal newlines:</p>
+<p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body willstack on top of each other on account of the literal newlines:</p>
 <div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
@@ -51,11 +48,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, ()
 </code></pre><iframe style="margin-top: 4" width="880" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20'This%20is%20not%20really%20a%20bird%20nest.'%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%7B'%5Cn'%7D%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.bodyText%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20'Cochin'%2C%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('TextInANest'%2C%20()%20%3D%3E%20TextInANest)%3B%0A" frame-border="0"></iframe></div>
 
 <h2><a class="anchor" aria-hidden="true" name="nested-text"></a><a href="#nested-text" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested text</h2>
-<p>Both iOS and Android allow you to display formatted text by annotating
-ranges of a string with specific formatting like bold or colored text
-(<code>NSAttributedString</code> on iOS, <code>SpannableString</code> on Android). In practice,
-this is very tedious. For React Native, we decided to use web paradigm for
-this where you can nest text to achieve the same effect.</p>
+<p>Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (<code>NSAttributedString</code> on iOS, <code>SpannableString</code> on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.</p>
 <div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
@@ -76,8 +69,7 @@ this where you can nest text to achieve the same effect.</p>
 AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>, () =&gt; BoldAndBeautiful);
 </code></pre><iframe style="margin-top: 4" width="880" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BoldAndBeautiful%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontWeight%3A%20'bold'%7D%7D%3E%0A%20%20%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7Bcolor%3A%20'red'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20and%20red%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BoldAndBeautiful)%3B%0A" frame-border="0"></iframe></div>
 
-<p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code>
-or <code>SpannableString</code> that contains the following information:</p>
+<p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
 <pre><code class="hljs css javascript"><span class="hljs-string">"I am bold and red"</span>
 <span class="hljs-number">0</span><span class="hljs-number">-9</span>: bold
 <span class="hljs-number">9</span><span class="hljs-number">-17</span>: bold, red
@@ -107,10 +99,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 <p>In order to use this feature, you must give the view a <code>width</code> and a <code>height</code>.</p>
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" name="containers"></a><a href="#containers" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Containers</h2>
-<p>The <code>&lt;Text&gt;</code> element is special relative to layout: everything inside is no
-longer using the flexbox layout but using text layout. This means that
-elements inside of a <code>&lt;Text&gt;</code> are no longer rectangles, but wrap when they
-see the end of the line.</p>
+<p>The <code>&lt;Text&gt;</code> element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a <code>&lt;Text&gt;</code> are no longer rectangles, but wrap when they see the end of the line.</p>
 <pre><code class="hljs css javascript">&lt;Text&gt;
   &lt;Text&gt;First part and &lt;/Text&gt;
   &lt;Text&gt;second part&lt;/Text&gt;
@@ -130,19 +119,15 @@ see the end of the line.</p>
 // |second part|
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="limited-style-inheritance"></a><a href="#limited-style-inheritance" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Limited Style Inheritance</h2>
-<p>On the web, the usual way to set a font family and size for the entire
-document is to take advantage of inherited CSS properties like so:</p>
+<p>On the web, the usual way to set a font family and size for the entire document is to take advantage of inherited CSS properties like so:</p>
 <pre><code class="hljs css css"><span class="hljs-selector-tag">html</span> {
   <span class="hljs-attribute">font-family</span>: <span class="hljs-string">'lucida grande'</span>, tahoma, verdana, arial, sans-serif;
   <span class="hljs-attribute">font-size</span>: <span class="hljs-number">11px</span>;
   <span class="hljs-attribute">color</span>: <span class="hljs-number">#141823</span>;
 }
 </code></pre>
-<p>All elements in the document will inherit this font unless they or one of
-their parents specifies a new rule.</p>
-<p>In React Native, we are more strict about it: <strong>you must wrap all the text
-nodes inside of a <code>&lt;Text&gt;</code> component</strong>. You cannot have a text node directly
-under a <code>&lt;View&gt;</code>.</p>
+<p>All elements in the document will inherit this font unless they or one of their parents specifies a new rule.</p>
+<p>In React Native, we are more strict about it: <strong>you must wrap all the text nodes inside of a <code>&lt;Text&gt;</code> component</strong>. You cannot have a text node directly under a <code>&lt;View&gt;</code>.</p>
 <pre><code class="hljs css javascript">// BAD: will raise exception, can't have a text node as child of a &lt;View&gt;
 &lt;View&gt;
   Some text
@@ -155,54 +140,34 @@ under a <code>&lt;View&gt;</code>.</p>
   &lt;/Text&gt;
 &lt;/View&gt;
 </code></pre>
-<p>You also lose the ability to set up a default font for an entire subtree.
-The recommended way to use consistent fonts and sizes across your
-application is to create a component <code>MyAppText</code> that includes them and use
-this component across your app. You can also use this component to make more
-specific components like <code>MyAppHeaderText</code> for other kinds of text.</p>
+<p>You also lose the ability to set up a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component <code>MyAppText</code> that includes them and use this component across your app. You can also use this component to make more specific components like <code>MyAppHeaderText</code> for other kinds of text.</p>
 <pre><code class="hljs css javascript">&lt;View&gt;
-  &lt;MyAppText&gt;Text styled with the default font for the entire application&lt;/MyAppText&gt;
+  &lt;MyAppText&gt;
+    Text styled with the default font for the entire application
+  &lt;/MyAppText&gt;
   &lt;MyAppHeaderText&gt;Text styled as a header&lt;/MyAppHeaderText&gt;
 &lt;/View&gt;
 </code></pre>
-<p>Assuming that <code>MyAppText</code> is a component that simply renders out its
-children into a <code>Text</code> component with styling, then <code>MyAppHeaderText</code> can be
-defined as follows:</p>
+<p>Assuming that <code>MyAppText</code> is a component that simply renders out its children into a <code>Text</code> component with styling, then <code>MyAppHeaderText</code> can be defined as follows:</p>
 <pre><code class="hljs css javascript">class MyAppHeaderText extends Component {
   render() {
     &lt;MyAppText&gt;
-      &lt;Text style={{fontSize: 20}}&gt;
-        {this.props.children}
-      &lt;/Text&gt;
-    &lt;/MyAppText&gt;
+      &lt;Text style={{fontSize: 20}}&gt;{this.props.children}&lt;/Text&gt;
+    &lt;/MyAppText&gt;;
   }
 }
 </code></pre>
-<p>Composing <code>MyAppText</code> in this way ensures that we get the styles from a
-top-level component, but leaves us the ability to add / override them in
-specific use cases.</p>
-<p>React Native still has the concept of style inheritance, but limited to text
-subtrees. In this case, the second part will be both bold and red.</p>
+<p>Composing <code>MyAppText</code> in this way ensures that we get the styles from a top-level component, but leaves us the ability to add / override them in specific use cases.</p>
+<p>React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.</p>
 <pre><code class="hljs css javascript">&lt;Text style={{fontWeight: 'bold'}}&gt;
   I am bold
-  &lt;Text style={{color: 'red'}}&gt;
-    and red
-  &lt;/Text&gt;
+  &lt;Text style={{color: 'red'}}&gt;and red&lt;/Text&gt;
 &lt;/Text&gt;
 </code></pre>
-<p>We believe that this more constrained way to style text will yield better
-apps:</p>
+<p>We believe that this more constrained way to style text will yield better apps:</p>
 <ul>
-<li><p>(Developer) React components are designed with strong isolation in mind:
-You should be able to drop a component anywhere in your application,
-trusting that as long as the props are the same, it will look and behave the
-same way. Text properties that could inherit from outside of the props would
-break this isolation.</p></li>
-<li><p>(Implementor) The implementation of React Native is also simplified. We do
-not need to have a <code>fontFamily</code> field on every single element, and we do not
-need to potentially traverse the tree up to the root every time we display a
-text node. The style inheritance is only encoded inside of the native Text
-component and doesn't leak to other components or the system itself.</p></li>
+<li><p>(Developer) React components are designed with strong isolation in mind: You should be able to drop a component anywhere in your application, trusting that as long as the props are the same, it will look and behave the same way. Text properties that could inherit from outside of the props would break this isolation.</p></li>
+<li><p>(Implementor) The implementation of React Native is also simplified. We do not need to have a <code>fontFamily</code> field on every single element, and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.</p></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
 <ul>
@@ -240,11 +205,8 @@ component and doesn't leak to other components or the system itself.</p></li>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="accessible"></a><a href="#accessible" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessible</code></h3>
-<p>When set to <code>true</code>, indicates that the view is an accessibility element. The default value
-for a <code>Text</code> element is <code>true</code>.</p>
-<p>See the
-<a href="/react-native/docs/0.50/accessibility.html#accessible-ios-android">Accessibility guide</a>
-for more information.</p>
+<p>When set to <code>true</code>, indicates that the view is an accessibility element. The default value for a <code>Text</code> element is <code>true</code>.</p>
+<p>See the <a href="/react-native/docs/0.50/accessibility.html#accessible-ios-android">Accessibility guide</a> for more information.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -255,16 +217,12 @@ for more information.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="ellipsizemode"></a><a href="#ellipsizemode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ellipsizeMode</code></h3>
-<p>When <code>numberOfLines</code> is set, this prop defines how text will be truncated.
-<code>numberOfLines</code> must be set in conjunction with this prop.</p>
+<p>When <code>numberOfLines</code> is set, this prop defines how text will be truncated. <code>numberOfLines</code> must be set in conjunction with this prop.</p>
 <p>This can be one of the following values:</p>
 <ul>
-<li><code>head</code> - The line is displayed so that the end fits in the container and the missing text
-at the beginning of the line is indicated by an ellipsis glyph. e.g., &quot;...wxyz&quot;</li>
-<li><code>middle</code> - The line is displayed so that the beginning and end fit in the container and the
-missing text in the middle is indicated by an ellipsis glyph. &quot;ab...yz&quot;</li>
-<li><code>tail</code> - The line is displayed so that the beginning fits in the container and the
-missing text at the end of the line is indicated by an ellipsis glyph. e.g., &quot;abcd...&quot;</li>
+<li><code>head</code> - The line is displayed so that the end fits in the container and the missing text at the beginning of the line is indicated by an ellipsis glyph. e.g., &quot;...wxyz&quot;</li>
+<li><code>middle</code> - The line is displayed so that the beginning and end fit in the container and the missing text in the middle is indicated by an ellipsis glyph. &quot;ab...yz&quot;</li>
+<li><code>tail</code> - The line is displayed so that the beginning fits in the container and the missing text at the end of the line is indicated by an ellipsis glyph. e.g., &quot;abcd...&quot;</li>
 <li><code>clip</code> - Lines are not drawn past the edge of the text container.</li>
 </ul>
 <p>The default is <code>tail</code>.</p>
@@ -292,9 +250,7 @@ missing text at the end of the line is indicated by an ellipsis glyph. e.g., &qu
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="numberoflines"></a><a href="#numberoflines" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>numberOfLines</code></h3>
-<p>Used to truncate the text with an ellipsis after computing the text
-layout, including line wrapping, such that the total number of lines
-does not exceed this number.</p>
+<p>Used to truncate the text with an ellipsis after computing the text layout, including line wrapping, such that the total number of lines does not exceed this number.</p>
 <p>This prop is commonly used with <code>ellipsizeMode</code>.</p>
 <table>
 <thead>
@@ -342,11 +298,7 @@ does not exceed this number.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="pressretentionoffset"></a><a href="#pressretentionoffset" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>pressRetentionOffset</code></h3>
-<p>When the scroll view is disabled, this defines how far your touch may
-move off of the button, before deactivating the button. Once deactivated,
-try moving it back and you'll see that the button is once again
-reactivated! Move it back and forth several times while the scroll view
-is disabled. Ensure you pass in a constant to reduce memory allocations.</p>
+<p>When the scroll view is disabled, this defines how far your touch may move off of the button, before deactivating the button. Once deactivated, try moving it back and you'll see that the button is once again reactivated! Move it back and forth several times while the scroll view is disabled. Ensure you pass in a constant to reduce memory allocations.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -357,8 +309,7 @@ is disabled. Ensure you pass in a constant to reduce memory allocations.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="allowfontscaling"></a><a href="#allowfontscaling" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>allowFontScaling</code></h3>
-<p>Specifies whether fonts should scale to respect Text Size accessibility settings. The
-default is <code>true</code>.</p>
+<p>Specifies whether fonts should scale to respect Text Size accessibility settings. The default is <code>true</code>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -384,21 +335,16 @@ default is <code>true</code>.</p>
 <li><p><strong><code>fontSize</code></strong>: number</p></li>
 <li><p><strong><code>fontStyle</code></strong>: enum('normal', 'italic')</p></li>
 <li><p><strong><code>fontWeight</code></strong>: enum('normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')</p>
-<p>Specifies font weight. The values 'normal' and 'bold' are supported for
-most fonts. Not all fonts have a variant for each of the numeric values,
-in that case the closest one is chosen.</p></li>
+<p>Specifies font weight. The values 'normal' and 'bold' are supported for most fonts. Not all fonts have a variant for each of the numeric values, in that case the closest one is chosen.</p></li>
 <li><p><strong><code>lineHeight</code></strong>: number</p></li>
 <li><p><strong><code>textAlign</code></strong>: enum('auto', 'left', 'right', 'center', 'justify')</p>
-<p>Specifies text alignment. The value 'justify' is only supported on iOS and
-fallbacks to <code>left</code> on Android.</p></li>
+<p>Specifies text alignment. The value 'justify' is only supported on iOS and fallbacks to <code>left</code> on Android.</p></li>
 <li><p><strong><code>textDecorationLine</code></strong>: enum('none', 'underline', 'line-through', 'underline line-through')</p></li>
 <li><p><strong><code>textShadowColor</code></strong>: <a href="/react-native/docs/0.50/colors.html">color</a></p></li>
 <li><p><strong><code>fontFamily</code></strong>: string</p></li>
 <li><p><strong><code>textShadowRadius</code></strong>: number</p></li>
 <li><p><strong><code>includeFontPadding</code></strong>: bool (<em>Android</em>)</p>
-<p>Set to <code>false</code> to remove extra font padding intended to make space for certain ascenders / descenders.
-With some fonts, this padding can make text look slightly misaligned when centered vertically.
-For best results also set <code>textAlignVertical</code> to <code>center</code>. Default is true.</p></li>
+<p>Set to <code>false</code> to remove extra font padding intended to make space for certain ascenders / descenders. With some fonts, this padding can make text look slightly misaligned when centered vertically. For best results also set <code>textAlignVertical</code> to <code>center</code>. Default is true.</p></li>
 </ul>
 <ul>
 <li><p><strong><code>textAlignVertical</code></strong>: enum('auto', 'top', 'bottom', 'center') (<em>Android</em>)</p></li>
@@ -443,8 +389,7 @@ For best results also set <code>textAlignVertical</code> to <code>center</code>.
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="textbreakstrategy"></a><a href="#textbreakstrategy" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textBreakStrategy</code></h3>
-<p>Set text break strategy on Android API Level 23+, possible values are <code>simple</code>, <code>highQuality</code>, <code>balanced</code>
-The default value is <code>highQuality</code>.</p>
+<p>Set text break strategy on Android API Level 23+, possible values are <code>simple</code>, <code>highQuality</code>, <code>balanced</code> The default value is <code>highQuality</code>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -477,8 +422,7 @@ The default value is <code>highQuality</code>.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="suppresshighlighting"></a><a href="#suppresshighlighting" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>suppressHighlighting</code></h3>
-<p>When <code>true</code>, no visual change is made when text is pressed down. By
-default, a gray oval highlights the text on press down.</p>
+<p>When <code>true</code>, no visual change is made when text is pressed down. By default, a gray oval highlights the text on press down.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>

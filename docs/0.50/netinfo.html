@@ -44,13 +44,10 @@ NetInfo.addEventListener(
 <li><code>unknown</code></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="android"></a><a href="#android" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android</h3>
-<p>To request network info, you need to add the following line to your
-app's <code>AndroidManifest.xml</code>:</p>
+<p>To request network info, you need to add the following line to your app's <code>AndroidManifest.xml</code>:</p>
 <p><code>&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</code></p>
 <h3><a class="anchor" aria-hidden="true" name="isconnectionexpensive"></a><a href="#isconnectionexpensive" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>isConnectionExpensive</h3>
-<p>Available on Android. Detect if the current active connection is metered or not. A network is
-classified as metered when the user is sensitive to heavy data usage on that connection due to
-monetary costs, data limitations or battery/performance issues.</p>
+<p>Available on Android. Detect if the current active connection is metered or not. A network is classified as metered when the user is sensitive to heavy data usage on that connection due to monetary costs, data limitations or battery/performance issues.</p>
 <pre><code class="hljs">NetInfo.isConnectionExpensive()
 .then(<span class="hljs-function"><span class="hljs-params">isConnectionExpensive</span> =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Connection is '</span> + (isConnectionExpensive ? <span class="hljs-string">'Expensive'</span> : <span class="hljs-string">'Not Expensive'</span>));
@@ -60,8 +57,7 @@ monetary costs, data limitations or battery/performance issues.</p>
 });
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" name="isconnected"></a><a href="#isconnected" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>isConnected</h3>
-<p>Available on all platforms. Asynchronously fetch a boolean to determine
-internet connectivity.</p>
+<p>Available on all platforms. Asynchronously fetch a boolean to determine internet connectivity.</p>
 <pre><code class="hljs">NetInfo.<span class="hljs-keyword">isConnected</span>.fetch().then(<span class="hljs-keyword">isConnected</span> =&gt; {
   console.<span class="hljs-keyword">log</span>(<span class="hljs-string">'First, is '</span> + (<span class="hljs-keyword">isConnected</span> ? <span class="hljs-string">'online'</span> : <span class="hljs-string">'offline'</span>));
 });
@@ -90,16 +86,16 @@ NetInfo.<span class="hljs-keyword">isConnected</span>.addEventListener(
 <ul>
 <li><code>NONE</code> - device is offline</li>
 <li><code>BLUETOOTH</code> - The Bluetooth data connection.</li>
-<li><code>DUMMY</code> -  Dummy data connection.</li>
+<li><code>DUMMY</code> - Dummy data connection.</li>
 <li><code>ETHERNET</code> - The Ethernet data connection.</li>
 <li><code>MOBILE</code> - The Mobile data connection.</li>
 <li><code>MOBILE_DUN</code> - A DUN-specific Mobile data connection.</li>
 <li><code>MOBILE_HIPRI</code> - A High Priority Mobile data connection.</li>
 <li><code>MOBILE_MMS</code> - An MMS-specific Mobile data connection.</li>
-<li><code>MOBILE_SUPL</code> -  A SUPL-specific Mobile data connection.</li>
-<li><code>VPN</code> -  A virtual network using one or more native bearers. Requires API Level 21</li>
+<li><code>MOBILE_SUPL</code> - A SUPL-specific Mobile data connection.</li>
+<li><code>VPN</code> - A virtual network using one or more native bearers. Requires API Level 21</li>
 <li><code>WIFI</code> - The WIFI data connection.</li>
-<li><code>WIMAX</code> -  The WiMAX data connection.</li>
+<li><code>WIMAX</code> - The WiMAX data connection.</li>
 <li><code>UNKNOWN</code> - Unknown data connection.</li>
 </ul>
 <p>The rest of the connectivity types are hidden by the Android API, but can be used if necessary.</p>
@@ -123,15 +119,12 @@ NetInfo.<span class="hljs-keyword">isConnected</span>.addEventListener(
 </code></pre>
 <p>Adds an event handler. Supported events:</p>
 <ul>
-<li><code>connectionChange</code>: Fires when the network status changes. The argument to the event
-handler is an object with keys:
+<li><code>connectionChange</code>: Fires when the network status changes. The argument to the event handler is an object with keys:
 <ul>
 <li><code>type</code>: A <code>ConnectionType</code> (listed above)</li>
 <li><code>effectiveType</code>: An <code>EffectiveConnectionType</code> (listed above)</li>
 </ul></li>
-<li><code>change</code>: This event is deprecated. Listen to <code>connectionChange</code> instead. Fires when
-the network status changes. The argument to the event handler is one of the deprecated
-connectivity types listed above.</li>
+<li><code>change</code>: This event is deprecated. Listen to <code>connectionChange</code> instead. Fires when the network status changes. The argument to the event handler is one of the deprecated connectivity types listed above.</li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>
@@ -142,15 +135,12 @@ connectivity types listed above.</li>
 <h3><a class="anchor" aria-hidden="true" name="fetch"></a><a href="#fetch" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fetch()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> fetch()
 </code></pre>
-<p>This function is deprecated. Use <code>getConnectionInfo</code> instead. Returns a promise that
-resolves with one of the deprecated connectivity types listed above.</p>
+<p>This function is deprecated. Use <code>getConnectionInfo</code> instead. Returns a promise that resolves with one of the deprecated connectivity types listed above.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getconnectioninfo"></a><a href="#getconnectioninfo" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getConnectionInfo()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getConnectionInfo()
 </code></pre>
-<p>Returns a promise that resolves to an object with <code>type</code> and <code>effectiveType</code> keys
-whose values are a <code>ConnectionType</code> and an <code>EffectiveConnectionType</code>, (described above),
-respectively.</p>
+<p>Returns a promise that resolves to an object with <code>type</code> and <code>effectiveType</code> keys whose values are a <code>ConnectionType</code> and an <code>EffectiveConnectionType</code>, (described above), respectively.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="isconnectionexpensive"></a><a href="#isconnectionexpensive" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isConnectionExpensive()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> isConnectionExpensive()

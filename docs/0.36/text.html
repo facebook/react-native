@@ -6,9 +6,7 @@
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank">Edit</a><h1>Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
-<p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from
-<code>styles.baseText</code>, but the title provides its own additional styles.  The title and body will
-stack on top of each other on account of the literal newlines:</p>
+<p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:</p>
 <div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
@@ -83,55 +81,31 @@ AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, ()
 <li><p><strong><code>color</code></strong>: <a href="/react-native/docs/0.36/colors.html">color</a></p></li>
 <li><p><strong><code>fontSize</code></strong>: ReactPropTypes.number</p></li>
 <li><p><strong><code>fontStyle</code></strong>: ReactPropTypes.oneOf(['normal', 'italic'])</p></li>
-<li><p><strong><code>fontWeight</code></strong>: ReactPropTypes.oneOf(
-['normal' /<em>default</em>/, 'bold',
-'100', '200', '300', '400', '500', '600', '700', '800', '900']
-)</p>
-<p>Specifies font weight. The values 'normal' and 'bold' are supported for
+<li><p><strong><code>fontWeight</code></strong>: ReactPropTypes.oneOf( ['normal' /<em>default</em>/, 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900'] )</p>
+<pre><code class="hljs">Specifies font weight. The values 'normal' and 'bold' are supported for
 most fonts. Not all fonts have a variant for each of the numeric values,
-in that case the closest one is chosen.</p></li>
+in that case the closest one is chosen.
+</code></pre></li>
 <li><p><strong><code>lineHeight</code></strong>: ReactPropTypes.number</p></li>
-<li><p><strong><code>textAlign</code></strong>: ReactPropTypes.oneOf(
-['auto' /<em>default</em>/, 'left', 'right', 'center', 'justify']
-)</p>
-<p>Specifies text alignment. The value 'justify' is only supported on iOS and
-fallbacks to <code>left</code> on Android.</p></li>
-<li><p><strong><code>textDecorationLine</code></strong>: ReactPropTypes.oneOf(
-['none' /<em>default</em>/, 'underline', 'line-through', 'underline line-through']
-)</p></li>
+<li><p><strong><code>textAlign</code></strong>: ReactPropTypes.oneOf( ['auto' /<em>default</em>/, 'left', 'right', 'center', 'justify'] )</p>
+<pre><code class="hljs">Specifies text alignment. The value 'justify' is only supported on iOS and
+fallbacks to `left` on Android.
+</code></pre></li>
+<li><p><strong><code>textDecorationLine</code></strong>: ReactPropTypes.oneOf( ['none' /<em>default</em>/, 'underline', 'line-through', 'underline line-through'] )</p></li>
 <li><p><strong><code>fontFamily</code></strong>: ReactPropTypes.string</p></li>
-<li><p><strong><code>textShadowOffset</code></strong>: ReactPropTypes.shape(
-{width: ReactPropTypes.number, height: ReactPropTypes.number}
-)</p></li>
+<li><p><strong><code>textShadowOffset</code></strong>: ReactPropTypes.shape( {width: ReactPropTypes.number, height: ReactPropTypes.number} )</p></li>
 <li><p><strong><code>textShadowRadius</code></strong>: ReactPropTypes.number</p></li>
-<li><p><strong><code>textAlignVertical</code></strong>: ReactPropTypes.oneOf(
-['auto' /<em>default</em>/, 'top', 'bottom', 'center']
-) (<em>Android</em>)</p></li>
-<li><p><strong><code>fontVariant</code></strong>: ReactPropTypes.arrayOf(
-ReactPropTypes.oneOf([
-'small-caps',
-'oldstyle-nums',
-'lining-nums',
-'tabular-nums',
-'proportional-nums',
-])
-) (<em>iOS</em>)</p></li>
+<li><p><strong><code>textAlignVertical</code></strong>: ReactPropTypes.oneOf( ['auto' /<em>default</em>/, 'top', 'bottom', 'center'] ) (<em>Android</em>)</p></li>
+<li><p><strong><code>fontVariant</code></strong>: ReactPropTypes.arrayOf( ReactPropTypes.oneOf([ 'small-caps', 'oldstyle-nums', 'lining-nums', 'tabular-nums', 'proportional-nums', ]) ) (<em>iOS</em>)</p></li>
 <li><p><strong><code>letterSpacing</code></strong>: ReactPropTypes.number (<em>iOS</em>)</p></li>
 <li><p><strong><code>textDecorationColor</code></strong>: <a href="/react-native/docs/0.36/colors.html">color</a> (<em>iOS</em>)</p></li>
-<li><p><strong><code>textDecorationStyle</code></strong>: ReactPropTypes.oneOf(
-['solid' /<em>default</em>/, 'double', 'dotted','dashed']
-) (<em>iOS</em>)</p></li>
-<li><p><strong><code>writingDirection</code></strong>: ReactPropTypes.oneOf(
-['auto' /<em>default</em>/, 'ltr', 'rtl']
-) (<em>iOS</em>)</p></li>
+<li><p><strong><code>textDecorationStyle</code></strong>: ReactPropTypes.oneOf( ['solid' /<em>default</em>/, 'double', 'dotted','dashed'] ) (<em>iOS</em>)</p></li>
+<li><p><strong><code>writingDirection</code></strong>: ReactPropTypes.oneOf( ['auto' /<em>default</em>/, 'ltr', 'rtl'] ) (<em>iOS</em>)</p></li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="accessible"></a><a href="#accessible" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessible</code></h3>
-<p>When set to <code>true</code>, indicates that the view is an accessibility element. The default value
-for a <code>Text</code> element is <code>true</code>.</p>
-<p>See the
-<a href="/react-native/accessibility.md#accessible-ios-android">Accessibility guide</a>
-for more information.</p>
+<p>When set to <code>true</code>, indicates that the view is an accessibility element. The default value for a <code>Text</code> element is <code>true</code>.</p>
+<p>See the <a href="/react-native/accessibility.md#accessible-ios-android">Accessibility guide</a> for more information.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -142,9 +116,7 @@ for more information.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="numberoflines"></a><a href="#numberoflines" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>numberOfLines</code></h3>
-<p>Used to truncate the text with an ellipsis after computing the text
-layout, including line wrapping, such that the total number of lines
-does not exceed this number.</p>
+<p>Used to truncate the text with an ellipsis after computing the text layout, including line wrapping, such that the total number of lines does not exceed this number.</p>
 <p>This prop is commonly used with <code>ellipsizeMode</code>.</p>
 <table>
 <thead>
@@ -194,12 +166,9 @@ does not exceed this number.</p>
 <h3><a class="anchor" aria-hidden="true" name="ellipsizemode"></a><a href="#ellipsizemode" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ellipsizeMode</code></h3>
 <p>This can be one of the following values:</p>
 <ul>
-<li><code>head</code> - The line is displayed so that the end fits in the container and the missing text
-at the beginning of the line is indicated by an ellipsis glyph. e.g., &quot;...wxyz&quot;</li>
-<li><code>middle</code> - The line is displayed so that the beginning and end fit in the container and the
-missing text in the middle is indicated by an ellipsis glyph. &quot;ab...yz&quot;</li>
-<li><code>tail</code> - The line is displayed so that the beginning fits in the container and the
-missing text at the end of the line is indicated by an ellipsis glyph. e.g., &quot;abcd...&quot;</li>
+<li><code>head</code> - The line is displayed so that the end fits in the container and the missing text at the beginning of the line is indicated by an ellipsis glyph. e.g., &quot;...wxyz&quot;</li>
+<li><code>middle</code> - The line is displayed so that the beginning and end fit in the container and the missing text in the middle is indicated by an ellipsis glyph. &quot;ab...yz&quot;</li>
+<li><code>tail</code> - The line is displayed so that the beginning fits in the container and the missing text at the end of the line is indicated by an ellipsis glyph. e.g., &quot;abcd...&quot;</li>
 <li><code>clip</code> - Lines are not drawn past the edge of the text container.</li>
 </ul>
 <p>The default is <code>tail</code>.</p>
@@ -250,8 +219,7 @@ missing text at the end of the line is indicated by an ellipsis glyph. e.g., &qu
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="allowfontscaling"></a><a href="#allowfontscaling" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>allowFontScaling</code></h3>
-<p>Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
-default is <code>true</code>.</p>
+<p>Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The default is <code>true</code>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -273,8 +241,7 @@ default is <code>true</code>.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="suppresshighlighting"></a><a href="#suppresshighlighting" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>suppressHighlighting</code></h3>
-<p>When <code>true</code>, no visual change is made when text is pressed down. By
-default, a gray oval highlights the text on press down.</p>
+<p>When <code>true</code>, no visual change is made when text is pressed down. By default, a gray oval highlights the text on press down.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>

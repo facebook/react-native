@@ -6,9 +6,7 @@
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/statusbar.md" target="_blank">Edit</a><h1>StatusBar</h1></header><article><div><span><p>Component to control the app status bar.</p>
 <h3><a class="anchor" aria-hidden="true" name="usage-with-navigator"></a><a href="#usage-with-navigator" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage with Navigator</h3>
-<p>It is possible to have multiple <code>StatusBar</code> components mounted at the same
-time. The props will be merged in the order the <code>StatusBar</code> components were
-mounted. One use case is to specify status bar styles per route using <code>Navigator</code>.</p>
+<p>It is possible to have multiple <code>StatusBar</code> components mounted at the same time. The props will be merged in the order the <code>StatusBar</code> components were mounted. One use case is to specify status bar styles per route using <code>Navigator</code>.</p>
 <pre><code class="hljs"> <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
    <span class="hljs-tag">&lt;<span class="hljs-name">StatusBar</span>
      <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">"blue"</span>
@@ -26,11 +24,7 @@ mounted. One use case is to specify status bar styles per route using <code>Navi
  <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" name="imperative-api"></a><a href="#imperative-api" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Imperative API</h3>
-<p>For cases where using a component is not ideal, there is also an imperative
-API exposed as static functions on the component. It is however not recommended
-to use the static API and the component for the same prop because any value
-set by the static API will get overriden by the one set by the component in
-the next render.</p>
+<p>For cases where using a component is not ideal, there is also an imperative API exposed as static functions on the component. It is however not recommended to use the static API and the component for the same prop because any value set by the static API will get overriden by the one set by the component in the next render.</p>
 <h3><a class="anchor" aria-hidden="true" name="constants"></a><a href="#constants" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Constants</h3>
 <p><code>currentHeight</code> (Android only) The height of the status bar.</p>
 <h3><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
@@ -60,8 +54,7 @@ the next render.</p>
 <h1><a class="anchor" aria-hidden="true" name="reference"></a><a href="#reference" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" name="props"></a><a href="#props" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" name="animated"></a><a href="#animated" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>animated</code></h3>
-<p>If the transition between status bar property changes should be animated.
-Supported for backgroundColor, barStyle and hidden.</p>
+<p>If the transition between status bar property changes should be animated. Supported for backgroundColor, barStyle and hidden.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -105,9 +98,7 @@ Supported for backgroundColor, barStyle and hidden.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="translucent"></a><a href="#translucent" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>translucent</code></h3>
-<p>If the status bar is translucent.
-When translucent is set to true, the app will draw under the status bar.
-This is useful when using a semi transparent status bar color.</p>
+<p>If the status bar is translucent. When translucent is set to true, the app will draw under the status bar. This is useful when using a semi transparent status bar color.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -129,8 +120,7 @@ This is useful when using a semi transparent status bar color.</p>
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="showhidetransition"></a><a href="#showhidetransition" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>showHideTransition</code></h3>
-<p>The transition effect when showing and hiding the status bar using the <code>hidden</code>
-prop. Defaults to 'fade'.</p>
+<p>The transition effect when showing and hiding the status bar using the <code>hidden</code> prop. Defaults to 'fade'.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -151,7 +141,7 @@ prop. Defaults to 'fade'.</p>
 </thead>
 <tbody>
 <tr><td>hidden</td><td>boolean</td><td>Yes</td><td>Hide the status bar.</td></tr>
-<tr><td>animation</td><td><a href="/react-native/docs/0.46/statusbar.html#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td>Optional animation when   changing the status bar hidden property.</td></tr>
+<tr><td>animation</td><td><a href="/react-native/docs/0.46/statusbar.html#statusbaranimation">StatusBarAnimation</a></td><td>No</td><td>Optional animation when changing the status bar hidden property.</td></tr>
 </tbody>
 </table>
 <hr>

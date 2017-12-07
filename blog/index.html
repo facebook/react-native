@@ -636,13 +636,13 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 </span></div></article></div><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2017/03/13/idx-the-existential-function.html">idx: The Existential Function</a></h1><p class="post-meta">March 13, 2017</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/yungsters" target="_blank">Timothy Yung</a>Engineering Manager at Facebook</p><div class="authorPhoto authorPhoto-big"><a href="https://github.com/yungsters" target="_blank"><img src="https://pbs.twimg.com/profile_images/1592444107/image.jpg"/></a></div></div></header><article class="post-content"><div><span><p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.</p>
 <p>Unfortunately, accessing these deeply nested values is currently tedious and verbose.</p>
 <pre><code class="hljs css javascript">props.user &amp;&amp;
-props.user.friends &amp;&amp;
-props.user.friends[<span class="hljs-number">0</span>] &amp;&amp;
-props.user.friends[<span class="hljs-number">0</span>].friends
+  props.user.friends &amp;&amp;
+  props.user.friends[<span class="hljs-number">0</span>] &amp;&amp;
+  props.user.friends[<span class="hljs-number">0</span>].friends;
 </code></pre>
 <p>There is <a href="https://github.com/claudepache/es-optional-chaining">an ECMAScript proposal to introduce the existential operator</a> which will make this much more convenient. But until a time when that proposal is finalized, we want a solution that improves our quality of life, maintains existing language semantics, and encourages type safety with Flow.</p>
 <p>We came up with an existential <em>function</em> we call <code>idx</code>.</p>
-<pre><code class="hljs css javascript">idx(props, _ =&gt; _.user.friends[<span class="hljs-number">0</span>].friends)
+<pre><code class="hljs css javascript">idx(props, _ =&gt; _.user.friends[<span class="hljs-number">0</span>].friends);
 </code></pre>
 <p>The invocation in this code snippet behaves similarly to the boolean expression in the code snippet above, except with significantly less repetition. The <code>idx</code> function takes exactly two arguments:</p>
 <ul>
@@ -651,10 +651,13 @@ props.user.friends[<span class="hljs-number">0</span>].friends
 </ul>
 <p>In theory, the <code>idx</code> function will try-catch errors that are the result of accessing properties on null or undefined. If such an error is caught, it will return either null or undefined. (And you can see how this might be implemented in <a href="https://github.com/facebookincubator/idx/blob/master/packages/idx/src/idx.js">idx.js</a>.)</p>
 <p>In practice, try-catching every nested property access is slow, and differentiating between specific kinds of TypeErrors is fragile. To deal with these shortcomings, we created a Babel plugin that transforms the above <code>idx</code> invocation into the following expression:</p>
-<pre><code class="hljs css javascript">props.user == <span class="hljs-literal">null</span> ? props.user :
-props.user.friends == <span class="hljs-literal">null</span> ? props.user.friends :
-props.user.friends[<span class="hljs-number">0</span>] == <span class="hljs-literal">null</span> ? props.user.friends[<span class="hljs-number">0</span>] :
-props.user.friends[<span class="hljs-number">0</span>].friends
+<pre><code class="hljs css javascript">props.user == <span class="hljs-literal">null</span>
+  ? props.user
+  : props.user.friends == <span class="hljs-literal">null</span>
+    ? props.user.friends
+    : props.user.friends[<span class="hljs-number">0</span>] == <span class="hljs-literal">null</span>
+      ? props.user.friends[<span class="hljs-number">0</span>]
+      : props.user.friends[<span class="hljs-number">0</span>].friends;
 </code></pre>
 <p>Finally, we added a custom Flow type declaration for <code>idx</code> that allows the traversal in the second argument to be properly type-checked while permitting nested access on nullable properties.</p>
 <p>The function, Babel plugin, and Flow declaration are now <a href="https://github.com/facebookincubator/idx">available on GitHub</a>. They are used by installing the <strong>idx</strong> and <strong>babel-plugin-idx</strong> npm packages, and adding “idx” to the list of plugins in your <code>.babelrc</code> file.</p>
@@ -706,19 +709,25 @@ props.user.friends[<span class="hljs-number">0</span>].friends
 <li><p>These components are based on <code>PureComponent</code> which means that they will not re-render if <code>props</code> remains shallow-equal. Make sure that everything your <code>renderItem</code> function depends on directly is passed as a prop that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state. For example:</p>
 <pre><code class="hljs css javascript">&lt;FlatList
   data={<span class="hljs-keyword">this</span>.state.data}
-  renderItem={({item}) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
-    <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
-    <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> this.setState((oldState) =&gt; ({
-      selected: { // New instance breaks `===`
-        ...oldState.selected, // copy old data
-        [item.key]: !oldState.selected[item.key], // toggle
-      }}))
-    }
-    selected={
-      !!this.state.selected[item.key] // renderItem depends on state
-    }
-  /&gt;}
-  selected={ // Can be any prop that doesn't collide with existing props
+  renderItem={({ item }) =&gt; (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
+      <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
+      <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span>
+        this.setState(oldState =&gt; ({
+          selected: {
+            // New instance breaks `===`
+            ...oldState.selected, // copy old data
+            [item.key]: !oldState.selected[item.key] // toggle
+          }
+        }))
+      }
+      selected={
+        !!this.state.selected[item.key] // renderItem depends on state
+      }
+    /&gt;
+  )}
+  selected={
+    // Can be any prop that doesn't collide with existing props
     this.state.selected // A change to selected should re-render FlatList
   }
 /&gt;

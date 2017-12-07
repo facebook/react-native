@@ -67,10 +67,7 @@
     display: block;
   }
 </style>
-<p>React Native is great when you are starting a new mobile app from scratch.
-However, it also works well for adding a single view or user flow to existing
-native applications. With a few steps, you can add new React Native based
-features, screens, views, etc.</p>
+<p>React Native is great when you are starting a new mobile app from scratch. However, it also works well for adding a single view or user flow to existing native applications. With a few steps, you can add new React Native based features, screens, views, etc.</p>
 <p>The specific steps are different depending on what platform you're targeting.</p>
 <div class="toggler">
   <ul role="tablist" >
@@ -88,50 +85,38 @@ features, screens, views, etc.</p>
 <p><block class="objc swift android" /></p>
 <h2><a class="anchor" aria-hidden="true" name="key-concepts"></a><a href="#key-concepts" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Key Concepts</h2>
 <p><block class="objc swift" /></p>
-<p>The keys to integrating React Native components into your iOS application are
-to:</p>
+<p>The keys to integrating React Native components into your iOS application are to:</p>
 <ol>
 <li>Set up React Native dependencies and directory structure.</li>
 <li>Understand what React Native components you will use in your app.</li>
 <li>Add these components as dependencies using CocoaPods.</li>
 <li>Develop your React Native components in JavaScript.</li>
-<li>Add a <code>RCTRootView</code> to your iOS app. This view will serve as the container
-for your React Native component.</li>
+<li>Add a <code>RCTRootView</code> to your iOS app. This view will serve as the container for your React Native component.</li>
 <li>Start the React Native server and run your native application.</li>
 <li>Verify that the React Native aspect of your application works as expected.</li>
 </ol>
 <p><block class="android" /></p>
-<p>The keys to integrating React Native components into your Android application
-are to:</p>
+<p>The keys to integrating React Native components into your Android application are to:</p>
 <ol>
 <li>Set up React Native dependencies and directory structure.</li>
 <li>Develop your React Native components in JavaScript.</li>
-<li>Add a <code>ReactRootView</code> to your Android app. This view will serve as the
-container for your React Native component.</li>
+<li>Add a <code>ReactRootView</code> to your Android app. This view will serve as the container for your React Native component.</li>
 <li>Start the React Native server and run your native application.</li>
 <li>Verify that the React Native aspect of your application works as expected.</li>
 </ol>
 <p><block class="objc swift android" /></p>
 <h2><a class="anchor" aria-hidden="true" name="prerequisites"></a><a href="#prerequisites" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Prerequisites</h2>
 <p><block class="objc swift" /></p>
-<p>Follow the instructions for building apps with native code from the
-<a href="/react-native/docs/0.15/getting-started.html">Getting Started guide</a> to configure your development
-environment for building React Native apps for iOS.</p>
+<p>Follow the instructions for building apps with native code from the <a href="/react-native/docs/0.15/getting-started.html">Getting Started guide</a> to configure your development environment for building React Native apps for iOS.</p>
 <h3><a class="anchor" aria-hidden="true" name="1-set-up-directory-structure"></a><a href="#1-set-up-directory-structure" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Set up directory structure</h3>
-<p>To ensure a smooth experience, create a new folder for your integrated React
-Native project, then copy your existing iOS project to a <code>/ios</code> subfolder.</p>
+<p>To ensure a smooth experience, create a new folder for your integrated React Native project, then copy your existing iOS project to a <code>/ios</code> subfolder.</p>
 <p><block class="android" /></p>
-<p>Follow the instructions for building apps with native code from the
-<a href="/react-native/docs/0.15/getting-started.html">Getting Started guide</a> to configure your development
-environment for building React Native apps for Android.</p>
+<p>Follow the instructions for building apps with native code from the <a href="/react-native/docs/0.15/getting-started.html">Getting Started guide</a> to configure your development environment for building React Native apps for Android.</p>
 <h3><a class="anchor" aria-hidden="true" name="1-set-up-directory-structure"></a><a href="#1-set-up-directory-structure" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Set up directory structure</h3>
-<p>To ensure a smooth experience, create a new folder for your integrated React
-Native project, then copy your existing Android project to a <code>/android</code>
-subfolder.</p>
+<p>To ensure a smooth experience, create a new folder for your integrated React Native project, then copy your existing Android project to a <code>/android</code> subfolder.</p>
 <p><block class="objc swift android" /></p>
 <h3><a class="anchor" aria-hidden="true" name="2-install-javascript-dependencies"></a><a href="#2-install-javascript-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Install JavaScript dependencies</h3>
-<p>Go to the root directory for your project and create a new <code>package.json</code> file
-with the following contents:</p>
+<p>Go to the root directory for your project and create a new <code>package.json</code> file with the following contents:</p>
 <pre><code class="hljs">{
   <span class="hljs-attr">"name"</span>: <span class="hljs-string">"MyReactNativeApp"</span>,
   <span class="hljs-attr">"version"</span>: <span class="hljs-string">"0.0.1"</span>,
@@ -141,64 +126,37 @@ with the following contents:</p>
   }
 }
 </code></pre>
-<p>Next, you will install the <code>react</code> and <code>react-native</code> packages. Open a terminal
-or command prompt, then navigate to the root directory for your project and type
-the following commands:</p>
+<p>Next, you will install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:</p>
 <pre><code class="hljs">$ npm install --save react@<span class="hljs-number">16.0</span><span class="hljs-number">.0</span>-beta<span class="hljs-number">.5</span> react-native
 </code></pre>
 <blockquote>
-<p>Make sure you use the same React version as specified in the
-<a href="https://github.com/facebook/react-native/blob/master/package.json">React Native package.json</a>
-for your release. This will only be necessary as long as React Native depends
-on a pre-release version of React.</p>
+<p>Make sure you use the same React version as specified in the <a href="https://github.com/facebook/react-native/blob/master/package.json">React Native package.json</a> for your release. This will only be necessary as long as React Native depends on a pre-release version of React.</p>
 </blockquote>
-<p>This will create a new <code>/node_modules</code> folder in your project's root directory.
-This folder stores all the JavaScript dependencies required to build your
-project.</p>
+<p>This will create a new <code>/node_modules</code> folder in your project's root directory. This folder stores all the JavaScript dependencies required to build your project.</p>
 <p><block class="objc swift" /></p>
 <h3><a class="anchor" aria-hidden="true" name="3-install-cocoapods"></a><a href="#3-install-cocoapods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Install CocoaPods</h3>
-<p><a href="http://cocoapods.org">CocoaPods</a> is a package management tool for iOS and macOS
-development. We use it to add the actual React Native framework code locally
-into your current project.</p>
+<p><a href="http://cocoapods.org">CocoaPods</a> is a package management tool for iOS and macOS development. We use it to add the actual React Native framework code locally into your current project.</p>
 <p>We recommend installing CocoaPods using <a href="http://brew.sh/">Homebrew</a>.</p>
 <pre><code class="hljs">$ <span class="hljs-keyword">brew </span><span class="hljs-keyword">install </span>cocoapods
 </code></pre>
 <blockquote>
-<p>It is technically possible not to use CocoaPods, but that would require manual
-library and linker additions that would overly complicate this process.</p>
+<p>It is technically possible not to use CocoaPods, but that would require manual library and linker additions that would overly complicate this process.</p>
 </blockquote>
 <p><block class="objc swift" /></p>
 <h2><a class="anchor" aria-hidden="true" name="adding-react-native-to-your-app"></a><a href="#adding-react-native-to-your-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding React Native to your app</h2>
 <p><block class="objc" /></p>
-<p>Assume the <a href="https://github.com/JoelMarcey/iOS-2048">app for integration</a> is a
-<a href="https://en.wikipedia.org/wiki/2048_%28video_game%29">2048</a> game. Here is what
-the main menu of the native application looks like without React Native.</p>
+<p>Assume the <a href="https://github.com/JoelMarcey/iOS-2048">app for integration</a> is a <a href="https://en.wikipedia.org/wiki/2048_%28video_game%29">2048</a> game. Here is what the main menu of the native application looks like without React Native.</p>
 <p><block class="swift" /></p>
-<p>Assume the <a href="https://github.com/JoelMarcey/swift-2048">app for integration</a> is a
-<a href="https://en.wikipedia.org/wiki/2048_%28video_game%29">2048</a> game. Here is what
-the main menu of the native application looks like without React Native.</p>
+<p>Assume the <a href="https://github.com/JoelMarcey/swift-2048">app for integration</a> is a <a href="https://en.wikipedia.org/wiki/2048_%28video_game%29">2048</a> game. Here is what the main menu of the native application looks like without React Native.</p>
 <p><block class="objc swift" /></p>
 <p><img src="/react-native/docs/assets/react-native-existing-app-integration-ios-before.png" alt="Before RN Integration"></p>
 <h3><a class="anchor" aria-hidden="true" name="configuring-cocoapods-dependencies"></a><a href="#configuring-cocoapods-dependencies" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuring CocoaPods dependencies</h3>
-<p>Before you integrate React Native into your application, you will want to decide
-what parts of the React Native framework you would like to integrate. We will
-use CocoaPods to specify which of these &quot;subspecs&quot; your app will depend on.</p>
-<p>The list of supported <code>subspec</code>s is available in
-<a href="https://github.com/facebook/react-native/blob/master/React.podspec"><code>/node_modules/react-native/React.podspec</code></a>.
-They are generally named by functionality. For example, you will generally
-always want the <code>Core</code> <code>subspec</code>. That will get you the <code>AppRegistry</code>,
-<code>StyleSheet</code>, <code>View</code> and other core React Native libraries. If you want to add
-the React Native <code>Text</code> library (e.g., for <code>&lt;Text&gt;</code> elements), then you will
-need the <code>RCTText</code> <code>subspec</code>. If you want the <code>Image</code> library (e.g., for
-<code>&lt;Image&gt;</code> elements), then you will need the <code>RCTImage</code> <code>subspec</code>.</p>
-<p>You can specify which <code>subspec</code>s your app will depend on in a <code>Podfile</code> file.
-The easiest way to create a <code>Podfile</code> is by running the CocoaPods <code>init</code> command
-in the <code>/ios</code> subfolder of your project:</p>
+<p>Before you integrate React Native into your application, you will want to decide what parts of the React Native framework you would like to integrate. We will use CocoaPods to specify which of these &quot;subspecs&quot; your app will depend on.</p>
+<p>The list of supported <code>subspec</code>s is available in <a href="https://github.com/facebook/react-native/blob/master/React.podspec"><code>/node_modules/react-native/React.podspec</code></a>. They are generally named by functionality. For example, you will generally always want the <code>Core</code> <code>subspec</code>. That will get you the <code>AppRegistry</code>, <code>StyleSheet</code>, <code>View</code> and other core React Native libraries. If you want to add the React Native <code>Text</code> library (e.g., for <code>&lt;Text&gt;</code> elements), then you will need the <code>RCTText</code> <code>subspec</code>. If you want the <code>Image</code> library (e.g., for <code>&lt;Image&gt;</code> elements), then you will need the <code>RCTImage</code> <code>subspec</code>.</p>
+<p>You can specify which <code>subspec</code>s your app will depend on in a <code>Podfile</code> file. The easiest way to create a <code>Podfile</code> is by running the CocoaPods <code>init</code> command in the <code>/ios</code> subfolder of your project:</p>
 <pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> pod init</span>
 </code></pre>
-<p>The <code>Podfile</code> will contain a boilerplate setup that you will tweak for your
-integration purposes. In the end, <code>Podfile</code> should look something similar to
-this:</p>
+<p>The <code>Podfile</code> will contain a boilerplate setup that you will tweak for your integration purposes. In the end, <code>Podfile</code> should look something similar to this:</p>
 <p><block class="objc" /></p>
 <pre><code class="hljs"><span class="hljs-comment"># The target name is most likely the name of your project.</span>
 target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keyword">do</span>
@@ -255,8 +213,7 @@ target <span class="hljs-string">'swift-2048'</span> <span class="hljs-keyword">
 <span class="hljs-keyword">end</span>
 </code></pre>
 <p><block class="objc swift" /></p>
-<p>After you have created your <code>Podfile</code>, you are ready to install the React Native
-pod.</p>
+<p>After you have created your <code>Podfile</code>, you are ready to install the React Native pod.</p>
 <pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> pod install</span>
 </code></pre>
 <p>You should see output such as:</p>
@@ -271,37 +228,27 @@ Pod installation complete! There are 3 dependencies <span class="hljs-keyword">f
 </code></pre>
 <p><block class="swift" /></p>
 <blockquote>
-<p>If you get a warning such as &quot;<em>The <code>swift-2048 [Debug]</code> target overrides the
-<code>FRAMEWORK_SEARCH_PATHS</code> build setting defined in <code>Pods/Target Support Files/Pods-swift-2048/Pods-swift-2048.debug.xcconfig</code>. This can lead to
-problems with the CocoaPods installation</em>&quot;, then make sure the <code>Framework Search Paths</code> in <code>Build Settings</code> for both <code>Debug</code> and <code>Release</code> only contain
-<code>$(inherited)</code>.</p>
+<p>If you get a warning such as &quot;<em>The <code>swift-2048 [Debug]</code> target overrides the <code>FRAMEWORK_SEARCH_PATHS</code> build setting defined in <code>Pods/Target Support Files/Pods-swift-2048/Pods-swift-2048.debug.xcconfig</code>. This can lead to problems with the CocoaPods installation</em>&quot;, then make sure the <code>Framework Search Paths</code> in <code>Build Settings</code> for both <code>Debug</code> and <code>Release</code> only contain <code>$(inherited)</code>.</p>
 </blockquote>
 <p><block class="objc swift" /></p>
 <h3><a class="anchor" aria-hidden="true" name="code-integration"></a><a href="#code-integration" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code integration</h3>
-<p>Now we will actually modify the native iOS application to integrate React
-Native. For our 2048 sample app, we will add a &quot;High Score&quot; screen in React
-Native.</p>
+<p>Now we will actually modify the native iOS application to integrate React Native. For our 2048 sample app, we will add a &quot;High Score&quot; screen in React Native.</p>
 <h4><a class="anchor" aria-hidden="true" name="the-react-native-component"></a><a href="#the-react-native-component" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native component</h4>
-<p>The first bit of code we will write is the actual React Native code for the new
-&quot;High Score&quot; screen that will be integrated into our application.</p>
+<p>The first bit of code we will write is the actual React Native code for the new &quot;High Score&quot; screen that will be integrated into our application.</p>
 <h5><a class="anchor" aria-hidden="true" name="1-create-a-indexjs-file"></a><a href="#1-create-a-indexjs-file" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create a <code>index.js</code> file</h5>
 <p>First, create an empty <code>index.js</code> file in the root of your React Native project.</p>
-<p><code>index.js</code> is the starting point for React Native applications, and it is always
-required. It can be a small file that <code>require</code>s other file that are part of
-your React Native component or application, or it can contain all the code that
-is needed for it. In our case, we will just put everything in <code>index.js</code>.</p>
+<p><code>index.js</code> is the starting point for React Native applications, and it is always required. It can be a small file that <code>require</code>s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in <code>index.js</code>.</p>
 <h5><a class="anchor" aria-hidden="true" name="2-add-your-react-native-code"></a><a href="#2-add-your-react-native-code" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Add your React Native code</h5>
-<p>In your <code>index.js</code>, create your component. In our sample here, we will add
-simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</code></p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<p>In your <code>index.js</code>, create your component. In our sample here, we will add simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</code></p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {AppRegistry, StyleSheet, Text, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RNHighScores</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   render() {
-    <span class="hljs-keyword">var</span> contents = <span class="hljs-keyword">this</span>.props[<span class="hljs-string">"scores"</span>].map(<span class="hljs-function"><span class="hljs-params">score</span> =&gt;</span> (
+    <span class="hljs-keyword">var</span> contents = <span class="hljs-keyword">this</span>.props[<span class="hljs-string">'scores'</span>].map(<span class="hljs-function"><span class="hljs-params">score</span> =&gt;</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{score.name}</span>&gt;</span>
         {score.name}:{score.value}
-        {"\n"}
+        {'\n'}
       <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
     ));
     <span class="hljs-keyword">return</span> (
@@ -316,63 +263,44 @@ simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</c
 <span class="hljs-keyword">const</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">"#FFFFFF"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">alignItems</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'#FFFFFF'</span>,
   },
   <span class="hljs-attr">highScoresTitle</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>,
   },
   <span class="hljs-attr">scores</span>: {
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">color</span>: <span class="hljs-string">"#333333"</span>,
-    <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">5</span>
-  }
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'#333333'</span>,
+    <span class="hljs-attr">marginBottom</span>: <span class="hljs-number">5</span>,
+  },
 });
 
 <span class="hljs-comment">// Module name</span>
-AppRegistry.registerComponent(<span class="hljs-string">"RNHighScores"</span>, () =&gt; RNHighScores);
+AppRegistry.registerComponent(<span class="hljs-string">'RNHighScores'</span>, () =&gt; RNHighScores);
 </code></pre>
 <blockquote>
-<p><code>RNHighScores</code> is the name of your module that will be used when you add a
-view to React Native from within your iOS application.</p>
+<p><code>RNHighScores</code> is the name of your module that will be used when you add a view to React Native from within your iOS application.</p>
 </blockquote>
 <h4><a class="anchor" aria-hidden="true" name="the-magic-rctrootview"></a><a href="#the-magic-rctrootview" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Magic: <code>RCTRootView</code></h4>
-<p>Now that your React Native component is created via <code>index.js</code>, you need to add
-that component to a new or existing <code>ViewController</code>. The easiest path to take
-is to optionally create an event path to your component and then add that
-component to an existing <code>ViewController</code>.</p>
-<p>We will tie our React Native component with a new native view in the
-<code>ViewController</code> that will actually host it called <code>RCTRootView</code> .</p>
+<p>Now that your React Native component is created via <code>index.js</code>, you need to add that component to a new or existing <code>ViewController</code>. The easiest path to take is to optionally create an event path to your component and then add that component to an existing <code>ViewController</code>.</p>
+<p>We will tie our React Native component with a new native view in the <code>ViewController</code> that will actually host it called <code>RCTRootView</code> .</p>
 <h5><a class="anchor" aria-hidden="true" name="1-create-an-event-path"></a><a href="#1-create-an-event-path" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create an Event Path</h5>
-<p>You can add a new link on the main game menu to go to the &quot;High Score&quot; React
-Native page.</p>
+<p>You can add a new link on the main game menu to go to the &quot;High Score&quot; React Native page.</p>
 <p><img src="/react-native/docs/assets/react-native-add-react-native-integration-link.png" alt="Event Path"></p>
 <h5><a class="anchor" aria-hidden="true" name="2-event-handler"></a><a href="#2-event-handler" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Event Handler</h5>
-<p>We will now add an event handler from the menu link. A method will be added to
-the main <code>ViewController</code> of your application. This is where <code>RCTRootView</code> comes
-into play.</p>
-<p>When you build a React Native application, you use the React Native packager to
-create an <code>index.bundle</code> that will be served by the React Native server. Inside
-<code>index.bundle</code> will be our <code>RNHighScore</code> module. So, we need to point our
-<code>RCTRootView</code> to the location of the <code>index.bundle</code> resource (via <code>NSURL</code>) and
-tie it to the module.</p>
-<p>We will, for debugging purposes, log that the event handler was invoked. Then,
-we will create a string with the location of our React Native code that exists
-inside the <code>index.bundle</code>. Finally, we will create the main <code>RCTRootView</code>.
-Notice how we provide <code>RNHighScores</code> as the <code>moduleName</code> that we created
-<a href="#the-react-native-component">above</a> when writing the code for our React Native
-component.</p>
+<p>We will now add an event handler from the menu link. A method will be added to the main <code>ViewController</code> of your application. This is where <code>RCTRootView</code> comes into play.</p>
+<p>When you build a React Native application, you use the React Native packager to create an <code>index.bundle</code> that will be served by the React Native server. Inside <code>index.bundle</code> will be our <code>RNHighScore</code> module. So, we need to point our <code>RCTRootView</code> to the location of the <code>index.bundle</code> resource (via <code>NSURL</code>) and tie it to the module.</p>
+<p>We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the <code>index.bundle</code>. Finally, we will create the main <code>RCTRootView</code>. Notice how we provide <code>RNHighScores</code> as the <code>moduleName</code> that we created <a href="#the-react-native-component">above</a> when writing the code for our React Native component.</p>
 <p><block class="objc" /></p>
 <p>First <code>import</code> the <code>RCTRootView</code> header.</p>
 <pre><code class="hljs css objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTRootView.h&gt;</span></span>
 </code></pre>
 <blockquote>
-<p>The <code>initialProperties</code> are here for illustration purposes so we have some
-data for our high score screen. In our React Native component, we will use
-<code>this.props</code> to get access to that data.</p>
+<p>The <code>initialProperties</code> are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use <code>this.props</code> to get access to that data.</p>
 </blockquote>
 <pre><code class="hljs css objectivec">- (<span class="hljs-keyword">IBAction</span>)highScoreButtonPressed:(<span class="hljs-keyword">id</span>)sender {
     <span class="hljs-built_in">NSLog</span>(<span class="hljs-string">@"High Score Button Pressed"</span>);
@@ -401,22 +329,14 @@ data for our high score screen. In our React Native component, we will use
 }
 </code></pre>
 <blockquote>
-<p>Note that <code>RCTRootView initWithURL</code> starts up a new JSC VM. To save resources
-and simplify the communication between RN views in different parts of your
-native app, you can have multiple views powered by React Native that are
-associated with a single JS runtime. To do that, instead of using
-<code>[RCTRootView alloc] initWithURL</code>, use
-<a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridge.h#L93"><code>RCTBridge initWithBundleURL</code></a>
-to create a bridge and then use <code>RCTRootView initWithBridge</code>.</p>
+<p>Note that <code>RCTRootView initWithURL</code> starts up a new JSC VM. To save resources and simplify the communication between RN views in different parts of your native app, you can have multiple views powered by React Native that are associated with a single JS runtime. To do that, instead of using <code>[RCTRootView alloc] initWithURL</code>, use <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridge.h#L93"><code>RCTBridge initWithBundleURL</code></a> to create a bridge and then use <code>RCTRootView initWithBridge</code>.</p>
 </blockquote>
 <p><block class="swift" /></p>
 <p>First <code>import</code> the <code>React</code> library.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React
 </code></pre>
 <blockquote>
-<p>The <code>initialProperties</code> are here for illustration purposes so we have some
-data for our high score screen. In our React Native component, we will use
-<code>this.props</code> to get access to that data.</p>
+<p>The <code>initialProperties</code> are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use <code>this.props</code> to get access to that data.</p>
 </blockquote>
 <pre><code class="hljs css swift"><span class="hljs-meta">@IBAction</span> <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">highScoreButtonTapped</span><span class="hljs-params">(sender : UIButton)</span></span> {
   <span class="hljs-type">NSLog</span>(<span class="hljs-string">"Hello"</span>)
@@ -440,43 +360,27 @@ data for our high score screen. In our React Native component, we will use
 }
 </code></pre>
 <blockquote>
-<p>Note that <code>RCTRootView bundleURL</code> starts up a new JSC VM. To save resources
-and simplify the communication between RN views in different parts of your
-native app, you can have multiple views powered by React Native that are
-associated with a single JS runtime. To do that, instead of using <code>RCTRootView bundleURL</code>, use
-<a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridge.h#L89"><code>RCTBridge initWithBundleURL</code></a>
-to create a bridge and then use <code>RCTRootView initWithBridge</code>.</p>
+<p>Note that <code>RCTRootView bundleURL</code> starts up a new JSC VM. To save resources and simplify the communication between RN views in different parts of your native app, you can have multiple views powered by React Native that are associated with a single JS runtime. To do that, instead of using <code>RCTRootView bundleURL</code>, use <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridge.h#L89"><code>RCTBridge initWithBundleURL</code></a> to create a bridge and then use <code>RCTRootView initWithBridge</code>.</p>
 </blockquote>
 <p><block class="objc" /></p>
 <blockquote>
-<p>When moving your app to production, the <code>NSURL</code> can point to a pre-bundled
-file on disk via something like <code>[[NSBundle mainBundle] URLForResource:@&quot;main&quot; withExtension:@&quot;jsbundle&quot;];</code>. You can use the <code>react-native-xcode.sh</code> script
-in <code>node_modules/react-native/scripts/</code> to generate that pre-bundled file.</p>
+<p>When moving your app to production, the <code>NSURL</code> can point to a pre-bundled file on disk via something like <code>[[NSBundle mainBundle] URLForResource:@&quot;main&quot; withExtension:@&quot;jsbundle&quot;];</code>. You can use the <code>react-native-xcode.sh</code> script in <code>node_modules/react-native/scripts/</code> to generate that pre-bundled file.</p>
 </blockquote>
 <p><block class="swift" /></p>
 <blockquote>
-<p>When moving your app to production, the <code>NSURL</code> can point to a pre-bundled
-file on disk via something like <code>let mainBundle = NSBundle(URLForResource: &quot;main&quot; withExtension:&quot;jsbundle&quot;)</code>. You can use the <code>react-native-xcode.sh</code>
-script in <code>node_modules/react-native/scripts/</code> to generate that pre-bundled
-file.</p>
+<p>When moving your app to production, the <code>NSURL</code> can point to a pre-bundled file on disk via something like <code>let mainBundle = NSBundle(URLForResource: &quot;main&quot; withExtension:&quot;jsbundle&quot;)</code>. You can use the <code>react-native-xcode.sh</code> script in <code>node_modules/react-native/scripts/</code> to generate that pre-bundled file.</p>
 </blockquote>
 <p><block class="objc swift" /></p>
 <h5><a class="anchor" aria-hidden="true" name="3-wire-up"></a><a href="#3-wire-up" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Wire Up</h5>
 <p>Wire up the new link in the main menu to the newly added event handler method.</p>
 <p><img src="/react-native/docs/assets/react-native-add-react-native-integration-wire-up.png" alt="Event Path"></p>
 <blockquote>
-<p>One of the easier ways to do this is to open the view in the storyboard and
-right click on the new link. Select something such as the <code>Touch Up Inside</code>
-event, drag that to the storyboard and then select the created method from the
-list provided.</p>
+<p>One of the easier ways to do this is to open the view in the storyboard and right click on the new link. Select something such as the <code>Touch Up Inside</code> event, drag that to the storyboard and then select the created method from the list provided.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" name="test-your-integration"></a><a href="#test-your-integration" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Test your integration</h3>
-<p>You have now done all the basic steps to integrate React Native with your
-current application. Now we will start the React Native packager to build the
-<code>index.bundle</code> package and the server running on <code>localhost</code> to serve it.</p>
+<p>You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the <code>index.bundle</code> package and the server running on <code>localhost</code> to serve it.</p>
 <h5><a class="anchor" aria-hidden="true" name="1-add-app-transport-security-exception"></a><a href="#1-add-app-transport-security-exception" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Add App Transport Security exception</h5>
-<p>Apple has blocked implicit cleartext HTTP resource loading. So we need to add
-the following our project's <code>Info.plist</code> (or equivalent) file.</p>
+<p>Apple has blocked implicit cleartext HTTP resource loading. So we need to add the following our project's <code>Info.plist</code> (or equivalent) file.</p>
 <pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>NSAppTransportSecurity<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>NSExceptionDomains<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
@@ -490,44 +394,30 @@ the following our project's <code>Info.plist</code> (or equivalent) file.</p>
 <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
 </code></pre>
 <blockquote>
-<p>App Transport Security is good for your users. Make sure to re-enable it prior
-to releasing your app for production.</p>
+<p>App Transport Security is good for your users. Make sure to re-enable it prior to releasing your app for production.</p>
 </blockquote>
 <h5><a class="anchor" aria-hidden="true" name="2-run-the-packager"></a><a href="#2-run-the-packager" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Run the packager</h5>
-<p>To run your app, you need to first start the development server. To do this,
-simply run the following command in the root directory of your React Native
-project:</p>
+<p>To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:</p>
 <pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> npm start</span>
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" name="3-run-the-app"></a><a href="#3-run-the-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Run the app</h5>
-<p>If you are using Xcode or your favorite editor, build and run your native iOS
-application as normal. Alternatively, you can run the app from the command line
-using:</p>
+<p>If you are using Xcode or your favorite editor, build and run your native iOS application as normal. Alternatively, you can run the app from the command line using:</p>
 <pre><code class="hljs"><span class="hljs-comment"># From the root of your project</span>
 $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 </span></code></pre>
-<p>In our sample application, you should see the link to the &quot;High Scores&quot; and then
-when you click on that you will see the rendering of your React Native
-component.</p>
+<p>In our sample application, you should see the link to the &quot;High Scores&quot; and then when you click on that you will see the rendering of your React Native component.</p>
 <p>Here is the <em>native</em> application home screen:</p>
 <p><img src="/react-native/docs/assets/react-native-add-react-native-integration-example-home-screen.png" alt="Home Screen"></p>
 <p>Here is the <em>React Native</em> high score screen:</p>
 <p><img src="/react-native/docs/assets/react-native-add-react-native-integration-example-high-scores.png" alt="High Scores"></p>
 <blockquote>
-<p>If you are getting module resolution issues when running your application
-please see
-<a href="https://github.com/facebook/react-native/issues/4968">this GitHub issue</a> for
-information and possible resolution.
-<a href="https://github.com/facebook/react-native/issues/4968#issuecomment-220941717">This comment</a>
-seemed to be the latest possible resolution.</p>
+<p>If you are getting module resolution issues when running your application please see <a href="https://github.com/facebook/react-native/issues/4968">this GitHub issue</a> for information and possible resolution. <a href="https://github.com/facebook/react-native/issues/4968#issuecomment-220941717">This comment</a> seemed to be the latest possible resolution.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" name="see-the-code"></a><a href="#see-the-code" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>See the Code</h3>
 <p><block class="objc" /></p>
-<p>You can examine the code that added the React Native screen to our sample app on
-<a href="https://github.com/JoelMarcey/iOS-2048/commit/9ae70c7cdd53eb59f5f7c7daab382b0300ed3585">GitHub</a>.</p>
+<p>You can examine the code that added the React Native screen to our sample app on <a href="https://github.com/JoelMarcey/iOS-2048/commit/9ae70c7cdd53eb59f5f7c7daab382b0300ed3585">GitHub</a>.</p>
 <p><block class="swift" /></p>
-<p>You can examine the code that added the React Native screen to our sample app on
-<a href="https://github.com/JoelMarcey/swift-2048/commit/13272a31ee6dd46dc68b1dcf4eaf16c1a10f5229">GitHub</a>.</p>
+<p>You can examine the code that added the React Native screen to our sample app on <a href="https://github.com/JoelMarcey/swift-2048/commit/13272a31ee6dd46dc68b1dcf4eaf16c1a10f5229">GitHub</a>.</p>
 <p><block class="android" /></p>
 <h2><a class="anchor" aria-hidden="true" name="adding-react-native-to-your-app"></a><a href="#adding-react-native-to-your-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding React Native to your app</h2>
 <h3><a class="anchor" aria-hidden="true" name="configuring-maven"></a><a href="#configuring-maven" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuring maven</h3>
@@ -539,12 +429,9 @@ seemed to be the latest possible resolution.</p>
 }
 </code></pre>
 <blockquote>
-<p>If you want to ensure that you are always using a specific React Native
-version in your native build, replace <code>+</code> with an actual React Native version
-you've downloaded from <code>npm</code>.</p>
+<p>If you want to ensure that you are always using a specific React Native version in your native build, replace <code>+</code> with an actual React Native version you've downloaded from <code>npm</code>.</p>
 </blockquote>
-<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be
-sure to add it to the &quot;allprojects&quot; block:</p>
+<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block:</p>
 <pre><code class="hljs">allprojects {
     repositories {
         ...
@@ -557,37 +444,27 @@ sure to add it to the &quot;allprojects&quot; block:</p>
 }
 </code></pre>
 <blockquote>
-<p>Make sure that the path is correct! You shouldn’t run into any “Failed to
-resolve: com.facebook.react:react-native:0.x.x&quot; errors after running Gradle
-sync in Android Studio.</p>
+<p>Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x&quot; errors after running Gradle sync in Android Studio.</p>
 </blockquote>
 <h3><a class="anchor" aria-hidden="true" name="configuring-permissions"></a><a href="#configuring-permissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuring permissions</h3>
 <p>Next, make sure you have the Internet permission in your <code>AndroidManifest.xml</code>:</p>
 <pre><code class="hljs">&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
 </code></pre>
-<p>If you need to access to the <code>DevSettingsActivity</code> add to your
-<code>AndroidManifest.xml</code>:</p>
+<p>If you need to access to the <code>DevSettingsActivity</code> add to your <code>AndroidManifest.xml</code>:</p>
 <pre><code class="hljs">&lt;activity android:name=&quot;com.facebook.react.devsupport.DevSettingsActivity&quot; /&gt;
 </code></pre>
-<p>This is only really used in dev mode when reloading JavaScript from the
-development server, so you can strip this in release builds if you need to.</p>
+<p>This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.</p>
 <h3><a class="anchor" aria-hidden="true" name="code-integration"></a><a href="#code-integration" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code integration</h3>
-<p>Now we will actually modify the native Android application to integrate React
-Native.</p>
+<p>Now we will actually modify the native Android application to integrate React Native.</p>
 <h4><a class="anchor" aria-hidden="true" name="the-react-native-component"></a><a href="#the-react-native-component" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native component</h4>
-<p>The first bit of code we will write is the actual React Native code for the new
-&quot;High Score&quot; screen that will be integrated into our application.</p>
+<p>The first bit of code we will write is the actual React Native code for the new &quot;High Score&quot; screen that will be integrated into our application.</p>
 <h5><a class="anchor" aria-hidden="true" name="1-create-a-indexjs-file"></a><a href="#1-create-a-indexjs-file" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create a <code>index.js</code> file</h5>
 <p>First, create an empty <code>index.js</code> file in the root of your React Native project.</p>
-<p><code>index.js</code> is the starting point for React Native applications, and it is always
-required. It can be a small file that <code>require</code>s other file that are part of
-your React Native component or application, or it can contain all the code that
-is needed for it. In our case, we will just put everything in <code>index.js</code>.</p>
+<p><code>index.js</code> is the starting point for React Native applications, and it is always required. It can be a small file that <code>require</code>s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in <code>index.js</code>.</p>
 <h5><a class="anchor" aria-hidden="true" name="2-add-your-react-native-code"></a><a href="#2-add-your-react-native-code" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Add your React Native code</h5>
-<p>In your <code>index.js</code>, create your component. In our sample here, we will add
-simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</code>:</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
-<span class="hljs-keyword">import</span> { AppRegistry, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>;
+<p>In your <code>index.js</code>, create your component. In our sample here, we will add simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</code>:</p>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {AppRegistry, StyleSheet, Text, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloWorld</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   render() {
@@ -601,27 +478,19 @@ simple <code>&lt;Text&gt;</code> component within a styled <code>&lt;View&gt;</c
 <span class="hljs-keyword">var</span> styles = StyleSheet.create({
   <span class="hljs-attr">container</span>: {
     <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">"center"</span>
+    <span class="hljs-attr">justifyContent</span>: <span class="hljs-string">'center'</span>,
   },
   <span class="hljs-attr">hello</span>: {
     <span class="hljs-attr">fontSize</span>: <span class="hljs-number">20</span>,
-    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">"center"</span>,
-    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>
-  }
+    <span class="hljs-attr">textAlign</span>: <span class="hljs-string">'center'</span>,
+    <span class="hljs-attr">margin</span>: <span class="hljs-number">10</span>,
+  },
 });
 
-AppRegistry.registerComponent(<span class="hljs-string">"MyReactNativeApp"</span>, () =&gt; HelloWorld);
+AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span>, () =&gt; HelloWorld);
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" name="3-configure-permissions-for-development-error-overlay"></a><a href="#3-configure-permissions-for-development-error-overlay" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure permissions for development error overlay</h5>
-<p>If your app is targeting the Android <code>API level 23</code> or greater, make sure you
-have the <code>overlay</code> permission enabled for the development build. You can check
-it with <code>Settings.canDrawOverlays(this);</code>. This is required in dev builds
-because react native development errors must be displayed above all the other
-windows. Due to the new permissions system introduced in the API level 23, the
-user needs to approve it. This can be achieved by adding the following code to
-the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a
-field of the class which would be responsible for passing the result back to the
-Activity.</p>
+<p>If your app is targeting the Android <code>API level 23</code> or greater, make sure you have the <code>overlay</code> permission enabled for the development build. You can check it with <code>Settings.canDrawOverlays(this);</code>. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be achieved by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.</p>
 <pre><code class="hljs css java"><span class="hljs-keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) {
     <span class="hljs-keyword">if</span> (!Settings.canDrawOverlays(<span class="hljs-keyword">this</span>)) {
         Intent intent = <span class="hljs-keyword">new</span> Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -630,8 +499,7 @@ Activity.</p>
     }
 }
 </code></pre>
-<p>Finally, the <code>onActivityResult()</code> method (as shown in the code below) has to be
-overridden to handle the permission Accepted or Denied cases for consistent UX.</p>
+<p>Finally, the <code>onActivityResult()</code> method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onActivityResult</span><span class="hljs-params">(<span class="hljs-keyword">int</span> requestCode, <span class="hljs-keyword">int</span> resultCode, Intent data)</span> </span>{
     <span class="hljs-keyword">if</span> (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
@@ -644,13 +512,9 @@ overridden to handle the permission Accepted or Denied cases for consistent UX.<
 }
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" name="the-magic-reactrootview"></a><a href="#the-magic-reactrootview" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Magic: <code>ReactRootView</code></h4>
-<p>You need to add some native code in order to start the React Native runtime and
-get it to render something. To do this, we're going to create an <code>Activity</code> that
-creates a <code>ReactRootView</code>, starts a React application inside it and sets it as
-the main content view.</p>
+<p>You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an <code>Activity</code> that creates a <code>ReactRootView</code>, starts a React application inside it and sets it as the main content view.</p>
 <blockquote>
-<p>If you are targetting Android version &lt;5, use the <code>AppCompatActivity</code> class
-from the <code>com.android.support:appcompat</code> package instead of <code>Activity</code>.</p>
+<p>If you are targetting Android version &lt;5, use the <code>AppCompatActivity</code> class from the <code>com.android.support:appcompat</code> package instead of <code>Activity</code>.</p>
 </blockquote>
 <pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyReactActivity</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Activity</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">DefaultHardwareBackBtnHandler</span> </span>{
     <span class="hljs-keyword">private</span> ReactRootView mReactRootView;
@@ -681,15 +545,10 @@ from the <code>com.android.support:appcompat</code> package instead of <code>Act
 }
 </code></pre>
 <blockquote>
-<p>If you are using a starter kit for React Native, replace the &quot;HelloWorld&quot;
-string with the one in your index.js file (it’s the first argument to the
-<code>AppRegistry.registerComponent()</code> method).</p>
+<p>If you are using a starter kit for React Native, replace the &quot;HelloWorld&quot; string with the one in your index.js file (it’s the first argument to the <code>AppRegistry.registerComponent()</code> method).</p>
 </blockquote>
-<p>If you are using Android Studio, use <code>Alt + Enter</code> to add all missing imports in
-your MyReactActivity class. Be careful to use your package’s <code>BuildConfig</code> and
-not the one from the <code>...facebook...</code> package.</p>
-<p>We need set the theme of <code>MyReactActivity</code> to
-<code>Theme.AppCompat.Light.NoActionBar</code> because some components rely on this theme.</p>
+<p>If you are using Android Studio, use <code>Alt + Enter</code> to add all missing imports in your MyReactActivity class. Be careful to use your package’s <code>BuildConfig</code> and not the one from the <code>...facebook...</code> package.</p>
+<p>We need set the theme of <code>MyReactActivity</code> to <code>Theme.AppCompat.Light.NoActionBar</code> because some components rely on this theme.</p>
 <pre><code class="hljs css xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span>
   <span class="hljs-attr">android:name</span>=<span class="hljs-string">".MyReactActivity"</span>
   <span class="hljs-attr">android:label</span>=<span class="hljs-string">"@string/app_name"</span>
@@ -697,15 +556,9 @@ not the one from the <code>...facebook...</code> package.</p>
 <span class="hljs-tag">&lt;/<span class="hljs-name">activity</span>&gt;</span>
 </code></pre>
 <blockquote>
-<p>A <code>ReactInstanceManager</code> can be shared amongst multiple activities and/or
-fragments. You will want to make your own <code>ReactFragment</code> or <code>ReactActivity</code>
-and have a singleton <em>holder</em> that holds a <code>ReactInstanceManager</code>. When you
-need the <code>ReactInstanceManager</code> (e.g., to hook up the <code>ReactInstanceManager</code>
-to the lifecycle of those Activities or Fragments) use the one provided by the
-singleton.</p>
+<p>A <code>ReactInstanceManager</code> can be shared amongst multiple activities and/or fragments. You will want to make your own <code>ReactFragment</code> or <code>ReactActivity</code> and have a singleton <em>holder</em> that holds a <code>ReactInstanceManager</code>. When you need the <code>ReactInstanceManager</code> (e.g., to hook up the <code>ReactInstanceManager</code> to the lifecycle of those Activities or Fragments) use the one provided by the singleton.</p>
 </blockquote>
-<p>Next, we need to pass some activity lifecycle callbacks down to the
-<code>ReactInstanceManager</code>:</p>
+<p>Next, we need to pass some activity lifecycle callbacks down to the <code>ReactInstanceManager</code>:</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onPause</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">super</span>.onPause();
@@ -743,14 +596,8 @@ singleton.</p>
     }
 }
 </code></pre>
-<p>This allows JavaScript to control what happens when the user presses the
-hardware back button (e.g. to implement navigation). When JavaScript doesn't
-handle a back press, your <code>invokeDefaultOnBackPressed</code> method will be called. By
-default this simply finishes your <code>Activity</code>.</p>
-<p>Finally, we need to hook up the dev menu. By default, this is activated by
-(rage) shaking the device, but this is not very useful in emulators. So we make
-it show when you press the hardware menu button (use <code>Ctrl + M</code> if you're using
-Android Studio emulator):</p>
+<p>This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle a back press, your <code>invokeDefaultOnBackPressed</code> method will be called. By default this simply finishes your <code>Activity</code>.</p>
+<p>Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button (use <code>Ctrl + M</code> if you're using Android Studio emulator):</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">onKeyUp</span><span class="hljs-params">(<span class="hljs-keyword">int</span> keyCode, KeyEvent event)</span> </span>{
     <span class="hljs-keyword">if</span> (keyCode == KeyEvent.KEYCODE_MENU &amp;&amp; mReactInstanceManager != <span class="hljs-keyword">null</span>) {
@@ -762,39 +609,26 @@ Android Studio emulator):</p>
 </code></pre>
 <p>Now your activity is ready to run some JavaScript code.</p>
 <h3><a class="anchor" aria-hidden="true" name="test-your-integration"></a><a href="#test-your-integration" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Test your integration</h3>
-<p>You have now done all the basic steps to integrate React Native with your
-current application. Now we will start the React Native packager to build the
-<code>index.bundle</code> package and the server running on localhost to serve it.</p>
+<p>You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the <code>index.bundle</code> package and the server running on localhost to serve it.</p>
 <h5><a class="anchor" aria-hidden="true" name="1-run-the-packager"></a><a href="#1-run-the-packager" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Run the packager</h5>
-<p>To run your app, you need to first start the development server. To do this,
-simply run the following command in the root directory of your React Native
-project:</p>
+<p>To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:</p>
 <pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> npm start</span>
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" name="2-run-the-app"></a><a href="#2-run-the-app" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Run the app</h5>
 <p>Now build and run your Android app as normal.</p>
-<p>Once you reach your React-powered activity inside the app, it should load the
-JavaScript code from the development server and display:</p>
+<p>Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:</p>
 <p><img src="/react-native/docs/assets/EmbeddedAppAndroid.png" alt="Screenshot"></p>
 <h3><a class="anchor" aria-hidden="true" name="creating-a-release-build-in-android-studio"></a><a href="#creating-a-release-build-in-android-studio" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a release build in Android Studio</h3>
-<p>You can use Android Studio to create your release builds too! It’s as easy as
-creating release builds of your previously-existing native Android app. There’s
-just one additional step, which you’ll have to do before every release build.
-You need to execute the following to create a React Native bundle, which will be
-included with your native Android app:</p>
+<p>You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which will be included with your native Android app:</p>
 <pre><code class="hljs">$ react-<span class="hljs-keyword">native</span> bundle --platform android --dev <span class="hljs-keyword">false</span> --entry-<span class="hljs-keyword">file</span> index.js --bundle-output android<span class="hljs-regexp">/com/y</span>our-company-name<span class="hljs-regexp">/app-package-name/</span>src<span class="hljs-regexp">/main/</span>assets<span class="hljs-regexp">/index.android.bundle --assets-dest android/</span>com<span class="hljs-regexp">/your-company-name/</span>app-<span class="hljs-keyword">package</span>-name<span class="hljs-regexp">/src/m</span>ain<span class="hljs-regexp">/res/</span>
 </code></pre>
 <blockquote>
-<p>Don’t forget to replace the paths with correct ones and create the assets
-folder if it doesn’t exist.</p>
+<p>Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist.</p>
 </blockquote>
-<p>Now just create a release build of your native app from within Android Studio as
-usual and you should be good to go!</p>
+<p>Now just create a release build of your native app from within Android Studio as usual and you should be good to go!</p>
 <p><block class="objc swift android" /></p>
 <h3><a class="anchor" aria-hidden="true" name="now-what"></a><a href="#now-what" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Now what?</h3>
-<p>At this point you can continue developing your app as usual. Refer to our
-<a href="/react-native/docs/0.15/debugging.html">debugging</a> and <a href="/react-native/docs/0.15/running-on-device.html">deployment</a> docs to learn
-more about working with React Native.</p>
+<p>At this point you can continue developing your app as usual. Refer to our <a href="/react-native/docs/0.15/debugging.html">debugging</a> and <a href="/react-native/docs/0.15/running-on-device.html">deployment</a> docs to learn more about working with React Native.</p>
 <script>
   function displayTab(type, value) {
     var container = document.getElementsByTagName('block')[0].parentNode;

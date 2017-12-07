@@ -6,9 +6,7 @@
           };
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/pixelratio.md" target="_blank">Edit</a><h1>PixelRatio</h1></header><article><div><span><p>PixelRatio class gives access to the device pixel density.</p>
 <h2><a class="anchor" aria-hidden="true" name="fetching-a-correctly-sized-image"></a><a href="#fetching-a-correctly-sized-image" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Fetching a correctly sized image</h2>
-<p>You should get a higher resolution image if you are on a high pixel density
-device. A good rule of thumb is to multiply the size of the image you display
-by the pixel ratio.</p>
+<p>You should get a higher resolution image if you are on a high pixel density device. A good rule of thumb is to multiply the size of the image you display by the pixel ratio.</p>
 <pre><code class="hljs"><span class="hljs-built_in">var</span> <span class="hljs-built_in">image</span> = getImage({
   <span class="hljs-built_in">width</span>: PixelRatio.getPixelSizeForLayoutSize(<span class="hljs-number">200</span>),
   <span class="hljs-built_in">height</span>: PixelRatio.getPixelSizeForLayoutSize(<span class="hljs-number">100</span>),
@@ -16,26 +14,10 @@ by the pixel ratio.</p>
 &lt;Image source={<span class="hljs-built_in">image</span>} <span class="hljs-built_in">style</span>={{<span class="hljs-built_in">width</span>: <span class="hljs-number">200</span>, <span class="hljs-built_in">height</span>: <span class="hljs-number">100</span>}} /&gt;
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="pixel-grid-snapping"></a><a href="#pixel-grid-snapping" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Pixel grid snapping</h2>
-<p>In iOS, you can specify positions and dimensions for elements with arbitrary
-precision, for example 29.674825. But, ultimately the physical display only
-have a fixed number of pixels, for example 640×960 for iPhone 4 or 750×1334
-for iPhone 6. iOS tries to be as faithful as possible to the user value by
-spreading one original pixel into multiple ones to trick the eye. The
-downside of this technique is that it makes the resulting element look
-blurry.</p>
-<p>In practice, we found out that developers do not want this feature and they
-have to work around it by doing manual rounding in order to avoid having
-blurry elements. In React Native, we are rounding all the pixels
-automatically.</p>
-<p>We have to be careful when to do this rounding. You never want to work with
-rounded and unrounded values at the same time as you're going to accumulate
-rounding errors. Having even one rounding error is deadly because a one
-pixel border may vanish or be twice as big.</p>
-<p>In React Native, everything in JavaScript and within the layout engine works
-with arbitrary precision numbers. It's only when we set the position and
-dimensions of the native element on the main thread that we round. Also,
-rounding is done relative to the root rather than the parent, again to avoid
-accumulating rounding errors.</p>
+<p>In iOS, you can specify positions and dimensions for elements with arbitrary precision, for example 29.674825. But, ultimately the physical display only have a fixed number of pixels, for example 640×960 for iPhone 4 or 750×1334 for iPhone 6. iOS tries to be as faithful as possible to the user value by spreading one original pixel into multiple ones to trick the eye. The downside of this technique is that it makes the resulting element look blurry.</p>
+<p>In practice, we found out that developers do not want this feature and they have to work around it by doing manual rounding in order to avoid having blurry elements. In React Native, we are rounding all the pixels automatically.</p>
+<p>We have to be careful when to do this rounding. You never want to work with rounded and unrounded values at the same time as you're going to accumulate rounding errors. Having even one rounding error is deadly because a one pixel border may vanish or be twice as big.</p>
+<p>In React Native, everything in JavaScript and within the layout engine works with arbitrary precision numbers. It's only when we set the position and dimensions of the native element on the main thread that we round. Also, rounding is done relative to the root rather than the parent, again to avoid accumulating rounding errors.</p>
 <h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
 <li><a href="/react-native/docs/0.50/pixelratio.html#get"><code>get</code></a></li>
@@ -81,13 +63,9 @@ accumulating rounding errors.</p>
 <h3><a class="anchor" aria-hidden="true" name="getfontscale"></a><a href="#getfontscale" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getFontScale()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getFontScale()
 </code></pre>
-<p>Returns the scaling factor for font sizes. This is the ratio that is used to calculate the
-absolute font size, so any elements that heavily depend on that should use this to do
-calculations.</p>
+<p>Returns the scaling factor for font sizes. This is the ratio that is used to calculate the absolute font size, so any elements that heavily depend on that should use this to do calculations.</p>
 <p>If a font scale is not set, this returns the device pixel ratio.</p>
-<p>Currently this is only implemented on Android and reflects the user preference set in
-Settings &gt; Display &gt; Font size, on iOS it will always return the default pixel ratio.
-@platform android</p>
+<p>Currently this is only implemented on Android and reflects the user preference set in Settings &gt; Display &gt; Font size, on iOS it will always return the default pixel ratio. @platform android</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getpixelsizeforlayoutsize"></a><a href="#getpixelsizeforlayoutsize" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getPixelSizeForLayoutSize()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getPixelSizeForLayoutSize(layoutSize)
@@ -98,10 +76,7 @@ Settings &gt; Display &gt; Font size, on iOS it will always return the default p
 <h3><a class="anchor" aria-hidden="true" name="roundtonearestpixel"></a><a href="#roundtonearestpixel" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>roundToNearestPixel()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> roundToNearestPixel(layoutSize)
 </code></pre>
-<p>Rounds a layout size (dp) to the nearest layout size that corresponds to
-an integer number of pixels. For example, on a device with a PixelRatio
-of 3, <code>PixelRatio.roundToNearestPixel(8.4) = 8.33</code>, which corresponds to
-exactly (8.33 * 3) = 25 pixels.</p>
+<p>Rounds a layout size (dp) to the nearest layout size that corresponds to an integer number of pixels. For example, on a device with a PixelRatio of 3, <code>PixelRatio.roundToNearestPixel(8.4) = 8.33</code>, which corresponds to exactly (8.33 * 3) = 25 pixels.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="startdetecting"></a><a href="#startdetecting" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>startDetecting()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> startDetecting()

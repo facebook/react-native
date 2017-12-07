@@ -14,10 +14,8 @@
     the Create React Native App repository.
   </p>
 </div>
-<p>Handle push notifications for your app, including permission handling and
-icon badge number.</p>
-<p>To get up and running, <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6">configure your notifications with Apple</a>
-and your server-side system.</p>
+<p>Handle push notifications for your app, including permission handling and icon badge number.</p>
+<p>To get up and running, <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6">configure your notifications with Apple</a> and your server-side system.</p>
 <p><a href="/react-native/docs/0.46/linking-libraries-ios.html#manual-linking">Manually link</a> the PushNotificationIOS library</p>
 <ul>
 <li>Add the following to your Project: <code>node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj</code></li>
@@ -98,11 +96,11 @@ and your server-side system.</p>
 <li><code>alertBody</code> : The message displayed in the notification alert.</li>
 <li><code>alertAction</code> : The &quot;action&quot; displayed beneath an actionable notification. Defaults to &quot;view&quot;;</li>
 <li><code>soundName</code> : The sound played when the notification is fired (optional).</li>
-<li><code>isSilent</code>  : If true, the notification will appear without sound (optional).</li>
-<li><code>category</code>  : The category of this notification, required for actionable notifications (optional).</li>
+<li><code>isSilent</code> : If true, the notification will appear without sound (optional).</li>
+<li><code>category</code> : The category of this notification, required for actionable notifications (optional).</li>
 <li><code>userInfo</code> : An optional object containing additional notification data.</li>
 <li><code>applicationIconBadgeNumber</code> (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.</li>
-<li><code>repeatInterval</code> : The interval to repeat as a string.  Possible values: <code>minute</code>, <code>hour</code>, <code>day</code>, <code>week</code>, <code>month</code>, <code>year</code>.</li>
+<li><code>repeatInterval</code> : The interval to repeat as a string. Possible values: <code>minute</code>, <code>hour</code>, <code>day</code>, <code>week</code>, <code>month</code>, <code>year</code>.</li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="cancelalllocalnotifications"></a><a href="#cancelalllocalnotifications" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>cancelAllLocalNotifications()</code></h3>
@@ -122,12 +120,12 @@ and your server-side system.</p>
 <p>@param callback Function which receive an array of delivered notifications</p>
 <p>A delivered notification is an object containing:</p>
 <ul>
-<li><code>identifier</code>  : The identifier of this notification.</li>
-<li><code>title</code>  : The title of this notification.</li>
-<li><code>body</code>  : The body of this notification.</li>
-<li><code>category</code>  : The category of this notification, if has one.</li>
-<li><code>userInfo</code>  : An optional object containing additional notification data.</li>
-<li><code>thread-id</code>  : The thread identifier of this notification, if has one.</li>
+<li><code>identifier</code> : The identifier of this notification.</li>
+<li><code>title</code> : The title of this notification.</li>
+<li><code>body</code> : The body of this notification.</li>
+<li><code>category</code> : The category of this notification, if has one.</li>
+<li><code>userInfo</code> : An optional object containing additional notification data.</li>
+<li><code>thread-id</code> : The thread identifier of this notification, if has one.</li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removedeliverednotifications"></a><a href="#removedeliverednotifications" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeDeliveredNotifications()</code></h3>
@@ -150,9 +148,7 @@ and your server-side system.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> cancelLocalNotifications(userInfo)
 </code></pre>
 <p>Cancel local notifications.</p>
-<p>Optionally restricts the set of canceled notifications to those
-notifications whose <code>userInfo</code> fields match the corresponding fields
-in the <code>userInfo</code> argument.</p>
+<p>Optionally restricts the set of canceled notifications to those notifications whose <code>userInfo</code> fields match the corresponding fields in the <code>userInfo</code> argument.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getscheduledlocalnotifications"></a><a href="#getscheduledlocalnotifications" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getScheduledLocalNotifications()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getScheduledLocalNotifications(callback)
@@ -162,61 +158,42 @@ in the <code>userInfo</code> argument.</p>
 <h3><a class="anchor" aria-hidden="true" name="addeventlistener"></a><a href="#addeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>addEventListener()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> addEventListener(type, handler)
 </code></pre>
-<p>Attaches a listener to remote or local notification events while the app is running
-in the foreground or the background.</p>
+<p>Attaches a listener to remote or local notification events while the app is running in the foreground or the background.</p>
 <p>Valid events are:</p>
 <ul>
-<li><code>notification</code> : Fired when a remote notification is received. The
-handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
-<li><code>localNotification</code> : Fired when a local notification is received. The
-handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
-<li><code>register</code>: Fired when the user registers for remote notifications. The
-handler will be invoked with a hex string representing the deviceToken.</li>
-<li><code>registrationError</code>: Fired when the user fails to register for remote
-notifications. Typically occurs when APNS is having issues, or the device
-is a simulator. The handler will be invoked with
-{message: string, code: number, details: any}.</li>
+<li><code>notification</code> : Fired when a remote notification is received. The handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
+<li><code>localNotification</code> : Fired when a local notification is received. The handler will be invoked with an instance of <code>PushNotificationIOS</code>.</li>
+<li><code>register</code>: Fired when the user registers for remote notifications. The handler will be invoked with a hex string representing the deviceToken.</li>
+<li><code>registrationError</code>: Fired when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. The handler will be invoked with {message: string, code: number, details: any}.</li>
 </ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="removeeventlistener"></a><a href="#removeeventlistener" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeEventListener()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> removeEventListener(type, handler)
 </code></pre>
-<p>Removes the event listener. Do this in <code>componentWillUnmount</code> to prevent
-memory leaks</p>
+<p>Removes the event listener. Do this in <code>componentWillUnmount</code> to prevent memory leaks</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="requestpermissions"></a><a href="#requestpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestPermissions()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> requestPermissions(permissions?)
 </code></pre>
-<p>Requests notification permissions from iOS, prompting the user's
-dialog box. By default, it will request all notification permissions, but
-a subset of these can be requested by passing a map of requested
-permissions.
-The following permissions are supported:</p>
+<p>Requests notification permissions from iOS, prompting the user's dialog box. By default, it will request all notification permissions, but a subset of these can be requested by passing a map of requested permissions. The following permissions are supported:</p>
 <ul>
 <li><code>alert</code></li>
 <li><code>badge</code></li>
 <li><code>sound</code></li>
 </ul>
-<p>If a map is provided to the method, only the permissions with truthy values
-will be requested.</p>
-<p>This method returns a promise that will resolve when the user accepts,
-rejects, or if the permissions were previously rejected. The promise
-resolves to the current state of the permission.</p>
+<p>If a map is provided to the method, only the permissions with truthy values will be requested.</p>
+<p>This method returns a promise that will resolve when the user accepts, rejects, or if the permissions were previously rejected. The promise resolves to the current state of the permission.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="abandonpermissions"></a><a href="#abandonpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>abandonPermissions()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> abandonPermissions()
 </code></pre>
 <p>Unregister for all remote notifications received via Apple Push Notification service.</p>
-<p>You should call this method in rare circumstances only, such as when a new version of
-the app removes support for all types of remote notifications. Users can temporarily
-prevent apps from receiving remote notifications through the Notifications section of
-the Settings app. Apps unregistered through this method can always re-register.</p>
+<p>You should call this method in rare circumstances only, such as when a new version of the app removes support for all types of remote notifications. Users can temporarily prevent apps from receiving remote notifications through the Notifications section of the Settings app. Apps unregistered through this method can always re-register.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="checkpermissions"></a><a href="#checkpermissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>checkPermissions()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> checkPermissions(callback)
 </code></pre>
-<p>See what push permissions are currently enabled. <code>callback</code> will be
-invoked with a <code>permissions</code> object:</p>
+<p>See what push permissions are currently enabled. <code>callback</code> will be invoked with a <code>permissions</code> object:</p>
 <ul>
 <li><code>alert</code> :boolean</li>
 <li><code>badge</code> :boolean</li>
@@ -226,56 +203,47 @@ invoked with a <code>permissions</code> object:</p>
 <h3><a class="anchor" aria-hidden="true" name="getinitialnotification"></a><a href="#getinitialnotification" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getInitialNotification()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> getInitialNotification()
 </code></pre>
-<p>This method returns a promise that resolves to either the notification
-object if the app was launched by a push notification, or <code>null</code> otherwise.</p>
+<p>This method returns a promise that resolves to either the notification object if the app was launched by a push notification, or <code>null</code> otherwise.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="constructor"></a><a href="#constructor" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>constructor()</code></h3>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>(nativeNotif)
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>(nativeNotif);
 </code></pre>
-<p>You will never need to instantiate <code>PushNotificationIOS</code> yourself.
-Listening to the <code>notification</code> event and invoking
-<code>getInitialNotification</code> is sufficient</p>
+<p>You will never need to instantiate <code>PushNotificationIOS</code> yourself. Listening to the <code>notification</code> event and invoking <code>getInitialNotification</code> is sufficient</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="finish"></a><a href="#finish" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>finish()</code></h3>
-<pre><code class="hljs css javascript">finish(fetchResult)
+<pre><code class="hljs css javascript">finish(fetchResult);
 </code></pre>
-<p>This method is available for remote notifications that have been received via:
-<code>application:didReceiveRemoteNotification:fetchCompletionHandler:</code>
-<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler">https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler</a>:</p>
-<p>Call this to execute when the remote notification handling is complete. When
-calling this block, pass in the fetch result value that best describes
-the results of your operation. You <em>must</em> call this handler and should do so
-as soon as possible. For a list of possible values, see <code>PushNotificationIOS.FetchResult</code>.</p>
-<p>If you do not call this method your background remote notifications could
-be throttled, to read more about it see the above documentation link.</p>
+<p>This method is available for remote notifications that have been received via: <code>application:didReceiveRemoteNotification:fetchCompletionHandler:</code> <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler">https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler</a>:</p>
+<p>Call this to execute when the remote notification handling is complete. When calling this block, pass in the fetch result value that best describes the results of your operation. You <em>must</em> call this handler and should do so as soon as possible. For a list of possible values, see <code>PushNotificationIOS.FetchResult</code>.</p>
+<p>If you do not call this method your background remote notifications could be throttled, to read more about it see the above documentation link.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getmessage"></a><a href="#getmessage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getMessage()</code></h3>
-<pre><code class="hljs css javascript">getMessage()
+<pre><code class="hljs css javascript">getMessage();
 </code></pre>
 <p>An alias for <code>getAlert</code> to get the notification's main message string</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getsound"></a><a href="#getsound" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getSound()</code></h3>
-<pre><code class="hljs css javascript">getSound()
+<pre><code class="hljs css javascript">getSound();
 </code></pre>
 <p>Gets the sound string from the <code>aps</code> object</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getcategory"></a><a href="#getcategory" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getCategory()</code></h3>
-<pre><code class="hljs css javascript">getCategory()
+<pre><code class="hljs css javascript">getCategory();
 </code></pre>
 <p>Gets the category string from the <code>aps</code> object</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getalert"></a><a href="#getalert" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAlert()</code></h3>
-<pre><code class="hljs css javascript">getAlert()
+<pre><code class="hljs css javascript">getAlert();
 </code></pre>
 <p>Gets the notification's main message from the <code>aps</code> object</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getbadgecount"></a><a href="#getbadgecount" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getBadgeCount()</code></h3>
-<pre><code class="hljs css javascript">getBadgeCount()
+<pre><code class="hljs css javascript">getBadgeCount();
 </code></pre>
 <p>Gets the badge count number from the <code>aps</code> object</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="getdata"></a><a href="#getdata" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getData()</code></h3>
-<pre><code class="hljs css javascript">getData()
+<pre><code class="hljs css javascript">getData();
 </code></pre>
 <p>Gets the data object on the notif</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="pixelratio.html">← PixelRatio</a><a class="docs-next button" href="settings.html">Settings →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
