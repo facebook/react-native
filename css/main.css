@@ -653,7 +653,7 @@ input[type="search"] {
   z-index: 1;
 }
 .navSearchWrapper .aa-dropdown-menu {
-  background: '#f9f9f9';
+  background: #f9f9f9;
   border: 3px solid rgba(57, 57, 57, 0.25);
   color: #393939;
   font-size: 14px;
