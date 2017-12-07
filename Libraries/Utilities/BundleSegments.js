@@ -20,35 +20,39 @@ let segmentLoaders = new Map();
  * its module. We cache load promises so as to avoid calling `fetchSegment` twice
  * for the same bundle. We assume that once a segment is fetched/loaded, it is
  * never gettting removed during this instance of the JavaScript VM.
+ *
+ * We don't use async/await syntax to avoid depending on `regeneratorRuntime`.
  */
-async function loadForModule(moduleID: number): Promise<void> {
-  const {segmentId} = (require: $FlowFixMe).unpackModuleId(moduleID);
-  if (segmentId === 0) {
-    return;
-  }
-  let segmentLoader = segmentLoaders.get(segmentId);
-  if (segmentLoader != null) {
-    return await segmentLoader;
-  }
+function loadForModule(moduleID: number): Promise<void> {
+  return Promise.resolve().then(() => {
+    const {segmentId} = (require: $FlowFixMe).unpackModuleId(moduleID);
+    if (segmentId === 0) {
+      return;
+    }
+    let segmentLoader = segmentLoaders.get(segmentId);
+    if (segmentLoader != null) {
+      return segmentLoader;
+    }
 
-  const {fetchSegment} = global;
-  if (fetchSegment == null) {
-    throw new Error(
-      'When bundle splitting is enabled, the `global.fetchSegment` function ' +
-        'must be provided to be able to load particular bundle segments.',
-    );
-  }
-  segmentLoader = new Promise((resolve, reject) => {
-    fetchSegment(segmentId, error => {
-      if (error != null) {
-        reject(error);
-        return;
-      }
-      resolve();
+    const {fetchSegment} = global;
+    if (fetchSegment == null) {
+      throw new Error(
+        'When bundle splitting is enabled, the `global.fetchSegment` function ' +
+          'must be provided to be able to load particular bundle segments.',
+      );
+    }
+    segmentLoader = new Promise((resolve, reject) => {
+      fetchSegment(segmentId, error => {
+        if (error != null) {
+          reject(error);
+          return;
+        }
+        resolve();
+      });
     });
+    segmentLoaders.set(segmentId, segmentLoader);
+    return segmentLoader;
   });
-  segmentLoaders.set(segmentId, segmentLoader);
-  return await segmentLoader;
 }
 
 module.exports = {loadForModule};
