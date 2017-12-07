@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Process;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
@@ -65,7 +66,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
+import com.facebook.react.devsupport.ReactInstanceManagerDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -221,7 +222,7 @@ public class ReactInstanceManager {
     mDevSupportManager =
         DevSupportManagerFactory.create(
             applicationContext,
-            createDevInterface(),
+            createDevHelperInterface(),
             mJSMainModulePath,
             useDeveloperSupport,
             redBoxHandler,
@@ -261,8 +262,8 @@ public class ReactInstanceManager {
     }
   }
 
-  private ReactInstanceDevCommandsHandler createDevInterface() {
-    return new ReactInstanceDevCommandsHandler() {
+  private ReactInstanceManagerDevHelper createDevHelperInterface() {
+    return new ReactInstanceManagerDevHelper() {
       @Override
       public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
         ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
@@ -276,6 +277,11 @@ public class ReactInstanceManager {
       @Override
       public void toggleElementInspector() {
         ReactInstanceManager.this.toggleElementInspector();
+      }
+
+      @Override
+      public @Nullable Activity getCurrentActivity() {
+        return ReactInstanceManager.this.mCurrentActivity;
       }
     };
   }
@@ -563,11 +569,40 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
+    mCurrentActivity = activity;
+
     if (mUseDeveloperSupport) {
-      mDevSupportManager.setDevSupportEnabled(true);
+      // Resume can be called from one of two different states:
+      // a) when activity was paused
+      // b) when activity has just been created
+      // In case of (a) the activity is attached to window and it is ok to add new views to it or
+      // open dialogs. In case of (b) there is often a slight delay before such a thing happens.
+      // As dev support manager can add views or open dialogs immediately after it gets enabled
+      // (e.g. in the case when JS bundle is being fetched in background) we only want to enable
+      // it once we know for sure the current activity is attached.
+
+      // We check if activity is attached to window by checking if decor view is attached
+      final View decorView = mCurrentActivity.getWindow().getDecorView();
+      if (!ViewCompat.isAttachedToWindow(decorView)) {
+        decorView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+          @Override
+          public void onViewAttachedToWindow(View v) {
+            // we can drop listener now that we know the view is attached
+            decorView.removeOnAttachStateChangeListener(this);
+            mDevSupportManager.setDevSupportEnabled(true);
+          }
+
+          @Override
+          public void onViewDetachedFromWindow(View v) {
+            // do nothing
+          }
+        });
+      } else {
+        // activity is attached to window, we can enable dev support immediately
+        mDevSupportManager.setDevSupportEnabled(true);
+      }
     }
 
-    mCurrentActivity = activity;
     moveToResumedLifecycleState(false);
   }
 
