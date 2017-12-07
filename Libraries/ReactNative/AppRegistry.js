@@ -59,7 +59,7 @@ let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/appregistry.html
  */
 const AppRegistry = {
@@ -89,7 +89,7 @@ const AppRegistry = {
 
   /**
    * Registers an app's root component.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#registercomponent
    */
   registerComponent(
@@ -155,7 +155,7 @@ const AppRegistry = {
 
   /**
    * Loads the JavaScript bundle and runs the app.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
    */
   runApplication(appKey: string, appParameters: any): void {
@@ -197,8 +197,8 @@ const AppRegistry = {
   },
 
   /**
-   * Stops an application when a view should be destroyed. 
-   * 
+   * Stops an application when a view should be destroyed.
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#unmountapplicationcomponentatroottag
    */
   unmountApplicationComponentAtRootTag(rootTag: number): void {
@@ -207,7 +207,7 @@ const AppRegistry = {
 
   /**
    * Register a headless task. A headless task is a bit of code that runs without a UI.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, task: TaskProvider): void {

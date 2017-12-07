@@ -63,8 +63,8 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
   groupName: PropTypes.string,
 
   /**
-  * Specifies filter on asset type
-  */
+   * Specifies filter on asset type
+   */
   assetType: PropTypes.oneOf(Object.keys(ASSET_TYPE_OPTIONS)),
 
   /**
