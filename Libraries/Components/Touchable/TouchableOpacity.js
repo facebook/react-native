@@ -162,6 +162,12 @@ var TouchableOpacity = createReactClass({
     ensurePositiveDelayProps(nextProps);
   },
 
+  componentDidUpdate: function(prevProps, prevState) {
+    if (this.props.disabled !== prevProps.disabled) {
+      this._opacityInactive(250);
+    }
+  },
+
   /**
    * Animate the touchable to a new opacity.
    */
