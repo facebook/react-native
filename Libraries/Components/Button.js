@@ -90,12 +90,6 @@ class Button extends React.Component<{
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
-    /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
-     */
-    hasTVPreferredFocus: PropTypes.bool,
   };
 
   render() {
@@ -106,7 +100,6 @@ class Button extends React.Component<{
       title,
       hasTVPreferredFocus,
       disabled,
-      hasTVPreferredFocus,
       testID,
     } = this.props;
     const buttonStyles = [styles.button];
@@ -138,7 +131,6 @@ class Button extends React.Component<{
         hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
-        hasTVPreferredFocus={hasTVPreferredFocus}
         onPress={onPress}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
