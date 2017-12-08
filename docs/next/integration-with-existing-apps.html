@@ -431,14 +431,14 @@ $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 <blockquote>
 <p>If you want to ensure that you are always using a specific React Native version in your native build, replace <code>+</code> with an actual React Native version you've downloaded from <code>npm</code>.</p>
 </blockquote>
-<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block:</p>
+<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block, above other maven repositories:</p>
 <pre><code class="hljs">allprojects {
     repositories {
-        ...
         maven {
             <span class="hljs-regexp">//</span> All <span class="hljs-keyword">of</span> React Native (JS, Android binaries) <span class="hljs-keyword">is</span> installed <span class="hljs-keyword">from</span> <span class="hljs-built_in">npm</span>
             url <span class="hljs-string">"$rootDir/../node_modules/react-native/android"</span>
         }
+        ...
     }
     ...
 }
