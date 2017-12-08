@@ -47,7 +47,7 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
         }
       }
     }
-    
+
     if (product.isTVOS) {
       for (i=0; i<targets.length; i++) {
         if(targets[i].isTVOS) {
