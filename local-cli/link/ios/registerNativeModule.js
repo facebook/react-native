@@ -38,7 +38,7 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
 
   getProducts(dependencyProject).forEach(product => {
     var i;
-    if(!product.isTVOS) {
+    if (!product.isTVOS) {
       for (i=0; i<targets.length; i++) {
         if(!targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
@@ -47,7 +47,8 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
         }
       }
     }
-    if(product.isTVOS) {
+    
+    if (product.isTVOS) {
       for (i=0; i<targets.length; i++) {
         if(targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
