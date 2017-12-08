@@ -68,7 +68,7 @@ function _flush(rootNode: AnimatedValue): void {
  * multiple properties in a synchronized fashion, but can only be driven by one
  * mechanism at a time.  Using a new mechanism (e.g. starting a new animation,
  * or calling `setValue`) will stop any previous ones.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/animatedvalue.html
  */
 class AnimatedValue extends AnimatedWithChildren {
@@ -108,7 +108,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Directly set the value.  This will stop any animations running on the value
    * and update all the bound properties.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#setvalue
    */
   setValue(value: number): void {
@@ -129,7 +129,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Sets an offset that is applied on top of whatever value is set, whether via
    * `setValue`, an animation, or `Animated.event`.  Useful for compensating
    * things like the start of a pan gesture.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#setoffset
    */
   setOffset(offset: number): void {
@@ -142,7 +142,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Merges the offset value into the base value and resets the offset to zero.
    * The final output of the value is unchanged.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#flattenoffset
    */
   flattenOffset(): void {
@@ -156,7 +156,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Sets the offset value to the base value, and resets the base value to zero.
    * The final output of the value is unchanged.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#extractoffset
    */
   extractOffset(): void {
@@ -171,7 +171,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Adds an asynchronous listener to the value so you can observe updates from
    * animations.  This is useful because there is no way to
    * synchronously read the value because it might be driven natively.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#addlistener
    */
   addListener(callback: ValueListenerCallback): string {
@@ -184,9 +184,9 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   /**
-   * Unregister a listener. The `id` param shall match the identifier 
-   * previously returned by `addListener()`. 
-   * 
+   * Unregister a listener. The `id` param shall match the identifier
+   * previously returned by `addListener()`.
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#removelistener
    */
   removeListener(id: string): void {
@@ -198,7 +198,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Remove all registered listeners.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#removealllisteners
    */
   removeAllListeners(): void {
@@ -239,7 +239,7 @@ class AnimatedValue extends AnimatedWithChildren {
    * Stops any running animation or tracking. `callback` is invoked with the
    * final value after stopping the animation, which is useful for updating
    * state to match the animation position with layout.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#stopanimation
    */
   stopAnimation(callback?: ?(value: number) => void): void {
@@ -251,7 +251,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Stops any animation and resets the value to its original.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#resetanimation
    */
   resetAnimation(callback?: ?(value: number) => void): void {
@@ -270,7 +270,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Typically only used internally, but could be used by a custom Animation
    * class.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
