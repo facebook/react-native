@@ -5,17 +5,17 @@ cxx_library(
     srcs = [
         "MicroProfiler.cpp",
     ],
+    header_namespace = "microprofiler",
+    exported_headers = [
+        "MicroProfiler.h",
+    ],
     compiler_flags = [
         "-Wall",
         "-Werror",
         "-std=c++11",
         "-fexceptions",
     ],
-    exported_headers = [
-        "MicroProfiler.h",
-    ],
     force_static = True,
-    header_namespace = "microprofiler",
     visibility = [
         "PUBLIC",
     ],

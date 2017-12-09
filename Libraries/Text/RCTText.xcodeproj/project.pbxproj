@@ -22,6 +22,7 @@
 		2D3B5F3A1D9B106F00451313 /* RCTTextFieldManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1362F0FF1B4D51F400E06D8C /* RCTTextFieldManager.m */; };
 		2D3B5F3B1D9B106F00451313 /* RCTTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6ABD1AF0CD0600FFC3E0 /* RCTTextView.m */; };
 		2D3B5F3C1D9B106F00451313 /* RCTTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6ABF1AF0CD0600FFC3E0 /* RCTTextViewManager.m */; };
+		2DEAB2901F84BA4300FC6B42 /* RCTFontAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A85C82991F742AA20036C019 /* RCTFontAttributes.m */; };
 		58B511CE1A9E6C5C00147676 /* RCTRawTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511C71A9E6C5C00147676 /* RCTRawTextManager.m */; };
 		58B511CF1A9E6C5C00147676 /* RCTShadowRawText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511C91A9E6C5C00147676 /* RCTShadowRawText.m */; };
 		58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CB1A9E6C5C00147676 /* RCTShadowText.m */; };

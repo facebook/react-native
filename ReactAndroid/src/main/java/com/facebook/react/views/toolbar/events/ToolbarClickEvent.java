@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
  * Represents a click on the toolbar.
- * Position is meaningful when the click happenned on a menu
+ * Position is meaningful when the click happened on a menu
  */
 public class ToolbarClickEvent extends Event<ToolbarClickEvent> {
 

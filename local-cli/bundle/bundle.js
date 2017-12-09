@@ -10,7 +10,7 @@
 
 const buildBundle = require('./buildBundle');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const outputBundle = require('metro-bundler/src/shared/output/bundle');
+const outputBundle = require('metro/src/shared/output/bundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.

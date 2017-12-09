@@ -21,7 +21,6 @@
 		139FDEDB1B0651FB00C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		13B6C1A31C34225900D3FAF5 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
 		13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
@@ -59,7 +58,6 @@
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		2D4624FA1DA2EAC300C74D09 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */; };
 		2D4624FB1DA2EAC300C74D09 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */; };
-		2D4624FC1DA2EAC300C74D09 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */; };
 		2D4624FD1DA2EAC300C74D09 /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 143BC5A01B21E45C00462512 /* RNTesterSnapshotTests.m */; };
 		2D4624FE1DA2EAC300C74D09 /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		2D4625351DA2EBBE00C74D09 /* libRCTTest-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323CC1DA2DD8B000FE1B8 /* libRCTTest-tvOS.a */; };
@@ -75,12 +73,9 @@
 		2D4BD8DD1DA2E20D005AC8A8 /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTImageUtilTests.m */; };
 		2D4BD8DE1DA2E20D005AC8A8 /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DB03471B5D2ED500C27245 /* RCTJSONTests.m */; };
 		2D4BD8DF1DA2E20D005AC8A8 /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */; };
-		2D4BD8E01DA2E20D005AC8A8 /* RCTModuleInitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */; };
-		2D4BD8E11DA2E20D005AC8A8 /* RCTModuleInitNotificationRaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */; };
 		2D4BD8E21DA2E20D005AC8A8 /* RCTModuleMethodTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.mm */; };
 		2D4BD8E31DA2E20D005AC8A8 /* RCTShadowViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 138D6A161B53CD440074A87E /* RCTShadowViewTests.m */; };
 		2D4BD8E41DA2E20D005AC8A8 /* RCTUIManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */; };
-		2D4BD8E51DA2E20D005AC8A8 /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
 		2D4BD8E61DA2E20D005AC8A8 /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */; };
 		2D4BD8E71DA2E20D005AC8A8 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14D6D7101B220EB3001FB087 /* libOCMock.a */; };
 		2D66FF8F1ECA406D00F0A767 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D66FF651ECA405900F0A767 /* libART.a */; };
@@ -89,7 +84,6 @@
 		2DD323DC1DA2DDBF000FE1B8 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		2DD323DD1DA2DDBF000FE1B8 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		2DD323DE1DA2DDBF000FE1B8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		2DD323DF1DA2DDBF000FE1B8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2DD323E01DA2DDBF000FE1B8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DD323E11DA2DDBF000FE1B8 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		2DD323E21DA2DDBF000FE1B8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB61A68108700A75B9A /* Info.plist */; };
@@ -100,6 +94,18 @@
 		2DD323E81DA2DE3F000FE1B8 /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D01DA2DD8B000FE1B8 /* libRCTText-tvOS.a */; };
 		2DD323E91DA2DE3F000FE1B8 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
 		2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
+		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
+		2DE7E7FD1FB2A4F3009E225D /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323B51DA2DD8B000FE1B8 /* libRCTAnimation.a */; };
+		2DE7E7FE1FB2A4F3009E225D /* libRCTBlob-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA531EEAC9A700AC40CD /* libRCTBlob-tvOS.a */; };
+		2DE7E7FF1FB2A4F3009E225D /* libRCTImage-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323BB1DA2DD8B000FE1B8 /* libRCTImage-tvOS.a */; };
+		2DE7E8001FB2A4F3009E225D /* libRCTLinking-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323BF1DA2DD8B000FE1B8 /* libRCTLinking-tvOS.a */; };
+		2DE7E8011FB2A4F3009E225D /* libRCTNetwork-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323C31DA2DD8B000FE1B8 /* libRCTNetwork-tvOS.a */; };
+		2DE7E8021FB2A4F3009E225D /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
+		2DE7E8031FB2A4F3009E225D /* libRCTSettings-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323C81DA2DD8B000FE1B8 /* libRCTSettings-tvOS.a */; };
+		2DE7E8041FB2A4F3009E225D /* libRCTTest-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323CC1DA2DD8B000FE1B8 /* libRCTTest-tvOS.a */; };
+		2DE7E8051FB2A4F3009E225D /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D01DA2DD8B000FE1B8 /* libRCTText-tvOS.a */; };
+		2DE7E8061FB2A4F3009E225D /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
+		2DE7E8071FB2A4F3009E225D /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
 		3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
@@ -210,6 +216,20 @@
 			remoteGlobalIDString = 2DD3238F1DA2DD8A000FE1B8;
 			remoteInfo = "RNTester-tvOS";
 		};
+		2D609F0C1F84BD7E00D65B08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9936F3131F5F2E4B0010BF04;
+			remoteInfo = privatedata;
+		};
+		2D609F0E1F84BD7E00D65B08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9936F32F1F5F2E5B0010BF04;
+			remoteInfo = "privatedata-tvOS";
+		};
 		2D66FF641ECA405900F0A767 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2D66FF5F1ECA405900F0A767 /* ART.xcodeproj */;
@@ -237,13 +257,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3D383D621EBD27B9005632C8;
 			remoteInfo = "double-conversion-tvOS";
-		};
-		2DD323A61DA2DD8B000FE1B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2DD3238F1DA2DD8A000FE1B8;
-			remoteInfo = "RNTester-tvOS";
 		};
 		2DD323B41DA2DD8B000FE1B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -454,7 +467,6 @@
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = RNTester/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RNTester/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
 		13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTURLUtilsTests.m; sourceTree = "<group>"; };
@@ -499,6 +511,7 @@
 		2DD323901DA2DD8A000FE1B8 /* RNTester-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNTester-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD323A01DA2DD8B000FE1B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DD323A51DA2DD8B000FE1B8 /* RNTester-tvOSUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RNTester-tvOSUnitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RNTester/Images.xcassets; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUnicodeDecodeTests.m; sourceTree = "<group>"; };
 		3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNTesterBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -602,6 +615,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DE7E7FD1FB2A4F3009E225D /* libRCTAnimation.a in Frameworks */,
+				2DE7E7FE1FB2A4F3009E225D /* libRCTBlob-tvOS.a in Frameworks */,
+				2DE7E7FF1FB2A4F3009E225D /* libRCTImage-tvOS.a in Frameworks */,
+				2DE7E8001FB2A4F3009E225D /* libRCTLinking-tvOS.a in Frameworks */,
+				2DE7E8011FB2A4F3009E225D /* libRCTNetwork-tvOS.a in Frameworks */,
+				2DE7E8021FB2A4F3009E225D /* libRCTPushNotification-tvOS.a in Frameworks */,
+				2DE7E8031FB2A4F3009E225D /* libRCTSettings-tvOS.a in Frameworks */,
+				2DE7E8041FB2A4F3009E225D /* libRCTTest-tvOS.a in Frameworks */,
+				2DE7E8051FB2A4F3009E225D /* libRCTText-tvOS.a in Frameworks */,
+				2DE7E8061FB2A4F3009E225D /* libRCTWebSocket-tvOS.a in Frameworks */,
+				2DE7E8071FB2A4F3009E225D /* libReact.a in Frameworks */,
 				2D4BD8E71DA2E20D005AC8A8 /* libOCMock.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -705,10 +729,10 @@
 		13B07FAE1A68108700A75B9A /* RNTester */ = {
 			isa = PBXGroup;
 			children = (
+				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
@@ -806,6 +830,8 @@
 				2D66FF8C1ECA405900F0A767 /* libthird-party.a */,
 				3D507F441EBC88B700B56834 /* libdouble-conversion.a */,
 				2D66FF8E1ECA405900F0A767 /* libdouble-conversion.a */,
+				2D609F0D1F84BD7E00D65B08 /* libprivatedata.a */,
+				2D609F0F1F84BD7E00D65B08 /* libprivatedata-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -870,6 +896,13 @@
 			path = "RNTester-tvOS";
 			sourceTree = "<group>";
 		};
+		2DE7E7D81FB2A4F3009E225D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		357858F91B28D2C400341EDB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -928,6 +961,7 @@
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				2DD323911DA2DD8B000FE1B8 /* RNTester-tvOS */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				2DE7E7D81FB2A4F3009E225D /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -1060,7 +1094,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				2DD323A71DA2DD8B000FE1B8 /* PBXTargetDependency */,
 			);
 			name = "RNTester-tvOSUnitTests";
 			productName = "RNTester-tvOSUnitTests";
@@ -1273,6 +1306,20 @@
 			fileType = archive.ar;
 			path = libRCTPushNotification.a;
 			remoteRef = 14DC67F01AB71876001358AB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2D609F0D1F84BD7E00D65B08 /* libprivatedata.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprivatedata.a;
+			remoteRef = 2D609F0C1F84BD7E00D65B08 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2D609F0F1F84BD7E00D65B08 /* libprivatedata-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libprivatedata-tvOS.a";
+			remoteRef = 2D609F0E1F84BD7E00D65B08 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		2D66FF651ECA405900F0A767 /* libART.a */ = {
@@ -1500,8 +1547,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3D56F9F11D6F6E9B00F53A06 /* RNTesterBundle.bundle in Resources */,
+				2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
@@ -1525,7 +1572,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD323DF1DA2DDBF000FE1B8 /* Images.xcassets in Resources */,
 				2DD323E11DA2DDBF000FE1B8 /* legacy_image@2x.png in Resources */,
 				2DD323E21DA2DDBF000FE1B8 /* Info.plist in Resources */,
 			);
@@ -1641,7 +1687,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C654F17E1EB34D24000B7A9A /* RNTesterTestModule.m in Sources */,
-				2D4624FC1DA2EAC300C74D09 /* RNTesterIntegrationTests.m in Sources */,
 				2D4624FA1DA2EAC300C74D09 /* RCTLoggingTests.m in Sources */,
 				2D4624FE1DA2EAC300C74D09 /* RCTUIManagerScenarioTests.m in Sources */,
 				2D4624FD1DA2EAC300C74D09 /* RNTesterSnapshotTests.m in Sources */,
@@ -1669,10 +1714,8 @@
 				2D4BD8D41DA2E20D005AC8A8 /* RCTAllocationTests.m in Sources */,
 				2D4BD8DA1DA2E20D005AC8A8 /* RCTGzipTests.m in Sources */,
 				2D4BD8DB1DA2E20D005AC8A8 /* RCTImageLoaderHelpers.m in Sources */,
-				2D4BD8E51DA2E20D005AC8A8 /* RCTComponentPropsTests.m in Sources */,
 				2D4BD8D71DA2E20D005AC8A8 /* RCTConvert_NSURLTests.m in Sources */,
 				2D4BD8E21DA2E20D005AC8A8 /* RCTModuleMethodTests.mm in Sources */,
-				2D4BD8E11DA2E20D005AC8A8 /* RCTModuleInitNotificationRaceTests.m in Sources */,
 				2D4BD8DF1DA2E20D005AC8A8 /* RCTMethodArgumentTests.m in Sources */,
 				2D4BD8D31DA2E20D005AC8A8 /* RCTBundleURLProviderTests.m in Sources */,
 				2D4BD8D21DA2E20D005AC8A8 /* RCTURLUtilsTests.m in Sources */,
@@ -1682,7 +1725,6 @@
 				2D4BD8D81DA2E20D005AC8A8 /* RCTFontTests.m in Sources */,
 				2D4BD8DD1DA2E20D005AC8A8 /* RCTImageUtilTests.m in Sources */,
 				2D4BD8E41DA2E20D005AC8A8 /* RCTUIManagerTests.m in Sources */,
-				2D4BD8E01DA2E20D005AC8A8 /* RCTModuleInitTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1705,11 +1747,6 @@
 			isa = PBXTargetDependency;
 			target = 2DD3238F1DA2DD8A000FE1B8 /* RNTester-tvOS */;
 			targetProxy = 2D4624C31DA2EA6900C74D09 /* PBXContainerItemProxy */;
-		};
-		2DD323A71DA2DD8B000FE1B8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2DD3238F1DA2DD8A000FE1B8 /* RNTester-tvOS */;
-			targetProxy = 2DD323A61DA2DD8B000FE1B8 /* PBXContainerItemProxy */;
 		};
 		3D13F84C1D6F6B5F00E69E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1775,6 +1812,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
@@ -1788,6 +1826,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
@@ -1896,7 +1935,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Debug;
 		};
@@ -1916,7 +1955,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Release;
 		};

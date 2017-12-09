@@ -330,7 +330,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
     if (reactApplicationContext != null) {
-      reactApplicationContext.runUIBackgroundRunnable(
+      reactApplicationContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactApplicationContext) {
             @Override
             public void runGuarded() {
@@ -466,6 +466,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
+  }
+
+  @Nullable
+  public ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {

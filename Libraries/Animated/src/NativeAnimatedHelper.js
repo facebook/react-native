@@ -147,6 +147,9 @@ const API = {
 const STYLES_WHITELIST = {
   opacity: true,
   transform: true,
+  /* ios styles */
+  shadowOpacity: true,
+  shadowRadius: true,
   /* legacy android transform properties */
   scaleX: true,
   scaleY: true,
@@ -170,7 +173,9 @@ function validateTransform(configs: Array<Object>): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
-        `Property '${config.property}' is not supported by native animated module`,
+        `Property '${
+          config.property
+        }' is not supported by native animated module`,
       );
     }
   });

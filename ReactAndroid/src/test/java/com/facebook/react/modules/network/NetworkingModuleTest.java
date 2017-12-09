@@ -200,6 +200,10 @@ public class NetworkingModuleTest {
 
   @Test
   public void testSuccessfulPostRequest() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
           @Override
@@ -211,12 +215,13 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
 
+    mockEvents();
+    
     networkingModule.sendRequest(
       "POST",
       "http://somedomain/bar",

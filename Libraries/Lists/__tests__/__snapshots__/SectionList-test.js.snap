@@ -278,14 +278,14 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollEnd={[Function]}
-  onRefresh={[Function]}
+  onRefresh={[MockFunction]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
   refreshControl={
     <RefreshControlMock
-      onRefresh={[Function]}
+      onRefresh={[MockFunction]}
       progressViewOffset={undefined}
       refreshing={false}
     />
