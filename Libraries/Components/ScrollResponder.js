@@ -455,6 +455,21 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * A helper function to scroll by a specific offset in the ScrollView.
+   * This is useful when you want to change the size of the content view and scroll
+   * position at the same time. Syntax:
+   *
+   * scrollResponderScrollBy(options: {deltaX: number = 0; deltaY: number = 0; animated: boolean = true})
+   */
+  scrollResponderScrollBy: function(options : {deltaX?: number, deltaY?: number, animated?: boolean}) {
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.scrollBy,
+      [options.deltaX || 0, options.deltaY || 0, options.animated !== false],
+    );
+  },
+
+  /**
    * Deprecated, do not use.
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {

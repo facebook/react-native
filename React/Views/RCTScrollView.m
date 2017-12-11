@@ -589,6 +589,17 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   }
 }
 
+- (void)scrollByOffset:(CGPoint)offset animated:(BOOL)animated
+{
+  if (offset.x != 0 || offset.y != 0) {
+    // Ensure at least one scroll event will fire
+    _allowNextScrollNoMatterWhat = YES;
+    CGPoint oldOffset = _scrollView.contentOffset;
+    CGPoint newOffset = (CGPoint){oldOffset.x + offset.x, oldOffset.y + offset.y};
+    [_scrollView setContentOffset:newOffset animated:animated];
+  }
+}
+
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
   [_scrollView zoomToRect:rect animated:animated];
