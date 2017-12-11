@@ -31,15 +31,15 @@
   if (self = [super initWithFrame:frame]) {
     dispatch_once(&onceToken, ^{
       defaultTVParallaxProperties = @{
-                                      @"enabled": @YES,
-                                      @"shiftDistanceX": @2.0f,
-                                      @"shiftDistanceY": @2.0f,
-                                      @"tiltAngle": @0.05f,
-                                      @"magnification": @1.0f,
-                                      @"pressMagnification": @1.0f,
-                                      @"pressDuration": @0.3f,
-                                      @"pressDelay": @0.0f
-                                      };
+        @"enabled": @YES,
+        @"shiftDistanceX": @2.0f,
+        @"shiftDistanceY": @2.0f,
+        @"tiltAngle": @0.05f,
+        @"magnification": @1.0f,
+        @"pressMagnification": @1.0f,
+        @"pressDuration": @0.3f,
+        @"pressDelay": @0.0f
+      };
     });
     self.tvParallaxProperties = defaultTVParallaxProperties;
   }
@@ -98,26 +98,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:pressDelay]];
     
     [UIView animateWithDuration:(pressDuration/2)
-                     animations:^{
-                       self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
-                     }
-                     completion:^(__unused BOOL finished1){
-                       [UIView animateWithDuration:(pressDuration/2)
-                                        animations:^{
-                                          self.transform = CGAffineTransformMakeScale(magnification, magnification);
-                                        }
-                                        completion:^(__unused BOOL finished2) {
-                                          [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                                                              object:@{@"eventType":@"select",@"tag":self.reactTag}];
-                                        }];
-                     }];
+     animations:^{
+       self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
+     }
+     completion:^(__unused BOOL finished1){
+       [UIView animateWithDuration:(pressDuration/2)
+        animations:^{
+          self.transform = CGAffineTransformMakeScale(magnification, magnification);
+        }
+        completion:^(__unused BOOL finished2) {
+          [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification 
+           object:@{@"eventType":@"select",@"tag":self.reactTag}];
+        }];
+     }];
     
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
 															object:@{@"eventType":@"select",@"tag":self.reactTag}];
 	}
-	
-
 }
 
 - (BOOL)isUserInteractionEnabled
