@@ -98,11 +98,10 @@ public class ViewGroupDrawingOrderHelper {
         mDrawingOrderIndices[i] = mViewGroup.indexOfChild(child);
       }
     }
-    Integer orderLength = mDrawingOrderIndices.length();
-    if (index < orderLength) {
+    if (index < mDrawingOrderIndices.length) {
       return mDrawingOrderIndices[index];
     }
-    return mDrawingOrderIndices[orderLength - 1];
+    return mDrawingOrderIndices[mDrawingOrderIndices.length - 1];
   }
 
   /**
