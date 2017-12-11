@@ -67,7 +67,6 @@ class ItemComponent extends React.PureComponent<{
         tvParallaxProperties={{
             pressMagnification: 1.1,
         }}
-
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
