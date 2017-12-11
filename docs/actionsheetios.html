@@ -22,13 +22,14 @@
 <li><code>destructiveButtonIndex</code> (int) - index of destructive button in <code>options</code></li>
 <li><code>title</code> (string) - a title to show above the action sheet</li>
 <li><code>message</code> (string) - a message to show below the title</li>
+<li><code>tintColor</code> (string) - the <a href="/react-native/docs/colors.html">color</a> used for non-destructive button titles</li>
 </ul>
 <p>The 'callback' function takes one parameter, the zero-based index of the selected item.</p>
 <p>Minimal example:</p>
 <pre><code class="hljs">ActionSheetIOS.showActionSheetWithOptions({
   options: [<span class="hljs-string">'Remove'</span>, <span class="hljs-string">'Cancel'</span>],
-  destructiveButtonIndex: <span class="hljs-number">1</span>,
-  cancelButtonIndex: <span class="hljs-number">0</span>,
+  destructiveButtonIndex: <span class="hljs-number">0</span>,
+  cancelButtonIndex: <span class="hljs-number">1</span>,
 },
 <span class="hljs-function">(<span class="hljs-params">buttonIndex</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (buttonIndex === <span class="hljs-number">1</span>) { <span class="hljs-comment">/* destructive action */</span> }
