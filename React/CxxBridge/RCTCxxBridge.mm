@@ -178,7 +178,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
-@synthesize embeddedBundleURL = _embeddedBundleURL;
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
@@ -205,9 +204,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
-    if ([bridge.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
-      _embeddedBundleURL = [bridge.delegate embeddedBundleURLForBridge:bridge];
-    }
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
