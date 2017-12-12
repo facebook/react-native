@@ -11,14 +11,5 @@
 
 
 test('Blob construct', () => {
-  let blob;
-
-  try {
-    new Blob();
-    blob = true;
-  } catch (e) {
-    blob = false;
-  }
-
-  expect(blob).toBe(true);
+  expect(() => new Blob()).not.toThrow();
 });
