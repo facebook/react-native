@@ -114,8 +114,6 @@
 		13B07FEF1A69327A00A75B9A /* RCTAlertManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FE81A69327A00A75B9A /* RCTAlertManager.m */; };
 		13B07FF01A69327A00A75B9A /* RCTExceptionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */; };
 		13B07FF21A69327A00A75B9A /* RCTTiming.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FEE1A69327A00A75B9A /* RCTTiming.m */; };
-		13B080051A6947C200A75B9A /* RCTScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FF71A6947C200A75B9A /* RCTScrollView.m */; };
-		13B080061A6947C200A75B9A /* RCTScrollViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FF91A6947C200A75B9A /* RCTScrollViewManager.m */; };
 		13B0801A1A69489C00A75B9A /* RCTNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B0800D1A69489C00A75B9A /* RCTNavigator.m */; };
 		13B0801B1A69489C00A75B9A /* RCTNavigatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B0800F1A69489C00A75B9A /* RCTNavigatorManager.m */; };
 		13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080111A69489C00A75B9A /* RCTNavItem.m */; };
@@ -320,8 +318,6 @@
 		2D3B5EDA1D9B099100451313 /* RCTNavItemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080131A69489C00A75B9A /* RCTNavItemManager.m */; };
 		2D3B5EDD1D9B09A300451313 /* RCTProgressViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */; };
 		2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE8081C99CB9D00DD7AAD /* RCTRootShadowView.m */; };
-		2D3B5EE11D9B09B000451313 /* RCTScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FF71A6947C200A75B9A /* RCTScrollView.m */; };
-		2D3B5EE21D9B09B400451313 /* RCTScrollViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FF91A6947C200A75B9A /* RCTScrollViewManager.m */; };
 		2D3B5EE31D9B09B700451313 /* RCTSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */; };
 		2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */; };
 		2D3B5EE51D9B09BE00451313 /* RCTShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0674C1A70F44B002CDEE1 /* RCTShadowView.m */; };
@@ -447,9 +443,6 @@
 		3D302F861DF828F800D6DDAE /* RCTRefreshControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */; };
 		3D302F871DF828F800D6DDAE /* RCTRefreshControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */; };
 		3D302F881DF828F800D6DDAE /* RCTRootShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BCE8071C99CB9D00DD7AAD /* RCTRootShadowView.h */; };
-		3D302F891DF828F800D6DDAE /* RCTScrollableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */; };
-		3D302F8A1DF828F800D6DDAE /* RCTScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF61A6947C200A75B9A /* RCTScrollView.h */; };
-		3D302F8B1DF828F800D6DDAE /* RCTScrollViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */; };
 		3D302F8C1DF828F800D6DDAE /* RCTSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */; };
 		3D302F8D1DF828F800D6DDAE /* RCTSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */; };
 		3D302F8E1DF828F800D6DDAE /* RCTShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */; };
@@ -645,9 +638,6 @@
 		3D80D9811DF6FA890028D040 /* RCTRefreshControl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */; };
 		3D80D9821DF6FA890028D040 /* RCTRefreshControlManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */; };
 		3D80D9831DF6FA890028D040 /* RCTRootShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13BCE8071C99CB9D00DD7AAD /* RCTRootShadowView.h */; };
-		3D80D9841DF6FA890028D040 /* RCTScrollableProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */; };
-		3D80D9851DF6FA890028D040 /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF61A6947C200A75B9A /* RCTScrollView.h */; };
-		3D80D9861DF6FA890028D040 /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */; };
 		3D80D9871DF6FA890028D040 /* RCTSegmentedControl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */; };
 		3D80D9881DF6FA890028D040 /* RCTSegmentedControlManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */; };
 		3D80D9891DF6FA890028D040 /* RCTShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */; };
@@ -758,9 +748,6 @@
 		3D80DA7B1DF820620028D040 /* RCTRefreshControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */; };
 		3D80DA7C1DF820620028D040 /* RCTRefreshControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */; };
 		3D80DA7D1DF820620028D040 /* RCTRootShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13BCE8071C99CB9D00DD7AAD /* RCTRootShadowView.h */; };
-		3D80DA7E1DF820620028D040 /* RCTScrollableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */; };
-		3D80DA7F1DF820620028D040 /* RCTScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF61A6947C200A75B9A /* RCTScrollView.h */; };
-		3D80DA801DF820620028D040 /* RCTScrollViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */; };
 		3D80DA811DF820620028D040 /* RCTSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */; };
 		3D80DA821DF820620028D040 /* RCTSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */; };
 		3D80DA831DF820620028D040 /* RCTShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */; };
@@ -895,11 +882,6 @@
 		3DA9821C1E5B0F7F004F2374 /* RCTRefreshControl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */; };
 		3DA9821D1E5B0F7F004F2374 /* RCTRefreshControlManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */; };
 		3DA9821E1E5B0F7F004F2374 /* RCTRootShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13BCE8071C99CB9D00DD7AAD /* RCTRootShadowView.h */; };
-		3DA9821F1E5B0F7F004F2374 /* RCTScrollableProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */; };
-		3DA982201E5B0F7F004F2374 /* RCTScrollContentShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
-		3DA982211E5B0F7F004F2374 /* RCTScrollContentViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */; };
-		3DA982221E5B0F7F004F2374 /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF61A6947C200A75B9A /* RCTScrollView.h */; };
-		3DA982231E5B0F7F004F2374 /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */; };
 		3DA982241E5B0F7F004F2374 /* RCTSegmentedControl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */; };
 		3DA982251E5B0F7F004F2374 /* RCTSegmentedControlManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */; };
 		3DA982261E5B0F7F004F2374 /* RCTShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */; };
@@ -1101,14 +1083,40 @@
 		59EB6DBE1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */ = {isa = PBXBuildFile; fileRef = 59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */; };
 		59EB6DBF1EBD6FFC0072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
 		59EB6DC01EBD70130072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */; };
-		59FBEFB01E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
-		59FBEFB11E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
-		59FBEFB21E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */; };
-		59FBEFB31E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */; };
-		59FBEFB41E46D91C0095D885 /* RCTScrollContentViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */; };
-		59FBEFB51E46D91C0095D885 /* RCTScrollContentViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */; };
-		59FBEFB61E46D91C0095D885 /* RCTScrollContentViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FBEFAF1E46D91C0095D885 /* RCTScrollContentViewManager.m */; };
-		59FBEFB71E46D91C0095D885 /* RCTScrollContentViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FBEFAF1E46D91C0095D885 /* RCTScrollContentViewManager.m */; };
+		59EDBCA71FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */; };
+		59EDBCA81FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */; };
+		59EDBCA91FDF4E0C003573DE /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */; };
+		59EDBCAA1FDF4E0C003573DE /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */; };
+		59EDBCAB1FDF4E0C003573DE /* RCTScrollContentShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBC9E1FDF4E0C003573DE /* RCTScrollContentShadowView.m */; };
+		59EDBCAC1FDF4E0C003573DE /* RCTScrollContentShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBC9E1FDF4E0C003573DE /* RCTScrollContentShadowView.m */; };
+		59EDBCAD1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */; };
+		59EDBCAE1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */; };
+		59EDBCAF1FDF4E0C003573DE /* RCTScrollContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA01FDF4E0C003573DE /* RCTScrollContentView.m */; };
+		59EDBCB01FDF4E0C003573DE /* RCTScrollContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA01FDF4E0C003573DE /* RCTScrollContentView.m */; };
+		59EDBCB11FDF4E0C003573DE /* RCTScrollContentViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */; };
+		59EDBCB21FDF4E0C003573DE /* RCTScrollContentViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */; };
+		59EDBCB31FDF4E0C003573DE /* RCTScrollContentViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA21FDF4E0C003573DE /* RCTScrollContentViewManager.m */; };
+		59EDBCB41FDF4E0C003573DE /* RCTScrollContentViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA21FDF4E0C003573DE /* RCTScrollContentViewManager.m */; };
+		59EDBCB51FDF4E0C003573DE /* RCTScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
+		59EDBCB61FDF4E0C003573DE /* RCTScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
+		59EDBCB71FDF4E0C003573DE /* RCTScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */; };
+		59EDBCB81FDF4E0C003573DE /* RCTScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */; };
+		59EDBCB91FDF4E0C003573DE /* RCTScrollViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
+		59EDBCBA1FDF4E0C003573DE /* RCTScrollViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
+		59EDBCBB1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */; };
+		59EDBCBC1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */; };
+		59EDBCBD1FDF4E43003573DE /* RCTScrollableProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */; };
+		59EDBCBE1FDF4E43003573DE /* RCTScrollContentShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */; };
+		59EDBCBF1FDF4E43003573DE /* RCTScrollContentView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */; };
+		59EDBCC01FDF4E43003573DE /* RCTScrollContentViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */; };
+		59EDBCC11FDF4E43003573DE /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
+		59EDBCC21FDF4E43003573DE /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
+		59EDBCC31FDF4E55003573DE /* RCTScrollableProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */; };
+		59EDBCC41FDF4E55003573DE /* RCTScrollContentShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */; };
+		59EDBCC51FDF4E55003573DE /* RCTScrollContentView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */; };
+		59EDBCC61FDF4E55003573DE /* RCTScrollContentViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */; };
+		59EDBCC71FDF4E55003573DE /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
+		59EDBCC81FDF4E55003573DE /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
 		657734841EE834C900A0E9EA /* RCTInspectorDevServerHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */; };
 		657734851EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */; };
 		657734861EE834D900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */; };
@@ -1327,6 +1335,12 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				59EDBCC31FDF4E55003573DE /* RCTScrollableProtocol.h in Copy Headers */,
+				59EDBCC41FDF4E55003573DE /* RCTScrollContentShadowView.h in Copy Headers */,
+				59EDBCC51FDF4E55003573DE /* RCTScrollContentView.h in Copy Headers */,
+				59EDBCC61FDF4E55003573DE /* RCTScrollContentViewManager.h in Copy Headers */,
+				59EDBCC71FDF4E55003573DE /* RCTScrollView.h in Copy Headers */,
+				59EDBCC81FDF4E55003573DE /* RCTScrollViewManager.h in Copy Headers */,
 				594F0A411FD233BD007FBE96 /* RCTSurface.h in Copy Headers */,
 				594F0A421FD233BD007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */,
 				594F0A431FD233BD007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */,
@@ -1399,11 +1413,6 @@
 				3DA9821C1E5B0F7F004F2374 /* RCTRefreshControl.h in Copy Headers */,
 				3DA9821D1E5B0F7F004F2374 /* RCTRefreshControlManager.h in Copy Headers */,
 				3DA9821E1E5B0F7F004F2374 /* RCTRootShadowView.h in Copy Headers */,
-				3DA9821F1E5B0F7F004F2374 /* RCTScrollableProtocol.h in Copy Headers */,
-				3DA982201E5B0F7F004F2374 /* RCTScrollContentShadowView.h in Copy Headers */,
-				3DA982211E5B0F7F004F2374 /* RCTScrollContentViewManager.h in Copy Headers */,
-				3DA982221E5B0F7F004F2374 /* RCTScrollView.h in Copy Headers */,
-				3DA982231E5B0F7F004F2374 /* RCTScrollViewManager.h in Copy Headers */,
 				3DA982241E5B0F7F004F2374 /* RCTSegmentedControl.h in Copy Headers */,
 				3DA982251E5B0F7F004F2374 /* RCTSegmentedControlManager.h in Copy Headers */,
 				3DA982261E5B0F7F004F2374 /* RCTShadowView.h in Copy Headers */,
@@ -1557,6 +1566,12 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				59EDBCBD1FDF4E43003573DE /* RCTScrollableProtocol.h in Copy Headers */,
+				59EDBCBE1FDF4E43003573DE /* RCTScrollContentShadowView.h in Copy Headers */,
+				59EDBCBF1FDF4E43003573DE /* RCTScrollContentView.h in Copy Headers */,
+				59EDBCC01FDF4E43003573DE /* RCTScrollContentViewManager.h in Copy Headers */,
+				59EDBCC11FDF4E43003573DE /* RCTScrollView.h in Copy Headers */,
+				59EDBCC21FDF4E43003573DE /* RCTScrollViewManager.h in Copy Headers */,
 				594F0A381FD233A2007FBE96 /* RCTSurface.h in Copy Headers */,
 				594F0A391FD233A2007FBE96 /* RCTSurfaceDelegate.h in Copy Headers */,
 				594F0A3A1FD233A2007FBE96 /* RCTSurfaceRootShadowView.h in Copy Headers */,
@@ -1664,9 +1679,6 @@
 				3D80D9811DF6FA890028D040 /* RCTRefreshControl.h in Copy Headers */,
 				3D80D9821DF6FA890028D040 /* RCTRefreshControlManager.h in Copy Headers */,
 				3D80D9831DF6FA890028D040 /* RCTRootShadowView.h in Copy Headers */,
-				3D80D9841DF6FA890028D040 /* RCTScrollableProtocol.h in Copy Headers */,
-				3D80D9851DF6FA890028D040 /* RCTScrollView.h in Copy Headers */,
-				3D80D9861DF6FA890028D040 /* RCTScrollViewManager.h in Copy Headers */,
 				3D80D9871DF6FA890028D040 /* RCTSegmentedControl.h in Copy Headers */,
 				3D80D9881DF6FA890028D040 /* RCTSegmentedControlManager.h in Copy Headers */,
 				3D80D9891DF6FA890028D040 /* RCTShadowView.h in Copy Headers */,
@@ -1942,10 +1954,6 @@
 		13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTExceptionsManager.m; sourceTree = "<group>"; };
 		13B07FED1A69327A00A75B9A /* RCTTiming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTiming.h; sourceTree = "<group>"; };
 		13B07FEE1A69327A00A75B9A /* RCTTiming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTiming.m; sourceTree = "<group>"; };
-		13B07FF61A6947C200A75B9A /* RCTScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollView.h; sourceTree = "<group>"; };
-		13B07FF71A6947C200A75B9A /* RCTScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollView.m; sourceTree = "<group>"; };
-		13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollViewManager.h; sourceTree = "<group>"; };
-		13B07FF91A6947C200A75B9A /* RCTScrollViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollViewManager.m; sourceTree = "<group>"; };
 		13B0800C1A69489C00A75B9A /* RCTNavigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNavigator.h; sourceTree = "<group>"; };
 		13B0800D1A69489C00A75B9A /* RCTNavigator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNavigator.m; sourceTree = "<group>"; };
 		13B0800E1A69489C00A75B9A /* RCTNavigatorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNavigatorManager.h; sourceTree = "<group>"; };
@@ -1967,7 +1975,6 @@
 		13C156031AB1A2840079392D /* RCTWebViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebViewManager.h; sourceTree = "<group>"; };
 		13C156041AB1A2840079392D /* RCTWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebViewManager.m; sourceTree = "<group>"; };
 		13C325261AA63B6A0048765F /* RCTAutoInsetsProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAutoInsetsProtocol.h; sourceTree = "<group>"; };
-		13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollableProtocol.h; sourceTree = "<group>"; };
 		13C325281AA63B6A0048765F /* RCTComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTComponent.h; sourceTree = "<group>"; };
 		13CC8A801B17642100940AE7 /* RCTBorderDrawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderDrawing.h; sourceTree = "<group>"; };
 		13CC8A811B17642100940AE7 /* RCTBorderDrawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBorderDrawing.m; sourceTree = "<group>"; };
@@ -2178,10 +2185,17 @@
 		59D031EC1F8353D3008361F0 /* RCTSafeAreaViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSafeAreaViewManager.m; sourceTree = "<group>"; };
 		59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManagerObserverCoordinator.h; sourceTree = "<group>"; };
 		59EB6DBA1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTUIManagerObserverCoordinator.mm; sourceTree = "<group>"; };
-		59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentShadowView.h; sourceTree = "<group>"; };
-		59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentShadowView.m; sourceTree = "<group>"; };
-		59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentViewManager.h; sourceTree = "<group>"; };
-		59FBEFAF1E46D91C0095D885 /* RCTScrollContentViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentViewManager.m; sourceTree = "<group>"; };
+		59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollableProtocol.h; sourceTree = "<group>"; };
+		59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentShadowView.h; sourceTree = "<group>"; };
+		59EDBC9E1FDF4E0C003573DE /* RCTScrollContentShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentShadowView.m; sourceTree = "<group>"; };
+		59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentView.h; sourceTree = "<group>"; };
+		59EDBCA01FDF4E0C003573DE /* RCTScrollContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentView.m; sourceTree = "<group>"; };
+		59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentViewManager.h; sourceTree = "<group>"; };
+		59EDBCA21FDF4E0C003573DE /* RCTScrollContentViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentViewManager.m; sourceTree = "<group>"; };
+		59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollView.h; sourceTree = "<group>"; };
+		59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollView.m; sourceTree = "<group>"; };
+		59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollViewManager.h; sourceTree = "<group>"; };
+		59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollViewManager.m; sourceTree = "<group>"; };
 		657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTInspectorDevServerHelper.h; sourceTree = "<group>"; };
 		657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTInspectorDevServerHelper.mm; sourceTree = "<group>"; };
 		6577348A1EE8354A00A0E9EA /* RCTInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTInspector.h; path = Inspector/RCTInspector.h; sourceTree = "<group>"; };
@@ -2538,15 +2552,6 @@
 				191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */,
 				13BCE8071C99CB9D00DD7AAD /* RCTRootShadowView.h */,
 				13BCE8081C99CB9D00DD7AAD /* RCTRootShadowView.m */,
-				13C325271AA63B6A0048765F /* RCTScrollableProtocol.h */,
-				59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */,
-				59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */,
-				59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */,
-				59FBEFAF1E46D91C0095D885 /* RCTScrollContentViewManager.m */,
-				13B07FF61A6947C200A75B9A /* RCTScrollView.h */,
-				13B07FF71A6947C200A75B9A /* RCTScrollView.m */,
-				13B07FF81A6947C200A75B9A /* RCTScrollViewManager.h */,
-				13B07FF91A6947C200A75B9A /* RCTScrollViewManager.m */,
 				131B6AF01AF1093D00FFC3E0 /* RCTSegmentedControl.h */,
 				131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */,
 				131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */,
@@ -2588,6 +2593,7 @@
 				13B080231A694A8400A75B9A /* RCTWrapperViewController.h */,
 				13B080241A694A8400A75B9A /* RCTWrapperViewController.m */,
 				59D031E41F8353D3008361F0 /* SafeAreaView */,
+				59EDBC9B1FDF4E0C003573DE /* ScrollView */,
 				83F15A171B7CC46900F10295 /* UIView+Private.h */,
 				13E067531A70F44B002CDEE1 /* UIView+React.h */,
 				13E067541A70F44B002CDEE1 /* UIView+React.m */,
@@ -2782,6 +2788,24 @@
 				59D031EC1F8353D3008361F0 /* RCTSafeAreaViewManager.m */,
 			);
 			path = SafeAreaView;
+			sourceTree = "<group>";
+		};
+		59EDBC9B1FDF4E0C003573DE /* ScrollView */ = {
+			isa = PBXGroup;
+			children = (
+				59EDBC9C1FDF4E0C003573DE /* RCTScrollableProtocol.h */,
+				59EDBC9D1FDF4E0C003573DE /* RCTScrollContentShadowView.h */,
+				59EDBC9E1FDF4E0C003573DE /* RCTScrollContentShadowView.m */,
+				59EDBC9F1FDF4E0C003573DE /* RCTScrollContentView.h */,
+				59EDBCA01FDF4E0C003573DE /* RCTScrollContentView.m */,
+				59EDBCA11FDF4E0C003573DE /* RCTScrollContentViewManager.h */,
+				59EDBCA21FDF4E0C003573DE /* RCTScrollContentViewManager.m */,
+				59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */,
+				59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */,
+				59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */,
+				59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */,
+			);
+			path = ScrollView;
 			sourceTree = "<group>";
 		};
 		657734881EE8352500A0E9EA /* Inspector */ = {
@@ -3041,11 +3065,9 @@
 				13134C951E296B2A00B9F3CB /* RCTObjcExecutor.h in Headers */,
 				590D7BFE1EBD458B00D8A370 /* RCTShadowView+Layout.h in Headers */,
 				13134C9D1E296B2A00B9F3CB /* RCTCxxModule.h in Headers */,
-				59FBEFB11E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */,
 				66CD94B61F1045E700CB3C7C /* RCTMaskedViewManager.h in Headers */,
 				130443A31E3FEAAE00D93A67 /* RCTFollyConvert.h in Headers */,
 				3D7BFD1E1EA8E351008DFB7A /* RCTPackagerConnection.h in Headers */,
-				59FBEFB51E46D91C0095D885 /* RCTScrollContentViewManager.h in Headers */,
 				3D302F241DF828F800D6DDAE /* RCTImageLoader.h in Headers */,
 				3D302F251DF828F800D6DDAE /* RCTImageStoreManager.h in Headers */,
 				C60128AC1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */,
@@ -3072,6 +3094,7 @@
 				3D302F351DF828F800D6DDAE /* RCTErrorCustomizer.h in Headers */,
 				3D302F361DF828F800D6DDAE /* RCTErrorInfo.h in Headers */,
 				3D302F371DF828F800D6DDAE /* RCTEventDispatcher.h in Headers */,
+				59EDBCAA1FDF4E0C003573DE /* RCTScrollContentShadowView.h in Headers */,
 				594F0A371FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h in Headers */,
 				3D302F381DF828F800D6DDAE /* RCTFrameUpdate.h in Headers */,
 				3D302F391DF828F800D6DDAE /* RCTImageSource.h in Headers */,
@@ -3082,6 +3105,7 @@
 				3D302F3C1DF828F800D6DDAE /* RCTJavaScriptLoader.h in Headers */,
 				3D302F3D1DF828F800D6DDAE /* RCTJSStackFrame.h in Headers */,
 				599FAA491FB274980058CCF6 /* RCTSurfaceView+Internal.h in Headers */,
+				59EDBCB61FDF4E0C003573DE /* RCTScrollView.h in Headers */,
 				3D302F3E1DF828F800D6DDAE /* RCTKeyCommands.h in Headers */,
 				135A9C031E7B0F6100587AEB /* RCTJSCErrorHandling.h in Headers */,
 				599FAA411FB274980058CCF6 /* RCTSurfaceRootShadowViewDelegate.h in Headers */,
@@ -3099,6 +3123,7 @@
 				3D302F481DF828F800D6DDAE /* RCTRootView.h in Headers */,
 				3D302F491DF828F800D6DDAE /* RCTRootViewDelegate.h in Headers */,
 				3D302F4A1DF828F800D6DDAE /* RCTRootViewInternal.h in Headers */,
+				59EDBCB21FDF4E0C003573DE /* RCTScrollContentViewManager.h in Headers */,
 				3D302F4B1DF828F800D6DDAE /* RCTTouchEvent.h in Headers */,
 				59D031F21F8353D3008361F0 /* RCTSafeAreaView.h in Headers */,
 				3D302F4C1DF828F800D6DDAE /* RCTTouchHandler.h in Headers */,
@@ -3115,6 +3140,7 @@
 				59D031EE1F8353D3008361F0 /* RCTSafeAreaShadowView.h in Headers */,
 				3D302F591DF828F800D6DDAE /* RCTClipboard.h in Headers */,
 				3D302F5A1DF828F800D6DDAE /* RCTDevLoadingView.h in Headers */,
+				59EDBCBA1FDF4E0C003573DE /* RCTScrollViewManager.h in Headers */,
 				3D0B842A1EC0B49400B2BD8E /* RCTTVRemoteHandler.h in Headers */,
 				3D302F5B1DF828F800D6DDAE /* RCTDevMenu.h in Headers */,
 				657734921EE8356100A0E9EA /* RCTInspector.h in Headers */,
@@ -3138,6 +3164,7 @@
 				3D302F6A1DF828F800D6DDAE /* RCTActivityIndicatorView.h in Headers */,
 				3D302F6B1DF828F800D6DDAE /* RCTActivityIndicatorViewManager.h in Headers */,
 				3D7BFD301EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */,
+				59EDBCA81FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
 				3D302F6C1DF828F800D6DDAE /* RCTAnimationType.h in Headers */,
 				598FD1951F817335006C54CB /* RCTModalManager.h in Headers */,
 				657734871EE834E000A0E9EA /* RCTInspectorDevServerHelper.h in Headers */,
@@ -3170,10 +3197,7 @@
 				3D302F871DF828F800D6DDAE /* RCTRefreshControlManager.h in Headers */,
 				A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */,
 				3D302F881DF828F800D6DDAE /* RCTRootShadowView.h in Headers */,
-				3D302F891DF828F800D6DDAE /* RCTScrollableProtocol.h in Headers */,
-				3D302F8A1DF828F800D6DDAE /* RCTScrollView.h in Headers */,
 				CF2731C21E7B8DEF0044CA4F /* RCTDeviceInfo.h in Headers */,
-				3D302F8B1DF828F800D6DDAE /* RCTScrollViewManager.h in Headers */,
 				599FAA371FB274980058CCF6 /* RCTSurface.h in Headers */,
 				3D302F8C1DF828F800D6DDAE /* RCTSegmentedControl.h in Headers */,
 				66CD94B21F1045E700CB3C7C /* RCTMaskedView.h in Headers */,
@@ -3186,6 +3210,7 @@
 				3D302F931DF828F800D6DDAE /* RCTTabBar.h in Headers */,
 				3D302F941DF828F800D6DDAE /* RCTTabBarItem.h in Headers */,
 				3D302F951DF828F800D6DDAE /* RCTTabBarItemManager.h in Headers */,
+				59EDBCAE1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */,
 				3D302F961DF828F800D6DDAE /* RCTTabBarManager.h in Headers */,
 				3D302F971DF828F800D6DDAE /* RCTTextDecorationLineType.h in Headers */,
 				3D302F981DF828F800D6DDAE /* RCTView.h in Headers */,
@@ -3345,7 +3370,6 @@
 				199B8A6F1F44DB16005DEF67 /* RCTVersion.h in Headers */,
 				3D80DA1A1DF820620028D040 /* RCTImageStoreManager.h in Headers */,
 				130443A11E3FEAA900D93A67 /* RCTFollyConvert.h in Headers */,
-				59FBEFB41E46D91C0095D885 /* RCTScrollContentViewManager.h in Headers */,
 				3D80DA1B1DF820620028D040 /* RCTResizeMode.h in Headers */,
 				3D80DA1C1DF820620028D040 /* RCTLinkingManager.h in Headers */,
 				3D80DA1D1DF820620028D040 /* RCTNetworking.h in Headers */,
@@ -3375,6 +3399,7 @@
 				3D7BFD2D1EA8E3FA008DFB7A /* RCTReconnectingWebSocket.h in Headers */,
 				3D80DA2C1DF820620028D040 /* RCTEventDispatcher.h in Headers */,
 				3D80DA2D1DF820620028D040 /* RCTFrameUpdate.h in Headers */,
+				59EDBCA91FDF4E0C003573DE /* RCTScrollContentShadowView.h in Headers */,
 				3D80DA2E1DF820620028D040 /* RCTImageSource.h in Headers */,
 				3D80DA2F1DF820620028D040 /* RCTInvalidating.h in Headers */,
 				598FD1971F817336006C54CB /* RCTModalManager.h in Headers */,
@@ -3396,12 +3421,15 @@
 				53D123B21FBF220F001B8A10 /* Yoga.h in Headers */,
 				3D80DA391DF820620028D040 /* RCTNullability.h in Headers */,
 				3D80DA3A1DF820620028D040 /* RCTParserUtils.h in Headers */,
+				59EDBCB11FDF4E0C003573DE /* RCTScrollContentViewManager.h in Headers */,
 				599FAA421FB274980058CCF6 /* RCTSurfaceRootView.h in Headers */,
 				59D031F91F8353D3008361F0 /* RCTSafeAreaViewManager.h in Headers */,
 				3D80DA3B1DF820620028D040 /* RCTPerformanceLogger.h in Headers */,
 				59D031F51F8353D3008361F0 /* RCTSafeAreaViewLocalData.h in Headers */,
 				3D80DA3C1DF820620028D040 /* RCTPlatform.h in Headers */,
 				3D80DA3D1DF820620028D040 /* RCTRootView.h in Headers */,
+				59EDBCB91FDF4E0C003573DE /* RCTScrollViewManager.h in Headers */,
+				59EDBCB51FDF4E0C003573DE /* RCTScrollView.h in Headers */,
 				135A9BFB1E7B0EAE00587AEB /* RCTJSCErrorHandling.h in Headers */,
 				3D80DA3E1DF820620028D040 /* RCTRootViewDelegate.h in Headers */,
 				3D80DA3F1DF820620028D040 /* RCTRootViewInternal.h in Headers */,
@@ -3447,6 +3475,8 @@
 				3D0E378A1F1CC40000DCAC9F /* RCTWebSocketModule.h in Headers */,
 				3D80DA621DF820620028D040 /* RCTAutoInsetsProtocol.h in Headers */,
 				C60128AB1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */,
+				59EDBCAD1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */,
+				59EDBCA71FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
 				3D80DA631DF820620028D040 /* RCTBorderDrawing.h in Headers */,
 				3D80DA641DF820620028D040 /* RCTBorderStyle.h in Headers */,
 				3D80DA651DF820620028D040 /* RCTComponent.h in Headers */,
@@ -3478,11 +3508,8 @@
 				59D031ED1F8353D3008361F0 /* RCTSafeAreaShadowView.h in Headers */,
 				3D80DA7D1DF820620028D040 /* RCTRootShadowView.h in Headers */,
 				134D63C31F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h in Headers */,
-				3D80DA7E1DF820620028D040 /* RCTScrollableProtocol.h in Headers */,
 				657734901EE8354A00A0E9EA /* RCTInspectorPackagerConnection.h in Headers */,
 				3D7BFD1D1EA8E351008DFB7A /* RCTPackagerConnection.h in Headers */,
-				3D80DA7F1DF820620028D040 /* RCTScrollView.h in Headers */,
-				3D80DA801DF820620028D040 /* RCTScrollViewManager.h in Headers */,
 				3D80DA811DF820620028D040 /* RCTSegmentedControl.h in Headers */,
 				599FAA3C1FB274980058CCF6 /* RCTSurfaceRootShadowView.h in Headers */,
 				3D80DA821DF820620028D040 /* RCTSegmentedControlManager.h in Headers */,
@@ -3508,7 +3535,6 @@
 				3D80DA911DF820620028D040 /* RCTWebViewManager.h in Headers */,
 				3D80DA921DF820620028D040 /* RCTWrapperViewController.h in Headers */,
 				3D80DA931DF820620028D040 /* UIView+Private.h in Headers */,
-				59FBEFB01E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */,
 				3D80DA941DF820620028D040 /* UIView+React.h in Headers */,
 				599FAA481FB274980058CCF6 /* RCTSurfaceView+Internal.h in Headers */,
 			);
@@ -4055,8 +4081,8 @@
 				2D3B5EA31D9B08BE00451313 /* RCTParserUtils.m in Sources */,
 				59500D461F71C63F00B122B7 /* RCTUIManagerUtils.m in Sources */,
 				599FAA4D1FB274980058CCF6 /* RCTSurfaceView.mm in Sources */,
+				59EDBCB41FDF4E0C003573DE /* RCTScrollContentViewManager.m in Sources */,
 				2D3B5EA01D9B08B200451313 /* RCTLog.mm in Sources */,
-				2D3B5EE21D9B09B400451313 /* RCTScrollViewManager.m in Sources */,
 				5960C1BC1F0804A00066FD5B /* RCTLayoutAnimationGroup.m in Sources */,
 				2D3B5ECF1D9B096F00451313 /* RCTFont.mm in Sources */,
 				2D3B5ED51D9B098000451313 /* RCTModalHostViewController.m in Sources */,
@@ -4066,6 +4092,7 @@
 				2D3B5E971D9B089000451313 /* RCTBridge.m in Sources */,
 				2D3B5E9B1D9B08A000451313 /* RCTFrameUpdate.m in Sources */,
 				2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */,
+				59EDBCB81FDF4E0C003573DE /* RCTScrollView.m in Sources */,
 				13134C9F1E296B2A00B9F3CB /* RCTCxxModule.mm in Sources */,
 				2D3B5EE31D9B09B700451313 /* RCTSegmentedControl.m in Sources */,
 				130443A41E3FEAC600D93A67 /* RCTFollyConvert.mm in Sources */,
@@ -4086,7 +4113,6 @@
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
 				594F0A351FD23228007FBE96 /* RCTSurfaceHostingView.mm in Sources */,
-				2D3B5EE11D9B09B000451313 /* RCTScrollView.m in Sources */,
 				130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */,
 				2D3B5ED81D9B098A00451313 /* RCTNavigatorManager.m in Sources */,
 				2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */,
@@ -4117,11 +4143,11 @@
 				2D3B5EA41D9B08C200451313 /* RCTPerformanceLogger.m in Sources */,
 				2D3B5E9E1D9B08AD00451313 /* RCTJSStackFrame.m in Sources */,
 				13134CA31E296B2A00B9F3CB /* RCTCxxUtils.mm in Sources */,
-				59FBEFB71E46D91C0095D885 /* RCTScrollContentViewManager.m in Sources */,
 				59D031F41F8353D3008361F0 /* RCTSafeAreaView.m in Sources */,
 				2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */,
 				2D3B5EB81D9B091B00451313 /* RCTSourceCode.m in Sources */,
 				2D3B5EB51D9B091100451313 /* RCTDevMenu.m in Sources */,
+				59EDBCAC1FDF4E0C003573DE /* RCTScrollContentShadowView.m in Sources */,
 				2D3B5EBD1D9B092A00451313 /* RCTTiming.m in Sources */,
 				135A9C041E7B0F6400587AEB /* RCTJSCErrorHandling.mm in Sources */,
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
@@ -4135,6 +4161,8 @@
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
 				2D1D83EF1F74E76C00615550 /* RCTModalManager.m in Sources */,
+				59EDBCBC1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
+				59EDBCB01FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
 				2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */,
 				2D3B5EEC1D9B09D400451313 /* RCTTabBarItemManager.m in Sources */,
 				2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */,
@@ -4144,7 +4172,6 @@
 				2D3B5EC31D9B094800451313 /* RCTProfileTrampoline-arm.S in Sources */,
 				3D0B842B1EC0B49400B2BD8E /* RCTTVRemoteHandler.m in Sources */,
 				657734861EE834D900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */,
-				59FBEFB31E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */,
 				2D3B5ED91D9B098E00451313 /* RCTNavItem.m in Sources */,
 				66CD94B41F1045E700CB3C7C /* RCTMaskedView.m in Sources */,
 				2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */,
@@ -4309,7 +4336,6 @@
 				13134C9A1E296B2A00B9F3CB /* RCTCxxMethod.mm in Sources */,
 				59500D451F71C63F00B122B7 /* RCTUIManagerUtils.m in Sources */,
 				597633361F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */,
-				59FBEFB61E46D91C0095D885 /* RCTScrollContentViewManager.m in Sources */,
 				13723B501A82FD3C00F88898 /* RCTStatusBarManager.m in Sources */,
 				000E6CEB1AB0E980000CDF4D /* RCTSourceCode.m in Sources */,
 				001BFCD01D8381DE008E587E /* RCTMultipartStreamReader.m in Sources */,
@@ -4331,6 +4357,7 @@
 				13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */,
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */,
+				59EDBCB31FDF4E0C003573DE /* RCTScrollContentViewManager.m in Sources */,
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
 				C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
@@ -4366,13 +4393,14 @@
 				1450FF881BCFF28A00208362 /* RCTProfileTrampoline-arm64.S in Sources */,
 				13E41EEB1C05CA0B00CD8DAC /* RCTProfileTrampoline-i386.S in Sources */,
 				3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */,
-				13B080061A6947C200A75B9A /* RCTScrollViewManager.m in Sources */,
 				137327EA1AA5CF210034F82E /* RCTTabBarManager.m in Sources */,
+				59EDBCB71FDF4E0C003573DE /* RCTScrollView.m in Sources */,
+				59EDBCAB1FDF4E0C003573DE /* RCTScrollContentShadowView.m in Sources */,
+				59EDBCBB1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
 				369123E11DDC75850095B341 /* RCTJSCSamplingProfiler.m in Sources */,
 				599FAA441FB274980058CCF6 /* RCTSurfaceRootView.mm in Sources */,
 				C60669361F3CCF1B00E67165 /* RCTManagedPointer.mm in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
-				13B080051A6947C200A75B9A /* RCTScrollView.m in Sources */,
 				A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */,
 				3DF1BE821F26576400068F1A /* JSCTracing.cpp in Sources */,
 				6577348F1EE8354A00A0E9EA /* RCTInspector.mm in Sources */,
@@ -4397,6 +4425,7 @@
 				13E067571A70F44B002CDEE1 /* RCTView.m in Sources */,
 				3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */,
 				EBF21BBD1FC498270052F4D5 /* InspectorInterfaces.cpp in Sources */,
+				59EDBCAF1FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
 				13D9FEEE1CDCD93000158BD7 /* RCTKeyboardObserver.m in Sources */,
 				135A9C001E7B0EE600587AEB /* RCTJSCHelpers.mm in Sources */,
 				B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */,
@@ -4424,7 +4453,6 @@
 				657734911EE8354A00A0E9EA /* RCTInspectorPackagerConnection.m in Sources */,
 				68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */,
 				B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */,
-				59FBEFB21E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */,
 				5960C1BB1F0804A00066FD5B /* RCTLayoutAnimationGroup.m in Sources */,
 				13B0801A1A69489C00A75B9A /* RCTNavigator.m in Sources */,
 				137327E71AA5CF210034F82E /* RCTTabBar.m in Sources */,
