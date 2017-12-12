@@ -10,10 +10,16 @@
 #import "RCTScrollContentViewManager.h"
 
 #import "RCTScrollContentShadowView.h"
+#import "RCTScrollContentView.h"
 
 @implementation RCTScrollContentViewManager
 
 RCT_EXPORT_MODULE()
+
+- (RCTScrollContentView *)view
+{
+  return [RCTScrollContentView new];
+}
 
 - (RCTShadowView *)shadowView
 {

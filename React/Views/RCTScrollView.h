@@ -59,6 +59,12 @@
 
 @end
 
+@interface RCTScrollView (Internal)
+
+- (void)updateContentOffsetIfNeeded;
+
+@end
+
 @interface RCTEventDispatcher (RCTScrollView)
 
 /**

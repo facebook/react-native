@@ -466,6 +466,13 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`
 }
 
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if ([changedProps containsObject:@"contentSize"]) {
+    [self updateContentOffsetIfNeeded];
+  }
+}
+
 - (BOOL)centerContent
 {
   return _scrollView.centerContent;
@@ -882,7 +889,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   return _contentView.frame.size;
 }
 
-- (void)reactBridgeDidFinishTransaction
+- (void)updateContentOffsetIfNeeded
 {
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
