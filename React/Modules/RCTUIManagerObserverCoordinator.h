@@ -45,6 +45,12 @@
  */
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
 
+/**
+ * Called just after flushing UI blocks.
+ * This is called from the UIManager queue.
+ */
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager;
+
 @end
 
 /**

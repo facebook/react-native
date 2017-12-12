@@ -431,7 +431,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
     shadowView.backgroundColor = color;
     [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:shadowView];
-    [self flushUIBlocks];
+    [self flushUIBlocksWithCompletion:^{}];
   } forTag:view.reactTag];
 }
 
@@ -1128,10 +1128,12 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
   [_observerCoordinator uiManagerWillPerformMounting:self];
 
-  [self flushUIBlocks];
+  [self flushUIBlocksWithCompletion:^{
+    [self->_observerCoordinator uiManagerDidPerformMounting:self];
+  }];
 }
 
-- (void)flushUIBlocks
+- (void)flushUIBlocksWithCompletion:(void (^)(void))completion;
 {
   RCTAssertUIManagerQueue();
 
@@ -1141,25 +1143,30 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   NSArray<RCTViewManagerUIBlock> *previousPendingUIBlocks = _pendingUIBlocks;
   _pendingUIBlocks = [NSMutableArray new];
 
-  if (previousPendingUIBlocks.count) {
-    // Execute the previously queued UI blocks
-    RCTProfileBeginFlowEvent();
-    RCTExecuteOnMainQueue(^{
-      RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
-        @"count": [@(previousPendingUIBlocks.count) stringValue],
-      }));
-      @try {
-        for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
-          block(self, self->_viewRegistry);
-        }
-      }
-      @catch (NSException *exception) {
-        RCTLogError(@"Exception thrown while executing UI block: %@", exception);
-      }
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-    });
+  if (previousPendingUIBlocks.count == 0) {
+    completion();
+    return;
   }
+
+  // Execute the previously queued UI blocks
+  RCTProfileBeginFlowEvent();
+  RCTExecuteOnMainQueue(^{
+    RCTProfileEndFlowEvent();
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
+      @"count": [@(previousPendingUIBlocks.count) stringValue],
+    }));
+    @try {
+      for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
+        block(self, self->_viewRegistry);
+      }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+
+    RCTExecuteOnUIManagerQueue(completion);
+  });
 }
 
 - (void)setNeedsLayout
