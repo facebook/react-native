@@ -1126,7 +1126,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     }
   }];
 
-  [_observerCoordinator uiManagerWillFlushUIBlocks:self];
+  [_observerCoordinator uiManagerWillPerformMounting:self];
 
   [self flushUIBlocks];
 }

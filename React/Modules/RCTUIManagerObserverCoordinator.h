@@ -43,7 +43,7 @@
  * Called before flushing UI blocks at the end of a batch.
  * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
 
 @end
 
