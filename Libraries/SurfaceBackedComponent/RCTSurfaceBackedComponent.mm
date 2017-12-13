@@ -55,7 +55,7 @@
                                        options:options];
 
   CKComponent *component;
-  if (options.activityIndicatorComponentFactory == nil || state.surface.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
+  if (options.activityIndicatorComponentFactory == nil || RCTSurfaceStageIsRunning(state.surface.stage)) {
     component = surfaceHostingComponent;
   } else {
     component = [CKOverlayLayoutComponent newWithComponent:surfaceHostingComponent

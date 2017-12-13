@@ -252,6 +252,15 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
   return [_dataSource settingForKey:key];
 }
 
+- (BOOL)isNuclideDebuggingAvailable
+{
+#if RCT_ENABLE_INSPECTOR
+  return true;
+#else
+  return false;
+#endif //RCT_ENABLE_INSPECTOR
+}
+
 - (BOOL)isRemoteDebuggingAvailable
 {
   Class jsDebuggingExecutorClass = objc_lookUpClass("RCTWebSocketExecutor");

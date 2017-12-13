@@ -324,7 +324,6 @@ class StatusBar extends React.Component<{
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    // $FlowFixMe found when converting React.createClass to ES6
     const index = StatusBar._propsStack.indexOf(this._stackEntry);
     StatusBar._propsStack.splice(index, 1);
 
@@ -332,7 +331,6 @@ class StatusBar extends React.Component<{
   }
 
   componentDidUpdate() {
-    // $FlowFixMe found when converting React.createClass to ES6
     const index = StatusBar._propsStack.indexOf(this._stackEntry);
     this._stackEntry = createStackEntry(this.props);
     StatusBar._propsStack[index] = this._stackEntry;

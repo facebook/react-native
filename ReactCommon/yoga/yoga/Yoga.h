@@ -274,4 +274,10 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 WIN_EXPORT void YGConfigSetContext(const YGConfigRef config, void *context);
 WIN_EXPORT void *YGConfigGetContext(const YGConfigRef config);
 
+WIN_EXPORT float YGRoundValueToPixelGrid(
+    const float value,
+    const float pointScaleFactor,
+    const bool forceCeil,
+    const bool forceFloor);
+
 YG_EXTERN_C_END

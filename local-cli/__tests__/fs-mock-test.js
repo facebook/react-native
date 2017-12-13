@@ -64,6 +64,17 @@ describe('fs mock', () => {
        * comment and run Flow. */
       expect(content).toEqual('foobar');
     });
+
+    it('does not erase directories', () => {
+      fs.mkdirSync('/dir', 0o777);
+      fs.writeFileSync('/dir/test', 'foobar', 'utf8');
+      fs.mkdirSync('/dir', 0o777);
+      const content = fs.readFileSync('/dir/test', 'utf8');
+      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+       * error found when Flow v0.56 was deployed. To see the error delete this
+       * comment and run Flow. */
+      expect(content).toEqual('foobar');
+    });
   });
 
   describe('createWriteStream()', () => {

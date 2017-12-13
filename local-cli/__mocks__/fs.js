@@ -66,29 +66,7 @@ fs.readdir.mockImplementation((filepath, callback) => {
   return callback(null, Object.keys(node));
 });
 
-fs.readFile.mockImplementation(function(filepath, encoding, callback) {
-  filepath = path.normalize(filepath);
-  callback = asyncCallback(callback);
-  if (arguments.length === 2) {
-    callback = encoding;
-    encoding = null;
-  }
-
-  let node;
-  try {
-    node = getToNode(filepath);
-    if (isDirNode(node)) {
-      callback(new Error('Error readFile a dir: ' + filepath));
-    }
-    if (node == null) {
-      return callback(Error('No such file: ' + filepath));
-    } else {
-      return callback(null, node);
-    }
-  } catch (e) {
-    return callback(e);
-  }
-});
+fs.readFile.mockImplementation(asyncify(fs.readFileSync));
 
 fs.readFileSync.mockImplementation(function(filepath, encoding) {
   filepath = path.normalize(filepath);
@@ -156,7 +134,9 @@ fs.mkdirSync.mockImplementation((dirPath, mode) => {
   if (!isDirNode(node)) {
     throw fsError('ENOTDIR', 'not a directory: ' + parentPath);
   }
-  node[path.basename(dirPath)] = {};
+  if (node[path.basename(dirPath)] == null) {
+    node[path.basename(dirPath)] = {};
+  }
 });
 
 function fsError(code, message) {
