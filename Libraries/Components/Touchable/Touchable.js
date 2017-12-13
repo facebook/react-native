@@ -743,7 +743,7 @@ var TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
-        if(Platform.OS === 'android') {
+        if (Platform.OS === 'android') {
           this._playTouchSound();
         }
         this.touchableHandlePress(e);
