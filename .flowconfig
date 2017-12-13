@@ -29,6 +29,7 @@
 
 [libs]
 Libraries/react-native/react-native-interface.js
+flow-github/ 
 flow/
 
 [options]
