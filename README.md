@@ -24,7 +24,7 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 ## Getting Started
 
-Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on the project you are currently working on. Here you can find short guides for the most common scenarios:
 
 - [Trying out React Native](https://snack.expo.io/BJ-uC-nrb)
 - [Creating a New Application](http://facebook.github.io/react-native/docs/getting-started.html)
