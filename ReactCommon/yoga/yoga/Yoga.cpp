@@ -133,6 +133,13 @@ static int YGDefaultLog(const YGConfigRef config,
 #endif
 
 bool YGFloatIsUndefined(const float value) {
+// TODO(gkm): Ugh! Some Android builds (r13b & clang-3.8) fail
+// with the kludge below, so we must tailor it specifically for
+// NDK r15c which has clang-5.0. NDK r16 will make it all better.
+#if __ANDROID__ && __clang_major__ == 5 // TODO(gkm): remove for NDK >= 16
+#undef isnan
+#define isnan __builtin_isnan
+#endif
   return isnan(value);
 }
 
