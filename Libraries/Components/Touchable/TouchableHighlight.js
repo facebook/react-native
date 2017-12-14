@@ -295,7 +295,7 @@ var TouchableHighlight = createReactClass({
   },
 
   _showUnderlay: function() {
-    if (!this._isMounted || !this._hasPressHandler()) {
+    if (!this._isMounted) {
       return;
     }
 
@@ -307,7 +307,7 @@ var TouchableHighlight = createReactClass({
   _hideUnderlay: function() {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
-    if (this._hasPressHandler() && this.refs[UNDERLAY_REF]) {
+    if (this.refs[UNDERLAY_REF]) {
       this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
       this.refs[UNDERLAY_REF].setNativeProps({
         ...INACTIVE_UNDERLAY_PROPS,
@@ -315,15 +315,6 @@ var TouchableHighlight = createReactClass({
       });
       this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
-  },
-
-  _hasPressHandler: function() {
-    return !!(
-      this.props.onPress ||
-      this.props.onPressIn ||
-      this.props.onPressOut ||
-      this.props.onLongPress
-    );
   },
 
   render: function() {
