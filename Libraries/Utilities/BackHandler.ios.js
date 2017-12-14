@@ -61,9 +61,9 @@ if (Platform.isTVOS) {
 
   _tvEventHandler.enable(this, function(cmp, evt) {
     if (evt && evt.eventType === 'menu') {
-      var backPressSubscriptions = new Set(_backPressSubscriptions);
       var invokeDefault = true;
-      var subscriptions = [...backPressSubscriptions].reverse();
+      var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+
       for (var i = 0; i < subscriptions.length; ++i) {
         if (subscriptions[i]()) {
           invokeDefault = false;

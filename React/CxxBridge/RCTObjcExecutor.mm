@@ -95,6 +95,10 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
+  }
+
   void callFunction(const std::string &module, const std::string &method,
                     const folly::dynamic &arguments) override {
     [m_jse callFunctionOnModule:@(module.c_str())

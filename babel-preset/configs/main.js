@@ -57,6 +57,9 @@ const getPreset = (src, options) => {
   if (isNull || src.indexOf('`') !== -1) {
     plugins.push('transform-es2015-template-literals');
   }
+  if (isNull || src.indexOf('**') !== -1) {
+    plugins.push('transform-exponentiation-operator');
+  }
   if (isNull || src.indexOf('Object.assign') !== -1) {
     plugins.push('transform-object-assign');
   }
@@ -72,9 +75,6 @@ const getPreset = (src, options) => {
     src.indexOf('createReactClass') !== -1
   ) {
     plugins.push('transform-react-display-name');
-  }
-  if (isNull || src.indexOf('import(')) {
-    plugins.push(require('../transforms/transform-dynamic-import'));
   }
 
   if (options && options.dev) {

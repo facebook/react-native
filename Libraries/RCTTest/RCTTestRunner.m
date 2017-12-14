@@ -31,6 +31,7 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
              moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -46,7 +47,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
     _appPath = app;
-    [self updateScript];
+
+    if (scriptURL != nil) {
+      _scriptURL = scriptURL;
+    } else {
+      [self updateScript];
+    }
   }
   return self;
 }
@@ -111,12 +117,15 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
   __weak RCTBridge *batchedBridge;
 
   @autoreleasepool {
-    __block NSString *error = nil;
+    __block NSMutableArray<NSString *> *errors = nil;
     RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       defaultLogFunction(level, source, fileName, lineNumber, message);
       if (level >= RCTLogLevelError) {
-        error = message;
+        if (errors == nil) {
+          errors = [NSMutableArray new];
+        }
+        [errors addObject:message];
       }
     });
 
@@ -149,7 +158,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     }
 
     NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
-    while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && error == nil) {
+    while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && errors == nil) {
       [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     }
@@ -167,9 +176,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 #endif
 
     if (expectErrorBlock) {
-      RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
+      RCTAssert(expectErrorBlock(errors[0]), @"Expected an error but the first one was missing or did not match.");
     } else {
-      RCTAssert(error == nil, @"RedBox error: %@", error);
+      RCTAssert(errors == nil, @"RedBox errors: %@", errors);
       RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
     }

@@ -51,7 +51,7 @@ if (editsBlogPost) {
 }
 
 // Fails if the description is too short.
-if (danger.github.pr.body.length < 10) {
+if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
   fail(':grey_question: This pull request needs a description.');
   markdown('@facebook-github-bot label Needs more information');
 }
@@ -75,7 +75,7 @@ if (packageChanged) {
 
 // Warns if a test plan is missing.
 const gettingStartedChanged = includes(danger.git.modified_files, 'docs/GettingStarted.md');
-const includesTestPlan = danger.github.pr.body.toLowerCase().includes('test plan');
+const includesTestPlan = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('test plan');
 
 // Warns if a test plan is missing, when editing the Getting Started guide. This page needs to be
 // tested in all its permutations.

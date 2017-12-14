@@ -29,7 +29,7 @@ const minimist = require('minimist');
 const path = require('path');
 
 import type {CommandT} from '../commands';
-import type {ConfigT} from 'metro-bundler';
+import type {ConfigT} from 'metro';
 
 export type RNConfig = {
   ...ConfigT,

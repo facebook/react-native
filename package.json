@@ -10,9 +10,17 @@
   "engines": {
     "node": ">=4"
   },
+  "prettier": {
+    "requirePragma": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": false,
+    "jsxBracketSameLine": true,
+    "parser": "flow"
+  },
   "jest": {
     "transform": {
-      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
+      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
@@ -25,7 +33,6 @@
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
-      "/website/",
       "local-cli/templates/"
     ],
     "haste": {
@@ -68,8 +75,7 @@
       "node_modules/jest-cli",
       "node_modules/react/dist",
       "node_modules/fbjs/.*/__mocks__/",
-      "node_modules/fbjs/node_modules/",
-      "<rootDir>/website/"
+      "node_modules/fbjs/node_modules/"
     ],
     "unmockedModulePathPatterns": [
       "node_modules/react/",
@@ -118,6 +124,7 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint .",
+    "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
@@ -133,7 +140,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.0.0"
+    "react": "16.2.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -142,6 +149,7 @@
     "babel-plugin-syntax-trailing-function-commas": "^6.20.0",
     "babel-plugin-transform-async-to-generator": "6.16.0",
     "babel-plugin-transform-class-properties": "^6.18.0",
+    "babel-plugin-transform-exponentiation-operator": "^6.5.0",
     "babel-plugin-transform-flow-strip-types": "^6.21.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-register": "^6.24.1",
@@ -162,7 +170,7 @@
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
     "lodash": "^4.16.6",
-    "metro-bundler": "^0.20.0",
+    "metro": "^0.23.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -176,9 +184,9 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "^2.5.0",
+    "react-devtools-core": "3.0.0",
     "react-timer-mixin": "^0.13.2",
-    "regenerator-runtime": "^0.9.5",
+    "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
     "shell-quote": "1.6.1",
@@ -198,11 +206,11 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.57.0",
-    "jest": "^21",
-    "prettier": "1.7.0",
-    "react": "16.0.0",
-    "react-test-renderer": "16.0.0",
+    "flow-bin": "^0.61.0",
+    "jest": "21.3.0-beta.13",
+    "prettier": "1.9.1",
+    "react": "16.2.0",
+    "react-test-renderer": "16.2.0",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }

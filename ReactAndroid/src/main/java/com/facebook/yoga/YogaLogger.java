@@ -12,7 +12,7 @@ package com.facebook.yoga;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
- * Inteface for recieving logs from native layer. Use by setting YogaNode.setLogger(myLogger);
+ * Interface for receiving logs from native layer. Use by setting YogaNode.setLogger(myLogger);
  * See YogaLogLevel for the different log levels.
  */
 @DoNotStrip

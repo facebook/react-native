@@ -19,6 +19,7 @@ import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.text.style.AbsoluteSizeSpan;
@@ -117,16 +118,7 @@ public class ReactEditText extends EditText {
   // TODO: t6408636 verify if we should schedule a layout after a View does a requestLayout()
   @Override
   public boolean isLayoutRequested() {
-    // If we are watching and updating container height based on content size
-    // then we don't want to scroll right away. This isn't perfect -- you might
-    // want to limit the height the text input can grow to. Possible solution
-    // is to add another prop that determines whether we should scroll to end
-    // of text.
-    if (mContentSizeWatcher != null) {
-      return isMultiline();
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @Override
@@ -351,6 +343,11 @@ public class ReactEditText extends EditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
+    if( isSecureText() &&
+        TextUtils.equals(getText(), reactTextUpdate.getText())) {
+      return;
+    }
+
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
     if (mMostRecentEventCount < mNativeEventCount) {
@@ -446,6 +443,14 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private boolean isSecureText() {
+    return
+      (getInputType() &
+        (InputType.TYPE_NUMBER_VARIATION_PASSWORD |
+          InputType.TYPE_TEXT_VARIATION_PASSWORD))
+      != 0;
   }
 
   private void onContentSizeChange() {

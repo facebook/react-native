@@ -59,7 +59,9 @@ class MessageQueue {
 
   __spy: ?(data: SpyData) => void;
 
-  constructor() {
+  __guard: (() => void) => void;
+
+  constructor(shouldUninstallGlobalErrorHandler: boolean = false) {
     this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
     this._successCallbacks = [];
@@ -67,6 +69,11 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+    if (shouldUninstallGlobalErrorHandler) {
+      this.uninstallGlobalErrorHandler();
+    } else {
+      this.installGlobalErrorHandler();
+    }
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -252,11 +259,26 @@ class MessageQueue {
     }
   }
 
+  uninstallGlobalErrorHandler() {
+    this.__guard = this.__guardUnsafe;
+  }
+
+  installGlobalErrorHandler() {
+    this.__guard = this.__guardSafe;
+  }
+
   /**
    * Private methods
    */
 
-  __guard(fn: () => void) {
+  // Lets exceptions propagate to be handled by the VM at the origin
+  __guardUnsafe(fn: () => void) {
+    this._inCall++;
+    fn();
+    this._inCall--;
+  }
+
+  __guardSafe(fn: () => void) {
     this._inCall++;
     try {
       fn();

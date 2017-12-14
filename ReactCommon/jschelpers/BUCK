@@ -1,7 +1,6 @@
 include_defs("//ReactCommon/DEFS")
 
 EXPORTED_HEADERS = [
-    "InspectorInterfaces.h",
     "JavaScriptCore.h",
     "JSCHelpers.h",
     "JSCWrapper.h",

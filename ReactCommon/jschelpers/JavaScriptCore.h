@@ -50,7 +50,11 @@
 // mixed usage of regular and custom JSC methods.
 // See https://gcc.gnu.org/onlinedocs/gcc-3.3/cpp/Pragmas.html for details
 #define jsc_pragma(x) _Pragma(#x)
+#ifndef NO_JSC_POISON
 #define jsc_poison(methods) jsc_pragma(GCC poison methods)
+#else
+#define jsc_poison(methods)
+#endif
 
 #else
 

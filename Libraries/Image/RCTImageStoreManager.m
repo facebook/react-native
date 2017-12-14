@@ -37,7 +37,7 @@ RCT_EXPORT_MODULE()
     return 1;
 }
 
-- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)(void))block
 {
   dispatch_async(_methodQueue, ^{
     [self removeImageForTag:imageTag];
