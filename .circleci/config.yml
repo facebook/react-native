@@ -1,14 +1,14 @@
 aliases:
-  - &restore-node-cache
+ - &restore-yarn-cache
     keys:
-      - v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+      - v1-yarn-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ arch }}-{{ .Branch }}-
-
-  - &save-node-cache
+      - v1-yarn-{{ .Branch }}-
+  - &save-yarn-cache
     paths:
       - node_modules
-    key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+      - ~/.cache/yarn
+    key: v1-yarn-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
   - &restore-cache-analysis
     keys:
@@ -76,6 +76,15 @@ aliases:
       - ~/watchman
     key: v1-watchman-{{ arch }}-v4.9.0
 
+  - &yarn
+    |
+      yarn install --non-interactive --cache-folder ~/.cache/yarn
+
+  - &install-yarn
+    |
+      curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
   - &install-node-dependencies
     |
       npm install --no-package-lock --no-spin --no-progress
@@ -93,11 +102,11 @@ aliases:
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
 
-  - &run-node-tests
+  - &run-js-tests
     | 
-      npm test -- --maxWorkers=2
-      npm run lint
-      npm run flow -- check
+      yarn test --maxWorkers=2
+      yarn lint
+      yarn flow check
 
   - &filter-only-master-stable
     branches:
@@ -178,10 +187,10 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-      - run: *run-node-tests
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+      - run: *run-js-tests
 
   # Runs JavaScript tests on Node 6
   test-js-node-6:
@@ -190,10 +199,10 @@ jobs:
       - image: circleci/node:6.11.0
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-      - run: *run-node-tests
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+      - run: *run-js-tests
 
   # Runs JavaScript tests on Node 4
   test-js-node-4:
@@ -202,10 +211,10 @@ jobs:
       - image: circleci/node:4.8.4
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-      - run: *run-node-tests
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+      - run: *run-js-tests
 
   # Runs unit tests on iOS devices
   test-objc-ios:
@@ -217,9 +226,9 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-ios.sh
 
   # Runs unit tests on tvOS devices
@@ -232,9 +241,9 @@ jobs:
         - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-tvos.sh
 
   # Runs end to end tests
@@ -247,9 +256,9 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
 
   # Checks podspec
@@ -259,9 +268,9 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - run: ./scripts/process-podspecs.sh
       
   # Publishes new version onto npm
@@ -284,9 +293,10 @@ jobs:
       - run: *install-buck
       - save-cache: *save-cache-buck
       - run: *install-node
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - run: *install-yarn
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - restore-cache: *restore-cache-buck-downloads
       - run: *install-android-app-dependencies
       - save-cache: *save-cache-buck-downloads
@@ -311,9 +321,9 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - run:
           name: Build JavaScript Bundle
           command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
@@ -354,10 +364,10 @@ jobs:
       - restore-cache: *restore-cache-buck
       - run: *install-buck
       - save-cache: *save-cache-buck
-      - run: *install-node
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
+      - run: *install-yarn
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
       - restore-cache: *restore-cache-buck-downloads
       - run: *install-android-app-dependencies
       - save-cache: *save-cache-buck-downloads
@@ -420,14 +430,14 @@ jobs:
     steps:
       - checkout
       - restore-cache: *restore-cache-analysis
-      - run: *install-node-dependencies
+      - run: *yarn
       - run:
-          name: Install Dependencies
+          name: Install Additional Dependencies
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              npm install github@0.2.4
+              yarn add github@0.2.4
               cd danger
-              npm install --no-package-lock --no-spin --no-progress
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
             else
               echo "Skipping dependency installation."            
             fi
@@ -436,7 +446,7 @@ jobs:
           name: Analyze Pull Request
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
             else
               echo "Skipping pull request analysis."            
             fi
@@ -445,7 +455,7 @@ jobs:
           name: Analyze Code
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+              cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
             else
               echo "Skipping code analysis."            
             fi
