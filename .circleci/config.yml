@@ -1,14 +1,14 @@
 aliases:
   - &restore-yarn-cache
     keys:
-      - v1-yarn-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Fallback in case checksum fails
-      - v1-yarn-{{ .Branch }}-
+      - v1-yarn-{{ arch }}-{{ .Branch }}-
   - &save-yarn-cache
     paths:
       - node_modules
       - ~/.cache/yarn
-    key: v1-yarn-{{ .Branch }}-{{ checksum "yarn.lock" }}
+    key: v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
   - &restore-cache-analysis
     keys:
