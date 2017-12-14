@@ -29,8 +29,8 @@
 
 [libs]
 Libraries/react-native/react-native-interface.js
-flow-github/ 
 flow/
+flow-github/
 
 [options]
 emoji=true
