@@ -407,7 +407,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "scalesPageToFit")
   public void setScalesPageToFit(WebView view, boolean enabled) {
-    view.getSettings().setUseWideViewPort(!enabled);
+    view.getSettings().setUseWideViewPort(enabled);
+    view.getSettings().setLoadWithOverviewMode(enabled);
   }
 
   @ReactProp(name = "domStorageEnabled")
