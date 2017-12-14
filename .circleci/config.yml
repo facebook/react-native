@@ -1,5 +1,5 @@
 aliases:
- - &restore-yarn-cache
+  - &restore-yarn-cache
     keys:
       - v1-yarn-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Fallback in case checksum fails
