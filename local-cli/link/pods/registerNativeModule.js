@@ -11,7 +11,7 @@ const MARKER_TEXT = '# Add new pods below this line';
 
 module.exports = function registerNativeModule(dependency, iOSProject) {
   const targetName = iOSProject.projectName.replace('.xcodeproj', '');
-  log.info(`Adding podspec for ${dependency.name} to ${targetName}`)
+  log.info(`Adding podspec for ${dependency.name} to ${targetName}`);
   const podLines = readPodfile(iOSProject.podfile);
   const linesToAddEntry = getLinesToAddEntry(podLines, targetName);
   addPodEntry(podLines, linesToAddEntry, dependency.config.ios.podspec, dependency.name);
@@ -23,12 +23,12 @@ function getLinesToAddEntry(podLines, targetName) {
   if (linesToAddPodWithMarker.length > 0) {
     return linesToAddPodWithMarker;
   } else {
-    log.info(`Couldn't find "${MARKER_TEXT}" in Podfile, will try to find target...`)
+    log.info(`Couldn't find "${MARKER_TEXT}" in Podfile, will try to find target...`);
     const firstTargetLined = findPodTargetLine(podLines, targetName);
     if (firstTargetLined) {
       return findLineToAddPod(podLines, firstTargetLined);
     } else {
-      throw new Error(`Couldn't find "${MARKER_TEXT}" or "target '${targetName}' do" in Podfile, unable to continue`)
+      throw new Error(`Couldn't find "${MARKER_TEXT}" or "target '${targetName}' do" in Podfile, unable to continue`);
     }
   }
 }

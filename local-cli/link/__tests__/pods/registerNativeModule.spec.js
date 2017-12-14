@@ -13,7 +13,7 @@
 
 'use strict';
 
-let savePodFileMock = jest.fn()
+let savePodFileMock = jest.fn();
 jest.mock('../../pods/savePodFile', () => savePodFileMock);
 
 const path = require('path');
@@ -49,6 +49,4 @@ describe('pods::registerNativeModule', () => {
       registerNativeModule(dependency, project)
     ).toThrow('Couldn\'t find "# Add new pods below this line" or "target \'Testing\' do" in Podfile, unable to continue');
   });
-
-
 });
