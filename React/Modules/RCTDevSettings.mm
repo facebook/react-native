@@ -42,6 +42,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
+#import <jschelpers/JSCWrapper.h>
 #endif
 
 #if RCT_DEV
@@ -255,7 +256,7 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
 - (BOOL)isNuclideDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  return true;
+  return facebook::react::isCustomJSCPtr(_bridge.jsContextRef);
 #else
   return false;
 #endif //RCT_ENABLE_INSPECTOR
