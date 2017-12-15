@@ -28,7 +28,7 @@ describe('ios::getProducts', () => {
 
   it('should return an array of static libraries project exports', () => {
     const products = getProducts(project);
-    expect(products.length).toBe(1);
-    expect(products).toContain('libRCTActionSheet.a');
+    expect(products.length).toBe(2);
+    expect(products[1].name).toBe('Basic.app');
   });
 });

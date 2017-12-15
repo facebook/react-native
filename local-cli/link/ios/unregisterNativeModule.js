@@ -33,7 +33,7 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
   removeProjectFromLibraries(libraries, file);
 
   getProducts(dependencyProject).forEach(product => {
-    removeFromStaticLibraries(project, product, {
+    removeFromStaticLibraries(project, product.name, {
       target: project.getFirstTarget().uuid,
     });
   });
