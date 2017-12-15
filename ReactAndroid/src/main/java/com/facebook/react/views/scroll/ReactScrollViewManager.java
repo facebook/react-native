@@ -211,6 +211,19 @@ public class ReactScrollViewManager
   }
 
   @Override
+  public void scrollBy(
+      ReactScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollByCommandData data) {
+    int x = scrollView.getScrollX() + data.mDeltaX;
+    int y = scrollView.getScrollY() + data.mDeltaY;
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(x, y);
+    } else {
+      scrollView.scrollTo(x, y);
+    }
+  }
+
+  @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
   }
