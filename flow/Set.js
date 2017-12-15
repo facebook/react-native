@@ -32,5 +32,5 @@ declare module "Set" {
 
   // Don't "declare class exports" directly, otherwise in error messages our
   // show up as "exports" instead of "Set" or "SetPolyfill".
-  declare var exports: typeof SetPolyfill;
+  declare module.exports: typeof SetPolyfill;
 }
