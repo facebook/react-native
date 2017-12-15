@@ -189,7 +189,7 @@ const TouchableHighlight = createReactClass({
     return {
       ...this.touchableGetInitialState(),
       extraChildStyle: null,
-      extraUnderlayStyle: styles.inactiveUnderlay,
+      extraUnderlayStyle: null,
     };
   },
 
@@ -285,7 +285,7 @@ const TouchableHighlight = createReactClass({
     if (this._hasPressHandler()) {
       this.setState({
         extraChildStyle: null,
-        extraUnderlayStyle: styles.inactiveUnderlay,
+        extraUnderlayStyle: null,
       });
       this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
@@ -339,12 +339,6 @@ const TouchableHighlight = createReactClass({
         })}
       </View>
     );
-  },
-});
-
-const styles = StyleSheet.create({
-  inactiveUnderlay: {
-    backgroundColor: 'transparent',
   },
 });
 
