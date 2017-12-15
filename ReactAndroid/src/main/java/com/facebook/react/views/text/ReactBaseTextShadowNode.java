@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -91,7 +92,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(((ReactRawTextShadowNode) child).getText());
+        sb.append(Html.fromHtml(((ReactRawTextShadowNode) child).getText()));
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
