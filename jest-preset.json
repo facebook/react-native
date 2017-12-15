@@ -14,7 +14,7 @@
   ],
   "transform": {
     "^.+\\.js$": "babel-jest",
-    "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
+    "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
   },
   "transformIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"

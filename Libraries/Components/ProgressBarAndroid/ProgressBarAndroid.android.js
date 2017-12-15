@@ -10,7 +10,6 @@
  */
 'use strict';
 
-const ActivityIndicator = require('ActivityIndicator');
 const ColorPropType = require('ColorPropType');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -108,15 +107,6 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
     indeterminate: true,
     animating: true,
   };
-
-  componentDidMount() {
-    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
-      console.warn(
-        'Circular indeterminate `ProgressBarAndroid`' +
-        'is deprecated. Use `ActivityIndicator` instead.'
-      );
-    }
-  }
 
   render() {
     return <AndroidProgressBar {...this.props} />;

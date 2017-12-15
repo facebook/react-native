@@ -88,7 +88,7 @@ struct FunctionWrapper {
   }
 };
 
-// registration wrappers for non-static methods, with autoconvertion of arguments.
+// registration wrappers for non-static methods, with autoconversion of arguments.
 template<typename M, M method, typename C, typename R, typename... Args>
 struct MethodWrapper {
   using jhybrid = typename C::jhybridobject;

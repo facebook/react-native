@@ -41,39 +41,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * Customize how bridge native modules are initialized.
- *
- * By default all modules are created lazily except those that have constants to export
- * or require main thread initialization. If you want to limit the set of native
- * modules that this should be considered for, implement this method.
- *
- * Return nil to whitelist all modules found. Modules passed in extraModulesForBridge:
- * are automatically whitelisted.
- *
- * @experimental
- */
-- (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
-
-/**
- * When loading initial JavaScript, do so synchronously when the bridge is created iff
- * this returns true.  Otherwise, the JS will be fetched on a network thread, and
- * executed on the JS thread.  Currently used only by C++ bridge.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
-
-/**
- * When initializing native modules that require main thread initialization, the bridge
- * will default to dispatch module creation blocks asynchrously. If we're blockingly
- * waiting on the main thread to finish bridge creation on the main thread, this will
- * deadlock. Override this method to initialize modules synchronously instead.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.
@@ -120,12 +87,5 @@
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
-
-/**
- * Specifies the path to folder where additional bundles are located
- *
- * @experimental
- */
-- (NSURL *)jsBundlesDirectory;
 
 @end

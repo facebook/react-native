@@ -111,19 +111,11 @@ static NSURL *serverRootWithHost(NSString *host)
   return nil;
 }
 
-- (NSURL *)packagerServerURL
-{
-  NSString *const host = [self packagerServerHost];
-  return host ? serverRootWithHost(host) : nil;
-}
-
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
   NSString *packagerServerHost = [self packagerServerHost];
   if (!packagerServerHost) {
-    resourceName = resourceName ?: @"main";
-    extension = extension ?: @"jsbundle";
-    return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
+    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                              packagerHost:packagerServerHost
@@ -135,6 +127,14 @@ static NSURL *serverRootWithHost(NSString *host)
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
 {
   return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
+}
+
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
+                        fallbackExtension:(NSString *)extension
+{
+  resourceName = resourceName ?: @"main";
+  extension = extension ?: @"jsbundle";
+  return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
 }
 
 - (NSURL *)resourceURLForResourceRoot:(NSString *)root

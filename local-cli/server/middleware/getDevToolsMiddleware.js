@@ -25,10 +25,7 @@ function escapePath(pathname) {
   return '"' + pathname + '"';
 }
 
-function launchDevTools(
-  {port, projectRoots, useDeltaBundler},
-  isChromeConnected,
-) {
+function launchDevTools({port, projectRoots}, isChromeConnected) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
@@ -42,7 +39,7 @@ function launchDevTools(
     });
   } else if (!isChromeConnected()) {
     // Dev tools are not yet open; we need to open a session
-    launchChromeDevTools(port, useDeltaBundler ? '#useDeltaBundler' : '');
+    launchChromeDevTools(port);
   }
 }
 

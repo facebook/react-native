@@ -112,6 +112,8 @@ static MethodCallResult invokeInner(RCTBridge *bridge, RCTModuleData *moduleData
                          exception, method.JSMethodName, moduleData.name, objcParams, exception.callStackSymbols];
     RCTFatal(RCTErrorWithMessage(message));
   }
+
+  return folly::none;
 }
 
 }

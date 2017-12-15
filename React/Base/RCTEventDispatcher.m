@@ -46,7 +46,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   // This array contains ids of events in order they come in, so we can emit them to JS in the exact same order.
   NSMutableArray<NSNumber *> *_eventQueue;
   BOOL _eventsDispatchScheduled;
-  NSMutableArray<id<RCTEventDispatcherObserver>> *_observers;
+  NSHashTable<id<RCTEventDispatcherObserver>> *_observers;
   NSLock *_observersLock;
 }
 
@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
   _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];
   _eventsDispatchScheduled = NO;
-  _observers = [NSMutableArray new];
+  _observers = [NSHashTable weakObjectsHashTable];
   _observersLock = [NSLock new];
 }
 

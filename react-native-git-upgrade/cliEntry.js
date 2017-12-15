@@ -52,12 +52,18 @@ function exec(command, logOutput) {
       process.stderr.write(data);
     });
 
-    child.on('exit', code => {
-      (code === 0)
-        ? resolve(stdout)
-        : reject(new Error(`Command '${command}' exited with code ${code}:
+    child.on('exit', (code, signal) => {
+      if (code === 0) {
+        resolve(stdout);
+      } else if (code) {
+        reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
 stdout: ${stdout}`));
+      } else {
+        reject(new Error(`Command '${command}' terminated with signal '${signal}':
+stderr: ${stderr}
+stdout: ${stdout}`));
+      }
     });
   });
 }
@@ -278,7 +284,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit current project sources');
-    await exec('git commit -m "Project snapshot"', verbose);
+    await exec('git commit -m "Project snapshot" --no-verify', verbose);
 
     log.info('Create a tag before updating sources');
     await exec('git tag project-snapshot', verbose);
@@ -291,7 +297,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit old version template');
-    await exec('git commit -m "Old version" --allow-empty', verbose);
+    await exec('git commit -m "Old version" --allow-empty --no-verify', verbose);
 
     log.info('Install the new version');
     let installCommand;
@@ -314,7 +320,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit new version template');
-    await exec('git commit -m "New version" --allow-empty', verbose);
+    await exec('git commit -m "New version" --allow-empty --no-verify', verbose);
 
     log.info('Generate the patch between the 2 versions');
     const diffOutput = await exec('git diff --binary --no-color HEAD~1 HEAD', verbose);
@@ -345,7 +351,7 @@ async function run(requestedVersion, cliArgs) {
     log.error(err.stack);
     if (projectBackupCreated) {
       log.error('Restore initial sources');
-      await exec('git checkout project-snapshot', true);
+      await exec('git checkout project-snapshot --no-verify', true);
     }
   }
 }

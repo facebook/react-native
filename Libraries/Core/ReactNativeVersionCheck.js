@@ -34,7 +34,7 @@ exports.checkVersions = function checkVersions(): void {
     ReactNativeVersion.version.major !== nativeVersion.major ||
     ReactNativeVersion.version.minor !== nativeVersion.minor
   ) {
-    throw new Error(
+    console.error(
       `React Native version mismatch.\n\nJavaScript version: ${_formatVersion(
         ReactNativeVersion.version,
       )}\n` +

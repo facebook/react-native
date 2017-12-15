@@ -28,7 +28,7 @@ import com.facebook.react.views.image.ImageResizeMode;
   static Object sCallerContext = RCTImageView.class;
 
   /**
-   * Assignes a CallerContext to execute network requests with.
+   * Assigns a CallerContext to execute network requests with.
    */
   /* package */ static void setCallerContext(Object callerContext) {
     sCallerContext = callerContext;

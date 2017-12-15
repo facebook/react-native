@@ -31,7 +31,11 @@ enum ReactMarkerId {
   NATIVE_MODULE_SETUP_STOP,
 };
 
+#ifdef __APPLE__
 using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+#else
+typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
+#endif
 extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
 extern void logMarker(const ReactMarkerId markerId);
@@ -50,7 +54,7 @@ using Hook = JSValueRef(*)(
 extern RN_EXPORT Hook loggingHook;
 extern RN_EXPORT Hook nowHook;
 
-using ConfigurationHook = std::function<void(JSGlobalContextRef)>;
+typedef void(*ConfigurationHook)(JSGlobalContextRef);
 extern RN_EXPORT ConfigurationHook installPerfHooks;
 
 }

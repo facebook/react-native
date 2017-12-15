@@ -853,9 +853,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
         <ScrollView
           {...props}
           refreshControl={
@@ -871,9 +868,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error when upgrading Flow's support for React.
-       * To see the error delete this comment and run Flow. */
       return <ScrollView {...props} />;
     }
   };

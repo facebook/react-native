@@ -55,6 +55,7 @@ typedef NSURL RCTFileURL;
 + (RCTFileURL *)RCTFileURL:(id)json;
 
 + (NSDate *)NSDate:(id)json;
++ (NSLocale *)NSLocale:(id)json;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
@@ -158,11 +159,6 @@ typedef NSArray UIColorArray __deprecated_msg("Use NSArray<UIColor *>");
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
-
-/**
- * Get the converter function for the specified type
- */
-RCT_EXTERN SEL RCTConvertSelectorForType(NSString *type);
 
 /**
  * This macro is used for logging conversion errors. This is just used to

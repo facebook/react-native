@@ -33,10 +33,12 @@ const HMRClient = {
       ? `${host}:${port}`
       : host;
 
+    bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
+
     // Build the websocket url
     const wsUrl = `ws://${wsHostPort}/hot?` +
       `platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+      `bundleEntry=${bundleEntry}`;
 
     const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
@@ -87,7 +89,6 @@ Error: ${e.message}`
             modules,
             sourceMappingURLs,
             sourceURLs,
-            inverseDependencies,
           } = data.body;
 
           if (Platform.OS === 'ios') {
@@ -107,16 +108,6 @@ Error: ${e.message}`
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
               : eval;
-
-            code = [
-              '__accept(',
-                `${id},`,
-                'function(global,require,module,exports){',
-                  `${code}`,
-                '\n},',
-                `${JSON.stringify(inverseDependencies)}`,
-              ');',
-            ].join('');
 
             injectFunction(code, sourceURLs[i]);
           });

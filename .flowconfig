@@ -5,9 +5,6 @@
 ; Ignore templates for 'react-native init'
 .*/local-cli/templates/.*
 
-; Ignore the website subdir
-<PROJECT_ROOT>/website/.*
-
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/danger/dangerfile.js
 
@@ -25,11 +22,15 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
+; Ignore metro
+.*/node_modules/metro/.*
+
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
 flow/
+flow-github/
 
 [options]
 emoji=true
@@ -44,14 +45,13 @@ suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
-suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(5[0-7]\\|[1-4][0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(5[0-7]\\|[1-4][0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 unsafe.enable_getters_and_setters=true
 
 [version]
-^0.57.0
+^0.61.0
