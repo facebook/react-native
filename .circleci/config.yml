@@ -12,14 +12,13 @@ aliases:
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
       - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
   - &save-cache-analysis
     paths:
-      - danger/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
 
   - &restore-cache-android-packages
     keys:
@@ -421,22 +420,12 @@ jobs:
       - checkout
       - restore-cache: *restore-cache-analysis
       - run: *install-node-dependencies
-      - run:
-          name: Install Dependencies
-          command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              npm install github@0.2.4
-              cd danger
-              npm install --no-package-lock --no-spin --no-progress
-            else
-              echo "Skipping dependency installation."            
-            fi
       - save-cache: *save-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
             if [ -n "$CIRCLE_PULL_REQUEST" ]; then
-              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
+              DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" npm run danger
             else
               echo "Skipping pull request analysis."            
             fi

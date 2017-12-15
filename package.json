@@ -200,6 +200,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "danger": "^2.1.5",
     "eslint": "^3.19.0",
     "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",

@@ -124,7 +124,7 @@ if (!includesReleaseNotes) {
 
 // Tags PRs that have been submitted by a core contributor.
 // TODO: Switch to using an actual MAINTAINERS file.
-const taskforce = fs.readFileSync('../bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
+const taskforce = fs.readFileSync('bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
 if (isSubmittedByTaskforce) {
   markdown('@facebook-github-bot label Core Team');
@@ -171,7 +171,7 @@ if (!isMergeRefMaster && isMergeRefStable) {
 }
 
 // People can add themselves to CODEOWNERS in order to be automatically added as reviewers when a file matching a glob pattern is modified. The following will have the bot add a mention in that case.
-const codeowners = fs.readFileSync('../.github/CODEOWNERS', 'utf8').split('\n');
+const codeowners = fs.readFileSync('.github/CODEOWNERS', 'utf8').split('\n');
 let mentions = [];
 codeowners.forEach((codeowner) => {
   const pattern = codeowner.split(' ')[0];
