@@ -502,7 +502,7 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
+export function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   if (!sections) {
     return null;
   }
