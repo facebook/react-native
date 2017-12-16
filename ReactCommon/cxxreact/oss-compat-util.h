@@ -8,7 +8,7 @@
   #define USE_FOLLY_FOR_ENDIAN_SWAP 1
   #define USE_FOLLY_FOR_TO_STRING 1
 #elif defined(__has_include)
-  #define USE_FOLLY_FOR_ENDIAN_SWAP __has_include(<folly/Bits.h>)
+  #define USE_FOLLY_FOR_ENDIAN_SWAP __has_include(<folly/lang/Bits.h>)
   #define USE_FOLLY_FOR_TO_STRING __has_include(<folly/Conv.h>)
 #else
   #define USE_FOLLY_FOR_ENDIAN_SWAP 0
@@ -16,7 +16,7 @@
 #endif
 
 #if USE_FOLLY_FOR_ENDIAN_SWAP
-#include <folly/Bits.h>
+#include <folly/lang/Bits.h>
 #elif defined(__APPLE__)
 #include <cstdint>
 #include <CoreFoundation/CFByteOrder.h>
