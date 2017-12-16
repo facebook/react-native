@@ -32,6 +32,13 @@ public class OkHttpClientProvider {
   // Centralized OkHttpClient for all networking requests.
   private static @Nullable OkHttpClient sClient;
 
+  // User-provided OkHttpClient factory
+  private static @Nullable OkHttpClientFactory sFactory;
+
+  public static void setOkHttpClientFactory(OkHttpClientFactory factory) {
+    sFactory = factory;
+  }
+
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
       sClient = createClient();
@@ -46,6 +53,10 @@ public class OkHttpClientProvider {
   }
 
   public static OkHttpClient createClient() {
+    if (sFactory != null) {
+      return sFactory.createNewNetworkModuleClient();
+    }
+
     // No timeouts by default
     OkHttpClient.Builder client = new OkHttpClient.Builder()
       .connectTimeout(0, TimeUnit.MILLISECONDS)
