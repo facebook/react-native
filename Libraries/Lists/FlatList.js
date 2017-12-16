@@ -19,6 +19,7 @@ const VirtualizedList = require('VirtualizedList');
 const ListView = require('ListView');
 
 const invariant = require('fbjs/lib/invariant');
+const areEqual = require('fbjs/lib/areEqual');
 
 import type {StyleObj} from 'StyleSheetTypes';
 import type {
@@ -434,16 +435,21 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         'changing the number of columns to force a fresh render of the component.',
     );
     invariant(
-      nextProps.onViewableItemsChanged === this.props.onViewableItemsChanged,
+      areEqual(
+        nextProps.onViewableItemsChanged,
+        this.props.onViewableItemsChanged
+      ),
       'Changing onViewableItemsChanged on the fly is not supported',
     );
     invariant(
-      nextProps.viewabilityConfig === this.props.viewabilityConfig,
+      areEqual(nextProps.viewabilityConfig, this.props.viewabilityConfig),
       'Changing viewabilityConfig on the fly is not supported',
     );
     invariant(
-      nextProps.viewabilityConfigCallbackPairs ===
-        this.props.viewabilityConfigCallbackPairs,
+      areEqual(
+        nextProps.viewabilityConfigCallbackPairs,
+        this.props.viewabilityConfigCallbackPairs
+      ),
       'Changing viewabilityConfigCallbackPairs on the fly is not supported',
     );
 
