@@ -128,7 +128,7 @@ function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, 
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
-      buildApk(gradlew);
+      buildApk(args, gradlew);
       installAndLaunchOnDevice(args, args.deviceId, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
@@ -140,12 +140,23 @@ function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, 
   }
 }
 
-function buildApk(gradlew) {
+function buildApk(args, gradlew) {
   try {
     console.log(chalk.bold('Building the app...'));
 
+    var gradleArgs = [];
+    if (args.variant) {
+      gradleArgs.push('assemble' +
+        args.variant[0].toUpperCase() + args.variant.slice(1)
+      );
+    } else {
+      gradleArgs.push('assembleDebug');
+    }
+
     // using '-x lint' in order to ignore linting errors while building the apk
-    child_process.execFileSync(gradlew, ['build', '-x', 'lint'], {
+    gradleArgs.push('-x', 'lint');
+
+    child_process.execFileSync(gradlew, gradleArgs, {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
