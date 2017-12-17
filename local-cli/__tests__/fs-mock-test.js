@@ -17,6 +17,7 @@
 
 declare var jest: any;
 declare var describe: any;
+declare var expect: any;
 declare var it: any;
 
 jest.mock('fs');
