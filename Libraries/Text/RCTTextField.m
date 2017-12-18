@@ -104,6 +104,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (!_backedTextInput.textWasPasted) {
     [self sendKeyValueForString:string];
   }
+  
+  if (_decimalPlaces != nil && _decimalPlaces.integerValue != 0) {
+    NSMutableString *newString = _backedTextInput.text.mutableCopy;
+    [newString replaceCharactersInRange:range withString:string];
+    NSArray *stringComponents = [newString componentsSeparatedByString:@"."];
+    // only allow 1 decimal mark
+    if([stringComponents count] > 2) {
+      return NO;
+    }
+    // limit to 2 decimal places
+    if([stringComponents count] == 2) {
+      NSString *decimalString =[NSString stringWithFormat:@"%@", [stringComponents objectAtIndex:1]];
+      if ([decimalString length] > _decimalPlaces.integerValue) {
+        return NO;
+      }
+    }
+  }
 
   if (_maxLength != nil && ![string isEqualToString:@"\n"]) { // Make sure forms can be submitted via return.
     NSUInteger allowedLength = _maxLength.integerValue - MIN(_maxLength.integerValue, _backedTextInput.text.length) + range.length;

@@ -352,6 +352,12 @@ const TextInput = createReactClass({
      */
     maxLength: PropTypes.number,
     /**
+     * Limits the maximum number of decimal places that can be entered. Use this
+     * instead of implementing the logic in JS to avoid flicker. If this value is
+     * set, it will also prevent the user from entering more than 1 decimal mark.
+     */
+    decimalPlaces: PropTypes.number,
+    /**
      * If autogrow is `true`, limits the height that the TextInput box can grow
      * to. Once it reaches this height, the TextInput becomes scrollable.
      */
