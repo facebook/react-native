@@ -75,15 +75,13 @@ class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
         <View>
           <CheckBox
             onValueChange={value =>
-              this.setState({eventCheckBoxRegressionIsOn: value})
-            }
+              this.setState({eventCheckBoxRegressionIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventCheckBoxRegressionIsOn}
           />
           <CheckBox
             onValueChange={value =>
-              this.setState({eventCheckBoxRegressionIsOn: value})
-            }
+              this.setState({eventCheckBoxRegressionIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventCheckBoxRegressionIsOn}
           />

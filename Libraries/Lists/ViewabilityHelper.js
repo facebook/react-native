@@ -60,17 +60,17 @@ export type ViewabilityConfig = {|
 |};
 
 /**
- * A Utility class for calculating viewable items based on current metrics like scroll position and
- * layout.
- *
- * An item is said to be in a "viewable" state when any of the following
- * is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
- * is true):
- *
- * - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
- *   visible in the view area >= `itemVisiblePercentThreshold`.
- * - Entirely visible on screen
- */
+* A Utility class for calculating viewable items based on current metrics like scroll position and
+* layout.
+*
+* An item is said to be in a "viewable" state when any of the following
+* is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
+* is true):
+*
+* - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
+*   visible in the view area >= `itemVisiblePercentThreshold`.
+* - Entirely visible on screen
+*/
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;

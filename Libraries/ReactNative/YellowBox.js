@@ -398,8 +398,7 @@ class YellowBox extends React.Component<
           onDismissAll={() => this.dismissWarning(null)}
           onMinimize={() => this.setState({inspecting: null})}
           toggleStacktrace={() =>
-            this.setState({stacktraceVisible: !stacktraceVisible})
-          }
+            this.setState({stacktraceVisible: !stacktraceVisible})}
         />
       ) : null;
 
