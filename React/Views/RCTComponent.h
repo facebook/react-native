@@ -50,11 +50,6 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
  */
 - (void)didUpdateReactSubviews;
 
-// TODO: Deprecate this
-// This method is called after layout has been performed for all views known
-// to the RCTViewManager. It is only called on UIViews, not shadow views.
-- (void)reactBridgeDidFinishTransaction;
-
 @end
 
 // TODO: this is kinda dumb - let's come up with a
