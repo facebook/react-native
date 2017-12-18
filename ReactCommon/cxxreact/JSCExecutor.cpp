@@ -644,6 +644,10 @@ namespace facebook {
       return m_context;
     }
 
+    bool JSCExecutor::isInspectable() {
+      return canUseInspector(m_context);
+    }
+
 #ifdef WITH_JSC_MEMORY_PRESSURE
     void JSCExecutor::handleMemoryPressure(int pressureLevel) {
       JSHandleMemoryPressure(this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
