@@ -334,7 +334,7 @@ async function run(requestedVersion, cliArgs) {
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${patchPath}`, true);
+      await exec(`git apply --reject ${patchPath}`, true);
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +
