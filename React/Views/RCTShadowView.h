@@ -171,11 +171,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float aspectRatio;
 
 /**
- * z-index, used to override sibling order in the view
- */
-@property (nonatomic, assign) NSInteger zIndex;
-
-/**
  * Interface direction (LTR or RTL)
  */
 @property (nonatomic, assign) YGDirection direction;

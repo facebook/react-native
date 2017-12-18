@@ -792,16 +792,6 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
   [self dirtyPropagation];
 }
 
-- (void)setZIndex:(NSInteger)zIndex
-{
-  _zIndex = zIndex;
-  if (_superview) {
-    // Changing zIndex means the subview order of the parent needs updating
-    _superview->_didUpdateSubviews = YES;
-    [_superview dirtyPropagation];
-  }
-}
-
 - (void)didUpdateReactSubviews
 {
   // Does nothing by default
