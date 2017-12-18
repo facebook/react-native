@@ -73,7 +73,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
+  // Do nothing, as subviews are managed by `uiManagerDidPerformMounting`
 }
 
 - (void)layoutSubviews
@@ -83,7 +83,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.view.frame = self.bounds;
 }
 
-- (void)reactBridgeDidFinishTransaction
+- (void)uiManagerDidPerformMounting
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here whenever a transaction has finished
