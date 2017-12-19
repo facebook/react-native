@@ -32,7 +32,5 @@ declare module "Map" {
     values(): Iterator<V>;
   }
 
-  // Don't "declare class exports" directly, otherwise in error messages our
-  // show up as "exports" instead of "Map" or "MapPolyfill".
   declare module.exports: typeof MapPolyfill;
 }

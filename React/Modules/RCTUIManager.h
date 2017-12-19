@@ -89,13 +89,6 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 - (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(UIView *)view;
 
 /**
- * Update the background color of a view. The source of truth for
- * backgroundColor is the shadow view, so if to update backgroundColor from
- * native code you will need to call this method.
- */
-- (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
-
-/**
  * Sets up layout animation which will perform on next layout pass.
  * The animation will affect only one next layout pass.
  * Must be called on the main queue.

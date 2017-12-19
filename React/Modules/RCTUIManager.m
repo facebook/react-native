@@ -298,7 +298,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.availableSize = availableSize;
     shadowView.reactTag = reactTag;
-    shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
     self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [self->_rootViewTags addObject:reactTag];
@@ -414,20 +413,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     }
 
     shadowView.intrinsicContentSize = intrinsicContentSize;
-  } forTag:view.reactTag];
-}
-
-- (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view
-{
-  RCTAssertMainQueue();
-  [self _executeBlockWithShadowView:^(RCTShadowView *shadowView) {
-    if (!self->_viewRegistry) {
-      return;
-    }
-
-    shadowView.backgroundColor = color;
-    [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:shadowView];
-    [self flushUIBlocksWithCompletion:^{}];
   } forTag:view.reactTag];
 }
 
@@ -969,11 +954,6 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
     shadowView.rootView = (RCTRootShadowView *)rootView;
   }
 
-  // Shadow view is the source of truth for background color this is a little
-  // bit counter-intuitive if people try to set background color when setting up
-  // the view, but it's the only way that makes sense given our threading model
-  UIColor *backgroundColor = shadowView.backgroundColor;
-
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
   __weak RCTUIManager *weakManager = self;
@@ -984,11 +964,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
     }
     UIView *view = [componentData createViewWithTag:reactTag];
     if (view) {
-      [componentData setProps:props forView:view]; // Must be done before bgColor to prevent wrong default
-      if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
-        ((UIView *)view).backgroundColor = backgroundColor;
-      }
-
+      [componentData setProps:props forView:view];
       uiManager->_viewRegistry[reactTag] = view;
 
 #if RCT_DEV

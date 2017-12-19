@@ -25,3 +25,5 @@ export type LayoutEvent = {|
   |},
   +persist: () => void,
 |};
+
+export type PressEvent = Object;

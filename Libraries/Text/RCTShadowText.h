@@ -24,6 +24,7 @@ extern NSString *const RCTReactTagAttributeName;
 @interface RCTShadowText : RCTShadowView
 
 @property (nonatomic, strong) UIColor *color;
+@property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, copy) NSString *fontFamily;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, copy) NSString *fontWeight;

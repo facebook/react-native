@@ -74,7 +74,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _writingDirection = NSWritingDirectionNatural;
     _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
-    YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
+     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
@@ -618,12 +618,6 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   [textContainer setMaximumNumberOfLines:maxLines];
 
   return requiredSize;
-}
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  [self dirtyText];
 }
 
 #define RCT_TEXT_PROPERTY(setProp, ivar, type) \
