@@ -44,7 +44,7 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
   const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf('.sln'));
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
-  const mainPage = path.join(sourceDir, 'MainPage.cs');
+  const mainPage = path.join(sourceDir, 'MainReactNativeHost.cs');
   const projectPath = userConfig.projectPath || findProject(folder);
 
   return {
