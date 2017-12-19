@@ -14,7 +14,7 @@
 
 using magic_number_t = uint32_t;
 const magic_number_t MAGIC_FILE_HEADER = 0xFB0BD1E5;
-const std::string MAGIC_FILE_NAME = "UNBUNDLE";
+const char* MAGIC_FILE_NAME = "UNBUNDLE";
 
 namespace facebook {
 namespace react {

@@ -6,12 +6,22 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @providesModule CoreEventTypes
  * @flow
- * @nolint
+ * @format
  */
 
-// TODO (acdlite) Remove this file once flowtype/flow-typed/pull/773 is merged
+'use strict';
 
-declare module 'create-react-class' {
-  declare module.exports: React$CreateClass;
-}
+export type Layout = {|
+  +x: number,
+  +y: number,
+  +width: number,
+  +height: number,
+|};
+export type LayoutEvent = {|
+  +nativeEvent: {|
+    +layout: Layout,
+  |},
+  +persist: () => void,
+|};

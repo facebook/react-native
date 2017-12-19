@@ -13,17 +13,12 @@
 'use strict';
 
 require('../../setupBabel')();
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
+
 const Metro = require('metro');
 
 const HmrServer = require('metro/src/HmrServer');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const Terminal = require('metro/src/lib/Terminal');
+const {Terminal} = require('metro-core');
 
 const attachWebsocketServer = require('./util/attachWebsocketServer');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error

@@ -10,8 +10,7 @@
 
 @interface RCTInspectorDevServerHelper : NSObject
 
-+ (void)connectForContext:(JSGlobalContextRef)context
-            withBundleURL:(NSURL *)bundleURL;
++ (void)connectWithBundleURL:(NSURL *)bundleURL;
 + (void)disableDebugger;
 + (void)attachDebugger:(NSString *)owner
          withBundleURL:(NSURL *)bundleURL

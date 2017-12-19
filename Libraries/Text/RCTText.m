@@ -80,11 +80,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   }];
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  self.backgroundColor = inheritedBackgroundColor;
-}
-
 - (void)didUpdateReactSubviews
 {
   // Do nothing, as subviews are managed by `setTextStorage:` method

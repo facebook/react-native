@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2017-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -7,11 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
 
-// TODO (acdlite) Remove this file once flowtype/flow-typed/pull/773 is merged
+declare module 'metro' {
+  declare module.exports: any;
+}
 
-declare module 'create-react-class' {
-  declare module.exports: React$CreateClass;
+declare module 'metro/src/lib/TerminalReporter' {
+  declare module.exports: any;
+}
+
+declare module 'metro/src/HmrServer' {
+  declare module.exports: any;
 }

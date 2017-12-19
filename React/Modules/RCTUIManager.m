@@ -68,8 +68,6 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   // Keyed by viewName
   NSDictionary *_componentDataByName;
-
-  NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
 }
 
 @synthesize bridge = _bridge;
@@ -107,7 +105,6 @@ RCT_EXPORT_MODULE()
     self->_rootViewTags = nil;
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
-    self->_bridgeTransactionListeners = nil;
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -145,7 +142,6 @@ RCT_EXPORT_MODULE()
   _pendingUIBlocks = [NSMutableArray new];
   _rootViewTags = [NSMutableSet new];
 
-  _bridgeTransactionListeners = [NSMutableSet new];
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
   // Get view managers from bridge
@@ -448,10 +444,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         [(id<RCTInvalidating>)subview invalidate];
       }
       [registry removeObjectForKey:subview.reactTag];
-
-      if (registry == (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry) {
-        [self->_bridgeTransactionListeners removeObject:subview];
-      }
     });
   }
 }
@@ -996,9 +988,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
       if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
         ((UIView *)view).backgroundColor = backgroundColor;
       }
-      if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
-        [uiManager->_bridgeTransactionListeners addObject:view];
-      }
+
       uiManager->_viewRegistry[reactTag] = view;
 
 #if RCT_DEV
@@ -1116,15 +1106,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
     [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:rootView];
   }
-
-  [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    /**
-     * TODO(tadeu): Remove it once and for all
-     */
-    for (id<RCTComponent> node in uiManager->_bridgeTransactionListeners) {
-      [node reactBridgeDidFinishTransaction];
-    }
-  }];
 
   [_observerCoordinator uiManagerWillPerformMounting:self];
 
