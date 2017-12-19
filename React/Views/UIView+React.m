@@ -193,11 +193,6 @@
   self.bounds = bounds;
 }
 
-- (void)reactSetInheritedBackgroundColor:(__unused UIColor *)inheritedBackgroundColor
-{
-  // Does nothing by default
-}
-
 - (UIViewController *)reactViewController
 {
   id responder = [self nextResponder];

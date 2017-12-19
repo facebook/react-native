@@ -620,12 +620,6 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   return requiredSize;
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  [self dirtyText];
-}
-
 #define RCT_TEXT_PROPERTY(setProp, ivar, type) \
 - (void)set##setProp:(type)value;              \
 {                                              \
