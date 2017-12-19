@@ -46,9 +46,4 @@
   }
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  self.backgroundColor = inheritedBackgroundColor;
-}
-
 @end

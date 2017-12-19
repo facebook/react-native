@@ -114,6 +114,15 @@ function computeWindowedRenderLimits(
   );
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
+  const lastItemOffset = getFrameMetricsApprox(itemCount - 1).offset;
+  if (lastItemOffset < overscanBegin) {
+    // Entire list is before our overscan window
+    return {
+      first: Math.max(0, itemCount - 1 - maxToRenderPerBatch),
+      last: itemCount - 1,
+    };
+  }
+
   // Find the indices that correspond to the items at the render boundaries we're targetting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],

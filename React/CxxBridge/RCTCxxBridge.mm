@@ -194,6 +194,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   return (JSGlobalContextRef)(self->_reactInstance ? self->_reactInstance->getJavaScriptContext() : nullptr);
 }
 
+- (BOOL)isInspectable {
+  return self->_reactInstance->isInspectable();
+}
+
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);

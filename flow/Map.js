@@ -34,5 +34,5 @@ declare module "Map" {
 
   // Don't "declare class exports" directly, otherwise in error messages our
   // show up as "exports" instead of "Map" or "MapPolyfill".
-  declare var exports: typeof MapPolyfill;
+  declare module.exports: typeof MapPolyfill;
 }

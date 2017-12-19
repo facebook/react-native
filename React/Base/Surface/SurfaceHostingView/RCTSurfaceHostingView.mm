@@ -84,11 +84,11 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     return CGSizeZero;
   }
 
-  CGSize minumumSize = CGSizeZero;
+  CGSize minimumSize = CGSizeZero;
   CGSize maximumSize = CGSizeMake(INFINITY, INFINITY);
 
   if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthExact) {
-    minumumSize.width = size.width;
+    minimumSize.width = size.width;
     maximumSize.width = size.width;
   }
   else if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthAtMost) {
@@ -96,14 +96,14 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightExact) {
-    minumumSize.height = size.height;
+    minimumSize.height = size.height;
     maximumSize.height = size.height;
   }
   else if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightAtMost) {
     maximumSize.height = size.height;
   }
 
-  return [_surface sizeThatFitsMinimumSize:minumumSize
+  return [_surface sizeThatFitsMinimumSize:minimumSize
                                maximumSize:maximumSize];
 }
 

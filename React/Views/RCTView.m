@@ -691,14 +691,6 @@ static BOOL RCTLayerHasShadow(CALayer *layer)
   return layer.shadowOpacity * CGColorGetAlpha(layer.shadowColor) > 0;
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  // Inherit background color if a shadow has been set, as an optimization
-  if (RCTLayerHasShadow(self.layer)) {
-    self.backgroundColor = inheritedBackgroundColor;
-  }
-}
-
 static void RCTUpdateShadowPathForView(RCTView *view)
 {
   if (RCTLayerHasShadow(view.layer)) {
