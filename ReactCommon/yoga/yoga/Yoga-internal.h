@@ -8,6 +8,9 @@
  */
 
 #pragma once
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <vector>
 
 #include "Yoga.h"
@@ -23,6 +26,25 @@ WIN_EXPORT float YGRoundValueToPixelGrid(const float value,
 
 YG_EXTERN_C_END
 
+extern const std::array<YGEdge, 4> trailing;
+extern const std::array<YGEdge, 4> leading;
+extern bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection);
+extern bool YGValueEqual(const YGValue a, const YGValue b);
+extern const YGValue YGValueUndefined;
+extern const YGValue YGValueAuto;
+extern const YGValue YGValueZero;
+
+template <std::size_t size>
+bool YGValueArrayEqual(
+    const std::array<YGValue, size> val1,
+    const std::array<YGValue, size> val2) {
+  bool areEqual = true;
+  for (uint32_t i = 0; i < size && areEqual; ++i) {
+    areEqual = YGValueEqual(val1[i], val2[i]);
+  }
+  return areEqual;
+}
+
 typedef struct YGCachedMeasurement {
   float availableWidth;
   float availableHeight;
@@ -37,12 +59,12 @@ typedef struct YGCachedMeasurement {
 // layouts should not require more than 16 entries to fit within the cache.
 #define YG_MAX_CACHED_RESULT_COUNT 16
 
-typedef struct YGLayout {
-  float position[4];
-  float dimensions[2];
-  float margin[6];
-  float border[6];
-  float padding[6];
+struct YGLayout {
+  std::array<float, 4> position;
+  std::array<float, 2> dimensions;
+  std::array<float, 6> margin;
+  std::array<float, 6> border;
+  std::array<float, 6> padding;
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
@@ -56,12 +78,12 @@ typedef struct YGLayout {
 
   uint32_t nextCachedMeasurementsIndex;
   YGCachedMeasurement cachedMeasurements[YG_MAX_CACHED_RESULT_COUNT];
-  float measuredDimensions[2];
+  std::array<float, 2> measuredDimensions;
 
   YGCachedMeasurement cachedLayout;
-} YGLayout;
+};
 
-typedef struct YGStyle {
+struct YGStyle {
   YGDirection direction;
   YGFlexDirection flexDirection;
   YGJustify justifyContent;
@@ -76,17 +98,58 @@ typedef struct YGStyle {
   float flexGrow;
   float flexShrink;
   YGValue flexBasis;
-  YGValue margin[YGEdgeCount];
-  YGValue position[YGEdgeCount];
-  YGValue padding[YGEdgeCount];
-  YGValue border[YGEdgeCount];
-  YGValue dimensions[2];
-  YGValue minDimensions[2];
-  YGValue maxDimensions[2];
+  std::array<YGValue, YGEdgeCount> margin;
+  std::array<YGValue, YGEdgeCount> position;
+  std::array<YGValue, YGEdgeCount> padding;
+  std::array<YGValue, YGEdgeCount> border;
+  std::array<YGValue, 2> dimensions;
+  std::array<YGValue, 2> minDimensions;
+  std::array<YGValue, 2> maxDimensions;
 
   // Yoga specific properties, not compatible with flexbox specification
   float aspectRatio;
-} YGStyle;
+  bool operator==(YGStyle style) {
+    bool areNonFloatValuesEqual = direction == style.direction &&
+        flexDirection == style.flexDirection &&
+        justifyContent == style.justifyContent &&
+        alignContent == style.alignContent && alignItems == style.alignItems &&
+        alignSelf == style.alignSelf && positionType == style.positionType &&
+        flexWrap == style.flexWrap && overflow == style.overflow &&
+        display == style.display && YGValueEqual(flexBasis, style.flexBasis) &&
+        YGValueArrayEqual(margin, style.margin) &&
+        YGValueArrayEqual(position, style.position) &&
+        YGValueArrayEqual(padding, style.padding) &&
+        YGValueArrayEqual(border, style.border) &&
+        YGValueArrayEqual(dimensions, style.dimensions) &&
+        YGValueArrayEqual(minDimensions, style.minDimensions) &&
+        YGValueArrayEqual(maxDimensions, style.maxDimensions);
+
+    if (!(std::isnan(flex) && std::isnan(style.flex))) {
+      areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
+    }
+
+    if (!(std::isnan(flexGrow) && std::isnan(style.flexGrow))) {
+      areNonFloatValuesEqual =
+          areNonFloatValuesEqual && flexGrow == style.flexGrow;
+    }
+
+    if (!(std::isnan(flexShrink) && std::isnan(style.flexShrink))) {
+      areNonFloatValuesEqual =
+          areNonFloatValuesEqual && flexShrink == style.flexShrink;
+    }
+
+    if (!(std::isnan(aspectRatio) && std::isnan(style.aspectRatio))) {
+      areNonFloatValuesEqual =
+          areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
+    }
+
+    return areNonFloatValuesEqual;
+  }
+
+  bool operator!=(YGStyle style) {
+    return !(*this == style);
+  }
+};
 
 typedef struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
@@ -97,29 +160,6 @@ typedef struct YGConfig {
   YGNodeClonedFunc cloneNodeCallback;
   void* context;
 } YGConfig;
-
-typedef struct YGNode {
-  YGStyle style;
-  YGLayout layout;
-  uint32_t lineIndex;
-
-  YGNodeRef parent;
-  YGVector children;
-
-  struct YGNode* nextChild;
-
-  YGMeasureFunc measure;
-  YGBaselineFunc baseline;
-  YGPrintFunc print;
-  YGConfigRef config;
-  void* context;
-
-  bool isDirty;
-  bool hasNewLayout;
-  YGNodeType nodeType;
-
-  YGValue const* resolvedDimensions[2];
-} YGNode;
 
 #define YG_UNDEFINED_VALUES \
   { .value = YGUndefined, .unit = YGUnitUndefined }
@@ -167,19 +207,51 @@ static const YGStyle gYGNodeStyleDefaults = {
     .flexGrow = YGUndefined,
     .flexShrink = YGUndefined,
     .flexBasis = YG_AUTO_VALUES,
-    .margin = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .position = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .padding = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .border = YG_DEFAULT_EDGE_VALUES_UNIT,
-    .dimensions = YG_DEFAULT_DIMENSION_VALUES_AUTO_UNIT,
-    .minDimensions = YG_DEFAULT_DIMENSION_VALUES_UNIT,
-    .maxDimensions = YG_DEFAULT_DIMENSION_VALUES_UNIT,
+    .margin = {{YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES}},
+    .position = {{YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES,
+                  YG_UNDEFINED_VALUES}},
+    .padding = {{YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES,
+                 YG_UNDEFINED_VALUES}},
+    .border = {{YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES,
+                YG_UNDEFINED_VALUES}},
+    .dimensions = {{YG_AUTO_VALUES, YG_AUTO_VALUES}},
+    .minDimensions = {{YG_UNDEFINED_VALUES, YG_UNDEFINED_VALUES}},
+    .maxDimensions = {{YG_UNDEFINED_VALUES, YG_UNDEFINED_VALUES}},
     .aspectRatio = YGUndefined,
 };
 
 static const YGLayout gYGNodeLayoutDefaults = {
     .position = {},
-    .dimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .dimensions = {{YGUndefined, YGUndefined}},
     .margin = {},
     .border = {},
     .padding = {},
@@ -191,7 +263,7 @@ static const YGLayout gYGNodeLayoutDefaults = {
     .lastParentDirection = (YGDirection)-1,
     .nextCachedMeasurementsIndex = 0,
     .cachedMeasurements = {},
-    .measuredDimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .measuredDimensions = {{YGUndefined, YGUndefined}},
     .cachedLayout =
         {
             .availableWidth = 0,
@@ -203,28 +275,9 @@ static const YGLayout gYGNodeLayoutDefaults = {
         },
 };
 
-static const YGNode gYGNodeDefaults = {
-    .style = gYGNodeStyleDefaults,
-    .layout = gYGNodeLayoutDefaults,
-    .lineIndex = 0,
-    .parent = nullptr,
-    .children = YGVector(),
-    .nextChild = nullptr,
-    .measure = nullptr,
-    .baseline = nullptr,
-    .print = nullptr,
-    .config = nullptr,
-    .context = nullptr,
-    .isDirty = false,
-    .hasNewLayout = true,
-    .nodeType = YGNodeTypeDefault,
-    .resolvedDimensions = {[YGDimensionWidth] = &YGValueUndefined,
-                           [YGDimensionHeight] = &YGValueUndefined},
-};
-
 extern bool YGFloatsEqual(const float a, const float b);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern const YGValue* YGComputedEdgeValue(
-    const YGValue edges[YGEdgeCount],
+    const std::array<YGValue, YGEdgeCount>& edges,
     const YGEdge edge,
     const YGValue* const defaultValue);

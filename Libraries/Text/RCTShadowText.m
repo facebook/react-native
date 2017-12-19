@@ -74,7 +74,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _writingDirection = NSWritingDirectionNatural;
     _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
-    YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
+     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)

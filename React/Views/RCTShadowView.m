@@ -10,11 +10,11 @@
 #import "RCTShadowView.h"
 
 #import "RCTConvert.h"
+#import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-#import "RCTI18nUtil.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -369,8 +369,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _reactSubviews = [NSMutableArray array];
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
-    YGNodeSetContext(_yogaNode, (__bridge void *)self);
-    YGNodeSetPrintFunc(_yogaNode, RCTPrint);
+     YGNodeSetContext(_yogaNode, (__bridge void *)self);
+     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
   return self;
 }
