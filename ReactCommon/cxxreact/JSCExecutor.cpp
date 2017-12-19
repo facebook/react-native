@@ -438,9 +438,6 @@ namespace facebook {
           jsScript = adoptString(std::move(script));
           ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
         }
-#ifdef WITH_FBSYSTRACE
-        fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-#endif
 
         SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
         evaluateScript(m_context, jsScript, jsSourceURL);
