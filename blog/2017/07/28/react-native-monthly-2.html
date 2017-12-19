@@ -1,16 +1,10 @@
-<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>React Native Monthly #2 · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="React Native Monthly #2 · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html"/><meta property="og:description" content="The React Native monthly meeting continues! On this session, we were joined by"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.51</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>React Native Monthly #2 · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="React Native Monthly #2 · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html"/><meta property="og:description" content="The React Native monthly meeting continues! On this session, we were joined by [Infinite Red](https://infinite.red/), great minds behind [Chain React, the React Native Conference](https://infinite.red/ChainReactConf). As most of the people here were presenting talks at Chain React, we pushed the meeting to a week later. Talks from the conference have been [posted online](https://www.youtube.com/playlist?list=PLFHvL21g9bk3RxJ1Ut5nR_uTZFVOxu522) and I encourage you to check them out. So, let&#x27;s see what our teams are up to."/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.52-RC</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
           var toggler = document.getElementById('navToggler');
           var nav = document.getElementById('docsNav');
           toggler.onclick = function() {
             nav.classList.toggle('docsSliderActive');
           };
-        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></h1><p class="post-meta">July 28, 2017</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/tenodi" target="_blank">Tomislav Tenodi</a>Product Manager at Shoutem</p><div class="authorPhoto authorPhoto-big"><a href="https://github.com/tenodi" target="_blank"><img src="https://pbs.twimg.com/profile_images/877237660225609729/bKFDwfAq.jpg"/></a></div></div></header><div><span><p>The React Native monthly meeting continues! On this session, we were joined by
-<a href="https://infinite.red/">Infinite Red</a>, great minds behind
-<a href="https://infinite.red/ChainReactConf">Chain React, the React Native Conference</a>.
-As most of the people here were presenting talks at Chain React, we pushed the
-meeting to a week later. Talks from the conference have been
-<a href="https://www.youtube.com/playlist?list=PLFHvL21g9bk3RxJ1Ut5nR_uTZFVOxu522">posted online</a>
-and I encourage you to check them out. So, let's see what our teams are up to.</p>
+        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></h1><p class="post-meta">July 28, 2017</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/tenodi" target="_blank">Tomislav Tenodi</a>Product Manager at Shoutem</p><div class="authorPhoto authorPhoto-big"><a href="https://github.com/tenodi" target="_blank"><img src="https://pbs.twimg.com/profile_images/877237660225609729/bKFDwfAq.jpg"/></a></div></div></header><div><span><p>The React Native monthly meeting continues! On this session, we were joined by <a href="https://infinite.red/">Infinite Red</a>, great minds behind <a href="https://infinite.red/ChainReactConf">Chain React, the React Native Conference</a>. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week later. Talks from the conference have been <a href="https://www.youtube.com/playlist?list=PLFHvL21g9bk3RxJ1Ut5nR_uTZFVOxu522">posted online</a> and I encourage you to check them out. So, let's see what our teams are up to.</p>
 <h2><a class="anchor" aria-hidden="true" name="teams"></a><a href="#teams" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Teams</h2>
 <p>On this second meeting, we had 9 teams join us:</p>
 <ul>
@@ -28,203 +22,81 @@ and I encourage you to check them out. So, let's see what our teams are up to.</
 <p>Here are the notes from each team:</p>
 <h3><a class="anchor" aria-hidden="true" name="airbnb"></a><a href="#airbnb" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Airbnb</h3>
 <ul>
-<li>Check out the <a href="https://github.com/airbnb">Airbnb repository</a> for React Native
-related projects.</li>
+<li>Check out the <a href="https://github.com/airbnb">Airbnb repository</a> for React Native related projects.</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="callstack"></a><a href="#callstack" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callstack</h3>
 <ul>
-<li><a href="https://github.com/grabbou">Mike Grabowski</a> has been managing React Native's
-monthly releases as always, including a few betas that were pushed out. In
-particular, working on getting a v0.43.5 build published to npm since it
-unblocks Windows users!</li>
-<li>Slow but consistent work is happening on
-<a href="https://github.com/callstack-io/haul">Haul</a>. There is a pull request that
-adds HMR, and other improvements have shipped. Recently got a few industry
-leaders to adopt it. Possibly planning to start a full-time paid work in that
-area.</li>
-<li><a href="https://twitter.com/thymikee">Michał Pierzchała</a> from the
-<a href="https://github.com/facebook/jest">Jest</a> team has joined us at Callstack this
-month. He will help maintain <a href="https://github.com/callstack-io/haul">Haul</a> and
-possibly work on <a href="https://github.com/facebook/metro">Metro Bundler</a> and
-<a href="https://github.com/facebook/jest">Jest</a>.</li>
+<li><a href="https://github.com/grabbou">Mike Grabowski</a> has been managing React Native's monthly releases as always, including a few betas that were pushed out. In particular, working on getting a v0.43.5 build published to npm since it unblocks Windows users!</li>
+<li>Slow but consistent work is happening on <a href="https://github.com/callstack-io/haul">Haul</a>. There is a pull request that adds HMR, and other improvements have shipped. Recently got a few industry leaders to adopt it. Possibly planning to start a full-time paid work in that area.</li>
+<li><a href="https://twitter.com/thymikee">Michał Pierzchała</a> from the <a href="https://github.com/facebook/jest">Jest</a> team has joined us at Callstack this month. He will help maintain <a href="https://github.com/callstack-io/haul">Haul</a> and possibly work on <a href="https://github.com/facebook/metro">Metro Bundler</a> and <a href="https://github.com/facebook/jest">Jest</a>.</li>
 <li><a href="https://twitter.com/satya164">Satyajit Sahoo</a> is now with us, yay!</li>
-<li>Got a bunch of cool stuff coming up from our OSS department. In particular,
-working on bringing Material Palette API to React Native. Planning to finally
-release our native iOS kit which is aimed to provide 1:1 look &amp; feel of native
-components.</li>
+<li>Got a bunch of cool stuff coming up from our OSS department. In particular, working on bringing Material Palette API to React Native. Planning to finally release our native iOS kit which is aimed to provide 1:1 look &amp; feel of native components.</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="expo"></a><a href="#expo" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Expo</h3>
 <ul>
-<li>Recently launched <a href="https://native.directory">Native Directory</a> to help with
-discoverability and evaluation of libraries in React Native ecosystem. The
-problem: lots of libraries, hard to test, need to manually apply heuristics
-and not immediately obvious which ones are just the best ones that you should
-use. It's also hard to know if something is compatible with CRNA/Expo. So
-Native Directory tries to solve these problems. Check it out and
-<a href="https://github.com/react-community/native-directory">add your library</a> to it.
-The list of libraries is in
-<a href="https://github.com/react-community/native-directory/blob/master/react-native-libraries.json">here</a>.
-This is just our first pass of it, and we want this to be owned and run by the
-community, not just Expo folks. So please pitch in if you think this is
-valuable and want to make it better!</li>
-<li>Added initial support for installing npm packages in
-<a href="https://snack.expo.io/">Snack</a> with Expo SDK 19. Let us know if you run into
-any issues with it, we are still working through some bugs. Along with Native
-Directory, this should make it easy to test libraries that have only JS
-dependencies, or dependencies included in
-<a href="https://github.com/expo/expo-sdk">Expo SDK</a>. Try it out:
+<li>Recently launched <a href="https://native.directory">Native Directory</a> to help with discoverability and evaluation of libraries in React Native ecosystem. The problem: lots of libraries, hard to test, need to manually apply heuristics and not immediately obvious which ones are just the best ones that you should use. It's also hard to know if something is compatible with CRNA/Expo. So Native Directory tries to solve these problems. Check it out and <a href="https://github.com/react-community/native-directory">add your library</a> to it. The list of libraries is in <a href="https://github.com/react-community/native-directory/blob/master/react-native-libraries.json">here</a>. This is just our first pass of it, and we want this to be owned and run by the community, not just Expo folks. So please pitch in if you think this is valuable and want to make it better!</li>
+<li>Added initial support for installing npm packages in <a href="https://snack.expo.io/">Snack</a> with Expo SDK 19. Let us know if you run into any issues with it, we are still working through some bugs. Along with Native Directory, this should make it easy to test libraries that have only JS dependencies, or dependencies included in <a href="https://github.com/expo/expo-sdk">Expo SDK</a>. Try it out:
 <ul>
 <li><a href="https://snack.expo.io/ByBCD_2r-">react-native-modal</a></li>
 <li><a href="https://snack.expo.io/SJfJguhrW">react-native-animatable</a></li>
 <li><a href="https://snack.expo.io/HkoXUdhr-">react-native-calendars</a></li>
 </ul></li>
-<li><a href="https://blog.expo.io/expo-sdk-v19-0-0-is-now-available-821a62b58d3d">Released Expo SDK19</a>
-with a bunch of improvements across the board, and we're now using the
-<a href="https://github.com/SoftwareMansion/jsc-android-buildscripts">updated Android JSC</a>.</li>
-<li>Working on a guide in docs with
-<a href="https://github.com/frantic">Alexander Kotliarskyi</a> with a list of tips on how
-to improve the user experience of your app. Please join in and add to the list
-or help write some of it!
+<li><a href="https://blog.expo.io/expo-sdk-v19-0-0-is-now-available-821a62b58d3d">Released Expo SDK19</a> with a bunch of improvements across the board, and we're now using the <a href="https://github.com/SoftwareMansion/jsc-android-buildscripts">updated Android JSC</a>.</li>
+<li>Working on a guide in docs with <a href="https://github.com/frantic">Alexander Kotliarskyi</a> with a list of tips on how to improve the user experience of your app. Please join in and add to the list or help write some of it!
 <ul>
 <li>Issue: <a href="https://github.com/facebook/react-native/issues/14979">#14979</a></li>
-<li>Initial pull request:
-<a href="https://github.com/facebook/react-native/pull/14993">#14993</a></li>
+<li>Initial pull request: <a href="https://github.com/facebook/react-native/pull/14993">#14993</a></li>
 </ul></li>
-<li>Continuing to work on: audio/video, camera, gestures (with Software Mansion,
-<code>react-native-gesture-handler</code>), GL camera integration and hoping to land some
-of these for the first time in SDK20 (August), and significant improvements to
-others by then as well. We're just getting started on building infrastructure
-into the Expo client for background work (geolocation, audio, handling
-notifications, etc.).</li>
-<li><a href="https://twitter.com/skevy">Adam Miskiewicz</a> has made some nice progress on
-imitating the transitions from
-<a href="https://developer.apple.com/documentation/uikit/uinavigationcontroller">UINavigationController</a>
-in <a href="https://github.com/react-community/react-navigation">react-navigation</a>.
-Check out an earlier version of it in
-<a href="https://twitter.com/skevy/status/884932473070735361">his tweet</a> - release
-coming with it soon. Also check out <code>MaskedViewIOS</code> which he
-<a href="https://github.com/facebook/react-native/commit/8ea6cea39a3db6171dd74838a6eea4631cf42bba">upstreamed</a>.
-If you have the skills and desire to implement <code>MaskedView</code> for Android that
-would be awesome!</li>
+<li>Continuing to work on: audio/video, camera, gestures (with Software Mansion, <code>react-native-gesture-handler</code>), GL camera integration and hoping to land some of these for the first time in SDK20 (August), and significant improvements to others by then as well. We're just getting started on building infrastructure into the Expo client for background work (geolocation, audio, handling notifications, etc.).</li>
+<li><a href="https://twitter.com/skevy">Adam Miskiewicz</a> has made some nice progress on imitating the transitions from <a href="https://developer.apple.com/documentation/uikit/uinavigationcontroller">UINavigationController</a> in <a href="https://github.com/react-community/react-navigation">react-navigation</a>. Check out an earlier version of it in <a href="https://twitter.com/skevy/status/884932473070735361">his tweet</a> - release coming with it soon. Also check out <code>MaskedViewIOS</code> which he <a href="https://github.com/facebook/react-native/commit/8ea6cea39a3db6171dd74838a6eea4631cf42bba">upstreamed</a>. If you have the skills and desire to implement <code>MaskedView</code> for Android that would be awesome!</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="facebook"></a><a href="#facebook" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Facebook</h3>
 <ul>
-<li>Facebook is internally exploring being able to embed native
-<a href="http://componentkit.org/">ComponentKit</a> and <a href="https://fblitho.com/">Litho</a>
-components inside of React Native.</li>
-<li>Contributions to React Native are very welcome! If you are wondering how you
-can contribute, the
-<a href="http://facebook.github.io/react-native/contributing.md">&quot;How to Contribute&quot; guide</a>
-describes our development process and lays out the steps to send your first
-pull request. There are other ways to contribute that do not require writing
-code, such as by triaging issues or updating the docs.
+<li>Facebook is internally exploring being able to embed native <a href="http://componentkit.org/">ComponentKit</a> and <a href="https://fblitho.com/">Litho</a> components inside of React Native.</li>
+<li>Contributions to React Native are very welcome! If you are wondering how you can contribute, the <a href="http://facebook.github.io/react-native/contributing.md">&quot;How to Contribute&quot; guide</a> describes our development process and lays out the steps to send your first pull request. There are other ways to contribute that do not require writing code, such as by triaging issues or updating the docs.
 <ul>
-<li>At the time of writing, React Native has <strong>635</strong>
-<a href="https://github.com/facebook/react-native/issues">open issues</a> and <strong>249</strong>
-<a href="https://github.com/facebook/react-native/pulls">open pull requests</a>. This
-is overwhelming for our maintainers, and when things get fixed internally,
-it is difficult to ensure the relevant tasks are updated.</li>
-<li>We are unsure what the best approach is to handle this while keeping the
-community satisfied. Some (but not all!) options include closing stale
-issues, giving significantly more people permissions to manage issues, and
-automatically closing issues that do not follow the issue template. We wrote
-a
-<a href="http://facebook.github.io/react-native/maintainers.md">&quot;What to Expect from Maintainers&quot;</a>
-guide to set expectations and avoid surprises. If you have ideas on how we
-can make this experience better for maintainers as well as ensuring people
-opening issues and pull requests feel heard and valued, please let us know!</li>
+<li>At the time of writing, React Native has <strong>635</strong> <a href="https://github.com/facebook/react-native/issues">open issues</a> and <strong>249</strong> <a href="https://github.com/facebook/react-native/pulls">open pull requests</a>. This is overwhelming for our maintainers, and when things get fixed internally, it is difficult to ensure the relevant tasks are updated.</li>
+<li>We are unsure what the best approach is to handle this while keeping the community satisfied. Some (but not all!) options include closing stale issues, giving significantly more people permissions to manage issues, and automatically closing issues that do not follow the issue template. We wrote a <a href="http://facebook.github.io/react-native/maintainers.md">&quot;What to Expect from Maintainers&quot;</a> guide to set expectations and avoid surprises. If you have ideas on how we can make this experience better for maintainers as well as ensuring people opening issues and pull requests feel heard and valued, please let us know!</li>
 </ul></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="geekyants"></a><a href="#geekyants" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>GeekyAnts</h3>
 <ul>
-<li>We demoed the Designer Tool which works with React Native files on Chain
-React. Many attendees signed up for the waiting list.</li>
-<li>We are also looking at other cross-platform solutions like
-<a href="https://flutter.io/">Google Flutter</a> (a major comparison coming along),
-<a href="https://github.com/JetBrains/kotlin-native">Kotlin Native</a>, and
-<a href="https://weex.incubator.apache.org/">Apache Weex</a> to understand the
-architectural differences and what we can learn from them to improve the
-overall performance of React Native.</li>
-<li>Switched to
-<a href="https://github.com/react-community/react-navigation">react-navigation</a> for
-most of our apps, which has improved the overall performance.</li>
-<li>Also, announced <a href="https://market.nativebase.io/">NativeBase Market</a> - A
-marketplace for React Native components and apps (for and by the developers).</li>
+<li>We demoed the Designer Tool which works with React Native files on Chain React. Many attendees signed up for the waiting list.</li>
+<li>We are also looking at other cross-platform solutions like <a href="https://flutter.io/">Google Flutter</a> (a major comparison coming along), <a href="https://github.com/JetBrains/kotlin-native">Kotlin Native</a>, and <a href="https://weex.incubator.apache.org/">Apache Weex</a> to understand the architectural differences and what we can learn from them to improve the overall performance of React Native.</li>
+<li>Switched to <a href="https://github.com/react-community/react-navigation">react-navigation</a> for most of our apps, which has improved the overall performance.</li>
+<li>Also, announced <a href="https://market.nativebase.io/">NativeBase Market</a> - A marketplace for React Native components and apps (for and by the developers).</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="infinite-red"></a><a href="#infinite-red" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Infinite Red</h3>
 <ul>
-<li>We want to introduce the
-<a href="https://github.com/infinitered/reactotron">Reactotron</a>. Check out the
-<a href="https://www.youtube.com/watch?v=tPBRfxswDjA">introductory video</a>. We'll be
-adding more features very soon!</li>
-<li>Organised Chain React Conference. It was awesome, thanks all for coming!
-<a href="https://www.youtube.com/playlist?list=PLFHvL21g9bk3RxJ1Ut5nR_uTZFVOxu522">The videos are now online!</a></li>
+<li>We want to introduce the <a href="https://github.com/infinitered/reactotron">Reactotron</a>. Check out the <a href="https://www.youtube.com/watch?v=tPBRfxswDjA">introductory video</a>. We'll be adding more features very soon!</li>
+<li>Organised Chain React Conference. It was awesome, thanks all for coming! <a href="https://www.youtube.com/playlist?list=PLFHvL21g9bk3RxJ1Ut5nR_uTZFVOxu522">The videos are now online!</a></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="microsoft"></a><a href="#microsoft" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Microsoft</h3>
 <ul>
-<li><a href="https://github.com/Microsoft/code-push">CodePush</a> has now been integrated
-into <a href="https://mobile.azure.com/">Mobile Center</a>. Existing users will have no
-change in their workflow.
+<li><a href="https://github.com/Microsoft/code-push">CodePush</a> has now been integrated into <a href="https://mobile.azure.com/">Mobile Center</a>. Existing users will have no change in their workflow.
 <ul>
-<li>Some people have reported an issue with duplicate apps - they already had an
-app on Mobile Center. We are working on resolving them, but if you have two
-apps, let us know, and we can merge them for you.</li>
+<li>Some people have reported an issue with duplicate apps - they already had an app on Mobile Center. We are working on resolving them, but if you have two apps, let us know, and we can merge them for you.</li>
 </ul></li>
-<li>Mobile Center now supports Push Notifications for CodePush. We also showed how
-a combination of Notifications and CodePush could be used for A/B testing
-apps - something unique to the ReactNative architecture.</li>
-<li><a href="https://github.com/Microsoft/vscode">VSCode</a> has a known debugging issue with
-ReactNative - the next release of the extension in a couple of days will be
-fixing the issue.</li>
-<li>Since there are many other teams also working on React Native inside
-Microsoft, we will work on getting better representation from all the groups
-for the next meeting.</li>
+<li>Mobile Center now supports Push Notifications for CodePush. We also showed how a combination of Notifications and CodePush could be used for A/B testing apps - something unique to the ReactNative architecture.</li>
+<li><a href="https://github.com/Microsoft/vscode">VSCode</a> has a known debugging issue with ReactNative - the next release of the extension in a couple of days will be fixing the issue.</li>
+<li>Since there are many other teams also working on React Native inside Microsoft, we will work on getting better representation from all the groups for the next meeting.</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="shoutem"></a><a href="#shoutem" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Shoutem</h3>
 <ul>
-<li>Finished the process of making the React Native development easier on
-<a href="https://shoutem.github.io/">Shoutem</a>. You can use all the standard
-<code>react-native</code> commands when developing apps on Shoutem.</li>
-<li>We did a lot of work trying to figure out how to best approach the profiling
-on React Native. A big chunk of
-<a href="https://facebook.github.io/react-native/performance.md">documentation</a> is
-outdated, and we'll do our best to create a pull request on the official docs
-or at least write some of our conclusions in a blog post.</li>
-<li>Switching our navigation solution to
-<a href="https://github.com/react-community/react-navigation">react-navigation</a>, so we
-might have some feedback soon.</li>
-<li>We released
-<a href="https://github.com/shoutem/ui/tree/develop/html">a new HTML component</a> in our
-toolkit which transforms the raw HTML to the React Native components tree.</li>
+<li>Finished the process of making the React Native development easier on <a href="https://shoutem.github.io/">Shoutem</a>. You can use all the standard <code>react-native</code> commands when developing apps on Shoutem.</li>
+<li>We did a lot of work trying to figure out how to best approach the profiling on React Native. A big chunk of <a href="https://facebook.github.io/react-native/performance.md">documentation</a> is outdated, and we'll do our best to create a pull request on the official docs or at least write some of our conclusions in a blog post.</li>
+<li>Switching our navigation solution to <a href="https://github.com/react-community/react-navigation">react-navigation</a>, so we might have some feedback soon.</li>
+<li>We released <a href="https://github.com/shoutem/ui/tree/develop/html">a new HTML component</a> in our toolkit which transforms the raw HTML to the React Native components tree.</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" name="wix"></a><a href="#wix" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Wix</h3>
 <ul>
-<li>We started working on a pull request to
-<a href="https://github.com/facebook/metro">Metro Bundler</a> with
-<a href="https://github.com/wix/react-native-repackager">react-native-repackager</a>
-capabilities. We updated react-native-repackager to support RN 44 (which we
-use in production). We are using it for our mocking infrastructure for
-<a href="https://github.com/wix/detox">detox</a>.</li>
-<li>We have been covering the Wix app in detox tests for the last three weeks.
-It's an amazing learning experience of how to reduce manual QA in an app of
-this scale (over 40 engineers). We have resolved several issues with detox as
-a result, a new version was just published. I am happy to report that we are
-living up to the &quot;zero flakiness policy&quot; and the tests are passing
-consistently so far.</li>
-<li>Detox for Android is moving forward nicely. We are getting significant help
-from the community. We are expecting an initial version in about two weeks.</li>
-<li><a href="https://github.com/wix/detoxinstruments">DetoxInstruments</a>, our performance
-testing tool, is getting a little bigger than we originally intended. We are
-now planning to turn it into a standalone tool that will not be tightly
-coupled to detox. It will allow investigating the performance of iOS apps in
-general. It will also be integrated with detox so we can run automated tests
-on performance metrics.</li>
+<li>We started working on a pull request to <a href="https://github.com/facebook/metro">Metro Bundler</a> with <a href="https://github.com/wix/react-native-repackager">react-native-repackager</a> capabilities. We updated react-native-repackager to support RN 44 (which we use in production). We are using it for our mocking infrastructure for <a href="https://github.com/wix/detox">detox</a>.</li>
+<li>We have been covering the Wix app in detox tests for the last three weeks. It's an amazing learning experience of how to reduce manual QA in an app of this scale (over 40 engineers). We have resolved several issues with detox as a result, a new version was just published. I am happy to report that we are living up to the &quot;zero flakiness policy&quot; and the tests are passing consistently so far.</li>
+<li>Detox for Android is moving forward nicely. We are getting significant help from the community. We are expecting an initial version in about two weeks.</li>
+<li><a href="https://github.com/wix/detoxinstruments">DetoxInstruments</a>, our performance testing tool, is getting a little bigger than we originally intended. We are now planning to turn it into a standalone tool that will not be tightly coupled to detox. It will allow investigating the performance of iOS apps in general. It will also be integrated with detox so we can run automated tests on performance metrics.</li>
 </ul>
 <h2><a class="anchor" aria-hidden="true" name="next-session"></a><a href="#next-session" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Next session</h2>
-<p>The next session is scheduled for August 16, 2017. As this was only our second
-meeting, we'd like to know how do these notes benefit the React Native
-community. Feel free to ping me <a href="https://twitter.com/TomislavTenodi">on Twitter</a>
-if you have any suggestion on how we should improve the output of the meeting.</p>
+<p>The next session is scheduled for August 16, 2017. As this was only our second meeting, we'd like to know how do these notes benefit the React Native community. Feel free to ping me <a href="https://twitter.com/TomislavTenodi">on Twitter</a> if you have any suggestion on how we should improve the output of the meeting.</p>
 </span></div></div><div><aside class="entry-share"><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="React Native Monthly #2" data-url="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html" data-related="reactnative" data-via="TomislavTenodi" data-show-count="false">Tweet</a></div></aside></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -239,6 +111,6 @@ if you have any suggestion on how we should improve the output of the meeting.</
                 apiKey: '2c98749b4a1e588efec53b2acec13025',
                 indexName: 'react-native-versions',
                 inputSelector: '#search_input_react',
-                algoliaOptions: {"facetFilters":["tags:0.51"],"hitsPerPage":5}
+                algoliaOptions: {"facetFilters":["tags:0.52-RC"],"hitsPerPage":5}
               });
             </script></body></html>

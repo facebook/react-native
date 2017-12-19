@@ -1,21 +1,16 @@
-<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Easier Upgrades Thanks to Git · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Easier Upgrades Thanks to Git · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html"/><meta property="og:description" content="Upgrading to new versions of React Native has been difficult. You might have"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.51</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Easier Upgrades Thanks to Git · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Easier Upgrades Thanks to Git · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html"/><meta property="og:description" content="Upgrading to new versions of React Native has been difficult. You might have seen something like this before:"/><link rel="shortcut icon" href="/react-native/img/favicon.png"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/blog/feed.xml" title="React Native Blog RSS Feed"/><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png"/><h2 class="headerTitle">React Native</h2></a><a href="/react-native/versions.html"><h3>0.52-RC</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/react-native/docs/getting-started.html" target="_self">Docs</a></li><li><a href="/react-native/en/help.html" target="_self">Community</a></li><li><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search"/></li><li><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Recent Posts</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Recent Posts</h3><ul><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/11/06/react-native-monthly-5.html">React Native Monthly #5</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/09/21/react-native-monthly-4.html">React Native Monthly #4</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/30/react-native-monthly-3.html">React Native Monthly #3</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">React Native Performance in Marketplace</a></li><li class="navListItem"><a class="navItem" href="/react-native/blog/2017/07/28/react-native-monthly-2.html">React Native Monthly #2</a></li></ul></div></div></section></div><script>
           var toggler = document.getElementById('navToggler');
           var nav = document.getElementById('docsNav');
           toggler.onclick = function() {
             nav.classList.toggle('docsSliderActive');
           };
-        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2016/12/05/easier-upgrades.html">Easier Upgrades Thanks to Git</a></h1><p class="post-meta">December 5, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://twitter.com/ncuillery" target="_blank">Nicolas Cuillery</a>JavaScript consultant and trainer at Zenika</p><div class="authorPhoto authorPhoto-big"><a href="https://twitter.com/ncuillery" target="_blank"><img src="https://fr.gravatar.com/userimage/78328995/184460def705a160fd8edadc04f60eaf.jpg?size=128"/></a></div></div></header><div><span><p>Upgrading to new versions of React Native has been difficult. You might have
-seen something like this before:</p>
+        </script></nav></div><div class="container mainContainer documentContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1><a href="/react-native/blog/2016/12/05/easier-upgrades.html">Easier Upgrades Thanks to Git</a></h1><p class="post-meta">December 5, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://twitter.com/ncuillery" target="_blank">Nicolas Cuillery</a>JavaScript consultant and trainer at Zenika</p><div class="authorPhoto authorPhoto-big"><a href="https://twitter.com/ncuillery" target="_blank"><img src="https://fr.gravatar.com/userimage/78328995/184460def705a160fd8edadc04f60eaf.jpg?size=128"/></a></div></div></header><div><span><p>Upgrading to new versions of React Native has been difficult. You might have seen something like this before:</p>
 <p><img src="/react-native/blog/assets/git-upgrade-conflict.png" alt=""></p>
-<p>None of those options is ideal. By overwriting the file we lose our local
-changes. By not overwriting we don't get the latest updates.</p>
-<p>Today I am proud to introduce a new tool that helps solve this problem. The tool
-is called <code>react-native-git-upgrade</code> and uses Git behind the scenes to resolve
-conflicts automatically whenever possible.</p>
+<p>None of those options is ideal. By overwriting the file we lose our local changes. By not overwriting we don't get the latest updates.</p>
+<p>Today I am proud to introduce a new tool that helps solve this problem. The tool is called <code>react-native-git-upgrade</code> and uses Git behind the scenes to resolve conflicts automatically whenever possible.</p>
 <h2><a class="anchor" aria-hidden="true" name="usage"></a><a href="#usage" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage</h2>
 <blockquote>
-<p><strong>Requirement</strong>: Git has to be available in the <code>PATH</code>. Your project doesn't
-have to be managed by Git.</p>
+<p><strong>Requirement</strong>: Git has to be available in the <code>PATH</code>. Your project doesn't have to be managed by Git.</p>
 </blockquote>
 <p>Install <code>react-native-git-upgrade</code> globally:</p>
 <pre><code class="hljs css shell"><span class="hljs-meta">$</span><span class="bash"> npm install -g react-native-git-upgrade</span>
@@ -28,32 +23,16 @@ have to be managed by Git.</p>
 <span class="hljs-meta">$</span><span class="bash"> react-native-git-upgrade 0.38.0</span>
 </code></pre>
 <blockquote>
-<p>Note: Do <strong>not</strong> run 'npm install' to install a new version of <code>react-native</code>.
-The tool needs to be able to compare the old and new project template to work
-correctly. Simply run it inside your app folder as shown above, while still on
-the old version.</p>
+<p>Note: Do <strong>not</strong> run 'npm install' to install a new version of <code>react-native</code>. The tool needs to be able to compare the old and new project template to work correctly. Simply run it inside your app folder as shown above, while still on the old version.</p>
 </blockquote>
 <p>Example output:</p>
 <p><img src="/react-native/blog/assets/git-upgrade-output.png" alt=""></p>
-<p>You can also run <code>react-native-git-upgrade</code> with no arguments to upgrade to the
-latest version of React Native.</p>
-<p>We try to preserve your changes in iOS and Android build files, so you don't
-need to run <code>react-native link</code> after an upgrade.</p>
-<p>We have designed the implementation to be as little intrusive as possible. It is
-entirely based on a local Git repository created on-the-fly in a temporary
-directory. It won't interfere with your project repository (no matter what VCS
-you use: Git, SVN, Mercurial, ... or none). Your sources are restored in case of
-unexpected errors.</p>
+<p>You can also run <code>react-native-git-upgrade</code> with no arguments to upgrade to the latest version of React Native.</p>
+<p>We try to preserve your changes in iOS and Android build files, so you don't need to run <code>react-native link</code> after an upgrade.</p>
+<p>We have designed the implementation to be as little intrusive as possible. It is entirely based on a local Git repository created on-the-fly in a temporary directory. It won't interfere with your project repository (no matter what VCS you use: Git, SVN, Mercurial, ... or none). Your sources are restored in case of unexpected errors.</p>
 <h2><a class="anchor" aria-hidden="true" name="how-does-it-work"></a><a href="#how-does-it-work" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How does it work?</h2>
-<p>The key step is generating a Git patch. The patch contains all the changes made
-in the React Native templates between the version your app is using and the new
-version.</p>
-<p>To obtain this patch, we need to generate an app from the templates embedded in
-the <code>react-native</code> package inside your <code>node_modules</code> directory (these are the
-same templates the <code>react-native init</code> commands uses). Then, after the native
-apps have been generated from the templates in both the current version and the
-new version, Git is able to produce a patch that is adapted to your project
-(i.e. containing your app name):</p>
+<p>The key step is generating a Git patch. The patch contains all the changes made in the React Native templates between the version your app is using and the new version.</p>
+<p>To obtain this patch, we need to generate an app from the templates embedded in the <code>react-native</code> package inside your <code>node_modules</code> directory (these are the same templates the <code>react-native init</code> commands uses). Then, after the native apps have been generated from the templates in both the current version and the new version, Git is able to produce a patch that is adapted to your project (i.e. containing your app name):</p>
 <pre><code class="hljs">[...]
 
 diff --git a<span class="hljs-meta-keyword">/ios/</span>MyAwesomeApp/Info.plist b<span class="hljs-meta-keyword">/ios/</span>MyAwesomeApp/Info.plist
@@ -71,10 +50,7 @@ index e98ebb0.<span class="hljs-number">.2</span>fb6a11 <span class="hljs-number
         <span class="hljs-params">&lt;/dict&gt;</span>
 [...]
 </code></pre>
-<p>All we need now is to apply this patch to your source files. While the old
-<code>react-native upgrade</code> process would have prompted you for any small difference,
-Git is able to merge most of the changes automatically using its 3-way merge
-algorithm and eventually leave us with familiar conflict delimiters:</p>
+<p>All we need now is to apply this patch to your source files. While the old <code>react-native upgrade</code> process would have prompted you for any small difference, Git is able to merge most of the changes automatically using its 3-way merge algorithm and eventually leave us with familiar conflict delimiters:</p>
 <pre><code class="hljs">        <span class="hljs-number">13</span>B07F951A680F5B00A75B9A <span class="hljs-comment">/* Release */</span> = {
             <span class="hljs-attr">isa</span> = XCBuildConfiguration;
             <span class="hljs-attr">buildSettings</span> = {
@@ -96,40 +72,16 @@ algorithm and eventually leave us with familiar conflict delimiters:</p>
                     <span class="hljs-string">"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**"</span>,
                 );
 </code></pre>
-<p>These conflicts are generally easy to reason about. The delimiter <strong>ours</strong>
-stands for &quot;your team&quot; whereas <strong>theirs</strong> could be seen as &quot;the React Native
-team&quot;.</p>
+<p>These conflicts are generally easy to reason about. The delimiter <strong>ours</strong> stands for &quot;your team&quot; whereas <strong>theirs</strong> could be seen as &quot;the React Native team&quot;.</p>
 <h2><a class="anchor" aria-hidden="true" name="why-introduce-a-new-global-package"></a><a href="#why-introduce-a-new-global-package" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Why introduce a new global package?</h2>
-<p>React Native comes with a global CLI (the
-<a href="https://www.npmjs.com/package/react-native-cli">react-native-cli</a> package)
-which delegates commands to the local CLI embedded in the
-<code>node_modules/react-native/local-cli</code> directory.</p>
-<p>As we mentioned above, the process has to be started from your current React
-Native version. If we had embedded the implementation in the local-cli, you
-wouldn't be able to enjoy this feature when using old versions of React Native.
-For example, you wouldn't be able to upgrade from 0.29.2 to 0.38.0 if this new
-upgrade code was only released in 0.38.0.</p>
-<p>Upgrading based on Git is a big improvement in developer experience and it is
-important to make it available to everyone. By using a separate package
-<a href="https://www.npmjs.com/package/react-native-git-upgrade">react-native-git-upgrade</a>
-installed globally you can use this new code today no matter what version of
-React Native your project is using.</p>
-<p>One more reason is the recent
-<a href="https://twitter.com/martinkonicek/status/800730190141857793">Yeoman wipeout</a> by
-Martin Konicek. We didn't want to get these Yeoman dependencies back into the
-<code>react-native</code> package to be able to evaluate the old template in order to
-create the patch.</p>
+<p>React Native comes with a global CLI (the <a href="https://www.npmjs.com/package/react-native-cli">react-native-cli</a> package) which delegates commands to the local CLI embedded in the <code>node_modules/react-native/local-cli</code> directory.</p>
+<p>As we mentioned above, the process has to be started from your current React Native version. If we had embedded the implementation in the local-cli, you wouldn't be able to enjoy this feature when using old versions of React Native. For example, you wouldn't be able to upgrade from 0.29.2 to 0.38.0 if this new upgrade code was only released in 0.38.0.</p>
+<p>Upgrading based on Git is a big improvement in developer experience and it is important to make it available to everyone. By using a separate package <a href="https://www.npmjs.com/package/react-native-git-upgrade">react-native-git-upgrade</a> installed globally you can use this new code today no matter what version of React Native your project is using.</p>
+<p>One more reason is the recent <a href="https://twitter.com/martinkonicek/status/800730190141857793">Yeoman wipeout</a> by Martin Konicek. We didn't want to get these Yeoman dependencies back into the <code>react-native</code> package to be able to evaluate the old template in order to create the patch.</p>
 <h2><a class="anchor" aria-hidden="true" name="try-it-out-and-provide-feedback"></a><a href="#try-it-out-and-provide-feedback" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Try it out and provide feedback</h2>
-<p>As a conclusion, I would say, enjoy the feature and feel free
-<a href="https://github.com/facebook/react-native/issues">to suggest improvements, report issues</a>
-and especially
-<a href="https://github.com/facebook/react-native/pulls">send pull requests</a>. Each
-environment is a bit different and each React Native project is different, and
-we need your feedback to make this work well for everyone.</p>
+<p>As a conclusion, I would say, enjoy the feature and feel free <a href="https://github.com/facebook/react-native/issues">to suggest improvements, report issues</a> and especially <a href="https://github.com/facebook/react-native/pulls">send pull requests</a>. Each environment is a bit different and each React Native project is different, and we need your feedback to make this work well for everyone.</p>
 <h3><a class="anchor" aria-hidden="true" name="thank-you"></a><a href="#thank-you" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Thank you!</h3>
-<p>I would like to thank the awesome companies <a href="http://www.zenika.com">Zenika</a> and
-<a href="http://www.groupem6.fr/le-groupe_en/activites/diversifications/m6-web.html">M6 Web</a>
-without whom none of this would have been possible!</p>
+<p>I would like to thank the awesome companies <a href="http://www.zenika.com">Zenika</a> and <a href="http://www.groupem6.fr/le-groupe_en/activites/diversifications/m6-web.html">M6 Web</a> without whom none of this would have been possible!</p>
 </span></div></div><div><aside class="entry-share"><div class="social-buttons"><div class="fb-like" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div><a href="https://twitter.com/share" class="twitter-share-button" data-text="Easier Upgrades Thanks to Git" data-url="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html" data-related="reactnative" data-via="ncuillery" data-show-count="false">Tweet</a></div></aside></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -144,6 +96,6 @@ without whom none of this would have been possible!</p>
                 apiKey: '2c98749b4a1e588efec53b2acec13025',
                 indexName: 'react-native-versions',
                 inputSelector: '#search_input_react',
-                algoliaOptions: {"facetFilters":["tags:0.51"],"hitsPerPage":5}
+                algoliaOptions: {"facetFilters":["tags:0.52-RC"],"hitsPerPage":5}
               });
             </script></body></html>

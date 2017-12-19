@@ -57,10 +57,7 @@
         <link href="https://facebook.github.io/blog/2017/08/07/react-native-performance-in-marketplace.html">
         </link>
         <updated>2017-08-07T06:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native is used in multiple places across multiple apps in the Facebook
-family including a top level tab in the main Facebook apps. Our focus for this
-post is a highly visible product,
-[Marketplace](https://newsroom.fb.com/news/2016/10/introduci]]></summary>
+        <summary type="html"><![CDATA[React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, [Marketplace](https://newsroom.fb.com/news/2016/10/introduci]]></summary>
         <author>
             <name>Aaron Chiu</name>
             <uri>https://www.facebook.com/aaronechiu</uri>
@@ -72,10 +69,7 @@ post is a highly visible product,
         <link href="https://facebook.github.io/blog/2017/07/28/react-native-monthly-2.html">
         </link>
         <updated>2017-07-28T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! On this session, we were joined by
-[Infinite Red](https://infinite.red/), great minds behind
-[Chain React, the React Native Conference](https://infinite.red/ChainReactConf).
-As most of the people here were ]]></summary>
+        <summary type="html"><![CDATA[The React Native monthly meeting continues! On this session, we were joined by [Infinite Red](https://infinite.red/), great minds behind [Chain React, the React Native Conference](https://infinite.red/ChainReactConf). As most of the people here were ]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -87,10 +81,7 @@ As most of the people here were ]]></summary>
         <link href="https://facebook.github.io/blog/2017/06/21/react-native-monthly-1.html">
         </link>
         <updated>2017-06-21T06:00:00Z</updated>
-        <summary type="html"><![CDATA[At [Shoutem](https://shoutem.github.io/), we've been fortunate enough to work
-with React Native from its very beginnings. We decided we wanted to be part of
-the amazing community from day one. Soon enough, we realized it's almost
-impossible to keep u]]></summary>
+        <summary type="html"><![CDATA[At [Shoutem](https://shoutem.github.io/), we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep u]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -138,10 +129,7 @@ impossible to keep u]]></summary>
         <link href="https://facebook.github.io/blog/2017/02/14/using-native-driver-for-animated.html">
         </link>
         <updated>2017-02-14T06:00:00Z</updated>
-        <summary type="html"><![CDATA[For the past year, we've been working on improving performance of animations
-that use the Animated library. Animations are very important to create a
-beautiful user experience but can also be hard to do right. We want to make it
-easy for developers t]]></summary>
+        <summary type="html"><![CDATA[For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers t]]></summary>
         <author>
             <name>Janic Duplessis</name>
             <uri>https://twitter.com/janicduplessis</uri>
@@ -165,13 +153,11 @@ easy for developers t]]></summary>
         <link href="https://facebook.github.io/blog/2016/12/05/easier-upgrades.html">
         </link>
         <updated>2016-12-05T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Upgrading to new versions of React Native has been difficult. You might have
-seen something like this before:
+        <summary type="html"><![CDATA[Upgrading to new versions of React Native has been difficult. You might have seen something like this before:
 
 ![](/react-native/blog/assets/git-upgrade-conflict.png)
 
-None of those options is ideal. By overwriting the file we lose our local
-changes.]]></summary>
+None of those options is ideal. By overwriting the file we lose our local changes.]]></summary>
         <author>
             <name>Nicolas Cuillery</name>
             <uri>https://twitter.com/ncuillery</uri>
@@ -183,10 +169,7 @@ changes.]]></summary>
         <link href="https://facebook.github.io/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html">
         </link>
         <updated>2016-11-08T06:00:00Z</updated>
-        <summary type="html"><![CDATA[We have heard from many people that there is so much work happening with React
-Native, it can be tough to keep track of what's going on. To help communicate
-what work is in progress, we are now publishing a
-[roadmap for React Native](https://github.c]]></summary>
+        <summary type="html"><![CDATA[We have heard from many people that there is so much work happening with React Native, it can be tough to keep track of what's going on. To help communicate what work is in progress, we are now publishing a [roadmap for React Native](https://github.c]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -226,10 +209,7 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
         <link href="https://facebook.github.io/blog/2016/08/19/right-to-left-support-for-react-native-apps.html">
         </link>
         <updated>2016-08-19T06:00:00Z</updated>
-        <summary type="html"><![CDATA[After launching an app to the app stores, internationalization is the next step
-to further your audience reach. Over 20 countries and numerous people around the
-world use Right-to-Left (RTL) languages. Thus, making your app support RTL for
-them is ne]]></summary>
+        <summary type="html"><![CDATA[After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is ne]]></summary>
         <author>
             <name>Mengjue (Mandy) Wang</name>
             <uri>https://github.com/MengjueW</uri>
@@ -241,10 +221,7 @@ them is ne]]></summary>
         <link href="https://facebook.github.io/blog/2016/08/12/react-native-meetup-san-francisco.html">
         </link>
         <updated>2016-08-12T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Last week I had the opportunity to attend the
-[React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854)
-at Zynga’s San Francisco office. With around 200 people in attendance, it served
-as a great place to meet]]></summary>
+        <summary type="html"><![CDATA[Last week I had the opportunity to attend the [React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -292,10 +269,7 @@ as a great place to meet]]></summary>
         <link href="https://facebook.github.io/blog/2016/03/24/introducing-hot-reloading.html">
         </link>
         <updated>2016-03-24T06:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native's goal is to give you the best possible developer experience. A big
-part of it is the time it takes between you save a file and be able to see the
-changes. Our goal is to get this feedback loop to be under 1 second, even as
-your app grow]]></summary>
+        <summary type="html"><![CDATA[React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grow]]></summary>
         <author>
             <name>Martín Bigio</name>
             <uri>https://twitter.com/martinbigio</uri>

@@ -719,19 +719,17 @@ input::placeholder {
   color: #e5e5e5;
 }
 
-code,
-a code,
-.mainContainer .wrapper a code,
-.mainContainer .wrapper a:focus code {
-  color: rgb(34, 34, 34);
+code {
+  padding: 2px 0;
+  background-color: rgba(34, 34, 34, 0.07);
+  /* box-shadow acts as padding around inline code snippets
+   * while not adding any extra spacing between words. */
+  box-shadow: 2px 0 rgba(34, 34, 34, 0.07), -2px 0 rgba(34, 34, 34, 0.07);
+  color: inherit;
+  border-radius: .3em;
   font-family: "SFMono-Regular",source-code-pro,Menlo,Monaco,Consolas,"Roboto Mono","Droid Sans Mono","Liberation Mono",Consolas,"Courier New",Courier,monospace;
-}
-
-a code {
-  text-decoration: underline;
-}
-a:hover code {
-  text-decoration: none;
+  /* avoids scale issues on mobile */
+  word-break: break-word;
 }
 
 pre code {
@@ -924,7 +922,7 @@ pre code {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin: -10px -20px;
+    margin: -10px;
   }
   .gridBlock .twoByGridBlock {
     box-sizing: border-box;
@@ -2296,12 +2294,6 @@ p {
 @media screen and (max-width: 373px) {
   .big-button {
     margin-bottom: 4px;
-  }
-}
-
-@media only screen and (min-width: 1024px) {
-  .docsNavContainer {
-    margin-right: 0;
   }
 }
 
