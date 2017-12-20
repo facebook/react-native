@@ -2119,6 +2119,16 @@ body {
   background-color: #f5fcff !important;
 }
 
+@media only screen and (min-width: 1024px) {
+  .mainContainer {
+    margin-left: 20px;
+  }
+}
+
+.docsNavContainer {
+  width: 240px;
+}
+
 .mainContainer h1,
 .mainContainer h2,
 .mainContainer h3,
