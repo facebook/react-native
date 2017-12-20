@@ -383,13 +383,17 @@ jobs:
       - restore-cache: *restore-cache-ndk
       - run: *install-ndk
       - save-cache: *save-cache-ndk
+
       - restore-cache: *restore-cache-buck
       - run: *install-buck
       - save-cache: *save-cache-buck
+
       - run: *install-node
+
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
+
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
@@ -397,9 +401,9 @@ jobs:
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
-      # Build Android App
       - run: *build-android-app
-      
+      - run: *compile-native-libs
+
       # The JavaScript Bundle is built as part of the build-js-bundle workflow, 
       # and is required for instrumentation tests.
       - attach_workspace:
@@ -410,7 +414,6 @@ jobs:
       - run: *wait-for-avd
             
       # Tests
-      - run: *compile-native-libs
       - run: *run-android-unit-tests
       - run: *run-android-integration-tests
       
