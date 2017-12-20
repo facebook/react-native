@@ -446,9 +446,9 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6s'
     )).toEqual({
-      udid: 'CBBB8FB8-77AB-49A9-8297-4CCFE3189C22',
+      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
       name: 'iPhone 6s',
-      version: 'iOS 10.0'
+      version: 'iOS 9.2'
     });
   });
 
