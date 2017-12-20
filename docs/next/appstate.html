@@ -9,7 +9,12 @@
 <h3><a class="anchor" aria-hidden="true" name="app-states"></a><a href="#app-states" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>App States</h3>
 <ul>
 <li><code>active</code> - The app is running in the foreground</li>
-<li><code>background</code> - The app is running in the background. The user is either in another app or on the home screen</li>
+<li><code>background</code> - The app is running in the background. The user is either:
+<ul>
+<li>in another app</li>
+<li>on the home screen</li>
+<li>[Android] on another <code>Activity</code> (even if it was launched by your app)</li>
+</ul></li>
 <li><code>inactive</code> - This is a state that occurs when transitioning between foreground &amp; background, and during periods of inactivity such as entering the Multitasking view or in the event of an incoming call</li>
 </ul>
 <p>For more information, see <a href="https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/TheAppLifeCycle/TheAppLifeCycle.html">Apple's documentation</a></p>
