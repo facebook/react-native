@@ -178,6 +178,19 @@ android_defaults: &android_defaults
 
 version: 2
 jobs:
+  # Runs JavaScript lint and flow checks
+  run-js-checks:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-lint-checks
+      - run: *run-flow-checks
+
   # Runs JavaScript tests on Node 8
   test-js-node-8:
     <<: *defaults
@@ -189,8 +202,6 @@ jobs:
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
       - run: *run-node-tests
-      - run: *run-lint-checks
-      - run: *run-flow-checks
 
   # Runs JavaScript tests on Node 6
   test-js-node-6:
@@ -203,8 +214,6 @@ jobs:
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
       - run: *run-node-tests
-      - run: *run-lint-checks
-      - run: *run-flow-checks
 
   # Runs unit tests on iOS devices
   test-objc-ios:
@@ -456,7 +465,11 @@ workflows:
   build:
     jobs:
 
-      # Test Javascript on Node 8 and 6
+      # Run lint and flow checks
+      - run-js-checks:
+          filters: *filter-ignore-gh-pages
+
+      # Test JavaScript on Node 8 and 6
       - test-js-node-8:
           filters: *filter-ignore-gh-pages
       - test-js-node-6:
