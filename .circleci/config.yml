@@ -50,15 +50,15 @@ aliases:
       - /opt/ndk
     key: v1-android-ndk-{{ arch }}-r10e-32-64
 
-  - &restore-cache-buck-downloads
+  - &restore-cache-buck-android-build-downloads
     keys:
-      - v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/src/test/java/com/facebook/react/modules/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/shell/BUCK" }}{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
       - v1-buck-downloads-{{ arch }}-
-  - &save-cache-buck-downloads
+  - &save-cache-buck-android-build-downloads
     paths:
      - "ReactAndroid/build/downloads"
-    key: v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/src/test/java/com/facebook/react/modules/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/shell/BUCK" }}{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
@@ -151,15 +151,6 @@ aliases:
       sudo apt-get update -y
       sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
 
-  - &install-android-app-dependencies
-    |
-      buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-      buck fetch ReactAndroid/src/main/java/com/facebook/react
-      buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-      buck fetch ReactAndroid/src/test/...
-      buck fetch ReactAndroid/src/androidTest/...
-      ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-
   - &build-android-app
     name: Build Android App
     command: |
@@ -191,6 +182,14 @@ aliases:
   - &run-android-integration-tests
     name: Build and Install Test APK
     command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+  
+  - &collect-android-test-results
+    name: Collect Test Results
+    command: |
+      mkdir -p ~/junit/
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
+    when: always
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -327,9 +326,14 @@ jobs:
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
-      - restore-cache: *restore-cache-buck-downloads
-      - run: *install-android-app-dependencies
-      - save-cache: *save-cache-buck-downloads
+      - restore-cache: *restore-cache-buck-android-build-downloads
+      - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+      - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
+      - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+      - run: buck fetch ReactAndroid/src/test/...
+      - run: buck fetch ReactAndroid/src/androidTest/...
+      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+      - save-cache: *save-cache-buck-android-build-downloads
 
       - run:
           name: Publish React Native Package
@@ -398,35 +402,34 @@ jobs:
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
-      - restore-cache: *restore-cache-buck-downloads
-      - run: *install-android-app-dependencies
-      - save-cache: *save-cache-buck-downloads
+      - restore-cache: *restore-cache-buck-android-build-downloads
+      - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+      - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
+      - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+      - run: buck fetch ReactAndroid/src/test/...
+      - run: buck fetch ReactAndroid/src/androidTest/...
+      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+      - save-cache: *save-cache-buck-android-build-downloads
 
       # Build Android App
       - run: *build-android-app
-      
-      # Wait for AVD to finish booting before running tests
-      - run: *wait-for-avd
       
       # The JavaScript Bundle is built as part of the build-js-bundle workflow, 
       # and is required for instrumentation tests.
       - attach_workspace:
           at: ReactAndroid/src/androidTest/assets/
       - run: *check-js-bundle
-      
+
+      # Wait for AVD to finish booting before running tests
+      - run: *wait-for-avd
+            
       # Tests
       - run: *compile-native-libs
       - run: *run-android-unit-tests
       - run: *run-android-integration-tests
       
       # post (always runs)
-      - run:
-          name: Collect Test Results
-          command: |
-            mkdir -p ~/junit/
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
-          when: always
+      - run: *collect-android-test-results
       - store_test_results:
           path: ~/junit
       - store_artifacts:
