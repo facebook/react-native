@@ -172,6 +172,11 @@
   }
 }
 
+- (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
+{
+  // The default implementation does nothing.
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
   // These frames are in terms of anchorPoint = topLeft, but internally the

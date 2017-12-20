@@ -66,6 +66,9 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
 
+  NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
+  NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
+
   // Keyed by viewName
   NSDictionary *_componentDataByName;
 }
@@ -137,6 +140,9 @@ RCT_EXPORT_MODULE()
 
   _shadowViewRegistry = [NSMutableDictionary new];
   _viewRegistry = [NSMutableDictionary new];
+
+  _shadowViewsWithUpdatedProps = [NSMapTable weakToStrongObjectsMapTable];
+  _shadowViewsWithUpdatedChildren = [NSHashTable weakObjectsHashTable];
 
   // Internal resources
   _pendingUIBlocks = [NSMutableArray new];
@@ -839,6 +845,8 @@ RCT_EXPORT_METHOD(setChildren:(nonnull NSNumber *)containerTag
     RCTSetChildren(containerTag, reactTags,
                    (NSDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry);
   }];
+
+  [self _shadowViewDidReceiveUpdatedChildren:_shadowViewRegistry[containerTag]];
 }
 
 static void RCTSetChildren(NSNumber *containerTag,
@@ -879,6 +887,8 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
                removeAtIndices:removeAtIndices
                       registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
   }];
+
+  [self _shadowViewDidReceiveUpdatedChildren:_shadowViewRegistry[containerTag]];
 }
 
 - (void)_manageChildren:(NSNumber *)containerTag
@@ -972,6 +982,13 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 #endif
     }
   });
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    [componentData setProps:props forView:view];
+  }];
+
+  [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
 }
 
 RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
@@ -986,6 +1003,8 @@ RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
     UIView *view = viewRegistry[reactTag];
     [componentData setProps:props forView:view];
   }];
+
+  [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag
@@ -1067,6 +1086,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [self addUIBlock:uiBlock];
   }
 
+  [self _dispatchPropsDidChangeEvents];
+  [self _dispatchChildrenDidChangeEvents];
+
   [_observerCoordinator uiManagerWillPerformLayout:self];
 
   // Perform layout
@@ -1133,6 +1155,75 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   if (![_bridge isBatchActive] && ![_bridge isLoading]) {
     [self _layoutAndMount];
   }
+}
+
+- (void)_shadowView:(RCTShadowView *)shadowView didReceiveUpdatedProps:(NSArray<NSString *> *)props
+{
+  // We collect a set with changed `shadowViews` and its changed props,
+  // so we have to maintain this collection properly.
+  NSArray<NSString *> *previousProps;
+  if ((previousProps = [_shadowViewsWithUpdatedProps objectForKey:shadowView])) {
+    // Merging already registred changed props and new ones.
+    NSMutableSet *set = [NSMutableSet setWithArray:previousProps];
+    [set addObjectsFromArray:props];
+    props = [set allObjects];
+  }
+
+  [_shadowViewsWithUpdatedProps setObject:props forKey:shadowView];
+}
+
+- (void)_shadowViewDidReceiveUpdatedChildren:(RCTShadowView *)shadowView
+{
+  [_shadowViewsWithUpdatedChildren addObject:shadowView];
+}
+
+- (void)_dispatchChildrenDidChangeEvents
+{
+  if (_shadowViewsWithUpdatedChildren.count == 0) {
+    return;
+  }
+
+  NSHashTable<RCTShadowView *> *shadowViews = _shadowViewsWithUpdatedChildren;
+  _shadowViewsWithUpdatedChildren = [NSHashTable weakObjectsHashTable];
+
+  NSMutableArray *tags = [NSMutableArray arrayWithCapacity:shadowViews.count];
+
+  for (RCTShadowView *shadowView in shadowViews) {
+    [shadowView didUpdateReactSubviews];
+    [tags addObject:shadowView.reactTag];
+  }
+
+  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    for (NSNumber *tag in tags) {
+      UIView<RCTComponent> *view = viewRegistry[tag];
+      [view didUpdateReactSubviews];
+    }
+  }];
+}
+
+- (void)_dispatchPropsDidChangeEvents
+{
+  if (_shadowViewsWithUpdatedProps.count == 0) {
+    return;
+  }
+
+  NSMapTable<RCTShadowView *, NSArray<NSString *> *> *shadowViews = _shadowViewsWithUpdatedProps;
+  _shadowViewsWithUpdatedProps = [NSMapTable weakToStrongObjectsMapTable];
+
+  NSMapTable<NSNumber *, NSArray<NSString *> *> *tags = [NSMapTable strongToStrongObjectsMapTable];
+
+  for (RCTShadowView *shadowView in shadowViews) {
+    NSArray<NSString *> *props = [shadowViews objectForKey:shadowView];
+    [shadowView didSetProps:props];
+    [tags setObject:props forKey:shadowView.reactTag];
+  }
+
+  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    for (NSNumber *tag in tags) {
+      UIView<RCTComponent> *view = viewRegistry[tag];
+      [view didSetProps:[tags objectForKey:tag]];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag

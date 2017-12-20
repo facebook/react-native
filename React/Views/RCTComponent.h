@@ -36,8 +36,6 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 // View/ShadowView is a root view
 - (BOOL)isReactRootView;
 
-@optional
-
 /**
  * Called each time props have been set.
  * Not all props have to be set - React can set only changed ones.

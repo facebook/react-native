@@ -61,6 +61,12 @@
 - (void)didUpdateReactSubviews;
 
 /**
+ * Called each time props have been set.
+ * The default implementation does nothing.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
+/**
  * Used by the UIIManager to set the view frame.
  * May be overriden to disable animation, etc.
  */
