@@ -1,25 +1,25 @@
 aliases:
   - &restore-node-cache
     keys:
-      - v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+      - v1-dependencies-{{ arch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ arch }}-{{ .Branch }}-
+      - v1-dependencies-{{ arch }}-
 
   - &save-node-cache
     paths:
       - node_modules
-    key: v1-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-dependencies-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
       # Fallback in case checksum fails
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+      - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
       - danger/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
 
   - &restore-cache-android-packages
     keys:
@@ -52,13 +52,13 @@ aliases:
 
   - &restore-cache-buck-downloads
     keys:
-      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - v1-buck-downloads-{{ arch }}-{{ .Branch }}-
+      - v1-buck-downloads-{{ arch }}-
   - &save-cache-buck-downloads
     paths:
      - "ReactAndroid/build/downloads"
-    key: v1-buck-downloads-{{ arch }}-{{ .Branch }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-buck
     keys:
