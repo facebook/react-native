@@ -20,6 +20,7 @@
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
+@property (nonatomic, assign) UIScrollViewKeyboardDismissMode keyboardDismissMode;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
