@@ -109,14 +109,4 @@
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
 
-#if RCT_DEV
-
-/**
- Tools for debugging
- */
-
-@property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
-
-#endif
-
 @end

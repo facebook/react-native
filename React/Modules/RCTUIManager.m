@@ -976,10 +976,6 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
     if (view) {
       [componentData setProps:props forView:view];
       uiManager->_viewRegistry[reactTag] = view;
-
-#if RCT_DEV
-      [view _DEBUG_setReactShadowView:shadowView];
-#endif
     }
   });
 
