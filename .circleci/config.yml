@@ -160,6 +160,38 @@ aliases:
       buck fetch ReactAndroid/src/androidTest/...
       ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
+  - &build-android-app
+    name: Build Android App
+    command: |
+      buck build ReactAndroid/src/main/java/com/facebook/react
+      buck build ReactAndroid/src/main/java/com/facebook/react/shell
+
+  - &wait-for-avd
+    name: Wait for Android Virtual Device
+    command: source scripts/circle-ci-android-setup.sh && waitForAVD
+
+  - &check-js-bundle
+    name: Check for JavaScript Bundle
+    command: |
+      if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+        echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
+      else
+        echo "JavaScript bundle found.";
+      fi
+
+  - &compile-native-libs
+    name: Compile Native Libs for Unit and Integration Tests
+    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
+    no_output_timeout: 6m
+
+  - &run-android-unit-tests
+    name: Unit Tests
+    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
+
+  - &run-android-integration-tests
+    name: Build and Install Test APK
+    command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+
 defaults: &defaults
   working_directory: ~/react-native
 
@@ -370,43 +402,22 @@ jobs:
       - run: *install-android-app-dependencies
       - save-cache: *save-cache-buck-downloads
 
-      - run:
-          name: Build Android App
-          command: |
-            buck build ReactAndroid/src/main/java/com/facebook/react
-            buck build ReactAndroid/src/main/java/com/facebook/react/shell
+      # Build Android App
+      - run: *build-android-app
       
       # Wait for AVD to finish booting before running tests
-      - run:
-          name: Wait for Android Virtual Device
-          command: source scripts/circle-ci-android-setup.sh && waitForAVD
+      - run: *wait-for-avd
       
       # The JavaScript Bundle is built as part of the build-js-bundle workflow, 
       # and is required for instrumentation tests.
       - attach_workspace:
           at: ReactAndroid/src/androidTest/assets/
-      - run:
-          name: Check for JavaScript Bundle
-          command: |
-            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
-            else
-              echo "JavaScript bundle found.";
-            fi
+      - run: *check-js-bundle
       
       # Tests
-      - run:
-          name: Compile Native Libs for Unit and Integration Tests
-          command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
-          no_output_timeout: 6m
-      - run:
-          name: Unit Tests
-          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
-      
-      # Integration Tests
-      - run:
-          name: Build and Install Test APK
-          command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+      - run: *compile-native-libs
+      - run: *run-android-unit-tests
+      - run: *run-android-integration-tests
       
       # post (always runs)
       - run:
@@ -457,7 +468,8 @@ jobs:
             else
               echo "Skipping code analysis."            
             fi
-
+          when: always
+          
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
