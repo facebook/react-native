@@ -265,7 +265,7 @@ describe('findMatchingSimulator', () => {
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined', () => {
+  it('should return the defined simulator in list even if another device is booted', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -304,8 +304,8 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6'
     )).toEqual({
-      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
-      name: 'iPhone 6s',
+      udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
+      name: 'iPhone 6',
       version: 'iOS 9.2'
     });
   });
@@ -381,7 +381,7 @@ describe('findMatchingSimulator', () => {
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined (multi ios versions)', () => {
+  it('should return the defined simulator in list even if another device is booted (multi ios versions)', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -446,8 +446,8 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6s'
     )).toEqual({
-      udid: '3A409DC5-5188-42A6-8598-3AA6F34607A5',
-      name: 'iPhone 7',
+      udid: 'CBBB8FB8-77AB-49A9-8297-4CCFE3189C22',
+      name: 'iPhone 6s',
       version: 'iOS 10.0'
     });
   });
