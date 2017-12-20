@@ -50,16 +50,6 @@ aliases:
       - /opt/ndk
     key: v1-android-ndk-{{ arch }}-r10e-32-64
 
-  - &restore-cache-buck-android-build-downloads
-    keys:
-      - v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/src/test/java/com/facebook/react/modules/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/shell/BUCK" }}{{ checksum "ReactAndroid/build.gradle" }}
-      # Fallback in case checksum fails
-      - v1-buck-downloads-{{ arch }}-
-  - &save-cache-buck-android-build-downloads
-    paths:
-     - "ReactAndroid/build/downloads"
-    key: v1-buck-downloads-{{ arch }}-{{ checksum "ReactAndroid/src/test/java/com/facebook/react/modules/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/BUCK" }}{{ checksum "ReactAndroid/src/main/java/com/facebook/react/shell/BUCK" }}{{ checksum "ReactAndroid/build.gradle" }}
-
   - &restore-cache-buck
     keys:
       - v2-buck-{{ arch }}-v2017.11.16.01
@@ -326,14 +316,12 @@ jobs:
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
-      - restore-cache: *restore-cache-buck-android-build-downloads
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-      - save-cache: *save-cache-buck-android-build-downloads
 
       - run:
           name: Publish React Native Package
@@ -402,14 +390,12 @@ jobs:
       - restore-cache: *restore-node-cache
       - run: *install-node-dependencies
       - save-cache: *save-node-cache
-      - restore-cache: *restore-cache-buck-android-build-downloads
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-      - save-cache: *save-cache-buck-android-build-downloads
 
       # Build Android App
       - run: *build-android-app
