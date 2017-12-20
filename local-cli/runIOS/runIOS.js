@@ -115,22 +115,18 @@ function runOnSimulator(xcodeProject, args, scheme) {
 
     const simulatorFullName = formattedDeviceName(selectedSimulator);
     console.log(`Launching ${simulatorFullName}...`);
-    try {
-      child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
-    } catch (e) {
-      // instruments always fail with 255 because it expects more arguments,
-      // but we want it to only launch the simulator
-    }
-    resolve(selectedSimulator.udid);
+    child_process.spawnSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+
+    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
+      .then((appName) => resolve(selectedSimulator.udid, appName));
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager, args.verbose, args.port))
-  .then((appName) => {
+  .then((udid, appName) => {
     if (!appName) {
       appName = scheme;
     }
     let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
-    child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+    child_process.spawnSync('xcrun', ['simctl', 'install', udid, appPath], {stdio: 'inherit'});
 
     const bundleID = child_process.execFileSync(
       '/usr/libexec/PlistBuddy',
@@ -139,7 +135,7 @@ function runOnSimulator(xcodeProject, args, scheme) {
     ).trim();
 
     console.log(`Launching ${bundleID}`);
-    child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+    child_process.spawnSync('xcrun', ['simctl', 'launch', udid, bundleID], {stdio: 'inherit'});
   });
 }
 
