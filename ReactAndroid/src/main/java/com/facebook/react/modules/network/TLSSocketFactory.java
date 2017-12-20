@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -71,7 +72,14 @@ public class TLSSocketFactory extends SSLSocketFactory {
 
     private Socket enableTLSOnSocket(Socket socket) {
         if(socket != null && (socket instanceof SSLSocket)) {
-            ((SSLSocket)socket).setEnabledProtocols(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
+            SSLSocket sslSocket = ((SSLSocket)socket);
+            String[] supportedProtocols = sslSocket.getSupportedProtocols();
+
+            if (Arrays.asList(supportedProtocols).contains("TLSv1")) {
+              sslSocket.setEnabledProtocols(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
+            } else {
+              sslSocket.setEnabledProtocols(new String[] {"TLSv1.1", "TLSv1.2"});
+            }
         }
         return socket;
     }
