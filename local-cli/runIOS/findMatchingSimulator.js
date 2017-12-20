@@ -34,17 +34,6 @@ function findMatchingSimulator(simulators, simulatorName) {
       if (simulator.availability !== '(available)') {
         continue;
       }
-      // If there is a booted simulator, we'll use that as instruments will not boot a second simulator
-      if (simulator.state === 'Booted') {
-        if (simulatorName !== null) {
-          console.warn("We couldn't boot your defined simulator due to an already booted simulator. We are limited to one simulator launched at a time.");
-        }
-        return {
-          udid: simulator.udid,
-          name: simulator.name,
-          version
-        };
-      }
       if (simulator.name === simulatorName && !match) {
         match = {
           udid: simulator.udid,
