@@ -298,7 +298,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                       hidden:(BOOL)hidden
             absolutePosition:(CGPoint)absolutePosition
 {
-  // This is not the core layout method. It is only used by RCTShadowText to layout
+  // This is not the core layout method. It is only used by RCTTextShadowView to layout
   // nested views.
 
   if (_hidden != hidden) {

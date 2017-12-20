@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, RCTSizeComparison)
 extern NSString *const RCTIsHighlightedAttributeName;
 extern NSString *const RCTReactTagAttributeName;
 
-@interface RCTShadowText : RCTShadowView
+@interface RCTTextShadowView : RCTShadowView
 
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIColor *backgroundColor;

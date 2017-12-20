@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTTextView.h"
+#import "RCTMultilineTextInputView.h"
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -16,19 +16,19 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTShadowText.h"
-#import "RCTText.h"
+#import "RCTTextShadowView.h"
+#import "RCTTextView.h"
 #import "RCTTextSelection.h"
 #import "RCTUITextView.h"
 
-@interface RCTTextView () <RCTBackedTextInputDelegate>
+@interface RCTMultilineTextInputView () <RCTBackedTextInputDelegate>
 
 @end
 
-@implementation RCTTextView
+@implementation RCTMultilineTextInputView
 {
   RCTUITextView *_backedTextInput;
-  RCTText *_richTextView;
+  RCTTextView *_richTextView;
   NSAttributedString *_pendingAttributedText;
 
   NSString *_predictedText;
@@ -77,11 +77,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super insertReactSubview:subview atIndex:index];
 
-  if ([subview isKindOfClass:[RCTText class]]) {
+  if ([subview isKindOfClass:[RCTTextView class]]) {
     if (_richTextView) {
       RCTLogError(@"Tried to insert a second <Text> into <TextInput> - there can only be one.");
     }
-    _richTextView = (RCTText *)subview;
+    _richTextView = (RCTTextView *)subview;
 
     // If this <TextInput> is in rich text editing mode, and the child <Text> node providing rich text
     // styling has a backgroundColor, then the attributedText produced by the child <Text> node will have an

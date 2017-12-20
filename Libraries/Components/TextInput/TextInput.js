@@ -50,8 +50,8 @@ const onlyMultiline = {
 if (Platform.OS === 'android') {
   var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
 } else if (Platform.OS === 'ios') {
-  var RCTTextView = requireNativeComponent('RCTTextView', null);
-  var RCTTextField = requireNativeComponent('RCTTextField', null);
+  var RCTMultilineTextInputView = requireNativeComponent('RCTMultilineTextInputView', null);
+  var RCTSinglelineTextInputView = requireNativeComponent('RCTSinglelineTextInputView', null);
 }
 
 type Event = Object;
@@ -707,7 +707,7 @@ const TextInput = createReactClass({
         }
       }
       textContainer =
-        <RCTTextField
+        <RCTSinglelineTextInputView
           ref={this._setNativeRef}
           {...props}
           onFocus={this._onFocus}
@@ -733,7 +733,7 @@ const TextInput = createReactClass({
       }
       props.style.unshift(styles.multilineInput);
       textContainer =
-        <RCTTextView
+        <RCTMultilineTextInputView
           ref={this._setNativeRef}
           {...props}
           children={children}
@@ -926,8 +926,8 @@ const TextInput = createReactClass({
 
 var styles = StyleSheet.create({
   multilineInput: {
-    // This default top inset makes RCTTextView seem as close as possible
-    // to single-line RCTTextField defaults, using the system defaults
+    // This default top inset makes RCTMultilineTextInputView seem as close as possible
+    // to single-line RCTSinglelineTextInputView defaults, using the system defaults
     // of font size 17 and a height of 31 points.
     paddingTop: 5,
   },

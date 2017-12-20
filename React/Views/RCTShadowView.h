@@ -246,7 +246,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Returns whether or not this node acts as a leaf node in the eyes of Yoga.
- * For example `RCTShadowText` has children which it does not want Yoga
+ * For example `RCTTextShadowView` has children which it does not want Yoga
  * to lay out so in the eyes of Yoga it is a leaf node.
  * Defaults to `NO`. Can be overridden in subclasses.
  * Don't confuse this with `canHaveSubviews`.

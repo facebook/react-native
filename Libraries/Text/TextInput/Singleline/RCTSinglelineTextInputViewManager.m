@@ -7,30 +7,30 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTTextViewManager.h"
+#import "RCTSinglelineTextInputViewManager.h"
 
 #import <React/RCTBridge.h>
-#import <React/RCTConvert.h>
 #import <React/RCTFont.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 
 #import "RCTConvert+Text.h"
-#import "RCTShadowTextView.h"
-#import "RCTTextView.h"
+#import "RCTSinglelineTextInputShadowView.h"
+#import "RCTSinglelineTextInputView.h"
+#import "RCTUITextField.h"
 
-@implementation RCTTextViewManager
+@implementation RCTSinglelineTextInputViewManager
 
 RCT_EXPORT_MODULE()
 
 - (RCTShadowView *)shadowView
 {
-  return [RCTShadowTextView new];
+  return [RCTSinglelineTextInputShadowView new];
 }
 
 - (UIView *)view
 {
-  return [[RCTTextView alloc] initWithBridge:self.bridge];
+  return [[RCTSinglelineTextInputView alloc] initWithBridge:self.bridge];
 }
 
 #pragma mark - Unified <TextInput> properties
@@ -61,27 +61,21 @@ RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 
-#pragma mark - Multiline <TextInput> (aka TextView) specific properties
+#pragma mark - Singleline <TextInput> (aka TextField) specific properties
 
-RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
+RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
+RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
-
-#if !TARGET_OS_TV
-RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, backedTextInputView.dataDetectorTypes, UIDataDetectorTypes)
-#endif
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets borderAsInsets = shadowView.borderAsInsets;
   UIEdgeInsets paddingAsInsets = shadowView.paddingAsInsets;
-  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextInput *> *viewRegistry) {
-    RCTTextInput *view = viewRegistry[reactTag];
+  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTBaseTextInputView *> *viewRegistry) {
+    RCTBaseTextInputView *view = viewRegistry[reactTag];
     view.reactBorderInsets = borderAsInsets;
     view.reactPaddingInsets = paddingAsInsets;
   };
