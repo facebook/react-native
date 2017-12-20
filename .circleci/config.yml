@@ -96,8 +96,15 @@ aliases:
   - &run-node-tests
     | 
       npm test -- --maxWorkers=2
+
+  - &run-lint-checks
+    | 
       npm run lint
+
+  - &run-flow-checks
+    | 
       npm run flow -- check
+
 
   - &filter-only-master-stable
     branches:
@@ -171,6 +178,19 @@ android_defaults: &android_defaults
 
 version: 2
 jobs:
+  # Runs JavaScript lint and flow checks
+  run-js-checks:
+    <<: *defaults
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *run-lint-checks
+      - run: *run-flow-checks
+
   # Runs JavaScript tests on Node 8
   test-js-node-8:
     <<: *defaults
@@ -187,19 +207,7 @@ jobs:
   test-js-node-6:
     <<: *defaults
     docker:
-      - image: circleci/node:6.11.0
-    steps:
-      - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-      - run: *run-node-tests
-
-  # Runs JavaScript tests on Node 4
-  test-js-node-4:
-    <<: *defaults
-    docker:
-      - image: circleci/node:4.8.4
+      - image: circleci/node:6
     steps:
       - checkout
       - restore-cache: *restore-node-cache
@@ -457,7 +465,11 @@ workflows:
   build:
     jobs:
 
-      # Test Javascript on Node 8 and 6
+      # Run lint and flow checks
+      - run-js-checks:
+          filters: *filter-ignore-gh-pages
+
+      # Test JavaScript on Node 8 and 6
       - test-js-node-8:
           filters: *filter-ignore-gh-pages
       - test-js-node-6:
