@@ -81,7 +81,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   @Override
   public boolean endBatchEdit() {
     mIsBatchEdit = false;
-    if(mKey != null) {
+    if (mKey != null) {
       dispatchKeyEvent(mKey);
       mKey = null;
     }
