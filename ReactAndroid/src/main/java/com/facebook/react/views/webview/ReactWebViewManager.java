@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
@@ -462,7 +463,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         return;
       }
       if (source.hasKey("uri")) {
-        String url = source.getString("uri");
+        String url = resolveSourceUri(view.getContext(), source.getString("uri"));
         String previousUrl = view.getUrl();
         if (previousUrl != null && previousUrl.equals(url)) {
           return;
@@ -620,6 +621,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       };
     }
     return mPictureListener;
+  }
+
+  protected String resolveSourceUri(Context context, String sourceUri) {
+    if (sourceUri != null && !sourceUri.contains(":/")) {
+      // The source is just a string, so it's probably a bundled resource
+      // which was copied into the app resource folder by the react native packager
+      // so try to find it
+      String[] resTypes = {"raw", "drawable"};
+      for (String resType : resTypes) {
+        int id = context.getResources().getIdentifier(sourceUri, resType, context.getPackageName());
+        if (id != 0) {
+          return "file:///android_res/" + resType + "/" + sourceUri;
+        }
+      }
+    }
+
+    return sourceUri;
   }
 
   protected static void dispatchEvent(WebView webView, Event event) {
