@@ -175,8 +175,7 @@ public class ReactEditText extends EditText {
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
     ReactEditTextInputConnectionWrapper inputConnectionWrapper =
-        new ReactEditTextInputConnectionWrapper(null, true, reactContext, this);
-    inputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
+        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
 
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION

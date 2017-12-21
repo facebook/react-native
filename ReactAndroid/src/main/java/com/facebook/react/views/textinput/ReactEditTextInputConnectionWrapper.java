@@ -64,11 +64,10 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
 
   public ReactEditTextInputConnectionWrapper(
       InputConnection target,
-      boolean mutable,
       final ReactContext reactContext,
       final ReactEditText editText
   ) {
-    super(target, mutable);
+    super(target, false);
     mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mEditText = editText;
   }
@@ -91,13 +90,13 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
 
   @Override
   public boolean setComposingText(CharSequence text, int newCursorPosition) {
-    final int previousSelectionStart = mEditText.getSelectionStart();
-    final int previousSelectionEnd = mEditText.getSelectionEnd();
+    int previousSelectionStart = mEditText.getSelectionStart();
+    int previousSelectionEnd = mEditText.getSelectionEnd();
     String key;
-    final boolean consumed = super.setComposingText(text, newCursorPosition);
-    final boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
-    final boolean cursorDidNotMove = mEditText.getSelectionStart() == previousSelectionStart;
-    final boolean cursorMovedBackwards = mEditText.getSelectionStart() < previousSelectionStart;
+    boolean consumed = super.setComposingText(text, newCursorPosition);
+    boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
+    boolean cursorDidNotMove = mEditText.getSelectionStart() == previousSelectionStart;
+    boolean cursorMovedBackwards = mEditText.getSelectionStart() < previousSelectionStart;
     if ((noPreviousSelection && cursorMovedBackwards)
             || !noPreviousSelection && cursorDidNotMove) {
       key = BACKSPACE_KEY_VALUE;
@@ -145,7 +144,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   }
 
   private void dispatchKeyEventOrEnqueue(String key) {
-    if(mIsBatchEdit) {
+    if (mIsBatchEdit) {
       mKey = key;
     } else {
       dispatchKeyEvent(key);
