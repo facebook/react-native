@@ -47,7 +47,7 @@
 
   _onPressItem = <span class="hljs-function">(<span class="hljs-params">id: string</span>) =&gt;</span> {
     <span class="hljs-comment">// updater functions are preferred for transactional updates</span>
-    <span class="hljs-keyword">this</span>.setState(<span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> {
+    <span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> {
       <span class="hljs-comment">// copy the map rather than modifying state.</span>
       <span class="hljs-keyword">const</span> selected = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>(state.selected);
       selected.set(id, !selected.get(id)); <span class="hljs-comment">// toggle</span>

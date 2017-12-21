@@ -245,7 +245,7 @@ Pod installation complete! There are 3 dependencies <span class="hljs-keyword">f
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RNHighScores</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   render() {
-    <span class="hljs-keyword">var</span> contents = <span class="hljs-keyword">this</span>.props[<span class="hljs-string">'scores'</span>].map(<span class="hljs-function"><span class="hljs-params">score</span> =&gt;</span> (
+    <span class="hljs-keyword">var</span> contents = <span class="hljs-keyword">this</span>.props[<span class="hljs-string">'scores'</span>].map(<span class="hljs-function">(<span class="hljs-params">score</span>) =&gt;</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{score.name}</span>&gt;</span>
         {score.name}:{score.value}
         {'\n'}

@@ -30,11 +30,11 @@
 <p>Networking is an inherently asynchronous operation. Fetch methods will return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> that makes it straightforward to write code that works in an asynchronous manner:</p>
 <pre><code class="hljs css javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMoviesFromApiAsync</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">'https://facebook.github.io/react-native/movies.json'</span>)
-    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json())
-    .then(<span class="hljs-function"><span class="hljs-params">responseJson</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json())
+    .then(<span class="hljs-function">(<span class="hljs-params">responseJson</span>) =&gt;</span> {
       <span class="hljs-keyword">return</span> responseJson.movies;
     })
-    .catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    .catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
       <span class="hljs-built_in">console</span>.error(error);
     });
 }
@@ -121,7 +121,7 @@
 <h3><a class="anchor" aria-hidden="true" name="using-other-networking-libraries"></a><a href="#using-other-networking-libraries" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using Other Networking Libraries</h3>
 <p>The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest">XMLHttpRequest API</a> is built in to React Native. This means that you can use third party libraries such as <a href="https://github.com/niftylettuce/frisbee">frisbee</a> or <a href="https://github.com/mzabriskie/axios">axios</a> that depend on it, or you can use the XMLHttpRequest API directly if you prefer.</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">var</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-request.onreadystatechange = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+request.onreadystatechange = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (request.readyState !== <span class="hljs-number">4</span>) {
     <span class="hljs-keyword">return</span>;
   }
@@ -148,17 +148,17 @@ ws.onopen = <span class="hljs-function"><span class="hljs-params">()</span> =&gt
   ws.send(<span class="hljs-string">'something'</span>); <span class="hljs-comment">// send a message</span>
 };
 
-ws.onmessage = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+ws.onmessage = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
   <span class="hljs-comment">// a message was received</span>
   <span class="hljs-built_in">console</span>.log(e.data);
 };
 
-ws.onerror = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+ws.onerror = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
   <span class="hljs-comment">// an error occurred</span>
   <span class="hljs-built_in">console</span>.log(e.message);
 };
 
-ws.onclose = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+ws.onclose = <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
   <span class="hljs-comment">// connection closed</span>
   <span class="hljs-built_in">console</span>.log(e.code, e.reason);
 };

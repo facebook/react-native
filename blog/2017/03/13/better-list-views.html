@@ -56,7 +56,7 @@
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
       <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
       <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span>
-        this.setState(oldState =&gt; ({
+        this.setState((oldState) =&gt; ({
           selected: {
             // New instance breaks `===`
             ...oldState.selected, // copy old data

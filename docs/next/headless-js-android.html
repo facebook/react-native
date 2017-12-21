@@ -10,7 +10,7 @@
 <pre><code class="hljs css javascript">AppRegistry.registerHeadlessTask(<span class="hljs-string">'SomeTaskName'</span>, () =&gt; <span class="hljs-built_in">require</span>(<span class="hljs-string">'SomeTaskName'</span>));
 </code></pre>
 <p>Then, in <code>SomeTaskName.js</code>:</p>
-<pre><code class="hljs css javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> taskData =&gt; {
+<pre><code class="hljs css javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-keyword">async</span> (taskData) =&gt; {
   <span class="hljs-comment">// do stuff</span>
 };
 </code></pre>

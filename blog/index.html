@@ -365,7 +365,7 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
 </code></pre>
 <p>There is <a href="https://github.com/claudepache/es-optional-chaining">an ECMAScript proposal to introduce the existential operator</a> which will make this much more convenient. But until a time when that proposal is finalized, we want a solution that improves our quality of life, maintains existing language semantics, and encourages type safety with Flow.</p>
 <p>We came up with an existential <em>function</em> we call <code>idx</code>.</p>
-<pre><code class="hljs css javascript">idx(props, _ =&gt; _.user.friends[<span class="hljs-number">0</span>].friends);
+<pre><code class="hljs css javascript">idx(props, (_) =&gt; _.user.friends[<span class="hljs-number">0</span>].friends);
 </code></pre>
 <p>The invocation in this code snippet behaves similarly to the boolean expression in the code snippet above, except with significantly less repetition. The <code>idx</code> function takes exactly two arguments:</p>
 <ul>
@@ -436,7 +436,7 @@ $ <span class="hljs-built_in">create-react-native-app</span> <span class="hljs-s
     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyItem</span>
       <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span>
       <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span>
-        this.setState(oldState =&gt; ({
+        this.setState((oldState) =&gt; ({
           selected: {
             // New instance breaks `===`
             ...oldState.selected, // copy old data

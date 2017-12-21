@@ -226,7 +226,7 @@ AsyncStorage.setItem(<span class="hljs-string">'UID123'</span>, <span class="hlj
 </table>
 <p>Example:</p>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
-AsyncStorage.multiRemove(keys, err =&gt; {
+AsyncStorage.multiRemove(keys, (err) =&gt; {
   <span class="hljs-comment">// keys k1 &amp; k2 removed, if they existed</span>
   <span class="hljs-comment">// do most stuff after removal (if you want)</span>
 });
@@ -283,8 +283,8 @@ AsyncStorage.multiRemove(keys, err =&gt; {
   [<span class="hljs-string">'UID345'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID345_delta)],
 ];
 
-AsyncStorage.multiSet(multi_set_pairs, err =&gt; {
-  AsyncStorage.multiMerge(multi_merge_pairs, err =&gt; {
+AsyncStorage.multiSet(multi_set_pairs, (err) =&gt; {
+  AsyncStorage.multiMerge(multi_merge_pairs, (err) =&gt; {
     AsyncStorage.multiGet([<span class="hljs-string">'UID234'</span>, <span class="hljs-string">'UID345'</span>], (err, stores) =&gt; {
       stores.map(<span class="hljs-function">(<span class="hljs-params">result, i, store</span>) =&gt;</span> {
         <span class="hljs-keyword">let</span> key = store[i][<span class="hljs-number">0</span>];

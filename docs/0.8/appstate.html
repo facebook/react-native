@@ -25,7 +25,7 @@
     AppState.removeEventListener(<span class="hljs-string">'change'</span>, <span class="hljs-keyword">this</span>._handleAppStateChange);
   }
 
-  _handleAppStateChange = <span class="hljs-function"><span class="hljs-params">nextAppState</span> =&gt;</span> {
+  _handleAppStateChange = <span class="hljs-function">(<span class="hljs-params">nextAppState</span>) =&gt;</span> {
     <span class="hljs-keyword">if</span> (
       <span class="hljs-keyword">this</span>.state.appState.match(<span class="hljs-regexp">/inactive|background/</span>) &amp;&amp;
       nextAppState === <span class="hljs-string">'active'</span>

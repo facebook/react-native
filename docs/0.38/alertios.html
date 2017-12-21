@@ -96,7 +96,7 @@
     },
     {
       <span class="hljs-attr">text</span>: <span class="hljs-string">'OK'</span>,
-      <span class="hljs-attr">onPress</span>: <span class="hljs-function"><span class="hljs-params">password</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'OK Pressed, password: '</span> + password),
+      <span class="hljs-attr">onPress</span>: <span class="hljs-function">(<span class="hljs-params">password</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'OK Pressed, password: '</span> + password),
     },
   ],
   <span class="hljs-string">'secure-text'</span>
@@ -107,7 +107,7 @@
 <pre><code class="hljs css javascript">AlertIOS.prompt(
   <span class="hljs-string">'Update username'</span>,
   <span class="hljs-literal">null</span>,
-  text =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Your username is '</span> + text),
+  (text) =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Your username is '</span> + text),
   <span class="hljs-literal">null</span>,
   <span class="hljs-string">'default'</span>
 );

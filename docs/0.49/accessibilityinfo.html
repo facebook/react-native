@@ -16,7 +16,7 @@
       <span class="hljs-string">'change'</span>,
       <span class="hljs-keyword">this</span>._handleScreenReaderToggled
     );
-    AccessibilityInfo.fetch().done(<span class="hljs-function"><span class="hljs-params">isEnabled</span> =&gt;</span> {
+    AccessibilityInfo.fetch().done(<span class="hljs-function">(<span class="hljs-params">isEnabled</span>) =&gt;</span> {
       <span class="hljs-keyword">this</span>.setState({
         <span class="hljs-attr">screenReaderEnabled</span>: isEnabled,
       });
@@ -30,7 +30,7 @@
     );
   }
 
-  _handleScreenReaderToggled = <span class="hljs-function"><span class="hljs-params">isEnabled</span> =&gt;</span> {
+  _handleScreenReaderToggled = <span class="hljs-function">(<span class="hljs-params">isEnabled</span>) =&gt;</span> {
     <span class="hljs-keyword">this</span>.setState({
       <span class="hljs-attr">screenReaderEnabled</span>: isEnabled,
     });
