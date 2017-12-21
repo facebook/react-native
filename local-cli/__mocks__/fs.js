@@ -347,11 +347,6 @@ fs.createWriteStream.mockImplementation(filePath => {
   const writeStream = new stream.Writable({
     write(chunk, encoding, callback) {
       this.__chunks.push(chunk);
-      /**
-       * We can't use `final` as that has been added to Node 8.x.
-       * For backwards compatibility and minimal code paths,
-       * we update the content of a file immediately
-       */
       node[path.basename(filePath)] = this.__chunks.join('');
       callback();
     },
