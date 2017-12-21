@@ -1044,7 +1044,7 @@ public class ReactInstanceManager {
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
-    rootView.runApplication();
+    rootView.invokeJSEntryPoint();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",

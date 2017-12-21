@@ -7,10 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTShadowView.h>
+#import "RCTRawTextViewManager.h"
 
-@interface RCTShadowRawText : RCTShadowView
+#import "RCTRawTextShadowView.h"
 
-@property (nonatomic, copy) NSString *text;
+@implementation RCTRawTextViewManager
+
+RCT_EXPORT_MODULE(RCTRawText)
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTRawTextShadowView new];
+}
+
+RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end

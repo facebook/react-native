@@ -7,27 +7,27 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTText.h"
+#import "RCTTextView.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTShadowText.h"
+#import "RCTTextShadowView.h"
 
-static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDescendants)
+static void collectNonTextDescendants(RCTTextView *view, NSMutableArray *nonTextDescendants)
 {
   for (UIView *child in view.reactSubviews) {
-    if ([child isKindOfClass:[RCTText class]]) {
-      collectNonTextDescendants((RCTText *)child, nonTextDescendants);
+    if ([child isKindOfClass:[RCTTextView class]]) {
+      collectNonTextDescendants((RCTTextView *)child, nonTextDescendants);
     } else if (!CGRectEqualToRect(child.frame, CGRectZero)) {
       [nonTextDescendants addObject:child];
     }
   }
 }
 
-@implementation RCTText
+@implementation RCTTextView
 {
   NSTextStorage *_textStorage;
   CAShapeLayer *_highlightLayer;
@@ -78,11 +78,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   [UIView performWithoutAnimation:^{
     [super reactSetFrame:frame];
   }];
-}
-
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  self.backgroundColor = inheritedBackgroundColor;
 }
 
 - (void)didUpdateReactSubviews

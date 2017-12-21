@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTShadowText.h"
+#import "RCTTextShadowView.h"
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
@@ -18,9 +18,9 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
-#import "RCTShadowRawText.h"
-#import "RCTText.h"
+#import "RCTRawTextShadowView.h"
 #import "RCTTextView.h"
+#import "RCTMultilineTextInputView.h"
 
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
 NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
@@ -31,7 +31,7 @@ static CGFloat const kAutoSizeWidthErrorMargin  = 0.05f;
 static CGFloat const kAutoSizeHeightErrorMargin = 0.025f;
 static CGFloat const kAutoSizeGranularity       = 0.001f;
 
-@implementation RCTShadowText
+@implementation RCTTextShadowView
 {
   NSTextStorage *_cachedTextStorage;
   CGFloat _cachedTextStorageWidth;
@@ -43,7 +43,7 @@ static CGFloat const kAutoSizeGranularity       = 0.001f;
 
 static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
-  RCTShadowText *shadowText = (__bridge RCTShadowText *)YGNodeGetContext(node);
+  RCTTextShadowView *shadowText = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
   [shadowText calculateTextFrame:textStorage];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
@@ -74,7 +74,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _writingDirection = NSWritingDirectionNatural;
     _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
-    YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
+     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
@@ -109,7 +109,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 - (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
-  if ([[self reactSuperview] isKindOfClass:[RCTShadowText class]]) {
+  if ([[self reactSuperview] isKindOfClass:[RCTTextShadowView class]]) {
     return parentProperties;
   }
 
@@ -122,7 +122,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   CGRect textFrame = [self calculateTextFrame:textStorage];
   BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    RCTText *view = (RCTText *)viewRegistry[self.reactTag];
+    RCTTextView *view = (RCTTextView *)viewRegistry[self.reactTag];
     view.textFrame = textFrame;
     view.textStorage = textStorage;
     view.selectable = selectable;
@@ -130,14 +130,14 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     /**
      * NOTE: this logic is included to support rich text editing inside multiline
      * `<TextInput>` controls. It is required in order to ensure that the
-     * textStorage (aka attributed string) is copied over from the RCTShadowText
-     * to the RCTText view in time to be used to update the editable text content.
-     * TODO: we should establish a delegate relationship betweeen RCTTextView
-     * and its contaned RCTText element when they get inserted and get rid of this
+     * textStorage (aka attributed string) is copied over from the RCTTextShadowView
+     * to the RCTTextView view in time to be used to update the editable text content.
+     * TODO: we should establish a delegate relationship betweeen RCTMultilineTextInputView
+     * and its contaned RCTTextView element when they get inserted and get rid of this
      */
     UIView *parentView = viewRegistry[parentTag];
     if ([parentView respondsToSelector:@selector(performTextUpdate)]) {
-      [(RCTTextView *)parentView performTextUpdate];
+      [(RCTMultilineTextInputView *)parentView performTextUpdate];
     }
   }];
 
@@ -308,8 +308,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   CGFloat heightOfTallestSubview = 0.0;
   NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
   for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTShadowText class]]) {
-      RCTShadowText *shadowText = (RCTShadowText *)child;
+    if ([child isKindOfClass:[RCTTextShadowView class]]) {
+      RCTTextShadowView *shadowText = (RCTTextShadowView *)child;
       [attributedString appendAttributedString:
        [shadowText _attributedStringWithFontFamily:fontFamily
                                           fontSize:fontSize
@@ -321,8 +321,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
                                    backgroundColor:shadowText.backgroundColor ?: backgroundColor
                                            opacity:opacity * shadowText.opacity]];
       [child setTextComputed];
-    } else if ([child isKindOfClass:[RCTShadowRawText class]]) {
-      RCTShadowRawText *shadowRawText = (RCTShadowRawText *)child;
+    } else if ([child isKindOfClass:[RCTRawTextShadowView class]]) {
+      RCTRawTextShadowView *shadowRawText = (RCTRawTextShadowView *)child;
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
       [child setTextComputed];
     } else {
@@ -340,7 +340,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       if (height > heightOfTallestSubview) {
         heightOfTallestSubview = height;
       }
-      // Don't call setTextComputed on this child. RCTTextManager takes care of
+      // Don't call setTextComputed on this child. RCTTextViewManager takes care of
       // processing inline UIViews.
     }
   }
@@ -620,12 +620,6 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   return requiredSize;
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  [self dirtyText];
-}
-
 #define RCT_TEXT_PROPERTY(setProp, ivar, type) \
 - (void)set##setProp:(type)value;              \
 {                                              \
@@ -659,8 +653,8 @@ RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *);
 {
   _allowFontScaling = allowFontScaling;
   for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTShadowText class]]) {
-      ((RCTShadowText *)child).allowFontScaling = allowFontScaling;
+    if ([child isKindOfClass:[RCTTextShadowView class]]) {
+      ((RCTTextShadowView *)child).allowFontScaling = allowFontScaling;
     }
   }
   [self dirtyText];
@@ -674,8 +668,8 @@ RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *);
     _fontSizeMultiplier = 1.0;
   }
   for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTShadowText class]]) {
-      ((RCTShadowText *)child).fontSizeMultiplier = fontSizeMultiplier;
+    if ([child isKindOfClass:[RCTTextShadowView class]]) {
+      ((RCTTextShadowView *)child).fontSizeMultiplier = fontSizeMultiplier;
     }
   }
   [self dirtyText];

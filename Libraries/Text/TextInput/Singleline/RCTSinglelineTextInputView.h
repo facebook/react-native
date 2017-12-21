@@ -7,19 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTRawTextManager.h"
+#import <UIKit/UIKit.h>
 
-#import "RCTShadowRawText.h"
+#import <React/RCTComponent.h>
+#import <React/RCTView.h>
 
-@implementation RCTRawTextManager
+#import "RCTBaseTextInputView.h"
 
-RCT_EXPORT_MODULE()
+@class RCTUITextField;
 
-- (RCTShadowView *)shadowView
-{
-  return [RCTShadowRawText new];
-}
+@interface RCTSinglelineTextInputView : RCTBaseTextInputView
 
-RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
+@property (nonatomic, assign) BOOL caretHidden;
+@property (nonatomic, strong) NSNumber *maxLength;
 
 @end

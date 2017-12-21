@@ -87,6 +87,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+  private @Nullable Runnable mJSEntryPoint;
 
   public ReactRootView(Context context) {
     super(context);
@@ -379,7 +380,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
     if (getRootViewTag() != 0) {
-      runApplication();
+      invokeJSEntryPoint();
     }
   }
 
@@ -387,34 +388,61 @@ public class ReactRootView extends SizeMonitoringFrameLayout
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /* package */ void runApplication() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
-    try {
-      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
-        return;
-      }
-
-      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-      if (reactContext == null) {
-        return;
-      }
-
-      CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-
-      WritableNativeMap appParams = new WritableNativeMap();
-      appParams.putDouble("rootTag", getRootViewTag());
-      @Nullable Bundle appProperties = getAppProperties();
-      if (appProperties != null) {
-        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-      }
-
-      mShouldLogContentAppeared = true;
-
-      String jsAppModuleName = getJSModuleName();
-      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+  /*package */ void invokeJSEntryPoint() {
+    if (mJSEntryPoint == null) {
+      defaultJSEntryPoint();
+    } else {
+      mJSEntryPoint.run();
     }
+  }
+
+  /**
+   * Set a custom entry point for invoking JS. By default, this is AppRegistry.runApplication
+   * @param jsEntryPoint
+   */
+  public void setJSEntryPoint(Runnable jsEntryPoint) {
+    mJSEntryPoint = jsEntryPoint;
+  }
+
+  public void invokeDefaultJSEntryPoint(@Nullable Bundle appProperties) {
+    UiThreadUtil.assertOnUiThread();
+    if (appProperties != null) {
+      mAppProperties = appProperties;
+    }
+    defaultJSEntryPoint();
+  }
+
+  /**
+   * Calls the default entry point into JS which is AppRegistry.runApplication()
+   */
+  private void defaultJSEntryPoint() {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+      try {
+        if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+          return;
+        }
+
+        ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+        if (reactContext == null) {
+          return;
+        }
+
+        CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+        WritableNativeMap appParams = new WritableNativeMap();
+        appParams.putDouble("rootTag", getRootViewTag());
+        @Nullable Bundle appProperties = getAppProperties();
+        if (appProperties != null) {
+          appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+        }
+
+        mShouldLogContentAppeared = true;
+
+        String jsAppModuleName = getJSModuleName();
+        catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
   }
 
   /**

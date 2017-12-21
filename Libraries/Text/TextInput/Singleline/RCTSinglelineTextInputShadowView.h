@@ -9,6 +9,6 @@
 
 #import <React/RCTShadowView.h>
 
-@interface RCTShadowTextView : RCTShadowView
+@interface RCTSinglelineTextInputShadowView : RCTShadowView
 
 @end
