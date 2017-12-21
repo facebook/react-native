@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Pair;
 import android.widget.Toast;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -51,6 +52,7 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -62,7 +64,9 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import javax.annotation.Nullable;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -83,9 +87,9 @@ import okhttp3.RequestBody;
  * bound to make sure that we don't display overlay or that we we don't listen for sensor events
  * when app is backgrounded.
  *
- * {@link ReactInstanceDevCommandsHandler} implementation is responsible for instantiating this
- * instance and for populating with an instance of {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewCatalystContextCreated}). Also, instance manager is
+ * {@link ReactInstanceManager} implementation is responsible for instantiating this class
+ * as well as for populating with a referece to {@link CatalystInstance} whenever instance
+ * manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager is
  * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
  * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  *
@@ -110,13 +114,16 @@ public class DevSupportManagerImpl implements
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
 
+  public static final String EMOJI_HUNDRED_POINTS_SYMBOL = " \uD83D\uDCAF";
+  public static final String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " \uD83D\uDE45";
+
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
   private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions =
       new LinkedHashMap<>();
-  private final ReactInstanceDevCommandsHandler mReactInstanceCommandsHandler;
+  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
@@ -174,13 +181,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManagerDevHelper reactInstanceManagerHelper,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     int minNumShakes) {
 
     this(applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManagerHelper,
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
@@ -190,13 +197,13 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes) {
-    mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
@@ -240,7 +247,8 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController = new DevLoadingViewController(applicationContext);
+    mDevLoadingViewController =
+            new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
   }
 
   @Override
@@ -363,8 +371,13 @@ public class DevSupportManagerImpl implements
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-              mRedBoxDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
+              Context context = mReactInstanceManagerHelper.getCurrentActivity();
+              if (context == null) {
+                FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " +
+                        "is not available, here is the error that redbox would've displayed: " + message);
+                return;
+              }
+              mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerImpl.this, mRedBoxHandler);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
@@ -395,16 +408,36 @@ public class DevSupportManagerImpl implements
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
     /* register standard options */
     options.put(
-        mApplicationContext.getString(R.string.catalyst_reloadjs), new DevOptionHandler() {
+        mApplicationContext.getString(R.string.catalyst_reloadjs),
+        new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             handleReloadJS();
           }
         });
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      // The concatenation is applied directly here because XML isn't emoji-friendly
+      String nuclideJsDebugMenuItemTitle =
+          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide)
+              + EMOJI_HUNDRED_POINTS_SYMBOL;
+      options.put(
+          nuclideJsDebugMenuItemTitle,
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+            }
+          });
+    }
+    String remoteJsDebugMenuItemTitle =
+        mDevSettings.isRemoteJSDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_debugjs_off)
+            : mApplicationContext.getString(R.string.catalyst_debugjs);
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
+    }
     options.put(
-        mDevSettings.isRemoteJSDebugEnabled() ?
-            mApplicationContext.getString(R.string.catalyst_debugjs_off) :
-            mApplicationContext.getString(R.string.catalyst_debugjs),
+        remoteJsDebugMenuItemTitle,
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -439,7 +472,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceCommandsHandler.toggleElementInspector();
+            mReactInstanceManagerHelper.toggleElementInspector();
           }
         });
     options.put(
@@ -449,6 +482,15 @@ public class DevSupportManagerImpl implements
       new DevOptionHandler() {
         @Override
         public void onOptionSelected() {
+          if (!mDevSettings.isFpsDebugEnabled()) {
+            // Request overlay permission if needed when "Show Perf Monitor" option is selected
+            Context context = mReactInstanceManagerHelper.getCurrentActivity();
+            if (context == null) {
+              FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+            } else {
+              DebugOverlayController.requestPermission(context);
+            }
+          }
           mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
         }
       });
@@ -476,8 +518,14 @@ public class DevSupportManagerImpl implements
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
+    Context context = mReactInstanceManagerHelper.getCurrentActivity();
+    if (context == null) {
+      FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " +
+              "isn't available");
+      return;
+    }
     mDevOptionsDialog =
-        new AlertDialog.Builder(mApplicationContext)
+        new AlertDialog.Builder(context)
             .setItems(
                 options.keySet().toArray(new String[0]),
                 new DialogInterface.OnClickListener() {
@@ -494,7 +542,6 @@ public class DevSupportManagerImpl implements
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowOverlayCompat.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
 
@@ -506,7 +553,7 @@ public class DevSupportManagerImpl implements
   @Override
   public void setDevSupportEnabled(boolean isDevSupportEnabled) {
     mIsDevSupportEnabled = isDevSupportEnabled;
-    reload();
+    reloadSettings();
   }
 
   @Override
@@ -575,7 +622,7 @@ public class DevSupportManagerImpl implements
         PackageInfo thisPackage = mApplicationContext.getPackageManager()
             .getPackageInfo(packageName, 0);
         if (mJSBundleTempFile.lastModified() > thisPackage.lastUpdateTime) {
-          // Base APK has not been updated since we donwloaded JS, but if app is using exopackage
+          // Base APK has not been updated since we downloaded JS, but if app is using exopackage
           // it may only be a single dex that has been updated. We check for exopackage dir update
           // time in that case.
           File exopackageDir = new File(
@@ -646,7 +693,16 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void reloadSettings() {
-    reload();
+    if (UiThreadUtil.isOnUiThread()) {
+      reload();
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          reload();
+        }
+      });
+    }
   }
 
   public void onInternalSettingsChanged() { reloadSettings(); }
@@ -698,6 +754,16 @@ public class DevSupportManagerImpl implements
   @Override
   public @Nullable StackFrame[] getLastErrorStack() {
     return mLastErrorStack;
+  }
+
+  @Override
+  public void onPackagerConnected() {
+    // No-op
+  }
+
+  @Override
+  public void onPackagerDisconnected() {
+    // No-op
   }
 
   @Override
@@ -829,7 +895,7 @@ public class DevSupportManagerImpl implements
         }
       }
     };
-    mReactInstanceCommandsHandler.onReloadWithJSDebugger(factory);
+    mReactInstanceManagerHelper.onReloadWithJSDebugger(factory);
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
@@ -876,7 +942,7 @@ public class DevSupportManagerImpl implements
                   @Override
                   public void run() {
                     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }
@@ -931,6 +997,8 @@ public class DevSupportManagerImpl implements
   }
 
   private void reload() {
+    UiThreadUtil.assertOnUiThread();
+
     // reload settings, show/hide debug overlay if required & start/stop shake detector
     if (mIsDevSupportEnabled) {
       // update visibility of FPS debug overlay depending on the settings

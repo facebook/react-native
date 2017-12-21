@@ -15,38 +15,37 @@ const log = require('../util/log').out('bundle');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const Server = require('metro-bundler/src/Server');
+const Server = require('metro/src/Server');
+const {Terminal} = require('metro-core');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const Terminal = require('metro-bundler/src/lib/Terminal');
+const TerminalReporter = require('metro/src/lib/TerminalReporter');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const TerminalReporter = require('metro-bundler/src/lib/TerminalReporter');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
+const TransformCaching = require('metro/src/lib/TransformCaching');
 
+const {defaults} = require('metro');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const outputBundle = require('metro-bundler/src/shared/output/bundle');
+const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
-const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
-const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults').providesModuleNodeModules;
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from 'metro-bundler';
+import type {ConfigT} from 'metro';
+
+const defaultAssetExts = defaults.assetExts;
+const defaultSourceExts = defaults.sourceExts;
+const defaultPlatforms = defaults.platforms;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const defaultProvidesModuleNodeModules = defaults.providesModuleNodeModules;
 
 async function buildBundle(
   args: OutputOptions & {
@@ -94,9 +93,6 @@ async function buildBundle(
         ? config.getProvidesModuleNodeModules()
         : defaultProvidesModuleNodeModules;
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
     const terminal = new Terminal(process.stdout);
     const options = {
       assetExts: defaultAssetExts.concat(assetExts),
@@ -136,6 +132,7 @@ async function buildBundle(
   const outputAssets = await packagerInstance.getAssets({
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...requestOpts,
+    bundleType: 'todo',
   });
 
   // When we're done saving bundle output and the assets, we're done.

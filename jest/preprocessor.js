@@ -20,7 +20,7 @@ const babel = require('babel-core');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const babelRegisterOnly = require('metro-bundler/src/babelRegisterOnly');
+const babelRegisterOnly = require('metro/src/babelRegisterOnly');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -29,7 +29,7 @@ const generate = require('babel-generator').default;
 
 const nodeFiles = RegExp([
   '/local-cli/',
-  '/metro-bundler/',
+  '/metro(-bundler)?/',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
@@ -38,7 +38,7 @@ babelRegisterOnly([]);
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const transformer = require('metro-bundler/src/transformer.js');
+const transformer = require('metro/src/transformer.js');
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
     if (nodeFiles.test(file)) { // node specific transforms only
@@ -75,7 +75,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro-bundler/src/transformer.js'),
+    require.resolve('metro/src/transformer.js'),
     require.resolve('babel-core/package.json'),
   ]),
 };

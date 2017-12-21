@@ -16,7 +16,6 @@
 
 @implementation RCTSurfaceView {
   RCTSurfaceRootView *_Nullable _rootView;
-  UIView *_Nullable _activityIndicatorView;
   RCTSurfaceStage _stage;
 }
 
@@ -44,28 +43,12 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
   [_rootView removeFromSuperview];
   _rootView = rootView;
-  [self updateStage];
+  [self _updateStage];
 }
 
 - (RCTSurfaceRootView *)rootView
 {
   return _rootView;
-}
-
-#pragma mark - activityIndicatorView
-
-- (void)setActivityIndicatorView:(UIView *)view
-{
-  [_activityIndicatorView removeFromSuperview];
-  _activityIndicatorView = view;
-  _activityIndicatorView.frame = self.bounds;
-  _activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  [self addSubview:_activityIndicatorView];
-}
-
-- (UIView *)activityIndicatorView
-{
-  return _activityIndicatorView;
 }
 
 #pragma mark - stage
@@ -78,7 +61,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
   _stage = stage;
 
-  [self updateStage];
+  [self _updateStage];
 }
 
 - (RCTSurfaceStage)stage
@@ -86,29 +69,17 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   return _stage;
 }
 
-#pragma mark - Visibility
+#pragma mark - Private
 
-- (void)updateStage
+- (void)_updateStage
 {
-  BOOL displayRootView = _stage & RCTSurfaceStageSurfaceDidInitialLayout;
-  BOOL displayActivityIndicator = !displayRootView;
-
-  if (displayRootView) {
+  if (RCTSurfaceStageIsRunning(_stage)) {
     if (_rootView.superview != self) {
       [self addSubview:_rootView];
     }
   }
   else {
     [_rootView removeFromSuperview];
-  }
-
-  if (displayActivityIndicator) {
-    if (!_activityIndicatorView && self.activityIndicatorViewFactory != nil) {
-      self.activityIndicatorView = self.activityIndicatorViewFactory();
-    }
-  }
-  else {
-    [_activityIndicatorView removeFromSuperview];
   }
 }
 
