@@ -18,25 +18,25 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
-class ReactTextInputInputConnection extends InputConnectionWrapper {
-  public static final String NewLineRawValue = "\n";
-  public static final String BackspaceKeyValue = "Backspace";
-  public static final String EnterKeyValue = "Enter";
 
-  private @Nullable ReactEditText mEditText;
+class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
+  public static final String NEWLINE_RAW_VALUE = "\n";
+  public static final String BACKSPACE_KEY_VALUE = "Backspace";
+  public static final String ENTER_KEY_VALUE = "Enter";
+
+  private ReactEditText mEditText;
   private EventDispatcher mEventDispatcher;
   private boolean mIsBatchEdit;
   private @Nullable String mKey = null;
 
-  public ReactTextInputInputConnection(
+  public ReactEditTextInputConnectionWrapper(
       InputConnection target,
       boolean mutable,
-      final ReactContext reactContext) {
+      final ReactContext reactContext,
+      final ReactEditText editText
+  ) {
     super(target, mutable);
     mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-  }
-
-  public void setEditText(final ReactEditText editText) {
     mEditText = editText;
   }
 
@@ -65,11 +65,11 @@ class ReactTextInputInputConnection extends InputConnectionWrapper {
     final boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
     if ((noPreviousSelection && mEditText.getSelectionStart() < previousSelectionStart)
             || !noPreviousSelection && mEditText.getSelectionStart() == previousSelectionStart) {
-      key = BackspaceKeyValue;
+      key = BACKSPACE_KEY_VALUE;
     } else {
       key = String.valueOf(mEditText.getText().charAt(mEditText.getSelectionStart() - 1));
     }
-    enqueueKeyEventIfBatchEdit(key);
+    dispatchKeyEventOrEnqueue(key);
     return consumed;
   }
 
@@ -79,9 +79,9 @@ class ReactTextInputInputConnection extends InputConnectionWrapper {
     // Assume not a keyPress if length > 1
     if (key.length() <= 1) {
       if (key.equals("")) {
-        key = BackspaceKeyValue;
+        key = BACKSPACE_KEY_VALUE;
       }
-      enqueueKeyEventIfBatchEdit(key);
+      dispatchKeyEventOrEnqueue(key);
     }
 
     return super.commitText(text, newCursorPosition);
@@ -89,7 +89,7 @@ class ReactTextInputInputConnection extends InputConnectionWrapper {
 
   @Override
   public boolean deleteSurroundingText(int beforeLength, int afterLength) {
-    dispatchKeyEvent(BackspaceKeyValue);
+    dispatchKeyEvent(BACKSPACE_KEY_VALUE);
     return super.deleteSurroundingText(beforeLength, afterLength);
   }
 
@@ -101,15 +101,15 @@ class ReactTextInputInputConnection extends InputConnectionWrapper {
   public boolean sendKeyEvent(KeyEvent event) {
     if(event.getAction() == KeyEvent.ACTION_DOWN) {
       if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
-        dispatchKeyEvent(BackspaceKeyValue);
+        dispatchKeyEvent(BACKSPACE_KEY_VALUE);
       } else if(event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-        dispatchKeyEvent(EnterKeyValue);
+        dispatchKeyEvent(ENTER_KEY_VALUE);
       }
     }
     return super.sendKeyEvent(event);
   }
 
-  private void enqueueKeyEventIfBatchEdit(String key) {
+  private void dispatchKeyEventOrEnqueue(String key) {
     if(mIsBatchEdit) {
       mKey = key;
     } else {
@@ -118,8 +118,8 @@ class ReactTextInputInputConnection extends InputConnectionWrapper {
   }
 
   private void dispatchKeyEvent(String key) {
-    if (key.equals(NewLineRawValue)) {
-      key = EnterKeyValue;
+    if (key.equals(NEWLINE_RAW_VALUE)) {
+      key = ENTER_KEY_VALUE;
     }
     mEventDispatcher.dispatchEvent(
         new ReactTextInputKeyPressEvent(

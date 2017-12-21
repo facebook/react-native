@@ -80,7 +80,6 @@ public class ReactEditText extends EditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
-  private final InputConnectionWrapper mInputConnectionWrapper;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
@@ -88,7 +87,7 @@ public class ReactEditText extends EditText {
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
-  public ReactEditText(Context context, InputConnectionWrapper inputConnectionWrapper) {
+  public ReactEditText(Context context) {
     super(context);
     setFocusableInTouchMode(false);
 
@@ -109,7 +108,6 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
-    mInputConnectionWrapper = inputConnectionWrapper;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -184,13 +182,16 @@ public class ReactEditText extends EditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    mInputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
+    ReactContext reactContext = (ReactContext) getContext();
+    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
+        new ReactEditTextInputConnectionWrapper(null, true, reactContext, this);
+    inputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
 
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return mInputConnectionWrapper;
+    return inputConnectionWrapper;
   }
 
   @Override

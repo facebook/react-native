@@ -88,9 +88,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public ReactEditText createViewInstance(ThemedReactContext context) {
-    ReactTextInputInputConnection inputConnection = new ReactTextInputInputConnection(null, true, context);
-    ReactEditText editText = new ReactEditText(context, inputConnection);
-    inputConnection.setEditText(editText);
+    ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
