@@ -60,9 +60,10 @@ struct YGNode {
   YGNodeType getNodeType() const;
   YGMeasureFunc getMeasure() const;
   YGBaselineFunc getBaseline() const;
-  YGStyle getStyle() const;
-  YGLayout getLayout() const;
-  YGLayout& getLayoutRef(); // TODO remove its use
+  // For Perfomance reasons passing as reference.
+  YGStyle& getStyle();
+  // For Perfomance reasons passing as reference.
+  YGLayout& getLayout();
   uint32_t getLineIndex() const;
   YGNodeRef getParent() const;
   YGVector getChildren() const;
