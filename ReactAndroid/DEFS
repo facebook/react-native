@@ -86,7 +86,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     '-XX:MaxPermSize=620m',
     '-Drobolectric.offline=true',
   ]
-  if os.path.isdir("/dev/shm") and not os.environ['CIRCLECI']:
+  if os.path.isdir("/dev/shm") and 'CIRCLECI' not in os.environ:
       extra_vm_args.append('-Djava.io.tmpdir=/dev/shm')
   else:
       extra_vm_args.append(
