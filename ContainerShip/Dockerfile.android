@@ -1,4 +1,4 @@
-FROM containership/android-base:latest
+FROM hramos/android-base:latest
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
@@ -38,7 +38,6 @@ RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
 
 # add all react-native code
-# How does this work?
 ADD . /app
 WORKDIR /app
 
