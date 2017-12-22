@@ -81,4 +81,15 @@ describe('elementsThatOverlapOffsets', function() {
       elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]),
     ).toEqual([1]);
   });
+  it('errors on non-increasing offsets', function() {
+    const offsets = [150, 50];
+    const frames = [
+      {offset: 0, length: 50},
+      {offset: 50, length: 150},
+      {offset: 250, length: 100},
+    ];
+    expect(() => {
+      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]);
+    }).toThrowErrorMatchingSnapshot();
+  });
 });
