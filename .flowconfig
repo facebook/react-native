@@ -6,7 +6,7 @@
 .*/local-cli/templates/.*
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/danger/dangerfile.js
+<PROJECT_ROOT>/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
