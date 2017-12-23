@@ -588,6 +588,10 @@ const TextInput = createReactClass({
      * If `true`, caret is hidden. The default value is `false`.
      */
     caretHidden: PropTypes.bool,
+    /*
+     * If `true`, contextMenuHidden is hidden. The default value is `false`.
+     */
+    contextMenuHidden: PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
