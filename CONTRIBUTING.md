@@ -11,10 +11,10 @@ Facebook has adopted a Code of Conduct that we expect project participants to ad
 
 There are many ways to contribute to React Native, and many of them do not involve writing any code. Here's a few ideas to get started:
 
-* Simply start using React Native. Go through the [Getting Started](http://facebook.github.io/react-native/docs/getting-started.html) guide. Does everything work as expected? If not, we're always looking for improvements. Let us know by [opening an issue](http://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
-* Look through the [open issues](https://github.com/facebook/react-native/issues). Provide workarounds, ask for clarification, or suggest labels. Help [triage issues](http://facebook.github.io/react-native/docs/contributing.html#triaging-issues-and-pull-requests).
-* If you find an issue you would like to fix, [open a pull request](http://facebook.github.io/react-native/docs/contributing.html#your-first-pull-request). Issues tagged as [_Good first issue_](https://github.com/facebook/react-native/labels/Good%20first%20issue) are a good place to get started.
-* Read through the [React Native docs](http://facebook.github.io/react-native/docs). If you find anything that is confusing or can be improved, you can make edits by clicking "Improve this page" at the bottom of most docs.
+* Simply start using React Native. Go through the [Getting Started](https://facebook.github.io/react-native/docs/getting-started.html) guide. Does everything work as expected? If not, we're always looking for improvements. Let us know by [opening an issue](https://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
+* Look through the [open issues](https://github.com/facebook/react-native/issues). Provide workarounds, ask for clarification, or suggest labels. Help [triage issues](https://facebook.github.io/react-native/docs/contributing.html#triaging-issues-and-pull-requests).
+* If you find an issue you would like to fix, [open a pull request](https://facebook.github.io/react-native/docs/contributing.html#your-first-pull-request). Issues tagged as [_Good first issue_](https://github.com/facebook/react-native/labels/Good%20first%20issue) are a good place to get started.
+* Read through the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). If you find anything that is confusing or can be improved, you can make edits by clicking "Improve this page" at the bottom of most docs.
 * Browse [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native) and answer questions. This will help you get familiarized with common pitfalls or misunderstandings, which can be useful when contributing updates to the documentation.
 * Take a look at the [features requested](https://react-native.canny.io/feature-requests) by others in the community and consider opening a pull request if you see something you want to work on.
 
@@ -43,13 +43,13 @@ When a change made on GitHub is approved, it will first be imported into Faceboo
 
 We will do our best to keep `master` in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We will do our best to [communicate these changes](https://github.com/facebook/react-native/releases) and version appropriately so you can lock into a specific version if need be.
 
-To see what changes are coming and provide better feedback to React Native contributors, use the [latest release candidate](http://facebook.github.io/react-native/versions.html) when possible. By the time a release candidate is released, the changes it contains will have been shipped in production Facebook apps for over two weeks.
+To see what changes are coming and provide better feedback to React Native contributors, use the [latest release candidate](https://facebook.github.io/react-native/versions.html) when possible. By the time a release candidate is released, the changes it contains will have been shipped in production Facebook apps for over two weeks.
 
 ## Bugs
 
-We use [GitHub Issues](https://github.com/facebook/react-native/issues) for our public bugs. If you would like to report a problem, take a look around and see if someone already opened an issue about it. If you a are certain this is a new, unreported bug, you can submit a [bug report](http://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
+We use [GitHub Issues](https://github.com/facebook/react-native/issues) for our public bugs. If you would like to report a problem, take a look around and see if someone already opened an issue about it. If you a are certain this is a new, unreported bug, you can submit a [bug report](https://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
 
-If you have questions about using React Native, the [Community page](http://facebook.github.io/react-native/support.html) list various resources that should help you get started.
+If you have questions about using React Native, the [Community page](https://facebook.github.io/react-native/help.html) list various resources that should help you get started.
 
 We also have a [place where you can request features or enhancements](https://react-native.canny.io/feature-requests). If you see anything you'd like to be implemented, vote it up and explain your use case.
 
@@ -60,9 +60,9 @@ When [opening a new issue](https://github.com/facebook/react-native/issues/new),
 * **One issue, one bug:** Please report a single bug per issue.
 * **Provide a Snack:** The best way to get attention on your issue is to provide a reduced test case. You can use [Snack](https://snack.expo.io/) to demonstrate the issue.
 * **Provide reproduction steps:** List all the steps necessary to reproduce the issue. Provide a Snack or upload a sample project to GitHub. The person reading your bug report should be able to follow these steps to reproduce your issue with minimal effort.
-* **Try out the latest version:** Verify that the issue can be reproduced locally by updating your project to use [React Native from `master`](http://facebook.github.io/react-native/versions.html). The bug may have already been fixed!
+* **Try out the latest version:** Verify that the issue can be reproduced locally by updating your project to use [React Native from `master`](https://facebook.github.io/react-native/versions.html). The bug may have already been fixed!
 
-We're not able to provide support through GitHub Issues. If you're looking for help with your code, consider asking on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) or reaching out to the community through [other channels](https://facebook.github.io/react-native/support.html).
+We're not able to provide support through GitHub Issues. If you're looking for help with your code, consider asking on [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native) or reaching out to the community through [other channels](https://facebook.github.io/react-native/support.html).
 
 ### Security bugs
 
@@ -117,7 +117,7 @@ See [What is a Test Plan?](https://medium.com/@martinkonicek/what-is-a-test-plan
 
 Make sure all **tests pass** on [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](https://facebook.github.io/react-native/docs/testing.html).
 
-[circle]: http://circleci.com/gh/facebook/react-native
+[circle]: https://circleci.com/gh/facebook/react-native
 
 #### Breaking changes
 
