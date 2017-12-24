@@ -44,7 +44,7 @@ As teams' plans might be of interest to a broader audience, we'll be sharing the
 
 - Looking into improving the release process by using [Detox](https://github.com/wix/detox) for E2E testing. Pull request should land soon.
 - Blob pull request they have been working on has been merged, subsequent pull requests coming up.
-- Increasing [Haul](https://github.com/callstack-io/haul) adoption across internal projects to see how it performs compared to [Metro](http://github.com/facebook/metro). Working on better multi-threaded performance with the Webpack team.
+- Increasing [Haul](https://github.com/callstack-io/haul) adoption across internal projects to see how it performs compared to [Metro](https://github.com/facebook/metro). Working on better multi-threaded performance with the Webpack team.
 - Internally, they have implemented a better infrastructure to manage open source projects. Plans to be getting more stuff out in upcoming weeks.
 - The React Native Europe conference is coming along, nothing interesting yet, but y'all invited!
 - Stepped back from [react-navigation](https://github.com/react-community/react-navigation) for a while to investigate alternatives (especially native navigations).
