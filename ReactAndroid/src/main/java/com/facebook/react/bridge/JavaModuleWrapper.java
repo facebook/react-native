@@ -37,17 +37,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 @DoNotStrip
 public class JavaModuleWrapper {
-  @DoNotStrip
-  public class MethodDescriptor {
-    @DoNotStrip
-    Method method;
-    @DoNotStrip
-    String signature;
-    @DoNotStrip
-    String name;
-    @DoNotStrip
-    String type;
-  }
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
