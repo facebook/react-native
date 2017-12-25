@@ -51,11 +51,12 @@ RCT_EXTERN dispatch_queue_t RCTJSThread;
 
 RCT_EXTERN_C_BEGIN
 
-typedef struct RCTMethodInfo {
+struct RCTMethodInfo {
   const char *const jsName;
   const char *const objcName;
   const BOOL isSync;
-} RCTMethodInfo;
+};
+typedef struct RCTMethodInfo RCTMethodInfo;
 
 RCT_EXTERN_C_END
 
