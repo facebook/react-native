@@ -7,24 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTTVRemoteHandler.h"
+#import <React/RCTTVRemoteHandler.h>
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTRootView.h"
-#import "RCTTVNavigationEventEmitter.h"
-#import "RCTUIManager.h"
-#import "RCTUtils.h"
-#import "RCTView.h"
-#import "UIView+React.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTRootView.h>
+#import <React/RCTTVNavigationEventEmitter.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
+#import <React/RCTView.h>
+#import <React/UIView+React.h>
 
-#if __has_include("RCTDevMenu.h")
-#import "RCTDevMenu.h"
-#endif
+#import <React/RCTDevMenu.h>
 
 NSString *const RCTTVRemoteEventMenu = @"menu";
 NSString *const RCTTVRemoteEventPlayPause = @"playPause";
