@@ -535,6 +535,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         'to support native onScroll events with useNativeDriver',
     );
 
+    invariant(
+      props.windowSize > 0,
+      'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
+    );
+
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,

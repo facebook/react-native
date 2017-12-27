@@ -1803,7 +1803,7 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(const YGNodeRef node,
 }
 
 static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
-  memset(&(node->getLayoutRef()), 0, sizeof(YGLayout));
+  memset(&(node->getLayout()), 0, sizeof(YGLayout));
   node->setHasNewLayout(true);
   YGCloneChildrenIfNeeded(node);
   const uint32_t childCount = YGNodeGetChildCount(node);
@@ -3341,7 +3341,7 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                           const bool performLayout,
                           const char *reason,
                           const YGConfigRef config) {
-  YGLayout* layout = &node->getLayoutRef();
+  YGLayout* layout = &node->getLayout();
 
   gDepth++;
 
