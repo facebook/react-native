@@ -37,9 +37,10 @@
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-  RCTAssert(_bridge != nil, @"bridge is not set. This is probably because you've "
+  RCTAssert(_bridge != nil, @"Error when sending event: %@ with body: %@. "
+            "Bridge is not set. This is probably because you've "
             "explicitly synthesized the bridge in %@, even though it's inherited "
-            "from RCTEventEmitter.", [self class]);
+            "from RCTEventEmitter.", eventName, body, [self class]);
 
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
     RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",

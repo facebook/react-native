@@ -215,11 +215,12 @@ namespace facebook {
         const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "unknown").getString();
         const std::string appId = m_jscConfig.getDefault("AppIdentity", "unknown").getString();
         const std::string deviceId = m_jscConfig.getDefault("DeviceIdentity", "unknown").getString();
-        const std::function<bool()> checkIsInspectedRemote = [&](){
+        auto checkIsInspectedRemote = [ownerId, appId, deviceId]() {
           return isNetworkInspected(ownerId, appId, deviceId);
         };
-        IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-        pInspector->registerGlobalContext(ownerId, checkIsInspectedRemote, m_context);
+
+        auto& globalInspector = facebook::react::getInspectorInstance();
+        JSC_JSGlobalContextEnableDebugger(m_context, globalInspector, ownerId.c_str(), checkIsInspectedRemote);
       }
 
       installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
@@ -340,8 +341,8 @@ namespace facebook {
       m_nativeModules.reset();
 
       if (canUseInspector(context)) {
-        IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-        pInspector->unregisterGlobalContext(context);
+        auto &globalInspector = facebook::react::getInspectorInstance();
+        JSC_JSGlobalContextDisableDebugger(context, globalInspector);
       }
 
       JSC_JSGlobalContextRelease(context);
@@ -437,9 +438,6 @@ namespace facebook {
           jsScript = adoptString(std::move(script));
           ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
         }
-#ifdef WITH_FBSYSTRACE
-        fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-#endif
 
         SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
         evaluateScript(m_context, jsScript, jsSourceURL);
@@ -641,6 +639,10 @@ namespace facebook {
 
     void* JSCExecutor::getJavaScriptContext() {
       return m_context;
+    }
+
+    bool JSCExecutor::isInspectable() {
+      return canUseInspector(m_context);
     }
 
 #ifdef WITH_JSC_MEMORY_PRESSURE

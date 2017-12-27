@@ -52,7 +52,7 @@ function dependencies(argv, config, args, packagerInstance) {
     platform: args.platform,
     entryFile: relativePath,
     dev: args.dev,
-    minify: !args.dev,
+    minify: false,
     generateSourceMaps: !args.dev,
   };
 

@@ -17,14 +17,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
-  style={
-    Array [
-      Object {},
-      Object {
-        "backgroundColor": "transparent",
-      },
-    ]
-  }
+  style={Object {}}
   testID={undefined}
   tvParallaxProperties={undefined}
 >

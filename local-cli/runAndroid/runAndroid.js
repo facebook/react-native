@@ -226,7 +226,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
       'Could not install the app on the device, read the error above for details.\n' +
       'Make sure you have an Android emulator running or a device connected and have\n' +
       'set up your Android development environment:\n' +
-      'https://facebook.github.io/react-native/docs/android-setup.html'
+      'https://facebook.github.io/react-native/docs/getting-started.html'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
