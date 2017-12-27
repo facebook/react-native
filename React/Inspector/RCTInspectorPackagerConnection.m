@@ -122,7 +122,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSString *wrappedEvent = payload[@"wrappedEvent"];
   RCTInspectorLocalConnection *inspectorConnection = _inspectorConnections[pageId];
   if (!inspectorConnection) {
-    RCTLogError(@"Not connected: %@", pageId);
+    RCTLogWarn(
+      @"Not connected to page: %@ , failed trying to handle event: %@",
+      pageId,
+      wrappedEvent);
     return;
   }
   [inspectorConnection sendMessage:wrappedEvent];

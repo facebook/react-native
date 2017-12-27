@@ -41,11 +41,10 @@
             constraintEqualToAnchor:contentLayout.widthAnchor
             multiplier:0.3].active = YES;
 
+
         self.keyLabel.textColor = [UIColor whiteColor];
         self.keyLabel.numberOfLines = 0;
-#if TARGET_OS_TV
-        self.keyLabel.font = [UIFont fontWithName:@"Helvetica" size:24.0f];
-#else
+#if !TARGET_OS_TV
         self.keyLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.keyLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif
@@ -65,9 +64,7 @@
 
         self.valueLabel.textColor = [UIColor whiteColor];
         self.valueLabel.numberOfLines = 0;
-#if TARGET_OS_TV
-        self.keyLabel.font = [UIFont fontWithName:@"Helvetica" size:24.0f];
-#else
+#if !TARGET_OS_TV
         self.valueLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.valueLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif

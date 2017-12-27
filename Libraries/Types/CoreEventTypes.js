@@ -13,14 +13,17 @@
 
 'use strict';
 
-export type Layout = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
-export type LayoutEvent = {
-  nativeEvent: {
-    layout: Layout,
-  },
-};
+export type Layout = {|
+  +x: number,
+  +y: number,
+  +width: number,
+  +height: number,
+|};
+export type LayoutEvent = {|
+  +nativeEvent: {|
+    +layout: Layout,
+  |},
+  +persist: () => void,
+|};
+
+export type PressEvent = Object;

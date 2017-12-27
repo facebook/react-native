@@ -25,17 +25,19 @@ function elementsThatOverlapOffsets(
   getFrameMetrics: (index: number) => {length: number, offset: number},
 ): Array<number> {
   const out = [];
+  let outLength = 0;
   for (let ii = 0; ii < itemCount; ii++) {
     const frame = getFrameMetrics(ii);
     const trailingOffset = frame.offset + frame.length;
     for (let kk = 0; kk < offsets.length; kk++) {
       if (out[kk] == null && trailingOffset >= offsets[kk]) {
         out[kk] = ii;
+        outLength++;
         if (kk === offsets.length - 1) {
           invariant(
-            out.length === offsets.length,
-            'bad offsets input, should be in increasing order ' +
-              JSON.stringify(offsets),
+            outLength === offsets.length,
+            'bad offsets input, should be in increasing order: %s',
+            JSON.stringify(offsets),
           );
           return out;
         }
@@ -113,6 +115,15 @@ function computeWindowedRenderLimits(
     visibleBegin - (1 - leadFactor) * overscanLength,
   );
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
+
+  const lastItemOffset = getFrameMetricsApprox(itemCount - 1).offset;
+  if (lastItemOffset < overscanBegin) {
+    // Entire list is before our overscan window
+    return {
+      first: Math.max(0, itemCount - 1 - maxToRenderPerBatch),
+      last: itemCount - 1,
+    };
+  }
 
   // Find the indices that correspond to the items at the render boundaries we're targetting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(

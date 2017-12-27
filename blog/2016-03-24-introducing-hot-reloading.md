@@ -169,7 +169,7 @@ In order to walk the dependency tree, the runtime receives the inverse dependenc
 
 ## React Components
 
-React components are a bit harder to get to work with Hot Reloading. The problem is that we can't simply replace the old code with the new one as we'd loose the component's state. For React web applications, [Dan Abramov](https://twitter.com/dan_abramov) implemented a babel [transform](http://gaearon.github.io/react-hot-loader/) that uses Webpack's HMR API to solve this issue. In a nutshell, his solution works by creating a proxy for every single React component on *transform time*. The proxies hold the component's state and delegate the lifecycle methods to the actual components, which are the ones we hot reload:
+React components are a bit harder to get to work with Hot Reloading. The problem is that we can't simply replace the old code with the new one as we'd loose the component's state. For React web applications, [Dan Abramov](https://twitter.com/dan_abramov) implemented a babel [transform](https://gaearon.github.io/react-hot-loader/) that uses Webpack's HMR API to solve this issue. In a nutshell, his solution works by creating a proxy for every single React component on *transform time*. The proxies hold the component's state and delegate the lifecycle methods to the actual components, which are the ones we hot reload:
 
 ![](/react-native/blog/img/hmr-proxy.png)
 
@@ -179,7 +179,7 @@ The default [transformer](https://github.com/facebook/react-native/blob/master/p
 
 ## Redux Stores
 
-To enable Hot Reloading on [Redux](http://redux.js.org/) stores you will just need to use the HMR API similarly to what you'd do on a web project that uses Webpack:
+To enable Hot Reloading on [Redux](https://redux.js.org/) stores you will just need to use the HMR API similarly to what you'd do on a web project that uses Webpack:
 
 ```
 // configureStore.js

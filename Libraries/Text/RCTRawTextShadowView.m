@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTShadowRawText.h"
+#import "RCTRawTextShadowView.h"
 
 #import <React/RCTUIManager.h>
 
-@implementation RCTShadowRawText
+@implementation RCTRawTextShadowView
 
 - (instancetype)init
 {

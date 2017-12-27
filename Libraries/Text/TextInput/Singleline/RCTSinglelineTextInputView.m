@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTTextField.h"
+#import "RCTSinglelineTextInputView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -21,11 +21,11 @@
 #import "RCTTextSelection.h"
 #import "RCTUITextField.h"
 
-@interface RCTTextField () <RCTBackedTextInputDelegate>
+@interface RCTSinglelineTextInputView () <RCTBackedTextInputDelegate>
 
 @end
 
-@implementation RCTTextField
+@implementation RCTSinglelineTextInputView
 {
   RCTUITextField *_backedTextInput;
   BOOL _submitted;

@@ -19,7 +19,7 @@
 @class RCTEventDispatcher;
 @class RCTTextSelection;
 
-@interface RCTTextInput : RCTView <RCTFontAttributesDelegate> {
+@interface RCTBaseTextInputView : RCTView <RCTFontAttributesDelegate> {
 @protected
   __weak RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;

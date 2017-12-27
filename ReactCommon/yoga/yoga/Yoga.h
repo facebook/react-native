@@ -43,11 +43,13 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
-static const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
-static const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
+extern const YGValue YGValueUndefined;
+extern const YGValue YGValueAuto;
 
 typedef struct YGConfig *YGConfigRef;
-typedef struct YGNode *YGNodeRef;
+
+typedef struct YGNode* YGNodeRef;
+
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
                                 YGMeasureMode widthMode,
@@ -95,7 +97,6 @@ WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
 // depends on information not known to YG they must perform this dirty
 // marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
-WIN_EXPORT bool YGNodeIsDirty(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 
@@ -158,12 +159,19 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
 #define YG_NODE_LAYOUT_EDGE_PROPERTY(type, name) \
   WIN_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge);
 
-YG_NODE_PROPERTY(void *, Context, context);
-YG_NODE_PROPERTY(YGMeasureFunc, MeasureFunc, measureFunc);
-YG_NODE_PROPERTY(YGBaselineFunc, BaselineFunc, baselineFunc)
-YG_NODE_PROPERTY(YGPrintFunc, PrintFunc, printFunc);
-YG_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
-YG_NODE_PROPERTY(YGNodeType, NodeType, nodeType);
+void* YGNodeGetContext(YGNodeRef node);
+void YGNodeSetContext(YGNodeRef node, void* context);
+YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
+void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
+YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
+void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
+YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
+void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
+bool YGNodeGetHasNewLayout(YGNodeRef node);
+void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
+YGNodeType YGNodeGetNodeType(YGNodeRef node);
+void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
+bool YGNodeIsDirty(YGNodeRef node);
 
 YG_NODE_STYLE_PROPERTY(YGDirection, Direction, direction);
 YG_NODE_STYLE_PROPERTY(YGFlexDirection, FlexDirection, flexDirection);
