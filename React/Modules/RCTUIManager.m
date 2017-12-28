@@ -974,7 +974,6 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
     }
     UIView *view = [componentData createViewWithTag:reactTag];
     if (view) {
-      [componentData setProps:props forView:view];
       uiManager->_viewRegistry[reactTag] = view;
     }
   });
