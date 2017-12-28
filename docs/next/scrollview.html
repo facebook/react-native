@@ -25,6 +25,8 @@
 <li><a href="/react-native/docs/next/scrollview.html#onmomentumscrollbegin"><code>onMomentumScrollBegin</code></a></li>
 <li><a href="/react-native/docs/next/scrollview.html#onmomentumscrollend"><code>onMomentumScrollEnd</code></a></li>
 <li><a href="/react-native/docs/next/scrollview.html#onscroll"><code>onScroll</code></a></li>
+<li><a href="/react-native/docs/next/scrollview.html#onscrollbegindrag"><code>onScrollBeginDrag</code></a></li>
+<li><a href="/react-native/docs/next/scrollview.html#onscrollenddrag"><code>onScrollEndDrag</code></a></li>
 <li><a href="/react-native/docs/next/scrollview.html#pagingenabled"><code>pagingEnabled</code></a></li>
 <li><a href="/react-native/docs/next/scrollview.html#refreshcontrol"><code>refreshControl</code></a></li>
 <li><a href="/react-native/docs/next/scrollview.html#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
@@ -177,6 +179,28 @@ const styles = StyleSheet.create({
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="onscroll"></a><a href="#onscroll" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScroll</code></h3>
 <p>Fires at most once per frame during scrolling. The frequency of the events can be controlled using the <code>scrollEventThrottle</code> prop.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onscrollbegindrag"></a><a href="#onscrollbegindrag" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScrollBeginDrag</code></h3>
+<p>Called when the user begins to drag the scroll view.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" name="onscrollenddrag"></a><a href="#onscrollenddrag" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScrollEndDrag</code></h3>
+<p>Called when the user stops dragging the scroll view and it either stops or begins to glide.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
