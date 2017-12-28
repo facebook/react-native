@@ -432,7 +432,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   static contextTypes = {
-    virtualizedListCellRenderer: PropTypes.shape({
+    virtualizedCell: PropTypes.shape({
       cellKey: PropTypes.string,
     }),
     virtualizedList: PropTypes.shape({
@@ -464,6 +464,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         unregisterAsNestedChild: this._unregisterAsNestedChild,
       },
     };
+  }
+
+  _getCellKey(): string {
+    return (
+      (this.context.virtualizedCell && this.context.virtualizedCell.cellKey) ||
+      'rootList'
+    );
   }
 
   _getScrollMetrics = () => {
@@ -528,6 +535,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         'to support native onScroll events with useNativeDriver',
     );
 
+    invariant(
+      props.windowSize > 0,
+      'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
+    );
+
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
@@ -559,10 +571,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     if (this._isNestedWithSameOrientation()) {
       const storedState = this.context.virtualizedList.registerAsNestedChild({
-        cellKey: this.context.virtualizedListCellRenderer.cellKey,
-        key:
-          this.props.listKey ||
-          this.context.virtualizedListCellRenderer.cellKey,
+        cellKey: this._getCellKey(),
+        key: this.props.listKey || this._getCellKey(),
         ref: this,
       });
       if (storedState) {
@@ -574,8 +584,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     this.state = initialState;
   }
-
-  componentWillMount() {}
 
   componentDidMount() {
     if (this.props.initialScrollIndex) {
@@ -593,9 +601,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentWillUnmount() {
     if (this._isNestedWithSameOrientation()) {
       this.context.virtualizedList.unregisterAsNestedChild({
-        key:
-          this.props.listKey ||
-          this.context.virtualizedListCellRenderer.cellKey,
+        key: this.props.listKey || this._getCellKey(),
         state: {
           first: this.state.first,
           last: this.state.last,
@@ -743,12 +749,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <ListHeaderComponent />
       );
       cells.push(
-        <View
-          key="$header"
-          onLayout={this._onLayoutHeader}
-          style={inversionStyle}>
-          {element}
-        </View>,
+        <VirtualizedCellWrapper
+          cellKey={this._getCellKey() + '-header'}
+          key="$header">
+          <View onLayout={this._onLayoutHeader} style={inversionStyle}>
+            {element}
+          </View>
+        </VirtualizedCellWrapper>,
       );
     }
     const itemCount = this.props.getItemCount(data);
@@ -867,12 +874,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <ListFooterComponent />
       );
       cells.push(
-        <View
-          key="$footer"
-          onLayout={this._onLayoutFooter}
-          style={inversionStyle}>
-          {element}
-        </View>,
+        <VirtualizedCellWrapper
+          cellKey={this._getCellKey() + '-footer'}
+          key="$footer">
+          <View onLayout={this._onLayoutFooter} style={inversionStyle}>
+            {element}
+          </View>
+        </VirtualizedCellWrapper>,
       );
     }
     const scrollProps = {
@@ -1522,14 +1530,14 @@ class CellRenderer extends React.Component<
   };
 
   static childContextTypes = {
-    virtualizedListCellRenderer: PropTypes.shape({
+    virtualizedCell: PropTypes.shape({
       cellKey: PropTypes.string,
     }),
   };
 
   getChildContext() {
     return {
-      virtualizedListCellRenderer: {
+      virtualizedCell: {
         cellKey: this.props.cellKey,
       },
     };
@@ -1618,6 +1626,29 @@ class CellRenderer extends React.Component<
         {itemSeparator}
       </CellRendererComponent>
     );
+  }
+}
+
+class VirtualizedCellWrapper extends React.Component<{
+  cellKey: string,
+  children: React.Node,
+}> {
+  static childContextTypes = {
+    virtualizedCell: PropTypes.shape({
+      cellKey: PropTypes.string,
+    }),
+  };
+
+  getChildContext() {
+    return {
+      virtualizedCell: {
+        cellKey: this.props.cellKey,
+      },
+    };
+  }
+
+  render() {
+    return this.props.children;
   }
 }
 

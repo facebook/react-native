@@ -80,6 +80,10 @@ public:
     return nullptr;
   }
 
+  /**
+   * Returns whether or not the underlying executor supports debugging via the
+   * Chrome remote debugging protocol.
+   */
   virtual bool isInspectable() {
     return false;
   }

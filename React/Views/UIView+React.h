@@ -61,6 +61,12 @@
 - (void)didUpdateReactSubviews;
 
 /**
+ * Called each time props have been set.
+ * The default implementation does nothing.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
+/**
  * Used by the UIIManager to set the view frame.
  * May be overriden to disable animation, etc.
  */
@@ -102,15 +108,5 @@
  * Defaults to `self`.
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
-
-#if RCT_DEV
-
-/**
- Tools for debugging
- */
-
-@property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
-
-#endif
 
 @end

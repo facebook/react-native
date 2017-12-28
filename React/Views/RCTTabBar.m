@@ -14,7 +14,6 @@
 #import "RCTTabBarItem.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTViewControllerProtocol.h"
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 

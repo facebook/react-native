@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTTextInput.h"
+#import "RCTBaseTextInputView.h"
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
@@ -19,7 +19,7 @@
 
 #import "RCTTextSelection.h"
 
-@implementation RCTTextInput {
+@implementation RCTBaseTextInputView {
   CGSize _previousContentSize;
   BOOL _hasInputAccesoryView;
 }
@@ -44,7 +44,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
-  RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
+  RCTAssert(NO, @"-[RCTBaseTextInputView backedTextInputView] must be implemented in subclass.");
   return nil;
 }
 

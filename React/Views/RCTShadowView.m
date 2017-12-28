@@ -41,7 +41,6 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
-  BOOL _didUpdateSubviews;
   YGValue _paddingMetaProps[META_PROP_COUNT];
   YGValue _marginMetaProps[META_PROP_COUNT];
   YGValue _borderMetaProps[META_PROP_COUNT];
@@ -263,19 +262,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
-  // TODO: we always refresh all propagated properties when propagation is
-  // dirtied, but really we should track which properties have changed and
-  // only update those.
-
-  if (_didUpdateSubviews) {
-    _didUpdateSubviews = NO;
-    [self didUpdateReactSubviews];
-    [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[self->_reactTag];
-      [view didUpdateReactSubviews];
-    }];
-  }
-
   return parentProperties;
 }
 
@@ -298,7 +284,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                       hidden:(BOOL)hidden
             absolutePosition:(CGPoint)absolutePosition
 {
-  // This is not the core layout method. It is only used by RCTShadowText to layout
+  // This is not the core layout method. It is only used by RCTTextShadowView to layout
   // nested views.
 
   if (_hidden != hidden) {
@@ -435,7 +421,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     YGNodeInsertChild(_yogaNode, subview.yogaNode, (uint32_t)atIndex);
   }
   subview->_superview = self;
-  _didUpdateSubviews = YES;
   [self dirtyText];
   [self dirtyPropagation];
 }
@@ -444,7 +429,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   [subview dirtyText];
   [subview dirtyPropagation];
-  _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
   if (![self isYogaLeafNode]) {

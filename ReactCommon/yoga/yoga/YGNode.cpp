@@ -34,15 +34,11 @@ YGBaselineFunc YGNode::getBaseline() const {
   return baseline_;
 }
 
-YGStyle YGNode::getStyle() const {
+YGStyle& YGNode::getStyle() {
   return style_;
 }
 
-YGLayout YGNode::getLayout() const {
-  return layout_;
-}
-
-YGLayout& YGNode::getLayoutRef() {
+YGLayout& YGNode::getLayout() {
   return layout_;
 }
 
@@ -248,21 +244,21 @@ YGNode::YGNode()
       resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
 
 YGNode::YGNode(const YGNode& node)
-    : context_(node.getContext()),
-      print_(node.getPrintFunc()),
-      hasNewLayout_(node.getHasNewLayout()),
-      nodeType_(node.getNodeType()),
-      measure_(node.getMeasure()),
-      baseline_(node.getBaseline()),
-      style_(node.getStyle()),
-      layout_(node.getLayout()),
-      lineIndex_(node.getLineIndex()),
-      parent_(node.getParent()),
-      children_(node.getChildren()),
-      nextChild_(node.getNextChild()),
-      config_(node.getConfig()),
-      isDirty_(node.isDirty()),
-      resolvedDimensions_(node.getResolvedDimensions()) {}
+    : context_(node.context_),
+      print_(node.print_),
+      hasNewLayout_(node.hasNewLayout_),
+      nodeType_(node.nodeType_),
+      measure_(node.measure_),
+      baseline_(node.baseline_),
+      style_(node.style_),
+      layout_(node.layout_),
+      lineIndex_(node.lineIndex_),
+      parent_(node.parent_),
+      children_(node.children_),
+      nextChild_(node.nextChild_),
+      config_(node.config_),
+      isDirty_(node.isDirty_),
+      resolvedDimensions_(node.resolvedDimensions_) {}
 
 YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
   config_ = newConfig;
@@ -315,8 +311,8 @@ YGNode& YGNode::operator=(const YGNode& node) {
   nodeType_ = node.getNodeType();
   measure_ = node.getMeasure();
   baseline_ = node.getBaseline();
-  style_ = node.getStyle();
-  layout_ = node.getLayout();
+  style_ = node.style_;
+  layout_ = node.layout_;
   lineIndex_ = node.getLineIndex();
   parent_ = node.getParent();
   children_ = node.getChildren();
@@ -330,28 +326,28 @@ YGNode& YGNode::operator=(const YGNode& node) {
 
 YGValue YGNode::marginLeadingValue(const YGFlexDirection axis) const {
   if (YGFlexDirectionIsRow(axis) &&
-      getStyle().margin[YGEdgeStart].unit != YGUnitUndefined) {
-    return getStyle().margin[YGEdgeStart];
+      style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
+    return style_.margin[YGEdgeStart];
   } else {
-    return getStyle().margin[leading[axis]];
+    return style_.margin[leading[axis]];
   }
 }
 
 YGValue YGNode::marginTrailingValue(const YGFlexDirection axis) const {
   if (YGFlexDirectionIsRow(axis) &&
-      getStyle().margin[YGEdgeEnd].unit != YGUnitUndefined) {
-    return getStyle().margin[YGEdgeEnd];
+      style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+    return style_.margin[YGEdgeEnd];
   } else {
-    return getStyle().margin[trailing[axis]];
+    return style_.margin[trailing[axis]];
   }
 }
 
 YGValue YGNode::resolveFlexBasisPtr() const {
-  YGValue flexBasis = getStyle().flexBasis;
+  YGValue flexBasis = style_.flexBasis;
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!YGFloatIsUndefined(getStyle().flex) && getStyle().flex > 0.0f) {
+  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -361,10 +357,10 @@ void YGNode::resolveDimension() {
   for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
     if (getStyle().maxDimensions[dim].unit != YGUnitUndefined &&
         YGValueEqual(
-            getStyle().maxDimensions[dim], getStyle().minDimensions[dim])) {
-      resolvedDimensions_[dim] = getStyle().maxDimensions[dim];
+            getStyle().maxDimensions[dim], style_.minDimensions[dim])) {
+      resolvedDimensions_[dim] = style_.maxDimensions[dim];
     } else {
-      resolvedDimensions_[dim] = getStyle().dimensions[dim];
+      resolvedDimensions_[dim] = style_.dimensions[dim];
     }
   }
 }

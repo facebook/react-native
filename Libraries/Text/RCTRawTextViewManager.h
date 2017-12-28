@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTShadowView.h>
+#import <React/RCTViewManager.h>
 
-@interface RCTShadowTextView : RCTShadowView
+@interface RCTRawTextViewManager : RCTViewManager
 
 @end
