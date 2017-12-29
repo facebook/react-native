@@ -257,6 +257,15 @@ const ScrollView = createReactClass({
      */
     onScroll: PropTypes.func,
     /**
+     * Called when the user begins to drag the scroll view.
+     */
+    onScrollBeginDrag: PropTypes.func,
+    /**
+     * Called when the user stops dragging the scroll view and it either stops
+     * or begins to glide.
+     */
+    onScrollEndDrag: PropTypes.func,
+    /**
      * Called when scrollable content view of the ScrollView changes.
      *
      * Handler function is passed the content width and content height as parameters:

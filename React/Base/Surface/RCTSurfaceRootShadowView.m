@@ -50,7 +50,7 @@
   float availableHeight = isinf(maximimSize.height) ? YGUndefined : maximimSize.height;
 
   self.minWidth = (YGValue){isinf(minimumSize.width) ? YGUndefined : minimumSize.width, YGUnitPoint};
-  self.minWidth = (YGValue){isinf(minimumSize.height) ? YGUndefined : minimumSize.height, YGUnitPoint};
+  self.minHeight = (YGValue){isinf(minimumSize.height) ? YGUndefined : minimumSize.height, YGUnitPoint};
 
   YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
 }
