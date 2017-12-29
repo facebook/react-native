@@ -273,8 +273,6 @@ RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
 
-RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
-
 RCT_EXPORT_SHADOW_PROPERTY(top, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(right, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(start, YGValue)
@@ -336,7 +334,6 @@ RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
-RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end

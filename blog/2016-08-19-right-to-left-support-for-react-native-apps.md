@@ -60,7 +60,7 @@ With this update, when you allow RTL layout for your app:
   	sharedI18nUtilInstance.allowRTL(context, true);
     ```
 
-3. For Android, you need add `android:supportsRtl="true"` to the [`<application>`](http://developer.android.com/guide/topics/manifest/application-element.html) element in `AndroidManifest.xml` file.
+3. For Android, you need add `android:supportsRtl="true"` to the [`<application>`](https://developer.android.com/guide/topics/manifest/application-element.html) element in `AndroidManifest.xml` file.
 
 Now, when you recompile your app and change the device language to an RTL language (e.g. Arabic or Hebrew), your app layout should change to RTL automatically.
 

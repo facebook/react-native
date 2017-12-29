@@ -12,11 +12,11 @@
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
-#import "RCTTextInput.h"
+#import "RCTBaseTextInputView.h"
 
 @class RCTBridge;
 
-@interface RCTTextView : RCTTextInput
+@interface RCTMultilineTextInputView : RCTBaseTextInputView
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
