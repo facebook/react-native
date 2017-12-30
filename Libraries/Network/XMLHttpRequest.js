@@ -181,12 +181,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   }
 
   set responseType(responseType: ResponseType): void {
-    if (this._sent) {
-      throw new Error(
-        'Failed to set the \'responseType\' property on \'XMLHttpRequest\': The ' +
-        'response type cannot be set after the request has been sent.'
-      );
-    }
     if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
       warning(
         false,

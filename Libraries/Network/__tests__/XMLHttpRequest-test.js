@@ -96,11 +96,6 @@ describe('XMLHttpRequest', function() {
 
     xhr.responseType = 'arraybuffer';
     expect(xhr.responseType).toBe('arraybuffer');
-
-    // Can't change responseType after first data has been received.
-    xhr.open('GET', 'blabla');
-    xhr.send();
-    expect(() => { xhr.responseType = 'text'; }).toThrow();
   });
 
   it('should expose responseText correctly', function() {
