@@ -453,12 +453,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     if (source != null) {
       if (source.hasKey("html")) {
         String html = source.getString("html");
+        String baseUrl = null;
         if (source.hasKey("baseUrl")) {
-          view.loadDataWithBaseURL(
-              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
-        } else {
-          view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+          baseUrl = source.getString("baseUrl");
         }
+        view.loadDataWithBaseURL(baseUrl, html, HTML_MIME_TYPE, HTML_ENCODING, null);
         return;
       }
       if (source.hasKey("uri")) {
