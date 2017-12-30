@@ -82,7 +82,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   _connectionType = RCTConnectionTypeUnknown;
   _effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
   _statusDeprecated = RCTReachabilityStateUnknown;
-  [self setupReachability];
+  _reachability = [self getReachabilityRef];
 }
 
 - (void)stopObserving
@@ -94,12 +94,14 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
-- (void)setupReachability
+- (SCNetworkReachabilityRef)getReachabilityRef
 {
-  _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
+  SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
   SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
-  SCNetworkReachabilitySetCallback(_reachability, RCTReachabilityCallback, &context);
-  SCNetworkReachabilityScheduleWithRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+  SCNetworkReachabilitySetCallback(reachability, RCTReachabilityCallback, &context);
+  SCNetworkReachabilityScheduleWithRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    
+  return reachability;
 }
 
 - (BOOL)setReachabilityStatus:(SCNetworkReachabilityFlags)flags
@@ -163,8 +165,8 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  [self setupReachability];
-  CFRelease(_reachability);
+  SCNetworkReachabilityRef reachability = [self getReachabilityRef];
+  CFRelease(reachability);
   resolve(@{@"connectionType": _connectionType ?: RCTConnectionTypeUnknown,
             @"effectiveConnectionType": _effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
             @"network_info": _statusDeprecated ?: RCTReachabilityStateUnknown});
