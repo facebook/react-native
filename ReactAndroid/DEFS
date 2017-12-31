@@ -110,4 +110,4 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
 
 def fb_xplat_cxx_library(allow_jni_merging=None, **kwargs):
-    cxx_library(*args, **kwargs)
+    cxx_library(**kwargs)
