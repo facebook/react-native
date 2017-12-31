@@ -9,6 +9,7 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Shader;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.drawee.drawable.ScalingUtils;
 
@@ -34,9 +35,42 @@ public class ImageResizeMode {
     if ("center".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.CENTER_INSIDE;
     }
+    if ("repeat".equals(resizeModeValue)) {
+      // Handled via a combination of ScaleType and TileMode
+      return ScaleTypeStartInside.INSTANCE;
+    }
     if (resizeModeValue == null) {
       // Use the default. Never use null.
       return defaultValue();
+    }
+    throw new JSApplicationIllegalArgumentException(
+        "Invalid resize mode: '" + resizeModeValue + "'");
+  }
+
+  /**
+   * Converts JS resize modes into {@code Shader.TileMode}.
+   * See {@code ImageResizeMode.js}.
+   */
+  public static Shader.TileMode toTileMode(@Nullable String resizeModeValue) {
+    if ("contain".equals(resizeModeValue)) {
+      return Shader.TileMode.CLAMP;
+    }
+    if ("cover".equals(resizeModeValue)) {
+      return Shader.TileMode.CLAMP;
+    }
+    if ("stretch".equals(resizeModeValue)) {
+      return Shader.TileMode.CLAMP;
+    }
+    if ("center".equals(resizeModeValue)) {
+      return Shader.TileMode.CLAMP;
+    }
+    if ("repeat".equals(resizeModeValue)) {
+      // Handled via a combination of ScaleType and TileMode
+      return Shader.TileMode.REPEAT;
+    }
+    if (resizeModeValue == null) {
+      // Use the default. Never use null.
+      return defaultTileMode();
     }
     throw new JSApplicationIllegalArgumentException(
         "Invalid resize mode: '" + resizeModeValue + "'");
@@ -48,5 +82,9 @@ public class ImageResizeMode {
    */
   public static ScalingUtils.ScaleType defaultValue() {
     return ScalingUtils.ScaleType.CENTER_CROP;
+  }
+
+  public static Shader.TileMode defaultTileMode() {
+    return Shader.TileMode.CLAMP;
   }
 }
