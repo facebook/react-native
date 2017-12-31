@@ -35,6 +35,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
@@ -82,6 +83,7 @@ public class ReactEditText extends EditText {
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
+  private float mLetterSpacingPt = 0;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -622,6 +624,29 @@ public class ReactEditText extends EditText {
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  public void setLetterSpacingPt(float letterSpacingPt) {
+    mLetterSpacingPt = letterSpacingPt;
+    updateLetterSpacing();
+  }
+
+  @Override
+  public void setTextSize (float size) {
+    super.setTextSize(size);
+    updateLetterSpacing();
+  }
+
+  @Override
+  public void setTextSize (int unit, float size) {
+    super.setTextSize(unit, size);
+    updateLetterSpacing();
+  }
+
+  protected void updateLetterSpacing() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      setLetterSpacing(PixelUtil.toPixelFromSP(mLetterSpacingPt) / getTextSize());
+    }
   }
 
   /**
