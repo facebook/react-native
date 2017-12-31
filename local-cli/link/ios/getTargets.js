@@ -2,7 +2,7 @@
  * Given xcodeproj it returns list of targets
  */
 module.exports = function getTargets(project) {
-  let targets = project.getFirstProject()['firstProject']['targets'];
+  let targets = project.getFirstProject().firstProject.targets;
   let nativeTargetSection = project.pbxNativeTargetSection();
   return targets.map(function(target) {
     let key = target.value;
