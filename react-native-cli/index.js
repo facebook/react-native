@@ -59,7 +59,7 @@ var semver = require('semver');
  *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
  */
 
-var options = require('minimist')(process.argv.slice(2));
+var options = require('gar')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(

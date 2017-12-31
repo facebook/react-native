@@ -14,7 +14,7 @@ const {
 } = require('../generator/templates');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
-const minimist = require('minimist');
+const gar = require('gar');
 const path = require('path');
 const printRunInstructions = require('../generator/printRunInstructions');
 const process = require('process');
@@ -41,7 +41,7 @@ function init(projectDir, argsOrName) {
   }
 
   const newProjectName = args[0];
-  const options = minimist(args);
+  const options = gar(args);
 
   if (listTemplatesAndExit(newProjectName, options)) {
     // Just listing templates using 'react-native init --template'
@@ -56,7 +56,7 @@ function init(projectDir, argsOrName) {
 /**
  * Generates a new React Native project based on the template.
  * @param Absolute path at which the project folder should be created.
- * @param options Command line arguments parsed by minimist.
+ * @param options Command line arguments parsed by gar.
  */
 function generateProject(destinationRoot, newProjectName, options) {
   var reactNativePackageJson = require('../../package.json');

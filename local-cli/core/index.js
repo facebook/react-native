@@ -25,7 +25,7 @@ const flatten = require('lodash').flatten;
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-const minimist = require('minimist');
+const gar = require('gar');
 const path = require('path');
 
 import type {CommandT} from '../commands';
@@ -106,7 +106,7 @@ const defaultRNConfig = {
  * Loads the CLI configuration
  */
 function getCliConfig(): RNConfig {
-  const cliArgs = minimist(process.argv.slice(2));
+  const cliArgs = gar(process.argv.slice(2));
   const config = cliArgs.config != null
     ? Config.load(path.resolve(__dirname, cliArgs.config))
     : Config.findOptional(__dirname);

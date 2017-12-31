@@ -230,7 +230,7 @@ function shouldUseYarn(cliArgs, projectDir) {
 /**
  * @param requestedVersion The version argument, e.g. 'react-native-git-upgrade 0.38'.
  *                         `undefined` if no argument passed.
- * @param cliArgs Additional arguments parsed using minimist.
+ * @param cliArgs Additional arguments parsed using gar.
  */
 async function run(requestedVersion, cliArgs) {
   const tmpDir = path.resolve(os.tmpdir(), 'react-native-git-upgrade');

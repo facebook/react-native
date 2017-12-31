@@ -24,12 +24,13 @@ const {
   sed,
 } = require('shelljs');
 
-const minimist = require('minimist');
+const gar = require('gar');
 
-let argv = minimist(process.argv.slice(2), {
-  alias: {remote: 'r'},
-  default: {remote: 'origin'},
-});
+let argv = Object.assign({
+  remote: 'origin'
+}, gar(process.argv.slice(2)));
+
+if (argv.hasOwnProperty('r')) argv.remote = argv.r;
 
 // - check we are in release branch, e.g. 0.33-stable
 let branch = exec('git symbolic-ref --short HEAD', {silent: true}).stdout.trim();
