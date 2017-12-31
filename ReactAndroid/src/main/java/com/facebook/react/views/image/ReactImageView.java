@@ -396,13 +396,14 @@ public class ReactImageView extends GenericDraweeView {
             ? mFadeDurationMs
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
-    // TODO: t13601664 Support multiple PostProcessors
-    Postprocessor postprocessor = null;
+    List<Postprocessor> postprocessors = new LinkedList<>();
     if (usePostprocessorScaling) {
-      postprocessor = mRoundedCornerPostprocessor;
-    } else if (mIterativeBoxBlurPostProcessor != null) {
-      postprocessor = mIterativeBoxBlurPostProcessor;
+      postprocessors.add(mRoundedCornerPostprocessor);
     }
+    if (mIterativeBoxBlurPostProcessor != null) {
+      postprocessors.add(mIterativeBoxBlurPostProcessor);
+    }
+    Postprocessor postprocessor = MultiPostprocessor.from(postprocessors);
 
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
