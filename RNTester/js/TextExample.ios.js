@@ -516,6 +516,11 @@ exports.examples = [
           <Text style={{letterSpacing: -1, marginTop: 5}}>
             letterSpacing = -1
           </Text>
+          <Text style={{letterSpacing: 3, marginTop: 5}}>
+            [letterSpacing = 3]
+            <Text style={{letterSpacing: 0}}>[Nested letterSpacing = 0]</Text>
+            <Text style={{letterSpacing: 6}}>[Nested letterSpacing = 6]</Text>
+          </Text>
         </View>
       );
     },
