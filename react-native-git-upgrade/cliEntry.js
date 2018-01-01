@@ -303,7 +303,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git init', verbose);
 
     log.info('Save current .gitignore file');
-    await copyCurrentGitIgnoreFile(tmpDir);
+    copyCurrentGitIgnoreFile(tmpDir);
 
     log.info('Add all files to commit');
     await exec('git add .', verbose);
