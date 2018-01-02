@@ -1161,7 +1161,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _selectOffset(metrics: {x: number, y: number}): number {
-    return !this.props.horizontal ? metrics.y : metrics.x;
+    return (
+      (!this.props.horizontal ? metrics.y : metrics.x) - this._headerLength
+    );
   }
 
   _maybeCallOnEndReached() {
