@@ -9,7 +9,9 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -43,6 +45,7 @@ public class ReactScrollViewManager
   };
 
   private @Nullable FpsListener mFpsListener = null;
+  private @Nullable ObjectAnimator mAnimator = null;
 
   public ReactScrollViewManager() {
     this(null);
@@ -142,8 +145,8 @@ public class ReactScrollViewManager
   @Override
   public void scrollTo(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    if (data.mAnimated) {
-      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    if (data.mDuration > 0) {
+      animateScroll(scrollView, data.mDestX, data.mDestY, data.mDuration);
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
@@ -203,8 +206,8 @@ public class ReactScrollViewManager
     // ScrollView always has one child - the scrollable area
     int bottom =
       scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
-    if (data.mAnimated) {
-      scrollView.smoothScrollTo(scrollView.getScrollX(), bottom);
+    if (data.mDuration > 0) {
+      animateScroll(scrollView, scrollView.getScrollX(), bottom, data.mDuration);
     } else {
       scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }
@@ -223,5 +226,12 @@ public class ReactScrollViewManager
         .put(ScrollEventType.MOMENTUM_BEGIN.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
         .put(ScrollEventType.MOMENTUM_END.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
+  }
+
+  private void animateScroll(ReactScrollView view, int mDestX, int mDestY, int mDuration) {
+    if (mAnimator != null) {
+      mAnimator.cancel();
+    }
+    mAnimator = ReactScrollViewHelper.animateScroll(view, mDestX, mDestY, mDuration);
   }
 }

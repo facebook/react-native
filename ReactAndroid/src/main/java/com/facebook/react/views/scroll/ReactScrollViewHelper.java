@@ -9,6 +9,10 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -92,5 +96,29 @@ public class ReactScrollViewHelper {
     } else {
       throw new JSApplicationIllegalArgumentException("wrong overScrollMode: " + jsOverScrollMode);
     }
+  }
+
+  /**
+   * Helper method for animating to a ScrollView position with a given duration,
+   * instead of using "smoothScrollTo", which does not expose a duration argument.
+   */
+  public static ObjectAnimator animateScroll(final ViewGroup scrollView, int mDestX, int mDestY, int mDuration) {
+    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", mDestX);
+    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", mDestY);
+
+    final ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(scrollView, scrollX, scrollY);
+
+    // Cancel the animation if a user interacts with the ScrollView.
+    scrollView.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        scrollView.setOnTouchListener(null);
+        animator.cancel();
+        return false;
+      }
+    });
+
+    animator.setDuration(mDuration).start();
+    return animator;
   }
 }
