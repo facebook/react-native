@@ -235,7 +235,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     String contentEncoding = requestHeaders.get(CONTENT_ENCODING_HEADER_NAME);
     requestBuilder.headers(requestHeaders);
 
-    if (data == null) {
+    if (data == null || method.toLowerCase() === 'get' || method.toLowerCase() === 'head') {
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
