@@ -19,7 +19,7 @@
     "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-stage-3": "^6.17.0",
     "babel-register": "^6.18.0",
-    "minimist": "^1.2.0",
+    "gar": "^1.0.2",
     "npmlog": "^4.0.0",
     "promise": "^7.1.1",
     "rimraf": "^2.5.4",

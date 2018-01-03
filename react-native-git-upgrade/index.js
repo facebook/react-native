@@ -9,7 +9,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var argv = require('minimist')(process.argv.slice(2));
+var argv = require('gar')(process.argv.slice(2));
 var cli = require('./cli');
 
 if (argv._.length === 0 && (argv.h || argv.help)) {
