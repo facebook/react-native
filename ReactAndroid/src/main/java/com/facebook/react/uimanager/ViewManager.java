@@ -42,7 +42,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       ThemedReactContext reactContext,
       JSResponderHandler jsResponderHandler) {
     T view = createViewInstance(reactContext);
-    addEventEmitters(reactContext, view);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
