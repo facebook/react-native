@@ -422,7 +422,6 @@ const TextInput = createReactClass({
      * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
      * the typed-in character otherwise including `' '` for space.
      * Fires before `onChange` callbacks.
-     * @platform ios
      */
     onKeyPress: PropTypes.func,
     /**
