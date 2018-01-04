@@ -75,6 +75,23 @@
 #endif
 
 /**
+ * Add the default Metro packager port number
+ */
+#ifndef RCT_METRO_PORT
+#define RCT_METRO_PORT 8081
+#else
+// test if RCT_METRO_PORT is empty
+#define RCT_METRO_PORT_DO_EXPAND(VAL)  VAL ## 1
+#define RCT_METRO_PORT_EXPAND(VAL)     RCT_METRO_PORT_DO_EXPAND(VAL)
+#if !defined(RCT_METRO_PORT) || (RCT_METRO_PORT_EXPAND(RCT_METRO_PORT) == 1)
+// Only here if RCT_METRO_PORT is not defined
+// OR RCT_METRO_PORT is the empty string
+#undef RCT_METRO_PORT
+#define RCT_METRO_PORT 8081
+#endif
+#endif
+
+/**
  * By default, only raise an NSAssertion in debug mode
  * (custom assert functions will still be called).
  */
@@ -99,10 +116,3 @@ _Pragma("clang diagnostic ignored \"-Wunused-parameter\"") \
 RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class); \
 method NS_UNAVAILABLE { @throw _RCTNotImplementedException(_cmd, [self class]); } \
 _Pragma("clang diagnostic pop")
-
-/**
- * Add the default Metro packager port number 
- */
-#ifndef RCT_METRO_PORT
-#define RCT_METRO_PORT 8081
-#endif

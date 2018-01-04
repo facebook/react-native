@@ -435,8 +435,8 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+          "RCT_METRO_PORT=${RCT_METRO_PORT}",
 					"$(inherited)",
-					"RCT_METRO_PORT=${RCT_METRO_PORT}",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				OTHER_LDFLAGS = "-ObjC";
