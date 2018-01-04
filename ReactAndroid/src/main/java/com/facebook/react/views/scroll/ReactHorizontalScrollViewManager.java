@@ -10,8 +10,10 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.Spacing;
@@ -68,6 +70,12 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
+  }
+
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactHorizontalScrollView view, int snapToInterval) {
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    view.setSnapInterval((int)(snapToInterval * screenDisplayMetrics.density));
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

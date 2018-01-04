@@ -45,7 +45,7 @@ import org.junit.Ignore;
  * Integration test to verify passing various types of parameters from JS to Java works
  *
  * TODO: we should run these tests with isBlockingSynchronousMethod = true as well,
- * since they currrently use a completely different codepath
+ * since they currently use a completely different codepath
  */
 @Ignore("Fix prop types and view managers.")
 public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTestCase {

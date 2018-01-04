@@ -19,6 +19,7 @@ import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.text.style.AbsoluteSizeSpan;
@@ -342,6 +343,11 @@ public class ReactEditText extends EditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
+    if( isSecureText() &&
+        TextUtils.equals(getText(), reactTextUpdate.getText())) {
+      return;
+    }
+
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
     if (mMostRecentEventCount < mNativeEventCount) {
@@ -437,6 +443,14 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private boolean isSecureText() {
+    return
+      (getInputType() &
+        (InputType.TYPE_NUMBER_VARIATION_PASSWORD |
+          InputType.TYPE_TEXT_VARIATION_PASSWORD))
+      != 0;
   }
 
   private void onContentSizeChange() {

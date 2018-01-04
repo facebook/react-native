@@ -107,6 +107,10 @@ const KeyboardAvoidingView = createReactClass({
     const {duration, easing, endCoordinates} = event;
     const height = this._relativeKeyboardHeight(endCoordinates);
 
+    if (this.state.bottom === height) {
+      return;
+    }
+
     if (duration && easing) {
       LayoutAnimation.configureNext({
         duration: duration,

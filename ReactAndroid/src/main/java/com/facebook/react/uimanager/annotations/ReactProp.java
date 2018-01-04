@@ -58,7 +58,7 @@ public @interface ReactProp {
    * set in which case default type will be send to JS based on the type of value argument from the
    * setter method (e.g. for {@code int}, {@code double} default is "number", for
    * {@code ReadableArray} it's "Array"). Custom type may be used when additional processing of the
-   * value needs to be done in JS before sending it over the brige. A good example of that would be
+   * value needs to be done in JS before sending it over the bridge. A good example of that would be
    * backgroundColor property, which is expressed as a {@code String} in JS, but we use
    * {@code processColor} JS module to convert it to {@code int} before sending over the bridge.
    */

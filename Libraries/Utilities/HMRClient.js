@@ -89,7 +89,6 @@ Error: ${e.message}`
             modules,
             sourceMappingURLs,
             sourceURLs,
-            inverseDependencies,
           } = data.body;
 
           if (Platform.OS === 'ios') {
@@ -109,16 +108,6 @@ Error: ${e.message}`
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
               : eval;
-
-            code = [
-              '__accept(',
-                `${id},`,
-                'function(global,require,module,exports){',
-                  `${code}`,
-                '\n},',
-                `${JSON.stringify(inverseDependencies)}`,
-              ');',
-            ].join('');
 
             injectFunction(code, sourceURLs[i]);
           });

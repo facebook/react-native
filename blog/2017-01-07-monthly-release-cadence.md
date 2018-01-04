@@ -24,7 +24,7 @@ The January release candidate is ready to try, and you can [see what's new here]
 
 To see what changes are coming and provide better feedback to React Native contributors, always use the current month's release candidate when possible. By the time each version is released at the end of the month, the changes it contains will have been shipped in production Facebook apps for over two weeks.
 
-You can easily upgrade your app with the new [react-native-git-upgrade](http://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html) command:
+You can easily upgrade your app with the new [react-native-git-upgrade](https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html) command:
 
 ```
 npm install -g react-native-git-upgrade

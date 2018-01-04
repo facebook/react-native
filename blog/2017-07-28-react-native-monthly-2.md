@@ -36,7 +36,7 @@ Here are the notes from each team:
 
 - [Mike Grabowski](https://github.com/grabbou) has been managing React Native's monthly releases as always, including a few betas that were pushed out. In particular, working on getting a v0.43.5 build published to npm since it unblocks Windows users!
 - Slow but consistent work is happening on [Haul](https://github.com/callstack-io/haul). There is a pull request that adds HMR, and other improvements have shipped. Recently got a few industry leaders to adopt it. Possibly planning to start a full-time paid work in that area.
-- [Michał Pierzchała](https://twitter.com/thymikee) from the [Jest](https://github.com/facebook/jest) team has joined us at Callstack this month. He will help maintain [Haul](https://github.com/callstack-io/haul) and possibly work on [Metro Bundler](https://github.com/facebook/metro-bundler) and [Jest](https://github.com/facebook/jest).
+- [Michał Pierzchała](https://twitter.com/thymikee) from the [Jest](https://github.com/facebook/jest) team has joined us at Callstack this month. He will help maintain [Haul](https://github.com/callstack-io/haul) and possibly work on [Metro Bundler](https://github.com/facebook/metro) and [Jest](https://github.com/facebook/jest).
 - [Satyajit Sahoo](https://twitter.com/satya164) is now with us, yay!
 - Got a bunch of cool stuff coming up from our OSS department. In particular, working on bringing Material Palette API to React Native. Planning to finally release our native iOS kit which is aimed to provide 1:1 look & feel of native components.
 
@@ -59,7 +59,7 @@ Here are the notes from each team:
 - Facebook is internally exploring being able to embed native [ComponentKit](http://componentkit.org/) and [Litho](https://fblitho.com/) components inside of React Native.
 - Contributions to React Native are very welcome! If you are wondering how you can contribute, the ["How to Contribute" guide](http://facebook.github.io/react-native/docs/contributing.html) describes our development process and lays out the steps to send your first pull request. There are other ways to contribute that do not require writing code, such as by triaging issues or updating the docs.
   - At the time of writing, React Native has **635** [open issues](https://github.com/facebook/react-native/issues) and **249** [open pull requests](https://github.com/facebook/react-native/pulls). This is overwhelming for our maintainers, and when things get fixed internally, it is difficult to ensure the relevant tasks are updated.
-  - We are unsure what the best approach is to handle this while keeping the community satisfied. Some (but not all!) options include closing stale issues, giving significantly more people permissions to manage issues, and automatically closing issues that do not follow the issue template. We wrote a ["What to Expect from Maintainers"](http://facebook.github.io/react-native/docs/maintainers.html) guide to set expectations and avoid surprises. If you have ideas on how we can make this experience better for maintainers as well as ensuring people opening issues and pull requests feel heard and valued, please let us know!
+  - We are unsure what the best approach is to handle this while keeping the community satisfied. Some (but not all!) options include closing stale issues, giving significantly more people permissions to manage issues, and automatically closing issues that do not follow the issue template. We wrote a ["What to Expect from Maintainers"](https://facebook.github.io/react-native/docs/maintainers.html) guide to set expectations and avoid surprises. If you have ideas on how we can make this experience better for maintainers as well as ensuring people opening issues and pull requests feel heard and valued, please let us know!
 
 ### GeekyAnts
 
@@ -79,7 +79,7 @@ Here are the notes from each team:
   - Some people have reported an issue with duplicate apps - they already had an app on Mobile Center. We are working on resolving them, but if you have two apps, let us know, and we can merge them for you.
 - Mobile Center now supports Push Notifications for CodePush. We also showed how a combination of Notifications and CodePush could be used for A/B testing apps - something unique to the ReactNative architecture.
 - [VSCode](https://github.com/Microsoft/vscode) has a known debugging issue with ReactNative - the next release of the extension in a couple of days will be fixing the issue.
-- Since there are many other teams also working on React Native inside Microsoft, we will work on getting better representation from all the groups for the next meeting. 
+- Since there are many other teams also working on React Native inside Microsoft, we will work on getting better representation from all the groups for the next meeting.
 
 ### Shoutem
 
@@ -90,7 +90,7 @@ Here are the notes from each team:
 
 ### Wix
 
-- We started working on a pull request to [Metro Bundler](https://github.com/facebook/metro-bundler) with [react-native-repackager](https://github.com/wix/react-native-repackager) capabilities. We updated react-native-repackager to support RN 44 (which we use in production). We are using it for our mocking infrastructure for [detox](https://github.com/wix/detox).
+- We started working on a pull request to [Metro Bundler](https://github.com/facebook/metro) with [react-native-repackager](https://github.com/wix/react-native-repackager) capabilities. We updated react-native-repackager to support RN 44 (which we use in production). We are using it for our mocking infrastructure for [detox](https://github.com/wix/detox).
 - We have been covering the Wix app in detox tests for the last three weeks. It's an amazing learning experience of how to reduce manual QA in an app of this scale (over 40 engineers). We have resolved several issues with detox as a result, a new version was just published. I am happy to report that we are living up to the "zero flakiness policy" and the tests are passing consistently so far.
 - Detox for Android is moving forward nicely. We are getting significant help from the community. We are expecting an initial version in about two weeks.
 - [DetoxInstruments](https://github.com/wix/detoxinstruments), our performance testing tool, is getting a little bigger than we originally intended. We are now planning to turn it into a standalone tool that will not be tightly coupled to detox. It will allow investigating the performance of iOS apps in general. It will also be integrated with detox so we can run automated tests on performance metrics.
