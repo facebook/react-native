@@ -9,16 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RCTComponent.h>
-#import <React/RCTView.h>
+@protocol RCTRedBoxExtraDataActionDelegate <NSObject>
+- (void)reload;
+@end
 
-#import "RCTTextInput.h"
+@interface RCTRedBoxExtraDataViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
-@class RCTUITextField;
+@property (nonatomic, weak) id<RCTRedBoxExtraDataActionDelegate> actionDelegate;
 
-@interface RCTTextField : RCTTextInput
-
-@property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, strong) NSNumber *maxLength;
+- (void)addExtraData:(NSDictionary *)data forIdentifier:(NSString *)identifier;
 
 @end

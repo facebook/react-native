@@ -217,6 +217,11 @@ RCT_EXPORT_MODULE()
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
         message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
         preferredStyle:UIAlertControllerStyleAlert];
+      __weak typeof(alertController) weakAlertController = alertController;
+      [alertController addAction:
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+      }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
@@ -241,7 +246,20 @@ RCT_EXPORT_MODULE()
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
       return devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
     } handler:^{
-      devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      if (devSettings.isDebuggingRemotely) {
+        UIAlertController *alertController = [UIAlertController
+          alertControllerWithTitle:@"Systrace Unavailable"
+          message:@"You need to stop remote JS debugging to enable Systrace"
+          preferredStyle:UIAlertControllerStyleAlert];
+        __weak typeof(alertController) weakAlertController = alertController;
+        [alertController addAction:
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+      } else {
+        devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      }
     }]];
   }
 

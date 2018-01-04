@@ -347,9 +347,6 @@ fs.createWriteStream.mockImplementation(filePath => {
   const writeStream = new stream.Writable({
     write(chunk, encoding, callback) {
       this.__chunks.push(chunk);
-      callback();
-    },
-    final(callback) {
       node[path.basename(filePath)] = this.__chunks.join('');
       callback();
     },

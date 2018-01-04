@@ -126,8 +126,8 @@ function isTagInstanceOfTextInput(tag) {
   var instance = getInstanceFromNode(tag);
   return instance && instance.viewConfig && (
     instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
-    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
-    instance.viewConfig.uiViewClassName === 'RCTTextField'
+    instance.viewConfig.uiViewClassName === 'RCTMultilineTextInputView' ||
+    instance.viewConfig.uiViewClassName === 'RCTSinglelineTextInputView'
   );
 }
 

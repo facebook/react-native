@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RCTText : UIView
+@interface RCTTextView : UIView
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, strong) NSTextStorage *textStorage;

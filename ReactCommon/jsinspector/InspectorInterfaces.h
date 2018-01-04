@@ -18,7 +18,7 @@ namespace facebook {
 namespace react {
 
 class IDestructible {
-public:
+ public:
   virtual ~IDestructible() = 0;
 };
 
@@ -27,29 +27,52 @@ struct InspectorPage {
   const std::string title;
 };
 
+/// IRemoteConnection allows the VM to send debugger messages to the client.
 class IRemoteConnection : public IDestructible {
-public:
+ public:
   virtual ~IRemoteConnection() = 0;
   virtual void onMessage(std::string message) = 0;
   virtual void onDisconnect() = 0;
 };
 
+/// ILocalConnection allows the client to send debugger messages to the VM.
 class ILocalConnection : public IDestructible {
-public:
+ public:
   virtual ~ILocalConnection() = 0;
   virtual void sendMessage(std::string message) = 0;
   virtual void disconnect() = 0;
 };
 
-// Note: not destructible!
+/// IInspector tracks debuggable JavaScript targets (pages).
 class IInspector {
-public:
-  virtual void registerGlobalContext(const std::string& title, const std::function<bool()> &checkIsInspectedRemote, void* ctx) = 0;
-  virtual void unregisterGlobalContext(void* ctx) = 0;
+ public:
+  using ConnectFunc = std::function<std::unique_ptr<ILocalConnection>(
+      std::unique_ptr<IRemoteConnection>)>;
 
+  /// addPage is called by the VM to add a page to the list of debuggable pages.
+  virtual int addPage(const std::string& title, ConnectFunc connectFunc) = 0;
+
+  /// removePage is called by the VM to remove a page from the list of
+  /// debuggable pages.
+  virtual void removePage(int pageId) = 0;
+
+  /// getPages is called by the client to list all debuggable pages.
   virtual std::vector<InspectorPage> getPages() const = 0;
-  virtual std::unique_ptr<ILocalConnection> connect(int pageId, std::unique_ptr<IRemoteConnection> remote) = 0;
+
+  /// connect is called by the client to initiate a debugging session on the
+  /// given page.
+  virtual std::unique_ptr<ILocalConnection> connect(
+      int pageId,
+      std::unique_ptr<IRemoteConnection> remote) = 0;
 };
 
-}
-}
+/// getInspectorInstance retrieves the singleton inspector that tracks all
+/// debuggable pages in this process.
+extern IInspector& getInspectorInstance();
+
+/// makeTestInspectorInstance creates an independent inspector instance that
+/// should only be used in tests.
+extern std::unique_ptr<IInspector> makeTestInspectorInstance();
+
+} // namespace react
+} // namespace facebook

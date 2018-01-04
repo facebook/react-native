@@ -104,13 +104,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
   sendEventToAllConnections(kDebuggerMsgDisable);
 }
 
-+ (void)connectForContext:(JSGlobalContextRef)context
-            withBundleURL:(NSURL *)bundleURL
++ (void)connectWithBundleURL:(NSURL *)bundleURL
 {
-  if (!isCustomJSCPtr(context)) {
-    return;
-  }
-
   NSURL *inspectorURL = getInspectorDeviceUrl(bundleURL);
 
   // Note, using a static dictionary isn't really the greatest design, but

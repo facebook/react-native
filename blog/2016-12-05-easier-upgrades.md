@@ -118,4 +118,4 @@ As a conclusion, I would say, enjoy the feature and feel free [to suggest improv
 
 ### Thank you!
 
-I would like to thank the awesome companies [Zenika](http://www.zenika.com) and [M6 Web](http://www.groupem6.fr/le-groupe_en/activites/diversifications/m6-web.html) without whom none of this would have been possible!
+I would like to thank the awesome companies [Zenika](https://www.zenika.com) and [M6 Web](http://www.groupem6.fr/le-groupe_en/activites/diversifications/m6-web.html) without whom none of this would have been possible!
