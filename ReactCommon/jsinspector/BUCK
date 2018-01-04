@@ -1,0 +1,27 @@
+include_defs("//ReactCommon/DEFS")
+
+EXPORTED_HEADERS = [
+    "InspectorInterfaces.h",
+]
+
+rn_xplat_cxx_library(
+    name = "jsinspector",
+    srcs = glob(
+        ["*.cpp"],
+    ),
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
+    header_namespace = "jsinspector",
+    exported_headers = EXPORTED_HEADERS,
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-std=c++1y",
+    ],
+    fbandroid_preferred_linkage = "shared",
+    visibility = [
+        "PUBLIC",
+    ],
+)

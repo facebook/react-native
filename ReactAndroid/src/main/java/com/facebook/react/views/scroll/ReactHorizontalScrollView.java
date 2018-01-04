@@ -48,6 +48,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private int mSnapInterval = 0;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactHorizontalScrollView(Context context) {
@@ -90,6 +91,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mPagingEnabled = pagingEnabled;
   }
 
+  public void setSnapInterval(int snapInterval) {
+    mSnapInterval = snapInterval;
+  }
+
   public void flashScrollIndicators() {
     awakenScrollBars();
   }
@@ -114,7 +119,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     super.onScrollChanged(x, y, oldX, oldY);
 
     mActivelyScrolling = true;
-    
+
     if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
       if (mRemoveClippedSubviews) {
         updateClippingRect();
@@ -210,6 +215,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
+  }
+
+  private int getSnapInterval() {
+    if (mSnapInterval != 0) {
+      return mSnapInterval;
+    }
+    return getWidth();
   }
 
   public void setEndFillColor(int color) {
@@ -312,7 +324,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * scrolling.
    */
   private void smoothScrollToPage(int velocity) {
-    int width = getWidth();
+    int width = getSnapInterval();
     int currentX = getScrollX();
     // TODO (t11123799) - Should we do anything beyond linear accounting of the velocity
     int predictedX = currentX + velocity;

@@ -54,9 +54,15 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+// Bridge might be already invalidated by the time the keyboard is about to be dismissed.
+// This might happen, for example, when reload from the packager is performed.
+// Thus we need to check against nil here.
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT) \
 - (void)EVENT:(NSNotification *)notification \
 { \
+  if (!self.bridge) { \
+    return; \
+  } \
   [self sendEventWithName:@#EVENT \
     body:RCTParseKeyboardNotification(notification)]; \
 }
