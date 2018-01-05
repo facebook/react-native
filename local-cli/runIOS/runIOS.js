@@ -115,7 +115,15 @@ function runOnSimulator(xcodeProject, args, scheme) {
 
     const simulatorFullName = formattedDeviceName(selectedSimulator);
     console.log(`Launching ${simulatorFullName}...`);
-    child_process.spawnSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+    try {
+      child_process.spawnSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+    } catch (e) {
+      throw new Error(
+        `Could not boot ${args.simulator} simulator. Is there already a simulator running? ` +
+        'Running multiple simulators is only supported from Xcode 9 and up. ' +
+        'Try closing the simulator or run the command again without specifying a simulator.'
+      );
+    }
 
     buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
       .then((appName) => resolve(selectedSimulator.udid, appName));
