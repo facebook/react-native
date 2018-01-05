@@ -419,6 +419,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     }
 
     shadowView.intrinsicContentSize = intrinsicContentSize;
+    [self setNeedsLayout];
   } forTag:view.reactTag];
 }
 
