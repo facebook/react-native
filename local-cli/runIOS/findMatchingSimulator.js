@@ -34,10 +34,12 @@ function findMatchingSimulator(simulators, simulatorName) {
       if (simulator.availability !== '(available)') {
         continue;
       }
-      if (simulator.state === 'Booted' && simulatorName === null) {
+      let booted = simulator.state === 'Booted';
+      if (booted && simulatorName === null) {
         return {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }
@@ -45,6 +47,7 @@ function findMatchingSimulator(simulators, simulatorName) {
         match = {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }
@@ -53,6 +56,7 @@ function findMatchingSimulator(simulators, simulatorName) {
         match = {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }

@@ -113,16 +113,18 @@ function runOnSimulator(xcodeProject, args, scheme) {
       throw new Error(`Could not find ${args.simulator} simulator`);
     }
 
-    const simulatorFullName = formattedDeviceName(selectedSimulator);
-    console.log(`Launching ${simulatorFullName}...`);
-    try {
-      child_process.spawnSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
-    } catch (e) {
-      throw new Error(
-        `Could not boot ${args.simulator} simulator. Is there already a simulator running? ` +
-        'Running multiple simulators is only supported from Xcode 9 and up. ' +
-        'Try closing the simulator or run the command again without specifying a simulator.'
-      );
+    if (!selectedSimulator.booted) {
+      const simulatorFullName = formattedDeviceName(selectedSimulator);
+      console.log(`Booting ${simulatorFullName}...`);
+      try {
+        child_process.execFileSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+      } catch (e) {
+        throw new Error(
+`Could not boot ${args.simulator} simulator. Is there already a simulator running?
+Running multiple simulators is only supported from Xcode 9 and up.
+Try closing the simulator or run the command again without specifying a simulator.`
+        );
+      }
     }
 
     buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
