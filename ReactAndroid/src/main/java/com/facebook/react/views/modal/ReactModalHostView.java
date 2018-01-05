@@ -128,10 +128,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      Activity currentActivity = getCurrentActivity();
-      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
-        mDialog.dismiss();
-      }
+      mDialog.dismiss();
       mDialog = null;
 
       // We need to remove the mHostView from the parent
@@ -212,9 +209,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     } else if (mAnimationType.equals("slide")) {
       theme = R.style.Theme_FullScreenDialogAnimatedSlide;
     }
-    Activity currentActivity = getCurrentActivity();
-    Context context = currentActivity == null ? getContext() : currentActivity;
-    mDialog = new Dialog(context, theme);
+    mDialog = new Dialog(getContext(), theme);
+
     mDialog.setContentView(getContentView());
     updateProperties();
 
@@ -237,7 +233,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             } else {
               // We redirect the rest of the key events to the current activity, since the activity
               // expects to receive those events and react to them, ie. in the case of the dev menu
-              Activity currentActivity = getCurrentActivity();
+              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
               if (currentActivity != null) {
                 return currentActivity.onKeyUp(keyCode, event);
               }
@@ -251,13 +247,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (mHardwareAccelerated) {
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
-    if (currentActivity == null || !currentActivity.isFinishing()) {
-      mDialog.show();
-    }
-  }
-
-  private @Nullable Activity getCurrentActivity() {
-    return ((ReactContext) getContext()).getCurrentActivity();
+    mDialog.show();
   }
 
   /**
