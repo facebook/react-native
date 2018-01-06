@@ -10,6 +10,7 @@
 package com.facebook.react.devsupport;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaJSExecutor;
@@ -25,6 +26,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   private static final long CONNECT_TIMEOUT_MS = 5000;
   private static final int CONNECT_RETRY_COUNT = 3;
+  private static final String TIMEOUT_HANDLER_THREAD = "TimeoutHandlerThread";
 
   public interface JSExecutorConnectCallback {
     void onSuccess();
@@ -73,29 +75,36 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   public void connect(final String webSocketServerUrl, final JSExecutorConnectCallback callback) {
     final AtomicInteger retryCount = new AtomicInteger(CONNECT_RETRY_COUNT);
+    final HandlerThread thread = new HandlerThread(TIMEOUT_HANDLER_THREAD);
+    thread.start();
+    final Handler timeoutHandler = new Handler(thread.getLooper());
     final JSExecutorConnectCallback retryProxyCallback = new JSExecutorConnectCallback() {
       @Override
       public void onSuccess() {
+        timeoutHandler.removeCallbacksAndMessages(null);
+        thread.quit();
         callback.onSuccess();
       }
 
       @Override
       public void onFailure(Throwable cause) {
+        timeoutHandler.removeCallbacksAndMessages(null);
         if (retryCount.decrementAndGet() <= 0) {
+          thread.quit();
           callback.onFailure(cause);
         } else {
-          connectInternal(webSocketServerUrl, this);
+          connectInternal(webSocketServerUrl, this, timeoutHandler);
         }
       }
     };
-    connectInternal(webSocketServerUrl, retryProxyCallback);
+    connectInternal(webSocketServerUrl, retryProxyCallback, timeoutHandler);
   }
 
   private void connectInternal(
       String webSocketServerUrl,
-      final JSExecutorConnectCallback callback) {
+      final JSExecutorConnectCallback callback,
+      Handler timeoutHandler) {
     final JSDebuggerWebSocketClient client = new JSDebuggerWebSocketClient();
-    final Handler timeoutHandler = new Handler(Looper.getMainLooper());
     client.connect(
         webSocketServerUrl, new JSDebuggerWebSocketClient.JSDebuggerCallback() {
           // It's possible that both callbacks can fire on an error so make sure we only
@@ -108,7 +117,6 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
                 new JSDebuggerWebSocketClient.JSDebuggerCallback() {
                   @Override
                   public void onSuccess(@Nullable String response) {
-                    timeoutHandler.removeCallbacksAndMessages(null);
                     mWebSocketClient = client;
                     if (!didSendResult) {
                       callback.onSuccess();
@@ -118,7 +126,6 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
                   @Override
                   public void onFailure(Throwable cause) {
-                    timeoutHandler.removeCallbacksAndMessages(null);
                     if (!didSendResult) {
                       callback.onFailure(cause);
                       didSendResult = true;
@@ -129,7 +136,6 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
           @Override
           public void onFailure(Throwable cause) {
-            timeoutHandler.removeCallbacksAndMessages(null);
             if (!didSendResult) {
               callback.onFailure(cause);
               didSendResult = true;
