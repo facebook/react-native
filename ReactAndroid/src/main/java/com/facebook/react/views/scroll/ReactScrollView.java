@@ -279,7 +279,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
       enableFpsListener();
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, 0, velocityY);
       Runnable r = new Runnable() {
         @Override
         public void run() {

@@ -158,14 +158,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      float velocityX = mVelocityHelper.getXVelocity();
+      float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(
         this,
-        mVelocityHelper.getXVelocity(),
-        mVelocityHelper.getYVelocity());
+        velocityX,
+        velocityY);
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
-      handlePostTouchScrolling();
+      handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
     }
 
     return super.onTouchEvent(ev);
@@ -178,7 +180,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else {
       super.fling(velocityX);
     }
-    handlePostTouchScrolling();
+    handlePostTouchScrolling(velocityX, 0);
   }
 
   @Override
@@ -270,7 +272,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   @TargetApi(16)
-  private void handlePostTouchScrolling() {
+  private void handlePostTouchScrolling(int velocityX, int velocityY) {
     // If we aren't going to do anything (send events or snap to page), we can early out.
     if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
       return;
@@ -283,7 +285,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
 
     if (mSendMomentumEvents) {
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, velocityX, velocityY);
     }
 
     mActivelyScrolling = false;
