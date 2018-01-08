@@ -13,7 +13,10 @@
 const Platform = require('Platform');
 
 var TVViewPropTypes = {};
-if (Platform.isTV) {
+// We need to always include TVViewPropTypes on Android
+// as unlike on iOS we can't detect TV devices at build time
+// and hence make view manager export a different list of native properties.
+if (Platform.isTV || Platform.OS === 'android') {
   TVViewPropTypes = require('TVViewPropTypes');
 }
 
