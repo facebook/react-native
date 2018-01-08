@@ -306,8 +306,6 @@
                         method:@"unmountApplicationComponentAtRootTag"
                           args:@[self->_rootViewTag]
                     completion:NULL];
-
-  [self _setStage:RCTSurfaceStageSurfaceDidStop];
 }
 
 - (void)_registerRootView
