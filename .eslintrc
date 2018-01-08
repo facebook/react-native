@@ -81,7 +81,7 @@
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger
-    "no-dupe-keys": 1,               // disallow duplicate keys when creating object literals
+    "no-dupe-keys": 2,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block
     "no-extra-boolean-cast": 1,      // disallow double-negation boolean casts in a boolean context
@@ -95,7 +95,7 @@
     "no-regex-spaces": 1,            // disallow multiple spaces in a regular expression literal
     "no-reserved-keys": 0,           // disallow reserved words being used as object literal keys (off by default)
     "no-sparse-arrays": 1,           // disallow sparse arrays
-    "no-unreachable": 1,             // disallow unreachable statements after a return, throw, continue, or break statement
+    "no-unreachable": 2,             // disallow unreachable statements after a return, throw, continue, or break statement
     "use-isnan": 1,                  // disallow comparisons with the value NaN
     "valid-jsdoc": 0,                // Ensure JSDoc comments are valid (off by default)
     "valid-typeof": 1,               // Ensure that the results of typeof are compared against a valid string
@@ -116,7 +116,7 @@
     "no-div-regex": 1,               // disallow division operators explicitly at beginning of regular expression (off by default)
     "no-else-return": 0,             // disallow else after a return in an if (off by default)
     "no-eq-null": 0,                 // disallow comparisons to null without a type-checking operator (off by default)
-    "no-eval": 1,                    // disallow use of eval()
+    "no-eval": 2,                    // disallow use of eval()
     "no-extend-native": 1,           // disallow adding to native types
     "no-extra-bind": 1,              // disallow unnecessary function binding
     "no-fallthrough": 1,             // disallow fallthrough of case statements
@@ -129,7 +129,7 @@
     "no-multi-str": 0,               // disallow use of multiline strings
     "no-native-reassign": 0,         // disallow reassignments of native objects
     "no-new": 1,                     // disallow use of new operator when not part of the assignment or comparison
-    "no-new-func": 1,                // disallow use of new operator for Function object
+    "no-new-func": 2,                // disallow use of new operator for Function object
     "no-new-wrappers": 1,            // disallows creating new instances of String,Number, and Boolean
     "no-octal": 1,                   // disallow use of octal literals
     "no-octal-escape": 1,            // disallow use of octal escape sequences in string literals, such as var foo = "Copyright \251";
