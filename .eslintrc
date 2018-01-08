@@ -188,7 +188,7 @@
     "no-multi-spaces": 0,
     "brace-style": 0,                // enforce one true brace style (off by default)
     "camelcase": 0,                  // require camel case names
-    "consistent-this": [1, "self"],            // enforces consistent naming when capturing the current execution context (off by default)
+    "consistent-this": 1,            // enforces consistent naming when capturing the current execution context (off by default)
     "eol-last": 1,                   // enforce newline at the end of file, with no multiple empty lines
     "func-names": 0,                 // require function expressions to have a name (off by default)
     "func-style": 0,                 // enforces use of function declarations or expressions (off by default)
@@ -196,6 +196,7 @@
     "new-parens": 1,                 // disallow the omission of parentheses when invoking a constructor with no arguments
     "no-nested-ternary": 0,          // disallow nested ternary expressions (off by default)
     "no-array-constructor": 1,       // disallow use of the Array constructor
+    'no-empty-character-class': 1,   // disallow the use of empty character classes in regular expressions
     "no-lonely-if": 0,               // disallow if as the only statement in an else block (off by default)
     "no-new-object": 1,              // disallow use of the Object constructor
     "no-spaced-func": 1,             // disallow space between function identifier and application
