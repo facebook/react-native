@@ -348,36 +348,6 @@ static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
   }
 }
 
-static void YGCloneChildrenIfNeeded(const YGNodeRef parent) {
-  // YGNodeRemoveChild has a forked variant of this algorithm optimized for deletions.
-  const uint32_t childCount = YGNodeGetChildCount(parent);
-  if (childCount == 0) {
-    // This is an empty set. Nothing to clone.
-    return;
-  }
-
-  const YGNodeRef firstChild = YGNodeGetChild(parent, 0);
-  if (firstChild->getParent() == parent) {
-    // If the first child has this node as its parent, we assume that it is already unique.
-    // We can do this because if we have it has a child, that means that its parent was at some
-    // point cloned which made that subtree immutable.
-    // We also assume that all its sibling are cloned as well.
-    return;
-  }
-
-  const YGNodeClonedFunc cloneNodeCallback =
-      parent->getConfig()->cloneNodeCallback;
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef oldChild = parent->getChild(i);
-    const YGNodeRef newChild = YGNodeClone(oldChild);
-    parent->replaceChild(newChild, i);
-    newChild->setParent(parent);
-    if (cloneNodeCallback) {
-      cloneNodeCallback(oldChild, newChild, parent, i);
-    }
-  }
-}
-
 void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32_t index) {
   YGAssertWithNode(
       node,
@@ -388,14 +358,15 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
       node->getMeasure() == nullptr,
       "Cannot add child: Nodes with measure functions cannot have children.");
 
-  YGCloneChildrenIfNeeded(node);
+  node->cloneChildrenIfNeeded();
   node->insertChild(child, index);
   child->setParent(node);
   YGNodeMarkDirtyInternal(node);
 }
 
 void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
-  // This algorithm is a forked variant from YGCloneChildrenIfNeeded that excludes a child.
+  // This algorithm is a forked variant from cloneChildrenIfNeeded in YGNode
+  // that excludes a child.
   const uint32_t childCount = YGNodeGetChildCount(parent);
 
   if (childCount == 0) {
@@ -1805,7 +1776,7 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(const YGNodeRef node,
 static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   memset(&(node->getLayout()), 0, sizeof(YGLayout));
   node->setHasNewLayout(true);
-  YGCloneChildrenIfNeeded(node);
+  node->cloneChildrenIfNeeded();
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = node->getChild(i);
@@ -1993,8 +1964,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // At this point we know we're going to perform work. Ensure that each child has a mutable copy.
-  YGCloneChildrenIfNeeded(node);
-
+  node->cloneChildrenIfNeeded();
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
 

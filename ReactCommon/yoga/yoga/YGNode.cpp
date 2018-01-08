@@ -155,6 +155,10 @@ void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
   children_[index] = child;
 }
 
+void YGNode::replaceChild(YGNodeRef oldChild, YGNodeRef newChild) {
+  std::replace(children_.begin(), children_.end(), oldChild, newChild);
+}
+
 void YGNode::insertChild(YGNodeRef child, uint32_t index) {
   children_.insert(children_.begin() + index, child);
 }
@@ -375,21 +379,33 @@ YGNode::~YGNode() {
   // deallocate here
 }
 
-const YGNode& YGNode::defaultValue() {
-  static const YGNode n = {nullptr,
-                           nullptr,
-                           true,
-                           YGNodeTypeDefault,
-                           nullptr,
-                           nullptr,
-                           gYGNodeStyleDefaults,
-                           gYGNodeLayoutDefaults,
-                           0,
-                           nullptr,
-                           YGVector(),
-                           nullptr,
-                           nullptr,
-                           false,
-                           {{YGValueUndefined, YGValueUndefined}}};
-  return n;
+void YGNode::cloneChildrenIfNeeded() {
+  // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
+  // optimized for deletions.
+
+  const uint32_t childCount = children_.size();
+  if (childCount == 0) {
+    // This is an empty set. Nothing to clone.
+    return;
+  }
+
+  const YGNodeRef firstChild = children_.front();
+  if (firstChild->getParent() == this) {
+    // If the first child has this node as its parent, we assume that it is
+    // already unique. We can do this because if we have it has a child, that
+    // means that its parent was at some point cloned which made that subtree
+    // immutable. We also assume that all its sibling are cloned as well.
+    return;
+  }
+
+  const YGNodeClonedFunc cloneNodeCallback = config_->cloneNodeCallback;
+  for (uint32_t i = 0; i < childCount; ++i) {
+    const YGNodeRef oldChild = children_[i];
+    const YGNodeRef newChild = YGNodeClone(oldChild);
+    replaceChild(newChild, i);
+    newChild->setParent(this);
+    if (cloneNodeCallback) {
+      cloneNodeCallback(oldChild, newChild, this, i);
+    }
+  }
 }

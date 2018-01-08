@@ -106,6 +106,8 @@ struct YGNode {
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
   void clearChildren();
+  /// Replaces the occurrences of oldChild with newChild
+  void replaceChild(YGNodeRef oldChild, YGNodeRef newChild);
   void replaceChild(YGNodeRef child, uint32_t index);
   void insertChild(YGNodeRef child, uint32_t index);
   /// Removes the first occurrence of child
@@ -117,6 +119,6 @@ struct YGNode {
   void setLayoutPadding(float padding, int index);
   void setLayoutPosition(float position, int index);
 
-  // Static methods
-  static const YGNode& defaultValue();
+  // Other methods
+  void cloneChildrenIfNeeded();
 };
