@@ -11,6 +11,13 @@
 
 #import <React/RCTShadowView.h>
 
+/**
+ * Converts float values between Yoga and CoreGraphics representations,
+ * especially in terms of edge cases.
+ */
+RCT_EXTERN float RCTYogaFloatFromCoreGraphicsFloat(CGFloat value);
+RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
+
 @interface RCTShadowView (Layout)
 
 #pragma mark - Computed Layout-Inferred Metrics
