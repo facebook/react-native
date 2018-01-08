@@ -27,6 +27,13 @@ RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
 @property (nonatomic, readonly) UIEdgeInsets compoundInsets;
 @property (nonatomic, readonly) CGSize availableSize;
 
+#pragma mark - Measuring
+
+/**
+ * Measures shadow view without side-effects.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
+
 #pragma mark - Dirty Propagation Control
 
 /**

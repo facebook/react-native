@@ -81,6 +81,39 @@ CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value)
   return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
 }
 
+#pragma mark - Measuring
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
+
+  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+
+  YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
+  YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
+  YGNodeStyleSetMaxWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width));
+  YGNodeStyleSetMaxHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height));
+
+  YGNodeCalculateLayout(
+    constraintYogaNode,
+    YGUndefined,
+    YGUndefined,
+    self.layoutDirection
+  );
+
+  CGSize measuredSize = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
+  };
+
+  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeFree(constraintYogaNode);
+  YGNodeFree(clonnedYogaNode);
+
+  return measuredSize;
+}
+
 #pragma mark - Dirty Propagation Control
 
 - (void)dirtyLayout
