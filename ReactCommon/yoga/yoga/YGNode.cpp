@@ -435,3 +435,17 @@ float YGNode::resolveFlexGrow() {
   }
   return kDefaultFlexGrow;
 }
+
+float YGNode::resolveFlexShrink() {
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexShrink)) {
+    return style_.flexShrink;
+  }
+  if (!config_->useWebDefaults && !YGFloatIsUndefined(style_.flex) &&
+      style_.flex < 0.0f) {
+    return -style_.flex;
+  }
+  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+}

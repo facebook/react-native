@@ -470,23 +470,6 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       : node->getStyle().flexShrink;
 }
 
-static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
-  // Root nodes flexShrink should always be 0
-  if (node->getParent() == nullptr) {
-    return 0.0;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flexShrink)) {
-    return node->getStyle().flexShrink;
-  }
-  if (!node->getConfig()->useWebDefaults &&
-      !YGFloatIsUndefined(node->getStyle().flex) &&
-      node->getStyle().flex < 0.0f) {
-    return -node->getStyle().flex;
-  }
-  return node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
-                                           : kDefaultFlexShrink;
-}
-
 #define YG_NODE_STYLE_PROPERTY_SETTER_IMPL(                               \
     type, name, paramName, instanceName)                                  \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) { \
@@ -1021,7 +1004,7 @@ static YGFlexDirection YGFlexDirectionCross(const YGFlexDirection flexDirection,
 static inline bool YGNodeIsFlex(const YGNodeRef node) {
   return (
       node->getStyle().positionType == YGPositionTypeRelative &&
-      (node->resolveFlexGrow() != 0 || YGNodeResolveFlexShrink(node) != 0));
+      (node->resolveFlexGrow() != 0 || node->resolveFlexShrink() != 0));
 }
 
 static bool YGIsBaselineLayout(const YGNodeRef node) {
@@ -2028,7 +2011,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         }
       } else if (
           child->resolveFlexGrow() > 0.0f &&
-          YGNodeResolveFlexShrink(child) > 0.0f) {
+          child->resolveFlexShrink() > 0.0f) {
         singleFlexChild = child;
       }
     }
@@ -2176,7 +2159,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           totalFlexGrowFactors += child->resolveFlexGrow();
 
           // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
-          totalFlexShrinkScaledFactors += -YGNodeResolveFlexShrink(child) *
+          totalFlexShrinkScaledFactors += -child->resolveFlexShrink() *
               child->getLayout().computedFlexBasis;
         }
 
@@ -2296,7 +2279,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 currentRelativeChild->getLayout().computedFlexBasis));
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -YGNodeResolveFlexShrink(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor =
+              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
@@ -2369,7 +2353,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -YGNodeResolveFlexShrink(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor =
+              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
             float childSize;

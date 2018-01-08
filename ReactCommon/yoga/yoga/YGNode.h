@@ -123,4 +123,5 @@ struct YGNode {
   void cloneChildrenIfNeeded();
   void markDirtyAndPropogate();
   float resolveFlexGrow();
+  float resolveFlexShrink();
 };
