@@ -967,21 +967,19 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __weak RCTUIManager *weakManager = self;
+  __block UIView *preliminaryCreatedView;
+
   RCTExecuteOnMainQueue(^{
-    RCTUIManager *uiManager = weakManager;
-    if (!uiManager) {
-      return;
-    }
-    UIView *view = [componentData createViewWithTag:reactTag];
-    if (view) {
-      uiManager->_viewRegistry[reactTag] = view;
-    }
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
   });
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    [componentData setProps:props forView:view];
+  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    if (!preliminaryCreatedView) {
+      return;
+    }
+
+    uiManager->_viewRegistry[reactTag] = preliminaryCreatedView;
+    [componentData setProps:props forView:preliminaryCreatedView];
   }];
 
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
