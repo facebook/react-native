@@ -158,6 +158,12 @@ RCT_EXPORT_MODULE()
   if (!_locationConfiguration.skipPermissionRequests) {
     [self requestAuthorization];
   }
+  
+  //re #17486 - If someone skips permissions, location manager is not being set. so lets make sure its set before continuing
+  if (!_locationManager) {
+    _locationManager = [CLLocationManager new];
+    _locationManager.delegate = self;
+  }
 
   _locationManager.distanceFilter  = distanceFilter;
   _locationManager.desiredAccuracy = desiredAccuracy;
