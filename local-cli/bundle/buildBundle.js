@@ -117,7 +117,7 @@ async function buildBundle(
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(terminal),
-      sourceExts: defaultSourceExts.concat(sourceExts),
+      sourceExts: sourceExts.concat(defaultSourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
       watch: false,
