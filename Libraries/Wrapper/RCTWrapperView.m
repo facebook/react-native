@@ -84,7 +84,7 @@
 {
   UIView *contentView = self.contentView;
   if (!contentView) {
-    return size;
+    return [super sizeThatFits:size];
   }
 
   return [contentView sizeThatFits:size];
