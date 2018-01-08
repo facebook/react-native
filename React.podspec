@@ -140,7 +140,6 @@ Pod::Spec.new do |s|
     ss.dependency             "React/jschelpers"
     ss.dependency             "React/jsinspector"
     ss.dependency             "Folly", "2016.09.26.00"
-    ss.dependency             "GLog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
