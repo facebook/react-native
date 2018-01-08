@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/facebook/folly.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'folly'
-  spec.dependency 'boost-for-react-native', '1.63.0'
+  spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'GLog'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
