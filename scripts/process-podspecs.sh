@@ -66,6 +66,7 @@ cd "$ROOT/third-party-podspecs"
 push Folly.podspec
 push DoubleConversion.podspec
 push GLog.podspec
+push boost.podspec
 
 process "$ROOT/ReactCommon/yoga"
 process "$ROOT" _ignore_me_subspec_for_linting_
