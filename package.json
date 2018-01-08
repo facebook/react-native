@@ -206,6 +206,7 @@
     "eslint-config-fbjs": "^1.1.1",
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-flowtype": "^2.33.0",
+    "eslint-plugin-jest": "^21.5.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
     "flow-bin": "^0.63.0",

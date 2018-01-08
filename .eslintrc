@@ -15,7 +15,8 @@
   "plugins": [
     "flowtype",
     "prettier",
-    "react"
+    "react",
+    "jest"
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -245,6 +246,11 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0
+    "react/wrap-multilines": 0,
+
+  // Jest Plugin
+  // The following rules are made available via `eslint-plugin-jest`.
+    "jest/no-disabled-tests": 1,
+    "jest/no-focused-tests": 1,
   }
 }
