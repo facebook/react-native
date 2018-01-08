@@ -67,7 +67,7 @@
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillLoadJavaScriptNotification:)

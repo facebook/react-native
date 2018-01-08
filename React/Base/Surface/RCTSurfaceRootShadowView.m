@@ -9,9 +9,9 @@
 
 #import "RCTSurfaceRootShadowView.h"
 
-#import <React/RCTUIManagerUtils.h>
-
 #import "RCTI18nUtil.h"
+#import "RCTShadowView+Layout.h"
+#import "RCTUIManagerUtils.h"
 
 @implementation RCTSurfaceRootShadowView {
   CGSize _intrinsicSize;
@@ -25,7 +25,7 @@
     self.viewName = @"RCTSurfaceRootView";
     _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     self.alignSelf = YGAlignStretch;
     self.flex = 1;
@@ -45,14 +45,17 @@
 
 - (void)calculateLayoutWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximimSize
 {
-  // Treating `INFINITY` as `YGUndefined` (which equals `NAN`).
-  float availableWidth = isinf(maximimSize.width) ? YGUndefined : maximimSize.width;
-  float availableHeight = isinf(maximimSize.height) ? YGUndefined : maximimSize.height;
+  YGNodeRef yogaNode = self.yogaNode;
 
-  self.minWidth = (YGValue){isinf(minimumSize.width) ? YGUndefined : minimumSize.width, YGUnitPoint};
-  self.minHeight = (YGValue){isinf(minimumSize.height) ? YGUndefined : minimumSize.height, YGUnitPoint};
+  YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximimSize.width));
+  YGNodeStyleSetMinHeight(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximimSize.height));
 
-  YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
+  YGNodeCalculateLayout(
+    self.yogaNode,
+    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.width),
+    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.height),
+    _baseDirection
+  );
 }
 
 - (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
