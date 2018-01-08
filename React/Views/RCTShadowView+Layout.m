@@ -13,6 +13,8 @@
 
 @implementation RCTShadowView (Layout)
 
+#pragma mark - Computed Layout-Inferred Metrics
+
 - (UIEdgeInsets)paddingAsInsets
 {
   YGNodeRef yogaNode = self.yogaNode;
@@ -51,6 +53,18 @@
 - (CGSize)availableSize
 {
   return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
+}
+
+#pragma mark - Dirty Propagation Control
+
+- (void)dirtyLayout
+{
+  // The default implementaion does nothing.
+}
+
+- (void)clearLayout
+{
+  // The default implementaion does nothing.
 }
 
 @end
