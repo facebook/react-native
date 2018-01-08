@@ -379,6 +379,8 @@ YGNode::~YGNode() {
   // deallocate here
 }
 
+// Other Methods
+
 void YGNode::cloneChildrenIfNeeded() {
   // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
   // optimized for deletions.
@@ -406,6 +408,16 @@ void YGNode::cloneChildrenIfNeeded() {
     newChild->setParent(this);
     if (cloneNodeCallback) {
       cloneNodeCallback(oldChild, newChild, this, i);
+    }
+  }
+}
+
+void YGNode::markDirtyAndPropogate() {
+  if (!isDirty_) {
+    isDirty_ = true;
+    setLayoutComputedFlexBasis(YGUndefined);
+    if (parent_) {
+      parent_->markDirtyAndPropogate();
     }
   }
 }
