@@ -421,3 +421,17 @@ void YGNode::markDirtyAndPropogate() {
     }
   }
 }
+
+float YGNode::resolveFlexGrow() {
+  // Root nodes flexGrow should always be 0
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexGrow)) {
+    return style_.flexGrow;
+  }
+  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
+    return style_.flex;
+  }
+  return kDefaultFlexGrow;
+}

@@ -457,21 +457,6 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
   }
 }
 
-static inline float YGResolveFlexGrow(const YGNodeRef node) {
-  // Root nodes flexGrow should always be 0
-  if (node->getParent() == nullptr) {
-    return 0.0;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flexGrow)) {
-    return node->getStyle().flexGrow;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flex) &&
-      node->getStyle().flex > 0.0f) {
-    return node->getStyle().flex;
-  }
-  return kDefaultFlexGrow;
-}
-
 float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
   return YGFloatIsUndefined(node->getStyle().flexGrow)
       ? kDefaultFlexGrow
@@ -1036,7 +1021,7 @@ static YGFlexDirection YGFlexDirectionCross(const YGFlexDirection flexDirection,
 static inline bool YGNodeIsFlex(const YGNodeRef node) {
   return (
       node->getStyle().positionType == YGPositionTypeRelative &&
-      (YGResolveFlexGrow(node) != 0 || YGNodeResolveFlexShrink(node) != 0));
+      (node->resolveFlexGrow() != 0 || YGNodeResolveFlexShrink(node) != 0));
 }
 
 static bool YGIsBaselineLayout(const YGNodeRef node) {
@@ -2041,7 +2026,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           singleFlexChild = nullptr;
           break;
         }
-      } else if (YGResolveFlexGrow(child) > 0.0f && YGNodeResolveFlexShrink(child) > 0.0f) {
+      } else if (
+          child->resolveFlexGrow() > 0.0f &&
+          YGNodeResolveFlexShrink(child) > 0.0f) {
         singleFlexChild = child;
       }
     }
@@ -2186,7 +2173,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
-          totalFlexGrowFactors += YGResolveFlexGrow(child);
+          totalFlexGrowFactors += child->resolveFlexGrow();
 
           // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
           totalFlexShrinkScaledFactors += -YGNodeResolveFlexShrink(child) *
@@ -2240,7 +2227,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
+            (totalFlexGrowFactors == 0 || node->resolveFlexGrow() == 0)) {
           // If we don't have any children to flex or we can't flex the node itself,
           // space we've used is all space we need. Root node also should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
@@ -2333,7 +2320,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             }
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = YGResolveFlexGrow(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -2402,7 +2389,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                               availableInnerWidth);
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = YGResolveFlexGrow(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {

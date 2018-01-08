@@ -122,4 +122,5 @@ struct YGNode {
   // Other methods
   void cloneChildrenIfNeeded();
   void markDirtyAndPropogate();
+  float resolveFlexGrow();
 };
