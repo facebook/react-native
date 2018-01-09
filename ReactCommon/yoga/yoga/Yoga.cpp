@@ -288,7 +288,9 @@ YGConfigRef YGConfigGetDefault() {
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = (const YGConfigRef)malloc(sizeof(YGConfig));
   YGAssert(config != nullptr, "Could not allocate memory for config");
-
+  if (config == nullptr) {
+    abort();
+  }
   gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
@@ -469,7 +471,7 @@ YGNodeRef YGNodeGetParent(const YGNodeRef node) {
 }
 
 uint32_t YGNodeGetChildCount(const YGNodeRef node) {
-  return node->children.size();
+  return static_cast<uint32_t>(node->getChildren().size());
 }
 
 void YGNodeMarkDirty(const YGNodeRef node) {
@@ -1853,7 +1855,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
-  const uint32_t childCount = node->children.size();
+  const uint32_t childCount = YGNodeGetChildCount(node);
   if (childCount == 0) {
     YGNodeEmptyContainerSetMeasuredDimensions(node,
                                               availableWidth,
@@ -3378,7 +3380,7 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
                               (textRounding && !hasFractionalHeight)) -
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
-  const uint32_t childCount = node->children.size();
+  const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }
