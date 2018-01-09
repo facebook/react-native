@@ -385,7 +385,7 @@ void YGNode::cloneChildrenIfNeeded() {
   // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
   // optimized for deletions.
 
-  const uint32_t childCount = children_.size();
+  const uint32_t childCount = static_cast<uint32_t>(children_.size());
   if (childCount == 0) {
     // This is an empty set. Nothing to clone.
     return;
