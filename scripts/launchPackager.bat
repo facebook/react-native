@@ -7,6 +7,7 @@
 
 @echo off
 title Metro Bundler
+call .packager.bat
 node "%~dp0..\local-cli\cli.js" start
 pause
 exit
