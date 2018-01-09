@@ -453,7 +453,7 @@ class PushNotificationIOS {
    * If you do not call this method your background remote notifications could
    * be throttled, to read more about it see the above documentation link.
    */
-  finish(fetchResult: FetchResult) {
+  finish(fetchResult: string) {
     if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
       return;
     }
