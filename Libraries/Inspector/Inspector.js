@@ -10,8 +10,6 @@
  * @flow
  */
 
-/* eslint-disable dot-notation, no-dimensions-get-window */
-
 'use strict';
 
 const Dimensions = require('Dimensions');
