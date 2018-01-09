@@ -288,7 +288,9 @@ YGConfigRef YGConfigGetDefault() {
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = (const YGConfigRef)malloc(sizeof(YGConfig));
   YGAssert(config != nullptr, "Could not allocate memory for config");
-
+  if (config == nullptr) {
+    abort();
+  }
   gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
@@ -464,8 +466,13 @@ YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
   return nullptr;
 }
 
+<<<<<<< HEAD
 YGNodeRef YGNodeGetParent(const YGNodeRef node) {
   return node->parent;
+=======
+uint32_t YGNodeGetChildCount(const YGNodeRef node) {
+  return static_cast<uint32_t>(node->getChildren().size());
+>>>>>>> a8d466665... Fix warnings of casting and null pointer handling
 }
 
 uint32_t YGNodeGetChildCount(const YGNodeRef node) {
@@ -1853,7 +1860,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
+<<<<<<< HEAD
   const uint32_t childCount = node->children.size();
+=======
+  const uint32_t childCount = YGNodeGetChildCount(node);
+>>>>>>> a8d466665... Fix warnings of casting and null pointer handling
   if (childCount == 0) {
     YGNodeEmptyContainerSetMeasuredDimensions(node,
                                               availableWidth,
@@ -3365,6 +3376,7 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 0) &&
                                    !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 1.0);
 
+<<<<<<< HEAD
   node->layout.dimensions[YGDimensionWidth] =
       YGRoundValueToPixelGrid(absoluteNodeRight,
                               pointScaleFactor,
@@ -3379,6 +3391,29 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
   const uint32_t childCount = node->children.size();
+=======
+  node->setLayoutDimension(
+      YGRoundValueToPixelGrid(
+          absoluteNodeRight,
+          pointScaleFactor,
+          (textRounding && hasFractionalWidth),
+          (textRounding && !hasFractionalWidth)) -
+          YGRoundValueToPixelGrid(
+              absoluteNodeLeft, pointScaleFactor, false, textRounding),
+      YGDimensionWidth);
+
+  node->setLayoutDimension(
+      YGRoundValueToPixelGrid(
+          absoluteNodeBottom,
+          pointScaleFactor,
+          (textRounding && hasFractionalHeight),
+          (textRounding && !hasFractionalHeight)) -
+          YGRoundValueToPixelGrid(
+              absoluteNodeTop, pointScaleFactor, false, textRounding),
+      YGDimensionHeight);
+
+  const uint32_t childCount = YGNodeGetChildCount(node);
+>>>>>>> a8d466665... Fix warnings of casting and null pointer handling
   for (uint32_t i = 0; i < childCount; i++) {
     YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }
