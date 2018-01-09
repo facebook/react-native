@@ -13,6 +13,7 @@
   },
 
   "plugins": [
+    "eslint-comments",
     "flowtype",
     "prettier",
     "react",
@@ -58,11 +59,6 @@
   },
 
   "rules": {
-  // Flow Plugin
-  // The following rules are made available via `eslint-plugin-flowtype`
-    "flowtype/define-flow-type": 1,
-    "flowtype/use-flow-type": 1,
-
   // General
 
     // This must be disallowed in this repo because the minimum supported
@@ -174,6 +170,18 @@
     "no-process-exit": 0,            // disallow process.exit() (on by default in the node environment)
     "no-restricted-modules": 1,      // restrict usage of specified node modules (off by default)
     "no-sync": 0,                    // disallow use of synchronous methods (off by default)
+
+  // ESLint Comments Plugin
+  // The following rules are made available via `eslint-plugin-eslint-comments`
+    'eslint-comments/no-aggregating-enable': 1, // disallows eslint-enable comments for multiple eslint-disable comments
+    'eslint-comments/no-unlimited-disable': 1, // disallows eslint-disable comments without rule names
+    'eslint-comments/no-unused-disable': 1, // disallow disables that don't cover any errors
+    'eslint-comments/no-unused-enable': 1, // // disallow enables that don't enable anything or enable rules that weren't disabled
+
+  // Flow Plugin
+  // The following rules are made available via `eslint-plugin-flowtype`
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
 
   // Prettier Plugin
   // https://github.com/prettier/eslint-plugin-prettier
