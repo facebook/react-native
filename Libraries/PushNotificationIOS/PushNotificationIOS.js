@@ -129,6 +129,7 @@ class PushNotificationIOS {
   _notificationId: string;
   _isRemote: boolean;
   _remoteNotificationCompleteCallbackCalled: boolean;
+  _threadID: string;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
@@ -424,6 +425,7 @@ class PushNotificationIOS {
           this._badgeCount = notifVal.badge;
           this._category = notifVal.category;
           this._contentAvailable = notifVal['content-available'];
+          this._threadID = notifVal['thread-id'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -508,6 +510,13 @@ class PushNotificationIOS {
    */
   getData(): ?Object {
     return this._data;
+  }
+
+  /**
+   * Gets the thread ID on the notif
+   */
+  getThreadID(): ?string {
+    return this._threadID;
   }
 }
 
