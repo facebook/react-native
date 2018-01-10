@@ -358,8 +358,8 @@ class YellowBox extends React.Component<
     });
   }
 
-  static disableYellowBox(val: boolean): void {
-    disableYellowBox = val;
+  static disableYellowBox(disableYellowBox: boolean): void {
+    DISABLE_YELLOW_BOX = disableYellowBox;
   }
 
   componentDidMount() {
