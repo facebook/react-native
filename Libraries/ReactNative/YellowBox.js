@@ -38,6 +38,7 @@ type WarningInfo = {
 const _warningEmitter = new EventEmitter();
 const _warningMap: Map<string, WarningInfo> = new Map();
 const IGNORED_WARNINGS: Array<string> = [];
+const DISABLE_YELLOW_BOX: boolean = false;
 
 /**
  * YellowBox renders warnings at the bottom of the app being developed.
@@ -84,6 +85,8 @@ if (__DEV__) {
   };
 
   if (Platform.isTesting) {
+    DISABLE_YELLOW_BOX = true;
+    // DEPRECATED
     (console: any).disableYellowBox = true;
   }
 
@@ -107,6 +110,10 @@ function sprintf(format, ...args) {
 }
 
 function updateWarningMap(...args): void {
+  if (DISABLE_YELLOW_BOX) {
+    return;
+  }
+  // DEPRECATED
   if (console.disableYellowBox) {
     return;
   }
@@ -381,6 +388,10 @@ class YellowBox extends React.Component<
   }
 
   render() {
+    if (DISABLE_YELLOW_BOX || this.state.warningMap.size === 0) {
+      return null;
+    }
+    // DEPRECATED
     if (console.disableYellowBox || this.state.warningMap.size === 0) {
       return null;
     }
