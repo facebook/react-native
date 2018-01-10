@@ -9,6 +9,7 @@
 
 #include "YGNode.h"
 #include <iostream>
+#include "Utils.h"
 
 void* YGNode::getContext() const {
   return context_;
@@ -153,6 +154,10 @@ void YGNode::setNextChild(YGNodeRef nextChild) {
 
 void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
   children_[index] = child;
+}
+
+void YGNode::replaceChild(YGNodeRef oldChild, YGNodeRef newChild) {
+  std::replace(children_.begin(), children_.end(), oldChild, newChild);
 }
 
 void YGNode::insertChild(YGNodeRef child, uint32_t index) {
@@ -375,21 +380,73 @@ YGNode::~YGNode() {
   // deallocate here
 }
 
-const YGNode& YGNode::defaultValue() {
-  static const YGNode n = {nullptr,
-                           nullptr,
-                           true,
-                           YGNodeTypeDefault,
-                           nullptr,
-                           nullptr,
-                           gYGNodeStyleDefaults,
-                           gYGNodeLayoutDefaults,
-                           0,
-                           nullptr,
-                           YGVector(),
-                           nullptr,
-                           nullptr,
-                           false,
-                           {{YGValueUndefined, YGValueUndefined}}};
-  return n;
+// Other Methods
+
+void YGNode::cloneChildrenIfNeeded() {
+  // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
+  // optimized for deletions.
+
+  const uint32_t childCount = static_cast<uint32_t>(children_.size());
+  if (childCount == 0) {
+    // This is an empty set. Nothing to clone.
+    return;
+  }
+
+  const YGNodeRef firstChild = children_.front();
+  if (firstChild->getParent() == this) {
+    // If the first child has this node as its parent, we assume that it is
+    // already unique. We can do this because if we have it has a child, that
+    // means that its parent was at some point cloned which made that subtree
+    // immutable. We also assume that all its sibling are cloned as well.
+    return;
+  }
+
+  const YGNodeClonedFunc cloneNodeCallback = config_->cloneNodeCallback;
+  for (uint32_t i = 0; i < childCount; ++i) {
+    const YGNodeRef oldChild = children_[i];
+    const YGNodeRef newChild = YGNodeClone(oldChild);
+    replaceChild(newChild, i);
+    newChild->setParent(this);
+    if (cloneNodeCallback) {
+      cloneNodeCallback(oldChild, newChild, this, i);
+    }
+  }
+}
+
+void YGNode::markDirtyAndPropogate() {
+  if (!isDirty_) {
+    isDirty_ = true;
+    setLayoutComputedFlexBasis(YGUndefined);
+    if (parent_) {
+      parent_->markDirtyAndPropogate();
+    }
+  }
+}
+
+float YGNode::resolveFlexGrow() {
+  // Root nodes flexGrow should always be 0
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexGrow)) {
+    return style_.flexGrow;
+  }
+  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
+    return style_.flex;
+  }
+  return kDefaultFlexGrow;
+}
+
+float YGNode::resolveFlexShrink() {
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexShrink)) {
+    return style_.flexShrink;
+  }
+  if (!config_->useWebDefaults && !YGFloatIsUndefined(style_.flex) &&
+      style_.flex < 0.0f) {
+    return -style_.flex;
+  }
+  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }

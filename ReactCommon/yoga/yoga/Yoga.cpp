@@ -10,6 +10,7 @@
 #include "Yoga.h"
 #include <string.h>
 #include <algorithm>
+#include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
@@ -59,8 +60,6 @@ static YGConfig gYGConfigDefaults = {
 const YGValue YGValueZero = {.value = 0, .unit = YGUnitPoint};
 const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
 const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
-
-static void YGNodeMarkDirtyInternal(const YGNodeRef node);
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -323,7 +322,9 @@ YGConfigRef YGConfigGetDefault() {
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = (const YGConfigRef)malloc(sizeof(YGConfig));
   YGAssert(config != nullptr, "Could not allocate memory for config");
-
+  if (config == nullptr) {
+    abort();
+  }
   gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
@@ -338,46 +339,6 @@ void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
 }
 
-static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
-  if (!node->isDirty()) {
-    node->setDirty(true);
-    node->setLayoutComputedFlexBasis(YGUndefined);
-    if (node->getParent()) {
-      YGNodeMarkDirtyInternal(node->getParent());
-    }
-  }
-}
-
-static void YGCloneChildrenIfNeeded(const YGNodeRef parent) {
-  // YGNodeRemoveChild has a forked variant of this algorithm optimized for deletions.
-  const uint32_t childCount = YGNodeGetChildCount(parent);
-  if (childCount == 0) {
-    // This is an empty set. Nothing to clone.
-    return;
-  }
-
-  const YGNodeRef firstChild = YGNodeGetChild(parent, 0);
-  if (firstChild->getParent() == parent) {
-    // If the first child has this node as its parent, we assume that it is already unique.
-    // We can do this because if we have it has a child, that means that its parent was at some
-    // point cloned which made that subtree immutable.
-    // We also assume that all its sibling are cloned as well.
-    return;
-  }
-
-  const YGNodeClonedFunc cloneNodeCallback =
-      parent->getConfig()->cloneNodeCallback;
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef oldChild = parent->getChild(i);
-    const YGNodeRef newChild = YGNodeClone(oldChild);
-    parent->replaceChild(newChild, i);
-    newChild->setParent(parent);
-    if (cloneNodeCallback) {
-      cloneNodeCallback(oldChild, newChild, parent, i);
-    }
-  }
-}
-
 void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32_t index) {
   YGAssertWithNode(
       node,
@@ -388,14 +349,15 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
       node->getMeasure() == nullptr,
       "Cannot add child: Nodes with measure functions cannot have children.");
 
-  YGCloneChildrenIfNeeded(node);
+  node->cloneChildrenIfNeeded();
   node->insertChild(child, index);
   child->setParent(node);
-  YGNodeMarkDirtyInternal(node);
+  node->markDirtyAndPropogate();
 }
 
 void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
-  // This algorithm is a forked variant from YGCloneChildrenIfNeeded that excludes a child.
+  // This algorithm is a forked variant from cloneChildrenIfNeeded in YGNode
+  // that excludes a child.
   const uint32_t childCount = YGNodeGetChildCount(parent);
 
   if (childCount == 0) {
@@ -410,7 +372,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       excludedChild->setLayout(
           YGNode().getLayout()); // layout is no longer valid
       excludedChild->setParent(nullptr);
-      YGNodeMarkDirtyInternal(parent);
+      parent->markDirtyAndPropogate();
     }
     return;
   }
@@ -426,7 +388,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       // Ignore the deleted child. Don't reset its layout or parent since it is still valid
       // in the other parent. However, since this parent has now changed, we need to mark it
       // as dirty.
-      YGNodeMarkDirtyInternal(parent);
+      parent->markDirtyAndPropogate();
       continue;
     }
     const YGNodeRef newChild = YGNodeClone(oldChild);
@@ -458,12 +420,12 @@ void YGNodeRemoveAllChildren(const YGNodeRef parent) {
       oldChild->setParent(nullptr);
     }
     parent->clearChildren();
-    YGNodeMarkDirtyInternal(parent);
+    parent->markDirtyAndPropogate();
     return;
   }
   // Otherwise, we are not the owner of the child set. We don't have to do anything to clear it.
   parent->setChildren(YGVector());
-  YGNodeMarkDirtyInternal(parent);
+  parent->markDirtyAndPropogate();
 }
 
 YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
@@ -474,7 +436,7 @@ YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
 }
 
 uint32_t YGNodeGetChildCount(const YGNodeRef node) {
-  return node->getChildren().size();
+  return static_cast<uint32_t>(node->getChildren().size());
 }
 
 YGNodeRef YGNodeGetParent(const YGNodeRef node) {
@@ -488,29 +450,14 @@ void YGNodeMarkDirty(const YGNodeRef node) {
       "Only leaf nodes with custom measure functions"
       "should manually mark themselves as dirty");
 
-  YGNodeMarkDirtyInternal(node);
+  node->markDirtyAndPropogate();
 }
 
 void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
   if (!(dstNode->getStyle() == srcNode->getStyle())) {
     dstNode->setStyle(srcNode->getStyle());
-    YGNodeMarkDirtyInternal(dstNode);
+    dstNode->markDirtyAndPropogate();
   }
-}
-
-static inline float YGResolveFlexGrow(const YGNodeRef node) {
-  // Root nodes flexGrow should always be 0
-  if (node->getParent() == nullptr) {
-    return 0.0;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flexGrow)) {
-    return node->getStyle().flexGrow;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flex) &&
-      node->getStyle().flex > 0.0f) {
-    return node->getStyle().flex;
-  }
-  return kDefaultFlexGrow;
 }
 
 float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
@@ -526,23 +473,6 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       : node->getStyle().flexShrink;
 }
 
-static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
-  // Root nodes flexShrink should always be 0
-  if (node->getParent() == nullptr) {
-    return 0.0;
-  }
-  if (!YGFloatIsUndefined(node->getStyle().flexShrink)) {
-    return node->getStyle().flexShrink;
-  }
-  if (!node->getConfig()->useWebDefaults &&
-      !YGFloatIsUndefined(node->getStyle().flex) &&
-      node->getStyle().flex < 0.0f) {
-    return -node->getStyle().flex;
-  }
-  return node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
-                                           : kDefaultFlexShrink;
-}
-
 #define YG_NODE_STYLE_PROPERTY_SETTER_IMPL(                               \
     type, name, paramName, instanceName)                                  \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) { \
@@ -550,7 +480,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                   \
       style.instanceName = paramName;                                     \
       node->setStyle(style);                                              \
-      YGNodeMarkDirtyInternal(node);                                      \
+      node->markDirtyAndPropogate();                                      \
     }                                                                     \
   }
 
@@ -567,7 +497,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -585,7 +515,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
                                                                                \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }
 
@@ -602,7 +532,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -615,7 +545,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       style.instanceName.unit =                                                \
           YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;          \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -625,7 +555,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       style.instanceName.value = YGUndefined;                                  \
       style.instanceName.unit = YGUnitAuto;                                    \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }
 
@@ -660,7 +590,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       style.instanceName[edge].value = YGUndefined;                          \
       style.instanceName[edge].unit = YGUnitAuto;                            \
       node->setStyle(style);                                                 \
-      YGNodeMarkDirtyInternal(node);                                         \
+      node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
 
@@ -678,7 +608,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -695,7 +625,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -717,7 +647,7 @@ static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      YGNodeMarkDirtyInternal(node);                                           \
+      node->markDirtyAndPropogate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -820,19 +750,6 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                           const char *reason,
                           const YGConfigRef config);
 
-bool YGValueEqual(const YGValue a, const YGValue b) {
-  if (a.unit != b.unit) {
-    return false;
-  }
-
-  if (a.unit == YGUnitUndefined ||
-      (std::isnan(a.value) && std::isnan(b.value))) {
-    return true;
-  }
-
-  return fabs(a.value - b.value) < 0.0001f;
-}
-
 bool YGFloatsEqual(const float a, const float b) {
   if (YGFloatIsUndefined(a)) {
     return YGFloatIsUndefined(b);
@@ -864,10 +781,6 @@ static const std::array<YGEdge, 4> pos = {{
 }};
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
-
-bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
-  return flexDirection == YGFlexDirectionRow || flexDirection == YGFlexDirectionRowReverse;
-}
 
 static inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
   return flexDirection == YGFlexDirectionColumn || flexDirection == YGFlexDirectionColumnReverse;
@@ -1077,7 +990,7 @@ static YGFlexDirection YGFlexDirectionCross(const YGFlexDirection flexDirection,
 static inline bool YGNodeIsFlex(const YGNodeRef node) {
   return (
       node->getStyle().positionType == YGPositionTypeRelative &&
-      (YGResolveFlexGrow(node) != 0 || YGNodeResolveFlexShrink(node) != 0));
+      (node->resolveFlexGrow() != 0 || node->resolveFlexShrink() != 0));
 }
 
 static bool YGIsBaselineLayout(const YGNodeRef node) {
@@ -1805,7 +1718,7 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(const YGNodeRef node,
 static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   memset(&(node->getLayout()), 0, sizeof(YGLayout));
   node->setHasNewLayout(true);
-  YGCloneChildrenIfNeeded(node);
+  node->cloneChildrenIfNeeded();
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = node->getChild(i);
@@ -1968,7 +1881,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
-  const uint32_t childCount = node->getChildren().size();
+  const uint32_t childCount = YGNodeGetChildCount(node);
   if (childCount == 0) {
     YGNodeEmptyContainerSetMeasuredDimensions(node,
                                               availableWidth,
@@ -1993,8 +1906,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // At this point we know we're going to perform work. Ensure that each child has a mutable copy.
-  YGCloneChildrenIfNeeded(node);
-
+  node->cloneChildrenIfNeeded();
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
 
@@ -2083,7 +1995,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           singleFlexChild = nullptr;
           break;
         }
-      } else if (YGResolveFlexGrow(child) > 0.0f && YGNodeResolveFlexShrink(child) > 0.0f) {
+      } else if (
+          child->resolveFlexGrow() > 0.0f &&
+          child->resolveFlexShrink() > 0.0f) {
         singleFlexChild = child;
       }
     }
@@ -2228,10 +2142,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
-          totalFlexGrowFactors += YGResolveFlexGrow(child);
+          totalFlexGrowFactors += child->resolveFlexGrow();
 
           // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
-          totalFlexShrinkScaledFactors += -YGNodeResolveFlexShrink(child) *
+          totalFlexShrinkScaledFactors += -child->resolveFlexShrink() *
               child->getLayout().computedFlexBasis;
         }
 
@@ -2282,7 +2196,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
+            (totalFlexGrowFactors == 0 || node->resolveFlexGrow() == 0)) {
           // If we don't have any children to flex or we can't flex the node itself,
           // space we've used is all space we need. Root node also should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
@@ -2351,7 +2265,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 currentRelativeChild->getLayout().computedFlexBasis));
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -YGNodeResolveFlexShrink(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor =
+              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
@@ -2375,7 +2290,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             }
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = YGResolveFlexGrow(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -2424,7 +2339,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -YGNodeResolveFlexShrink(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor =
+              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
             float childSize;
@@ -2444,7 +2360,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                               availableInnerWidth);
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = YGResolveFlexGrow(currentRelativeChild);
+          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -3626,7 +3542,7 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
               absoluteNodeTop, pointScaleFactor, false, textRounding),
       YGDimensionHeight);
 
-  const uint32_t childCount = node->getChildren().size();
+  const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }

@@ -171,8 +171,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   @Override
   public void onHostPause() {
-    // We dismiss the dialog and reconstitute it onHostResume
-    dismiss();
+    // do nothing
   }
 
   @Override
@@ -184,6 +183,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   @VisibleForTesting
   public @Nullable Dialog getDialog() {
     return mDialog;
+  }
+
+  private @Nullable Activity getCurrentActivity() {
+    return ((ReactContext) getContext()).getCurrentActivity();
   }
 
   /**
@@ -215,6 +218,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
+
     mDialog.setContentView(getContentView());
     updateProperties();
 
@@ -237,7 +241,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             } else {
               // We redirect the rest of the key events to the current activity, since the activity
               // expects to receive those events and react to them, ie. in the case of the dev menu
-              Activity currentActivity = getCurrentActivity();
+              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
               if (currentActivity != null) {
                 return currentActivity.onKeyUp(keyCode, event);
               }
@@ -254,10 +258,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (currentActivity == null || !currentActivity.isFinishing()) {
       mDialog.show();
     }
-  }
-
-  private @Nullable Activity getCurrentActivity() {
-    return ((ReactContext) getContext()).getCurrentActivity();
   }
 
   /**

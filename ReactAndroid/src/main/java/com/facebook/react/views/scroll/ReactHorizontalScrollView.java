@@ -48,6 +48,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private int mSnapInterval = 0;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactHorizontalScrollView(Context context) {
@@ -90,6 +91,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mPagingEnabled = pagingEnabled;
   }
 
+  public void setSnapInterval(int snapInterval) {
+    mSnapInterval = snapInterval;
+  }
+
   public void flashScrollIndicators() {
     awakenScrollBars();
   }
@@ -114,7 +119,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     super.onScrollChanged(x, y, oldX, oldY);
 
     mActivelyScrolling = true;
-    
+
     if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
       if (mRemoveClippedSubviews) {
         updateClippingRect();
@@ -153,14 +158,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      float velocityX = mVelocityHelper.getXVelocity();
+      float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(
         this,
-        mVelocityHelper.getXVelocity(),
-        mVelocityHelper.getYVelocity());
+        velocityX,
+        velocityY);
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
-      handlePostTouchScrolling();
+      handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
     }
 
     return super.onTouchEvent(ev);
@@ -173,7 +180,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else {
       super.fling(velocityX);
     }
-    handlePostTouchScrolling();
+    handlePostTouchScrolling(velocityX, 0);
   }
 
   @Override
@@ -210,6 +217,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
+  }
+
+  private int getSnapInterval() {
+    if (mSnapInterval != 0) {
+      return mSnapInterval;
+    }
+    return getWidth();
   }
 
   public void setEndFillColor(int color) {
@@ -258,7 +272,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   @TargetApi(16)
-  private void handlePostTouchScrolling() {
+  private void handlePostTouchScrolling(int velocityX, int velocityY) {
     // If we aren't going to do anything (send events or snap to page), we can early out.
     if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
       return;
@@ -271,7 +285,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
 
     if (mSendMomentumEvents) {
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, velocityX, velocityY);
     }
 
     mActivelyScrolling = false;
@@ -312,7 +326,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * scrolling.
    */
   private void smoothScrollToPage(int velocity) {
-    int width = getWidth();
+    int width = getSnapInterval();
     int currentX = getScrollX();
     // TODO (t11123799) - Should we do anything beyond linear accounting of the velocity
     int predictedX = currentX + velocity;

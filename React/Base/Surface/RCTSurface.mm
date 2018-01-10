@@ -15,6 +15,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTShadowView+Layout.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceRootShadowView.h"
 #import "RCTSurfaceRootShadowViewDelegate.h"
@@ -67,7 +68,7 @@
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillLoadJavaScriptNotification:)
@@ -305,8 +306,6 @@
                         method:@"unmountApplicationComponentAtRootTag"
                           args:@[self->_rootViewTag]
                     completion:NULL];
-
-  [self _setStage:RCTSurfaceStageSurfaceDidStop];
 }
 
 - (void)_registerRootView

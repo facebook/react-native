@@ -85,7 +85,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   CGSize minimumSize = CGSizeZero;
-  CGSize maximumSize = CGSizeMake(INFINITY, INFINITY);
+  CGSize maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
   if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthExact) {
     minimumSize.width = size.width;

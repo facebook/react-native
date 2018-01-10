@@ -138,6 +138,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .put(
+            "topKeyPress",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
         .build();
   }
 

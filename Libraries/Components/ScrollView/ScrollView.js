@@ -344,10 +344,10 @@ const ScrollView = createReactClass({
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
      * that have lengths smaller than the scroll view. Typically used in
-     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * combination with `snapToAlignment` and `decelerationRate="fast"` on ios.
      * Overrides less configurable `pagingEnabled` prop.
      *
-     * @platform ios
+     * Supported for horizontal scrollview on android.
      */
     snapToInterval: PropTypes.number,
     /**
@@ -611,7 +611,7 @@ const ScrollView = createReactClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console
+        console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +
