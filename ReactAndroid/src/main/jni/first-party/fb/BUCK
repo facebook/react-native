@@ -2,7 +2,7 @@ include_defs("//ReactAndroid/DEFS")
 
 # This target is only used in open source
 if IS_OSS_BUILD:
-  fb_xplat_cxx_library(
+  cxx_library(
     name = 'jni',
     soname = 'libfb.$(ext)',
     srcs = glob(['*.cpp', 'jni/*.cpp', 'lyra/*.cpp']),
