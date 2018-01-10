@@ -277,7 +277,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
   }
 
   public float getFullBorderRadius() {
-    return YogaConstants.isUndefined(mBorderRadius) ? 0 : mBorderRadius;
+    float desiredRadius = YogaConstants.isUndefined(mBorderRadius) ? 0 : mBorderRadius;
+    float minSide = Math.min(getBounds().height(), getBounds().width());
+    float radius = Math.min(minSide / 2, desiredRadius);
+    return radius;
   }
 
   public float getBorderRadius(final BorderRadiusLocation location) {
