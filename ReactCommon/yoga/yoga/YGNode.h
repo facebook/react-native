@@ -20,6 +20,7 @@ struct YGNode {
   YGNodeType nodeType_;
   YGMeasureFunc measure_;
   YGBaselineFunc baseline_;
+  YGDirtiedFunc dirtied_;
   YGStyle style_;
   YGLayout layout_;
   uint32_t lineIndex_;
@@ -43,6 +44,7 @@ struct YGNode {
       YGNodeType nodeType,
       YGMeasureFunc measure,
       YGBaselineFunc baseline,
+      YGDirtiedFunc dirtied,
       YGStyle style,
       YGLayout layout,
       uint32_t lineIndex,
@@ -60,6 +62,7 @@ struct YGNode {
   YGNodeType getNodeType() const;
   YGMeasureFunc getMeasure() const;
   YGBaselineFunc getBaseline() const;
+  YGDirtiedFunc getDirtied() const;
   // For Perfomance reasons passing as reference.
   YGStyle& getStyle();
   // For Perfomance reasons passing as reference.
@@ -82,6 +85,7 @@ struct YGNode {
   void setNodeType(YGNodeType nodeTye);
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setBaseLineFunc(YGBaselineFunc baseLineFunc);
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc);
   void setStyle(YGStyle style);
   void setStyleFlexDirection(YGFlexDirection direction);
   void setStyleAlignContent(YGAlign alignContent);

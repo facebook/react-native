@@ -35,6 +35,10 @@ YGBaselineFunc YGNode::getBaseline() const {
   return baseline_;
 }
 
+YGDirtiedFunc YGNode::getDirtied() const {
+  return dirtied_;
+}
+
 YGStyle& YGNode::getStyle() {
   return style_;
 }
@@ -128,6 +132,10 @@ void YGNode::setBaseLineFunc(YGBaselineFunc baseLineFunc) {
   baseline_ = baseLineFunc;
 }
 
+void YGNode::setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+  dirtied_ = dirtiedFunc;
+}
+
 void YGNode::setStyle(YGStyle style) {
   style_ = style;
 }
@@ -169,7 +177,13 @@ void YGNode::setConfig(YGConfigRef config) {
 }
 
 void YGNode::setDirty(bool isDirty) {
+  if (isDirty == isDirty_) {
+    return;
+  }
   isDirty_ = isDirty;
+  if (isDirty && dirtied_) {
+    dirtied_(this);
+  }
 }
 
 bool YGNode::removeChild(YGNodeRef child) {
@@ -238,6 +252,7 @@ YGNode::YGNode()
       nodeType_(YGNodeTypeDefault),
       measure_(nullptr),
       baseline_(nullptr),
+      dirtied_(nullptr),
       style_(gYGNodeStyleDefaults),
       layout_(gYGNodeLayoutDefaults),
       lineIndex_(0),
@@ -255,6 +270,7 @@ YGNode::YGNode(const YGNode& node)
       nodeType_(node.nodeType_),
       measure_(node.measure_),
       baseline_(node.baseline_),
+      dirtied_(node.dirtied_),
       style_(node.style_),
       layout_(node.layout_),
       lineIndex_(node.lineIndex_),
@@ -276,6 +292,7 @@ YGNode::YGNode(
     YGNodeType nodeType,
     YGMeasureFunc measure,
     YGBaselineFunc baseline,
+    YGDirtiedFunc dirtied,
     YGStyle style,
     YGLayout layout,
     uint32_t lineIndex,
@@ -291,6 +308,7 @@ YGNode::YGNode(
       nodeType_(nodeType),
       measure_(measure),
       baseline_(baseline),
+      dirtied_(dirtied),
       style_(style),
       layout_(layout),
       lineIndex_(lineIndex),
@@ -316,6 +334,7 @@ YGNode& YGNode::operator=(const YGNode& node) {
   nodeType_ = node.getNodeType();
   measure_ = node.getMeasure();
   baseline_ = node.getBaseline();
+  dirtied_ = node.getDirtied();
   style_ = node.style_;
   layout_ = node.layout_;
   lineIndex_ = node.getLineIndex();
@@ -415,7 +434,7 @@ void YGNode::cloneChildrenIfNeeded() {
 
 void YGNode::markDirtyAndPropogate() {
   if (!isDirty_) {
-    isDirty_ = true;
+    setDirty(true);
     setLayoutComputedFlexBasis(YGUndefined);
     if (parent_) {
       parent_->markDirtyAndPropogate();
