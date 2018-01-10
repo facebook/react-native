@@ -9,6 +9,7 @@
 
 #include "YGNode.h"
 #include <iostream>
+#include "Utils.h"
 
 void* YGNode::getContext() const {
   return context_;

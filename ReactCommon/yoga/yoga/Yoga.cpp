@@ -10,6 +10,7 @@
 #include "Yoga.h"
 #include <string.h>
 #include <algorithm>
+#include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
@@ -749,19 +750,6 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                           const char *reason,
                           const YGConfigRef config);
 
-bool YGValueEqual(const YGValue a, const YGValue b) {
-  if (a.unit != b.unit) {
-    return false;
-  }
-
-  if (a.unit == YGUnitUndefined ||
-      (std::isnan(a.value) && std::isnan(b.value))) {
-    return true;
-  }
-
-  return fabs(a.value - b.value) < 0.0001f;
-}
-
 bool YGFloatsEqual(const float a, const float b) {
   if (YGFloatIsUndefined(a)) {
     return YGFloatIsUndefined(b);
@@ -793,10 +781,6 @@ static const std::array<YGEdge, 4> pos = {{
 }};
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
-
-bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
-  return flexDirection == YGFlexDirectionRow || flexDirection == YGFlexDirectionRowReverse;
-}
 
 static inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
   return flexDirection == YGFlexDirectionColumn || flexDirection == YGFlexDirectionColumnReverse;
