@@ -38,7 +38,7 @@ type WarningInfo = {
 const _warningEmitter = new EventEmitter();
 const _warningMap: Map<string, WarningInfo> = new Map();
 const IGNORED_WARNINGS: Array<string> = [];
-const DISABLE_YELLOW_BOX: boolean = false;
+let DISABLE_YELLOW_BOX: boolean = false;
 
 /**
  * YellowBox renders warnings at the bottom of the app being developed.
