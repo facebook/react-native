@@ -22,7 +22,9 @@ const _notifHandlers = new Map();
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
+const NOTIF_RESPONSE_EVENT = 'notificationResponseReceived';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+const DEVICE_WILLSHOW_NOTIF_EVENT = 'willPresentNotification';
 
 export type ContentAvailable = 1 | null | void;
 
@@ -57,6 +59,18 @@ export type PushNotificationEventName = $Enum<{
    * handler will be invoked with {message: string, code: number, details: any}.
    */
   registrationError: string,
+  /**
+   * Fired when the user responds to a notification by opening the application, 
+   * dismissing the notification or choosing a UNNotificationAction. The handler
+   * will be invoked with {notification: `PushNotificationIOS`, action: string, 
+   * userText: [string]}. (Only available iOS >= 10)
+   */
+  response: string,
+  /**
+   * Fired when a local notification will be presented in the foreground. The handler
+   * will be invoked with an instance of `PushNotificationIOS`. (Only available iOS >= 10)
+   */
+  willPresent: string
 }>;
 
 /**
@@ -84,9 +98,21 @@ export type PushNotificationEventName = $Enum<{
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
+ * At the top of your `AppDelegate.h` change:
+ *
+ *   `@interface AppDelegate : UIResponder <UIApplicationDelegate>`
+ *
+ * to:
+ *
+ *   `@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>`
+ *
  * At the top of your `AppDelegate.m`:
  *
  *   `#import <React/RCTPushNotificationManager.h>`
+ *
+ * At the top of your AppDelegate's `didFinishLaunchingWithOptions` add the following:
+ *
+ *   `[UNUserNotificationCenter currentNotificationCenter].delegate = self;`
  *
  * And then in your AppDelegate implementation add the following:
  *
@@ -116,6 +142,16 @@ export type PushNotificationEventName = $Enum<{
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
  *    {
  *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
+ *    }  
+ *    // Required for presenting notifications when the app is in the foreground (willPresent event).
+ *    - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler 
+ *    {
+ *     [RCTPushNotificationManager willPresentNotification:notification showCompletionHandler:completionHandler];
+ *    }
+ *    // Required for handling notification responses (clicking actions or dismissing).
+ *    - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler
+ *    {
+ *     [RCTPushNotificationManager didReceiveNotificationResponse:response completionHandler:completionHandler];
  *    }
  *   ```
  */
@@ -127,13 +163,34 @@ class PushNotificationIOS {
   _contentAvailable: ContentAvailable;
   _badgeCount: number;
   _notificationId: string;
+  _threadId: string;
+  _trigger: Object;
   _isRemote: boolean;
+  _showForegroundCompleteCallbackCalled: boolean;
+  _responseCompleteCallbackCalled: boolean;
   _remoteNotificationCompleteCallbackCalled: boolean;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
     NoData: 'UIBackgroundFetchResultNoData',
     ResultFailed: 'UIBackgroundFetchResultFailed',
+  };
+
+  static PresentationOption: PresentationOption = {
+    Badge: 'UNNotificationPresentationOptionBadge',
+    Sound: 'UNNotificationPresentationOptionSound',
+    Alert: 'UNNotificationPresentationOptionAlert',
+  };
+
+  static ActionOption: ActionOption = {
+    AuthenticationRequired: 'UNNotificationActionOptionAuthenticationRequired',
+    Destructive: 'UNNotificationActionOptionDestructive',
+    Foreground: 'UNNotificationActionOptionForeground'
+  };
+
+  static CategoryOption: CategoryOption = {
+    CustomDismissAction: 'UNNotificationCategoryOptionCustomDismissAction',
+    AllowInCarPlay: 'UNNotificationCategoryOptionAllowInCarPlay'
   };
 
   /**
@@ -149,8 +206,8 @@ class PushNotificationIOS {
    * - `userInfo`  : An optional object containing additional notification data.
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
-  static presentLocalNotification(details: Object) {
-    RCTPushNotificationManager.presentLocalNotification(details);
+  static presentLocalNotification(details: Object, callback: Function) {
+    RCTPushNotificationManager.presentLocalNotification(details, callback || function(){});
   }
 
   /**
@@ -169,8 +226,8 @@ class PushNotificationIOS {
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
    * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    */
-  static scheduleLocalNotification(details: Object) {
-    RCTPushNotificationManager.scheduleLocalNotification(details);
+  static scheduleLocalNotification(details: Object, callback: Function) {
+    RCTPushNotificationManager.scheduleLocalNotification(details, callback || function(){});
   }
 
   /**
@@ -246,6 +303,11 @@ class PushNotificationIOS {
     RCTPushNotificationManager.getScheduledLocalNotifications(callback);
   }
 
+  static setNotificationCategories(categories: [Object]) {
+    RCTPushNotificationManager.setNotificationCategories(categories);
+  }
+  
+
   /**
    * Attaches a listener to remote or local notification events while the app is running
    * in the foreground or the background.
@@ -262,11 +324,18 @@ class PushNotificationIOS {
    *   notifications. Typically occurs when APNS is having issues, or the device
    *   is a simulator. The handler will be invoked with
    *   {message: string, code: number, details: any}.
+   * - `response`: Fired when the user responds to a notification, by opening the 
+   *   application, dismissing the notification or choosing a UNNotificationAction.
+   *   The handler will be invoked with
+   *   {notification: `PushNotificationIOS`, action: string, userText: [string]}
+   * - `willPresent`: Fired if a notification is received in the foreground
+   *   on a device running iOS 10 or greater. The handler will be invoked with
+   *   an instance of `PushNotificationIOS`.
    */
   static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification' || type === 'willPresent' || type === 'response',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, `willPresent`, `response`, and `localNotification` events'
     );
     var listener;
     if (type === 'notification') {
@@ -297,6 +366,24 @@ class PushNotificationIOS {
           handler(errorInfo);
         }
       );
+    } else if (type === 'response') {
+      listener = PushNotificationEmitter.addListener(
+        NOTIF_RESPONSE_EVENT,
+        (notifData) => {
+          handler({
+            notification: new PushNotificationIOS(notifData.notification),
+            action: notifData.action,
+            userText: notifData.userText
+          });
+        }
+      )
+    } else if (type === 'willPresent') {
+      listener = PushNotificationEmitter.addListener(
+        DEVICE_WILLSHOW_NOTIF_EVENT,
+        (notifData) => {
+          handler(new PushNotificationIOS(notifData));
+        }
+      )
     }
     _notifHandlers.set(type, listener);
   }
@@ -307,7 +394,7 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification' || type === 'willPresent' || type === 'response',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener = _notifHandlers.get(type);
@@ -408,6 +495,8 @@ class PushNotificationIOS {
   constructor(nativeNotif: Object) {
     this._data = {};
     this._remoteNotificationCompleteCallbackCalled = false;
+    this._showForegroundCompleteCallbackCalled = false;
+    this._responseCompleteCallbackCalled = false;
     this._isRemote = nativeNotif.remote;
     if (this._isRemote) {
       this._notificationId = nativeNotif.notificationId;
@@ -419,10 +508,18 @@ class PushNotificationIOS {
       Object.keys(nativeNotif).forEach((notifKey) => {
         var notifVal = nativeNotif[notifKey];
         if (notifKey === 'aps') {
-          this._alert = notifVal.alert;
-          this._sound = notifVal.sound;
-          this._badgeCount = notifVal.badge;
+          // Fallbacks for new iOS 10 notification format which returns in the same format as local notifications
+          this._alert = notifVal.alert || notifVal.alertBody;
+          this._sound = notifVal.sound || notifVal.soundName;
+          this._badgeCount = notifVal.badge || notifVal.applicationIconBadgeNumber;
+          this._title = notifVal.alertTitle;
+          this._subtitle = notifVal.alertSubtitle;
           this._category = notifVal.category;
+          this._trigger = notifVal.trigger;
+          this._threadId = notifVal.threadId;
+          // Make sure we don't overwrite existing value
+          this._notificationId = notifVal.notificationId || this.notificationId;
+          this._data = {...this._data, ...notifVal.userInfo};
           this._contentAvailable = notifVal['content-available'];
         } else {
           this._data[notifKey] = notifVal;
@@ -433,9 +530,31 @@ class PushNotificationIOS {
       this._badgeCount = nativeNotif.applicationIconBadgeNumber;
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
+      this._title = nativeNotif.alertTitle;
+      this._subtitle = nativeNotif.alertSubtitle;
       this._data = nativeNotif.userInfo;
       this._category = nativeNotif.category;
+      this._trigger = nativeNotif.trigger;
+      this._threadId = nativeNotif.threadId;
+      this._notificationId = nativeNotif.notificationId;
     }
+  }
+
+  /**
+   * This method is available for remote notifications that have been responded
+   * to via:
+   * `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler`
+   * https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter
+   *
+   * Call this to execute when the response handling is complete.
+   */
+  completeResponse() {
+    if (!this._notificationId || this._responseCompleteCallbackCalled) {
+      return;
+    }
+    this._responseCompleteCallbackCalled = true;
+
+    RCTPushNotificationManager.onFinishNotificationResponse(this._notificationId);
   }
 
   /**
@@ -458,6 +577,27 @@ class PushNotificationIOS {
     this._remoteNotificationCompleteCallbackCalled = true;
 
     RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
+  }
+
+  /**
+   * This method is available for remote notifications that have been received via:
+   * `userNotificationCenter:willPresentNotification:withCompletionHandler:`
+   * https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649518-usernotificationcenter
+   *
+   * Call this to decide how to present a foreground notification once you have
+   * handled it. When calling this block, pass in an array of strings determining
+   * how the notification should be displayed. You *must* call this handler and should
+   * do so as soon as possible. For a list of possible values, see `PushNotificationIOS.PresentationOptions`.
+   *
+   * If you do not call this method the notification will not be shown in the foreground.
+   */
+  presentForeground(presentationOptions: [PresentationOption]) {
+    if (!this._notificationId || this._showForegroundCompleteCallbackCalled) {
+      return;
+    }
+    this._showForegroundCompleteCallbackCalled = true;
+
+    RCTPushNotificationManager.onPresentForegroundNotification(this._notificationId, presentationOptions)
   }
 
   /**
@@ -508,6 +648,41 @@ class PushNotificationIOS {
    */
   getData(): ?Object {
     return this._data;
+  }
+
+  /**
+   * Gets the thread id on the notif
+   */
+  getThreadId(): ?string {
+    return this._threadId;
+  }
+
+  /**
+   * Gets the trigger for the notification
+   */
+  getTrigger(): ?Object {
+    return this._trigger;
+  }
+
+  /**
+   * Gets the notification's unique id
+   */
+  getId(): ?string {
+    return this._notificationId;
+  }
+
+  /**
+   * Get's the notifcation's title
+   */
+  getTitle(): ?string {
+    return this._title;
+  }
+
+  /**
+   * Get's the notification's subtitle
+   */
+  getSubtitle(): ?string {
+    return this._subtitle;
   }
 }
 
