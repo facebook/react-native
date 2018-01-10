@@ -9,9 +9,9 @@
 
 #import "RCTSurfaceRootShadowView.h"
 
-#import <React/RCTUIManagerUtils.h>
-
 #import "RCTI18nUtil.h"
+#import "RCTShadowView+Layout.h"
+#import "RCTUIManagerUtils.h"
 
 @implementation RCTSurfaceRootShadowView {
   CGSize _intrinsicSize;
@@ -25,7 +25,7 @@
     self.viewName = @"RCTSurfaceRootView";
     _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     self.alignSelf = YGAlignStretch;
     self.flex = 1;
@@ -45,14 +45,17 @@
 
 - (void)calculateLayoutWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximimSize
 {
-  // Treating `INFINITY` as `YGUndefined` (which equals `NAN`).
-  float availableWidth = isinf(maximimSize.width) ? YGUndefined : maximimSize.width;
-  float availableHeight = isinf(maximimSize.height) ? YGUndefined : maximimSize.height;
+  YGNodeRef yogaNode = self.yogaNode;
 
-  self.minWidth = (YGValue){isinf(minimumSize.width) ? YGUndefined : minimumSize.width, YGUnitPoint};
-  self.minWidth = (YGValue){isinf(minimumSize.height) ? YGUndefined : minimumSize.height, YGUnitPoint};
+  YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximimSize.width));
+  YGNodeStyleSetMinHeight(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximimSize.height));
 
-  YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
+  YGNodeCalculateLayout(
+    self.yogaNode,
+    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.width),
+    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.height),
+    _baseDirection
+  );
 }
 
 - (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
@@ -71,41 +74,6 @@
   }
 
   return viewsWithNewFrame;
-}
-
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
-{
-  // Positive case where requested constraind are aready enforced.
-  if (CGSizeEqualToSize(minimumSize, _minimumSize) &&
-      CGSizeEqualToSize(maximumSize, _maximumSize)) {
-    // We stil need to call `calculateLayoutWithMinimumSize:maximumSize`
-    // mehtod though.
-    [self calculateLayoutWithMinimumSize:_minimumSize
-                             maximumSize:_maximumSize];
-
-    YGNodeRef yogaNode = self.yogaNode;
-    return CGSizeMake(YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode));
-  }
-
-  // Generic case, where requested constraind are different from enforced.
-
-  // Applying given size constraints.
-  [self calculateLayoutWithMinimumSize:minimumSize
-                           maximumSize:maximumSize];
-
-  YGNodeRef yogaNode = self.yogaNode;
-  CGSize fittingSize =
-    CGSizeMake(YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode));
-
-  // Reverting size constraints.
-  [self calculateLayoutWithMinimumSize:_minimumSize
-                           maximumSize:_maximumSize];
-
-  return CGSizeMake(
-    MAX(minimumSize.width, MIN(maximumSize.width, fittingSize.width)),
-    MAX(minimumSize.height, MIN(maximumSize.height, fittingSize.height))
-  );
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize

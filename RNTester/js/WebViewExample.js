@@ -256,7 +256,7 @@ class MessagingTest extends React.Component<{}, $FlowFixMeState> {
 class InjectJS extends React.Component<{}> {
   webview = null;
   injectJS = () => {
-    const script = 'document.write("Injected JS ")';  // eslint-disable-line quotes
+    const script = 'document.write("Injected JS ")';
     if (this.webview) {
       this.webview.injectJavaScript(script);
     }

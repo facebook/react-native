@@ -15,6 +15,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTShadowView+Layout.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceRootShadowView.h"
 #import "RCTSurfaceRootShadowViewDelegate.h"
@@ -67,7 +68,7 @@
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillLoadJavaScriptNotification:)
@@ -82,10 +83,10 @@
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
     if (!bridge.loading) {
-      _stage = (RCTSurfaceStage)(_stage | RCTSurfaceStageBridgeDidLoad);
+      _stage = _stage | RCTSurfaceStageBridgeDidLoad;
     }
 
-    [self _registerRootViewTag];
+    [self _registerRootView];
     [self _run];
   }
 
@@ -94,6 +95,7 @@
 
 - (void)dealloc
 {
+  [self _stop];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -211,6 +213,7 @@
 
 - (void)_setStage:(RCTSurfaceStage)stage
 {
+  RCTSurfaceStage updatedStage;
   {
     std::lock_guard<std::mutex> lock(_mutex);
 
@@ -218,10 +221,11 @@
       return;
     }
 
-    _stage = (RCTSurfaceStage)(_stage | stage);
+    updatedStage = (RCTSurfaceStage)(_stage | stage);
+    _stage = updatedStage;
   }
 
-  [self _propagateStageChange:stage];
+  [self _propagateStageChange:updatedStage];
 }
 
 - (void)_propagateStageChange:(RCTSurfaceStage)stage
@@ -295,7 +299,16 @@
   [self _setStage:RCTSurfaceStageSurfaceDidRun];
 }
 
-- (void)_registerRootViewTag
+- (void)_stop
+{
+  RCTBridge *batchedBridge = self._batchedBridge;
+  [batchedBridge enqueueJSCall:@"AppRegistry"
+                        method:@"unmountApplicationComponentAtRootTag"
+                          args:@[self->_rootViewTag]
+                    completion:NULL];
+}
+
+- (void)_registerRootView
 {
   RCTBridge *batchedBridge;
   CGSize minimumSize;
@@ -309,7 +322,8 @@
   }
 
   RCTUIManager *uiManager = batchedBridge.uiManager;
-  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+
+  RCTExecuteOnUIManagerQueue(^{
     [uiManager registerRootViewTag:self->_rootViewTag];
 
     RCTSurfaceRootShadowView *rootShadowView =

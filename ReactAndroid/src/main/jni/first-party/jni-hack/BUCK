@@ -7,13 +7,13 @@ include_defs("//ReactAndroid/DEFS")
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "jni-hack",
+    header_namespace = "",
     exported_headers = [
         "jni.h",
         "real/jni.h",
     ],
     force_static = True,
-    header_namespace = "",
     visibility = ["PUBLIC"],
 )

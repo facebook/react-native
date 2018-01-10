@@ -12,7 +12,7 @@
  * @format
  */
 
-/* eslint-disable */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
 
 /**
  * This pipes all of our console logging functions to native logging so that

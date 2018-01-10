@@ -30,6 +30,7 @@ const {
   StyleSheet,
   Text,
   View,
+  SafeAreaView
 } = ReactNative;
 
 import type { RNTesterExample } from './RNTesterList.ios';
@@ -43,14 +44,16 @@ type Props = {
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
 const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
-  <View style={styles.header}>
-    <View style={styles.headerCenter}>
-      <Text style={styles.title}>{title}</Text>
+  <SafeAreaView style={styles.headerContainer}>
+    <View style={styles.header}>
+      <View style={styles.headerCenter}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+      {onBack && <View style={styles.headerLeft}>
+        <Button title="Back" onPress={onBack} />
+      </View>}
     </View>
-    {onBack && <View style={styles.headerLeft}>
-      <Button title="Back" onPress={onBack} />
-    </View>}
-  </View>
+  </SafeAreaView>
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
@@ -138,20 +141,21 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 60,
+  headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#96969A',
     backgroundColor: '#F5F5F6',
-    flexDirection: 'row',
-    paddingTop: 20,
+  },
+  header: { 
+    height: 40, 
+    flexDirection: 'row' 
   },
   headerLeft: {
   },
   headerCenter: {
     flex: 1,
     position: 'absolute',
-    top: 27,
+    top: 7,
     left: 0,
     right: 0,
   },

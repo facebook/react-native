@@ -1,3 +1,5 @@
+include_defs("xplat//configurations/buck/apple/flag_defs.bzl")
+
 include_defs("//ReactCommon/DEFS")
 
 EXPORTED_HEADERS = [
