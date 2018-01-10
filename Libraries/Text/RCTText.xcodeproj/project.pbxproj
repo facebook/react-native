@@ -86,6 +86,7 @@
 		59E6049B1FE9CB4A00BD90C5 /* RCTUITextField.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59E604501FE9CAF100BD90C5 /* RCTUITextField.h */; };
 		59E8C5CC1F8833D100204F5E /* RCTFontAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A85C82991F742AA20036C019 /* RCTFontAttributes.m */; };
 		A85C829A1F742AA20036C019 /* RCTFontAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A85C82991F742AA20036C019 /* RCTFontAttributes.m */; };
+		AD50D1DF20067E6F00A34797 /* RCTBaseTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5989E14C20018A2200EA444A /* RCTBaseTextInputViewManager.m */; };
 		AF3225F91DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 		AF3225FA1DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 /* End PBXBuildFile section */
@@ -380,6 +381,7 @@
 				59E6045D1FE9CAF100BD90C5 /* RCTMultilineTextInputShadowView.m in Sources */,
 				59E604591FE9CAF100BD90C5 /* RCTRawTextShadowView.m in Sources */,
 				59E604551FE9CAF100BD90C5 /* RCTTextView.m in Sources */,
+				AD50D1DF20067E6F00A34797 /* RCTBaseTextInputViewManager.m in Sources */,
 				59E604691FE9CAF100BD90C5 /* RCTTextSelection.m in Sources */,
 				59E6045F1FE9CAF100BD90C5 /* RCTMultilineTextInputView.m in Sources */,
 				59E604611FE9CAF100BD90C5 /* RCTMultilineTextInputViewManager.m in Sources */,
