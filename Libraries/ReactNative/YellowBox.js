@@ -358,6 +358,10 @@ class YellowBox extends React.Component<
     });
   }
 
+  static disableYellowBox(val: boolean): void {
+    disableYellowBox = val;
+  }
+
   componentDidMount() {
     let scheduled = null;
     this._listener = _warningEmitter.addListener('warning', warningMap => {
