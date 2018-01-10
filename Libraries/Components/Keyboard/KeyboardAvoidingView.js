@@ -68,10 +68,16 @@ const KeyboardAvoidingView = createReactClass({
      * may be non-zero in some use cases. The default value is 0.
      */
     keyboardVerticalOffset: PropTypes.number.isRequired,
+    /**
+    * This is to allow us to manually control which KAV shuld take effect when
+    * having more than one KAV at the same screen
+    */
+    enabled: PropTypes.bool.isRequired,
   },
 
   getDefaultProps() {
     return {
+      enabled: true,
       keyboardVerticalOffset: 0,
     };
   },
@@ -157,7 +163,7 @@ const KeyboardAvoidingView = createReactClass({
   render(): React.Element<any> {
     // $FlowFixMe(>=0.41.0)
     const {behavior, children, style, ...props} = this.props;
-
+    const bottomHeight = this.props.enabled ? this.state.bottom : 0;
     switch (behavior) {
       case 'height':
         let heightStyle;
@@ -166,7 +172,7 @@ const KeyboardAvoidingView = createReactClass({
           // i.e. this.state.bottom is greater than 0. If we remove that condition,
           // this.frame.height will never go back to its original value.
           // When height changes, we need to disable flex.
-          heightStyle = {height: this.frame.height - this.state.bottom, flex: 0};
+          heightStyle = {height: this.frame.height - bottomHeight, flex: 0};
         }
         return (
           <View ref={viewRef} style={[style, heightStyle]} onLayout={this._onLayout} {...props}>
@@ -175,7 +181,7 @@ const KeyboardAvoidingView = createReactClass({
         );
 
       case 'position':
-        const positionStyle = {bottom: this.state.bottom};
+        const positionStyle = {bottom: bottomHeight};
         const { contentContainerStyle } = this.props;
 
         return (
@@ -187,7 +193,7 @@ const KeyboardAvoidingView = createReactClass({
         );
 
       case 'padding':
-        const paddingStyle = {paddingBottom: this.state.bottom};
+        const paddingStyle = {paddingBottom: bottomHeight};
         return (
           <View ref={viewRef} style={[style, paddingStyle]} onLayout={this._onLayout} {...props}>
             {children}
