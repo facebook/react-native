@@ -97,6 +97,7 @@ public class LayoutAnimationController {
       view.layout(x, y, x + width, y + height);
     }
     if (animation != null) {
+      view.clearAnimation();
       view.startAnimation(animation);
     }
   }

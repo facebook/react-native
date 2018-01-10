@@ -244,7 +244,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       parent.addViewWithSubviewClippingEnabled(child, index);
     } else {
-      parent.addView(child, index);
+      super.addView(parent, child, index);
     }
   }
 
@@ -254,7 +254,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       return parent.getAllChildrenCount();
     } else {
-      return parent.getChildCount();
+      return super.getChildCount(parent);
     }
   }
 
@@ -264,7 +264,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       return parent.getChildAtWithSubviewClippingEnabled(index);
     } else {
-      return parent.getChildAt(index);
+      return super.getChildAt(parent, index);
     }
   }
 
@@ -278,7 +278,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       }
       parent.removeViewWithSubviewClippingEnabled(child);
     } else {
-      parent.removeViewAt(index);
+      super.removeViewAt(parent, index);
     }
   }
 
@@ -288,7 +288,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       parent.removeAllViewsWithSubviewClippingEnabled();
     } else {
-      parent.removeAllViews();
+      super.removeAllViews(parent);
     }
   }
 }
