@@ -35,18 +35,6 @@ inline float YGResolveValue(const YGValue value, const float parentSize) {
   return YGUndefined;
 }
 
-inline bool YGNodeIsLeadingPosDefined(
-    const YGNodeRef node,
-    const YGFlexDirection axis) {
-  return (YGFlexDirectionIsRow(axis) &&
-          YGComputedEdgeValue(
-              node->getStyle().position, YGEdgeStart, &YGValueUndefined)
-                  ->unit != YGUnitUndefined) ||
-      YGComputedEdgeValue(
-          node->getStyle().position, leading[axis], &YGValueUndefined)
-          ->unit != YGUnitUndefined;
-}
-
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
   return flexDirection == YGFlexDirectionColumn ||
       flexDirection == YGFlexDirectionColumnReverse;
