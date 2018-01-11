@@ -57,9 +57,9 @@ import javax.annotation.Nullable;
  * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
  * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
  * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular touch event
+ * intercepting it. In case when no child view is interested in handling some particular touch event,
  * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
- * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
 public class ReactRootView extends SizeMonitoringFrameLayout
