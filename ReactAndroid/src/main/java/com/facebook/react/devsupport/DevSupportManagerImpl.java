@@ -350,7 +350,7 @@ public class DevSupportManagerImpl implements
           // JS errors are reported here after source mapping.
           if (mRedBoxHandler != null) {
             mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
-            mRedBoxDialog.resetReporting(true);
+            mRedBoxDialog.resetReporting();
           }
           mRedBoxDialog.show();
         }
@@ -403,10 +403,8 @@ public class DevSupportManagerImpl implements
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
-              mRedBoxDialog.resetReporting(true);
-            } else {
-              mRedBoxDialog.resetReporting(false);
             }
+            mRedBoxDialog.resetReporting();
             mRedBoxDialog.show();
           }
         });
