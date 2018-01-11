@@ -199,7 +199,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
               @"group_name": [group valueForProperty:ALAssetsGroupPropertyName],
               @"image": @{
                 @"uri": uri,
-                @"filename" : filename,
+                @"filename" : filename ? filename : @"",
                 @"height": @(dimensions.height),
                 @"width": @(dimensions.width),
                 @"isStored": @YES,
