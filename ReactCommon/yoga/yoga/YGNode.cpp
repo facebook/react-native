@@ -102,6 +102,25 @@ float YGNode::getLeadingPosition(
       : YGResolveValue(*leadingPosition, axisSize);
 }
 
+float YGNode::getTrailingPosition(
+    const YGFlexDirection axis,
+    const float axisSize) {
+  if (YGFlexDirectionIsRow(axis)) {
+    const YGValue* trailingPosition =
+        YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined);
+    if (trailingPosition->unit != YGUnitUndefined) {
+      return YGResolveValue(*trailingPosition, axisSize);
+    }
+  }
+
+  const YGValue* trailingPosition =
+      YGComputedEdgeValue(style_.position, trailing[axis], &YGValueUndefined);
+
+  return trailingPosition->unit == YGUnitUndefined
+      ? 0.0f
+      : YGResolveValue(*trailingPosition, axisSize);
+}
+
 bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) {
   return (YGFlexDirectionIsRow(axis) &&
           YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined)
