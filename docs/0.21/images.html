@@ -17,7 +17,7 @@
     └── check@<span class="hljs-number">3</span>x<span class="hljs-selector-class">.png</span>
 </code></pre>
 <p>...and <code>button.js</code> code contains:</p>
-<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">'./assets/check.png'</span>)} /&gt;
+<pre><code class="hljs css javascript">&lt;Image source={<span class="hljs-built_in">require</span>(<span class="hljs-string">'./img/check.png'</span>)} /&gt;
 </code></pre>
 <p>...the packager will bundle and serve the image corresponding to device's screen density. For example, <code>check@2x.png</code>, will be used on an iPhone 7, while<code>check@3x.png</code> will be used on an iPhone 7 Plus or a Nexus 5. If there is no image matching the screen density, the closest best option will be selected.</p>
 <p>On Windows, you might need to restart the packager if you add new images to your project.</p>
