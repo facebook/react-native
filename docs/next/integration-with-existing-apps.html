@@ -165,6 +165,7 @@ target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keywo
   <span class="hljs-comment"># but if not, adjust the `:path` accordingly</span>
   pod <span class="hljs-string">'React'</span>, <span class="hljs-symbol">:path</span> =&gt; <span class="hljs-string">'../node_modules/react-native'</span>, <span class="hljs-symbol">:subspecs</span> =&gt; [
     <span class="hljs-string">'Core'</span>,
+    <span class="hljs-string">'CxxBridge'</span>, <span class="hljs-comment"># Include this for RN &gt;= 0.47</span>
     <span class="hljs-string">'DevSupport'</span>, <span class="hljs-comment"># Include this to enable In-App Devmenu if RN &gt;= 0.43</span>
     <span class="hljs-string">'RCTText'</span>,
     <span class="hljs-string">'RCTNetwork'</span>,
