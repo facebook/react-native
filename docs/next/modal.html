@@ -107,10 +107,11 @@ const styles = StyleSheet.create({
 <p>The <code>onRequestClose</code> callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.</p>
 <table>
 <thead>
-<tr><th>Type</th><th>Required</th></tr>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
 </thead>
 <tbody>
-<tr><td>(Platform.isTVOS</td><td></td><td>Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func</td><td>No</td></tr>
+<tr><td>function</td><td>Yes</td><td>Android, Platform.isTVOS</td></tr>
+<tr><td>function</td><td>No</td><td>(Others)</td></tr>
 </tbody>
 </table>
 <hr>
