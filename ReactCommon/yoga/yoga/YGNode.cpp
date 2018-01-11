@@ -110,6 +110,14 @@ bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) {
           ->unit != YGUnitUndefined;
 }
 
+bool YGNode::isTrailingPosDefined(const YGFlexDirection axis) {
+  return (YGFlexDirectionIsRow(axis) &&
+          YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined)
+                  ->unit != YGUnitUndefined) ||
+      YGComputedEdgeValue(style_.position, trailing[axis], &YGValueUndefined)
+          ->unit != YGUnitUndefined;
+}
+
 // Setters
 
 void YGNode::setContext(void* context) {

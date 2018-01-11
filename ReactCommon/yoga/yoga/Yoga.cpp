@@ -999,17 +999,6 @@ static inline bool YGNodeIsLayoutDimDefined(const YGNodeRef node, const YGFlexDi
   return !YGFloatIsUndefined(value) && value >= 0.0f;
 }
 
-
-static inline bool YGNodeIsTrailingPosDefined(const YGNodeRef node, const YGFlexDirection axis) {
-  return (YGFlexDirectionIsRow(axis) &&
-          YGComputedEdgeValue(
-              node->getStyle().position, YGEdgeEnd, &YGValueUndefined)
-                  ->unit != YGUnitUndefined) ||
-      YGComputedEdgeValue(
-          node->getStyle().position, trailing[axis], &YGValueUndefined)
-          ->unit != YGUnitUndefined;
-}
-
 static float YGNodeTrailingPosition(const YGNodeRef node,
                                     const YGFlexDirection axis,
                                     const float axisSize) {
@@ -1342,7 +1331,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     // on the left/right
     // offsets if they're defined.
     if (child->isLeadingPositionDefined(YGFlexDirectionRow) &&
-        YGNodeIsTrailingPosDefined(child, YGFlexDirectionRow)) {
+        child->isTrailingPosDefined(YGFlexDirectionRow)) {
       childWidth = node->getLayout().measuredDimensions[YGDimensionWidth] -
           (YGNodeLeadingBorder(node, YGFlexDirectionRow) +
            YGNodeTrailingBorder(node, YGFlexDirectionRow)) -
@@ -1361,7 +1350,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     // based on the top/bottom
     // offsets if they're defined.
     if (child->isLeadingPositionDefined(YGFlexDirectionColumn) &&
-        YGNodeIsTrailingPosDefined(child, YGFlexDirectionColumn)) {
+        child->isTrailingPosDefined(YGFlexDirectionColumn)) {
       childHeight = node->getLayout().measuredDimensions[YGDimensionHeight] -
           (YGNodeLeadingBorder(node, YGFlexDirectionColumn) +
            YGNodeTrailingBorder(node, YGFlexDirectionColumn)) -
@@ -1430,7 +1419,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
                        "abs-layout",
                        config);
 
-  if (YGNodeIsTrailingPosDefined(child, mainAxis) &&
+  if (child->isTrailingPosDefined(mainAxis) &&
       !child->isLeadingPositionDefined(mainAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimensions[dim[mainAxis]] -
@@ -1457,7 +1446,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
         leading[mainAxis]);
   }
 
-  if (YGNodeIsTrailingPosDefined(child, crossAxis) &&
+  if (child->isTrailingPosDefined(crossAxis) &&
       !child->isLeadingPositionDefined(crossAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimensions[dim[crossAxis]] -
