@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5989E14D20018A2200EA444A /* RCTBaseTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5989E14C20018A2200EA444A /* RCTBaseTextInputViewManager.m */; };
+		5989E14E20018A6600EA444A /* RCTBaseTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5989E14B20018A2200EA444A /* RCTBaseTextInputViewManager.h */; };
+		5989E14F20018A7800EA444A /* RCTBaseTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5989E14B20018A2200EA444A /* RCTBaseTextInputViewManager.h */; };
 		59E604521FE9CAF100BD90C5 /* RCTTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59E6042F1FE9CAF100BD90C5 /* RCTTextShadowView.m */; };
 		59E604531FE9CAF100BD90C5 /* RCTTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59E6042F1FE9CAF100BD90C5 /* RCTTextShadowView.m */; };
 		59E604541FE9CAF100BD90C5 /* RCTTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59E604311FE9CAF100BD90C5 /* RCTTextView.m */; };
@@ -94,6 +97,7 @@
 			dstPath = include/RCTText;
 			dstSubfolderSpec = 16;
 			files = (
+				5989E14E20018A6600EA444A /* RCTBaseTextInputViewManager.h in Copy Headers */,
 				59E604871FE9CB4A00BD90C5 /* RCTConvert+Text.h in Copy Headers */,
 				59E604881FE9CB4A00BD90C5 /* RCTFontAttributes.h in Copy Headers */,
 				59E604891FE9CB4A00BD90C5 /* RCTFontAttributesDelegate.h in Copy Headers */,
@@ -125,6 +129,7 @@
 			dstPath = include/RCTText;
 			dstSubfolderSpec = 16;
 			files = (
+				5989E14F20018A7800EA444A /* RCTBaseTextInputViewManager.h in Copy Headers */,
 				59E604721FE9CB3F00BD90C5 /* RCTConvert+Text.h in Copy Headers */,
 				59E604731FE9CB3F00BD90C5 /* RCTFontAttributes.h in Copy Headers */,
 				59E604741FE9CB3F00BD90C5 /* RCTFontAttributesDelegate.h in Copy Headers */,
@@ -155,6 +160,8 @@
 /* Begin PBXFileReference section */
 		2D2A287B1D9B048500D4039D /* libRCTText-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTText-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B5119B1A9E6C1200147676 /* libRCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTText.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5989E14B20018A2200EA444A /* RCTBaseTextInputViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextInputViewManager.h; sourceTree = "<group>"; };
+		5989E14C20018A2200EA444A /* RCTBaseTextInputViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextInputViewManager.m; sourceTree = "<group>"; };
 		59E6042C1FE9CAF100BD90C5 /* RCTRawTextShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRawTextShadowView.h; sourceTree = "<group>"; };
 		59E6042E1FE9CAF100BD90C5 /* RCTTextShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextShadowView.h; sourceTree = "<group>"; };
 		59E6042F1FE9CAF100BD90C5 /* RCTTextShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextShadowView.m; sourceTree = "<group>"; };
@@ -250,6 +257,8 @@
 				59E604441FE9CAF100BD90C5 /* RCTBackedTextInputViewProtocol.h */,
 				59E604451FE9CAF100BD90C5 /* RCTBaseTextInputView.h */,
 				59E604461FE9CAF100BD90C5 /* RCTBaseTextInputView.m */,
+				5989E14B20018A2200EA444A /* RCTBaseTextInputViewManager.h */,
+				5989E14C20018A2200EA444A /* RCTBaseTextInputViewManager.m */,
 				59E604471FE9CAF100BD90C5 /* RCTTextSelection.h */,
 				59E604481FE9CAF100BD90C5 /* RCTTextSelection.m */,
 				59E604491FE9CAF100BD90C5 /* Singleline */,
@@ -396,6 +405,7 @@
 				59E6045C1FE9CAF100BD90C5 /* RCTMultilineTextInputShadowView.m in Sources */,
 				59E604581FE9CAF100BD90C5 /* RCTRawTextShadowView.m in Sources */,
 				59E604541FE9CAF100BD90C5 /* RCTTextView.m in Sources */,
+				5989E14D20018A2200EA444A /* RCTBaseTextInputViewManager.m in Sources */,
 				59E604681FE9CAF100BD90C5 /* RCTTextSelection.m in Sources */,
 				59E6045E1FE9CAF100BD90C5 /* RCTMultilineTextInputView.m in Sources */,
 				59E604601FE9CAF100BD90C5 /* RCTMultilineTextInputViewManager.m in Sources */,

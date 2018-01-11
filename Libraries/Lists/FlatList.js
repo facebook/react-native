@@ -462,6 +462,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         }),
       );
     } else if (this.props.onViewableItemsChanged) {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       this._virtualizedListPairs.push({
         viewabilityConfig: this.props.viewabilityConfig,
         onViewableItemsChanged: this._createOnViewableItemsChanged(
@@ -555,6 +558,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         .map((it, kk) => keyExtractor(it, index * numColumns + kk))
         .join(':');
     } else {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       return keyExtractor(items, index);
     }
   };

@@ -30,6 +30,9 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
+/* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.63 was deployed. To see the error delete this comment and
+ * run Flow. */
 var NetworkImageCallbackExample = createReactClass({
   displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
@@ -98,9 +101,6 @@ var NetworkImageCallbackExample = createReactClass({
   },
 
   _loadEventFired(event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this.setState((state) => {
       return state.events = [...state.events, event];
     });

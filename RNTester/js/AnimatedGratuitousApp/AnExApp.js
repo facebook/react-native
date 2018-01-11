@@ -89,10 +89,16 @@ class Circle extends React.Component<any, any> {
         onResponderGrant: () => {
           this.state.pan.setValue({x: 0, y: 0});           // reset                (step1: uncomment)
           this.state.pan.setOffset(this.props.restLayout); // offset from onLayout (step1: uncomment)
+          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.63 was deployed. To see the error
+           * delete this comment and run Flow. */
           this.longTimer = setTimeout(this._onLongPress, 300);
         },
         onResponderRelease: () => {
           if (!this.state.panResponder) {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             clearTimeout(this.longTimer);
             this._toggleIsActive();
           }

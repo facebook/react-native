@@ -56,6 +56,7 @@ typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float height,
                                 YGMeasureMode heightMode);
 typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
+typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(const YGConfigRef config,
                         const YGNodeRef node,

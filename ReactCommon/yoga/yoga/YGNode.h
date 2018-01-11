@@ -20,6 +20,7 @@ struct YGNode {
   YGNodeType nodeType_;
   YGMeasureFunc measure_;
   YGBaselineFunc baseline_;
+  YGDirtiedFunc dirtied_;
   YGStyle style_;
   YGLayout layout_;
   uint32_t lineIndex_;
@@ -43,6 +44,7 @@ struct YGNode {
       YGNodeType nodeType,
       YGMeasureFunc measure,
       YGBaselineFunc baseline,
+      YGDirtiedFunc dirtied,
       YGStyle style,
       YGLayout layout,
       uint32_t lineIndex,
@@ -60,9 +62,11 @@ struct YGNode {
   YGNodeType getNodeType() const;
   YGMeasureFunc getMeasure() const;
   YGBaselineFunc getBaseline() const;
-  YGStyle getStyle() const;
-  YGLayout getLayout() const;
-  YGLayout& getLayoutRef(); // TODO remove its use
+  YGDirtiedFunc getDirtied() const;
+  // For Perfomance reasons passing as reference.
+  YGStyle& getStyle();
+  // For Perfomance reasons passing as reference.
+  YGLayout& getLayout();
   uint32_t getLineIndex() const;
   YGNodeRef getParent() const;
   YGVector getChildren() const;
@@ -81,6 +85,7 @@ struct YGNode {
   void setNodeType(YGNodeType nodeTye);
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setBaseLineFunc(YGBaselineFunc baseLineFunc);
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc);
   void setStyle(YGStyle style);
   void setStyleFlexDirection(YGFlexDirection direction);
   void setStyleAlignContent(YGAlign alignContent);
@@ -105,6 +110,8 @@ struct YGNode {
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
   void clearChildren();
+  /// Replaces the occurrences of oldChild with newChild
+  void replaceChild(YGNodeRef oldChild, YGNodeRef newChild);
   void replaceChild(YGNodeRef child, uint32_t index);
   void insertChild(YGNodeRef child, uint32_t index);
   /// Removes the first occurrence of child
@@ -116,6 +123,9 @@ struct YGNode {
   void setLayoutPadding(float padding, int index);
   void setLayoutPosition(float position, int index);
 
-  // Static methods
-  static const YGNode& defaultValue();
+  // Other methods
+  void cloneChildrenIfNeeded();
+  void markDirtyAndPropogate();
+  float resolveFlexGrow();
+  float resolveFlexShrink();
 };

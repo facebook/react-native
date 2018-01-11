@@ -9,6 +9,7 @@
 
 #include "YGNode.h"
 #include <iostream>
+#include "Utils.h"
 
 void* YGNode::getContext() const {
   return context_;
@@ -34,15 +35,15 @@ YGBaselineFunc YGNode::getBaseline() const {
   return baseline_;
 }
 
-YGStyle YGNode::getStyle() const {
+YGDirtiedFunc YGNode::getDirtied() const {
+  return dirtied_;
+}
+
+YGStyle& YGNode::getStyle() {
   return style_;
 }
 
-YGLayout YGNode::getLayout() const {
-  return layout_;
-}
-
-YGLayout& YGNode::getLayoutRef() {
+YGLayout& YGNode::getLayout() {
   return layout_;
 }
 
@@ -131,6 +132,10 @@ void YGNode::setBaseLineFunc(YGBaselineFunc baseLineFunc) {
   baseline_ = baseLineFunc;
 }
 
+void YGNode::setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+  dirtied_ = dirtiedFunc;
+}
+
 void YGNode::setStyle(YGStyle style) {
   style_ = style;
 }
@@ -159,6 +164,10 @@ void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
   children_[index] = child;
 }
 
+void YGNode::replaceChild(YGNodeRef oldChild, YGNodeRef newChild) {
+  std::replace(children_.begin(), children_.end(), oldChild, newChild);
+}
+
 void YGNode::insertChild(YGNodeRef child, uint32_t index) {
   children_.insert(children_.begin() + index, child);
 }
@@ -168,7 +177,13 @@ void YGNode::setConfig(YGConfigRef config) {
 }
 
 void YGNode::setDirty(bool isDirty) {
+  if (isDirty == isDirty_) {
+    return;
+  }
   isDirty_ = isDirty;
+  if (isDirty && dirtied_) {
+    dirtied_(this);
+  }
 }
 
 bool YGNode::removeChild(YGNodeRef child) {
@@ -237,6 +252,7 @@ YGNode::YGNode()
       nodeType_(YGNodeTypeDefault),
       measure_(nullptr),
       baseline_(nullptr),
+      dirtied_(nullptr),
       style_(gYGNodeStyleDefaults),
       layout_(gYGNodeLayoutDefaults),
       lineIndex_(0),
@@ -248,21 +264,22 @@ YGNode::YGNode()
       resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
 
 YGNode::YGNode(const YGNode& node)
-    : context_(node.getContext()),
-      print_(node.getPrintFunc()),
-      hasNewLayout_(node.getHasNewLayout()),
-      nodeType_(node.getNodeType()),
-      measure_(node.getMeasure()),
-      baseline_(node.getBaseline()),
-      style_(node.getStyle()),
-      layout_(node.getLayout()),
-      lineIndex_(node.getLineIndex()),
-      parent_(node.getParent()),
-      children_(node.getChildren()),
-      nextChild_(node.getNextChild()),
-      config_(node.getConfig()),
-      isDirty_(node.isDirty()),
-      resolvedDimensions_(node.getResolvedDimensions()) {}
+    : context_(node.context_),
+      print_(node.print_),
+      hasNewLayout_(node.hasNewLayout_),
+      nodeType_(node.nodeType_),
+      measure_(node.measure_),
+      baseline_(node.baseline_),
+      dirtied_(node.dirtied_),
+      style_(node.style_),
+      layout_(node.layout_),
+      lineIndex_(node.lineIndex_),
+      parent_(node.parent_),
+      children_(node.children_),
+      nextChild_(node.nextChild_),
+      config_(node.config_),
+      isDirty_(node.isDirty_),
+      resolvedDimensions_(node.resolvedDimensions_) {}
 
 YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
   config_ = newConfig;
@@ -275,6 +292,7 @@ YGNode::YGNode(
     YGNodeType nodeType,
     YGMeasureFunc measure,
     YGBaselineFunc baseline,
+    YGDirtiedFunc dirtied,
     YGStyle style,
     YGLayout layout,
     uint32_t lineIndex,
@@ -290,6 +308,7 @@ YGNode::YGNode(
       nodeType_(nodeType),
       measure_(measure),
       baseline_(baseline),
+      dirtied_(dirtied),
       style_(style),
       layout_(layout),
       lineIndex_(lineIndex),
@@ -315,8 +334,9 @@ YGNode& YGNode::operator=(const YGNode& node) {
   nodeType_ = node.getNodeType();
   measure_ = node.getMeasure();
   baseline_ = node.getBaseline();
-  style_ = node.getStyle();
-  layout_ = node.getLayout();
+  dirtied_ = node.getDirtied();
+  style_ = node.style_;
+  layout_ = node.layout_;
   lineIndex_ = node.getLineIndex();
   parent_ = node.getParent();
   children_ = node.getChildren();
@@ -330,28 +350,28 @@ YGNode& YGNode::operator=(const YGNode& node) {
 
 YGValue YGNode::marginLeadingValue(const YGFlexDirection axis) const {
   if (YGFlexDirectionIsRow(axis) &&
-      getStyle().margin[YGEdgeStart].unit != YGUnitUndefined) {
-    return getStyle().margin[YGEdgeStart];
+      style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
+    return style_.margin[YGEdgeStart];
   } else {
-    return getStyle().margin[leading[axis]];
+    return style_.margin[leading[axis]];
   }
 }
 
 YGValue YGNode::marginTrailingValue(const YGFlexDirection axis) const {
   if (YGFlexDirectionIsRow(axis) &&
-      getStyle().margin[YGEdgeEnd].unit != YGUnitUndefined) {
-    return getStyle().margin[YGEdgeEnd];
+      style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+    return style_.margin[YGEdgeEnd];
   } else {
-    return getStyle().margin[trailing[axis]];
+    return style_.margin[trailing[axis]];
   }
 }
 
 YGValue YGNode::resolveFlexBasisPtr() const {
-  YGValue flexBasis = getStyle().flexBasis;
+  YGValue flexBasis = style_.flexBasis;
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!YGFloatIsUndefined(getStyle().flex) && getStyle().flex > 0.0f) {
+  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -361,10 +381,10 @@ void YGNode::resolveDimension() {
   for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
     if (getStyle().maxDimensions[dim].unit != YGUnitUndefined &&
         YGValueEqual(
-            getStyle().maxDimensions[dim], getStyle().minDimensions[dim])) {
-      resolvedDimensions_[dim] = getStyle().maxDimensions[dim];
+            getStyle().maxDimensions[dim], style_.minDimensions[dim])) {
+      resolvedDimensions_[dim] = style_.maxDimensions[dim];
     } else {
-      resolvedDimensions_[dim] = getStyle().dimensions[dim];
+      resolvedDimensions_[dim] = style_.dimensions[dim];
     }
   }
 }
@@ -379,21 +399,73 @@ YGNode::~YGNode() {
   // deallocate here
 }
 
-const YGNode& YGNode::defaultValue() {
-  static const YGNode n = {nullptr,
-                           nullptr,
-                           true,
-                           YGNodeTypeDefault,
-                           nullptr,
-                           nullptr,
-                           gYGNodeStyleDefaults,
-                           gYGNodeLayoutDefaults,
-                           0,
-                           nullptr,
-                           YGVector(),
-                           nullptr,
-                           nullptr,
-                           false,
-                           {{YGValueUndefined, YGValueUndefined}}};
-  return n;
+// Other Methods
+
+void YGNode::cloneChildrenIfNeeded() {
+  // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
+  // optimized for deletions.
+
+  const uint32_t childCount = static_cast<uint32_t>(children_.size());
+  if (childCount == 0) {
+    // This is an empty set. Nothing to clone.
+    return;
+  }
+
+  const YGNodeRef firstChild = children_.front();
+  if (firstChild->getParent() == this) {
+    // If the first child has this node as its parent, we assume that it is
+    // already unique. We can do this because if we have it has a child, that
+    // means that its parent was at some point cloned which made that subtree
+    // immutable. We also assume that all its sibling are cloned as well.
+    return;
+  }
+
+  const YGNodeClonedFunc cloneNodeCallback = config_->cloneNodeCallback;
+  for (uint32_t i = 0; i < childCount; ++i) {
+    const YGNodeRef oldChild = children_[i];
+    const YGNodeRef newChild = YGNodeClone(oldChild);
+    replaceChild(newChild, i);
+    newChild->setParent(this);
+    if (cloneNodeCallback) {
+      cloneNodeCallback(oldChild, newChild, this, i);
+    }
+  }
+}
+
+void YGNode::markDirtyAndPropogate() {
+  if (!isDirty_) {
+    setDirty(true);
+    setLayoutComputedFlexBasis(YGUndefined);
+    if (parent_) {
+      parent_->markDirtyAndPropogate();
+    }
+  }
+}
+
+float YGNode::resolveFlexGrow() {
+  // Root nodes flexGrow should always be 0
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexGrow)) {
+    return style_.flexGrow;
+  }
+  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
+    return style_.flex;
+  }
+  return kDefaultFlexGrow;
+}
+
+float YGNode::resolveFlexShrink() {
+  if (parent_ == nullptr) {
+    return 0.0;
+  }
+  if (!YGFloatIsUndefined(style_.flexShrink)) {
+    return style_.flexShrink;
+  }
+  if (!config_->useWebDefaults && !YGFloatIsUndefined(style_.flex) &&
+      style_.flex < 0.0f) {
+    return -style_.flex;
+  }
+  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }

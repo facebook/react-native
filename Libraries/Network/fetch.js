@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable */
+ /* globals Headers, Request, Response */
 
 'use strict';
 
