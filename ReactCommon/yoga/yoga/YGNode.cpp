@@ -82,6 +82,26 @@ YGValue YGNode::getResolvedDimension(int index) {
 std::array<YGValue, 2> YGNode::getResolvedDimensions() const {
   return resolvedDimensions_;
 }
+
+float YGNode::getLeadingPosition(
+    const YGFlexDirection axis,
+    const float axisSize) {
+  if (YGFlexDirectionIsRow(axis)) {
+    const YGValue* leadingPosition =
+        YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined);
+    if (leadingPosition->unit != YGUnitUndefined) {
+      return YGResolveValue(*leadingPosition, axisSize);
+    }
+  }
+
+  const YGValue* leadingPosition =
+      YGComputedEdgeValue(style_.position, leading[axis], &YGValueUndefined);
+
+  return leadingPosition->unit == YGUnitUndefined
+      ? 0.0f
+      : YGResolveValue(*leadingPosition, axisSize);
+}
+
 // Setters
 
 void YGNode::setContext(void* context) {

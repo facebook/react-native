@@ -7,11 +7,61 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#pragma once
+#include "YGNode.h"
 #include "Yoga-internal.h"
+
+bool YGValueEqual(const YGValue a, const YGValue b);
+
+YGFlexDirection YGFlexDirectionCross(
+    const YGFlexDirection flexDirection,
+    const YGDirection direction);
 
 inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
   return flexDirection == YGFlexDirectionRow ||
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-bool YGValueEqual(const YGValue a, const YGValue b);
+inline float YGResolveValue(const YGValue value, const float parentSize) {
+  switch (value.unit) {
+    case YGUnitUndefined:
+    case YGUnitAuto:
+      return YGUndefined;
+    case YGUnitPoint:
+      return value.value;
+    case YGUnitPercent:
+      return value.value * parentSize / 100.0f;
+  }
+  return YGUndefined;
+}
+
+inline bool YGNodeIsLeadingPosDefined(
+    const YGNodeRef node,
+    const YGFlexDirection axis) {
+  return (YGFlexDirectionIsRow(axis) &&
+          YGComputedEdgeValue(
+              node->getStyle().position, YGEdgeStart, &YGValueUndefined)
+                  ->unit != YGUnitUndefined) ||
+      YGComputedEdgeValue(
+          node->getStyle().position, leading[axis], &YGValueUndefined)
+          ->unit != YGUnitUndefined;
+}
+
+inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
+  return flexDirection == YGFlexDirectionColumn ||
+      flexDirection == YGFlexDirectionColumnReverse;
+}
+
+inline YGFlexDirection YGResolveFlexDirection(
+    const YGFlexDirection flexDirection,
+    const YGDirection direction) {
+  if (direction == YGDirectionRTL) {
+    if (flexDirection == YGFlexDirectionRow) {
+      return YGFlexDirectionRowReverse;
+    } else if (flexDirection == YGFlexDirectionRowReverse) {
+      return YGFlexDirectionRow;
+    }
+  }
+
+  return flexDirection;
+}

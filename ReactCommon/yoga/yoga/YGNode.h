@@ -76,6 +76,7 @@ struct YGNode {
   bool isDirty() const;
   std::array<YGValue, 2> getResolvedDimensions() const;
   YGValue getResolvedDimension(int index);
+  float getLeadingPosition(const YGFlexDirection axis, const float axisSize);
 
   // Setters
 
