@@ -53,3 +53,9 @@ inline YGFlexDirection YGResolveFlexDirection(
 
   return flexDirection;
 }
+
+static inline float YGResolveValueMargin(
+    const YGValue value,
+    const float parentSize) {
+  return value.unit == YGUnitAuto ? 0 : YGResolveValue(value, parentSize);
+}

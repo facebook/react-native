@@ -137,6 +137,19 @@ bool YGNode::isTrailingPosDefined(const YGFlexDirection axis) {
           ->unit != YGUnitUndefined;
 }
 
+float YGNode::getLeadingMargin(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
+    return YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize);
+  }
+
+  return YGResolveValueMargin(
+      *YGComputedEdgeValue(style_.margin, leading[axis], &YGValueZero),
+      widthSize);
+}
+
 // Setters
 
 void YGNode::setContext(void* context) {
