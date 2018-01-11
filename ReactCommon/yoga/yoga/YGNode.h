@@ -31,6 +31,8 @@ struct YGNode {
   bool isDirty_;
   std::array<YGValue, 2> resolvedDimensions_;
 
+  float relativePosition(const YGFlexDirection axis, const float axisSize);
+
  public:
   YGNode();
   ~YGNode();
@@ -109,6 +111,12 @@ struct YGNode {
   void setLayoutMeasuredDimension(float measuredDimension, int index);
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float dimension, int index);
+
+  void setPosition(
+      const YGDirection direction,
+      const float mainSize,
+      const float crossSize,
+      const float parentWidth);
 
   // Other methods
   YGValue marginLeadingValue(const YGFlexDirection axis) const;

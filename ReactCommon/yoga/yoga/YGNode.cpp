@@ -326,6 +326,46 @@ void YGNode::setLayoutDimension(float dimension, int index) {
   layout_.dimensions[index] = dimension;
 }
 
+// If both left and right are defined, then use left. Otherwise return
+// +left or -right depending on which is defined.
+float YGNode::relativePosition(
+    const YGFlexDirection axis,
+    const float axisSize) {
+  return isLeadingPositionDefined(axis) ? getLeadingPosition(axis, axisSize)
+                                        : -getTrailingPosition(axis, axisSize);
+}
+
+void YGNode::setPosition(
+    const YGDirection direction,
+    const float mainSize,
+    const float crossSize,
+    const float parentWidth) {
+  /* Root nodes should be always layouted as LTR, so we don't return negative
+   * values. */
+  const YGDirection directionRespectingRoot =
+      parent_ != nullptr ? direction : YGDirectionLTR;
+  const YGFlexDirection mainAxis =
+      YGResolveFlexDirection(style_.flexDirection, directionRespectingRoot);
+  const YGFlexDirection crossAxis =
+      YGFlexDirectionCross(mainAxis, directionRespectingRoot);
+
+  const float relativePositionMain = relativePosition(mainAxis, mainSize);
+  const float relativePositionCross = relativePosition(crossAxis, crossSize);
+
+  setLayoutPosition(
+      getLeadingMargin(mainAxis, parentWidth) + relativePositionMain,
+      leading[mainAxis]);
+  setLayoutPosition(
+      getTrailingMargin(mainAxis, parentWidth) + relativePositionMain,
+      trailing[mainAxis]);
+  setLayoutPosition(
+      getLeadingMargin(crossAxis, parentWidth) + relativePositionCross,
+      leading[crossAxis]);
+  setLayoutPosition(
+      getTrailingMargin(crossAxis, parentWidth) + relativePositionCross,
+      trailing[crossAxis]);
+}
+
 YGNode::YGNode()
     : context_(nullptr),
       print_(nullptr),

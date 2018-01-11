@@ -1020,16 +1020,6 @@ static void YGNodeSetChildTrailingPosition(const YGNodeRef node,
       trailing[axis]);
 }
 
-// If both left and right are defined, then use left. Otherwise return
-// +left or -right depending on which is defined.
-static float YGNodeRelativePosition(const YGNodeRef node,
-                                    const YGFlexDirection axis,
-                                    const float axisSize) {
-  return node->isLeadingPositionDefined(axis)
-      ? node->getLeadingPosition(axis, axisSize)
-      : -node->getTrailingPosition(axis, axisSize);
-}
-
 static void YGConstrainMaxSizeForMode(const YGNodeRef node,
                                       const enum YGFlexDirection axis,
                                       const float parentAxisSize,
@@ -1052,35 +1042,6 @@ static void YGConstrainMaxSizeForMode(const YGNodeRef node,
       }
       break;
   }
-}
-
-static void YGNodeSetPosition(const YGNodeRef node,
-                              const YGDirection direction,
-                              const float mainSize,
-                              const float crossSize,
-                              const float parentWidth) {
-  /* Root nodes should be always layouted as LTR, so we don't return negative values. */
-  const YGDirection directionRespectingRoot =
-      node->getParent() != nullptr ? direction : YGDirectionLTR;
-  const YGFlexDirection mainAxis = YGResolveFlexDirection(
-      node->getStyle().flexDirection, directionRespectingRoot);
-  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, directionRespectingRoot);
-
-  const float relativePositionMain = YGNodeRelativePosition(node, mainAxis, mainSize);
-  const float relativePositionCross = YGNodeRelativePosition(node, crossAxis, crossSize);
-
-  node->setLayoutPosition(
-      node->getLeadingMargin(mainAxis, parentWidth) + relativePositionMain,
-      leading[mainAxis]);
-  node->setLayoutPosition(
-      node->getTrailingMargin(mainAxis, parentWidth) + relativePositionMain,
-      trailing[mainAxis]);
-  node->setLayoutPosition(
-      node->getLeadingMargin(crossAxis, parentWidth) + relativePositionCross,
-      leading[crossAxis]);
-  node->setLayoutPosition(
-      node->getTrailingMargin(crossAxis, parentWidth) + relativePositionCross,
-      trailing[crossAxis]);
 }
 
 static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
@@ -1887,11 +1848,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     if (performLayout) {
       // Set the initial position (relative to the parent).
       const YGDirection childDirection = YGNodeResolveDirection(child, direction);
-      YGNodeSetPosition(child,
-                        childDirection,
-                        availableInnerMainDim,
-                        availableInnerCrossDim,
-                        availableInnerWidth);
+      child->setPosition(
+          childDirection,
+          availableInnerMainDim,
+          availableInnerCrossDim,
+          availableInnerWidth);
     }
 
     // Absolute-positioned children don't participate in flex layout. Add them
@@ -3477,12 +3438,8 @@ void YGNodeCalculateLayout(const YGNodeRef node,
           true,
           "initial",
           node->getConfig())) {
-    YGNodeSetPosition(
-        node,
-        node->getLayout().direction,
-        parentWidth,
-        parentHeight,
-        parentWidth);
+    node->setPosition(
+        node->getLayout().direction, parentWidth, parentHeight, parentWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
 
     if (gPrintTree) {
