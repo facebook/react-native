@@ -150,6 +150,19 @@ float YGNode::getLeadingMargin(
       widthSize);
 }
 
+float YGNode::getTrailingMargin(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+    return YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize);
+  }
+
+  return YGResolveValueMargin(
+      *YGComputedEdgeValue(style_.margin, trailing[axis], &YGValueZero),
+      widthSize);
+}
+
 // Setters
 
 void YGNode::setContext(void* context) {

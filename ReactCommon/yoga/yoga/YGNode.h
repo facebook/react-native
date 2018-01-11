@@ -82,7 +82,7 @@ struct YGNode {
   bool isTrailingPosDefined(const YGFlexDirection axis);
   float getTrailingPosition(const YGFlexDirection axis, const float axisSize);
   float getLeadingMargin(const YGFlexDirection axis, const float widthSize);
-
+  float getTrailingMargin(const YGFlexDirection axis, const float widthSize);
   // Setters
 
   void setContext(void* context);

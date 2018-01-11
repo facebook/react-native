@@ -762,20 +762,6 @@ static const std::array<YGEdge, 4> pos = {{
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
-static float YGNodeTrailingMargin(const YGNodeRef node,
-                                  const YGFlexDirection axis,
-                                  const float widthSize) {
-  if (YGFlexDirectionIsRow(axis) &&
-      node->getStyle().margin[YGEdgeEnd].unit != YGUnitUndefined) {
-    return YGResolveValueMargin(node->getStyle().margin[YGEdgeEnd], widthSize);
-  }
-
-  return YGResolveValueMargin(
-      *YGComputedEdgeValue(
-          node->getStyle().margin, trailing[axis], &YGValueZero),
-      widthSize);
-}
-
 static float YGNodeLeadingPadding(const YGNodeRef node,
                                   const YGFlexDirection axis,
                                   const float widthSize) {
@@ -859,7 +845,7 @@ static inline float YGNodeMarginForAxis(const YGNodeRef node,
                                         const YGFlexDirection axis,
                                         const float widthSize) {
   return node->getLeadingMargin(axis, widthSize) +
-      YGNodeTrailingMargin(node, axis, widthSize);
+      node->getTrailingMargin(axis, widthSize);
 }
 
 static inline float YGNodePaddingAndBorderForAxis(const YGNodeRef node,
@@ -959,7 +945,7 @@ static inline float YGNodeDimWithMargin(const YGNodeRef node,
                                         const float widthSize) {
   return node->getLayout().measuredDimensions[dim[axis]] +
       node->getLeadingMargin(axis, widthSize) +
-      YGNodeTrailingMargin(node, axis, widthSize);
+      node->getTrailingMargin(axis, widthSize);
 }
 
 static inline bool YGNodeIsStyleDimDefined(const YGNodeRef node,
@@ -1087,14 +1073,13 @@ static void YGNodeSetPosition(const YGNodeRef node,
       node->getLeadingMargin(mainAxis, parentWidth) + relativePositionMain,
       leading[mainAxis]);
   node->setLayoutPosition(
-      YGNodeTrailingMargin(node, mainAxis, parentWidth) + relativePositionMain,
+      node->getTrailingMargin(mainAxis, parentWidth) + relativePositionMain,
       trailing[mainAxis]);
   node->setLayoutPosition(
       node->getLeadingMargin(crossAxis, parentWidth) + relativePositionCross,
       leading[crossAxis]);
   node->setLayoutPosition(
-      YGNodeTrailingMargin(node, crossAxis, parentWidth) +
-          relativePositionCross,
+      node->getTrailingMargin(crossAxis, parentWidth) + relativePositionCross,
       trailing[crossAxis]);
 }
 
@@ -1387,7 +1372,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
         node->getLayout().measuredDimensions[dim[mainAxis]] -
             child->getLayout().measuredDimensions[dim[mainAxis]] -
             YGNodeTrailingBorder(node, mainAxis) -
-            YGNodeTrailingMargin(child, mainAxis, width) -
+            child->getTrailingMargin(mainAxis, width) -
             child->getTrailingPosition(
                 mainAxis, isMainAxisRow ? width : height),
         leading[mainAxis]);
@@ -1414,7 +1399,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
         node->getLayout().measuredDimensions[dim[crossAxis]] -
             child->getLayout().measuredDimensions[dim[crossAxis]] -
             YGNodeTrailingBorder(node, crossAxis) -
-            YGNodeTrailingMargin(child, crossAxis, width) -
+            child->getTrailingMargin(crossAxis, width) -
             child->getTrailingPosition(
                 crossAxis, isMainAxisRow ? height : width),
         leading[crossAxis]);
@@ -1729,12 +1714,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   node->setLayoutMargin(
       node->getLeadingMargin(flexRowDirection, parentWidth), YGEdgeStart);
   node->setLayoutMargin(
-      YGNodeTrailingMargin(node, flexRowDirection, parentWidth), YGEdgeEnd);
+      node->getTrailingMargin(flexRowDirection, parentWidth), YGEdgeEnd);
   node->setLayoutMargin(
       node->getLeadingMargin(flexColumnDirection, parentWidth), YGEdgeTop);
   node->setLayoutMargin(
-      YGNodeTrailingMargin(node, flexColumnDirection, parentWidth),
-      YGEdgeBottom);
+      node->getTrailingMargin(flexColumnDirection, parentWidth), YGEdgeBottom);
 
   node->setLayoutBorder(
       YGNodeLeadingBorder(node, flexRowDirection), YGEdgeStart);
@@ -2767,8 +2751,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignFlexEnd: {
                 child->setLayoutPosition(
                     currentLead + lineHeight -
-                        YGNodeTrailingMargin(
-                            child, crossAxis, availableInnerWidth) -
+                        child->getTrailingMargin(
+                            crossAxis, availableInnerWidth) -
                         child->getLayout().measuredDimensions[dim[crossAxis]],
                     pos[crossAxis]);
                 break;
