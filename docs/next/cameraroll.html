@@ -93,7 +93,7 @@
 <pre><code class="hljs"><span class="hljs-function"><span class="hljs-title">_handleButtonPress</span> = <span class="hljs-params">()</span> =&gt;</span> {
    CameraRoll.getPhotos({
        first: <span class="hljs-number">20</span>,
-       assetType: <span class="hljs-string">'All'</span>,
+       assetType: <span class="hljs-string">'Photos'</span>,
      })
      .<span class="hljs-keyword">then</span>(r =&gt; {
        <span class="hljs-keyword">this</span>.setState({ photos: r.edges });
