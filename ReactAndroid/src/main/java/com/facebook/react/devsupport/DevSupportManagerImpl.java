@@ -9,6 +9,7 @@
 
 package com.facebook.react.devsupport;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -88,17 +89,18 @@ import okhttp3.RequestBody;
  * bound to make sure that we don't display overlay or that we we don't listen for sensor events
  * when app is backgrounded.
  *
- * {@link ReactInstanceManager} implementation is responsible for instantiating this class
- * as well as for populating with a referece to {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager is
- * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
- * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
+ * {@link com.facebook.react.ReactInstanceManager} implementation is responsible for instantiating
+ * this class as well as for populating with a referece to {@link CatalystInstance} whenever
+ * instance manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager
+ * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
+ * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  *
  * IMPORTANT: In order for developer support to work correctly it is required that the
  * manifest of your application contain the following entries:
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
+@TargetApi(11)
 public class DevSupportManagerImpl implements
     DevSupportManager,
     PackagerCommandListener,
@@ -107,7 +109,7 @@ public class DevSupportManagerImpl implements
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
-  private static enum ErrorType {
+  private enum ErrorType {
     JS,
     NATIVE
   }
@@ -255,21 +257,22 @@ public class DevSupportManagerImpl implements
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
-      String message = e.getMessage();
+      StringBuilder message = new StringBuilder(e.getMessage());
       Throwable cause = e.getCause();
       while (cause != null) {
-        message += "\n\n" + cause.getMessage();
+        message.append("\n\n").append(cause.getMessage());
         cause = cause.getCause();
       }
 
       if (e instanceof JSException) {
         FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-        message += "\n\n" + ((JSException) e).getStack();
+        String stack = ((JSException) e).getStack();
+        message.append("\n\n").append(stack);
 
         // TODO #11638796: convert the stack into something useful
-        showNewError(message, new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+        showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
       } else {
-        showNewJavaError(message, e);
+        showNewJavaError(message.toString(), e);
       }
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
@@ -324,34 +327,34 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void updateJSError(
-      final String message,
-      final ReadableArray details,
-      final int errorCookie) {
+    final String message,
+    final ReadableArray details,
+    final int errorCookie) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Since we only show the first JS error in a succession of JS errors, make sure we only
-            // update the error message for that error message. This assumes that updateJSError
-            // belongs to the most recent showNewJSError
-            if (mRedBoxDialog == null ||
-                !mRedBoxDialog.isShowing() ||
-                errorCookie != mLastErrorCookie) {
-              return;
-            }
-            StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
-            Pair<String, StackFrame[]> errorInfo =
-                processErrorCustomizers(Pair.create(message, stack));
-            mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
-            updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
-            // JS errors are reported here after source mapping.
-            if (mRedBoxHandler != null) {
-              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
-              mRedBoxDialog.resetReporting(true);
-            }
-            mRedBoxDialog.show();
+      new Runnable() {
+        @Override
+        public void run() {
+          // Since we only show the first JS error in a succession of JS errors, make sure we only
+          // update the error message for that error message. This assumes that updateJSError
+          // belongs to the most recent showNewJSError
+          if (mRedBoxDialog == null ||
+            !mRedBoxDialog.isShowing() ||
+            errorCookie != mLastErrorCookie) {
+            return;
           }
-        });
+          StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
+          Pair<String, StackFrame[]> errorInfo =
+            processErrorCustomizers(Pair.create(message, stack));
+          mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
+          updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
+          // JS errors are reported here after source mapping.
+          if (mRedBoxHandler != null) {
+            mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
+            mRedBoxDialog.resetReporting();
+          }
+          mRedBoxDialog.show();
+        }
+      });
   }
 
   @Override
@@ -359,6 +362,14 @@ public class DevSupportManagerImpl implements
     // dismiss redbox if exists
     if (mRedBoxDialog != null) {
       mRedBoxDialog.dismiss();
+      mRedBoxDialog = null;
+    }
+  }
+
+  private void hideDevOptionsDialog() {
+    if (mDevOptionsDialog != null) {
+      mDevOptionsDialog.dismiss();
+      mDevOptionsDialog = null;
     }
   }
 
@@ -392,10 +403,8 @@ public class DevSupportManagerImpl implements
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
-              mRedBoxDialog.resetReporting(true);
-            } else {
-              mRedBoxDialog.resetReporting(false);
             }
+            mRedBoxDialog.resetReporting();
             mRedBoxDialog.show();
           }
         });
@@ -643,8 +652,8 @@ public class DevSupportManagerImpl implements
 
   /**
    * @return {@code true} if JS bundle {@param bundleAssetName} exists, in that case
-   * {@link ReactInstanceManager} should use that file from assets instead of downloading bundle
-   * from dev server
+   * {@link com.facebook.react.ReactInstanceManager} should use that file from assets instead of
+   * downloading bundle from dev server
    */
   public boolean hasBundleInAssets(String bundleAssetName) {
     try {
@@ -716,9 +725,7 @@ public class DevSupportManagerImpl implements
     ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
 
     // dismiss redbox if exists
-    if (mRedBoxDialog != null) {
-      mRedBoxDialog.dismiss();
-    }
+    hideRedboxDialog();
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
       PrinterHolder.getPrinter()
@@ -1058,14 +1065,10 @@ public class DevSupportManagerImpl implements
       }
 
       // hide redbox dialog
-      if (mRedBoxDialog != null) {
-        mRedBoxDialog.dismiss();
-      }
+      hideRedboxDialog();
 
       // hide dev options dialog
-      if (mDevOptionsDialog != null) {
-        mDevOptionsDialog.dismiss();
-      }
+      hideDevOptionsDialog();
 
       // hide loading view
       mDevLoadingViewController.hide();
@@ -1073,4 +1076,5 @@ public class DevSupportManagerImpl implements
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }
+
 }

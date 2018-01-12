@@ -981,6 +981,8 @@
 		590D7BFE1EBD458B00D8A370 /* RCTShadowView+Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
 		590D7BFF1EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
 		590D7C001EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */ = {isa = PBXBuildFile; fileRef = 590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */; };
+		5925356A20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5925356920084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm */; };
+		5925356B20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5925356920084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm */; };
 		59283CA01FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
 		59283CA11FD67321000EAAB9 /* RCTSurfaceStage.m in Sources */ = {isa = PBXBuildFile; fileRef = 59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */; };
 		594F0A321FD23228007FBE96 /* RCTSurfaceHostingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */; };
@@ -2158,6 +2160,7 @@
 		58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDatePickerManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTShadowView+Layout.h"; sourceTree = "<group>"; };
 		590D7BFC1EBD458B00D8A370 /* RCTShadowView+Layout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTShadowView+Layout.m"; sourceTree = "<group>"; };
+		5925356920084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSurfaceSizeMeasureMode.mm; sourceTree = "<group>"; };
 		59283C9F1FD67320000EAAB9 /* RCTSurfaceStage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSurfaceStage.m; sourceTree = "<group>"; };
 		594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSurfaceHostingView.h; sourceTree = "<group>"; };
 		594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSurfaceHostingView.mm; sourceTree = "<group>"; };
@@ -2766,6 +2769,7 @@
 				594F0A2F1FD23228007FBE96 /* RCTSurfaceHostingView.h */,
 				594F0A301FD23228007FBE96 /* RCTSurfaceHostingView.mm */,
 				594F0A311FD23228007FBE96 /* RCTSurfaceSizeMeasureMode.h */,
+				5925356920084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm */,
 			);
 			path = SurfaceHostingView;
 			sourceTree = "<group>";
@@ -4166,6 +4170,7 @@
 				3D7BFD181EA8E351008DFB7A /* RCTPackagerClient.m in Sources */,
 				2D3B5EA71D9B08CE00451313 /* RCTTouchHandler.m in Sources */,
 				59D031F01F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
+				5925356B20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */,
 				3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */,
 				2D3B5EA41D9B08C200451313 /* RCTPerformanceLogger.m in Sources */,
 				3DCE53251FEAB1E000613583 /* RCTShadowView.m in Sources */,
@@ -4479,6 +4484,7 @@
 				58114A161AAE854800E7D092 /* RCTPicker.m in Sources */,
 				137327E81AA5CF210034F82E /* RCTTabBarItem.m in Sources */,
 				83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */,
+				5925356A20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */,
 				9936F3371F5F2F480010BF04 /* PrivateDataBase.cpp in Sources */,
 				1450FF871BCFF28A00208362 /* RCTProfileTrampoline-arm.S in Sources */,
 				131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */,

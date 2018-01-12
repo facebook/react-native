@@ -273,7 +273,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
  * Note: Explicitly returning `YES`, instead of relying on the default fixes
  * (at least) one bug where if you have a UIControl inside a UIScrollView and
  * tap on the UIControl and then start dragging (to scroll), it won't scroll.
- * Chat with andras for more details.
+ * Chat with @andras for more details.
  *
  * In order to have this called, you must have delaysContentTouches set to NO
  * (which is the not the `UIKit` default).
@@ -315,7 +315,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIEdgeInsets contentInset = self.contentInset;
   CGSize contentSize = self.contentSize;
-  
+
   // If contentSize has not been measured yet we can't check bounds.
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;

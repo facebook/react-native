@@ -9,6 +9,14 @@
 
 #include "Utils.h"
 
+YGFlexDirection YGFlexDirectionCross(
+    const YGFlexDirection flexDirection,
+    const YGDirection direction) {
+  return YGFlexDirectionIsColumn(flexDirection)
+      ? YGResolveFlexDirection(YGFlexDirectionRow, direction)
+      : YGFlexDirectionColumn;
+}
+
 bool YGValueEqual(const YGValue a, const YGValue b) {
   if (a.unit != b.unit) {
     return false;

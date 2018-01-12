@@ -129,6 +129,7 @@ class PushNotificationIOS {
   _notificationId: string;
   _isRemote: boolean;
   _remoteNotificationCompleteCallbackCalled: boolean;
+  _threadID: string;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
@@ -424,6 +425,7 @@ class PushNotificationIOS {
           this._badgeCount = notifVal.badge;
           this._category = notifVal.category;
           this._contentAvailable = notifVal['content-available'];
+          this._threadID = notifVal['thread-id'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -451,7 +453,7 @@ class PushNotificationIOS {
    * If you do not call this method your background remote notifications could
    * be throttled, to read more about it see the above documentation link.
    */
-  finish(fetchResult: FetchResult) {
+  finish(fetchResult: string) {
     if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
       return;
     }
@@ -508,6 +510,13 @@ class PushNotificationIOS {
    */
   getData(): ?Object {
     return this._data;
+  }
+
+  /**
+   * Gets the thread ID on the notif
+   */
+  getThreadID(): ?string {
+    return this._threadID;
   }
 }
 
