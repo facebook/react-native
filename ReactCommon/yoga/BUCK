@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 fb_xplat_cxx_library(
     name = "yoga",
     srcs = glob(["yoga/*.cpp"]),
