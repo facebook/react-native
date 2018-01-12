@@ -111,7 +111,9 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  *```
  *
  * You can use this component to navigate back and forth in the web view's
- * history and configure various properties for the web content.
+ * history and configure various properties for the web content. Cookies are
+ * synchronized between React Native and the WebView with the [exception of
+ * cookies marked `SameSite` on Android](https://bugs.chromium.org/p/chromium/issues/detail?id=780491&can=2&start=0&num=100&q=samesite&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&groupby=&sort=).
  */
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
