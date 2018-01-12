@@ -12,6 +12,7 @@ const findWindowsSolution = require('./findWindowsSolution');
 const findNamespace = require('./findNamespace');
 const findProject = require('./findProject');
 const findPackageClassName = require('./findPackageClassName');
+const findMainFile = require('./findMainFile');
 const path = require('path');
 const generateGUID = require('./generateGUID');
 
@@ -44,14 +45,14 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
   const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
-  const mainPage = path.join(sourceDir, 'MainPage.cs');
+  const mainFilePath = findMainFile(sourceDir);
   const projectPath = userConfig.projectPath || findProject(folder);
 
   return {
     sourceDir,
     solutionPath,
     projectPath,
-    mainPage,
+    mainFilePath,
     folder,
     userConfig,
   };
