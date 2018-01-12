@@ -65,9 +65,9 @@ struct YGNode {
   YGMeasureFunc getMeasure() const;
   YGBaselineFunc getBaseline() const;
   YGDirtiedFunc getDirtied() const;
-  // For Perfomance reasons passing as reference.
+  // For Performance reasons passing as reference.
   YGStyle& getStyle();
-  // For Perfomance reasons passing as reference.
+  // For Performance reasons passing as reference.
   YGLayout& getLayout();
   uint32_t getLineIndex() const;
   YGNodeRef getParent() const;
