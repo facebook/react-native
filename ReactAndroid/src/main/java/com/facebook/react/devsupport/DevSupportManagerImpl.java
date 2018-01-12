@@ -90,7 +90,7 @@ import okhttp3.RequestBody;
  * when app is backgrounded.
  *
  * {@link com.facebook.react.ReactInstanceManager} implementation is responsible for instantiating
- * this class as well as for populating with a referece to {@link CatalystInstance} whenever
+ * this class as well as for populating with a reference to {@link CatalystInstance} whenever
  * instance manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
