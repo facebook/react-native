@@ -37,6 +37,8 @@ public:
     std::string sourceURL) override;
   virtual void setBundleRegistry(
     std::unique_ptr<RAMBundleRegistry> bundle) override;
+  virtual void registerBundle(
+    uint32_t bundleId, const std::string& bundlePath) override;
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,

@@ -38,7 +38,7 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader loads bundle from file system. The bundle will be read in native code to save on
-   * passing large strings from java to native memorory.
+   * passing large strings from java to native memory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
     return createFileLoader(fileName, fileName, false);
@@ -92,21 +92,6 @@ public abstract class JSBundleLoader {
       public String loadScript(CatalystInstanceImpl instance) {
         instance.setSourceURLs(realSourceURL, proxySourceURL);
         return realSourceURL;
-      }
-    };
-  }
-
-  /**
-   * This loader is used to wrap other loaders and set js bundles directory before executing
-   * application script.
-   */
-  public static JSBundleLoader createSplitBundlesLoader(
-      final String jsBundlesDirectory, final JSBundleLoader delegate) {
-    return new JSBundleLoader() {
-      @Override
-      public String loadScript(CatalystInstanceImpl instance) {
-        instance.setJsBundlesDirectory(jsBundlesDirectory);
-        return delegate.loadScript(instance);
       }
     };
   }

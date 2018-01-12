@@ -9,6 +9,8 @@
 
 package com.facebook.react.modules.fresco;
 
+import com.facebook.imagepipeline.producers.NetworkFetcher;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
 import android.net.Uri;
 import android.os.SystemClock;
 
@@ -57,7 +59,7 @@ class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
   }
 
   @Override
-  public void fetch(final OkHttpNetworkFetchState fetchState, final Callback callback) {
+  public void fetch(final OkHttpNetworkFetcher.OkHttpNetworkFetchState fetchState, final NetworkFetcher.Callback callback) {
     fetchState.submitTime = SystemClock.elapsedRealtime();
     final Uri uri = fetchState.getUri();
     Map<String, String> requestHeaders = null;

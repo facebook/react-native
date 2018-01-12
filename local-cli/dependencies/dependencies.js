@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const ReactPackager = require('metro-bundler');
+const Metro = require('metro');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -34,6 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
+    postMinifyProcess: config.postMinifyProcess,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
@@ -51,7 +52,7 @@ function dependencies(argv, config, args, packagerInstance) {
     platform: args.platform,
     entryFile: relativePath,
     dev: args.dev,
-    minify: !args.dev,
+    minify: false,
     generateSourceMaps: !args.dev,
   };
 
@@ -62,7 +63,7 @@ function dependencies(argv, config, args, packagerInstance) {
 
   return Promise.resolve((packagerInstance ?
     packagerInstance.getOrderedDependencyPaths(options) :
-    ReactPackager.getOrderedDependencyPaths(packageOpts, options)).then(
+    Metro.getOrderedDependencyPaths(packageOpts, options)).then(
     deps => {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.

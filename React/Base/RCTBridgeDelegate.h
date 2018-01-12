@@ -41,12 +41,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * The location of bundle path, this should be a `file://` url
- * pointing to a path inside the bundle resources, e.g. `file://..//main.jsbundle`.
- */
-- (NSURL *)bundledSourceURLForBridge:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.
@@ -93,12 +87,5 @@
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
-
-/**
- * Specifies the path to folder where additional bundles are located
- *
- * @experimental
- */
-- (NSURL *)jsBundlesDirectory;
 
 @end

@@ -35,6 +35,15 @@ const ASSET_TYPE_OPTIONS = {
   Photos: 'Photos',
 };
 
+type GetPhotosParams = {
+  first: number,
+  after?: string,
+  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
+  groupName?: string,
+  assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
+  mimeTypes?: Array<string>,
+};
+
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
@@ -63,8 +72,8 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
   groupName: PropTypes.string,
 
   /**
-  * Specifies filter on asset type
-  */
+   * Specifies filter on asset type
+   */
   assetType: PropTypes.oneOf(Object.keys(ASSET_TYPE_OPTIONS)),
 
   /**
@@ -72,6 +81,35 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
    */
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
+
+type GetPhotosReturn = Promise<{
+  edges: Array<{
+    node: {
+      type: string,
+      group_name: string,
+      image: {
+        uri: string,
+        height: number,
+        width: number,
+        isStored?: boolean,
+        playableDuration: number,
+      },
+      timestamp: number,
+      location?: {
+        latitude?: number,
+        longitude?: number,
+        altitude?: number,
+        heading?: number,
+        speed?: number,
+      },
+    },
+  }>,
+  page_info: {
+    has_next_page: boolean,
+    start_cursor?: string,
+    end_cursor?: string,
+  },
+}>;
 
 /**
  * Shape of the return value of the `getPhotos` function.
@@ -133,6 +171,10 @@ class CameraRoll {
     return this.saveToCameraRoll(tag, 'photo');
   }
 
+  static deletePhotos(photos: Array<string>) {
+    return RCTCameraRollManager.deletePhotos(photos);
+  }
+
   /**
    * Saves the photo or video to the camera roll / gallery.
    *
@@ -158,8 +200,8 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      // $FlowFixMe(>=0.28.0)
-      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
+        'unknown'}`,
     );
 
     let mediaType = 'photo';
@@ -215,8 +257,8 @@ class CameraRoll {
    *              - `speed`: {number}
    * - `page_info` : {object} : An object with the following shape:
    *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {boolean}
-   *      - `end_cursor`: {boolean}
+   *      - `start_cursor`: {string}
+   *      - `end_cursor`: {string}
    *
    * Loading images:
    * ```
@@ -255,7 +297,7 @@ class CameraRoll {
    * }
    * ```
    */
-  static getPhotos(params) {
+  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},

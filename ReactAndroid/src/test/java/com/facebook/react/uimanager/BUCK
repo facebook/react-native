@@ -4,7 +4,10 @@ rn_robolectric_test(
     name = "uimanager",
     # TODO Disabled temporarily until Yoga linking is fixed t14964130
     # srcs = glob(['**/*.java']),
-    srcs = ["SimpleViewPropertyTest.java", "MatrixMathHelperTest.java"],
+    srcs = [
+        "MatrixMathHelperTest.java",
+        "SimpleViewPropertyTest.java",
+    ],
     # Please change the contact to the oncall of your team
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
     visibility = [

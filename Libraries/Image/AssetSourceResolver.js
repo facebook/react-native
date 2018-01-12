@@ -50,14 +50,17 @@ function getAssetPathInDrawableFolder(asset): string {
 class AssetSourceResolver {
 
   serverUrl: ?string;
-  // where the bundle is being run from
-  bundleUrl: ?string;
+  // where the jsbundle is being run from
+  jsbundleUrl: ?string;
   // the asset to resolve
   asset: PackagerAsset;
 
-  constructor(serverUrl: ?string, bundleUrl: ?string, asset: PackagerAsset) {
+  constructor(serverUrl: ?string,
+    jsbundleUrl: ?string,
+    asset: PackagerAsset
+  ) {
     this.serverUrl = serverUrl;
-    this.bundleUrl = bundleUrl;
+    this.jsbundleUrl = jsbundleUrl;
     this.asset = asset;
   }
 
@@ -66,7 +69,7 @@ class AssetSourceResolver {
   }
 
   isLoadedFromFileSystem(): boolean {
-    return !!this.bundleUrl;
+    return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
   defaultAsset(): ResolvedAssetSource {
@@ -79,7 +82,7 @@ class AssetSourceResolver {
         this.drawableFolderInBundle() :
         this.resourceIdentifierWithoutScale();
     } else {
-      return this.scaledAssetURLInBundle();
+      return this.scaledAssetURLNearBundle();
     }
   }
 
@@ -107,8 +110,8 @@ class AssetSourceResolver {
    * Resolves to where the bundle is running from, with a scaled asset filename
    * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
    */
-  scaledAssetURLInBundle(): ResolvedAssetSource {
-    const path = this.bundleUrl || 'file://';
+  scaledAssetURLNearBundle(): ResolvedAssetSource {
+    const path = this.jsbundleUrl || 'file://';
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
 
@@ -129,7 +132,7 @@ class AssetSourceResolver {
    * E.g. 'file:///sdcard/AwesomeModule/drawable-mdpi/icon.png'
    */
   drawableFolderInBundle(): ResolvedAssetSource {
-    const path = this.bundleUrl || 'file://';
+    const path = this.jsbundleUrl || 'file://';
     return this.fromSource(
       path + getAssetPathInDrawableFolder(this.asset)
     );

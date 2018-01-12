@@ -9,7 +9,7 @@ hero: /react-native/blog/img/rnmsf-august-2016-hero.jpg
 category: events
 ---
 
-Last week I had the opportunity to attend the [React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.
+Last week I had the opportunity to attend the [React Native Meetup](https://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.
 
 I was particularly interested in learning more about how React and React Native are used at companies like Zynga, Netflix, and Airbnb. The agenda for the night would be as follows:
 
@@ -23,7 +23,7 @@ But first, the event started off with a quick introduction and a brief recap of 
 * [rnpm](https://github.com/rnpm/rnpm) is now part of React Native core! You can now use `react-native link` in place of `rnpm link` to [install libraries with native dependencies](https://facebook.github.io/react-native/docs/linking-libraries-ios.html).
 * The React Native Meetup community is growing fast! There are now over 4,800 developers across a variety of React Native meetup groups all over the globe.
 
-If [one of these meetups](http://www.meetup.com/find/?allMeetups=false&keywords=react+native&radius=Infinity&userFreeform=San+Francisco%2C+CA&mcId=z94105&mcName=San+Francisco%2C+CA&sort=recommended&eventFilter=mysugg) is held near you, I highly recommend attending!
+If [one of these meetups](https://www.meetup.com/find/?allMeetups=false&keywords=react+native&radius=Infinity&userFreeform=San+Francisco%2C+CA&mcId=z94105&mcName=San+Francisco%2C+CA&sort=recommended&eventFilter=mysugg) is held near you, I highly recommend attending!
 
 ## Rapid Prototyping in React at Zynga
 

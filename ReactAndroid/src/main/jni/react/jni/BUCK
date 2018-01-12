@@ -20,7 +20,7 @@ EXPORTED_HEADERS = [
     "WritableNativeMap.h",
 ]
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(

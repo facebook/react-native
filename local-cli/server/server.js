@@ -15,7 +15,7 @@ const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from 'metro-bundler';
+import type {ConfigT} from 'metro';
 import type {Args as RunServerArgs} from './runServer';
 
 /**
@@ -60,7 +60,7 @@ module.exports = {
   description: 'starts the webserver',
   options: [{
     command: '--port [number]',
-    default: 8081,
+    default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
   }, {
     command: '--host [string]',

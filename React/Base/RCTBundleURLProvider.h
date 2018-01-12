@@ -60,11 +60,6 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                         offlineBundle:(NSBundle *)offlineBundle;
 
 /**
- * Returns the URL of the packager server.
- */
-- (NSURL *)packagerServerURL;
-
-/**
  * The IP address or hostname of the packager.
  */
 @property (nonatomic, copy) NSString *jsLocation;

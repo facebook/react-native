@@ -128,7 +128,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      mDialog.dismiss();
+      Activity currentActivity = getCurrentActivity();
+      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
+        mDialog.dismiss();
+      }
       mDialog = null;
 
       // We need to remove the mHostView from the parent
@@ -168,8 +171,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   @Override
   public void onHostPause() {
-    // We dismiss the dialog and reconstitute it onHostResume
-    dismiss();
+    // do nothing
   }
 
   @Override
@@ -181,6 +183,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   @VisibleForTesting
   public @Nullable Dialog getDialog() {
     return mDialog;
+  }
+
+  private @Nullable Activity getCurrentActivity() {
+    return ((ReactContext) getContext()).getCurrentActivity();
   }
 
   /**
@@ -209,7 +215,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     } else if (mAnimationType.equals("slide")) {
       theme = R.style.Theme_FullScreenDialogAnimatedSlide;
     }
-    mDialog = new Dialog(getContext(), theme);
+    Activity currentActivity = getCurrentActivity();
+    Context context = currentActivity == null ? getContext() : currentActivity;
+    mDialog = new Dialog(context, theme);
 
     mDialog.setContentView(getContentView());
     updateProperties();
@@ -247,7 +255,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (mHardwareAccelerated) {
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
-    mDialog.show();
+    if (currentActivity == null || !currentActivity.isFinishing()) {
+      mDialog.show();
+    }
   }
 
   /**
@@ -306,7 +316,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       if (getChildCount() > 0) {
         final int viewTag = getChildAt(0).getId();
         ReactContext reactContext = (ReactContext) getContext();
-        reactContext.runUIBackgroundRunnable(
+        reactContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactContext) {
             @Override
             public void runGuarded() {

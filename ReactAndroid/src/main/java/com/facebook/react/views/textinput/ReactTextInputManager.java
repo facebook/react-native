@@ -138,6 +138,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .put(
+            "topKeyPress",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
         .build();
   }
 
@@ -331,6 +336,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
       cursorDrawableResField.setAccessible(true);
       int drawableResId = cursorDrawableResField.getInt(view);
+
+      // The view has no cursor drawable.
+      if (drawableResId == 0) {
+        return;
+      }
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
       if (color != null) {

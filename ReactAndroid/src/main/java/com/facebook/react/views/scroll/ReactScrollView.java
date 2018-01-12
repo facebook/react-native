@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -269,7 +270,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         0,
         scrollWindowHeight / 2);
 
-      postInvalidateOnAnimation();
+      ViewCompat.postInvalidateOnAnimation(this);
 
       // END FB SCROLLVIEW CHANGE
     } else {
@@ -279,7 +280,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
       enableFpsListener();
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, 0, velocityY);
       Runnable r = new Runnable() {
         @Override
         public void run() {
@@ -289,11 +290,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
             ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
           } else {
             mDoneFlinging = true;
-            ReactScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            ViewCompat.postOnAnimationDelayed(
+                ReactScrollView.this,
+                this,
+                ReactScrollViewHelper.MOMENTUM_DELAY);
           }
         }
       };
-      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+      ViewCompat.postOnAnimationDelayed(this, r, ReactScrollViewHelper.MOMENTUM_DELAY);
     }
   }
 
