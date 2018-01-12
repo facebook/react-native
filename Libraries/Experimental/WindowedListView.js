@@ -392,7 +392,7 @@ class WindowedListView extends React.Component<Props, State> {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
