@@ -232,6 +232,12 @@ class WebView extends React.Component {
      * @platform android
      */
     urlPrefixesForDefaultIntent: PropTypes.arrayOf(PropTypes.string),
+
+    /*
+     * Sets the initial percentage scale for this WebView. 0 means default.
+     * @platform android
+     */
+    initialScale: PropTypes.number,
   };
 
   static defaultProps = {
@@ -318,6 +324,7 @@ class WebView extends React.Component {
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
         urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}
+        initialScale={this.props.initialScale}
         {...nativeConfig.props}
       />;
 
