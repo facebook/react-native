@@ -66,7 +66,7 @@ Read our [contributing guide](https://facebook.github.io/react-native/docs/contr
 
 ### Beginner Friendly Bugs
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20first%20issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ---
 
