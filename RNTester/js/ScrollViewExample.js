@@ -12,10 +12,13 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  Platform,
+import type {StyleObj} from 'StyleSheetTypes';
+
+const ActivityIndicator = require('ActivityIndicator');
+const Platform = require('Platform');
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ScrollView,
   StyleSheet,
   Text,
@@ -30,11 +33,11 @@ exports.description =
   'Component that enables scrolling through child components';
 exports.examples = [
   {
-    title: '<ScrollView>',
+    title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
     render: function() {
-      var _scrollView: ScrollView;
+      let _scrollView: ScrollView;
       return (
         <View>
           <ScrollView
@@ -49,33 +52,30 @@ exports.examples = [
             style={styles.scrollView}>
             {THUMB_URLS.map(createThumbRow)}
           </ScrollView>
-          <TouchableOpacity
-            style={styles.button}
+          <Button
+            label="Scroll to top"
             onPress={() => {
               _scrollView.scrollTo({y: 0});
-            }}>
-            <Text>Scroll to top</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+            }}
+          />
+          <Button
+            label="Scroll to bottom"
             onPress={() => {
               _scrollView.scrollToEnd({animated: true});
-            }}>
-            <Text>Scroll to bottom</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+            }}
+          />
+          <Button
+            label="Flash scroll indicators"
             onPress={() => {
               _scrollView.flashScrollIndicators();
-            }}>
-            <Text>Flash scroll indicators</Text>
-          </TouchableOpacity>
+            }}
+          />
         </View>
       );
     },
   },
   {
-    title: '<ScrollView> (horizontal = true)',
+    title: '<ScrollView> (horizontal = true)\n',
     description:
       "You can display <ScrollView>'s child components horizontally rather than vertically",
     render: function() {
@@ -83,7 +83,7 @@ exports.examples = [
         title: string,
         addtionalStyles: typeof StyleSheet,
       ) {
-        var _scrollView: ScrollView;
+        let _scrollView: ScrollView;
         return (
           <View style={addtionalStyles}>
             <Text style={styles.text}>{title}</Text>
@@ -96,27 +96,24 @@ exports.examples = [
               style={[styles.scrollView, styles.horizontalScrollView]}>
               {THUMB_URLS.map(createThumbRow)}
             </ScrollView>
-            <TouchableOpacity
-              style={styles.button}
+            <Button
+              label="Scroll to start"
               onPress={() => {
                 _scrollView.scrollTo({x: 0});
-              }}>
-              <Text>Scroll to start</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
+              }}
+            />
+            <Button
+              label="Scroll to end"
               onPress={() => {
                 _scrollView.scrollToEnd({animated: true});
-              }}>
-              <Text>Scroll to end</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
+              }}
+            />
+            <Button
+              label="Flash scroll indicators"
               onPress={() => {
                 _scrollView.flashScrollIndicators();
-              }}>
-              <Text>Flash scroll indicators</Text>
-            </TouchableOpacity>
+              }}
+            />
           </View>
         );
       }
@@ -130,22 +127,144 @@ exports.examples = [
     },
   },
 ];
+if (Platform.OS === 'ios') {
+  exports.examples.push({
+    title: '<ScrollView> smooth bi-directional content loading\n',
+    description:
+      'The `maintainPositionAtOrBeyondIndex` prop allows insertions to either end of the content ' +
+      'without causing the visible content to jump. Re-ordering is not supported.',
+    render: function() {
+      let itemCount = 6;
+      class AppendingList extends React.Component<{}, *> {
+        state = {
+          items: [...Array(itemCount)].map((_, ii) => (
+            <Thumb msg={`Item ${ii}`} />
+          )),
+        };
+        render() {
+          return (
+            <View>
+              <ScrollView
+                automaticallyAdjustContentInsets={false}
+                maintainPositionAtOrBeyondIndex={1}
+                style={styles.scrollView}>
+                <ActivityIndicator style={{height: 40}} />
+                {this.state.items.map(item =>
+                  React.cloneElement(item, {key: item.props.msg}),
+                )}
+              </ScrollView>
+              <ScrollView
+                horizontal={true}
+                automaticallyAdjustContentInsets={false}
+                maintainPositionAtOrBeyondIndex={1}
+                style={[styles.scrollView, styles.horizontalScrollView]}>
+                <ActivityIndicator style={{height: 40}} />
+                {this.state.items.map(item =>
+                  React.cloneElement(item, {key: item.props.msg, style: null}),
+                )}
+              </ScrollView>
+              <View style={styles.row}>
+                <Button
+                  label="Add to top"
+                  onPress={() => {
+                    this.setState(state => {
+                      const idx = itemCount++;
+                      return {
+                        items: [
+                          <Thumb
+                            style={{paddingTop: idx * 5}}
+                            msg={`Item ${idx}`}
+                          />,
+                        ].concat(state.items),
+                      };
+                    });
+                  }}
+                />
+                <Button
+                  label="Remove top"
+                  onPress={() => {
+                    this.setState(state => ({
+                      items: state.items.slice(1),
+                    }));
+                  }}
+                />
+                <Button
+                  label="Change height top"
+                  onPress={() => {
+                    this.setState(state => ({
+                      items: [
+                        React.cloneElement(state.items[0], {
+                          style: {paddingBottom: Math.random() * 40},
+                        }),
+                      ].concat(state.items.slice(1)),
+                    }));
+                  }}
+                />
+              </View>
+              <View style={styles.row}>
+                <Button
+                  label="Add to end"
+                  onPress={() => {
+                    this.setState(state => ({
+                      items: state.items.concat(
+                        <Thumb msg={`Item ${itemCount++}`} />,
+                      ),
+                    }));
+                  }}
+                />
+                <Button
+                  label="Remove end"
+                  onPress={() => {
+                    this.setState(state => ({
+                      items: state.items.slice(0, -1),
+                    }));
+                  }}
+                />
+                <Button
+                  label="Change height end"
+                  onPress={() => {
+                    this.setState(state => ({
+                      items: state.items.slice(0, -1).concat(
+                        React.cloneElement(
+                          state.items[state.items.length - 1],
+                          {
+                            style: {paddingBottom: Math.random() * 40},
+                          },
+                        ),
+                      ),
+                    }));
+                  }}
+                />
+              </View>
+            </View>
+          );
+        }
+      }
+      return <AppendingList />;
+    },
+  });
+}
 
-class Thumb extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  shouldComponentUpdate(nextProps, nextState) {
-    return false;
-  }
-
+class Thumb extends React.PureComponent<{|
+  source?: string | number,
+  msg?: string,
+  style?: StyleObj,
+|}> {
   render() {
+    const {source} = this.props;
     return (
-      <View style={styles.thumb}>
-        <Image style={styles.img} source={this.props.source} />
+      <View style={[styles.thumb, this.props.style]}>
+        <Image
+          style={styles.img}
+          source={source == null ? THUMB_URLS[6] : source}
+        />
+        <Text>{this.props.msg}</Text>
       </View>
     );
   }
 }
 
-var THUMB_URLS = [
+let THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -162,9 +281,15 @@ var THUMB_URLS = [
 
 THUMB_URLS = THUMB_URLS.concat(THUMB_URLS); // double length of THUMB_URLS
 
-var createThumbRow = (uri, i) => <Thumb key={i} source={uri} />;
+const createThumbRow = (uri, i) => <Thumb key={i} source={uri} />;
 
-var styles = StyleSheet.create({
+const Button = ({label, onPress}) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Text>{label}</Text>
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: '#eeeeee',
     height: 300,
@@ -183,6 +308,10 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#cccccc',
     borderRadius: 3,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   thumb: {
     margin: 5,

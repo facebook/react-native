@@ -45,6 +45,7 @@
 @property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
+@property (nonatomic, copy) NSNumber *maintainPositionAtOrBeyondIndex;
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
 
