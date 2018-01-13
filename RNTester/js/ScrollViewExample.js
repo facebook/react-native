@@ -8,6 +8,7 @@
  *
  * @flow
  * @providesModule ScrollViewExample
+ * @format
  */
 'use strict';
 
@@ -20,90 +21,115 @@ var {
   Text,
   TouchableOpacity,
   View,
-  Image
+  Image,
 } = ReactNative;
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
-exports.description = 'Component that enables scrolling through child components';
+exports.description =
+  'Component that enables scrolling through child components';
 exports.examples = [
-{
-  title: '<ScrollView>',
-  description: 'To make content scrollable, wrap it within a <ScrollView> component',
-  render: function() {
-    var _scrollView: ScrollView;
-    return (
-      <View>
-        <ScrollView
-          ref={(scrollView) => { _scrollView = scrollView; }}
-          automaticallyAdjustContentInsets={false}
-          onScroll={() => { console.log('onScroll!'); }}
-          scrollEventThrottle={200}
-          style={styles.scrollView}>
-          {THUMB_URLS.map(createThumbRow)}
-        </ScrollView>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => { _scrollView.scrollTo({y: 0}); }}>
-          <Text>Scroll to top</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
-          <Text>Scroll to bottom</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => { _scrollView.flashScrollIndicators(); }}>
-          <Text>Flash scroll indicators</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}, {
-  title: '<ScrollView> (horizontal = true)',
-  description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
-  render: function() {
-
-    function renderScrollView(title: string, addtionalStyles: typeof StyleSheet) {
+  {
+    title: '<ScrollView>',
+    description:
+      'To make content scrollable, wrap it within a <ScrollView> component',
+    render: function() {
       var _scrollView: ScrollView;
       return (
-        <View style={addtionalStyles}>
-          <Text style={styles.text}>{title}</Text>
+        <View>
           <ScrollView
-            ref={(scrollView) => { _scrollView = scrollView; }}
+            ref={scrollView => {
+              _scrollView = scrollView;
+            }}
             automaticallyAdjustContentInsets={false}
-            horizontal={true}
-            style={[styles.scrollView, styles.horizontalScrollView]}>
+            onScroll={() => {
+              console.log('onScroll!');
+            }}
+            scrollEventThrottle={200}
+            style={styles.scrollView}>
             {THUMB_URLS.map(createThumbRow)}
           </ScrollView>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => { _scrollView.scrollTo({x: 0}); }}>
-            <Text>Scroll to start</Text>
+            onPress={() => {
+              _scrollView.scrollTo({y: 0});
+            }}>
+            <Text>Scroll to top</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
-            <Text>Scroll to end</Text>
+            onPress={() => {
+              _scrollView.scrollToEnd({animated: true});
+            }}>
+            <Text>Scroll to bottom</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => { _scrollView.flashScrollIndicators(); }}>
+            onPress={() => {
+              _scrollView.flashScrollIndicators();
+            }}>
             <Text>Flash scroll indicators</Text>
           </TouchableOpacity>
         </View>
       );
-    }
+    },
+  },
+  {
+    title: '<ScrollView> (horizontal = true)',
+    description:
+      "You can display <ScrollView>'s child components horizontally rather than vertically",
+    render: function() {
+      function renderScrollView(
+        title: string,
+        addtionalStyles: typeof StyleSheet,
+      ) {
+        var _scrollView: ScrollView;
+        return (
+          <View style={addtionalStyles}>
+            <Text style={styles.text}>{title}</Text>
+            <ScrollView
+              ref={scrollView => {
+                _scrollView = scrollView;
+              }}
+              automaticallyAdjustContentInsets={false}
+              horizontal={true}
+              style={[styles.scrollView, styles.horizontalScrollView]}>
+              {THUMB_URLS.map(createThumbRow)}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                _scrollView.scrollTo({x: 0});
+              }}>
+              <Text>Scroll to start</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                _scrollView.scrollToEnd({animated: true});
+              }}>
+              <Text>Scroll to end</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                _scrollView.flashScrollIndicators();
+              }}>
+              <Text>Flash scroll indicators</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
 
-    return (
-      <View>
-        {renderScrollView('LTR layout', {direction: 'ltr'})}
-        {renderScrollView('RTL layout', {direction: 'rtl'})}
-      </View>
-    );
-  }
-}];
+      return (
+        <View>
+          {renderScrollView('LTR layout', {direction: 'ltr'})}
+          {renderScrollView('RTL layout', {direction: 'rtl'})}
+        </View>
+      );
+    },
+  },
+];
 
 class Thumb extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   shouldComponentUpdate(nextProps, nextState) {
@@ -168,5 +194,5 @@ var styles = StyleSheet.create({
   img: {
     width: 64,
     height: 64,
-  }
+  },
 });
