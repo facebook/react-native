@@ -346,7 +346,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 {
   [self invalidateContentSize];
 
-  // Detect when _backedTextInput updates happend that didn't invoke `shouldChangeTextInRange`
+  // Detect when _backedTextInput updates happened that didn't invoke `shouldChangeTextInRange`
   // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.

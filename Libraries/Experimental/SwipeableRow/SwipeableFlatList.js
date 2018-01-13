@@ -51,7 +51,7 @@ type State = {
  *
  * - It ensures that at most 1 row is swiped open (auto closes others)
  * - It can bounce the 1st row of the list so users know it's swipeable
- * - Increase performance on iOS by locking list swiping when row swiping is occuring
+ * - Increase performance on iOS by locking list swiping when row swiping is occurring
  * - More to come
  */
 

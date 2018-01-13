@@ -49,7 +49,7 @@
 /**
  * Layout direction of the view.
  * This is inherited from UIView+React, but we override it here
- * to improve perfomance and make subclassing/overriding possible/easier.
+ * to improve performance and make subclassing/overriding possible/easier.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 

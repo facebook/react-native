@@ -71,7 +71,7 @@ class ScrollViewStickyHeader extends React.Component<Props, {
       // - Past the collision with the next header y: no more translation. This will cause the
       // header to continue scrolling up and make room for the next sticky header.
       // In the case that there is no next header just translate equally to
-      // scroll indefinetly.
+      // scroll indefinitely.
       inputRange.push(layoutY);
       outputRange.push(0);
       // Sometimes headers jump around so we make sure we don't violate the monotonic inputRange
