@@ -457,14 +457,14 @@
     return NO;
   }
 
-  BOOL timeoutOccured = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
-  if (!timeoutOccured) {
+  BOOL timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
+  if (!timeoutOccurred) {
     // Balancing the semaphore.
-    // Note: `dispatch_semaphore_wait` reverts the decrement in case when timeout occured.
+    // Note: `dispatch_semaphore_wait` reverts the decrement in case when timeout occurred.
     dispatch_semaphore_signal(semaphore);
   }
 
-  return !timeoutOccured;
+  return !timeoutOccurred;
 }
 
 #pragma mark - RCTSurfaceRootShadowViewDelegate

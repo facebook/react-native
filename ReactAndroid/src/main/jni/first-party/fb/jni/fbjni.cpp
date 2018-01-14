@@ -21,25 +21,25 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
   static std::once_flag flag{};
   // TODO (t7832883): DTRT when we have exception pointers
   static auto error_msg = std::string{"Failed to initialize fbjni"};
-  static auto error_occured = false;
+  static auto error_occurred = false;
 
   std::call_once(flag, [vm] {
     try {
       Environment::initialize(vm);
     } catch (std::exception& ex) {
-      error_occured = true;
+      error_occurred = true;
       try {
         error_msg = std::string{"Failed to initialize fbjni: "} + ex.what();
       } catch (...) {
         // Ignore, we already have a fall back message
       }
     } catch (...) {
-      error_occured = true;
+      error_occurred = true;
     }
   });
 
   try {
-    if (error_occured) {
+    if (error_occurred) {
       throw std::runtime_error(error_msg);
     }
 
