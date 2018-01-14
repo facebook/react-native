@@ -331,7 +331,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
   node->cloneChildrenIfNeeded();
   node->insertChild(child, index);
   child->setParent(node);
-  node->markDirtyAndPropogate();
+  node->markDirtyAndPropagate();
 }
 
 void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
@@ -351,7 +351,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       excludedChild->setLayout(
           YGNode().getLayout()); // layout is no longer valid
       excludedChild->setParent(nullptr);
-      parent->markDirtyAndPropogate();
+      parent->markDirtyAndPropagate();
     }
     return;
   }
@@ -367,7 +367,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       // Ignore the deleted child. Don't reset its layout or parent since it is still valid
       // in the other parent. However, since this parent has now changed, we need to mark it
       // as dirty.
-      parent->markDirtyAndPropogate();
+      parent->markDirtyAndPropagate();
       continue;
     }
     const YGNodeRef newChild = YGNodeClone(oldChild);
@@ -399,12 +399,12 @@ void YGNodeRemoveAllChildren(const YGNodeRef parent) {
       oldChild->setParent(nullptr);
     }
     parent->clearChildren();
-    parent->markDirtyAndPropogate();
+    parent->markDirtyAndPropagate();
     return;
   }
   // Otherwise, we are not the owner of the child set. We don't have to do anything to clear it.
   parent->setChildren(YGVector());
-  parent->markDirtyAndPropogate();
+  parent->markDirtyAndPropagate();
 }
 
 YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
@@ -429,13 +429,13 @@ void YGNodeMarkDirty(const YGNodeRef node) {
       "Only leaf nodes with custom measure functions"
       "should manually mark themselves as dirty");
 
-  node->markDirtyAndPropogate();
+  node->markDirtyAndPropagate();
 }
 
 void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
   if (!(dstNode->getStyle() == srcNode->getStyle())) {
     dstNode->setStyle(srcNode->getStyle());
-    dstNode->markDirtyAndPropogate();
+    dstNode->markDirtyAndPropagate();
   }
 }
 
@@ -459,7 +459,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                   \
       style.instanceName = paramName;                                     \
       node->setStyle(style);                                              \
-      node->markDirtyAndPropogate();                                      \
+      node->markDirtyAndPropagate();                                      \
     }                                                                     \
   }
 
@@ -476,7 +476,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -494,7 +494,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
                                                                                \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }
 
@@ -511,7 +511,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName = value;                                              \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -524,7 +524,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       style.instanceName.unit =                                                \
           YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;          \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -534,7 +534,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       style.instanceName.value = YGUndefined;                                  \
       style.instanceName.unit = YGUnitAuto;                                    \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }
 
@@ -569,7 +569,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       style.instanceName[edge].value = YGUndefined;                          \
       style.instanceName[edge].unit = YGUnitAuto;                            \
       node->setStyle(style);                                                 \
-      node->markDirtyAndPropogate();                                         \
+      node->markDirtyAndPropagate();                                         \
     }                                                                        \
   }
 
@@ -587,7 +587,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -604,7 +604,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
@@ -626,7 +626,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       YGStyle style = node->getStyle();                                        \
       style.instanceName[edge] = value;                                        \
       node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+      node->markDirtyAndPropagate();                                           \
     }                                                                          \
   }                                                                            \
                                                                                \
