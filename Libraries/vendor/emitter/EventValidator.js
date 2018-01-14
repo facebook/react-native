@@ -79,10 +79,10 @@ if (__DEV__) {
     return typeRecommendations.sort(recommendationSort)[0];
   };
 
-  var typeRecommendationFor = function (type, recomendedType) {
+  var typeRecommendationFor = function (type, recommendedType) {
     return {
-      type: recomendedType,
-      distance: damerauLevenshteinDistance(type, recomendedType)
+      type: recommendedType,
+      distance: damerauLevenshteinDistance(type, recommendedType)
     };
   };
 
