@@ -78,7 +78,7 @@ Working on your first Pull Request? You can learn how from this free video serie
 
 [**How to Contribute to an Open Source Project on GitHub**](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Task) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20first%20issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ### Proposing a change
 
