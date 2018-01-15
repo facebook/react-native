@@ -660,3 +660,9 @@ float YGNode::getTrailingPadding(
           widthSize),
       0.0f);
 }
+
+float YGNode::getLeadingPaddingAndBorder(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  return getLeadingPadding(axis, widthSize) + getLeadingBorder(axis);
+}

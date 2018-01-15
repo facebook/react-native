@@ -90,6 +90,9 @@ struct YGNode {
   float getTrailingBorder(const YGFlexDirection flexDirection);
   float getLeadingPadding(const YGFlexDirection axis, const float widthSize);
   float getTrailingPadding(const YGFlexDirection axis, const float widthSize);
+  float getLeadingPaddingAndBorder(
+      const YGFlexDirection axis,
+      const float widthSize);
   // Setters
 
   void setContext(void* context);

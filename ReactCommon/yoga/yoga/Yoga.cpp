@@ -762,14 +762,6 @@ static const std::array<YGEdge, 4> pos = {{
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
-static inline float YGNodeLeadingPaddingAndBorder(
-    const YGNodeRef node,
-    const YGFlexDirection axis,
-    const float widthSize) {
-  return node->getLeadingPadding(axis, widthSize) +
-      node->getLeadingBorder(axis);
-}
-
 static inline float YGNodeTrailingPaddingAndBorder(const YGNodeRef node,
                                                    const YGFlexDirection axis,
                                                    const float widthSize) {
@@ -787,8 +779,8 @@ static inline float YGNodeMarginForAxis(const YGNodeRef node,
 static inline float YGNodePaddingAndBorderForAxis(const YGNodeRef node,
                                                   const YGFlexDirection axis,
                                                   const float widthSize) {
-  return YGNodeLeadingPaddingAndBorder(node, axis, widthSize) +
-         YGNodeTrailingPaddingAndBorder(node, axis, widthSize);
+  return node->getLeadingPaddingAndBorder(axis, widthSize) +
+      YGNodeTrailingPaddingAndBorder(node, axis, widthSize);
 }
 
 static inline YGAlign YGNodeAlignItem(const YGNodeRef node, const YGNodeRef child) {
@@ -1785,11 +1777,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   YGNodeRef currentAbsoluteChild = nullptr;
 
   const float leadingPaddingAndBorderMain =
-      YGNodeLeadingPaddingAndBorder(node, mainAxis, parentWidth);
+      node->getLeadingPaddingAndBorder(mainAxis, parentWidth);
   const float trailingPaddingAndBorderMain =
       YGNodeTrailingPaddingAndBorder(node, mainAxis, parentWidth);
   const float leadingPaddingAndBorderCross =
-      YGNodeLeadingPaddingAndBorder(node, crossAxis, parentWidth);
+      node->getLeadingPaddingAndBorder(crossAxis, parentWidth);
   const float paddingAndBorderAxisMain = YGNodePaddingAndBorderForAxis(node, mainAxis, parentWidth);
   const float paddingAndBorderAxisCross =
       YGNodePaddingAndBorderForAxis(node, crossAxis, parentWidth);
