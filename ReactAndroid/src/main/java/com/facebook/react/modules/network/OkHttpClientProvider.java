@@ -29,6 +29,9 @@ import okhttp3.TlsVersion;
  */
 public class OkHttpClientProvider {
 
+  // customize the builder used in the createClient() call
+  private static @Nullable OkHttpClient.Builder sClientBuilder;
+
   // Centralized OkHttpClient for all networking requests.
   private static @Nullable OkHttpClient sClient;
 
@@ -38,20 +41,32 @@ public class OkHttpClientProvider {
     }
     return sClient;
   }
-  
+
   // okhttp3 OkHttpClient is immutable
   // This allows app to init an OkHttpClient with custom settings.
   public static void replaceOkHttpClient(OkHttpClient client) {
     sClient = client;
   }
 
-  public static OkHttpClient createClient() {
+  public static OkHttpClient.Builder getOkHttpClientBuilder() {
+    if (sClientBuilder != null) {
+      return sClientBuilder;
+    }
     // No timeouts by default
-    OkHttpClient.Builder client = new OkHttpClient.Builder()
+    return new OkHttpClient.Builder()
       .connectTimeout(0, TimeUnit.MILLISECONDS)
       .readTimeout(0, TimeUnit.MILLISECONDS)
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
+  }
+
+  // this allows the app to customize the client returned by createClient()
+  public static void replaceOkHttpClientBuilder(OkHttpClient.Builder clientBuilder) {
+    sClientBuilder = clientBuilder;
+  }
+
+  public static OkHttpClient createClient() {
+    OkHttpClient.Builder client = getOkHttpClientBuilder();
 
     return enableTls12OnPreLollipop(client).build();
   }
