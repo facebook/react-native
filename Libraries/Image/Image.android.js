@@ -19,11 +19,9 @@ var NativeModules = require('NativeModules');
 var React = require('React');
 var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var createReactClass = require('create-react-class');
 var flattenStyle = require('flattenStyle');
@@ -62,21 +60,6 @@ function generateRequestId() {
  *
  * More example code in ImageExample.js
  */
-
-var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
-  src: true,
-  loadingIndicatorSrc: true,
-  resizeMethod: true,
-  resizeMode: true,
-  progressiveRenderingEnabled: true,
-  fadeDuration: true,
-  shouldNotifyLoadEvents: true,
-});
-
-var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
-var ImageSpecificStyleKeys = new Set(
-  Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)),
-);
 
 var Image = createReactClass({
   displayName: 'Image',
