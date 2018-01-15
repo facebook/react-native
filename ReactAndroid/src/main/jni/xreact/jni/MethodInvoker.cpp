@@ -7,11 +7,15 @@
 #endif
 
 #include <cxxreact/CxxNativeModule.h>
+#include <fb/fbjni.h>
 
 #include "JCallback.h"
-#include "JExecutorToken.h"
 #include "ReadableNativeArray.h"
 #include "ReadableNativeMap.h"
+#include "WritableNativeArray.h"
+#include "WritableNativeMap.h"
+
+using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
@@ -20,10 +24,10 @@ namespace {
 
 using dynamic_iterator = folly::dynamic::const_iterator;
 
-struct JPromiseImpl : public jni::JavaClass<JPromiseImpl> {
+struct JPromiseImpl : public JavaClass<JPromiseImpl> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/PromiseImpl;";
 
-  static jni::local_ref<javaobject> create(jni::local_ref<JCallback::javaobject> resolve, jni::local_ref<JCallback::javaobject> reject) {
+  static local_ref<javaobject> create(local_ref<JCallback::javaobject> resolve, local_ref<JCallback::javaobject> reject) {
     return newInstance(resolve, reject);
   }
 };
@@ -42,43 +46,19 @@ jdouble extractDouble(const folly::dynamic& value) {
   }
 }
 
-jni::local_ref<JCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, ExecutorToken token, const folly::dynamic& value) {
+local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, const folly::dynamic& value) {
   if (value.isNull()) {
-    return jni::local_ref<JCallbackImpl::jhybridobject>(nullptr);
+    return local_ref<JCxxCallbackImpl::jhybridobject>(nullptr);
   } else {
-    return JCallbackImpl::newObjectCxxArgs(makeCallback(instance, token, value));
+    return JCxxCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
   }
 }
 
-jni::local_ref<JPromiseImpl::javaobject> extractPromise(std::weak_ptr<Instance>& instance, ExecutorToken token, dynamic_iterator& it, dynamic_iterator& end) {
-  auto resolve = extractCallback(instance, token, *it++);
+local_ref<JPromiseImpl::javaobject> extractPromise(std::weak_ptr<Instance>& instance, dynamic_iterator& it, dynamic_iterator& end) {
+  auto resolve = extractCallback(instance, *it++);
   CHECK(it != end);
-  auto reject = extractCallback(instance, token, *it++);
+  auto reject = extractCallback(instance, *it++);
   return JPromiseImpl::create(resolve, reject);
-}
-
-jobject valueOf(jboolean value) {
-  static auto kClass = jni::findClassStatic("java/lang/Boolean");
-  static auto kValueOf = kClass->getStaticMethod<jobject(jboolean)>("valueOf");
-  return kValueOf(kClass, value).release();
-}
-
-jobject valueOf(jint value) {
-  static auto kClass = jni::findClassStatic("java/lang/Integer");
-  static auto kValueOf = kClass->getStaticMethod<jobject(jint)>("valueOf");
-  return kValueOf(kClass, value).release();
-}
-
-jobject valueOf(jdouble value) {
-  static auto kClass = jni::findClassStatic("java/lang/Double");
-  static auto kValueOf = kClass->getStaticMethod<jobject(jdouble)>("valueOf");
-  return kValueOf(kClass, value).release();
-}
-
-jobject valueOf(jfloat value) {
-  static auto kClass = jni::findClassStatic("java/lang/Float");
-  static auto kValueOf = kClass->getStaticMethod<jobject(jfloat)>("valueOf");
-  return kValueOf(kClass, value).release();
 }
 
 bool isNullable(char type) {
@@ -96,14 +76,11 @@ bool isNullable(char type) {
   }
 }
 
-jvalue extract(std::weak_ptr<Instance>& instance, ExecutorToken token, char type, dynamic_iterator& it, dynamic_iterator& end) {
+jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& it, dynamic_iterator& end) {
   CHECK(it != end);
   jvalue value;
   if (type == 'P') {
-    value.l = extractPromise(instance, token, it, end).release();
-    return value;
-  } else if (type == 'T') {
-    value.l = JExecutorToken::extractJavaPartFromToken(token).release();
+    value.l = extractPromise(instance, it, end).release();
     return value;
   }
 
@@ -118,28 +95,28 @@ jvalue extract(std::weak_ptr<Instance>& instance, ExecutorToken token, char type
       value.z = static_cast<jboolean>(arg.getBool());
       break;
     case 'Z':
-      value.l = valueOf(static_cast<jboolean>(arg.getBool()));
+      value.l = JBoolean::valueOf(static_cast<jboolean>(arg.getBool())).release();
       break;
     case 'i':
       value.i = static_cast<jint>(arg.getInt());
       break;
     case 'I':
-      value.l = valueOf(static_cast<jint>(arg.getInt()));
+      value.l = JInteger::valueOf(static_cast<jint>(arg.getInt())).release();
       break;
     case 'f':
       value.f = static_cast<jfloat>(extractDouble(arg));
       break;
     case 'F':
-      value.l = valueOf(static_cast<jfloat>(extractDouble(arg)));
+      value.l = JFloat::valueOf(static_cast<jfloat>(extractDouble(arg))).release();
       break;
     case 'd':
       value.d = extractDouble(arg);
       break;
     case 'D':
-      value.l = valueOf(extractDouble(arg));
+      value.l = JDouble::valueOf(extractDouble(arg)).release();
       break;
     case 'S':
-      value.l = jni::make_jstring(arg.getString().c_str()).release();
+      value.l = make_jstring(arg.getString().c_str()).release();
       break;
     case 'A':
       value.l = ReadableNativeArray::newObjectCxxArgs(arg).release();
@@ -148,7 +125,7 @@ jvalue extract(std::weak_ptr<Instance>& instance, ExecutorToken token, char type
       value.l = ReadableNativeMap::newObjectCxxArgs(arg).release();
       break;
     case 'X':
-      value.l = extractCallback(instance, token, arg).release();
+      value.l = extractCallback(instance, arg).release();
       break;
     default:
       LOG(FATAL) << "Unknown param type: " << type;
@@ -160,8 +137,6 @@ std::size_t countJsArgs(const std::string& signature) {
   std::size_t count = 0;
   for (char c : signature) {
     switch (c) {
-      case 'T':
-        break;
       case 'P':
         count += 2;
         break;
@@ -175,17 +150,17 @@ std::size_t countJsArgs(const std::string& signature) {
 
 }
 
-MethodInvoker::MethodInvoker(jni::alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync)
+MethodInvoker::MethodInvoker(alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync)
  : method_(method->getMethodID()),
- jsArgCount_(countJsArgs(signature) - 2),
- signature_(std::move(signature)),
+ signature_(signature),
+ jsArgCount_(countJsArgs(signature) -2),
  traceName_(std::move(traceName)),
  isSync_(isSync) {
-   CHECK(signature_.at(1) == '.') << "Improper module method signature";
-   CHECK(!isSync || signature_.at(0) == 'v') << "Non-sync hooks cannot have a non-void return type";
+     CHECK(signature_.at(1) == '.') << "Improper module method signature";
+     CHECK(isSync_ || signature_.at(0) == 'v') << "Non-sync hooks cannot have a non-void return type";
  }
 
-MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, JBaseJavaModule::javaobject module, ExecutorToken token, const folly::dynamic& params) {
+MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, alias_ref<JBaseJavaModule::javaobject> module, const folly::dynamic& params) {
   #ifdef WITH_FBSYSTRACE
   fbsystrace::FbSystraceSection s(
       TRACE_TAG_REACT_CXX_BRIDGE,
@@ -193,38 +168,62 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, JBaseJ
       "method",
       traceName_);
   #endif
+
   if (params.size() != jsArgCount_) {
     throw std::invalid_argument(folly::to<std::string>("expected ", jsArgCount_, " arguments, got ", params.size()));
   }
+
+  auto env = Environment::current();
   auto argCount = signature_.size() - 2;
-  jni::JniLocalScope scope(jni::Environment::current(), argCount);
+  JniLocalScope scope(env, argCount);
   jvalue args[argCount];
   std::transform(
     signature_.begin() + 2,
     signature_.end(),
     args,
-    [&instance, token, it = params.begin(), end = params.end()] (char type) mutable {
-      return extract(instance, token, type, it, end);
+    [&instance, it = params.begin(), end = params.end()] (char type) mutable {
+      return extract(instance, type, it, end);
   });
 
-  // TODO(t10768795): Use fbjni here
-  folly::dynamic ret = folly::dynamic::object();
-  bool isReturnUndefined = false;
+#define CASE_PRIMITIVE(KEY, TYPE, METHOD)                                      \
+  case KEY: {                                                                  \
+    auto result = env->Call ## METHOD ## MethodA(module.get(), method_, args); \
+    throwPendingJniExceptionAsCppException();                                  \
+    return folly::dynamic(result);                                             \
+  }
+
+#define CASE_OBJECT(KEY, JNI_CLASS, ACTIONS)                                \
+  case KEY: {                                                               \
+    auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
+    throwPendingJniExceptionAsCppException();                               \
+    auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
+    return folly::dynamic(result->ACTIONS);                                 \
+  }
+
   char returnType = signature_.at(0);
   switch (returnType) {
     case 'v':
-      jni::Environment::current()->CallVoidMethodA(module, method_, args);
-      ret = nullptr;
-      isReturnUndefined = true;
-      break;
+      env->CallVoidMethodA(module.get(), method_, args);
+      throwPendingJniExceptionAsCppException();
+      return folly::none;
+
+    CASE_PRIMITIVE('z', jboolean, Boolean)
+    CASE_OBJECT('Z', JBoolean, value())
+    CASE_PRIMITIVE('i', jint, Int)
+    CASE_OBJECT('I', JInteger, value())
+    CASE_PRIMITIVE('d', jdouble, Double)
+    CASE_OBJECT('D', JDouble, value())
+    CASE_PRIMITIVE('f', jfloat, Float)
+    CASE_OBJECT('F', JFloat, value())
+
+    CASE_OBJECT('S', JString, toStdString())
+    CASE_OBJECT('M', WritableNativeMap, cthis()->consume())
+    CASE_OBJECT('A', WritableNativeArray, cthis()->consume())
+
     default:
       LOG(FATAL) << "Unknown return type: " << returnType;
-    // TODO: other cases
+      return folly::none;
   }
-
-  jni::throwPendingJniExceptionAsCppException();
-
-  return MethodCallResult{ret, isReturnUndefined};
 }
 
 }

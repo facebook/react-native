@@ -18,8 +18,8 @@ var ReactNative = require('ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 
-// require BackAndroid so it sets the default handler that exits the app if no listeners respond
-require('BackAndroid');
+// require BackHandler so it sets the default handler that exits the app if no listeners respond
+require('BackHandler');
 
 function renderApplication<Props: Object>(
   RootComponent: ReactClass<Props>,

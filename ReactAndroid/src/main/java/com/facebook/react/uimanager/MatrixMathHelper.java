@@ -426,13 +426,11 @@ public class MatrixMathHelper {
   }
 
   public static void applySkewX(double[] m, double radians) {
-    m[4] = Math.sin(radians);
-    m[5] = Math.cos(radians);
+    m[4] = Math.tan(radians);
   }
 
   public static void applySkewY(double[] m, double radians) {
-    m[0] = Math.cos(radians);
-    m[1] = Math.sin(radians);
+    m[1] = Math.tan(radians);
   }
 
   public static void applyRotateX(double[] m, double radians) {

@@ -12,7 +12,6 @@ package com.facebook.react.devsupport;
 import java.util.Locale;
 
 import android.annotation.TargetApi;
-import android.view.Choreographer;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -20,6 +19,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.debug.FpsDebugFrameCallback;
 
 /**
@@ -41,7 +41,7 @@ public class FpsView extends FrameLayout {
     super(reactContext);
     inflate(reactContext, R.layout.fps_view, this);
     mTextView = (TextView) findViewById(R.id.fps_text);
-    mFrameCallback = new FpsDebugFrameCallback(Choreographer.getInstance(), reactContext);
+    mFrameCallback = new FpsDebugFrameCallback(ChoreographerCompat.getInstance(), reactContext);
     mFPSMonitorRunnable = new FPSMonitorRunnable();
     setCurrentFPS(0, 0, 0, 0);
   }

@@ -10,8 +10,8 @@
 #import "RCTTiming.h"
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -51,14 +51,18 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 /**
  * Returns `YES` if we should invoke the JS callback.
  */
-- (BOOL)updateFoundNeedsJSUpdate
+- (BOOL)shouldFire:(NSDate *)now
 {
-  if (_target && _target.timeIntervalSinceNow <= 0) {
-    // The JS Timers will do fine grained calculating of expired timeouts.
-    _target = _repeats ? [NSDate dateWithTimeIntervalSinceNow:_interval] : nil;
+  if (_target && [_target timeIntervalSinceDate:now] <= 0) {
     return YES;
   }
   return NO;
+}
+
+- (void)reschedule
+{
+  // The JS Timers will do fine grained calculating of expired timeouts.
+  _target = [NSDate dateWithTimeIntervalSinceNow:_interval];
 }
 
 @end
@@ -178,13 +182,11 @@ RCT_EXPORT_MODULE()
 - (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
   NSDate *nextScheduledTarget = [NSDate distantFuture];
-  NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
+  NSMutableArray<_RCTTimer *> *timersToCall = [NSMutableArray new];
+  NSDate *now = [NSDate date]; // compare all the timers to the same base time
   for (_RCTTimer *timer in _timers.allValues) {
-    if ([timer updateFoundNeedsJSUpdate]) {
-      [timersToCall addObject:timer.callbackID];
-    }
-    if (!timer.target) {
-      [_timers removeObjectForKey:timer.callbackID];
+    if ([timer shouldFire:now]) {
+      [timersToCall addObject:timer];
     } else {
       nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
     }
@@ -192,10 +194,22 @@ RCT_EXPORT_MODULE()
 
   // Call timers that need to be called
   if (timersToCall.count > 0) {
+    NSArray<NSNumber *> *sortedTimers = [[timersToCall sortedArrayUsingComparator:^(_RCTTimer *a, _RCTTimer *b) {
+      return [a.target compare:b.target];
+    }] valueForKey:@"callbackID"];
     [_bridge enqueueJSCall:@"JSTimersExecution"
                     method:@"callTimers"
-                      args:@[timersToCall]
+                      args:@[sortedTimers]
                 completion:NULL];
+  }
+
+  for (_RCTTimer *timer in timersToCall) {
+    if (timer.repeats) {
+      [timer reschedule];
+      nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
+    } else {
+      [_timers removeObjectForKey:timer.callbackID];
+    }
   }
 
   if (_sendIdleEvents) {

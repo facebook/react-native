@@ -15,12 +15,13 @@ const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
 const path = require('path');
+const relativizeSourceMap = require('../../../../packager/src//lib/relativizeSourceMap');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
+import type Bundle from '../../../../packager/src//Bundler/Bundle';
 import type {OutputOptions} from '../../types.flow';
 
 // must not start with a dot, as that won't go into the apk
@@ -42,7 +43,8 @@ function saveAsAssets(
   const {
     bundleOutput,
     bundleEncoding: encoding,
-    sourcemapOutput
+    sourcemapOutput,
+    sourcemapSourcesRoot,
   } = options;
 
   log('start');
@@ -63,10 +65,14 @@ function saveAsAssets(
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
   const sourceMap =
-    buildSourceMapWithMetaData({
-      startupModules: startupModules.concat(),
-      lazyModules: lazyModules.concat(),
-    });
+    relativizeSourceMap(
+      buildSourceMapWithMetaData({
+        startupModules: startupModules.concat(),
+        lazyModules: lazyModules.concat(),
+      }),
+      sourcemapSourcesRoot
+    );
+
 
   return Promise.all([
     writeUnbundle,

@@ -5,18 +5,26 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Server = require('../../packager/react-packager/src/Server');
+const Server = require('../../packager/src/Server');
+const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultSourceExts = require('../../packager/defaults').sourceExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
-import type RequestOptions from './types.flow';
+import type {RequestOptions, OutputOptions} from './types.flow';
+import type {ConfigT} from '../util/Config';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -24,14 +32,29 @@ function saveBundle(output, bundle, args) {
   ).then(() => bundle);
 }
 
-function buildBundle(args, config, output = outputBundle, packagerInstance) {
+function buildBundle(
+  args: OutputOptions & {
+    assetsDest: mixed,
+    entryFile: string,
+    resetCache: boolean,
+    transformer: string,
+  },
+  config: ConfigT,
+  output = outputBundle,
+  packagerInstance,
+) {
   // This is used by a bazillion of npm modules we don't control so we don't
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
+  let sourceMapUrl = args.sourcemapOutput;
+  if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
+    sourceMapUrl = path.basename(sourceMapUrl);
+  }
+
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
-    sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
+    sourceMapUrl,
     dev: args.dev,
     minify: !args.dev,
     platform: args.platform,
@@ -42,20 +65,33 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
+    const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
-    const transformModulePath =
-      args.transformer ? path.resolve(args.transformer) :
-      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
-      undefined;
+    const transformModulePath = args.transformer
+      ? path.resolve(args.transformer)
+      : config.getTransformModulePath();
+
+    const providesModuleNodeModules =
+      typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
+      defaultProvidesModuleNodeModules;
 
     const options = {
-      projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptions: config.getTransformOptions,
-      transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
+      getTransformOptions: config.getTransformOptions,
+      globalTransformCache: null,
+      hasteImpl: config.hasteImpl,
+      platforms: defaultPlatforms.concat(platforms),
+      postMinifyProcess: config.postMinifyProcess,
+      postProcessModules: config.postProcessModules,
+      projectRoots: config.getProjectRoots(),
+      providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
+      reporter: new TerminalReporter(),
+      sourceExts: defaultSourceExts.concat(sourceExts),
+      transformModulePath: transformModulePath,
       watch: false,
     };
 

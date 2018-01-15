@@ -4,26 +4,41 @@ title: Colors
 layout: docs
 category: Guides
 permalink: docs/colors.html
-next: images
-previous: integration-with-existing-apps
+next: platform-specific-code
+previous: images
 ---
 
-The following formats are supported:
+Components in React Native are [styled using JavaScript](docs/styles.html). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
 
- - `'#f0f'` (#rgb)
- - `'#f0fc'` (#rgba)
- - `'#ff00ff'` (#rrggbb)
- - `'#ff00ff00'` (#rrggbbaa)
- - `'rgb(255, 255, 255)'`
- - `'rgba(255, 255, 255, 1.0)'`
- - `'hsl(360, 100%, 100%)'`
- - `'hsla(360, 100%, 100%, 1.0)'`
- - `'transparent'`
- - `'red'`
- - `0xff00ff00` (0xrrggbbaa)
+### Red-green-blue
 
+React Native supports `rgb()` and `rgba()` in both hexadecimal and functional notation:
 
-For the named colors, React Native follows the [CSS3 specification](http://www.w3.org/TR/css3-color/#svg-color):
+- `'#f0f'` (#rgb)
+- `'#ff00ff'` (#rrggbb)
+
+- `'rgb(255, 0, 255)'`
+- `'rgba(255, 255, 255, 1.0)'`
+
+- `'#f0ff'` (#rgba)
+- `'#ff00ff00'` (#rrggbbaa)
+
+### Hue-saturation-lightness
+
+`hsl()` and `hsla()` is supported in functional notation:
+
+- `'hsl(360, 100%, 100%)'`
+- `'hsla(360, 100%, 100%, 1.0)'`
+
+### `transparent`
+
+This is a shortcut for `rgba(0,0,0,0)`:
+
+- `'transparent'`
+
+### Named colors
+
+You can also use color names as values. React Native follows the [CSS3 specification](http://www.w3.org/TR/css3-color/#svg-color):
 
 - <color aliceblue /> aliceblue (#f0f8ff)
 - <color antiquewhite /> antiquewhite (#faebd7)
@@ -61,7 +76,6 @@ For the named colors, React Native follows the [CSS3 specification](http://www.w
 - <color darksalmon /> darksalmon (#e9967a)
 - <color darkseagreen /> darkseagreen (#8fbc8f)
 - <color darkslateblue /> darkslateblue (#483d8b)
-- <color darkslategray /> darkslategray (#2f4f4f)
 - <color darkslategrey /> darkslategrey (#2f4f4f)
 - <color darkturquoise /> darkturquoise (#00ced1)
 - <color darkviolet /> darkviolet (#9400d3)
@@ -103,7 +117,6 @@ For the named colors, React Native follows the [CSS3 specification](http://www.w
 - <color lightsalmon /> lightsalmon (#ffa07a)
 - <color lightseagreen /> lightseagreen (#20b2aa)
 - <color lightskyblue /> lightskyblue (#87cefa)
-- <color lightslategray /> lightslategray (#778899)
 - <color lightslategrey /> lightslategrey (#778899)
 - <color lightsteelblue /> lightsteelblue (#b0c4de)
 - <color lightyellow /> lightyellow (#ffffe0)
@@ -158,7 +171,6 @@ For the named colors, React Native follows the [CSS3 specification](http://www.w
 - <color skyblue /> skyblue (#87ceeb)
 - <color slateblue /> slateblue (#6a5acd)
 - <color slategray /> slategray (#708090)
-- <color slategrey /> slategrey (#708090)
 - <color snow /> snow (#fffafa)
 - <color springgreen /> springgreen (#00ff7f)
 - <color steelblue /> steelblue (#4682b4)

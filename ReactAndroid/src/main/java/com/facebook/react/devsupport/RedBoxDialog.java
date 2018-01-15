@@ -35,7 +35,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.devsupport.RedBoxHandler.ReportCompletedListener;
 
 import okhttp3.MediaType;

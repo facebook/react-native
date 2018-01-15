@@ -11,17 +11,26 @@
  */
 'use strict';
 
-const DialogManagerAndroid = require('NativeModules').DialogManagerAndroid;
-const Permissions = require('NativeModules').PermissionsAndroid;
+const NativeModules = require('NativeModules');
 
 type Rationale = {
-  title: string;
-  message: string;
+  title: string,
+  message: string,
 }
 
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
-
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Project with Native Code Required</h3>
+ *   <p>
+ *     This API only works in projects made with <code>react-native init</code>
+ *     or in those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  * Some permissions are granted by default when the application is installed
  * so long as they appear in `AndroidManifest.xml`. However, "dangerous"
@@ -29,7 +38,7 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  * permissions.
  *
  * On devices before SDK version 23, the permissions are automatically granted
- * if they appear in the manifest, so `checkPermission` and `requestPermission`
+ * if they appear in the manifest, so `check` and `request`
  * should always be true.
  *
  * If a user has previously turned off a permission that you prompt for, the OS
@@ -41,7 +50,7 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  * ```
  * async function requestCameraPermission() {
  *   try {
- *     const granted = await PermissionsAndroid.requestPermission(
+ *     const granted = await PermissionsAndroid.request(
  *       PermissionsAndroid.PERMISSIONS.CAMERA,
  *       {
  *         'title': 'Cool Photo App Camera Permission',
@@ -113,7 +122,7 @@ class PermissionsAndroid {
    */
   checkPermission(permission: string) : Promise<boolean> {
     console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead');
-    return Permissions.checkPermission(permission);
+    return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -121,7 +130,7 @@ class PermissionsAndroid {
    * permissions has been granted
    */
   check(permission: string) : Promise<boolean> {
-    return Permissions.checkPermission(permission);
+    return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -156,19 +165,19 @@ class PermissionsAndroid {
    */
   async request(permission: string, rationale?: Rationale) : Promise<PermissionStatus> {
     if (rationale) {
-      const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
+      const shouldShowRationale = await NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(permission);
 
       if (shouldShowRationale) {
         return new Promise((resolve, reject) => {
-          DialogManagerAndroid.showAlert(
+          NativeModules.DialogManagerAndroid.showAlert(
             rationale,
             () => reject(new Error('Error showing rationale')),
-            () => resolve(Permissions.requestPermission(permission))
+            () => resolve(NativeModules.PermissionsAndroid.requestPermission(permission))
           );
         });
       }
     }
-    return Permissions.requestPermission(permission);
+    return NativeModules.PermissionsAndroid.requestPermission(permission);
   }
 
   /**
@@ -177,7 +186,7 @@ class PermissionsAndroid {
    * indicating whether the user allowed or denied the request
    */
   requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {
-    return Permissions.requestMultiplePermissions(permissions);
+    return NativeModules.PermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
 

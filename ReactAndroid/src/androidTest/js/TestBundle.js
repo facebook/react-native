@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @providesModule TestBundle
  */
 'use strict';
 
@@ -18,6 +19,7 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
+require('TestJavaToJSReturnValuesModule');
 require('UIManagerTestModule');
 
 require('CatalystRootViewTestModule');
@@ -66,6 +68,10 @@ var apps = [
 {
   appKey: 'MultitouchHandlingTestAppModule',
   component: () => require('MultitouchHandlingTestAppModule')
+},
+{
+  appKey: 'NativeIdTestApp',
+  component: () => require('NativeIdTestModule').NativeIdTestApp
 },
 {
   appKey: 'PickerAndroidTestApp',

@@ -61,7 +61,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     mHandler.post(runnable);
   }
 
-
   @DoNotStrip
   @Override
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
@@ -97,6 +96,18 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
+  }
+
+  /**
+   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
+   * {@link AssertionError}) if the assertion fails.
+   */
+  @DoNotStrip
+  @Override
+  public void assertIsOnThread(String message) {
+    SoftAssertions.assertCondition(
+      isOnThread(),
+      new StringBuilder().append(mAssertionErrorMessage).append(" ").append(message).toString());
   }
 
   /**
@@ -164,30 +175,22 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     return mqt;
   }
 
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(
-        name,
-        MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
-        exceptionHandler);
-  }
-
   /**
    * Creates and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
    * running on it. Give it a name for easier debugging and optionally a suggested stack size.
    * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      long stackSize,
-      QueueThreadExceptionHandler exceptionHandler) {
+  private static MessageQueueThreadImpl startNewBackgroundThread(
+    final String name,
+    long stackSize,
+    QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
     final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());

@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 import okio.Buffer;
 import okio.ByteString;
 
-@ReactModule(name = "WebSocketModule")
+@ReactModule(name = "WebSocketModule", hasConstants = false)
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
@@ -281,6 +281,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         scheme += "https";
       } else if (requestURI.getScheme().equals("ws")) {
         scheme += "http";
+      } else if (requestURI.getScheme().equals("http") || requestURI.getScheme().equals("https")) {
+        scheme += requestURI.getScheme();
       }
 
       if (requestURI.getPort() != -1) {
@@ -294,7 +296,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       return defaultOrigin;
-
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("Unable to set " + uri + " as default origin header");
     }

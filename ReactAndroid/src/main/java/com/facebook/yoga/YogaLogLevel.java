@@ -17,7 +17,8 @@ public enum YogaLogLevel {
   WARN(1),
   INFO(2),
   DEBUG(3),
-  VERBOSE(4);
+  VERBOSE(4),
+  FATAL(5);
 
   private int mIntValue;
 
@@ -36,7 +37,8 @@ public enum YogaLogLevel {
       case 2: return INFO;
       case 3: return DEBUG;
       case 4: return VERBOSE;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      case 5: return FATAL;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

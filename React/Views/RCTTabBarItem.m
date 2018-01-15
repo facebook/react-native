@@ -105,11 +105,12 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
   }
 }
 
-- (void)setBadgeColor:(UIColor *)bagdeColor
+- (void)setBadgeColor:(UIColor *)badgeColor
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-  _barItem.badgeColor = bagdeColor;
-#endif
+  // badgeColor available since iOS 10
+  if ([self.barItem respondsToSelector:@selector(badgeColor)]) {
+    self.barItem.badgeColor = badgeColor;
+  }
 }
 
 - (UIViewController *)reactViewController

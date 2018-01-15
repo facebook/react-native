@@ -15,6 +15,7 @@ var Path = require('ARTSerializablePath');
 var Transform = require('art/core/transform');
 
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
@@ -139,7 +140,7 @@ function childrenAsString(children) {
 
 class Surface extends React.Component {
   static childContextTypes = {
-    isInSurface: React.PropTypes.bool,
+    isInSurface: PropTypes.bool,
   };
 
   getChildContext() {
@@ -213,7 +214,7 @@ function extractOpacity(props) {
 
 class Group extends React.Component {
   static contextTypes = {
-    isInSurface: React.PropTypes.bool.isRequired,
+    isInSurface: PropTypes.bool.isRequired,
   };
 
   render() {

@@ -2,9 +2,8 @@
 
 #pragma once
 
+#include <cxxreact/Executor.h>
 #include <jschelpers/Value.h>
-
-#include "Executor.h"
 
 namespace facebook {
 namespace react {

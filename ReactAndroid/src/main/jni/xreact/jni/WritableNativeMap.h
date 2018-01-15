@@ -20,16 +20,13 @@ struct WritableNativeMap : jni::HybridClass<WritableNativeMap, ReadableNativeMap
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
-  __attribute__((visibility("default")))
-  folly::dynamic consume();
-
   void putNull(std::string key);
   void putBoolean(std::string key, bool val);
   void putDouble(std::string key, double val);
   void putInt(std::string key, int val);
   void putString(std::string key, jni::alias_ref<jstring> val);
-  void putNativeArray(std::string key, jni::alias_ref<WritableNativeArray::jhybridobject> val);
-  void putNativeMap(std::string key, jni::alias_ref<jhybridobject> val);
+  void putNativeArray(std::string key, WritableNativeArray* val);
+  void putNativeMap(std::string key, WritableNativeMap* val);
   void mergeNativeMap(ReadableNativeMap* other);
 
   static void registerNatives();

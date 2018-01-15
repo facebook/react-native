@@ -20,4 +20,5 @@ buck fetch ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 
 echo "Running integration tests..."
-adb shell am instrument -w com.facebook.react.tests/android.support.test.runner.AndroidJUnitRunner
+# Use the JS script that runs all tests in a loop and is easy to tweak
+node ./scripts/run-android-ci-instrumentation-tests.js --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests

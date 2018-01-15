@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -303,12 +304,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
-        ((ReactContext) getContext()).runOnNativeModulesQueueThread(
-          new Runnable() {
+        final int viewTag = getChildAt(0).getId();
+        ReactContext reactContext = (ReactContext) getContext();
+        reactContext.runUIBackgroundRunnable(
+          new GuardedRunnable(reactContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(getChildAt(0).getId(), w, h);
+                .updateNodeSize(viewTag, w, h);
             }
           });
       }

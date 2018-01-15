@@ -2,7 +2,6 @@
 
 #include "JSCNativeModules.h"
 
-#include <jschelpers/JavaScriptCore.h>
 #include <string>
 
 namespace facebook {
@@ -12,6 +11,10 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
   m_moduleRegistry(std::move(moduleRegistry)) {}
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
+  if (!m_moduleRegistry) {
+    return nullptr;
+  }
+
   std::string moduleName = String::ref(context, jsName).str();
 
   const auto it = m_objects.find(moduleName);
@@ -21,7 +24,8 @@ JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName)
 
   auto module = createModule(moduleName, context);
   if (!module.hasValue()) {
-    return Value::makeUndefined(context);
+    // Allow lookup to continue in the objects own properties, which allows for overrides of NativeModules
+    return nullptr;
   }
 
   // Protect since we'll be holding on to this value, even though JS may not
@@ -41,10 +45,6 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
     auto global = Object::getGlobalObject(context);
     m_genNativeModuleJS = global.getProperty("__fbGenNativeModule").asObject();
     m_genNativeModuleJS->makeProtected();
-
-    // Initialize the module name list, otherwise getModuleConfig won't work
-    // TODO (pieterdb): fix this in ModuleRegistry
-    m_moduleRegistry->moduleNames();
   }
 
   auto result = m_moduleRegistry->getConfig(name);

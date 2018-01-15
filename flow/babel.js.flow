@@ -8,12 +8,13 @@
  */
 
 type _SourceMap = {
-  version: number,
   file?: string,
-  sources: Array<string>,
-  names: Array<string>,
   mappings: string,
-  sourcesContent?: Array<string>,
+  names: Array<string>,
+  sourceRoot?: string,
+  sources: Array<string>,
+  sourcesContent?: Array<?string>,
+  version: number,
 };
 
 // based on babylon v6.13.1
@@ -49,14 +50,15 @@ type GeneratorOptions = {
   sourceFileName?: string,
 };
 
-type InlinePlugin = [string | {} | () => {}, any];
+type InlinePlugin = string | {} | () => {};
+type _Plugins = Array<string | Object | [InlinePlugin] | [InlinePlugin, mixed]>;
 
 // based on https://babeljs.io/docs/usage/options/ -- 2016-11-11
 type __TransformOptions = {
   filename?: string,
   filenameRelative?: string,
   presets?: Array<string | Object>,
-  plugins?: Array<string | Object | InlinePlugin>,
+  plugins?: _Plugins,
   parserOpts?: BabylonOptions,
   generatorOpts?: GeneratorOptions,
   highlightCode?: boolean,
@@ -87,15 +89,17 @@ type __TransformOptions = {
 
 type _TransformOptions =
   __TransformOptions & {env?: {[key: string]: __TransformOptions}};
-declare class _Ast {};
+declare class _Ast {}
 type TransformResult = {
   ast: _Ast,
   code: ?string,
+  ignored: boolean,
   map: ?_SourceMap,
 };
 type VisitFn = <State>(path: Object, state: State) => any;
 
 declare module 'babel-core' {
+  declare type Plugins = _Plugins;
   declare type SourceMap = _SourceMap;
   declare type Ast = _Ast;
   declare type TransformOptions = _TransformOptions;
@@ -119,9 +123,17 @@ declare module 'babel-core' {
   ): TransformResult;
 }
 
+type RawMapping = {
+  generated: {column: number, line: number},
+  name?: string,
+  original?: {column: number, line: number},
+  source?: string,
+};
+
 declare module 'babel-generator' {
+  declare type RawMapping = RawMapping;
   declare function exports(
     ast: _Ast,
     options?: GeneratorOptions,
-  ): TransformResult;
+  ): TransformResult & {rawMappings: ?Array<RawMapping>};
 }

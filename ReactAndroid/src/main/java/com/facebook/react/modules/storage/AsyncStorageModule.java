@@ -33,9 +33,11 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUM
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 
-@ReactModule(name = "AsyncSQLiteDBStorage")
+@ReactModule(name = AsyncStorageModule.NAME)
 public final class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
+
+  protected static final String NAME = "AsyncSQLiteDBStorage";
 
   // SQL variable number limit, defined by SQLITE_LIMIT_VARIABLE_NUMBER:
   // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
@@ -51,7 +53,7 @@ public final class AsyncStorageModule
 
   @Override
   public String getName() {
-    return "AsyncSQLiteDBStorage";
+    return NAME;
   }
 
   @Override

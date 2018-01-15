@@ -52,26 +52,28 @@ class AppContainer extends React.Component {
 
   componentDidMount(): void {
     if (__DEV__) {
-      this._subscription = RCTDeviceEventEmitter.addListener(
-        'toggleElementInspector',
-        () => {
-          const Inspector = require('Inspector');
-          const inspector = this.state.inspector
-            ? null
-            : <Inspector
-                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                onRequestRerenderApp={(updateInspectedViewTag) => {
-                  this.setState(
-                    (s) => ({mainKey: s.mainKey + 1}),
-                    () => updateInspectedViewTag(
-                      ReactNative.findNodeHandle(this._mainRef)
-                    )
-                  );
-                }}
-              />;
-          this.setState({inspector});
-        },
-      );
+      if (!global.__RCTProfileIsProfiling) {
+        this._subscription = RCTDeviceEventEmitter.addListener(
+          'toggleElementInspector',
+          () => {
+            const Inspector = require('Inspector');
+            const inspector = this.state.inspector
+              ? null
+              : <Inspector
+                  inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
+                  onRequestRerenderApp={(updateInspectedViewTag) => {
+                    this.setState(
+                      (s) => ({mainKey: s.mainKey + 1}),
+                      () => updateInspectedViewTag(
+                        ReactNative.findNodeHandle(this._mainRef)
+                      )
+                    );
+                  }}
+                />;
+            this.setState({inspector});
+          },
+        );
+      }
     }
   }
 
@@ -84,15 +86,18 @@ class AppContainer extends React.Component {
   render(): React.Element<*> {
     let yellowBox = null;
     if (__DEV__) {
-      const YellowBox = require('YellowBox');
-      yellowBox = <YellowBox />;
+      if (!global.__RCTProfileIsProfiling) {
+        const YellowBox = require('YellowBox');
+        yellowBox = <YellowBox />;
+      }
     }
 
     return (
-      <View style={styles.appContainer}>
+      <View style={styles.appContainer} pointerEvents="box-none">
         <View
           collapsable={!this.state.inspector}
           key={this.state.mainKey}
+          pointerEvents="box-none"
           style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
           {this.props.children}
         </View>

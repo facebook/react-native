@@ -58,24 +58,33 @@ export type PushNotificationEventName = $Enum<{
 }>;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Projects with Native Code Only</h3>
+ *   <p>
+ *     This section only applies to projects made with <code>react-native init</code>
+ *     or to those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
  * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
- * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
+ * and your server-side system.
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
  * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
  * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
- * - Add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
  * At the top of your `AppDelegate.m`:
  *
- *   `#import "RCTPushNotificationManager.h"`
+ *   `#import <React/RCTPushNotificationManager.h>`
  *
  * And then in your AppDelegate implementation add the following:
  *
@@ -162,6 +171,40 @@ class PushNotificationIOS {
    */
   static cancelAllLocalNotifications() {
     RCTPushNotificationManager.cancelAllLocalNotifications();
+  }
+
+  /**
+   * Remove all delivered notifications from Notification Center
+   */
+  static removeAllDeliveredNotifications(): void {
+    RCTPushNotificationManager.removeAllDeliveredNotifications();
+  }
+
+  /**
+   * Provides you with a list of the app’s notifications that are still displayed in Notification Center
+   *
+   * @param callback Function which receive an array of delivered notifications
+   *
+   *  A delivered notification is an object containing:
+   *
+   * - `identifier`  : The identifier of this notification.
+   * - `title`  : The title of this notification.
+   * - `body`  : The body of this notification.
+   * - `category`  : The category of this notification, if has one.
+   * - `userInfo`  : An optional object containing additional notification data.
+   * - `thread-id`  : The thread identifier of this notification, if has one.
+   */
+  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
+    RCTPushNotificationManager.getDeliveredNotifications(callback);
+  }
+
+  /**
+   * Removes the specified notifications from Notification Center
+   *
+   * @param identifiers Array of notification identifiers
+   */
+  static removeDeliveredNotifications(identifiers: [string]): void {
+    RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
   }
 
   /**

@@ -51,6 +51,9 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
                                                    selector:self->_testSelector
                                                  identifier:identifier
                                                       error:&error];
+    if (!success) {
+      RCTLogInfo(@"Failed to verify snapshot %@ (error: %@)", identifier, error);
+    }
     callback(@[@(success)]);
   }];
 }

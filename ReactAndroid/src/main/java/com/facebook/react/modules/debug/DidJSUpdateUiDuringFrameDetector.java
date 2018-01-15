@@ -9,11 +9,10 @@
 
 package com.facebook.react.modules.debug;
 
-import android.view.Choreographer;
-
 import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LongArray;
+import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 
@@ -22,7 +21,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * to calculate whether JS was able to update the UI during a given frame. After being installed
  * on a {@link ReactBridge} and a {@link UIManagerModule},
  * {@link #getDidJSHitFrameAndCleanup} should be called once per frame via a
- * {@link Choreographer.FrameCallback}.
+ * {@link ChoreographerCompat.FrameCallback}.
  */
 public class DidJSUpdateUiDuringFrameDetector implements NotThreadSafeBridgeIdleDebugListener,
     NotThreadSafeViewHierarchyUpdateDebugListener {
@@ -56,7 +55,7 @@ public class DidJSUpdateUiDuringFrameDetector implements NotThreadSafeBridgeIdle
   }
 
   /**
-   * Designed to be called from a {@link Choreographer.FrameCallback#doFrame} call.
+   * Designed to be called from a {@link ChoreographerCompat.FrameCallback#doFrame} call.
    *
    * There are two 'success' cases that will cause {@link #getDidJSHitFrameAndCleanup} to
    * return true for a given frame:

@@ -14,7 +14,7 @@ We have heard from many people that there is so much work happening with React N
 - **Stability**. Improve the underlying infrastructure to reduce bugs and improve code quality.
 - **Developer Experience**. Help React Native developers move faster
 
-If you have suggestions for features that you think would be valuable on the roadmap, check out [Product Pains](https://productpains.com/product/react-native), where you can suggest new features and discuss existing proposals.
+If you have suggestions for features that you think would be valuable on the roadmap, check out [Canny](https://react-native.canny.io/feature-requests), where you can suggest new features and discuss existing proposals.
 
 ## What's new in React Native
 

@@ -10,14 +10,14 @@
 */
 'use strict';
 
-var DialogManager = require('NativeModules').DialogManagerAndroid;
+var NativeModules = require('NativeModules');
 
 function emptyCallback() {}
 
 module.exports = {
   alertWithArgs: function(args, callback) {
     // TODO(5998984): Polyfill it correctly with DialogManagerAndroid
-    DialogManager.showAlert(
+    NativeModules.DialogManagerAndroid.showAlert(
         args,
         emptyCallback,
         callback || emptyCallback);

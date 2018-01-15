@@ -15,6 +15,7 @@ var Header = require('Header');
 var Prism = require('Prism');
 var React = require('React');
 var WebPlayer = require('WebPlayer');
+var SnackPlayer = require('SnackPlayer');
 
 /**
  * Block-Level Grammar
@@ -839,6 +840,12 @@ Parser.prototype.tok = function() {
       if (lang && lang.indexOf('ReactNativeWebPlayer') === 0) {
         return (
           <WebPlayer params={lang.split('?')[1]}>{text}</WebPlayer>
+        );
+      }
+
+      if (lang && lang.indexOf('SnackPlayer') === 0) {
+        return (
+          <SnackPlayer params={lang.split('?')[1]}>{text}</SnackPlayer>
         );
       }
 

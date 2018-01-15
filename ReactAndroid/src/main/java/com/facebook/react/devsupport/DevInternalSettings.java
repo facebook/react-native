@@ -16,7 +16,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 
 /**
  * Helper class for accessing developers settings that should not be accessed outside of the package
@@ -31,7 +32,6 @@ public class DevInternalSettings implements
   private static final String PREFS_FPS_DEBUG_KEY = "fps_debug";
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
   private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
-  private static final String PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
@@ -39,14 +39,20 @@ public class DevInternalSettings implements
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
 
   private final SharedPreferences mPreferences;
-  private final DevSupportManager mDebugManager;
+  private final Listener mListener;
+  private final PackagerConnectionSettings mPackagerConnectionSettings;
 
   public DevInternalSettings(
       Context applicationContext,
-      DevSupportManager debugManager) {
-    mDebugManager = debugManager;
+      Listener listener) {
+    mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
+    mPackagerConnectionSettings = new PackagerConnectionSettings(applicationContext);
+  }
+
+  public PackagerConnectionSettings getPackagerConnectionSettings() {
+    return mPackagerConnectionSettings;
   }
 
   @Override
@@ -73,16 +79,14 @@ public class DevInternalSettings implements
     return mPreferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false);
   }
 
-  public @Nullable String getDebugServerHost() {
-    return mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
-  }
-
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    if (PREFS_FPS_DEBUG_KEY.equals(key) ||
-        PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
-        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
-        PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
-      mDebugManager.reloadSettings();
+    if (mListener != null) {
+      if (PREFS_FPS_DEBUG_KEY.equals(key) ||
+          PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
+          PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
+          PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
+        mListener.onInternalSettingsChanged();
+      }
     }
   }
 
@@ -118,5 +122,9 @@ public class DevInternalSettings implements
   @Override
   public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
     mPreferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply();
+  }
+
+  public interface Listener {
+    void onInternalSettingsChanged();
   }
 }

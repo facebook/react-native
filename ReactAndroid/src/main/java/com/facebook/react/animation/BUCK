@@ -1,15 +1,14 @@
-include_defs('//ReactAndroid/DEFS')
+include_defs("//ReactAndroid/DEFS")
 
 android_library(
-  name = 'animation',
-  srcs = glob(['**/*.java']),
-  deps = [
-    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
-    react_native_dep('third-party/java/jsr-305:jsr-305'),
-    react_native_target('java/com/facebook/react/bridge:bridge'),
-  ],
-  visibility = [
-    'PUBLIC'
-  ],
+    name = "animation",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+    ],
 )
-

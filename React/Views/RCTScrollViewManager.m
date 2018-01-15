@@ -67,7 +67,6 @@ RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
 #endif
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSIndexSet)
 RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
@@ -88,6 +87,7 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 // that css-layout is always treating the contents of a scroll container as
 // overflow: 'scroll'.
 RCT_CUSTOM_SHADOW_PROPERTY(overflow, YGOverflow, RCTShadowView) {
+#pragma unused (json)
   view.overflow = YGOverflowScroll;
 }
 
@@ -145,6 +145,21 @@ RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
                   "with tag #%@", view, reactTag);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
+                  animated:(BOOL)animated)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+     UIView *view = viewRegistry[reactTag];
+     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+       [(id<RCTScrollableProtocol>)view scrollToEnd:animated];
+     } else {
+       RCTLogError(@"tried to scrollTo: on non-RCTScrollableProtocol view %@ "
+                   "with tag #%@", view, reactTag);
+     }
+   }];
 }
 
 RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag

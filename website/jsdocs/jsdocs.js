@@ -112,14 +112,14 @@ function getFileDocBlock(commentsForFile) {
           inCopyrightBlock = true;
         }
 
-        var hasProvides = !!line.match(/^\s*\*\s+@provides/);
+        var hasProvidesModule = !!line.match(/^\s*\*\s+@providesModule/);
         var hasFlow = !!line.match(/^\s*\*\s+@flow/);
 
-        if (hasFlow || hasProvides) {
+        if (hasFlow || hasProvidesModule) {
           inCopyrightBlock = false;
         }
 
-        return !inCopyrightBlock && !hasFlow && !hasProvides;
+        return !inCopyrightBlock && !hasFlow && !hasProvidesModule;
       });
       docblock = filteredLines.join('\n');
       return true;

@@ -12,7 +12,7 @@ namespace react {
 class JavaScriptExecutorHolder : public jni::HybridClass<JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/cxxbridge/JavaScriptExecutor;";
+    "Lcom/facebook/react/bridge/JavaScriptExecutor;";
 
   std::shared_ptr<JSExecutorFactory> getExecutorFactory() {
     return mExecutorFactory;

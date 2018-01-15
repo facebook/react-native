@@ -6,6 +6,7 @@ LOCAL_MODULE := yogacore
 
 LOCAL_SRC_FILES := \
   yoga/Yoga.c \
+  yoga/YGEnums.c \
   yoga/YGNodeList.c
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)

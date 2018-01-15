@@ -21,6 +21,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -75,10 +76,10 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       UiThreadUtil.runOnUiThread(
-        new Runnable() {
+        new GuardedRunnable(getReactApplicationContext()) {
           @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           @Override
-          public void run() {
+          public void runGuarded() {
             if (animated) {
               int curColor = activity.getWindow().getStatusBarColor();
               ValueAnimator colorAnimation = ValueAnimator.ofObject(
@@ -112,10 +113,10 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       UiThreadUtil.runOnUiThread(
-        new Runnable() {
+        new GuardedRunnable(getReactApplicationContext()) {
           @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           @Override
-          public void run() {
+          public void runGuarded() {
             // If the status bar is translucent hook into the window insets calculations
             // and consume all the top insets so no padding will be added under the status bar.
             View decorView = activity.getWindow().getDecorView();

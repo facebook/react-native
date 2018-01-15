@@ -22,7 +22,7 @@ import android.widget.EditText;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -43,7 +43,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
-  private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
@@ -69,17 +68,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
     setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mComputedPadding = new float[] {
-        getPadding(Spacing.START),
-        getPadding(Spacing.TOP),
-        getPadding(Spacing.END),
-        getPadding(Spacing.BOTTOM),
-    };
+    mEditText.setPadding(0, 0, 0, 0);
   }
 
   @Override
   public long measure(
-      YogaNodeAPI node,
+      YogaNode node,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -91,17 +85,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-    mComputedPadding = new float[] {
-        getPadding(Spacing.START),
-        getPadding(Spacing.TOP),
-        getPadding(Spacing.END),
-        getPadding(Spacing.BOTTOM),
-    };
-    editText.setPadding(
-        (int) Math.floor(getPadding(Spacing.START)),
-        (int) Math.floor(getPadding(Spacing.TOP)),
-        (int) Math.floor(getPadding(Spacing.END)),
-        (int) Math.floor(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -151,19 +134,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
-    if (mComputedPadding != null) {
-      float[] updatedPadding = mComputedPadding;
-      if (getLayoutDirection() == YogaDirection.RTL) {
-        updatedPadding = new float[] {
-            getPadding(Spacing.END),
-            getPadding(Spacing.TOP),
-            getPadding(Spacing.START),
-            getPadding(Spacing.BOTTOM),
-        };
-      }
-      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), updatedPadding);
-      mComputedPadding = null;
-    }
 
     if (mJsEventCount != UNSET) {
       Spannable preparedSpannableText = fromTextCSSNode(this);
@@ -172,9 +142,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           preparedSpannableText,
           mJsEventCount,
           mContainsImages,
-          getPadding(Spacing.START),
+          getPadding(Spacing.LEFT),
           getPadding(Spacing.TOP),
-          getPadding(Spacing.END),
+          getPadding(Spacing.RIGHT),
           getPadding(Spacing.BOTTOM),
           mTextAlign,
           mTextBreakStrategy
@@ -186,12 +156,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void setPadding(int spacingType, float padding) {
     super.setPadding(spacingType, padding);
-    mComputedPadding = new float[] {
-        getPadding(Spacing.START),
-        getPadding(Spacing.TOP),
-        getPadding(Spacing.END),
-        getPadding(Spacing.BOTTOM),
-    };
     markUpdated();
   }
 }

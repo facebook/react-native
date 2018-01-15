@@ -10,7 +10,7 @@
 
 var resolvePlugins = require('../lib/resolvePlugins');
 
-module.exports = {
+var preset = {
   comments: false,
   compact: true,
   plugins: resolvePlugins([
@@ -40,11 +40,15 @@ module.exports = {
     ['transform-es2015-for-of', { loose: true }],
     require('../transforms/transform-symbol-member'),
   ]),
-  env: {
-    development: {
-      plugins: resolvePlugins(['transform-react-jsx-source']),
-    },
-  },
   retainLines: true,
   sourceMaps: false,
 };
+
+var env = process.env.BABEL_ENV || process.env.NODE_ENV;
+if (!env || env === 'development') {
+  preset.plugins = preset.plugins.concat(
+    resolvePlugins(['transform-react-jsx-source'])
+  );
+}
+
+module.exports = preset;

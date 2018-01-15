@@ -14,6 +14,8 @@
 const InteractionManager = require('InteractionManager');
 const React = require('React');
 
+const PropTypes = require('prop-types');
+
 const infoLog = require('infoLog');
 
 const DEBUG = false;
@@ -110,8 +112,8 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
   };
 
   static contextTypes = {
-    incrementalGroup: React.PropTypes.object,
-    incrementalGroupEnabled: React.PropTypes.bool,
+    incrementalGroup: PropTypes.object,
+    incrementalGroupEnabled: PropTypes.bool,
   };
 
   constructor(props: Props, context: Context) {

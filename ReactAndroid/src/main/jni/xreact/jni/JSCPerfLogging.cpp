@@ -9,105 +9,82 @@
 
 using namespace facebook::jni;
 
-struct _jqplProvider : _jobject {};
-using jqplProvider = _jqplProvider*;
+namespace facebook { namespace react {
 
-struct _jqpl : _jobject {};
-using jqpl = _jqpl*;
-
-namespace facebook { namespace jni {
-
-template<>
-class JObjectWrapper<jqpl> : public JObjectWrapper<jobject> {
-
- public:
-  static constexpr const char* kJavaDescriptor = "Lcom/facebook/quicklog/QuickPerformanceLogger;";
-
-  using JObjectWrapper<jobject>::JObjectWrapper;
+struct JQuickPerformanceLogger : JavaClass<JQuickPerformanceLogger> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/quicklog/QuickPerformanceLogger;";
 
   void markerStart(int markerId, int instanceKey, long timestamp) {
     static auto markerStartMethod =
-      qplClass()->getMethod<void(jint, jint, jlong)>("markerStart");
-    markerStartMethod(this_, markerId, instanceKey, timestamp);
+      javaClassStatic()->getMethod<void(jint, jint, jlong)>("markerStart");
+    markerStartMethod(self(), markerId, instanceKey, timestamp);
   }
 
   void markerEnd(int markerId, int instanceKey, short actionId, long timestamp) {
     static auto markerEndMethod =
-      qplClass()->getMethod<void(jint, jint, jshort, jlong)>("markerEnd");
-    markerEndMethod(this_, markerId, instanceKey, actionId, timestamp);
+      javaClassStatic()->getMethod<void(jint, jint, jshort, jlong)>("markerEnd");
+    markerEndMethod(self(), markerId, instanceKey, actionId, timestamp);
+  }
+
+  void markerTag(int markerId, int instanceKey, alias_ref<jstring> tag) {
+    static auto markerTagMethod =
+      javaClassStatic()->getMethod<void(jint, jint, alias_ref<jstring>)>("markerTag");
+    markerTagMethod(self(), markerId, instanceKey, tag);
+  }
+
+  void markerAnnotate(
+      int markerId,
+      int instanceKey,
+      alias_ref<jstring> key,
+      alias_ref<jstring> value) {
+    static auto markerAnnotateMethod = javaClassStatic()->
+      getMethod<void(jint, jint, alias_ref<jstring>, alias_ref<jstring>)>("markerAnnotate");
+    markerAnnotateMethod(self(), markerId, instanceKey, key, value);
   }
 
   void markerNote(int markerId, int instanceKey, short actionId, long timestamp) {
     static auto markerNoteMethod =
-      qplClass()->getMethod<void(jint, jint, jshort, jlong)>("markerNote");
-    markerNoteMethod(this_, markerId, instanceKey, actionId, timestamp);
+      javaClassStatic()->getMethod<void(jint, jint, jshort, jlong)>("markerNote");
+    markerNoteMethod(self(), markerId, instanceKey, actionId, timestamp);
   }
 
   void markerCancel(int markerId, int instanceKey) {
     static auto markerCancelMethod =
-      qplClass()->getMethod<void(jint, jint)>("markerCancel");
-    markerCancelMethod(this_, markerId, instanceKey);
+      javaClassStatic()->getMethod<void(jint, jint)>("markerCancel");
+    markerCancelMethod(self(), markerId, instanceKey);
   }
 
   int64_t currentMonotonicTimestamp() {
     static auto currentTimestampMethod =
-      qplClass()->getMethod<jlong()>("currentMonotonicTimestamp");
-    return currentTimestampMethod(this_);
-  }
-
- private:
-
-  static alias_ref<jclass> qplClass() {
-    static auto cls = findClassStatic("com/facebook/quicklog/QuickPerformanceLogger");
-    return cls;
-  }
-
-};
-using JQuickPerformanceLogger = JObjectWrapper<jqpl>;
-
-
-template<>
-class JObjectWrapper<jqplProvider> : public JObjectWrapper<jobject> {
- public:
-  static constexpr const char* kJavaDescriptor =
-    "Lcom/facebook/quicklog/QuickPerformanceLoggerProvider;";
-
-  using JObjectWrapper<jobject>::JObjectWrapper;
-
-  static global_ref<jqpl> get() {
-    static auto getQPLInstMethod = qplProviderClass()->getStaticMethod<jqpl()>("getQPLInstance");
-    static global_ref<jqpl> theQpl = make_global(getQPLInstMethod(qplProviderClass().get()));
-    return theQpl;
-  }
-
-  static bool check() {
-    static auto getQPLInstMethod = qplProviderClass()->getStaticMethod<jqpl()>("getQPLInstance");
-    auto theQpl = getQPLInstMethod(qplProviderClass().get());
-    return (theQpl.get() != nullptr);
-  }
-
- private:
-
-  static alias_ref<jclass> qplProviderClass() {
-    static auto cls = findClassStatic("com/facebook/quicklog/QuickPerformanceLoggerProvider");
-    return cls;
+      javaClassStatic()->getMethod<jlong()>("currentMonotonicTimestamp");
+    return currentTimestampMethod(self());
   }
 };
-using JQuickPerformanceLoggerProvider = JObjectWrapper<jqplProvider>;
 
-}}
+struct JQuickPerformanceLoggerProvider : JavaClass<JQuickPerformanceLoggerProvider> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/quicklog/QuickPerformanceLoggerProvider;";
+
+  static alias_ref<JQuickPerformanceLogger::javaobject> get() {
+    static auto getQPLInstMethod =
+      javaClassStatic()->getStaticMethod<JQuickPerformanceLogger::javaobject()>("getQPLInstance");
+    static auto logger = make_global(getQPLInstMethod(javaClassStatic()));
+    return logger;
+  }
+};
 
 static bool isReady() {
   static bool ready = false;
   if (!ready) {
     try {
+      // TODO: findClassStatic only does the lookup once. If we can't find
+      // QuickPerformanceLoggerProvider the first time we call this, we will always fail here.
       findClassStatic("com/facebook/quicklog/QuickPerformanceLoggerProvider");
     } catch(...) {
       // Swallow this exception - we don't want to crash the app, an error is enough.
       FBLOGE("Calling QPL from JS before class has been loaded in Java. Ignored.");
       return false;
     }
-    if (JQuickPerformanceLoggerProvider::check()) {
+    if (JQuickPerformanceLoggerProvider::get()) {
       ready = true;
     } else {
       FBLOGE("Calling QPL from JS before it has been initialized in Java. Ignored.");
@@ -146,6 +123,15 @@ static bool grabDoubles(
   return true;
 }
 
+static local_ref<jstring> getJStringFromJSValueRef(JSContextRef ctx, JSValueRef ref) {
+    JSStringRef jsStringRef = JSValueToStringCopy(ctx, ref, nullptr);
+    const JSChar* chars = JSStringGetCharactersPtr(jsStringRef);
+    const size_t length = JSStringGetLength(jsStringRef);
+    local_ref<jstring> returnStr = adopt_local(Environment::current()->NewString(chars, length));
+    JSStringRelease(jsStringRef);
+    return returnStr;
+}
+
 static JSValueRef nativeQPLMarkerStart(
     JSContextRef ctx,
     JSObjectRef function,
@@ -177,6 +163,41 @@ static JSValueRef nativeQPLMarkerEnd(
     int16_t actionId = (int16_t) targets[2];
     int64_t timestamp = (int64_t) targets[3];
     JQuickPerformanceLoggerProvider::get()->markerEnd(markerId, instanceKey, actionId, timestamp);
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
+static JSValueRef nativeQPLMarkerTag(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  double targets[2];
+  if (isReady() && grabDoubles(2, targets, ctx, argumentCount, arguments, exception)) {
+    int32_t markerId = (int32_t) targets[0];
+    int32_t instanceKey = (int32_t) targets[1];
+    local_ref<jstring> tag = getJStringFromJSValueRef(ctx, arguments[2]);
+    JQuickPerformanceLoggerProvider::get()->markerTag(markerId, instanceKey, tag);
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
+static JSValueRef nativeQPLMarkerAnnotate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  double targets[2];
+  if (isReady() && grabDoubles(2, targets, ctx, argumentCount, arguments, exception)) {
+    int32_t markerId = (int32_t) targets[0];
+    int32_t instanceKey = (int32_t) targets[1];
+    local_ref<jstring> key = getJStringFromJSValueRef(ctx, arguments[2]);
+    local_ref<jstring> value = getJStringFromJSValueRef(ctx, arguments[3]);
+    JQuickPerformanceLoggerProvider::get()->markerAnnotate(markerId, instanceKey, key, value);
   }
   return JSValueMakeUndefined(ctx);
 }
@@ -230,12 +251,11 @@ static JSValueRef nativeQPLTimestamp(
   return JSValueMakeNumber(ctx, timestamp);
 }
 
-namespace facebook {
-namespace react {
-
 void addNativePerfLoggingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeQPLMarkerStart", nativeQPLMarkerStart);
   installGlobalFunction(ctx, "nativeQPLMarkerEnd", nativeQPLMarkerEnd);
+  installGlobalFunction(ctx, "nativeQPLMarkerTag", nativeQPLMarkerTag);
+  installGlobalFunction(ctx, "nativeQPLMarkerAnnotate", nativeQPLMarkerAnnotate);
   installGlobalFunction(ctx, "nativeQPLMarkerNote", nativeQPLMarkerNote);
   installGlobalFunction(ctx, "nativeQPLMarkerCancel", nativeQPLMarkerCancel);
   installGlobalFunction(ctx, "nativeQPLTimestamp", nativeQPLTimestamp);

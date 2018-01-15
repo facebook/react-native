@@ -28,11 +28,19 @@ const numberOfRetries = argv.retries || 1;
 const tryExecNTimes = require('./try-n-times');
 const path = require('path');
 
+// Flaky tests ignored on Circle CI. They still run internally at fb.
+const ignoredTests = [
+  'ReactScrollViewTestCase',
+  'ReactHorizontalScrollViewTestCase'
+];
+
 // ReactAndroid/src/androidTest/java/com/facebook/react/tests/ReactHorizontalScrollViewTestCase.java
 const testClasses = ls(`${argv.path}/*.java`)
 .map(javaFile => {
   // ReactHorizontalScrollViewTestCase
   return path.basename(javaFile, '.java');
+}).filter(className => {
+  return ignoredTests.indexOf(className) === -1;
 }).map(className => {
   // com.facebook.react.tests.ReactHorizontalScrollViewTestCase
   return argv.package + '.' + className;

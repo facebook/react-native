@@ -4,7 +4,8 @@ title: Generating Signed APK
 layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
-next: android-ui-performance
+banner: ejected
+next: android-building-from-source
 previous: headless-js-android
 ---
 
@@ -54,10 +55,12 @@ android {
     defaultConfig { ... }
     signingConfigs {
         release {
-            storeFile file(MYAPP_RELEASE_STORE_FILE)
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {

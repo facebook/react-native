@@ -14,29 +14,30 @@ We will do our best to keep `master` in good shape, with tests passing at all ti
 
 The core team will be monitoring for pull requests. When we get one, we'll run some Facebook-specific integration tests on it first. From here, we'll need to get another person to sign off on the changes and then merge the pull request. For API changes we may need to fix internal uses, which could cause some delay. We'll do our best to provide updates and feedback throughout the process.
 
-**Please submit your pull request on the `master` branch**. If the fix is critical and should be included in a stable branch please mention it and it will be cherry picked into it.
+**Please submit your pull request on the `master` branch**. If the fix is critical and should be included in a stable branch please mention it and it will be cherry picked into it by a project maintainer.
 
 *Before* submitting a pull request, please make sure the following is done…
 
 1. Fork the repo and create your branch from `master`.
-2. **Describe your test plan in your commit.** If you've added code that should be tested, add tests!
-3. If you've changed APIs, update the documentation.
-4. If you've updated the docs, verify the website locally and submit screenshots if applicable.
+2. **Describe your test plan in your commit.**
+  - If you've added code that should be tested, add tests!
+  - If you've changed APIs, update the documentation.
+  - If you've updated the docs, verify the website locally and submit screenshots if applicable.
 
-    ```
-    $ cd website
-    $ npm install && npm start
-    go to: http://localhost:8079/react-native/index.html
-    ```
+  ```
+  $ cd website
+  $ npm install && npm start
+  Open the following in your browser: http://localhost:8079/react-native/index.html
+  ```
 
-5. Add the copyright notice to the top of any new files you've added.
-6. Ensure tests pass on Travis and Circle CI.
-7. Make sure your code lints (`node linter.js <files touched>`).
-8. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
-9. Squash your commits (`git rebase -i`).
-   one intent alongs with one commit makes it clearer for people to review and easier to understand your intention
+3. Add the copyright notice to the top of any new files you've added.
+4. Ensure tests pass on Travis and Circle CI.
+5. Make sure your code lints (`node linter.js <files touched>`).
+6. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
+7. Squash your commits (`git rebase -i`).
+   One intent alongside one commit makes it clearer for people to review and easier to understand your intention.
 
-Note: It is not necessary to keep clicking `Merge master to your branch` on PR page. You would want to merge master if there are conflicts or tests are failing. The facebook-bot ultimately squashes all commits to a single one before merging your PR.
+> **Note:** It is not necessary to keep clicking `Merge master to your branch` on the PR page. You would want to merge master if there are conflicts or tests are failing. The Facebook-GitHub-Bot ultimately squashes all commits to a single one before merging your PR.
 
 #### Copyright Notice for files
 
@@ -69,7 +70,7 @@ We are using GitHub Issues for our public bugs. We keep a close eye on this and 
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [Sketch](https://sketch.expo.io/).
 
 ### Security Bugs
 
@@ -77,8 +78,8 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ## How to Get in Touch
 
-* [Facebook group](https://www.facebook.com/groups/react.native.community/)
-* Reactiflux — [#react-native](http://join.reactiflux.com/)
+* [Facebook](https://www.facebook.com/groups/react.native.community/)
+* [Twitter](https://www.twitter.com/reactnative)
 
 ## Style Guide
 

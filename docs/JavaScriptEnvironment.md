@@ -4,8 +4,8 @@ title: JavaScript Environment
 layout: docs
 category: Guides
 permalink: docs/javascript-environment.html
-next: navigation
-previous: testing
+next: direct-manipulation
+previous: timers
 ---
 
 ## JavaScript Runtime
@@ -65,9 +65,9 @@ Browser
 
 * [console.{log, warn, error, info, trace, table}](https://developer.chrome.com/devtools/docs/console-api)
 * [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
-* [XMLHttpRequest, fetch](/react-native/docs/network.html#content)
-* [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](/react-native/docs/timers.html#content)
-* [navigator.geolocation](/react-native/docs/geolocation.html#content)
+* [XMLHttpRequest, fetch](docs/network.html#content)
+* [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](docs/timers.html#content)
+* [navigator.geolocation](docs/geolocation.html#content)
 
 ES6
 

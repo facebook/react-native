@@ -11,12 +11,15 @@
  */
 'use strict';
 
+var DeviceInfo = require('DeviceInfo');
+var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
-var UIManager = require('UIManager');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
 
+var eventEmitter = new EventEmitter();
+var dimensionsInitialized = false;
 var dimensions = {};
 class Dimensions {
   /**
@@ -60,6 +63,15 @@ class Dimensions {
     }
 
     Object.assign(dimensions, dims);
+    if (dimensionsInitialized) {
+      // Don't fire 'change' the first time the dimensions are set.
+      eventEmitter.emit('change', {
+        window: dimensions.window,
+        screen: dimensions.screen
+      });
+    } else {
+      dimensionsInitialized = true;
+    }
   }
 
   /**
@@ -81,9 +93,42 @@ class Dimensions {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }
+
+  /**
+   * Add an event handler. Supported events:
+   *
+   * - `change`: Fires when a property within the `Dimensions` object changes. The argument
+   *   to the event handler is an object with `window` and `screen` properties whose values
+   *   are the same as the return values of `Dimensions.get('window')` and
+   *   `Dimensions.get('screen')`, respectively.
+   */
+  static addEventListener(
+    type: string,
+    handler: Function
+  ) {
+    invariant(
+      'change' === type,
+      'Trying to subscribe to unknown event: "%s"', type
+    );
+    eventEmitter.addListener(type, handler);
+  }
+
+  /**
+   * Remove an event handler.
+   */
+  static removeEventListener(
+    type: string,
+    handler: Function
+  ) {
+    invariant(
+      'change' === type,
+      'Trying to remove listener for unknown event: "%s"', type
+    );
+    eventEmitter.removeListener(type, handler);
+  }
 }
 
-Dimensions.set(UIManager.Dimensions);
+Dimensions.set(DeviceInfo.Dimensions);
 RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
   Dimensions.set(update);
 });

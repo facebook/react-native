@@ -36,7 +36,7 @@ public enum YogaJustify {
       case 2: return FLEX_END;
       case 3: return SPACE_BETWEEN;
       case 4: return SPACE_AROUND;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

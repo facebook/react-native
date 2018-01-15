@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -26,12 +25,16 @@ import android.view.WindowManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
@@ -39,6 +42,9 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.systrace.Systrace;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -68,7 +74,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
-  private @Nullable Bundle mLaunchOptions;
+  private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
@@ -197,7 +203,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle launchOptions) {
+      @Nullable Bundle initialProperties) {
     UiThreadUtil.assertOnUiThread();
 
     // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
@@ -209,7 +215,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
-    mLaunchOptions = launchOptions;
+    mAppProperties = initialProperties;
 
     if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
       mReactInstanceManager.createReactContextInBackground();
@@ -249,8 +255,46 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     return Assertions.assertNotNull(mJSModuleName);
   }
 
-  /* package */ @Nullable Bundle getLaunchOptions() {
-    return mLaunchOptions;
+  public @Nullable Bundle getAppProperties() {
+    return mAppProperties;
+  }
+
+  public void setAppProperties(@Nullable Bundle appProperties) {
+    UiThreadUtil.assertOnUiThread();
+    mAppProperties = appProperties;
+    runApplication();
+  }
+
+  /**
+   * Calls into JS to start the React application. Can be called multiple times with the
+   * same rootTag, which will re-render the application from the root.
+   */
+  /* package */ void runApplication() {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+    try {
+      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+        return;
+      }
+
+      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactContext == null) {
+        return;
+      }
+
+      CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", getRootViewTag());
+      @Nullable Bundle appProperties = getAppProperties();
+      if (appProperties != null) {
+        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+      }
+
+      String jsAppModuleName = getJSModuleName();
+      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /**
@@ -394,27 +438,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
 
     private void emitUpdateDimensionsEvent() {
-      DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-      DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-      WritableMap windowDisplayMetricsMap = Arguments.createMap();
-      windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-      windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-      windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-      windowDisplayMetricsMap.putDouble("fontScale", windowDisplayMetrics.scaledDensity);
-      windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-      WritableMap screenDisplayMetricsMap = Arguments.createMap();
-      screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-      screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-      screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-      screenDisplayMetricsMap.putDouble("fontScale", screenDisplayMetrics.scaledDensity);
-      screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-      WritableMap dimensionsMap = Arguments.createMap();
-      dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-      dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-      sendEvent("didUpdateDimensions", dimensionsMap);
+      mReactInstanceManager
+          .getCurrentReactContext()
+          .getNativeModule(DeviceInfoModule.class)
+          .emitUpdateDimensionsEvent();
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {

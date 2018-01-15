@@ -13,6 +13,10 @@
 
 using namespace std::placeholders;
 
+namespace facebook { namespace react {
+  class Instance;
+}}
+
 namespace facebook { namespace xplat { namespace module {
 
 /**
@@ -46,6 +50,8 @@ class CxxModule {
   class SyncTagType {};
 
 public:
+  typedef std::function<std::unique_ptr<CxxModule>()> Provider;
+
   typedef std::function<void(std::vector<folly::dynamic>)> Callback;
 
   constexpr static AsyncTagType AsyncTag = AsyncTagType();
@@ -157,6 +163,26 @@ public:
    * @return a list of methods this module exports to JS.
    */
   virtual auto getMethods() -> std::vector<Method> = 0;
+
+  /**
+   *  Called during the construction of CxxNativeModule.
+   */
+  void setInstance(std::weak_ptr<react::Instance> instance) {
+    instance_ = instance;
+  }
+
+  /**
+   * @return a weak_ptr to the current instance of the bridge.
+   * When used with CxxNativeModule, this gives Cxx modules access to functions
+   * such as `callJSFunction`, allowing them to communicate back to JS outside
+   * of the regular callbacks.
+   */
+  std::weak_ptr<react::Instance> getInstance() {
+    return instance_;
+  }
+
+private:
+  std::weak_ptr<react::Instance> instance_;
 };
 
 }}}

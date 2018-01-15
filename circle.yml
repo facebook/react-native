@@ -19,13 +19,13 @@ dependencies:
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
     - cd /home/ubuntu/buck && ant
     - buck --version
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
     - buck fetch ReactAndroid/src/main/java/com/facebook/react
     - buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
     - buck fetch ReactAndroid/src/test/...
     - buck fetch ReactAndroid/src/androidTest/...
-    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
-    - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+    - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
     # CIRCLE_NPM_TOKEN is in React Native project settings in Circle CI.
     # It was generated for bestander user, easy to replace with anyone's else
     - echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
@@ -49,7 +49,7 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
-    # eslint bot
+    # eslint bot. This GitHub token grants public_repo access scope.
     - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
     # JS tests for dependencies installed with npm3
     - npm run flow -- check
@@ -73,10 +73,10 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+    # - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     # Android e2e test
-    # Commented out because of odd breaks. TODO: re-enable this
+    # disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
     # - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
     # testing docs generation
@@ -100,3 +100,10 @@ deployment:
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages
       - node ./scripts/publish-npm.js
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+        - /.*-stable/

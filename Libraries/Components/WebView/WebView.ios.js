@@ -14,11 +14,13 @@
 var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
@@ -28,7 +30,6 @@ var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
@@ -117,7 +118,7 @@ class WebView extends React.Component {
   static NavigationType = NavigationType;
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -253,7 +254,7 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Determines the types of data converted to clickable URLs in the web view’s content.
@@ -334,6 +335,28 @@ class WebView extends React.Component {
      * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Function that accepts a string that will be passed to the WebView and
+     * executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.func,
+
+    /**
+     * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
+     *
+     * Possible values for `mixedContentMode` are:
+     *
+     * - `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
+     * - `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+     * - `'compatibility'` -  WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+     * @platform android
+     */
+    mixedContentMode: PropTypes.oneOf([
+      'never',
+      'always',
+      'compatibility'
+    ]),
   };
 
   state = {
@@ -486,6 +509,20 @@ class WebView extends React.Component {
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
       [String(data)]
+    );
+  };
+
+  /**
+  * Injects a javascript string into the referenced WebView. Deliberately does not
+  * return a response because using eval() to return a response breaks this method
+  * on pages with a Content Security Policy that disallows eval(). If you need that
+  * functionality, look into postMessage/onMessage.
+  */
+  injectJavaScript = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.injectJavaScript,
+      [data]
     );
   };
 

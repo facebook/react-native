@@ -21,12 +21,6 @@ local_ref<WritableNativeMap::jhybriddata> WritableNativeMap::initHybrid(alias_re
   return makeCxxInstance();
 }
 
-folly::dynamic WritableNativeMap::consume() {
-  throwIfConsumed();
-  isConsumed = true;
-  return std::move(map_);
-}
-
 void WritableNativeMap::putNull(std::string key) {
   throwIfConsumed();
   map_.insert(std::move(key), nullptr);
@@ -56,26 +50,22 @@ void WritableNativeMap::putString(std::string key, alias_ref<jstring> val) {
   map_.insert(std::move(key), val->toString());
 }
 
-void WritableNativeMap::putNativeArray(std::string key, alias_ref<WritableNativeArray::jhybridobject> val) {
-  if (!val) {
+void WritableNativeMap::putNativeArray(std::string key, WritableNativeArray* otherArray) {
+  if (!otherArray) {
     putNull(std::move(key));
     return;
   }
   throwIfConsumed();
-  auto array = val->cthis();
-  exceptions::throwIfObjectAlreadyConsumed(array, "Array to put already consumed");
-  map_.insert(key, std::move(array->array));
-  array->isConsumed = true;
+  map_.insert(key, otherArray->consume());
 }
 
-void WritableNativeMap::putNativeMap(std::string key, alias_ref<jhybridobject> val) {
-  if (!val) {
+void WritableNativeMap::putNativeMap(std::string key, WritableNativeMap *otherMap) {
+  if (!otherMap) {
     putNull(std::move(key));
     return;
   }
   throwIfConsumed();
-  auto other = val->cthis();
-  map_.insert(std::move(key), other->consume());
+  map_.insert(std::move(key), otherMap->consume());
 }
 
 void WritableNativeMap::mergeNativeMap(ReadableNativeMap* other) {

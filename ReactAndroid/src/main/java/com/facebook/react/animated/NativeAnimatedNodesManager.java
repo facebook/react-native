@@ -29,8 +29,11 @@ import com.facebook.react.uimanager.events.EventDispatcherListener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
 
@@ -54,10 +57,14 @@ import javax.annotation.Nullable;
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
-  private final Map<String, EventAnimationDriver> mEventDrivers = new HashMap<>();
+  // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
+  // there will be only one driver per mapping so all code code should be optimized around that.
+  private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
   private final Map<String, Map<String, String>> mCustomEventTypes;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
+  // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
+  private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
@@ -309,11 +316,32 @@ import javax.annotation.Nullable;
     }
 
     EventAnimationDriver event = new EventAnimationDriver(pathList, (ValueAnimatedNode) node);
-    mEventDrivers.put(viewTag + eventName, event);
+    String key = viewTag + eventName;
+    if (mEventDrivers.containsKey(key)) {
+      mEventDrivers.get(key).add(event);
+    } else {
+      List<EventAnimationDriver> drivers = new ArrayList<>(1);
+      drivers.add(event);
+      mEventDrivers.put(key, drivers);
+    }
   }
 
-  public void removeAnimatedEventFromView(int viewTag, String eventName) {
-    mEventDrivers.remove(viewTag + eventName);
+  public void removeAnimatedEventFromView(int viewTag, String eventName, int animatedValueTag) {
+    String key = viewTag + eventName;
+    if (mEventDrivers.containsKey(key)) {
+      List<EventAnimationDriver> driversForKey = mEventDrivers.get(key);
+      if (driversForKey.size() == 1) {
+        mEventDrivers.remove(viewTag + eventName);
+      } else {
+        ListIterator<EventAnimationDriver> it = driversForKey.listIterator();
+        while (it.hasNext()) {
+          if (it.next().mValueNode.mTag == animatedValueTag) {
+            it.remove();
+            break;
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -331,10 +359,14 @@ import javax.annotation.Nullable;
         eventName = customEventType.get("registrationName");
       }
 
-      EventAnimationDriver eventDriver = mEventDrivers.get(event.getViewTag() + eventName);
-      if (eventDriver != null) {
-        event.dispatch(eventDriver);
-        mUpdatedNodes.put(eventDriver.mValueNode.mTag, eventDriver.mValueNode);
+      List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
+      if (driversForKey != null) {
+        for (EventAnimationDriver driver : driversForKey) {
+          event.dispatch(driver);
+          mRunUpdateNodeList.add(driver.mValueNode);
+        }
+        updateNodes(mRunUpdateNodeList);
+        mRunUpdateNodeList.clear();
       }
     }
   }
@@ -353,15 +385,52 @@ import javax.annotation.Nullable;
    */
   public void runUpdates(long frameTimeNanos) {
     UiThreadUtil.assertOnUiThread();
-    int activeNodesCount = 0;
-    int updatedNodesCount = 0;
     boolean hasFinishedAnimations = false;
 
+    for (int i = 0; i < mUpdatedNodes.size(); i++) {
+      AnimatedNode node = mUpdatedNodes.valueAt(i);
+      mRunUpdateNodeList.add(node);
+    }
+
+    // Clean mUpdatedNodes queue
+    mUpdatedNodes.clear();
+
+    for (int i = 0; i < mActiveAnimations.size(); i++) {
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
+      animation.runAnimationStep(frameTimeNanos);
+      AnimatedNode valueNode = animation.mAnimatedValue;
+      mRunUpdateNodeList.add(valueNode);
+      if (animation.mHasFinished) {
+        hasFinishedAnimations = true;
+      }
+    }
+
+    updateNodes(mRunUpdateNodeList);
+    mRunUpdateNodeList.clear();
+
+    // Cleanup finished animations. Iterate over the array of animations and override ones that has
+    // finished, then resize `mActiveAnimations`.
+    if (hasFinishedAnimations) {
+      for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
+        AnimationDriver animation = mActiveAnimations.valueAt(i);
+        if (animation.mHasFinished) {
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", true);
+          animation.mEndCallback.invoke(endCallbackResponse);
+          mActiveAnimations.removeAt(i);
+        }
+      }
+    }
+  }
+
+  private void updateNodes(List<AnimatedNode> nodes) {
+    int activeNodesCount = 0;
+    int updatedNodesCount = 0;
+
     // STEP 1.
-    // BFS over graph of nodes starting from ones from `mUpdatedNodes` and ones that are attached to
-    // active animations (from `mActiveAnimations)`. Update `mIncomingNodes` attribute for each node
-    // during that BFS. Store number of visited nodes in `activeNodesCount`. We "execute" active
-    // animations as a part of this step.
+    // BFS over graph of nodes. Update `mIncomingNodes` attribute for each node during that BFS.
+    // Store number of visited nodes in `activeNodesCount`. We "execute" active animations as a part
+    // of this step.
 
     mAnimatedGraphBFSColor++; /* use new color */
     if (mAnimatedGraphBFSColor == AnimatedNode.INITIAL_BFS_COLOR) {
@@ -371,26 +440,11 @@ import javax.annotation.Nullable;
     }
 
     Queue<AnimatedNode> nodesQueue = new ArrayDeque<>();
-    for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.valueAt(i);
+    for (AnimatedNode node : nodes) {
       if (node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         activeNodesCount++;
         nodesQueue.add(node);
-      }
-    }
-
-    for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.valueAt(i);
-      animation.runAnimationStep(frameTimeNanos);
-      AnimatedNode valueNode = animation.mAnimatedValue;
-      if (valueNode.mBFSColor != mAnimatedGraphBFSColor) {
-        valueNode.mBFSColor = mAnimatedGraphBFSColor;
-        activeNodesCount++;
-        nodesQueue.add(valueNode);
-      }
-      if (animation.mHasFinished) {
-        hasFinishedAnimations = true;
       }
     }
 
@@ -425,21 +479,11 @@ import javax.annotation.Nullable;
 
     // find nodes with zero "incoming nodes", those can be either nodes from `mUpdatedNodes` or
     // ones connected to active animations
-    for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.valueAt(i);
+    for (AnimatedNode node : nodes) {
       if (node.mActiveIncomingNodes == 0 && node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         updatedNodesCount++;
         nodesQueue.add(node);
-      }
-    }
-    for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.valueAt(i);
-      AnimatedNode valueNode = animation.mAnimatedValue;
-      if (valueNode.mActiveIncomingNodes == 0 && valueNode.mBFSColor != mAnimatedGraphBFSColor) {
-        valueNode.mBFSColor = mAnimatedGraphBFSColor;
-        updatedNodesCount++;
-        nodesQueue.add(valueNode);
       }
     }
 
@@ -485,23 +529,6 @@ import javax.annotation.Nullable;
     if (activeNodesCount != updatedNodesCount) {
       throw new IllegalStateException("Looks like animated nodes graph has cycles, there are "
         + activeNodesCount + " but toposort visited only " + updatedNodesCount);
-    }
-
-    // Clean mUpdatedNodes queue
-    mUpdatedNodes.clear();
-
-    // Cleanup finished animations. Iterate over the array of animations and override ones that has
-    // finished, then resize `mActiveAnimations`.
-    if (hasFinishedAnimations) {
-      for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
-        AnimationDriver animation = mActiveAnimations.valueAt(i);
-        if (animation.mHasFinished) {
-          WritableMap endCallbackResponse = Arguments.createMap();
-          endCallbackResponse.putBoolean("finished", true);
-          animation.mEndCallback.invoke(endCallbackResponse);
-          mActiveAnimations.removeAt(i);
-        }
-      }
     }
   }
 }

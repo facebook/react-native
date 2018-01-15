@@ -14,11 +14,12 @@ const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
 
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');
+const relativizeSourceMap = require('../../../../packager/src//lib/relativizeSourceMap');
 const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-import type ModuleTransport from '../../../../packager/react-packager/src/lib/ModuleTransport';
+import type ModuleTransport from '../../../../packager/src//lib/ModuleTransport';
 import type {Bundle, ModuleGroups, OutputOptions} from '../../types.flow';
 
 const SIZEOF_UINT32 = 4;
@@ -39,6 +40,7 @@ function saveAsIndexedFile(
     bundleOutput,
     bundleEncoding: encoding,
     sourcemapOutput,
+    sourcemapSourcesRoot,
   } = options;
 
   log('start');
@@ -55,11 +57,14 @@ function saveAsIndexedFile(
   ).then(() => log('Done writing unbundle output'));
 
   const sourceMap =
-    buildSourceMapWithMetaData({
-      startupModules: startupModules.concat(),
-      lazyModules: lazyModules.concat(),
-      moduleGroups,
-    });
+    relativizeSourceMap(
+      buildSourceMapWithMetaData({
+        startupModules: startupModules.concat(),
+        lazyModules: lazyModules.concat(),
+        moduleGroups,
+      }),
+      sourcemapSourcesRoot
+    );
 
   return Promise.all([
     writeUnbundle,

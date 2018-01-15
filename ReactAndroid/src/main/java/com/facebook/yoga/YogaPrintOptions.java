@@ -32,7 +32,7 @@ public enum YogaPrintOptions {
       case 1: return LAYOUT;
       case 2: return STYLE;
       case 4: return CHILDREN;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

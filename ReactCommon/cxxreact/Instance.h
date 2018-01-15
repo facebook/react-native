@@ -4,11 +4,10 @@
 
 #include <memory>
 
+#include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/NativeModule.h>
+#include <cxxreact/NativeToJsBridge.h>
 #include <folly/dynamic.h>
-
-#include "NativeToJsBridge.h"
-#include "ModuleRegistry.h"
-#include "NativeModule.h"
 
 namespace facebook {
 namespace react {
@@ -20,9 +19,6 @@ struct InstanceCallback {
   virtual void onBatchComplete() = 0;
   virtual void incrementPendingJSCalls() = 0;
   virtual void decrementPendingJSCalls() = 0;
-  virtual void onNativeException(const std::string& what) = 0;
-  virtual ExecutorToken createExecutorToken() = 0;
-  virtual void onExecutorStopped(ExecutorToken) = 0;
 };
 
 class Instance {
@@ -32,12 +28,13 @@ class Instance {
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry);
+
+  void setSourceURL(std::string sourceURL);
+
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromStringSync(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
-  void loadScriptFromOptimizedBundle(std::string bundlePath, std::string sourceURL, int flags);
   void loadUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
@@ -51,11 +48,9 @@ class Instance {
   void stopProfiler(const std::string& title, const std::string& filename);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
-  void callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
-                      folly::dynamic&& params);
-  void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
-                                              unsigned int methodId, folly::dynamic&& args);
+  void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
+  void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
+  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
   // This method is experimental, and may be modified or removed.
   template <typename T>
   Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
@@ -63,13 +58,12 @@ class Instance {
     return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
   }
 
-  ExecutorToken getMainExecutorToken();
   void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
 
  private:
-  void callNativeModules(ExecutorToken token, folly::dynamic&& calls, bool isEndOfBatch);
+  void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;

@@ -13,17 +13,17 @@
  */
 'use strict';
 
-import type { ResolvedAssetSource } from 'AssetSourceResolver';
-
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
-const { SourceCode } = require('NativeModules');
+const NativeModules = require('NativeModules');
+
+import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
 let _customSourceTransformer, _serverURL, _bundleSourcePath;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
-    var scriptURL = SourceCode.scriptURL;
+    var scriptURL = NativeModules.SourceCode.scriptURL;
     var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
       // Bundle was loaded from network
@@ -38,7 +38,7 @@ function getDevServerURL(): ?string {
 
 function getBundleSourcePath(): ?string {
   if (_bundleSourcePath === undefined) {
-    const scriptURL = SourceCode.scriptURL;
+    const scriptURL = NativeModules.SourceCode.scriptURL;
     if (!scriptURL) {
       // scriptURL is falsy, we have nothing to go on here
       _bundleSourcePath = null;

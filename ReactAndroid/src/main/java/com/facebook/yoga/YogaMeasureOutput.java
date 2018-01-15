@@ -15,18 +15,20 @@ package com.facebook.yoga;
 public class YogaMeasureOutput {
 
   public static long make(float width, float height) {
-    return make((int) width, (int) height);
+    final int wBits = Float.floatToRawIntBits(width);
+    final int hBits = Float.floatToRawIntBits(height);
+    return ((long) wBits) << 32 | ((long) hBits);
   }
 
   public static long make(int width, int height) {
-    return ((long) width) << 32 | ((long) height);
+    return make((float) width, (float) height);
   }
 
-  public static int getWidth(long measureOutput) {
-    return (int) (0xFFFFFFFF & (measureOutput >> 32));
+  public static float getWidth(long measureOutput) {
+    return Float.intBitsToFloat((int) (0xFFFFFFFF & (measureOutput >> 32)));
   }
 
-  public static int getHeight(long measureOutput) {
-    return (int) (0xFFFFFFFF & measureOutput);
+  public static float getHeight(long measureOutput) {
+    return Float.intBitsToFloat((int) (0xFFFFFFFF & measureOutput));
   }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -52,7 +53,7 @@ public class InspectorPackagerConnection {
     try {
       JSONObject payload = makePageIdPayload(pageId);
       sendEvent("open", payload);
-    } catch (JSONException | IOException e) {
+    } catch (JSONException e) {
       FLog.e(TAG, "Failed to open page", e);
     }
   }
@@ -85,7 +86,7 @@ public class InspectorPackagerConnection {
     mInspectorConnections.clear();
   }
 
-  private void handleConnect(JSONObject payload) throws JSONException, IOException {
+  private void handleConnect(JSONObject payload) throws JSONException {
     final String pageId = payload.getString("pageId");
     Inspector.LocalConnection inspectorConnection = mInspectorConnections.remove(pageId);
     if (inspectorConnection != null) {
@@ -99,7 +100,7 @@ public class InspectorPackagerConnection {
         public void onMessage(String message) {
           try {
             sendWrappedEvent(pageId, message);
-          } catch (IOException | JSONException e) {
+          } catch (JSONException e) {
             FLog.w(TAG, "Couldn't send event to packager", e);
           }
         }
@@ -109,7 +110,7 @@ public class InspectorPackagerConnection {
           try {
             mInspectorConnections.remove(pageId);
             sendEvent("disconnect", makePageIdPayload(pageId));
-          } catch (IOException | JSONException e) {
+          } catch (JSONException e) {
             FLog.w(TAG, "Couldn't send event to packager", e);
           }
         }
@@ -131,7 +132,7 @@ public class InspectorPackagerConnection {
     inspectorConnection.disconnect();
   }
 
-  private void handleWrappedEvent(JSONObject payload) throws JSONException, IOException {
+  private void handleWrappedEvent(JSONObject payload) throws JSONException {
     final String pageId = payload.getString("pageId");
     String wrappedEvent = payload.getString("wrappedEvent");
     Inspector.LocalConnection inspectorConnection = mInspectorConnections.get(pageId);
@@ -153,7 +154,7 @@ public class InspectorPackagerConnection {
     return array;
   }
 
-  private void sendWrappedEvent(String pageId, String message) throws IOException, JSONException {
+  private void sendWrappedEvent(String pageId, String message) throws JSONException {
     JSONObject payload = new JSONObject();
     payload.put("pageId", pageId);
     payload.put("wrappedEvent", message);
@@ -161,7 +162,7 @@ public class InspectorPackagerConnection {
   }
 
   private void sendEvent(String name, Object payload)
-      throws JSONException, IOException {
+      throws JSONException {
     JSONObject jsonMessage = new JSONObject();
     jsonMessage.put("event", name);
     jsonMessage.put("payload", payload);
@@ -276,12 +277,21 @@ public class InspectorPackagerConnection {
       }
     }
 
-    public void send(JSONObject object) throws IOException {
-      if (mWebSocket == null) {
-        return;
-      }
-
-      mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, object.toString()));
+    public void send(final JSONObject object) {
+      new AsyncTask<WebSocket, Void, Void>() {
+        @Override
+        protected Void doInBackground(WebSocket... sockets) {
+          if (sockets == null || sockets.length == 0) {
+            return null;
+          }
+          try {
+            sockets[0].sendMessage(RequestBody.create(WebSocket.TEXT, object.toString()));
+          } catch (IOException e) {
+            FLog.w(TAG, "Couldn't send event to packager", e);
+          }
+          return null;
+        }
+      }.execute(mWebSocket);
     }
 
     private void abort(String message, Throwable cause) {

@@ -4,8 +4,8 @@ title: Platform Specific Code
 layout: docs
 category: Guides
 permalink: docs/platform-specific-code.html
-next: gesture-responder-system
-previous: upgrading
+next: debugging
+previous: colors
 ---
 
 When building a cross-platform app, you'll want to re-use as much code as possible. Scenarios may arise where it makes sense for the code to be different, for example you may want to implement separate visual components for iOS and Android.

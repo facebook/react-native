@@ -18,7 +18,7 @@ if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
 
   if [ -d "/opt/facebook" ]; then
-    SUGGESTED="ff27d5270ecaa92727cd5a19954e62298fa78f09"
+    SUGGESTED="b9b76a3a5a086eb440a26d1db9b0731875975099"
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
     echo "the open source version of Buck forbids that."

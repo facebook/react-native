@@ -8,10 +8,9 @@
 #include <vector>
 
 #include <folly/dynamic.h>
-
 #include <jschelpers/JavaScriptCore.h>
-#include <jschelpers/noncopyable.h>
 #include <jschelpers/Unicode.h>
+#include <jschelpers/noncopyable.h>
 
 namespace facebook {
 namespace react {
@@ -19,29 +18,33 @@ namespace react {
 class Value;
 class Context;
 
-class JSException : public std::runtime_error {
+class JSException : public std::exception {
 public:
   explicit JSException(const char* msg)
-    : std::runtime_error(msg)
-    , stack_("") {}
+    : msg_(msg), stack_("") {}
 
   JSException(const char* msg, const char* stack)
-    : std::runtime_error(msg)
-    , stack_(stack) {}
+    : msg_(msg), stack_(stack) {}
 
   const std::string& getStack() const {
     return stack_;
   }
 
+  virtual const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
 private:
+  std::string msg_;
   std::string stack_;
 };
 
 class String : public noncopyable {
 public:
-  explicit String(JSContextRef context, const char* utf8) :
-    m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8))
-  {}
+  explicit String(): m_context(nullptr), m_string(nullptr) {} // dummy empty constructor
+
+  explicit String(JSContextRef context, const char* utf8)
+  : m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8)) {}
 
   String(String&& other) :
     m_context(other.m_context), m_string(other.m_string)
@@ -63,18 +66,30 @@ public:
     }
   }
 
+  String& operator=(String&& other) {
+    if (m_string) {
+      JSC_JSStringRelease(m_context, m_string);
+    }
+
+    m_context = other.m_context;
+    m_string = other.m_string;
+    other.m_string = nullptr;
+
+    return *this;
+  }
+
   operator JSStringRef() const {
     return m_string;
   }
 
   // Length in characters
   size_t length() const {
-    return JSC_JSStringGetLength(m_context, m_string);
+    return m_string ? JSC_JSStringGetLength(m_context, m_string) : 0;
   }
 
   // Length in bytes of a null-terminated utf8 encoded value
   size_t utf8Size() const {
-    return JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string);
+    return m_string ? JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string) : 0;
   }
 
   /*
@@ -92,14 +107,17 @@ public:
    * https://mathiasbynens.be/notes/javascript-unicode
    */
   std::string str() const {
+    if (!m_string) {
+      return "";
+    }
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
-    int stringLength = JSC_JSStringGetLength(m_context, m_string);
+    size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 
   // Assumes that utf8 is null terminated
   bool equals(const char* utf8) {
-    return JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8);
+    return m_string ? JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8) : false;
   }
 
   // This assumes ascii is nul-terminated.
@@ -231,9 +249,16 @@ private:
 
 class Value : public noncopyable {
 public:
-  Value(JSContextRef context, JSValueRef value);
-  Value(JSContextRef context, JSStringRef value);
-  Value(Value&&);
+  __attribute__((visibility("default"))) Value(JSContextRef context, JSValueRef value);
+  __attribute__((visibility("default"))) Value(JSContextRef context, JSStringRef value);
+  __attribute__((visibility("default"))) Value(Value&&);
+
+  Value& operator=(Value&& other) {
+    m_context = other.m_context;
+    m_value = other.m_value;
+    other.m_value = NULL;
+    return *this;
+  };
 
   operator JSValueRef() const {
     return m_value;
@@ -303,10 +328,14 @@ public:
     return Value(ctx, JSC_JSValueMakeUndefined(ctx));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
-  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
-  JSContextRef context() const;
+  static Value makeNull(JSContextRef ctx) {
+    return Value(ctx, JSC_JSValueMakeNull(ctx));
+  }
+
+  __attribute__((visibility("default"))) std::string toJSONString(unsigned indent = 0) const;
+  __attribute__((visibility("default"))) static Value fromJSON(JSContextRef ctx, const String& json);
+  __attribute__((visibility("default"))) static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
+  __attribute__((visibility("default"))) JSContextRef context() const;
 protected:
   JSContextRef m_context;
   JSValueRef m_value;

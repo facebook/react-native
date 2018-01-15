@@ -112,12 +112,6 @@ Upgrading based on Git is a big improvement in developer experience and it is im
 
 One more reason is the recent [Yeoman wipeout](https://twitter.com/martinkonicek/status/800730190141857793) by Martin Konicek. We didn't want to get these Yeoman dependencies back into the `react-native` package to be able to evaluate the old template in order to create the patch.
 
-## Looking ahead
-
-The logic behind `react-native-git-upgrade` described above is going to power the standard `react-native upgrade` starting with React Native version 0.40.0.
-
-This means that if you are upgrading __from version 0.40.0 or higher__, you will be able to simply run `react-native upgrade` in your project without having to install anything globally. The `react-native-git-upgrade` is provided so anyone can enjoy this improved experience today while using older versions of React Native.
-
 ## Try it out and provide feedback
 
 As a conclusion, I would say, enjoy the feature and feel free [to suggest improvements, report issues](https://github.com/facebook/react-native/issues) and especially [send pull requests](https://github.com/facebook/react-native/pulls). Each environment is a bit different and each React Native project is different, and we need your feedback to make this work well for everyone.

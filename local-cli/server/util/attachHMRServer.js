@@ -5,24 +5,38 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
+const getInverseDependencies = require('../../../packager/src//node-haste/lib/getInverseDependencies');
 const querystring = require('querystring');
 const url = require('url');
 
-const {createEntry, print} = require('../../../packager/react-packager/src/Logger');
-const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
+import type HMRBundle from '../../../packager/src/Bundler/HMRBundle';
+import type Server from '../../../packager/src/Server';
+import type ResolutionResponse
+  from '../../../packager/src/node-haste/DependencyGraph/ResolutionResponse';
+import type Module from '../../../packager/src/node-haste/Module';
+import type {Server as HTTPServer} from 'http';
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
 ];
 
+type HMROptions = {
+  httpServer: HTTPServer,
+  path: string,
+  packagerServer: Server,
+};
+
 /**
  * Attaches a WebSocket based connection to the Packager to expose
  * Hot Module Replacement updates to the simulator.
  */
-function attachHMRServer({httpServer, path, packagerServer}) {
+function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
   let client = null;
 
   function disconnect() {
@@ -34,44 +48,55 @@ function attachHMRServer({httpServer, path, packagerServer}) {
   //   - The full list of dependencies.
   //   - The shallow dependencies each file on the dependency list has
   //   - Inverse shallow dependencies map
-  function getDependencies(platform, bundleEntry) {
+  function getDependencies(platform: string, bundleEntry: string): Promise<{
+    dependenciesCache: Array<string>,
+    dependenciesModulesCache: {[mixed]: Module},
+    shallowDependencies: {[string]: Array<Module>},
+    inverseDependenciesCache: mixed,
+    resolutionResponse: ResolutionResponse<Module, *>,
+  }> {
     return packagerServer.getDependencies({
-      platform: platform,
       dev: true,
-      hot: true,
       entryFile: bundleEntry,
+      hot: true,
+      minify: false,
+      platform: platform,
+      recursive: true,
     }).then(response => {
-      const {getModuleId} = response;
+      /* $FlowFixMe: getModuleId might be null */
+      const {getModuleId}: {getModuleId: () => number} = response;
 
       // for each dependency builds the object:
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
-      return Promise.all(Object.values(response.dependencies).map(dep => {
+      return Promise.all(response.dependencies.map((dep: Module) => {
         return dep.getName().then(depName => {
           if (dep.isAsset() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
           return packagerServer.getShallowDependencies({
-            platform: platform,
             dev: true,
+            entryFile: dep.path,
             hot: true,
-            entryFile: dep.path
-          })
-            .then(deps => {
-              return {
-                path: dep.path,
-                name: depName,
-                deps,
-              };
-            });
+            minify: false,
+            platform: platform,
+            recursive: true,
+          }).then(deps => {
+            return {
+              path: dep.path,
+              name: depName,
+              deps,
+            };
+          });
         });
       }))
-      .then(deps => {
+      .then((deps: Array<{path: string, name?: string, deps: Array<Module>}>) => {
         // list with all the dependencies' filenames the bundle entry has
         const dependenciesCache = response.dependencies.map(dep => dep.path);
 
         // map from module name to path
         const moduleToFilenameCache = Object.create(null);
         deps.forEach(dep => {
+          /* $FlowFixMe: `name` could be null, but `deps` would be as well. */
           moduleToFilenameCache[dep.name] = dep.path;
         });
 
@@ -114,9 +139,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  print(createEntry(`HMR Server listening on ${path}`));
   wss.on('connection', ws => {
-    print(createEntry('HMR Client connected'));
+    /* $FlowFixMe: url might be null */
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
@@ -140,7 +164,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           if (!client) {
             return;
           }
-          print(createEntry('HMR Server detected file change'));
 
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
@@ -154,10 +177,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           const promise = type === 'delete'
             ? Promise.resolve()
             : packagerServer.getShallowDependencies({
-                entryFile: filename,
-                platform: client.platform,
                 dev: true,
+                minify: false,
+                entryFile: filename,
                 hot: true,
+                platform: client.platform,
+                recursive: true,
               }).then(deps => {
                 if (!client) {
                   return [];
@@ -173,15 +198,16 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   // specific response we can compute a non recursive one which
                   // is the least we need and improve performance.
                   return packagerServer.getDependencies({
-                    platform: client.platform,
                     dev: true,
-                    hot: true,
                     entryFile: filename,
+                    hot: true,
+                    minify: false,
+                    platform: client.platform,
                     recursive: true,
                   }).then(response => {
-                    const module = packagerServer.getModuleForPath(filename);
-
-                    return response.copy({dependencies: [module]});
+                    return packagerServer.getModuleForPath(filename).then(module => {
+                      return response.copy({dependencies: [module]});
+                    });
                   });
                 }
 
@@ -199,32 +225,36 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                       return {};
                     }
 
-                    // build list of modules for which we'll send HMR updates
-                    const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
-                    Object.keys(depsModulesCache).forEach(module => {
-                      if (!client.dependenciesModulesCache[module]) {
-                        modulesToUpdate.push(depsModulesCache[module]);
-                      }
-                    });
+                    const nonNullClient = client;
 
-                    // Need to send modules to the client in an order it can
-                    // process them: if a new dependency graph was uncovered
-                    // because a new dependency was added, the file that was
-                    // changed, which is the root of the dependency tree that
-                    // will be sent, needs to be the last module that gets
-                    // processed. Reversing the new modules makes sense
-                    // because we get them through the resolver which returns
-                    // a BFS ordered list.
-                    modulesToUpdate.reverse();
+                    return packagerServer.getModuleForPath(filename).then(moduleToUpdate => {
+                      // build list of modules for which we'll send HMR updates
+                      const modulesToUpdate = [moduleToUpdate];
+                      Object.keys(depsModulesCache).forEach(module => {
+                        if (!nonNullClient.dependenciesModulesCache[module]) {
+                          modulesToUpdate.push(depsModulesCache[module]);
+                        }
+                      });
 
-                    // invalidate caches
-                    client.dependenciesCache = depsCache;
-                    client.dependenciesModulesCache = depsModulesCache;
-                    client.shallowDependencies = shallowDeps;
-                    client.inverseDependenciesCache = inverseDepsCache;
+                      // Need to send modules to the client in an order it can
+                      // process them: if a new dependency graph was uncovered
+                      // because a new dependency was added, the file that was
+                      // changed, which is the root of the dependency tree that
+                      // will be sent, needs to be the last module that gets
+                      // processed. Reversing the new modules makes sense
+                      // because we get them through the resolver which returns
+                      // a BFS ordered list.
+                      modulesToUpdate.reverse();
 
-                    return resolutionResponse.copy({
-                      dependencies: modulesToUpdate
+                      // invalidate caches
+                      nonNullClient.dependenciesCache = depsCache;
+                      nonNullClient.dependenciesModulesCache = depsModulesCache;
+                      nonNullClient.shallowDependencies = shallowDeps;
+                      nonNullClient.inverseDependenciesCache = inverseDepsCache;
+
+                      return resolutionResponse.copy({
+                        dependencies: modulesToUpdate
+                      });
                     });
                   });
               })
@@ -254,7 +284,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   resolutionResponse,
                 }, packagerHost, httpServerAddress.port);
               })
-              .then(bundle => {
+              .then((bundle: HMRBundle) => {
                 if (!client || !bundle || bundle.isEmpty()) {
                   return;
                 }
@@ -297,11 +327,11 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                print(createEntry('HMR Server sending update to client'));
                 client.ws.send(update);
               });
 
           promise.then(() => {
+            /* $FlowFixMe: assume `client` non-null */
             client.ws.send(JSON.stringify({type: 'update-done'}));
           });
         });
@@ -319,7 +349,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
   });
 }
 
-function arrayEquals(arrayA, arrayB) {
+function arrayEquals<T>(arrayA: Array<T>, arrayB: Array<T>): boolean {
   arrayA = arrayA || [];
   arrayB = arrayB || [];
   return (

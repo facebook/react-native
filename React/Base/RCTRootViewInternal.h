@@ -18,9 +18,10 @@
 @interface RCTRootView ()
 
 /**
- * This setter should be used only by RCTUIManager on react root view size update.
+ * This setter should be used only by RCTUIManager on react root view
+ * intrinsic content size update.
  */
-@property (readwrite, nonatomic, assign) CGSize intrinsicSize;
+@property (readwrite, nonatomic, assign) CGSize intrinsicContentSize;
 
 /**
  * TV remote gesture recognizers
@@ -29,5 +30,7 @@
 @property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
 @property (nonatomic, strong) UIView *reactPreferredFocusedView;
 #endif
+
+- (void)contentViewInvalidated;
 
 @end

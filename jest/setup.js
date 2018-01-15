@@ -10,14 +10,21 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/error-guard');
+require.requireActual('../packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/src/Resolver/polyfills/Object.es7.js');
+require.requireActual('../packager/src/Resolver/polyfills/error-guard');
 
 global.__DEV__ = true;
 
 global.Promise = require.requireActual('promise');
 global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
+
+global.requestAnimationFrame = function(callback) {
+  setTimeout(callback, 0);
+};
+global.cancelAnimationFrame = function(id) {
+  clearTimeout(id);
+};
 
 jest
   .mock('setupDevtools')
@@ -27,23 +34,19 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('ReactNativeDefaultInjection')
+  .mock('InitializeCore')
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View'))
-  .mock('ScrollView', () => mockComponent('ScrollView'))
+  .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
+  .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
   .mock(
     'ActivityIndicator',
     () => mockComponent('ActivityIndicator'),
   )
-  .mock('ListView', () => {
-    const RealListView = require.requireActual('ListView');
-    const ListView = mockComponent('ListView');
-    ListView.prototype.render = RealListView.prototype.render;
-    return ListView;
-  })
+  .mock('ListView', () => require.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
     const DataSource = require.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
@@ -52,7 +55,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items += dataBlob[key] && dataBlob[key].length;
+            this.items += dataBlob[key] && (
+              dataBlob[key].length || dataBlob[key].size || 0
+            );
           });
         } catch (e) {
           this.items = 'unknown';
@@ -74,10 +79,12 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
-    clear: jest.fn(),
-    getItem: jest.fn(),
-    removeItem: jest.fn(),
-    setItem: jest.fn(),
+    multiGet: jest.fn((keys, callback) => process.nextTick(() => callback(null, []))),
+    multiSet: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
+    multiRemove: jest.fn((keys, callback) => process.nextTick(() => callback(null))),
+    multiMerge: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
+    clear: jest.fn(callback => process.nextTick(() => callback(null))),
+    getAllKeys: jest.fn(callback => process.nextTick(() => callback(null, []))),
   },
   BuildInfo: {
     appVersion: '0',
@@ -88,6 +95,16 @@ const mockNativeModules = {
   },
   DataManager: {
     queryData: jest.fn(),
+  },
+  DeviceInfo: {
+    Dimensions: {
+      window: {
+        fontScale: 2,
+        height: 1334,
+        scale: 2,
+        width: 750,
+      },
+    },
   },
   FacebookSDK: {
     login: jest.fn(),
@@ -121,6 +138,17 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  Linking: {
+    openURL: jest.fn(),
+    canOpenURL: jest.fn(
+      () => new Promise((resolve) => resolve(true))
+    ),
+  },
+  LocationObserver: {
+    getCurrentPosition: jest.fn(),
+    startObserving: jest.fn(),
+    stopObserving: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
   Networking: {
     sendRequest: jest.fn(),
@@ -128,10 +156,29 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  PushNotificationManager: {
+    presentLocalNotification: jest.fn(),
+    scheduleLocalNotification: jest.fn(),
+    cancelAllLocalNotifications: jest.fn(),
+    removeAllDeliveredNotifications: jest.fn(),
+    getDeliveredNotifications: jest.fn(callback => process.nextTick(() => [])),
+    removeDeliveredNotifications: jest.fn(),
+    setApplicationIconBadgeNumber: jest.fn(),
+    getApplicationIconBadgeNumber: jest.fn(callback => process.nextTick(() => callback(0))),
+    cancelLocalNotifications: jest.fn(),
+    getScheduledLocalNotifications: jest.fn(callback => process.nextTick(() => callback())),
+    requestPermissions: jest.fn(() => Promise.resolve({alert: true, badge: true, sound: true})),
+    abandonPermissions: jest.fn(),
+    checkPermissions: jest.fn(callback => process.nextTick(() => callback({alert: true, badge: true, sound: true}))),
+    getInitialNotification: jest.fn(() => Promise.resolve(null)),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   SourceCode: {
     scriptURL: null,
   },
   StatusBarManager: {
+    setColor: jest.fn(),
     setStyle: jest.fn(),
     setHidden: jest.fn(),
     setNetworkActivityIndicatorVisible: jest.fn(),
@@ -143,15 +190,25 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    AndroidViewPager: {
+      Commands: {
+        setPage: jest.fn(),
+        setPageWithoutAnimation: jest.fn(),
+      },
+    },
+    blur: jest.fn(),
+    createView: jest.fn(),
+    dispatchViewManagerCommand: jest.fn(),
+    focus: jest.fn(),
+    setChildren: jest.fn(),
+    manageChildren: jest.fn(),
+    updateView: jest.fn(),
+    removeSubviewsFromContainerWithID: jest.fn(),
+    replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
-    Dimensions: {
-      window: {
-        fontScale: 2,
-        height: 1334,
-        scale: 2,
-        width: 750,
-      },
+    AndroidTextInput: {
+      Commands: {},
     },
     ModalFullscreenView: {
       Constants: {},

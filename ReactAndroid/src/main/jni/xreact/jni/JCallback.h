@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include <folly/dynamic.h>
 #include <fb/fbjni.h>
+#include <folly/dynamic.h>
 
 #include "NativeArray.h"
 
@@ -18,23 +18,23 @@ struct JCallback : public jni::JavaClass<JCallback> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/Callback;";
 };
 
-class JCallbackImpl : public jni::HybridClass<JCallbackImpl, JCallback> {
+class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
 public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/CallbackImpl;";
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/bridge/CxxCallbackImpl;";
 
   static void registerNatives() {
     javaClassStatic()->registerNatives({
-        makeNativeMethod("nativeInvoke", JCallbackImpl::invoke),
+        makeNativeMethod("nativeInvoke", JCxxCallbackImpl::invoke),
     });
   }
 private:
   friend HybridBase;
 
   using Callback = std::function<void(folly::dynamic)>;
-  JCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
+  JCxxCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
 
   void invoke(NativeArray* arguments) {
-    callback_(std::move(arguments->array));
+    callback_(arguments->consume());
   }
 
   Callback callback_;

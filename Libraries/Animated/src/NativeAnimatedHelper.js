@@ -23,7 +23,7 @@ type EndResult = {finished: boolean};
 type EndCallback = (result: EndResult) => void;
 type EventMapping = {
   nativeEventPath: Array<string>,
-  animatedValueTag: number,
+  animatedValueTag: ?number,
 };
 
 let nativeEventEmitter;
@@ -33,89 +33,86 @@ let nativeEventEmitter;
  * the native module methods
  */
 const API = {
-  createAnimatedNode: function(tag: number, config: Object): void {
+  createAnimatedNode: function(tag: ?number, config: Object): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
   },
-  startListeningToAnimatedNodeValue: function(tag: number) {
+  startListeningToAnimatedNodeValue: function(tag: ?number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.startListeningToAnimatedNodeValue(tag);
   },
-  stopListeningToAnimatedNodeValue: function(tag: number) {
+  stopListeningToAnimatedNodeValue: function(tag: ?number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
   },
-  connectAnimatedNodes: function(parentTag: number, childTag: number): void {
+  connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
-  disconnectAnimatedNodes: function(parentTag: number, childTag: number): void {
+  disconnectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
-  startAnimatingNode: function(animationId: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
+  startAnimatingNode: function(animationId: ?number, nodeTag: ?number, config: Object, endCallback: EndCallback): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.startAnimatingNode(animationId, nodeTag, config, endCallback);
   },
-  stopAnimation: function(animationId: number) {
+  stopAnimation: function(animationId: ?number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.stopAnimation(animationId);
   },
-  setAnimatedNodeValue: function(nodeTag: number, value: number): void {
+  setAnimatedNodeValue: function(nodeTag: ?number, value: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeValue(nodeTag, value);
   },
-  setAnimatedNodeOffset: function(nodeTag: number, offset: number): void {
+  setAnimatedNodeOffset: function(nodeTag: ?number, offset: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeOffset(nodeTag, offset);
   },
-  flattenAnimatedNodeOffset: function(nodeTag: number): void {
+  flattenAnimatedNodeOffset: function(nodeTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
   },
-  extractAnimatedNodeOffset: function(nodeTag: number): void {
+  extractAnimatedNodeOffset: function(nodeTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
   },
-  connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
+  connectAnimatedNodeToView: function(nodeTag: ?number, viewTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
   },
-  disconnectAnimatedNodeFromView: function(nodeTag: number, viewTag: number): void {
+  disconnectAnimatedNodeFromView: function(nodeTag: ?number, viewTag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodeFromView(nodeTag, viewTag);
   },
-  dropAnimatedNode: function(tag: number): void {
+  dropAnimatedNode: function(tag: ?number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
-  addAnimatedEventToView: function(viewTag: number, eventName: string, eventMapping: EventMapping) {
+  addAnimatedEventToView: function(viewTag: ?number, eventName: string, eventMapping: EventMapping) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
   },
-  removeAnimatedEventFromView(viewTag: number, eventName: string) {
+  removeAnimatedEventFromView(viewTag: ?number, eventName: string, animatedNodeTag: ?number) {
     assertNativeAnimatedModule();
-    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
+    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName, animatedNodeTag);
   }
 };
 
 /**
- * Properties allowed by the native animated implementation.
+ * Styles allowed by the native animated implementation.
  *
  * In general native animated implementation should support any numeric property that doesn't need
- * to be updated through the shadow view hierarchy (all non-layout properties). This list is limited
- * to the properties that will perform best when animated off the JS thread.
+ * to be updated through the shadow view hierarchy (all non-layout properties).
  */
-const PROPS_WHITELIST = {
-  style: {
-    opacity: true,
-    transform: true,
-    /* legacy android transform properties */
-    scaleX: true,
-    scaleY: true,
-    translateX: true,
-    translateY: true,
-  },
+const STYLES_WHITELIST = {
+  opacity: true,
+  transform: true,
+  /* legacy android transform properties */
+  scaleX: true,
+  scaleY: true,
+  translateX: true,
+  translateY: true,
 };
 
 const TRANSFORM_WHITELIST = {
@@ -130,14 +127,6 @@ const TRANSFORM_WHITELIST = {
   perspective: true,
 };
 
-function validateProps(params: Object): void {
-  for (var key in params) {
-    if (!PROPS_WHITELIST.hasOwnProperty(key)) {
-      throw new Error(`Property '${key}' is not supported by native animated module`);
-    }
-  }
-}
-
 function validateTransform(configs: Array<Object>): void {
   configs.forEach((config) => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
@@ -147,7 +136,6 @@ function validateTransform(configs: Array<Object>): void {
 }
 
 function validateStyles(styles: Object): void {
-  var STYLES_WHITELIST = PROPS_WHITELIST.style || {};
   for (var key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(`Style property '${key}' is not supported by native animated module`);
@@ -188,7 +176,6 @@ function isNativeAnimatedAvailable(): boolean {
 
 module.exports = {
   API,
-  validateProps,
   validateStyles,
   validateTransform,
   validateInterpolation,

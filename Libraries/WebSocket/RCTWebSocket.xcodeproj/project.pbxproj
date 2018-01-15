@@ -15,6 +15,8 @@
 		2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		3DB9106F1C74B1ED00838BBE /* RCTWebSocketObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */; };
+		A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
+		A12E9E2F1E5DEC550029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,12 +30,16 @@
 		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; tabWidth = 2; };
 		3DB9106D1C74B1ED00838BBE /* RCTWebSocketObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketObserver.h; sourceTree = "<group>"; };
 		3DB9106E1C74B1ED00838BBE /* RCTWebSocketObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketObserver.m; sourceTree = "<group>"; };
+		A12E9E2C1E5DEC4E0029001B /* RCTReconnectingWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReconnectingWebSocket.h; sourceTree = "<group>"; };
+		A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReconnectingWebSocket.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		3C86DF3D1ADF2C930047B81A = {
 			isa = PBXGroup;
 			children = (
+				A12E9E2C1E5DEC4E0029001B /* RCTReconnectingWebSocket.h */,
+				A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */,
 				1338BBDC1B04ACC80064A9C9 /* RCTSRWebSocket.h */,
 				1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */,
 				1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */,
@@ -133,6 +139,7 @@
 			files = (
 				2D3B5F3E1D9B165B00451313 /* RCTWebSocketExecutor.m in Sources */,
 				2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */,
+				A12E9E2F1E5DEC550029001B /* RCTReconnectingWebSocket.m in Sources */,
 				2D3B5F3D1D9B165B00451313 /* RCTSRWebSocket.m in Sources */,
 				2D3B5F3F1D9B165B00451313 /* RCTWebSocketObserver.m in Sources */,
 			);
@@ -144,6 +151,7 @@
 			files = (
 				1338BBE01B04ACC80064A9C9 /* RCTSRWebSocket.m in Sources */,
 				3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */,
+				A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */,
 				1338BBE11B04ACC80064A9C9 /* RCTWebSocketExecutor.m in Sources */,
 				3DB9106F1C74B1ED00838BBE /* RCTWebSocketObserver.m in Sources */,
 			);
@@ -196,6 +204,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -245,6 +254,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

@@ -12,6 +12,7 @@ import java.util.Map;
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -112,6 +113,22 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
 
     protected abstract @Nullable Object extractProperty(ReactStylesDiffMap props);
+  }
+
+  private static class DynamicPropSetter extends PropSetter {
+
+    public DynamicPropSetter(ReactProp prop, Method setter) {
+      super(prop, "mixed", setter);
+    }
+
+    public DynamicPropSetter(ReactPropGroup prop, Method setter, int index) {
+      super(prop, "mixed", setter, index);
+    }
+
+    @Override
+    protected Object extractProperty(ReactStylesDiffMap props) {
+      return props.getDynamic(mPropName);
+    }
   }
 
   private static class IntPropSetter extends PropSetter {
@@ -331,7 +348,9 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       ReactProp annotation,
       Method method,
       Class<?> propTypeClass) {
-    if (propTypeClass == boolean.class) {
+    if (propTypeClass == Dynamic.class) {
+      return new DynamicPropSetter(annotation, method);
+    } else if (propTypeClass == boolean.class) {
       return new BooleanPropSetter(annotation, method, annotation.defaultBoolean());
     } else if (propTypeClass == int.class) {
       return new IntPropSetter(annotation, method, annotation.defaultInt());
@@ -361,7 +380,13 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       Class<?> propTypeClass,
       Map<String, PropSetter> props) {
     String[] names = annotation.names();
-    if (propTypeClass == int.class) {
+    if (propTypeClass == Dynamic.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new DynamicPropSetter(annotation, method, i));
+      }
+    } else if (propTypeClass == int.class) {
       for (int i = 0; i < names.length; i++) {
         props.put(
             names[i],
