@@ -79,6 +79,7 @@ struct YGNode {
   std::array<YGValue, 2> getResolvedDimensions() const;
   YGValue getResolvedDimension(int index);
 
+  // Methods related to positions, margin, padding and border
   float getLeadingPosition(const YGFlexDirection axis, const float axisSize);
   bool isLeadingPositionDefined(const YGFlexDirection axis);
   bool isTrailingPosDefined(const YGFlexDirection axis);
@@ -87,6 +88,7 @@ struct YGNode {
   float getTrailingMargin(const YGFlexDirection axis, const float widthSize);
   float getLeadingBorder(const YGFlexDirection flexDirection);
   float getTrailingBorder(const YGFlexDirection flexDirection);
+  float getLeadingPadding(const YGFlexDirection axis, const float widthSize);
   // Setters
 
   void setContext(void* context);

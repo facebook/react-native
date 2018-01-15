@@ -630,3 +630,18 @@ float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) {
           ->value,
       0.0f);
 }
+
+float YGNode::getLeadingPadding(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
+      YGResolveValue(style_.padding[YGEdgeStart], widthSize) >= 0.0f) {
+    return YGResolveValue(style_.padding[YGEdgeStart], widthSize);
+  }
+  return fmaxf(
+      YGResolveValue(
+          *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
+          widthSize),
+      0.0f);
+}

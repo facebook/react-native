@@ -762,24 +762,6 @@ static const std::array<YGEdge, 4> pos = {{
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
-static float YGNodeLeadingPadding(const YGNodeRef node,
-                                  const YGFlexDirection axis,
-                                  const float widthSize) {
-  if (YGFlexDirectionIsRow(axis) &&
-      node->getStyle().padding[YGEdgeStart].unit != YGUnitUndefined &&
-      YGResolveValue(node->getStyle().padding[YGEdgeStart], widthSize) >=
-          0.0f) {
-    return YGResolveValue(node->getStyle().padding[YGEdgeStart], widthSize);
-  }
-
-  return fmaxf(
-      YGResolveValue(
-          *YGComputedEdgeValue(
-              node->getStyle().padding, leading[axis], &YGValueZero),
-          widthSize),
-      0.0f);
-}
-
 static float YGNodeTrailingPadding(const YGNodeRef node,
                                    const YGFlexDirection axis,
                                    const float widthSize) {
@@ -801,7 +783,7 @@ static inline float YGNodeLeadingPaddingAndBorder(
     const YGNodeRef node,
     const YGFlexDirection axis,
     const float widthSize) {
-  return YGNodeLeadingPadding(node, axis, widthSize) +
+  return node->getLeadingPadding(axis, widthSize) +
       node->getLeadingBorder(axis);
 }
 
@@ -1757,11 +1739,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       node->getTrailingBorder(flexColumnDirection), YGEdgeBottom);
 
   node->setLayoutPadding(
-      YGNodeLeadingPadding(node, flexRowDirection, parentWidth), YGEdgeStart);
+      node->getLeadingPadding(flexRowDirection, parentWidth), YGEdgeStart);
   node->setLayoutPadding(
       YGNodeTrailingPadding(node, flexRowDirection, parentWidth), YGEdgeEnd);
   node->setLayoutPadding(
-      YGNodeLeadingPadding(node, flexColumnDirection, parentWidth), YGEdgeTop);
+      node->getLeadingPadding(flexColumnDirection, parentWidth), YGEdgeTop);
   node->setLayoutPadding(
       YGNodeTrailingPadding(node, flexColumnDirection, parentWidth),
       YGEdgeBottom);
