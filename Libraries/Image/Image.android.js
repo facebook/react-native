@@ -8,6 +8,7 @@
  *
  * @providesModule Image
  * @flow
+ * @format
  */
 'use strict';
 
@@ -32,9 +33,7 @@ var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var {
-  ImageLoader,
-} = NativeModules;
+var {ImageLoader} = NativeModules;
 
 let _requestId = 1;
 function generateRequestId() {
@@ -75,14 +74,16 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 });
 
 var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
-var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
+var ImageSpecificStyleKeys = new Set(
+  Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)),
+);
 
 var Image = createReactClass({
   displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
-   /**
+    /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
@@ -108,11 +109,12 @@ var Image = createReactClass({
           width: PropTypes.number,
           height: PropTypes.number,
           headers: PropTypes.objectOf(PropTypes.string),
-        }))
+        }),
+      ),
     ]),
     /**
-    * blurRadius: the blur radius of the blur filter added to the image
-    */
+     * blurRadius: the blur radius of the blur filter added to the image
+     */
     blurRadius: PropTypes.number,
     /**
      * similarly to `source`, this property represents the resource used to render
@@ -202,9 +204,12 @@ var Image = createReactClass({
         .then(function(sizes) {
           success(sizes.width, sizes.height);
         })
-        .catch(failure || function() {
-          console.warn('Failed to get size for image: ' + url);
-        });
+        .catch(
+          failure ||
+            function() {
+              console.warn('Failed to get size for image: ' + url);
+            },
+        );
     },
 
     /**
@@ -231,7 +236,9 @@ var Image = createReactClass({
      * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
      *         not in the mapping, it means it's not in the cache.
      */
-    async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+    async queryCache(
+      urls: Array<string>,
+    ): Promise<Map<string, 'memory' | 'disk'>> {
       return await ImageLoader.queryCache(urls);
     },
 
@@ -255,12 +262,14 @@ var Image = createReactClass({
   },
 
   contextTypes: {
-    isInAParentText: PropTypes.bool
+    isInAParentText: PropTypes.bool,
   },
 
   render: function() {
     const source = resolveAssetSource(this.props.source);
-    const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const loadingIndicatorSource = resolveAssetSource(
+      this.props.loadingIndicatorSource,
+    );
 
     // As opposed to the ios version, here we render `null` when there is no source, source.uri
     // or source array.
@@ -270,11 +279,15 @@ var Image = createReactClass({
     }
 
     if (this.props.src) {
-      console.warn('The <Image> component requires a `source` property rather than `src`.');
+      console.warn(
+        'The <Image> component requires a `source` property rather than `src`.',
+      );
     }
 
     if (this.props.children) {
-      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.');
+      throw new Error(
+        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+      );
     }
 
     if (source && (source.uri || Array.isArray(source))) {
@@ -292,20 +305,27 @@ var Image = createReactClass({
       const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+        shouldNotifyLoadEvents: !!(
+          onLoadStart ||
+          onLoad ||
+          onLoadEnd ||
+          onError
+        ),
         src: sources,
         headers: source.headers,
-        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+        loadingIndicatorSrc: loadingIndicatorSource
+          ? loadingIndicatorSource.uri
+          : null,
       });
 
       if (this.context.isInAParentText) {
-        return <RCTTextInlineImage {...nativeProps}/>;
+        return <RCTTextInlineImage {...nativeProps} />;
       } else {
-        return <RKImage {...nativeProps}/>;
+        return <RKImage {...nativeProps} />;
       }
     }
     return null;
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -323,6 +343,10 @@ var cfg = {
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent(
+  'RCTTextInlineImage',
+  Image,
+  cfg,
+);
 
 module.exports = Image;
