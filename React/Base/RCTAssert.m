@@ -120,7 +120,7 @@ void _RCTAssertFormat(
 
 void RCTFatal(NSError *error)
 {
-  _RCTLogNativeInternal(RCTLogLevelFatal, NULL, 0, @"%@", error.localizedDescription);
+  _RCTLogNativeInternal(RCTLogLevelFatal, NULL, 0, @"%@ [%@]", error.localizedDescription, error.localizedFailureReason);
 
   RCTFatalHandler fatalHandler = RCTGetFatalHandler();
   if (fatalHandler) {
