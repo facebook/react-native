@@ -1590,6 +1590,87 @@ static float YGNodeCalculateAvailableInnerDim(
   return availableInnerDim;
 }
 
+static void YGNodeComputeFlexBasisForChildren(
+    const YGNodeRef node,
+    const float availableInnerWidth,
+    const float availableInnerHeight,
+    YGMeasureMode widthMeasureMode,
+    YGMeasureMode heightMeasureMode,
+    YGDirection direction,
+    YGFlexDirection mainAxis,
+    const YGConfigRef config,
+    bool performLayout,
+    float& totalOuterFlexBasis) {
+  YGNodeRef singleFlexChild = nullptr;
+  YGVector children = node->getChildren();
+  YGMeasureMode measureModeMainDim =
+      YGFlexDirectionIsRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
+  // If there is only one child with flexGrow + flexShrink it means we can set
+  // the computedFlexBasis to 0 instead of measuring and shrinking / flexing the
+  // child to exactly match the remaining space
+  if (measureModeMainDim == YGMeasureModeExactly) {
+    for (auto child : children) {
+      if (singleFlexChild != nullptr) {
+        if (YGNodeIsFlex(child)) {
+          // There is already a flexible child, abort
+          singleFlexChild = nullptr;
+          break;
+        }
+      } else if (
+          child->resolveFlexGrow() > 0.0f &&
+          child->resolveFlexShrink() > 0.0f) {
+        singleFlexChild = child;
+      }
+    }
+  }
+
+  for (auto child : children) {
+    child->resolveDimension();
+    if (child->getStyle().display == YGDisplayNone) {
+      YGZeroOutLayoutRecursivly(child);
+      child->setHasNewLayout(true);
+      child->setDirty(false);
+      continue;
+    }
+    if (child->getStyle().positionType == YGPositionTypeAbsolute) {
+      continue;
+    }
+    if (performLayout) {
+      // Set the initial position (relative to the parent).
+      const YGDirection childDirection =
+          YGNodeResolveDirection(child, direction);
+      const float mainDim = YGFlexDirectionIsRow(mainAxis)
+          ? availableInnerWidth
+          : availableInnerHeight;
+      const float crossDim = YGFlexDirectionIsRow(mainAxis)
+          ? availableInnerHeight
+          : availableInnerWidth;
+      child->setPosition(
+          childDirection, mainDim, crossDim, availableInnerWidth);
+    }
+    if (child == singleFlexChild) {
+      child->setLayoutComputedFlexBasisGeneration(gCurrentGenerationCount);
+      child->setLayoutComputedFlexBasis(0);
+    } else {
+      YGNodeComputeFlexBasisForChild(
+          node,
+          child,
+          availableInnerWidth,
+          widthMeasureMode,
+          availableInnerHeight,
+          availableInnerWidth,
+          availableInnerHeight,
+          heightMeasureMode,
+          direction,
+          config);
+    }
+
+    totalOuterFlexBasis += child->getLayout().computedFlexBasis +
+        YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+    ;
+  }
+}
+
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
@@ -1827,59 +1908,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
   const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
 
-  // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
-
-  float availableInnerWidth = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionRow, availableWidth, parentWidth);
-  float availableInnerHeight = YGNodeCalculateAvailableInnerDim(
-      node, YGFlexDirectionColumn, availableHeight, parentHeight);
-
-  float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
-  const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
-
-  // If there is only one child with flexGrow + flexShrink it means we can set the
-  // computedFlexBasis to 0 instead of measuring and shrinking / flexing the child to exactly
-  // match the remaining space
-  YGNodeRef singleFlexChild = nullptr;
-  if (measureModeMainDim == YGMeasureModeExactly) {
-    for (uint32_t i = 0; i < childCount; i++) {
-      const YGNodeRef child = YGNodeGetChild(node, i);
-      if (singleFlexChild) {
-        if (YGNodeIsFlex(child)) {
-          // There is already a flexible child, abort.
-          singleFlexChild = nullptr;
-          break;
-        }
-      } else if (
-          child->resolveFlexGrow() > 0.0f &&
-          child->resolveFlexShrink() > 0.0f) {
-        singleFlexChild = child;
-      }
-    }
-  }
-
-  float totalOuterFlexBasis = 0;
-
-  // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef child = node->getChild(i);
-    if (child->getStyle().display == YGDisplayNone) {
-      YGZeroOutLayoutRecursivly(child);
-      child->setHasNewLayout(true);
-      child->setDirty(false);
-      continue;
-    }
-    child->resolveDimension();
-    if (performLayout) {
-      // Set the initial position (relative to the parent).
-      const YGDirection childDirection = YGNodeResolveDirection(child, direction);
-      child->setPosition(
-          childDirection,
-          availableInnerMainDim,
-          availableInnerCrossDim,
-          availableInnerWidth);
-    }
-
+  // Make a private linkedlist of absolutely positioned child
+  for (auto child : node->getChildren()) {
     // Absolute-positioned children don't participate in flex layout. Add them
     // to a list that we can process later.
     if (child->getStyle().positionType == YGPositionTypeAbsolute) {
@@ -1893,28 +1923,36 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
       currentAbsoluteChild = child;
       child->setNextChild(nullptr);
-    } else {
-      if (child == singleFlexChild) {
-        child->setLayoutComputedFlexBasisGeneration(gCurrentGenerationCount);
-        child->setLayoutComputedFlexBasis(0);
-      } else {
-        YGNodeComputeFlexBasisForChild(node,
-                                       child,
-                                       availableInnerWidth,
-                                       widthMeasureMode,
-                                       availableInnerHeight,
-                                       availableInnerWidth,
-                                       availableInnerHeight,
-                                       heightMeasureMode,
-                                       direction,
-                                       config);
-      }
     }
-
-    totalOuterFlexBasis += child->getLayout().computedFlexBasis +
-        YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
-    ;
   }
+
+  // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
+
+  float availableInnerWidth = YGNodeCalculateAvailableInnerDim(
+      node, YGFlexDirectionRow, availableWidth, parentWidth);
+  float availableInnerHeight = YGNodeCalculateAvailableInnerDim(
+      node, YGFlexDirectionColumn, availableHeight, parentHeight);
+
+  float availableInnerMainDim =
+      isMainAxisRow ? availableInnerWidth : availableInnerHeight;
+  const float availableInnerCrossDim =
+      isMainAxisRow ? availableInnerHeight : availableInnerWidth;
+
+  float totalOuterFlexBasis = 0;
+
+  // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
+
+  YGNodeComputeFlexBasisForChildren(
+      node,
+      availableInnerWidth,
+      availableInnerHeight,
+      widthMeasureMode,
+      heightMeasureMode,
+      direction,
+      mainAxis,
+      config,
+      performLayout,
+      totalOuterFlexBasis);
 
   const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
                                       ? false
@@ -1922,7 +1960,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
     measureModeMainDim = YGMeasureModeExactly;
   }
-
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
   // Indexes of children that represent the first and last items in the line.
