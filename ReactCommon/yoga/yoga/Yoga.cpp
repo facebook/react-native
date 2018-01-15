@@ -175,6 +175,14 @@ void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc) {
   node->setBaseLineFunc(baselineFunc);
 }
 
+YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node) {
+  return node->getDirtied();
+}
+
+void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc) {
+  node->setDirtiedFunc(dirtiedFunc);
+}
+
 YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node) {
   return node->getPrintFunc();
 }
