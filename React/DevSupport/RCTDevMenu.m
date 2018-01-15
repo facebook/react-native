@@ -284,6 +284,13 @@ RCT_EXPORT_MODULE()
   } handler:^{
     [devSettings toggleElementInspector];
   }]];
+  
+  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+    return devSettings.isDevToolsEnabled ? @"Disable DevTools" : @"Enable DevTools";
+  } handler:^{
+    [devSettings setDevToolsEnabled:!devSettings.isDevToolsEnabled];
+    [bridge reload];
+  }]];
 
   [items addObjectsFromArray:_extraMenuItems];
   return items;
