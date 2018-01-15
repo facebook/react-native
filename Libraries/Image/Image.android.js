@@ -22,16 +22,16 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
 var ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var createReactClass = require('create-react-class');
-var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+
+const {ViewContextTypes} = require('ViewContext');
 
 var {ImageLoader} = NativeModules;
 
@@ -261,9 +261,7 @@ var Image = createReactClass({
     validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
-  contextTypes: {
-    isInAParentText: PropTypes.bool,
-  },
+  contextTypes: ViewContextTypes,
 
   render: function() {
     const source = resolveAssetSource(this.props.source);

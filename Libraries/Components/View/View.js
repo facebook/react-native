@@ -14,17 +14,18 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const ViewPropTypes = require('ViewPropTypes');
+const {ViewContextTypes} = require('ViewContext');
 
 const createReactClass = require('create-react-class');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {ViewChildContext} from 'ViewContext';
 
 export type Props = ViewProps;
 
@@ -56,8 +57,12 @@ const View = createReactClass({
     validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
-  contextTypes: {
-    isInAParentText: PropTypes.bool,
+  childContextTypes: ViewContextTypes,
+
+  getChildContext(): ViewChildContext {
+    return {
+      isInAParentText: false,
+    };
   },
 
   render() {

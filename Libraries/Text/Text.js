@@ -26,8 +26,11 @@ const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
+const {ViewContextTypes} = require('ViewContext');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
+
+import type {ViewChildContext} from 'ViewContext';
 
 /**
  * A React component for displaying text.
@@ -401,15 +404,13 @@ const Text = createReactClass({
     });
   },
   mixins: [NativeMethodsMixin],
-  getChildContext(): Object {
-    return {isInAParentText: true};
+  getChildContext(): ViewChildContext {
+    return {
+      isInAParentText: true,
+    };
   },
-  childContextTypes: {
-    isInAParentText: PropTypes.bool,
-  },
-  contextTypes: {
-    isInAParentText: PropTypes.bool,
-  },
+  childContextTypes: ViewContextTypes,
+  contextTypes: ViewContextTypes,
   /**
    * Only assigned if touch is needed.
    */
