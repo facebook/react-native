@@ -590,3 +590,9 @@ float YGNode::resolveFlexShrink() {
   }
   return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
+
+bool YGNode::isNodeFlexible() {
+  return (
+      (style_.positionType == YGPositionTypeRelative) &&
+      (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
+}

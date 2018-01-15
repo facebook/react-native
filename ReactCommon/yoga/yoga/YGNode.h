@@ -111,7 +111,11 @@ struct YGNode {
   void setLayoutMeasuredDimension(float measuredDimension, int index);
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float dimension, int index);
-
+  void setLayoutDirection(YGDirection direction);
+  void setLayoutMargin(float margin, int index);
+  void setLayoutBorder(float border, int index);
+  void setLayoutPadding(float padding, int index);
+  void setLayoutPosition(float position, int index);
   void setPosition(
       const YGDirection direction,
       const float mainSize,
@@ -131,15 +135,10 @@ struct YGNode {
   /// Removes the first occurrence of child
   bool removeChild(YGNodeRef child);
   void removeChild(uint32_t index);
-  void setLayoutDirection(YGDirection direction);
-  void setLayoutMargin(float margin, int index);
-  void setLayoutBorder(float border, int index);
-  void setLayoutPadding(float padding, int index);
-  void setLayoutPosition(float position, int index);
 
-  // Other methods
   void cloneChildrenIfNeeded();
   void markDirtyAndPropogate();
   float resolveFlexGrow();
   float resolveFlexShrink();
+  bool isNodeFlexible();
 };

@@ -915,12 +915,6 @@ static float YGBaseline(const YGNodeRef node) {
   return baseline + baselineChild->getLayout().position[YGEdgeTop];
 }
 
-static inline bool YGNodeIsFlex(const YGNodeRef node) {
-  return (
-      node->getStyle().positionType == YGPositionTypeRelative &&
-      (node->resolveFlexGrow() != 0 || node->resolveFlexShrink() != 0));
-}
-
 static bool YGIsBaselineLayout(const YGNodeRef node) {
   if (YGFlexDirectionIsColumn(node->getStyle().flexDirection)) {
     return false;
@@ -1611,7 +1605,7 @@ static void YGNodeComputeFlexBasisForChildren(
   if (measureModeMainDim == YGMeasureModeExactly) {
     for (auto child : children) {
       if (singleFlexChild != nullptr) {
-        if (YGNodeIsFlex(child)) {
+        if (child->isNodeFlexible()) {
           // There is already a flexible child, abort
           singleFlexChild = nullptr;
           break;
@@ -2033,7 +2027,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         sizeConsumedOnCurrentLine += flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
-        if (YGNodeIsFlex(child)) {
+        if (child->isNodeFlexible()) {
           totalFlexGrowFactors += child->resolveFlexGrow();
 
           // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
