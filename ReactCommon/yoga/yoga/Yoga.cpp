@@ -1557,6 +1557,39 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   }
 }
 
+static float YGNodeCalculateAvailableInnerDim(
+    const YGNodeRef node,
+    YGFlexDirection axis,
+    float availableDim,
+    float parentDim) {
+  YGFlexDirection direction =
+      YGFlexDirectionIsRow(axis) ? YGFlexDirectionRow : YGFlexDirectionColumn;
+  YGDimension dimension =
+      YGFlexDirectionIsRow(axis) ? YGDimensionWidth : YGDimensionHeight;
+
+  const float margin = YGNodeMarginForAxis(node, direction, parentDim);
+  const float paddingAndBorder =
+      YGNodePaddingAndBorderForAxis(node, direction, parentDim);
+
+  float availableInnerDim = availableDim - margin - paddingAndBorder;
+  // Max dimension overrides predefined dimension value; Min dimension in turn
+  // overrides both of the above
+  if (!YGFloatIsUndefined(availableInnerDim)) {
+    // We want to make sure our available height does not violate min and max
+    // constraints
+    const float minInnerDim =
+        YGResolveValue(node->getStyle().minDimensions[dimension], parentDim) -
+        paddingAndBorder;
+    const float maxInnerDim =
+        YGResolveValue(node->getStyle().maxDimensions[dimension], parentDim) -
+        paddingAndBorder;
+    availableInnerDim =
+        fmaxf(fminf(availableInnerDim, maxInnerDim), minInnerDim);
+  }
+
+  return availableInnerDim;
+}
+
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
@@ -1775,7 +1808,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow, parentWidth);
   const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn, parentWidth);
 
-  // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
   const float minInnerWidth =
       YGResolveValue(
           node->getStyle().minDimensions[YGDimensionWidth], parentWidth) -
@@ -1795,19 +1827,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
   const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
 
-  // Max dimension overrides predefined dimension value; Min dimension in turn overrides both of the
-  // above
-  float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-  if (!YGFloatIsUndefined(availableInnerWidth)) {
-    // We want to make sure our available width does not violate min and max constraints
-    availableInnerWidth = fmaxf(fminf(availableInnerWidth, maxInnerWidth), minInnerWidth);
-  }
+  // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
 
-  float availableInnerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
-  if (!YGFloatIsUndefined(availableInnerHeight)) {
-    // We want to make sure our available height does not violate min and max constraints
-    availableInnerHeight = fmaxf(fminf(availableInnerHeight, maxInnerHeight), minInnerHeight);
-  }
+  float availableInnerWidth = YGNodeCalculateAvailableInnerDim(
+      node, YGFlexDirectionRow, availableWidth, parentWidth);
+  float availableInnerHeight = YGNodeCalculateAvailableInnerDim(
+      node, YGFlexDirectionColumn, availableHeight, parentHeight);
 
   float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
   const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
