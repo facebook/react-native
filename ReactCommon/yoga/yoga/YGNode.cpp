@@ -608,3 +608,16 @@ float YGNode::getLeadingBorder(const YGFlexDirection axis) {
       YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value,
       0.0f);
 }
+
+float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) {
+  if (YGFlexDirectionIsRow(flexDirection) &&
+      style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
+      style_.border[YGEdgeEnd].value >= 0.0f) {
+    return style_.border[YGEdgeEnd].value;
+  }
+
+  return fmaxf(
+      YGComputedEdgeValue(style_.border, trailing[flexDirection], &YGValueZero)
+          ->value,
+      0.0f);
+}
