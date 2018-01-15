@@ -759,6 +759,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     });
   };
 
+#if RCT_DEV
+  if (self.devSettings.isDevToolsEnabled) {
+    _reactInstance->setGlobalVariable("__RCTDevToolsEnabled", std::make_unique<JSBigStdString>("true"));
+  }
+#endif
+  
   if (sync) {
     [self executeApplicationScriptSync:sourceCode url:self.bundleURL];
     completion();
