@@ -762,23 +762,6 @@ static const std::array<YGEdge, 4> pos = {{
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
-static float YGNodeTrailingPadding(const YGNodeRef node,
-                                   const YGFlexDirection axis,
-                                   const float widthSize) {
-  if (YGFlexDirectionIsRow(axis) &&
-      node->getStyle().padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      YGResolveValue(node->getStyle().padding[YGEdgeEnd], widthSize) >= 0.0f) {
-    return YGResolveValue(node->getStyle().padding[YGEdgeEnd], widthSize);
-  }
-
-  return fmaxf(
-      YGResolveValue(
-          *YGComputedEdgeValue(
-              node->getStyle().padding, trailing[axis], &YGValueZero),
-          widthSize),
-      0.0f);
-}
-
 static inline float YGNodeLeadingPaddingAndBorder(
     const YGNodeRef node,
     const YGFlexDirection axis,
@@ -790,7 +773,7 @@ static inline float YGNodeLeadingPaddingAndBorder(
 static inline float YGNodeTrailingPaddingAndBorder(const YGNodeRef node,
                                                    const YGFlexDirection axis,
                                                    const float widthSize) {
-  return YGNodeTrailingPadding(node, axis, widthSize) +
+  return node->getTrailingPadding(axis, widthSize) +
       node->getTrailingBorder(axis);
 }
 
@@ -1741,12 +1724,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   node->setLayoutPadding(
       node->getLeadingPadding(flexRowDirection, parentWidth), YGEdgeStart);
   node->setLayoutPadding(
-      YGNodeTrailingPadding(node, flexRowDirection, parentWidth), YGEdgeEnd);
+      node->getTrailingPadding(flexRowDirection, parentWidth), YGEdgeEnd);
   node->setLayoutPadding(
       node->getLeadingPadding(flexColumnDirection, parentWidth), YGEdgeTop);
   node->setLayoutPadding(
-      YGNodeTrailingPadding(node, flexColumnDirection, parentWidth),
-      YGEdgeBottom);
+      node->getTrailingPadding(flexColumnDirection, parentWidth), YGEdgeBottom);
 
   if (node->getMeasure() != nullptr) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(node,

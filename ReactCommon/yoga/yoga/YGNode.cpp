@@ -645,3 +645,18 @@ float YGNode::getLeadingPadding(
           widthSize),
       0.0f);
 }
+
+float YGNode::getTrailingPadding(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize) >= 0.0f) {
+    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  }
+  return fmaxf(
+      YGResolveValue(
+          *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
+          widthSize),
+      0.0f);
+}
