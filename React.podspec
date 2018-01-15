@@ -215,13 +215,7 @@ Pod::Spec.new do |s|
   s.subspec "RCTWebSocket" do |ss|
     ss.dependency             "React/Core"
     ss.dependency             "React/RCTBlob"
-    ss.dependency             "React/fishhook"
     ss.source_files         = "Libraries/WebSocket/*.{h,m}"
-  end
-
-  s.subspec "fishhook" do |ss|
-    ss.header_dir           = "fishhook"
-    ss.source_files         = "Libraries/fishhook/*.{h,c}"
   end
 
   s.subspec "RCTLinkingIOS" do |ss|
