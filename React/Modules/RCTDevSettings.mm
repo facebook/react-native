@@ -26,6 +26,7 @@
 
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingDevToolsEnabled = @"devToolsEnabled";
 static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
@@ -139,6 +140,7 @@ RCT_EXPORT_MODULE()
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu: @YES,
+    kRCTDevSettingDevToolsEnabled: @YES,
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
@@ -452,6 +454,15 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     _bridge.executorClass = executorClass;
     [_bridge reload];
   }
+}
+
+- (void)setDevToolsEnabled:(BOOL)isDevToolsEnabled
+{
+  [self _updateSettingWithValue:@(isDevToolsEnabled) forKey:kRCTDevSettingDevToolsEnabled];
+}
+
+- (BOOL)isDevToolsEnabled {
+  return [[self settingForKey:kRCTDevSettingDevToolsEnabled] boolValue];
 }
 
 #if RCT_DEV
