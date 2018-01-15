@@ -669,7 +669,9 @@ const TextInput = createReactClass({
 
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOS();
+      return UIManager.RCTVirtualText
+        ? this._renderIOS()
+        : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
@@ -687,7 +689,7 @@ const TextInput = createReactClass({
     this._inputRef = ref;
   },
 
-  _renderIOS: function() {
+  _renderIOSLegacy: function() {
     var textContainer;
 
     var props = Object.assign({}, this.props);
@@ -762,6 +764,57 @@ const TextInput = createReactClass({
         />
       );
     }
+
+    return (
+      <TouchableWithoutFeedback
+        onLayout={props.onLayout}
+        onPress={this._onPress}
+        rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
+        nativeID={this.props.nativeID}
+        testID={props.testID}>
+        {textContainer}
+      </TouchableWithoutFeedback>
+    );
+  },
+
+  _renderIOS: function() {
+    var props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
+    }
+
+    const RCTTextInputView = props.multiline
+      ? RCTMultilineTextInputView
+      : RCTSinglelineTextInputView;
+
+    if (props.multiline) {
+      props.style.unshift(styles.multilineInput);
+    }
+
+    const textContainer = (
+      <RCTTextInputView
+        ref={this._setNativeRef}
+        {...props}
+        onFocus={this._onFocus}
+        onBlur={this._onBlur}
+        onChange={this._onChange}
+        onContentSizeChange={this.props.onContentSizeChange}
+        onSelectionChange={this._onSelectionChange}
+        onTextInput={this._onTextInput}
+        onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+        text={this._getText()}
+        dataDetectorTypes={this.props.dataDetectorTypes}
+        onScroll={this._onScroll}
+      />
+    );
 
     return (
       <TouchableWithoutFeedback
