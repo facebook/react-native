@@ -21,14 +21,14 @@ import com.facebook.react.views.image.ImageResizeMode;
 
 /**
  * RCTImageView is a top-level node for Image. It can display either a remote image
- * (source must start wtih http:// or https://) or a local resource (a BitmapDrawable).
+ * (source must start with http:// or https://) or a local resource (a BitmapDrawable).
  */
 /* package */ class RCTImageView<T extends AbstractDrawCommand & DrawImage> extends FlatShadowNode {
 
   static Object sCallerContext = RCTImageView.class;
 
   /**
-   * Assignes a CallerContext to execute network requests with.
+   * Assigns a CallerContext to execute network requests with.
    */
   /* package */ static void setCallerContext(Object callerContext) {
     sCallerContext = callerContext;

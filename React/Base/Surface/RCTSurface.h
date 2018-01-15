@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Previously set `maximumSize` layout constraint.
- * Defaults to `{INFINITY, INFINITY}`.
+ * Defaults to `{CGFLOAT_MAX, CGFLOAT_MAX}`.
  */
 @property (atomic, assign, readonly) CGSize maximumSize;
 

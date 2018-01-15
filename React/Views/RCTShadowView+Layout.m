@@ -11,16 +11,44 @@
 
 #import <yoga/Yoga.h>
 
+/**
+ * Yoga and CoreGraphics have different opinions about how "infinity" value
+ * should be represented.
+ * Yoga uses `NAN` which requires additional effort to compare all those values,
+ * whereas GoreGraphics uses `GFLOAT_MAX` which can be easyly compared with
+ * standard `==` operator.
+ */
+
+float RCTYogaFloatFromCoreGraphicsFloat(CGFloat value)
+{
+  if (value == CGFLOAT_MAX || isnan(value) || isinf(value)) {
+    return YGUndefined;
+  }
+
+  return value;
+}
+
+CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value)
+{
+  if (value == YGUndefined || isnan(value) || isinf(value)) {
+    return CGFLOAT_MAX;
+  }
+
+  return value;
+}
+
 @implementation RCTShadowView (Layout)
+
+#pragma mark - Computed Layout-Inferred Metrics
 
 - (UIEdgeInsets)paddingAsInsets
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeTop),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeRight)
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))
   };
 }
 
@@ -28,10 +56,10 @@
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeTop),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeRight)
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))
   };
 }
 
@@ -51,6 +79,51 @@
 - (CGSize)availableSize
 {
   return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
+}
+
+#pragma mark - Measuring
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
+
+  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+
+  YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
+  YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
+  YGNodeStyleSetMaxWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width));
+  YGNodeStyleSetMaxHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height));
+
+  YGNodeCalculateLayout(
+    constraintYogaNode,
+    YGUndefined,
+    YGUndefined,
+    self.layoutDirection
+  );
+
+  CGSize measuredSize = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
+  };
+
+  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeFree(constraintYogaNode);
+  YGNodeFree(clonnedYogaNode);
+
+  return measuredSize;
+}
+
+#pragma mark - Dirty Propagation Control
+
+- (void)dirtyLayout
+{
+  // The default implementaion does nothing.
+}
+
+- (void)clearLayout
+{
+  // The default implementaion does nothing.
 }
 
 @end

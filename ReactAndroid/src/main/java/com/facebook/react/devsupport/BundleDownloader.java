@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -171,7 +172,7 @@ public class BundleDownloader {
                 if (headers.containsKey("X-Http-Status")) {
                   status = Integer.parseInt(headers.get("X-Http-Status"));
                 }
-                processBundleResult(url, status, okhttp3.Headers.of(headers), body, outputFile, bundleInfo, callback);
+                processBundleResult(url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
               } else {
                 if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
                   return;
@@ -221,7 +222,7 @@ public class BundleDownloader {
   private void processBundleResult(
       String url,
       int statusCode,
-      okhttp3.Headers headers,
+      Headers headers,
       BufferedSource body,
       File outputFile,
       BundleInfo bundleInfo,
@@ -380,7 +381,7 @@ public class BundleDownloader {
     return bundleUrl.indexOf(".delta?") != -1;
   }
 
-  private static void populateBundleInfo(String url, okhttp3.Headers headers, BundleInfo bundleInfo) {
+  private static void populateBundleInfo(String url, Headers headers, BundleInfo bundleInfo) {
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

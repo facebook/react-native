@@ -355,10 +355,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
     [self propBlockForKey:key isShadowView:NO](view, json);
   }];
-
-  if ([view respondsToSelector:@selector(didSetProps:)]) {
-    [view didSetProps:[props allKeys]];
-  }
 }
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
@@ -370,10 +366,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
     [self propBlockForKey:key isShadowView:YES](shadowView, json);
   }];
-
-  if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
-    [shadowView didSetProps:[props allKeys]];
-  }
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig

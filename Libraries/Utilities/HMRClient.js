@@ -89,7 +89,6 @@ Error: ${e.message}`
             modules,
             sourceMappingURLs,
             sourceURLs,
-            inverseDependencies,
           } = data.body;
 
           if (Platform.OS === 'ios') {
@@ -108,17 +107,7 @@ Error: ${e.message}`
             // evaluating code) but on Chrome we can simply use eval
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
-              : eval;
-
-            code = [
-              '__accept(',
-                `${id},`,
-                'function(global,require,module,exports){',
-                  `${code}`,
-                '\n},',
-                `${JSON.stringify(inverseDependencies)}`,
-              ');',
-            ].join('');
+              : eval; // eslint-disable-line no-eval
 
             injectFunction(code, sourceURLs[i]);
           });

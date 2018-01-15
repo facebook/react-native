@@ -161,7 +161,9 @@ const Systrace = {
         }
         if (_canInstallReactHook) {
           if (_useFiber) {
-            global.performance = enabled ? userTimingPolyfill : undefined;
+            if (enabled && global.performance === undefined) {
+              global.performance = userTimingPolyfill;
+            }
           } else {
             const ReactDebugTool = require('ReactDebugTool');
             if (enabled) {
@@ -238,7 +240,10 @@ const Systrace = {
    * therefore async variant of profiling is used
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
-    relayProfiler.attachProfileHandler('*', (name) => {
+    relayProfiler.attachProfileHandler('*', (name, state?) => {
+      if (state != null && state.queryName !== undefined) {
+        name += '_' + state.queryName
+      }
       const cookie = Systrace.beginAsyncEvent(name);
       return () => {
         Systrace.endAsyncEvent(name, cookie);

@@ -119,9 +119,11 @@ RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
 
 // Acessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifier, NSString)
@@ -271,8 +273,6 @@ RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
 
-RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
-
 RCT_EXPORT_SHADOW_PROPERTY(top, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(right, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(start, YGValue)
@@ -334,7 +334,6 @@ RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
-RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end
