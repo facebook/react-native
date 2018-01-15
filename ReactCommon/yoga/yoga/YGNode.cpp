@@ -596,3 +596,15 @@ bool YGNode::isNodeFlexible() {
       (style_.positionType == YGPositionTypeRelative) &&
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
+
+float YGNode::getLeadingBorder(const YGFlexDirection axis) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.border[YGEdgeStart].unit != YGUnitUndefined &&
+      style_.border[YGEdgeStart].value >= 0.0f) {
+    return style_.border[YGEdgeStart].value;
+  }
+
+  return fmaxf(
+      YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value,
+      0.0f);
+}
