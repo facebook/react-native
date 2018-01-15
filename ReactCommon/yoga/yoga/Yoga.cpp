@@ -837,15 +837,6 @@ static inline YGAlign YGNodeAlignItem(const YGNodeRef node, const YGNodeRef chil
   return align;
 }
 
-static inline YGDirection YGNodeResolveDirection(const YGNodeRef node,
-                                                 const YGDirection parentDirection) {
-  if (node->getStyle().direction == YGDirectionInherit) {
-    return parentDirection > YGDirectionInherit ? parentDirection : YGDirectionLTR;
-  } else {
-    return node->getStyle().direction;
-  }
-}
-
 static float YGBaseline(const YGNodeRef node) {
   if (node->getBaseline() != nullptr) {
     const float baseline = node->getBaseline()(
@@ -1602,8 +1593,7 @@ static void YGNodeComputeFlexBasisForChildren(
     }
     if (performLayout) {
       // Set the initial position (relative to the parent).
-      const YGDirection childDirection =
-          YGNodeResolveDirection(child, direction);
+      const YGDirection childDirection = child->resolveDirection(direction);
       const float mainDim = YGFlexDirectionIsRow(mainAxis)
           ? availableInnerWidth
           : availableInnerHeight;
@@ -1744,7 +1734,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                    "YGMeasureModeUndefined");
 
   // Set the resolved resolution in the node's layout.
-  const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
+  const YGDirection direction = node->resolveDirection(parentDirection);
   node->setLayoutDirection(direction);
 
   const YGFlexDirection flexRowDirection = YGResolveFlexDirection(YGFlexDirectionRow, direction);

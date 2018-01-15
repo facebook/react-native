@@ -129,6 +129,7 @@ struct YGNode {
   YGValue marginTrailingValue(const YGFlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
+  YGDirection resolveDirection(const YGDirection parentDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(YGNodeRef oldChild, YGNodeRef newChild);

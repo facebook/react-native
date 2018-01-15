@@ -510,6 +510,15 @@ void YGNode::resolveDimension() {
   }
 }
 
+YGDirection YGNode::resolveDirection(const YGDirection parentDirection) {
+  if (style_.direction == YGDirectionInherit) {
+    return parentDirection > YGDirectionInherit ? parentDirection
+                                                : YGDirectionLTR;
+  } else {
+    return style_.direction;
+  }
+}
+
 void YGNode::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
