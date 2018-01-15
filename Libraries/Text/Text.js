@@ -8,6 +8,7 @@
  *
  * @providesModule Text
  * @flow
+ * @format
  */
 'use strict';
 
@@ -422,10 +423,10 @@ const Text = createReactClass({
     return {isInAParentText: true};
   },
   childContextTypes: {
-    isInAParentText: PropTypes.bool
+    isInAParentText: PropTypes.bool,
   },
   contextTypes: {
-    isInAParentText: PropTypes.bool
+    isInAParentText: PropTypes.bool,
   },
   /**
    * Only assigned if touch is needed.
@@ -448,10 +449,11 @@ const Text = createReactClass({
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
         this._handlers = {
-          onStartShouldSetResponder: (): bool => {
-            const shouldSetFromProps = this.props.onStartShouldSetResponder &&
-                // $FlowFixMe(>=0.41.0)
-                this.props.onStartShouldSetResponder();
+          onStartShouldSetResponder: (): boolean => {
+            const shouldSetFromProps =
+              this.props.onStartShouldSetResponder &&
+              // $FlowFixMe(>=0.41.0)
+              this.props.onStartShouldSetResponder();
             const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
@@ -462,7 +464,10 @@ const Text = createReactClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
+                if (
+                  this.props.suppressHighlighting ||
+                  !this._hasPressHandler()
+                ) {
                   return;
                 }
                 this.setState({
@@ -471,7 +476,10 @@ const Text = createReactClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
+                if (
+                  this.props.suppressHighlighting ||
+                  !this._hasPressHandler()
+                ) {
                   return;
                 }
                 this.setState({
@@ -513,12 +521,15 @@ const Text = createReactClass({
             this.props.onResponderTerminate &&
               this.props.onResponderTerminate.apply(this, arguments);
           }.bind(this),
-          onResponderTerminationRequest: function(): bool {
+          onResponderTerminationRequest: function(): boolean {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
-              allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
+              allowTermination = this.props.onResponderTerminationRequest.apply(
+                this,
+                arguments,
+              );
             }
             return allowTermination;
           }.bind(this),
@@ -533,7 +544,7 @@ const Text = createReactClass({
     if (newProps.selectionColor != null) {
       newProps = {
         ...newProps,
-        selectionColor: processColor(newProps.selectionColor)
+        selectionColor: processColor(newProps.selectionColor),
       };
     }
     if (Touchable.TOUCH_TARGET_DEBUG && newProps.onPress) {
@@ -555,13 +566,13 @@ type RectOffset = {
   left: number,
   right: number,
   bottom: number,
-}
+};
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 var RCTText = createReactNativeComponentClass(
   viewConfig.uiViewClassName,
-  () => viewConfig
+  () => viewConfig,
 );
 var RCTVirtualText = RCTText;
 
