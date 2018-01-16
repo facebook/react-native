@@ -14,7 +14,6 @@ See the official [React Native website](https://facebook.github.io/react-native/
 Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 - [Getting Started](#getting-started)
-- [Getting Help](#getting-help)
 - [Documentation](#documentation)
 - [Upgrading](#upgrading)
 - [Contributing](#contributing)
