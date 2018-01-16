@@ -4,7 +4,6 @@ package com.facebook.react.views.common;
 
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 /** Helper class for Views */
@@ -19,7 +18,7 @@ public class ViewHelper {
    * @param drawable {@link Drawable} The Drawable to use as the background, or null to remove the
    *     background
    */
-  public static void setBackground(View view, @Nullable Drawable drawable) {
+  public static void setBackground(View view, Drawable drawable) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       view.setBackground(drawable);
     } else {

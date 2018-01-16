@@ -57,10 +57,6 @@ public class ReactViewBackgroundManager {
     getOrCreateReactViewBackground().setRadius(borderRadius);
   }
 
-  public boolean hasRoundedBorders() {
-    return getOrCreateReactViewBackground().hasRoundedBorders();
-  }
-
   public void setBorderRadius(float borderRadius, int position) {
     getOrCreateReactViewBackground().setRadius(borderRadius, position);
   }
