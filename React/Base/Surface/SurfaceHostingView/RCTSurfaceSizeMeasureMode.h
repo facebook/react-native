@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTDefines.h>
+
 /**
  * Bitmask defines how size constrains from `-[UIView sizeThatFits:]`
  * are translated to `-[RCTSurface sizeThatFitsMinimumSize:maximumSize:]`.
@@ -21,3 +23,13 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceSizeMeasureMode) {
   RCTSurfaceSizeMeasureModeHeightExact       = 1 << 2,
   RCTSurfaceSizeMeasureModeHeightAtMost      = 2 << 2,
 };
+
+/**
+ * Returns size constraints based on `size` and `sizeMeasureMode`.
+ */
+RCT_EXTERN void RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
+  CGSize size,
+  RCTSurfaceSizeMeasureMode sizeMeasureMode,
+  CGSize &minimumSize,
+  CGSize &maximumSize
+);

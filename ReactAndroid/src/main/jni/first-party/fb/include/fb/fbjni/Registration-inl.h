@@ -18,7 +18,7 @@ namespace jni {
 namespace detail {
 
 #ifdef __i386__
-// X86 ABI forces 16 byte stack allignment on calls. Unfortunately
+// X86 ABI forces 16 byte stack alignment on calls. Unfortunately
 // sometimes Dalvik chooses not to obey the ABI:
 // - https://code.google.com/p/android/issues/detail?id=61012
 // - https://android.googlesource.com/platform/ndk/+/81696d2%5E!/

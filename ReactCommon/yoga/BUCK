@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+include_defs("//ReactCommon/DEFS")
 
-fb_xplat_cxx_library(
+rn_xplat_cxx_library(
     name = "yoga",
     srcs = glob(["yoga/*.cpp"]),
     header_namespace = "",

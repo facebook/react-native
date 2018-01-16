@@ -11,11 +11,44 @@
 
 #import <React/RCTShadowView.h>
 
+/**
+ * Converts float values between Yoga and CoreGraphics representations,
+ * especially in terms of edge cases.
+ */
+RCT_EXTERN float RCTYogaFloatFromCoreGraphicsFloat(CGFloat value);
+RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
+
 @interface RCTShadowView (Layout)
+
+#pragma mark - Computed Layout-Inferred Metrics
 
 @property (nonatomic, readonly) UIEdgeInsets paddingAsInsets;
 @property (nonatomic, readonly) UIEdgeInsets borderAsInsets;
 @property (nonatomic, readonly) UIEdgeInsets compoundInsets;
 @property (nonatomic, readonly) CGSize availableSize;
+
+#pragma mark - Measuring
+
+/**
+ * Measures shadow view without side-effects.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
+
+#pragma mark - Dirty Propagation Control
+
+/**
+ * Designated method to control dirty propagation mechanism.
+ * Dirties the shadow view (and all affected shadow views, usually a superview)
+ * in terms of layout.
+ * The default implementaion does nothing.
+ */
+- (void)dirtyLayout;
+
+/**
+ * Designated method to control dirty propagation mechanism.
+ * Clears (makes not dirty) the shadow view.
+ * The default implementaion does nothing.
+ */
+- (void)clearLayout;
 
 @end

@@ -56,6 +56,7 @@ typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float height,
                                 YGMeasureMode heightMode);
 typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
+typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(const YGConfigRef config,
                         const YGNodeRef node,
@@ -165,6 +166,8 @@ YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
 void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
+YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
+void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
 YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
 bool YGNodeGetHasNewLayout(YGNodeRef node);

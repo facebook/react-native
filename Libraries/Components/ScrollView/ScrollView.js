@@ -234,6 +234,19 @@ const ScrollView = createReactClass({
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
+     * When non-null, the scroll view will adjust the scroll position so that the content at or
+     * beyond the specified index that is currently visible will not change position. This is useful
+     * for lists that are loading content in both directions, e.g. a chat thread, where new messages
+     * coming in might otherwise cause the scroll position to jump. A value of 1 can be used to skip
+     * a spinner that does not need to maintain position. The default value is null.
+     *
+     * Caveat: reordering elements in the scrollview with this enabled will probably cause jumpiness
+     * and jank. It can be fixed, but there are currently no plans to do so.
+     *
+     * @platform ios
+     */
+    maintainPositionAtOrBeyondIndex: PropTypes.number,
+    /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios
      */
@@ -256,6 +269,15 @@ const ScrollView = createReactClass({
      * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
+    /**
+     * Called when the user begins to drag the scroll view.
+     */
+    onScrollBeginDrag: PropTypes.func,
+    /**
+     * Called when the user stops dragging the scroll view and it either stops
+     * or begins to glide.
+     */
+    onScrollEndDrag: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes.
      *
@@ -335,10 +357,10 @@ const ScrollView = createReactClass({
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
      * that have lengths smaller than the scroll view. Typically used in
-     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * combination with `snapToAlignment` and `decelerationRate="fast"` on ios.
      * Overrides less configurable `pagingEnabled` prop.
      *
-     * @platform ios
+     * Supported for horizontal scrollview on android.
      */
     snapToInterval: PropTypes.number,
     /**
@@ -602,7 +624,7 @@ const ScrollView = createReactClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console
+        console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +

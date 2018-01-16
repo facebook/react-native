@@ -109,7 +109,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Convenient alias to `width` and `height` in pixels.
- * Defaults to NAN in case of non-pixel dimention.
+ * Defaults to NAN in case of non-pixel dimension.
  */
 @property (nonatomic, assign) CGSize size;
 

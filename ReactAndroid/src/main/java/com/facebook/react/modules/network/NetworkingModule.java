@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -408,20 +410,24 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Ignore
     }
 
-    Reader reader = responseBody.charStream();
+    Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
+      responseBody.contentType().charset(StandardCharsets.UTF_8);
+
+    ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
+    InputStream inputStream = responseBody.byteStream();
     try {
-      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+      byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      while ((read = reader.read(buffer)) != -1) {
+      while ((read = inputStream.read(buffer)) != -1) {
         ResponseUtil.onIncrementalDataReceived(
           eventEmitter,
           requestId,
-          new String(buffer, 0, read),
+          streamDecoder.decodeNext(buffer, read),
           totalBytesRead,
           contentLength);
       }
     } finally {
-      reader.close();
+      inputStream.close();
     }
   }
 
