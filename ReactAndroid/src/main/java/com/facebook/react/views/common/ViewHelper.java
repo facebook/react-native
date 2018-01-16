@@ -5,6 +5,7 @@ package com.facebook.react.views.common;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import javax.annotation.Nullable;
 
 /** Helper class for Views */
 public class ViewHelper {
