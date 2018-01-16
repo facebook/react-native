@@ -1553,9 +1553,6 @@ static void YGNodeComputeFlexBasisForChildren(
       child->setDirty(false);
       continue;
     }
-    if (child->getStyle().positionType == YGPositionTypeAbsolute) {
-      continue;
-    }
     if (performLayout) {
       // Set the initial position (relative to the parent).
       const YGDirection childDirection = child->resolveDirection(direction);
@@ -1567,6 +1564,10 @@ static void YGNodeComputeFlexBasisForChildren(
           : availableInnerWidth;
       child->setPosition(
           childDirection, mainDim, crossDim, availableInnerWidth);
+    }
+
+    if (child->getStyle().positionType == YGPositionTypeAbsolute) {
+      continue;
     }
     if (child == singleFlexChild) {
       child->setLayoutComputedFlexBasisGeneration(gCurrentGenerationCount);
