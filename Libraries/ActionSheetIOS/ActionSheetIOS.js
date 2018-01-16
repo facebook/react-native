@@ -30,7 +30,7 @@ const ActionSheetIOS = {
    *
    * - `options` (array of strings) - a list of button titles (required)
    * - `cancelButtonIndex` (int) - index of cancel button in `options`
-   * - `destructiveButtonIndex` (int) - index of destructive button in `options`
+   * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
    *
