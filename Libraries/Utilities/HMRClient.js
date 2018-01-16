@@ -121,7 +121,7 @@ Error: ${e.message}`
         }
         case 'error': {
           HMRLoadingView.hide();
-          throw new Error(data.body.type + ' ' + data.body.description);
+          throw new Error(`${data.body.type}: ${data.body.message}`);
         }
         default: {
           throw new Error(`Unexpected message: ${data}`);
