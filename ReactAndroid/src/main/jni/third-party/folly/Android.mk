@@ -14,9 +14,9 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS += -fexceptions -fno-omit-frame-pointer -frtti
-LOCAL_CFLAGS += -Wall -Werror -std=c++11
+LOCAL_CFLAGS += -Wall -Werror -std=c++1y
 
-CXX11_FLAGS := -std=gnu++11
+CXX11_FLAGS := -std=gnu++1y
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 
 FOLLY_FLAGS := -DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1

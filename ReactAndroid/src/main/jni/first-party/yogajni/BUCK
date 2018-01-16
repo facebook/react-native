@@ -13,7 +13,7 @@ if IS_OSS_BUILD:
       '-Wall',
       '-Werror',
       '-O3',
-      '-std=c++11',
+      '-std=c++1y',
     ],
     deps = [
       '//ReactCommon/yoga:yoga',

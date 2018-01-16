@@ -12,7 +12,7 @@ fb_xplat_cxx_library(
     compiler_flags = [
         "-Wall",
         "-Werror",
-        "-std=c++11",
+        "-std=c++1y",
         "-fexceptions",
     ],
     force_static = True,

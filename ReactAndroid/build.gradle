@@ -18,7 +18,7 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
 //   - boost_1_63_0
-//   - double-conversion-1.1.1
+//   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.3
 //   - jsc-headers
@@ -53,16 +53,16 @@ task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/double-conversion/archive/v1.1.1.tar.gz'
+    src 'https://github.com/google/double-conversion/archive/v1.1.6.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'double-conversion-1.1.1.tar.gz')
+    dest new File(downloadsDir, 'double-conversion-1.1.6.tar.gz')
 }
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from dependenciesPath ?: tarTree(downloadDoubleConversion.dest)
     from 'src/main/jni/third-party/double-conversion/Android.mk'
-    include 'double-conversion-1.1.1/src/**/*', 'Android.mk'
+    include 'double-conversion-1.1.6/src/**/*', 'Android.mk'
     filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/double-conversion"
@@ -134,7 +134,7 @@ task downloadJSCHeaders(type: Download) {
 }
 
 // Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
-task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
+task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) doLast {
     copy {
         from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
         from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
@@ -283,7 +283,7 @@ dependencies {
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:1.3.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
-    compile 'com.facebook.soloader:soloader:0.1.0'
+    compile 'com.facebook.soloader:soloader:0.3.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
