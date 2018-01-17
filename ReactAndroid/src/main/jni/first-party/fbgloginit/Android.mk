@@ -10,7 +10,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_CFLAGS := -fexceptions -fno-omit-frame-pointer
 LOCAL_CFLAGS += -Wall -Werror
 
-CXX11_FLAGS := -std=gnu++1y
+CXX11_FLAGS := -std=gnu++11
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
