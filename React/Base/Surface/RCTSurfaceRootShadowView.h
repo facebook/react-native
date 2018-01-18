@@ -22,9 +22,6 @@
 
 @property (nonatomic, weak) id<RCTSurfaceRootShadowViewDelegate> delegate;
 
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize;
-
 /**
  * Layout direction (LTR or RTL) inherited from native environment and
  * is using as a base direction value in layout engine.

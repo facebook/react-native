@@ -143,6 +143,10 @@ void *Instance::getJavaScriptContext() {
                            : nullptr;
 }
 
+bool Instance::isInspectable() {
+  return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
+}
+
 void Instance::callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) {
   callback_->incrementPendingJSCalls();

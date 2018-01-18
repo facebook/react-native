@@ -111,6 +111,7 @@
 		3D4153641F277011005B8EFE /* libART-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D4153621F276FF9005B8EFE /* libART-tvOS.a */; };
 		3D56F9F11D6F6E9B00F53A06 /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */; };
 		3DB99D0C1BA0340600302749 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */; };
+		3DCE52BC1FEAAF8F00613583 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1380DC9B1E70C0DD00E7C47D /* libReact.a */; };
 		3DD981D61D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
@@ -554,6 +555,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DCE52BC1FEAAF8F00613583 /* libReact.a in Frameworks */,
 				3D4153641F277011005B8EFE /* libART-tvOS.a in Frameworks */,
 				2DD323E31DA2DE3F000FE1B8 /* libRCTAnimation.a in Frameworks */,
 				3D302F221DF8285100D6DDAE /* libRCTImage-tvOS.a in Frameworks */,
@@ -868,6 +870,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3DCE52B31FEAAF8F00613583 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		58005BE51ABA80530062E044 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -897,6 +906,7 @@
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				2DD323911DA2DD8B000FE1B8 /* RNTester-tvOS */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				3DCE52B31FEAAF8F00613583 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";

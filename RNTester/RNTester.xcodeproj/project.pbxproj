@@ -414,6 +414,20 @@
 			remoteGlobalIDString = 3DBE0D0D1F3B181C0099AA32;
 			remoteInfo = "fishhook-tvOS";
 		};
+		3DCE53211FEAB1C500613583 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EBF21BDC1FC498900052F4D5;
+			remoteInfo = jsinspector;
+		};
+		3DCE53231FEAB1C500613583 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EBF21BFA1FC4989A0052F4D5;
+			remoteInfo = "jsinspector-tvOS";
+		};
 		5281CA501EEAC9A700AC40CD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5281CA4B1EEAC9A700AC40CD /* RCTBlob.xcodeproj */;
@@ -831,6 +845,8 @@
 				3D05748E1DE6008900184BB4 /* libcxxreact.a */,
 				3D0574901DE6008900184BB4 /* libjschelpers.a */,
 				3D0574921DE6008900184BB4 /* libjschelpers.a */,
+				3DCE53221FEAB1C500613583 /* libjsinspector.a */,
+				3DCE53241FEAB1C500613583 /* libjsinspector-tvOS.a */,
 				3D507F421EBC88B700B56834 /* libthird-party.a */,
 				2D66FF8C1ECA405900F0A767 /* libthird-party.a */,
 				3D507F441EBC88B700B56834 /* libdouble-conversion.a */,
@@ -1507,6 +1523,20 @@
 			fileType = archive.ar;
 			path = "libfishhook-tvOS.a";
 			remoteRef = 3DBE0D341F3B18670099AA32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3DCE53221FEAB1C500613583 /* libjsinspector.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsinspector.a;
+			remoteRef = 3DCE53211FEAB1C500613583 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3DCE53241FEAB1C500613583 /* libjsinspector-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libjsinspector-tvOS.a";
+			remoteRef = 3DCE53231FEAB1C500613583 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		5281CA511EEAC9A700AC40CD /* libRCTBlob.a */ = {

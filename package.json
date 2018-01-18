@@ -33,7 +33,6 @@
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
-      "/website/",
       "local-cli/templates/"
     ],
     "haste": {
@@ -76,8 +75,7 @@
       "node_modules/jest-cli",
       "node_modules/react/dist",
       "node_modules/fbjs/.*/__mocks__/",
-      "node_modules/fbjs/node_modules/",
-      "<rootDir>/website/"
+      "node_modules/fbjs/node_modules/"
     ],
     "unmockedModulePathPatterns": [
       "node_modules/react/",
@@ -97,6 +95,7 @@
     "android",
     "cli.js",
     "flow",
+    "flow-github",
     "init.sh",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
@@ -128,7 +127,8 @@
     "lint": "eslint .",
     "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
-    "test-android-setup": "docker pull containership/android-base:latest",
+    "test-android-setup": "docker pull hramos/android-base:latest",
+    "test-android-build-base": "docker build -t hramos/android-base -f ContainerShip/Dockerfile.android-base .",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
     "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-unit-tests.sh",
@@ -142,7 +142,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.1.1"
+    "react": "16.2.0"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -159,11 +159,13 @@
     "base64-js": "^1.1.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
-    "connect": "^2.8.3",
+    "compression": "^1.7.1",
+    "connect": "^3.6.5",
     "create-react-class": "^15.5.2",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
     "envinfo": "^3.0.0",
+    "errorhandler": "^1.5.0",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.14",
     "fbjs-scripts": "^0.8.1",
@@ -172,10 +174,12 @@
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
     "lodash": "^4.16.6",
-    "metro-bundler": "^0.21.0",
+    "metro": "^0.24.4",
+    "metro-core": "^0.24.4",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "morgan": "^1.9.0",
     "node-fetch": "^1.3.3",
     "node-notifier": "^5.1.2",
     "npmlog": "^2.0.4",
@@ -186,11 +190,12 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "^2.5.0",
+    "react-devtools-core": "3.0.0",
     "react-timer-mixin": "^0.13.2",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
+    "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
     "uuid": "^3.0.1",
@@ -205,15 +210,16 @@
     "eslint": "^3.19.0",
     "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",
-    "eslint-plugin-babel": "^4.1.1",
+    "eslint-plugin-eslint-comments": "^2.0.1",
     "eslint-plugin-flowtype": "^2.33.0",
+    "eslint-plugin-jest": "^21.5.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.59.0",
-    "jest": "21.3.0-beta.8",
-    "prettier": "1.7.0",
-    "react": "16.1.1",
-    "react-test-renderer": "16.1.1",
+    "flow-bin": "^0.63.0",
+    "jest": "22.1.2",
+    "prettier": "1.9.1",
+    "react": "16.2.0",
+    "react-test-renderer": "16.2.0",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }

@@ -27,6 +27,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
   updateText = (text) => {
@@ -35,6 +36,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   };
@@ -46,6 +48,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={(event) => this.updateText(
@@ -60,12 +63,16 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onKeyPress={(event) => this.updateText(
+            'onKeyPress key: ' + event.nativeEvent.key
+          )}
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
@@ -320,10 +327,14 @@ class AutogrowingTextInputExample extends React.Component<{}> {
       width: 100,
       multiline: true,
       text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
     };
   }
 
-  componentDidReceiveProps(props) {
+  componentWillReceiveProps(props) {
     this.setState({
       multiline: props.multiline,
     });
@@ -351,10 +362,12 @@ class AutogrowingTextInputExample extends React.Component<{}> {
           multiline={this.state.multiline}
           style={[style, {width: this.state.width + '%'}]}
           onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
           {...props}
         />
         <Text>Plain text value representation:</Text>
         <Text>{this.state.text}</Text>
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
       </View>
     );
   }
