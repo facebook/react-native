@@ -43,7 +43,8 @@ class File extends Blob {
    * Name of the file.
    */
   get name(): string {
-    return this.data.name || '';
+    invariant(this.data.name != null, 'Files must have a name set.');
+    return this.data.name;
   }
 
   /*

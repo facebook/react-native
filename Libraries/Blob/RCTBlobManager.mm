@@ -13,7 +13,9 @@
 #import <React/RCTWebSocketModule.h>
 #import <React/RCTNetworking.h>
 
-static NSString *const kBlobUriScheme = @"blob";
+#import <mutex>
+
+static NSString *const kBlobURIScheme = @"blob";
 
 @interface RCTBlobManager () <RCTNetworkingRequestHandler, RCTNetworkingResponseHandler, RCTWebSocketContentHandler>
 
@@ -36,6 +38,8 @@ RCT_EXPORT_MODULE(BlobModule)
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
+
+  std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
 }
 
@@ -47,7 +51,7 @@ RCT_EXPORT_MODULE(BlobModule)
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
-    @"BLOB_URI_SCHEME": kBlobUriScheme,
+    @"BLOB_URI_SCHEME": kBlobURIScheme,
     @"BLOB_URI_HOST": [NSNull null],
   };
 }
@@ -179,7 +183,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [request.URL.scheme caseInsensitiveCompare:kBlobUriScheme] == NSOrderedSame;
+  return [request.URL.scheme caseInsensitiveCompare:kBlobURIScheme] == NSOrderedSame;
 }
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate

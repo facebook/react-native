@@ -8,6 +8,7 @@
  *
  * @providesModule convertRequestBody
  * @flow
+ * @format
  */
 'use strict';
 
@@ -22,8 +23,7 @@ export type RequestBody =
   | FormData
   | {uri: string}
   | ArrayBuffer
-  | $ArrayBufferView
-  ;
+  | $ArrayBufferView;
 
 function convertRequestBody(body: RequestBody): Object {
   if (typeof body === 'string') {

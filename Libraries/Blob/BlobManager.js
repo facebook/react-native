@@ -106,7 +106,7 @@ class BlobManager {
   }
 
   /**
-   * Indicate the the websocket should return a blob for incoming binary
+   * Indicate the websocket should return a blob for incoming binary
    * messages.
    */
   static addWebSocketHandler(socketId: number): void {
@@ -114,7 +114,7 @@ class BlobManager {
   }
 
   /**
-   * Indicate the the websocket should no longer return a blob for incoming
+   * Indicate the websocket should no longer return a blob for incoming
    * binary messages.
    */
   static removeWebSocketHandler(socketId: number): void {
