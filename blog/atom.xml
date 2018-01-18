@@ -13,9 +13,9 @@
         <link href="https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html">
         </link>
         <updated>2018-01-18T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<img src="/react-native/blog/assets/loading-screen-01.gif" style="float: left; padding-right: 80px; padding-bottom: 20px"/>
+        <summary type="html"><![CDATA[Twitter’s iOS app has a loading animation I quite enjoy.
 
-Twitter’s iOS app has a loading animation I quite enjoy.
+<img src="/react-native/blog/assets/loading-screen-01.gif" style="float: left; padding-right: 80px; padding-bottom: 20px"/>
 
 Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
         <author>
