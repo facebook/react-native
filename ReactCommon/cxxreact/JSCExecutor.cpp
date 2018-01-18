@@ -39,10 +39,6 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
-#if defined(WITH_JSC_MEMORY_PRESSURE)
-#include <jsc_memory.h>
-#endif
-
 #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
 #endif
@@ -459,6 +455,10 @@ namespace facebook {
     void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
       if (m_bundleRegistry) {
         m_bundleRegistry->registerBundle(bundleId, bundlePath);
+      } else {
+        auto sourceUrl = String(m_context, bundlePath.c_str());
+        auto source = adoptString(JSBigFileString::fromPath(bundlePath));
+        evaluateScript(m_context, source, sourceUrl);
       }
     }
 
