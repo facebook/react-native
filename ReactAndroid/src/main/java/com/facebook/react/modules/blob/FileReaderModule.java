@@ -1,5 +1,3 @@
-package com.facebook.react.modules.blob;
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -9,6 +7,7 @@ package com.facebook.react.modules.blob;
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+package com.facebook.react.modules.blob;
 
 import android.util.Base64;
 
