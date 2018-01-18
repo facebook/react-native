@@ -8,10 +8,6 @@
 
 package com.facebook.react.tests;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -19,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -27,14 +22,17 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.testing.FakeWebSocketModule;
+import com.facebook.react.testing.ReactIntegrationTestCase;
+import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.testing.FakeWebSocketModule;
-import com.facebook.react.testing.ReactIntegrationTestCase;
-import com.facebook.react.testing.ReactTestHelper;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Test to verify that Progress bar renders as a view of the right size
@@ -70,11 +68,8 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager(),
         new ReactProgressBarViewManager());
-    mUIManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    mUIManager =
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

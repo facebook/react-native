@@ -53,7 +53,7 @@ type State = {
  * - It can bounce the 1st row of the list so users know it's swipeable
  * - More to come
  */
-class SwipeableListView extends React.Component<DefaultProps, Props, State> {
+class SwipeableListView extends React.Component<Props, State> {
   props: Props;
   state: State;
 
@@ -113,7 +113,7 @@ class SwipeableListView extends React.Component<DefaultProps, Props, State> {
     }
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <ListView
         {...this.props}

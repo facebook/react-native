@@ -16,21 +16,18 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 
 type Props = {
-  children?: React.Element<*>,
+  children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: Object) => void,
   scrollAnimatedValue: Animated.Value,
 };
 
-class ScrollViewStickyHeader extends React.Component {
-  props: Props;
-  state: {
-    measured: boolean,
-    layoutY: number,
-    layoutHeight: number,
-    nextHeaderLayoutY: ?number,
-  };
-
+class ScrollViewStickyHeader extends React.Component<Props, {
+  measured: boolean,
+  layoutY: number,
+  layoutHeight: number,
+  nextHeaderLayoutY: ?number,
+}> {
   constructor(props: Props, context: Object) {
     super(props, context);
     this.state = {
@@ -74,7 +71,7 @@ class ScrollViewStickyHeader extends React.Component {
       // - Past the collision with the next header y: no more translation. This will cause the
       // header to continue scrolling up and make room for the next sticky header.
       // In the case that there is no next header just translate equally to
-      // scroll indefinetly.
+      // scroll indefinitely.
       inputRange.push(layoutY);
       outputRange.push(0);
       // Sometimes headers jump around so we make sure we don't violate the monotonic inputRange

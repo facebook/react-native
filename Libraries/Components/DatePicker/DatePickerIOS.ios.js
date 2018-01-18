@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
@@ -35,8 +36,8 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-// $FlowFixMe(>=0.41.0)
-const DatePickerIOS = React.createClass({
+const DatePickerIOS = createReactClass({
+  displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 
@@ -76,6 +77,11 @@ const DatePickerIOS = React.createClass({
      * The date picker mode.
      */
     mode: PropTypes.oneOf(['date', 'time', 'datetime']),
+
+    /**
+     * The date picker locale.
+     */
+    locale: PropTypes.string,
 
     /**
      * The interval at which minutes can be selected.
@@ -126,6 +132,7 @@ const DatePickerIOS = React.createClass({
           ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
+          locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }
@@ -154,6 +161,7 @@ const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
   propTypes: {
     ...DatePickerIOS.propTypes,
     date: PropTypes.number,
+    locale: PropTypes.string,
     minimumDate: PropTypes.number,
     maximumDate: PropTypes.number,
     onDateChange: () => null,

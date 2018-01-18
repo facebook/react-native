@@ -10,6 +10,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/google/glog.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
+  spec.header_dir = 'glog'
   spec.source_files = 'src/glog/*.h',
                       'src/demangle.cc',
                       'src/logging.cc',
@@ -27,6 +28,6 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, "8.0"
+  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 
 end

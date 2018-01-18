@@ -8,6 +8,7 @@
  *
  * @providesModule TextInput
  * @flow
+ * @format
  */
 'use strict';
 
@@ -17,19 +18,30 @@ const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInputState = require('TextInputState');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
+const {ViewContextTypes} = require('ViewContext');
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const onlyMultiline = {
@@ -37,11 +49,19 @@ const onlyMultiline = {
   children: true,
 };
 
+import type {ViewChildContext} from 'ViewContext';
+
 if (Platform.OS === 'android') {
   var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
 } else if (Platform.OS === 'ios') {
-  var RCTTextView = requireNativeComponent('RCTTextView', null);
-  var RCTTextField = requireNativeComponent('RCTTextField', null);
+  var RCTMultilineTextInputView = requireNativeComponent(
+    'RCTMultilineTextInputView',
+    null,
+  );
+  var RCTSinglelineTextInputView = requireNativeComponent(
+    'RCTSinglelineTextInputView',
+    null,
+  );
 }
 
 type Event = Object;
@@ -94,6 +114,9 @@ const DataDetectorTypes = [
  * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
+ *
+ * Two methods exposed via the native element are .focus() and .blur() that
+ * will focus or blur the TextInput programmatically.
  *
  * Note that some props are only available with `multiline={true/false}`.
  * Additionally, border styles that apply to only one side of the element
@@ -167,8 +190,9 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
-// $FlowFixMe(>=0.41.0)
-const TextInput = React.createClass({
+
+const TextInput = createReactClass({
+  displayName: 'TextInput',
   statics: {
     /* TODO(brentvatne) docs are needed for this */
     State: TextInputState,
@@ -206,6 +230,11 @@ const TextInput = React.createClass({
      */
     autoFocus: PropTypes.bool,
     /**
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
      * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
@@ -218,6 +247,25 @@ const TextInput = React.createClass({
      * - `numeric`
      * - `email-address`
      * - `phone-pad`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
+     * - `ascii-capable`
+     * - `numbers-and-punctuation`
+     * - `url`
+     * - `number-pad`
+     * - `name-phone-pad`
+     * - `decimal-pad`
+     * - `twitter`
+     * - `web-search`
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `visible-password`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
@@ -234,16 +282,14 @@ const TextInput = React.createClass({
       'decimal-pad',
       'twitter',
       'web-search',
+      // Android-only
+      'visible-password',
     ]),
     /**
      * Determines the color of the keyboard.
      * @platform ios
      */
-    keyboardAppearance: PropTypes.oneOf([
-      'default',
-      'light',
-      'dark',
-    ]),
+    keyboardAppearance: PropTypes.oneOf(['default', 'light', 'dark']),
     /**
      * Determines how the return key should look. On Android you can also use
      * `returnKeyLabel`.
@@ -382,7 +428,6 @@ const TextInput = React.createClass({
      * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
      * the typed-in character otherwise including `' '` for space.
      * Fires before `onChange` callbacks.
-     * @platform ios
      */
     onKeyPress: PropTypes.func,
     /**
@@ -398,19 +443,19 @@ const TextInput = React.createClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.node,
+    placeholder: PropTypes.string,
     /**
      * The text color of the placeholder string.
      */
     placeholderTextColor: ColorPropType,
     /**
      * If `true`, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. The default value is `false`.
+     * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight and cursor color of the text input.
-    */
+     * The highlight and cursor color of the text input.
+     */
     selectionColor: ColorPropType,
     /**
      * An instance of `DocumentSelectionState`, this is some state that is responsible for
@@ -480,7 +525,17 @@ const TextInput = React.createClass({
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * Note that not all Text styles are supported,
+     * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
+     *
+     * - `borderLeftWidth`
+     * - `borderTopWidth`
+     * - `borderRightWidth`
+     * - `borderBottomWidth`
+     * - `borderTopLeftRadius`
+     * - `borderTopRightRadius`
+     * - `borderBottomRightRadius`
+     * - `borderBottomLeftRadius`
+     *
      * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
      * for more detail.
      *
@@ -495,6 +550,13 @@ const TextInput = React.createClass({
 
     /**
      * If defined, the provided image resource will be rendered on the left.
+     * The image resource must be inside `/android/app/src/main/res/drawable` and referenced
+     * like
+     * ```
+     * <TextInput
+     *  inlineImageLeft='search_icon'
+     * />
+     * ```
      * @platform android
      */
     inlineImageLeft: PropTypes.string,
@@ -532,7 +594,11 @@ const TextInput = React.createClass({
      */
     caretHidden: PropTypes.bool,
   },
-
+  getDefaultProps(): Object {
+    return {
+      allowFontScaling: true,
+    };
+  },
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -543,13 +609,10 @@ const TextInput = React.createClass({
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
   isFocused: function(): boolean {
-    return TextInputState.currentlyFocusedField() ===
-      ReactNative.findNodeHandle(this._inputRef);
-  },
-
-  contextTypes: {
-    onFocusRequested: PropTypes.func,
-    focusEmitter: PropTypes.instanceOf(EventEmitter),
+    return (
+      TextInputState.currentlyFocusedField() ===
+      ReactNative.findNodeHandle(this._inputRef)
+    );
   },
 
   _inputRef: (undefined: any),
@@ -567,13 +630,13 @@ const TextInput = React.createClass({
     }
     this._focusSubscription = this.context.focusEmitter.addListener(
       'focus',
-      (el) => {
+      el => {
         if (this === el) {
           this.requestAnimationFrame(this.focus);
         } else if (this.isFocused()) {
           this.blur();
         }
-      }
+      },
     );
     if (this.props.autoFocus) {
       this.context.onFocusRequested(this);
@@ -587,12 +650,18 @@ const TextInput = React.createClass({
     }
   },
 
-  getChildContext: function(): Object {
-    return {isInAParentText: true};
+  getChildContext(): ViewChildContext {
+    return {
+      isInAParentText: true,
+    };
   },
 
-  childContextTypes: {
-    isInAParentText: PropTypes.bool
+  childContextTypes: ViewContextTypes,
+
+  contextTypes: {
+    ...ViewContextTypes,
+    onFocusRequested: PropTypes.func,
+    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   /**
@@ -604,34 +673,37 @@ const TextInput = React.createClass({
 
   render: function() {
     if (Platform.OS === 'ios') {
-      return this._renderIOS();
+      return UIManager.RCTVirtualText
+        ? this._renderIOS()
+        : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
     }
   },
 
   _getText: function(): ?string {
-    return typeof this.props.value === 'string' ?
-      this.props.value :
-      (
-        typeof this.props.defaultValue === 'string' ?
-        this.props.defaultValue :
-        ''
-      );
+    return typeof this.props.value === 'string'
+      ? this.props.value
+      : typeof this.props.defaultValue === 'string'
+        ? this.props.defaultValue
+        : '';
   },
 
   _setNativeRef: function(ref: any) {
     this._inputRef = ref;
   },
 
-  _renderIOS: function() {
+  _renderIOSLegacy: function() {
     var textContainer;
 
     var props = Object.assign({}, this.props);
     props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
-      props.selection = {start: props.selection.start, end: props.selection.start};
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
     }
 
     if (!props.multiline) {
@@ -639,14 +711,16 @@ const TextInput = React.createClass({
         for (var propKey in onlyMultiline) {
           if (props[propKey]) {
             const error = new Error(
-              'TextInput prop `' + propKey + '` is only supported with multiline.'
+              'TextInput prop `' +
+                propKey +
+                '` is only supported with multiline.',
             );
             warning(false, '%s', error.stack);
           }
         }
       }
-      textContainer =
-        <RCTTextField
+      textContainer = (
+        <RCTSinglelineTextInputView
           ref={this._setNativeRef}
           {...props}
           onFocus={this._onFocus}
@@ -655,24 +729,29 @@ const TextInput = React.createClass({
           onSelectionChange={this._onSelectionChange}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
-        />;
+        />
+      );
     } else {
       var children = props.children;
       var childCount = 0;
       React.Children.forEach(children, () => ++childCount);
       invariant(
         !(props.value && childCount),
-        'Cannot specify both value and children.'
+        'Cannot specify both value and children.',
       );
       if (childCount >= 1) {
-        children = <Text style={props.style}>{children}</Text>;
+        children = (
+          <Text style={props.style} allowFontScaling={props.allowFontScaling}>
+            {children}
+          </Text>
+        );
       }
       if (props.inputView) {
         children = [children, props.inputView];
       }
       props.style.unshift(styles.multilineInput);
-      textContainer =
-        <RCTTextView
+      textContainer = (
+        <RCTMultilineTextInputView
           ref={this._setNativeRef}
           {...props}
           children={children}
@@ -686,8 +765,60 @@ const TextInput = React.createClass({
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
-        />;
+        />
+      );
     }
+
+    return (
+      <TouchableWithoutFeedback
+        onLayout={props.onLayout}
+        onPress={this._onPress}
+        rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
+        nativeID={this.props.nativeID}
+        testID={props.testID}>
+        {textContainer}
+      </TouchableWithoutFeedback>
+    );
+  },
+
+  _renderIOS: function() {
+    var props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
+    }
+
+    const RCTTextInputView = props.multiline
+      ? RCTMultilineTextInputView
+      : RCTSinglelineTextInputView;
+
+    if (props.multiline) {
+      props.style.unshift(styles.multilineInput);
+    }
+
+    const textContainer = (
+      <RCTTextInputView
+        ref={this._setNativeRef}
+        {...props}
+        onFocus={this._onFocus}
+        onBlur={this._onBlur}
+        onChange={this._onChange}
+        onContentSizeChange={this.props.onContentSizeChange}
+        onSelectionChange={this._onSelectionChange}
+        onTextInput={this._onTextInput}
+        onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+        text={this._getText()}
+        dataDetectorTypes={this.props.dataDetectorTypes}
+        onScroll={this._onScroll}
+      />
+    );
 
     return (
       <TouchableWithoutFeedback
@@ -708,23 +839,31 @@ const TextInput = React.createClass({
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
     props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
+        props.autoCapitalize || 'sentences'
+      ];
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
     invariant(
       !(this.props.value && childCount),
-      'Cannot specify both value and children.'
+      'Cannot specify both value and children.',
     );
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
 
     if (props.selection && props.selection.end == null) {
-      props.selection = {start: props.selection.start, end: props.selection.start};
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
     }
 
-    const textContainer =
+    const textContainer = (
       <AndroidTextInput
         ref={this._setNativeRef}
         {...props}
@@ -739,11 +878,12 @@ const TextInput = React.createClass({
         disableFullscreenUI={this.props.disableFullscreenUI}
         textBreakStrategy={this.props.textBreakStrategy}
         onScroll={this._onScroll}
-      />;
+      />
+    );
 
     return (
       <TouchableWithoutFeedback
-        onLayout={this.props.onLayout}
+        onLayout={this._onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
@@ -810,22 +950,28 @@ const TextInput = React.createClass({
     }
   },
 
-  componentDidUpdate: function () {
+  componentDidUpdate: function() {
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
     const nativeProps = {};
 
-    if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
+    if (
+      this._lastNativeText !== this.props.value &&
+      typeof this.props.value === 'string'
+    ) {
       nativeProps.text = this.props.value;
     }
 
     // Selection is also a controlled prop, if the native value doesn't match
     // JS, update to the JS value.
     const {selection} = this.props;
-    if (this._lastNativeSelection && selection &&
-        (this._lastNativeSelection.start !== selection.start ||
-        this._lastNativeSelection.end !== selection.end)) {
+    if (
+      this._lastNativeSelection &&
+      selection &&
+      (this._lastNativeSelection.start !== selection.start ||
+        this._lastNativeSelection.end !== selection.end)
+    ) {
       nativeProps.selection = this.props.selection;
     }
 
@@ -860,8 +1006,8 @@ const TextInput = React.createClass({
 
 var styles = StyleSheet.create({
   multilineInput: {
-    // This default top inset makes RCTTextView seem as close as possible
-    // to single-line RCTTextField defaults, using the system defaults
+    // This default top inset makes RCTMultilineTextInputView seem as close as possible
+    // to single-line RCTSinglelineTextInputView defaults, using the system defaults
     // of font size 17 and a height of 31 points.
     paddingTop: 5,
   },

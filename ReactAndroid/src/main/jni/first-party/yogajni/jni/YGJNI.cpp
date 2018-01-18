@@ -8,8 +8,9 @@
  */
 
 #include <fb/fbjni.h>
-#include <iostream>
+#include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <iostream>
 
 using namespace facebook::jni;
 using namespace std;
@@ -19,7 +20,7 @@ struct JYogaNode : public JavaClass<JYogaNode> {
 };
 
 static inline weak_ref<JYogaNode> *YGNodeJobject(YGNodeRef node) {
-  return reinterpret_cast<weak_ref<JYogaNode> *>(YGNodeGetContext(node));
+  return reinterpret_cast<weak_ref<JYogaNode>*>(node->getContext());
 }
 
 static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNode) {
@@ -28,7 +29,7 @@ static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNod
 }
 
 static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
-  if (YGNodeGetHasNewLayout(root)) {
+  if (root->getHasNewLayout()) {
     if (auto obj = YGNodeJobject(root)->lockLocal()) {
       static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
       static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
@@ -88,7 +89,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
 
       obj->setFieldValue<jboolean>(hasNewLayoutField, true);
       YGTransferLayoutDirection(root, obj);
-      YGNodeSetHasNewLayout(root, false);
+      root->setHasNewLayout(false);
 
       for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
         YGTransferLayoutOutputsRecursive(YGNodeGetChild(root, i));
@@ -188,15 +189,17 @@ static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
 
 jlong jni_YGNodeNew(alias_ref<jobject> thiz) {
   const YGNodeRef node = YGNodeNew();
-  YGNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
-  YGNodeSetPrintFunc(node, YGPrint);
+  node->setContext(new weak_ref<jobject>(make_weak(thiz)));
+  // YGNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
+  node->setPrintFunc(YGPrint);
+  // YGNodeSetPrintFunc(node, YGPrint);
   return reinterpret_cast<jlong>(node);
 }
 
 jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
   const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
-  YGNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
-  YGNodeSetPrintFunc(node, YGPrint);
+  node->setContext(new weak_ref<jobject>(make_weak(thiz)));
+  node->setPrintFunc(YGPrint);
   return reinterpret_cast<jlong>(node);
 }
 
@@ -208,10 +211,10 @@ void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
 
 void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  void *context = YGNodeGetContext(node);
+  void* context = node->getContext();
   YGNodeReset(node);
-  YGNodeSetContext(node, context);
-  YGNodeSetPrintFunc(node, YGPrint);
+  node->setContext(context);
+  node->setPrintFunc(YGPrint);
 }
 
 void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
@@ -246,18 +249,19 @@ void jni_YGNodeMarkDirty(alias_ref<jobject>, jlong nativePointer) {
 }
 
 jboolean jni_YGNodeIsDirty(alias_ref<jobject>, jlong nativePointer) {
-  return (jboolean) YGNodeIsDirty(_jlong2YGNodeRef(nativePointer));
+  return (jboolean)_jlong2YGNodeRef(nativePointer)->isDirty();
 }
 
 void jni_YGNodeSetHasMeasureFunc(alias_ref<jobject>, jlong nativePointer, jboolean hasMeasureFunc) {
-  YGNodeSetMeasureFunc(_jlong2YGNodeRef(nativePointer), hasMeasureFunc ? YGJNIMeasureFunc : NULL);
+  _jlong2YGNodeRef(nativePointer)
+      ->setMeasureFunc(hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
 }
 
 void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>,
                                   jlong nativePointer,
                                   jboolean hasBaselineFunc) {
-  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer),
-                        hasBaselineFunc ? YGJNIBaselineFunc : NULL);
+  _jlong2YGNodeRef(nativePointer)
+      ->setBaseLineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 
 void jni_YGNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcNativePointer) {
@@ -422,9 +426,7 @@ void jni_YGConfigSetLogger(alias_ref<jobject>, jlong nativePointer, alias_ref<jo
 
   auto context = YGConfigGetContext(config);
   if (context) {
-    auto jlogger = reinterpret_cast<global_ref<jobject> *>(context);
-    jlogger->releaseAlias();
-    delete jlogger;
+    delete reinterpret_cast<global_ref<jobject> *>(context);
   }
 
   if (logger) {

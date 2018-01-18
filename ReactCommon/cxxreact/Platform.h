@@ -6,9 +6,13 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jschelpers/JavaScriptCore.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -27,8 +31,12 @@ enum ReactMarkerId {
   NATIVE_MODULE_SETUP_STOP,
 };
 
+#ifdef __APPLE__
 using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
-extern LogTaggedMarker logTaggedMarker;
+#else
+typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
+#endif
+extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
 extern void logMarker(const ReactMarkerId markerId);
 
@@ -43,11 +51,11 @@ using Hook = JSValueRef(*)(
   size_t argumentCount,
   const JSValueRef arguments[],
   JSValueRef *exception);
-extern Hook loggingHook;
-extern Hook nowHook;
+extern RN_EXPORT Hook loggingHook;
+extern RN_EXPORT Hook nowHook;
 
-using ConfigurationHook = std::function<void(JSGlobalContextRef)>;
-extern ConfigurationHook installPerfHooks;
+typedef void(*ConfigurationHook)(JSGlobalContextRef);
+extern RN_EXPORT ConfigurationHook installPerfHooks;
 
 }
 

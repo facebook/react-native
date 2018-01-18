@@ -95,7 +95,7 @@ class RCTNetworking extends NativeEventEmitter {
 if (__DEV__ && !RCTNetworkingNative) {
   class MissingNativeRCTNetworkingShim extends MissingNativeEventEmitterShim {
     constructor() {
-      super('RCTAppState', 'AppState');
+      super('RCTNetworking', 'Networking');
     }
 
     sendRequest(...args: Array<any>) {

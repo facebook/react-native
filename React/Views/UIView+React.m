@@ -27,20 +27,15 @@
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-#if RCT_DEV
-
-- (RCTShadowView *)_DEBUG_reactShadowView
+- (NSNumber *)nativeID
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)_DEBUG_setReactShadowView:(RCTShadowView *)shadowView
+- (void)setNativeID:(NSNumber *)nativeID
 {
-  // Use assign to avoid keeping the shadowView alive it if no longer exists
-  objc_setAssociatedObject(self, @selector(_DEBUG_reactShadowView), shadowView, OBJC_ASSOCIATION_ASSIGN);
+  objc_setAssociatedObject(self, @selector(nativeID), nativeID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
-#endif
 
 - (BOOL)isReactRootView
 {
@@ -87,6 +82,20 @@
   [subview removeFromSuperview];
 }
 
+#pragma mark - Display
+
+- (YGDisplay)reactDisplay
+{
+  return self.isHidden ? YGDisplayNone : YGDisplayFlex;
+}
+
+- (void)setReactDisplay:(YGDisplay)display
+{
+  self.hidden = display == YGDisplayNone;
+}
+
+#pragma mark - Layout Direction
+
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
   if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
@@ -107,6 +116,8 @@
     objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
 }
+
+#pragma mark - zIndex
 
 - (NSInteger)reactZIndex
 {
@@ -146,6 +157,11 @@
   }
 }
 
+- (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
+{
+  // The default implementation does nothing.
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
   // These frames are in terms of anchorPoint = topLeft, but internally the
@@ -165,11 +181,6 @@
 
   self.center = position;
   self.bounds = bounds;
-}
-
-- (void)reactSetInheritedBackgroundColor:(__unused UIColor *)inheritedBackgroundColor
-{
-  // Does nothing by default
 }
 
 - (UIViewController *)reactViewController

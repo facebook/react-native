@@ -3,4 +3,8 @@
 **/staticBundle.js
 **/main.js
 Libraries/vendor/**/*
-packager/src/worker-farm/**/*
+Libraries/Renderer/*
+pr-inactivity-bookmarklet.js
+question-bookmarklet.js
+flow/
+danger/

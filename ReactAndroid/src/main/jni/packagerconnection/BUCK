@@ -1,6 +1,6 @@
 include_defs("//ReactAndroid/DEFS")
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(
@@ -23,10 +23,10 @@ cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = ([
         FBJNI_TARGET,
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("jsinspector:jsinspector"),
     ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )

@@ -29,6 +29,7 @@ const colors = [
   '#ff0000',
   '#00ff00',
   '#0000ff',
+  'rgba(0, 0, 0, 0.4)',
 ];
 
 const barStyles = [
@@ -45,7 +46,7 @@ function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
 }
 
-class StatusBarHiddenExample extends React.Component {
+class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animated: true,
     hidden: false,
@@ -106,7 +107,7 @@ class StatusBarHiddenExample extends React.Component {
   }
 }
 
-class StatusBarStyleExample extends React.Component {
+class StatusBarStyleExample extends React.Component<{}, $FlowFixMeState> {
   _barStyleIndex = 0;
 
   _onChangeBarStyle = () => {
@@ -149,7 +150,7 @@ class StatusBarStyleExample extends React.Component {
   }
 }
 
-class StatusBarNetworkActivityExample extends React.Component {
+class StatusBarNetworkActivityExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     networkActivityIndicatorVisible: false,
   };
@@ -181,7 +182,7 @@ class StatusBarNetworkActivityExample extends React.Component {
   }
 }
 
-class StatusBarBackgroundColorExample extends React.Component {
+class StatusBarBackgroundColorExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animated: true,
     backgroundColor: getValue(colors, 0),
@@ -224,7 +225,7 @@ class StatusBarBackgroundColorExample extends React.Component {
   }
 }
 
-class StatusBarTranslucentExample extends React.Component {
+class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     translucent: false,
   };
@@ -253,7 +254,7 @@ class StatusBarTranslucentExample extends React.Component {
   }
 }
 
-class StatusBarStaticIOSExample extends React.Component {
+class StatusBarStaticIOSExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -316,7 +317,7 @@ class StatusBarStaticIOSExample extends React.Component {
   }
 }
 
-class StatusBarStaticAndroidExample extends React.Component {
+class StatusBarStaticAndroidExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -405,7 +406,7 @@ const examples = [{
   },
   platform: 'android',
 }, {
-  title: 'StatusBar background color',
+  title: 'StatusBar translucent',
   render() {
     return <StatusBarTranslucentExample />;
   },

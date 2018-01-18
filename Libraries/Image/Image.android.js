@@ -8,6 +8,7 @@
  *
  * @providesModule Image
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,22 +19,19 @@ var NativeModules = require('NativeModules');
 var React = require('React');
 var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
 var ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var filterObject = require('fbjs/lib/filterObject');
+var createReactClass = require('create-react-class');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var {
-  ImageLoader,
-} = NativeModules;
+const {ViewContextTypes} = require('ViewContext');
+
+var {ImageLoader} = NativeModules;
 
 let _requestId = 1;
 function generateRequestId() {
@@ -54,7 +52,7 @@ function generateRequestId() {
  *         />
  *         <Image
  *           style={styles.logo}
- *           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+ *           source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
  *         />
  *       </View>
  *     );
@@ -63,24 +61,12 @@ function generateRequestId() {
  * More example code in ImageExample.js
  */
 
-var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
-  src: true,
-  loadingIndicatorSrc: true,
-  resizeMethod: true,
-  resizeMode: true,
-  progressiveRenderingEnabled: true,
-  fadeDuration: true,
-  shouldNotifyLoadEvents: true,
-});
-
-var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
-var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
-
-var Image = React.createClass({
+var Image = createReactClass({
+  displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
-   /**
+    /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
@@ -105,11 +91,13 @@ var Image = React.createClass({
           uri: PropTypes.string,
           width: PropTypes.number,
           height: PropTypes.number,
-        }))
+          headers: PropTypes.objectOf(PropTypes.string),
+        }),
+      ),
     ]),
     /**
-    * blurRadius: the blur radius of the blur filter added to the image
-    */
+     * blurRadius: the blur radius of the blur filter added to the image
+     */
     blurRadius: PropTypes.number,
     /**
      * similarly to `source`, this property represents the resource used to render
@@ -199,9 +187,12 @@ var Image = React.createClass({
         .then(function(sizes) {
           success(sizes.width, sizes.height);
         })
-        .catch(failure || function() {
-          console.warn('Failed to get size for image: ' + url);
-        });
+        .catch(
+          failure ||
+            function() {
+              console.warn('Failed to get size for image: ' + url);
+            },
+        );
     },
 
     /**
@@ -228,7 +219,9 @@ var Image = React.createClass({
      * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
      *         not in the mapping, it means it's not in the cache.
      */
-    async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+    async queryCache(
+      urls: Array<string>,
+    ): Promise<Map<string, 'memory' | 'disk'>> {
       return await ImageLoader.queryCache(urls);
     },
 
@@ -244,43 +237,20 @@ var Image = React.createClass({
 
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class. Since it can render
-   * as 3 different native components we need to update viewConfig accordingly
+   * make `this` look like an actual native component class.
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
-  _updateViewConfig: function(props) {
-    if (props.children) {
-      this.viewConfig = {
-        uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RCTView,
-      };
-    } else {
-      this.viewConfig = {
-        uiViewClassName: 'RCTImageView',
-        validAttributes: ImageViewAttributes,
-      };
-    }
-  },
-
-  componentWillMount: function() {
-    this._updateViewConfig(this.props);
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this._updateViewConfig(nextProps);
-  },
-
-  contextTypes: {
-    isInAParentText: PropTypes.bool
-  },
+  contextTypes: ViewContextTypes,
 
   render: function() {
     const source = resolveAssetSource(this.props.source);
-    const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const loadingIndicatorSource = resolveAssetSource(
+      this.props.loadingIndicatorSource,
+    );
 
     // As opposed to the ios version, here we render `null` when there is no source, source.uri
     // or source array.
@@ -290,7 +260,15 @@ var Image = React.createClass({
     }
 
     if (this.props.src) {
-      console.warn('The <Image> component requires a `source` property rather than `src`.');
+      console.warn(
+        'The <Image> component requires a `source` property rather than `src`.',
+      );
+    }
+
+    if (this.props.children) {
+      throw new Error(
+        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+      );
     }
 
     if (source && (source.uri || Array.isArray(source))) {
@@ -308,50 +286,33 @@ var Image = React.createClass({
       const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+        shouldNotifyLoadEvents: !!(
+          onLoadStart ||
+          onLoad ||
+          onLoadEnd ||
+          onError
+        ),
         src: sources,
         headers: source.headers,
-        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+        loadingIndicatorSrc: loadingIndicatorSource
+          ? loadingIndicatorSource.uri
+          : null,
       });
 
-      if (nativeProps.children) {
-        // TODO(6033040): Consider implementing this as a separate native component
-        const containerStyle = filterObject(style, (val, key) => !ImageSpecificStyleKeys.has(key));
-        const imageStyle = filterObject(style, (val, key) => ImageSpecificStyleKeys.has(key));
-        const imageProps = merge(nativeProps, {
-          style: [imageStyle, styles.absoluteImage],
-          children: undefined,
-        });
-
-        return (
-          <View style={containerStyle}>
-            <RKImage {...imageProps}/>
-            {this.props.children}
-          </View>
-        );
+      if (this.context.isInAParentText) {
+        return <RCTTextInlineImage {...nativeProps} />;
       } else {
-        if (this.context.isInAParentText) {
-          return <RCTTextInlineImage {...nativeProps}/>;
-        } else {
-          return <RKImage {...nativeProps}/>;
-        }
+        return <RKImage {...nativeProps} />;
       }
     }
     return null;
-  }
+  },
 });
 
 var styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
-  absoluteImage: {
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    position: 'absolute'
-  }
 });
 
 var cfg = {
@@ -363,6 +324,10 @@ var cfg = {
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent(
+  'RCTTextInlineImage',
+  Image,
+  cfg,
+);
 
 module.exports = Image;

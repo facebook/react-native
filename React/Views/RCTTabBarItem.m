@@ -42,6 +42,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   if ((self = [super initWithFrame:frame])) {
     _systemIcon = NSNotFound;
+#if TARGET_OS_TV
+    _wasSelectedInJS = NO;
+#endif
   }
   return self;
 }
@@ -53,6 +56,11 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _systemIcon = NSNotFound;
   }
   return _barItem;
+}
+
+- (void)setTestID:(NSString *)testID
+{
+  self.barItem.accessibilityIdentifier = testID;
 }
 
 - (void)setBadge:(id)badge
@@ -117,5 +125,17 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   return self.superview.reactViewController;
 }
+
+#if TARGET_OS_TV
+
+// On Apple TV, we let native control the tab bar selection after initial render
+- (void)setSelected:(BOOL)selected
+{
+  if (!_wasSelectedInJS) {
+    _selected = selected;
+  }
+}
+
+#endif
 
 @end

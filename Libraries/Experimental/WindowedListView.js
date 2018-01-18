@@ -27,6 +27,8 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const nullthrows = require('fbjs/lib/nullthrows');
 
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+
 const DEBUG = false;
 
 /**
@@ -148,9 +150,7 @@ type State = {
   firstRow: number,
   lastRow: number,
 };
-class WindowedListView extends React.Component {
-  props: Props;
-  state: State;
+class WindowedListView extends React.Component<Props, State> {
   /**
    * Recomputing which rows to render is batched up and run asynchronously to avoid wastful updates,
    * e.g. from multiple layout updates in rapid succession.
@@ -176,6 +176,11 @@ class WindowedListView extends React.Component {
     maxNumToRender: 30,
     numToRenderAhead: 10,
     viewablePercentThreshold: 50,
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     renderScrollComponent: (props) => <ScrollView {...props} />,
     disableIncrementalRendering: false,
     recomputeRowsBatchingPeriod: 10, // This should capture most events that happen within a frame
@@ -387,7 +392,7 @@ class WindowedListView extends React.Component {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
@@ -421,7 +426,7 @@ class WindowedListView extends React.Component {
     this._firstVisible = newFirstVisible;
     this._lastVisible = newLastVisible;
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     const {firstRow} = this.state;
     const lastRow = clamp(0, this.state.lastRow, this.props.data.length - 1);
     const rowFrames = this._rowFrames;
@@ -611,9 +616,8 @@ type CellProps = {
    */
   onWillUnmount: (rowKey: string) => void,
 };
-class CellRenderer extends React.Component {
-  props: CellProps;
-  _containerRef: View;
+class CellRenderer extends React.Component<CellProps> {
+  _containerRef: NativeMethodsMixinType;
   _offscreenRenderDone = false;
   _timeout = 0;
   _lastLayout: ?Object = null;
@@ -683,6 +687,9 @@ class CellRenderer extends React.Component {
     }
   };
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timeout);
     this.props.onProgressChange({rowKey: this.props.rowKey, inProgress: false});
     this.props.onWillUnmount(this.props.rowKey);
@@ -698,6 +705,9 @@ class CellRenderer extends React.Component {
     return newProps.rowData !== this.props.rowData;
   }
   _setRef = (ref) => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._containerRef = ref;
   };
   render() {

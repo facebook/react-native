@@ -136,7 +136,7 @@ exports.examples = [
    },
  }];
 
-class TextOnPressBox extends React.Component {
+class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -172,7 +172,7 @@ class TextOnPressBox extends React.Component {
   }
 }
 
-class TouchableFeedbackEvents extends React.Component {
+class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -211,7 +211,7 @@ class TouchableFeedbackEvents extends React.Component {
   };
 }
 
-class TouchableDelayEvents extends React.Component {
+class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   state = {
     eventLog: [],
   };
@@ -250,7 +250,7 @@ class TouchableDelayEvents extends React.Component {
   };
 }
 
-class ForceTouchExample extends React.Component {
+class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     force: 0,
   };
@@ -284,7 +284,7 @@ class ForceTouchExample extends React.Component {
   }
 }
 
-class TouchableHitSlop extends React.Component {
+class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
   };
@@ -326,7 +326,7 @@ class TouchableHitSlop extends React.Component {
   }
 }
 
-class TouchableDisabled extends React.Component {
+class TouchableDisabled extends React.Component<{}> {
   render() {
     return (
       <View>

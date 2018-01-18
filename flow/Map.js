@@ -7,10 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
-
-/* eslint-disable */
 
 // These annotations are copy/pasted from the built-in Flow definitions for
 // Native Map.
@@ -22,7 +19,6 @@ declare module "Map" {
     @@iterator(): Iterator<[K, V]>;
     constructor<Key, Value>(_: void): MapPolyfill<Key, Value>;
     constructor<Key, Value>(_: null): MapPolyfill<Key, Value>;
-    constructor<Key, Value>(iterable: Array<[Key, Value]>): MapPolyfill<Key, Value>;
     constructor<Key, Value>(iterable: Iterable<[Key, Value]>): MapPolyfill<Key, Value>;
     clear(): void;
     delete(key: K): boolean;
@@ -36,7 +32,5 @@ declare module "Map" {
     values(): Iterator<V>;
   }
 
-  // Don't "declare class exports" directly, otherwise in error messages our
-  // show up as "exports" instead of "Map" or "MapPolyfill".
-  declare var exports: typeof MapPolyfill;
+  declare module.exports: typeof MapPolyfill;
 }

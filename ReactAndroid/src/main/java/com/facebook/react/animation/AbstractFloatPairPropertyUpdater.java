@@ -13,7 +13,7 @@ import android.view.View;
 
 /**
  * Base class for {@link AnimationPropertyUpdater} subclasses that updates a pair of float property
- * values. It helps to handle convertion from animation progress to the actual values as
+ * values. It helps to handle conversion from animation progress to the actual values as
  * well as the quite common case when no starting value is provided.
  */
 public abstract class AbstractFloatPairPropertyUpdater implements AnimationPropertyUpdater {

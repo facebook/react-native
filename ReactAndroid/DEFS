@@ -86,7 +86,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     '-XX:MaxPermSize=620m',
     '-Drobolectric.offline=true',
   ]
-  if os.path.isdir("/dev/shm"):
+  if os.path.isdir("/dev/shm") and 'CIRCLECI' not in os.environ:
       extra_vm_args.append('-Djava.io.tmpdir=/dev/shm')
   else:
       extra_vm_args.append(
@@ -108,6 +108,6 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args + extra_vm_args,
     *args, **kwargs)
 
-original_cxx_library = cxx_library
-def cxx_library(allow_jni_merging=None, **kwargs):
-    original_cxx_library(**kwargs)
+
+def fb_xplat_cxx_library(allow_jni_merging=None, **kwargs):
+    cxx_library(**kwargs)

@@ -10,8 +10,6 @@
  * @nolint
  */
 
-/* eslint-disable */
-
 declare class Position {
   coords: Coordinates,
   timestamp: number,

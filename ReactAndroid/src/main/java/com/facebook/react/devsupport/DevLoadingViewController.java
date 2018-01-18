@@ -9,21 +9,16 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Locale;
-
+import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Build;
-import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.WindowManager;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.facebook.common.logging.FLog;
@@ -31,7 +26,11 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
-import static android.Manifest.permission.SYSTEM_ALERT_WINDOW;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 /**
  * Controller to display loading messages on top of the screen. All methods are thread safe.
@@ -41,23 +40,23 @@ public class DevLoadingViewController {
 
   private static boolean sEnabled = true;
   private final Context mContext;
-  private final WindowManager mWindowManager;
-  private TextView mDevLoadingView;
-  private boolean mIsVisible = false;
+  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
+  private final TextView mDevLoadingView;
+  private @Nullable PopupWindow mDevLoadingPopup;
 
   public static void setDevLoadingEnabled(boolean enabled) {
     sEnabled = enabled;
   }
 
-  public DevLoadingViewController(Context context) {
+  public DevLoadingViewController(Context context, ReactInstanceManagerDevHelper reactInstanceManagerHelper) {
     mContext = context;
-    mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
     LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mDevLoadingView = (TextView) inflater.inflate(R.layout.dev_loading_view, null);
   }
 
   public void showMessage(final String message, final int color, final int backgroundColor) {
-    if (!sEnabled || !isWindowPermissionGranted()) {
+    if (!sEnabled) {
       return;
     }
 
@@ -68,7 +67,7 @@ public class DevLoadingViewController {
         mDevLoadingView.setText(message);
         mDevLoadingView.setTextColor(color);
 
-        setVisible(true);
+        showInternal();
       }
     });
   }
@@ -120,7 +119,7 @@ public class DevLoadingViewController {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        setVisible(true);
+        showInternal();
       }
     });
   }
@@ -133,30 +132,52 @@ public class DevLoadingViewController {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        setVisible(false);
+        hideInternal();
       }
     });
   }
 
-  private void setVisible(boolean visible) {
-    if (visible && !mIsVisible) {
-      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT);
-      params.gravity = Gravity.TOP;
-      mWindowManager.addView(mDevLoadingView, params);
-    } else if (!visible && mIsVisible) {
-      mWindowManager.removeView(mDevLoadingView);
+  private void showInternal() {
+    if (mDevLoadingPopup != null && mDevLoadingPopup.isShowing()) {
+      // already showing
+      return;
     }
-    mIsVisible = visible;
+
+    Activity currentActivity = mReactInstanceManagerHelper.getCurrentActivity();
+    if (currentActivity == null) {
+      FLog.e(ReactConstants.TAG, "Unable to display loading message because react " +
+              "activity isn't available");
+      return;
+    }
+
+    int topOffset = 0;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+      // On Android SDK <= 19 PopupWindow#showAtLocation uses absolute screen position. In order for
+      // loading view to be placed below status bar (if the status bar is present) we need to pass
+      // an appropriate Y offset.
+      Rect rectangle = new Rect();
+      currentActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
+      topOffset = rectangle.top;
+    }
+
+    mDevLoadingPopup = new PopupWindow(
+            mDevLoadingView,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    mDevLoadingPopup.setTouchable(false);
+
+    mDevLoadingPopup.showAtLocation(
+            currentActivity.getWindow().getDecorView(),
+            Gravity.NO_GRAVITY,
+
+            0,
+            topOffset);
   }
 
-  private boolean isWindowPermissionGranted() {
-    return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-      Settings.canDrawOverlays(mContext) ||
-      PackageManager.PERMISSION_GRANTED == mContext.checkSelfPermission(SYSTEM_ALERT_WINDOW);
+  private void hideInternal() {
+    if (mDevLoadingPopup != null && mDevLoadingPopup.isShowing()) {
+      mDevLoadingPopup.dismiss();
+      mDevLoadingPopup = null;
+    }
   }
 }

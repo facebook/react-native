@@ -13,6 +13,7 @@
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
 
+@class RCTRootShadowView;
 @class RCTSparseArray;
 
 typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
@@ -50,11 +51,23 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
+@property (nonatomic, weak, readonly) RCTRootShadowView *rootView;
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
-@property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
+
+/**
+ * In some cases we need a way to specify some environmental data to shadow view
+ * to improve layout (or do something similar), so `localData` serves these needs.
+ * For example, any stateful embedded native views may benefit from this.
+ * Have in mind that this data is not supposed to interfere with the state of
+ * the shadow view.
+ * Please respect one-directional data flow of React.
+ * Use `-[RCTUIManager setLocalData:forView:]` to set this property
+ * (to provide local/environmental data for a shadow view) from the main thread.
+ */
+- (void)setLocalData:(NSObject *)localData;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -70,9 +83,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
- * Computed layout direction for the view backed to Yoga node value.
+ * Computed layout direction of the view.
  */
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
 
 /**
  * Position and dimensions.
@@ -82,6 +96,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue left;
 @property (nonatomic, assign) YGValue bottom;
 @property (nonatomic, assign) YGValue right;
+@property (nonatomic, assign) YGValue start;
+@property (nonatomic, assign) YGValue end;
 
 @property (nonatomic, assign) YGValue width;
 @property (nonatomic, assign) YGValue height;
@@ -93,7 +109,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Convenient alias to `width` and `height` in pixels.
- * Defaults to NAN in case of non-pixel dimention.
+ * Defaults to NAN in case of non-pixel dimension.
  */
 @property (nonatomic, assign) CGSize size;
 
@@ -105,6 +121,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float borderLeftWidth;
 @property (nonatomic, assign) float borderBottomWidth;
 @property (nonatomic, assign) float borderRightWidth;
+@property (nonatomic, assign) float borderStartWidth;
+@property (nonatomic, assign) float borderEndWidth;
 
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
@@ -116,6 +134,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue marginLeft;
 @property (nonatomic, assign) YGValue marginBottom;
 @property (nonatomic, assign) YGValue marginRight;
+@property (nonatomic, assign) YGValue marginStart;
+@property (nonatomic, assign) YGValue marginEnd;
 
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
@@ -127,6 +147,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue paddingLeft;
 @property (nonatomic, assign) YGValue paddingBottom;
 @property (nonatomic, assign) YGValue paddingRight;
+@property (nonatomic, assign) YGValue paddingStart;
+@property (nonatomic, assign) YGValue paddingEnd;
 
 /**
  * Flexbox properties. All zero/disabled by default
@@ -146,11 +168,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue flexBasis;
 
 @property (nonatomic, assign) float aspectRatio;
-
-/**
- * z-index, used to override sibling order in the view
- */
-@property (nonatomic, assign) NSInteger zIndex;
 
 /**
  * Interface direction (LTR or RTL)
@@ -217,9 +234,22 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Return whether or not this node acts as a leaf node in the eyes of Yoga.
- * For example `RCTShadowText` has children which it does not want Yoga
+ * Returns whether or not this view can have any subviews.
+ * Adding/inserting a child view to leaf view (`canHaveSubviews` equals `NO`)
+ * will throw an error.
+ * Return `NO` for components which must not have any descendants
+ * (like <Image>, for example.)
+ * Defaults to `YES`. Can be overridden in subclasses.
+ * Don't confuse this with `isYogaLeafNode`.
+ */
+- (BOOL)canHaveSubviews;
+
+/**
+ * Returns whether or not this node acts as a leaf node in the eyes of Yoga.
+ * For example `RCTTextShadowView` has children which it does not want Yoga
  * to lay out so in the eyes of Yoga it is a leaf node.
+ * Defaults to `NO`. Can be overridden in subclasses.
+ * Don't confuse this with `canHaveSubviews`.
  */
 - (BOOL)isYogaLeafNode;
 
@@ -250,15 +280,5 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
-
-@end
-
-@interface RCTShadowView (Deprecated)
-
-@property (nonatomic, assign, readonly) YGNodeRef cssNode
-__deprecated_msg("Use `yogaNode` instead.");
-
-- (BOOL)isCSSLeafNode
-__deprecated_msg("Use `isYogaLeafNode` instead.");
 
 @end
