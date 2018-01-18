@@ -10,6 +10,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/google/glog.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
+  spec.header_dir = 'glog'
   spec.source_files = 'src/glog/*.h',
                       'src/demangle.cc',
                       'src/logging.cc',
