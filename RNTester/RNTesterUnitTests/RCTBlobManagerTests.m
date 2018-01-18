@@ -82,7 +82,7 @@
    @"data": blobData,
    @"type": @"blob",
   };
-  NSString *stringData = @"i ♥ dogs";
+  NSString *stringData = @"i \u2665 dogs";
   NSDictionary *string = @{
     @"data": stringData,
     @"type": @"string",
