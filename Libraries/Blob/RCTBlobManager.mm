@@ -27,7 +27,7 @@ static NSString *const kBlobURIScheme = @"blob";
   // make sure to use proper locking when accessing this.
   NSMutableDictionary<NSString *, NSData *> *_blobs;
   std::mutex _blobsMutex;
-  
+
   NSOperationQueue *_queue;
 }
 
@@ -98,11 +98,11 @@ RCT_EXPORT_MODULE(BlobModule)
 - (NSData *)resolveURL:(NSURL *)url
 {
   NSURLComponents *components = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
-  
+
   NSString *blobId = components.path;
   NSInteger offset = 0;
   NSInteger size = -1;
-  
+
   if (components.queryItems) {
     for (NSURLQueryItem *queryItem in components.queryItems) {
       if ([queryItem.name isEqualToString:@"offset"]) {
@@ -113,7 +113,7 @@ RCT_EXPORT_MODULE(BlobModule)
       }
     }
   }
-  
+
   if (blobId) {
     return [self resolve:blobId offset:offset size:size];
   }
@@ -238,13 +238,13 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 - (NSDictionary *)handleNetworkingRequest:(NSDictionary *)data
 {
   NSDictionary *blob = [RCTConvert NSDictionary:data[@"blob"]];
-  
+
   NSString *contentType = @"application/octet-stream";
   NSString *blobType = [RCTConvert NSString:blob[@"type"]];
   if (blobType != nil && blobType.length > 0) {
     contentType = blob[@"type"];
   }
-  
+
   return @{@"body": [self resolve:blob], @"contentType": contentType};
 }
 
@@ -274,7 +274,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
     *type = @"text";
     return message;
   }
-  
+
   *type = @"blob";
   return @{
     @"blobId": [self store:message],
@@ -284,4 +284,3 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 }
 
 @end
-
