@@ -29,9 +29,9 @@ describe('Blob', function() {
   it('should create blob from other blobs and strings', () => {
     const blobA = new Blob();
     const blobB = new Blob();
-    const textA = 'i ♥ dogs';
-    const textB = '𐀀';
-    const textC = 'Z͑ͫ̓ͪ̂ͫ̽͏̴̙̤̞͉͚̯̞̠͍A̴̵̜̰͔ͫ͗͢L̠ͨͧͩ͘G̴̻͈͍͔̹̑͗̎̅͛́Ǫ̵̹̻̝̳͂̌̌͘!͖̬̰̙̗̿̋ͥͥ̂ͣ̐́́͜͞';
+    const textA = 'i \u2665 dogs';
+    const textB = '\uD800\uDC00';
+    const textC = 'Z\u0351\u036B\u0343\u036A\u0302\u036B\u033D\u034F\u0334\u0319\u0324\u031E\u0349\u035A\u032F\u031E\u0320\u034DA\u036B\u0357\u0334\u0362\u0335\u031C\u0330\u0354L\u0368\u0367\u0369\u0358\u0320G\u0311\u0357\u030E\u0305\u035B\u0341\u0334\u033B\u0348\u034D\u0354\u0339O\u0342\u030C\u030C\u0358\u0328\u0335\u0339\u033B\u031D\u0333!\u033F\u030B\u0365\u0365\u0302\u0363\u0310\u0301\u0301\u035E\u035C\u0356\u032C\u0330\u0319\u0317';
 
     blobA.data.size = 34540;
     blobB.data.size = 65452;
