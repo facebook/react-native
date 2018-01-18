@@ -94,6 +94,7 @@ async function buildBundle(
     assetExts: defaultAssetExts.concat(assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
     extraNodeModules: config.extraNodeModules,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
