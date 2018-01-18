@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @PrepareForTest({Arguments.class})
-@RunWith(RobolectricTestRunner.class)
+@RunWith(WithTestDefaultsRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @Config(manifest = Config.NONE)
 public class BlobModuleTest {
