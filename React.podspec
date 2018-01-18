@@ -204,7 +204,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTText" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/Text/*.{h,m}"
+    ss.source_files         = "Libraries/Text/**/*.{h,m}"
   end
 
   s.subspec "RCTVibration" do |ss|
