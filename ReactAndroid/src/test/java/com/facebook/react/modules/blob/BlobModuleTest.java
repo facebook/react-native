@@ -125,7 +125,7 @@ public class BlobModuleTest {
     blob.putMap("data", blobData);
     blob.putString("type", "blob");
 
-    String stringData = "i \u{2665} dogs";
+    String stringData = "i \u2665 dogs";
     byte[] stringBytes = stringData.getBytes(Charset.forName("UTF-8"));
     JavaOnlyMap string = new JavaOnlyMap();
     string.putString("data", stringData);
