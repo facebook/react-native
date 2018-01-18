@@ -10,8 +10,8 @@
 #import "RCTBlobManager.h"
 
 #import <React/RCTConvert.h>
-#import <React/RCTWebSocketModule.h>
 #import <React/RCTNetworking.h>
+#import <React/RCTWebSocketModule.h>
 
 #import <mutex>
 
