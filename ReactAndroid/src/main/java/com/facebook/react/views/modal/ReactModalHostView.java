@@ -298,9 +298,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * way as ReactRootView.
    *
    * To get layout to work properly, we need to layout all the elements within the Modal as if they
-   * can fill the entire window.  To do that, we need to explicitly set the styleWidth and
-   * styleHeight on the LayoutShadowNode to be the window size. This is done through the
-   * UIManagerModule, and will then cause the children to layout as if they can fill the window.
+   * can fill the entire window.  To do that, we set the size of LayoutShadowNode when it's attached
+   * here and when the size of this view changes.
    */
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
 
@@ -308,23 +307,41 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     public DialogRootViewGroup(Context context) {
       super(context);
+
+      setOnHierarchyChangeListener(
+        new OnHierarchyChangeListener() {
+          @Override
+          public void onChildViewAdded(View parent, View child) {
+            int w = getWidth();
+            int h = getHeight();
+            setChildSize(w, h);
+          }
+
+          @Override
+          public void onChildViewRemoved(View parent, View child) {}
+        });
     }
 
     @Override
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
-        final int viewTag = getChildAt(0).getId();
-        ReactContext reactContext = (ReactContext) getContext();
-        reactContext.runOnNativeModulesQueueThread(
-          new GuardedRunnable(reactContext) {
-            @Override
-            public void runGuarded() {
-              ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(viewTag, w, h);
-            }
-          });
+        setChildSize(w, h);
       }
+    }
+
+    private void setChildSize(final int w, final int h) {
+      ReactContext reactContext = (ReactContext) getContext();
+      final int viewTag = getChildAt(0).getId();
+
+      reactContext.runOnNativeModulesQueueThread(
+         new GuardedRunnable(reactContext) {
+           @Override
+           public void runGuarded() {
+             ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
+               .updateNodeSize(viewTag, w, h);
+           }
+         });
     }
 
     @Override
