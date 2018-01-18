@@ -2356,6 +2356,27 @@ table.versions tr:nth-of-type(even) {
   background: #ebf9ff;
 }
 
+article iframe {
+  max-width: 120%;
+}
+
+.codepen {
+  width: 1000px;
+  padding: 20px 0;
+  margin-left: -100px;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  .codepen {
+    width: 100%;
+    margin-left: auto;
+  }
+
+  article iframe {
+    max-width: 100%;
+  }
+}
+
 .showcaseSection .inner-content {
   width: 800px;
 }

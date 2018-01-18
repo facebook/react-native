@@ -2,11 +2,27 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/blog</id>
     <title>React Native Blog</title>
-    <updated>2017-11-06T06:00:00Z</updated>
+    <updated>2018-01-18T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.ioimg/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Implementing Twitter’s App Loading Animation in React Native]]></title>
+        <id>https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html</id>
+        <link href="https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html">
+        </link>
+        <updated>2018-01-18T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<img src="/react-native/blog/assets/loading-screen-01.gif" style="float: left; padding-right: 80px; padding-bottom: 20px"/>
+
+Twitter’s iOS app has a loading animation I quite enjoy.
+
+Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
+        <author>
+            <name>Eli White</name>
+            <uri>https://github.com/TheSavior</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #5]]></title>
         <id>https://facebook.github.io/blog/2017/11/06/react-native-monthly-5.html</id>
