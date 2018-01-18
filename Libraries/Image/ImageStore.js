@@ -8,6 +8,7 @@
  *
  * @providesModule ImageStore
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,7 +19,7 @@ class ImageStore {
    * Check if the ImageStore contains image data for the specified URI.
    * @platform ios
    */
-  static hasImageForTag(uri: string, callback: (hasImage: bool) => void) {
+  static hasImageForTag(uri: string, callback: (hasImage: boolean) => void) {
     if (RCTImageStoreManager.hasImageForTag) {
       RCTImageStoreManager.hasImageForTag(uri, callback);
     } else {
@@ -56,7 +57,7 @@ class ImageStore {
   static addImageFromBase64(
     base64ImageData: string,
     success: (uri: string) => void,
-    failure: (error: any) => void
+    failure: (error: any) => void,
   ) {
     RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
   }
@@ -75,7 +76,7 @@ class ImageStore {
   static getBase64ForTag(
     uri: string,
     success: (base64ImageData: string) => void,
-    failure: (error: any) => void
+    failure: (error: any) => void,
   ) {
     RCTImageStoreManager.getBase64ForTag(uri, success, failure);
   }

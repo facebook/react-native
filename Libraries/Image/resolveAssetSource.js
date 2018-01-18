@@ -19,7 +19,7 @@ const NativeModules = require('NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
-let _customSourceTransformer, _serverURL, _scriptURL, _embeddedBundleURL;
+let _customSourceTransformer, _serverURL, _scriptURL;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
@@ -60,12 +60,6 @@ function getScriptURL(): ?string {
   return _scriptURL;
 }
 
-function getEmbeddedBundledURL(): ?string {
-  const scriptURL = NativeModules.SourceCode.embeddedBundleURL;
-  _embeddedBundleURL = _coerceLocalScriptURL(scriptURL);
-  return _embeddedBundleURL;
-}
-
 function setCustomSourceTransformer(
   transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource,
 ): void {
@@ -89,7 +83,6 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   const resolver = new AssetSourceResolver(
     getDevServerURL(),
     getScriptURL(),
-    getEmbeddedBundledURL(),
     asset,
   );
   if (_customSourceTransformer) {

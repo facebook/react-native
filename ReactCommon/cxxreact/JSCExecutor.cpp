@@ -39,10 +39,6 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
-#if defined(WITH_JSC_MEMORY_PRESSURE)
-#include <jsc_memory.h>
-#endif
-
 #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
 #endif
@@ -438,9 +434,6 @@ namespace facebook {
           jsScript = adoptString(std::move(script));
           ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
         }
-#ifdef WITH_FBSYSTRACE
-        fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-#endif
 
         SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
         evaluateScript(m_context, jsScript, jsSourceURL);
@@ -462,6 +455,10 @@ namespace facebook {
     void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
       if (m_bundleRegistry) {
         m_bundleRegistry->registerBundle(bundleId, bundlePath);
+      } else {
+        auto sourceUrl = String(m_context, bundlePath.c_str());
+        auto source = adoptString(JSBigFileString::fromPath(bundlePath));
+        evaluateScript(m_context, source, sourceUrl);
       }
     }
 

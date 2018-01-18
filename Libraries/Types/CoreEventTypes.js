@@ -26,4 +26,44 @@ export type LayoutEvent = {|
   +persist: () => void,
 |};
 
-export type PressEvent = Object;
+export type SyntheticEvent<T> = {|
+  +bubbles: ?boolean,
+  +cancelable: ?boolean,
+  +currentTarget: number,
+  +defaultPrevented: ?boolean,
+  +dispatchConfig: {|
+    +registrationName: string,
+  |},
+  +eventPhase: ?number,
+  +isDefaultPrevented: () => boolean,
+  +isPropagationStopped: () => boolean,
+  +isTrusted: ?boolean,
+  +nativeEvent: T,
+  +target: ?number,
+  +timeStamp: number,
+  +type: ?string,
+|};
+
+export type PressEvent = SyntheticEvent<Object>;
+
+export type ScrollEvent = SyntheticEvent<{|
+  +contentInset: {|
+    +bottom: number,
+    +left: number,
+    +right: number,
+    +top: number,
+  |},
+  +contentOffset: {|
+    +y: number,
+    +x: number,
+  |},
+  +contentSize: {|
+    +height: number,
+    +width: number,
+  |},
+  +layoutMeasurement: {|
+    +height: number,
+    +width: number,
+  |},
+  +zoomScale: number,
+|}>;

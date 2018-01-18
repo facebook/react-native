@@ -1,6 +1,6 @@
 include_defs("//ReactCommon/DEFS")
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "microprofiler",
     srcs = [
         "MicroProfiler.cpp",
