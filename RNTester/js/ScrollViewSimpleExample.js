@@ -22,7 +22,7 @@ var {
 
 var NUM_ITEMS = 20;
 
-class ScrollViewSimpleExample extends React.Component {
+class ScrollViewSimpleExample extends React.Component<{}> {
   static title = '<ScrollView>';
   static description = 'Component that enables scrolling through child components.';
 
@@ -44,6 +44,20 @@ class ScrollViewSimpleExample extends React.Component {
     items[4] = (
       <ScrollView key={'scrollView'} horizontal={true}>
         {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+      </ScrollView>
+    );
+    items.push(
+      <ScrollView
+        key={'scrollViewSnap'}
+        horizontal
+        snapToInterval={210.0}
+        pagingEnabled
+      >
+        {this.makeItems(NUM_ITEMS, [
+          styles.itemWrapper,
+          styles.horizontalItemWrapper,
+          styles.horizontalPagingItemWrapper,
+        ])}
       </ScrollView>
     );
 
@@ -72,7 +86,10 @@ var styles = StyleSheet.create({
   },
   horizontalItemWrapper: {
     padding: 50
-  }
+  },
+  horizontalPagingItemWrapper: {
+    width: 200,
+  },
 });
 
 module.exports = ScrollViewSimpleExample;

@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Java {@link ArrayList} backed impementation of {@link ReadableArray} and {@link WritableArray}
+ * Java {@link ArrayList} backed implementation of {@link ReadableArray} and {@link WritableArray}
  * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
  * of {@link WritableNativeArray} created via {@link Arguments#createArray} or just
  * {@link ReadableArray} interface if you want your "native" module method to take an array from JS
@@ -148,6 +148,11 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   @Override
   public void pushNull() {
     mBackingList.add(null);
+  }
+
+  @Override
+  public ArrayList<Object> toArrayList() {
+    return new ArrayList<Object>(mBackingList);
   }
 
   @Override

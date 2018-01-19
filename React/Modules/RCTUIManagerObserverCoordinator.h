@@ -12,9 +12,11 @@
 #import <React/RCTViewManager.h>
 
 /**
- * Allows to hook into UIManager internals. This can be used to execute code at
+ * Allows hooking into UIManager internals. This can be used to execute code at
  * specific points during the view updating process.
- * All observer handler is called on UIManager queue.
+ * New observers must not be added inside observer handlers.
+ * The particular order of handler invocation is not guaranteed.
+ * All observer handlers are called on UIManager queue.
  */
 @protocol RCTUIManagerObserver <NSObject>
 
@@ -38,11 +40,16 @@
 - (void)uiManagerDidPerformLayout:(RCTUIManager *)manager;
 
 /**
- * Called before flushing UI blocks at the end of a batch. Note that this won't
- * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
+ * Called before flushing UI blocks at the end of a batch.
  * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
+
+/**
+ * Called just after flushing UI blocks.
+ * This is called from the UIManager queue.
+ */
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager;
 
 @end
 

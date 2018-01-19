@@ -33,7 +33,7 @@ exports.examples = [
   }
 ];
 
-class GeolocationExample extends React.Component {
+class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     initialPosition: 'unknown',
     lastPosition: 'unknown',

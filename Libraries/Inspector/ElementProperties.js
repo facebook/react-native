@@ -12,8 +12,8 @@
 'use strict';
 
 const BoxInspector = require('BoxInspector');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleInspector = require('StyleInspector');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -25,16 +25,16 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
-class ElementProperties extends React.Component {
-  props: {
-    hierarchy: Array<$FlowFixMe>,
-    style?: Object | Array<$FlowFixMe> | number,
-    source?: {
-      fileName?: string,
-      lineNumber?: number,
-    },
-  };
+import type {StyleObj} from 'StyleSheetTypes';
 
+class ElementProperties extends React.Component<{
+  hierarchy: Array<$FlowFixMe>,
+  style?: StyleObj,
+  source?: {
+    fileName?: string,
+    lineNumber?: number,
+  },
+}> {
   static propTypes = {
     hierarchy: PropTypes.array.isRequired,
     style: PropTypes.oneOfType([
@@ -76,14 +76,14 @@ class ElementProperties extends React.Component {
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
               this.props.hierarchy,
-              (item, i) => (
+              (hierarchyItem, i) => (
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {getInstanceName(item)}
+                    {hierarchyItem.name}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -107,16 +107,6 @@ class ElementProperties extends React.Component {
       </TouchableWithoutFeedback>
     );
   }
-}
-
-function getInstanceName(instance) {
-  if (instance.getName) {
-    return instance.getName();
-  }
-  if (instance.constructor && instance.constructor.displayName) {
-    return instance.constructor.displayName;
-  }
-  return 'Unknown';
 }
 
 const styles = StyleSheet.create({

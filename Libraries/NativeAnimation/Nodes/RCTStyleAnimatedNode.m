@@ -37,7 +37,7 @@
 
   NSDictionary<NSString *, NSNumber *> *style = self.config[@"style"];
   [style enumerateKeysAndObjectsUsingBlock:^(NSString *property, NSNumber *nodeTag, __unused BOOL *stop) {
-    RCTAnimatedNode *node = self.parentNodes[nodeTag];
+    RCTAnimatedNode *node = [self.parentNodes objectForKey:nodeTag];
     if (node) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;

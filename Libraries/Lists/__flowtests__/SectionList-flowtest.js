@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -18,40 +19,67 @@ function renderMyListItem(info: {item: {title: string}, index: number}) {
   return <span />;
 }
 
-const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => <span />;
+const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
+  <span />
+);
 
 module.exports = {
   testGoodDataWithGoodItem() {
-    const sections = [{
-      key: 'a', data: [{
-        title: 'foo',
-        key: 1,
-      }],
-    }];
+    const sections = [
+      {
+        key: 'a',
+        data: [
+          {
+            title: 'foo',
+            key: 1,
+          },
+        ],
+      },
+    ];
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
   testBadRenderItemFunction() {
-    const sections = [{
-      key: 'a', data: [{
-        title: 'foo',
-        key: 1,
-      }],
-    }];
+    const sections = [
+      {
+        key: 'a',
+        data: [
+          {
+            title: 'foo',
+            key: 1,
+          },
+        ],
+      },
+    ];
     return [
       // $FlowExpectedError - title should be inside `item`
-      <SectionList renderItem={(info: {title: string}) => <span /> } sections={sections} />,
-      // $FlowExpectedError - bad index type string, should be number
-      <SectionList renderItem={(info: {index: string}) => <span /> } sections={sections} />,
+      <SectionList
+        renderItem={(info: {title: string}) => <span />}
+        sections={sections}
+      />,
+      <SectionList
+        // $FlowExpectedError - bad index type string, should be number
+        renderItem={(info: {index: string}) => <span />}
+        sections={sections}
+      />,
       // EverythingIsFine
-      <SectionList renderItem={(info: {item: {title: string}}) => <span /> } sections={sections} />,
+      <SectionList
+        renderItem={(info: {item: {title: string}}) => <span />}
+        sections={sections}
+      />,
     ];
   },
 
   testBadInheritedDefaultProp(): React.Element<*> {
     const sections = [];
-    // $FlowExpectedError - bad windowSize type "big"
-    return <SectionList renderItem={renderMyListItem} sections={sections} windowSize="big" />;
+    return (
+      <SectionList
+        renderItem={renderMyListItem}
+        sections={sections}
+        // $FlowExpectedError - bad windowSize type "big"
+        windowSize="big"
+      />
+    );
   },
 
   testMissingData(): React.Element<*> {
@@ -60,24 +88,38 @@ module.exports = {
   },
 
   testBadSectionsShape(): React.Element<*> {
-    const sections = [{
-      key: 'a', items: [{
-        title: 'foo',
-        key: 1,
-      }],
-    }];
+    const sections = [
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
+      {
+        key: 'a',
+        items: [
+          {
+            title: 'foo',
+            key: 1,
+          },
+        ],
+      },
+    ];
     // $FlowExpectedError - section missing `data` field
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
   testBadSectionsMetadata(): React.Element<*> {
-    // $FlowExpectedError - section has bad meta data `fooNumber` field of type string
-    const sections = [{
-      key: 'a', fooNumber: 'string', data: [{
-        title: 'foo',
-        key: 1,
-      }],
-    }];
+    const sections = [
+      {
+        key: 'a',
+        // $FlowExpectedError - section has bad meta data `fooNumber` field of type string
+        fooNumber: 'string',
+        data: [
+          {
+            title: 'foo',
+            key: 1,
+          },
+        ],
+      },
+    ];
     return (
       <SectionList
         renderSectionHeader={renderMyHeader}

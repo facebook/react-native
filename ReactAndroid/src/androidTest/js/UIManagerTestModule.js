@@ -17,9 +17,11 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 var Text = require('Text');
 
+var createReactClass = require('create-react-class');
 var renderApplication = require('renderApplication');
 
-var FlexTestApp = React.createClass({
+var FlexTestApp = createReactClass({
+  displayName: 'FlexTestApp',
   _styles: StyleSheet.create({
     container: {
       width: 200,
@@ -47,7 +49,8 @@ var FlexTestApp = React.createClass({
   }
 });
 
-var FlexWithText = React.createClass({
+var FlexWithText = createReactClass({
+  displayName: 'FlexWithText',
   _styles: StyleSheet.create({
     container: {
       flexDirection: 'column',
@@ -75,7 +78,8 @@ var FlexWithText = React.createClass({
   }
 });
 
-var AbsolutePositionTestApp = React.createClass({
+var AbsolutePositionTestApp = createReactClass({
+  displayName: 'AbsolutePositionTestApp',
   _styles: StyleSheet.create({
     absolute: {
       position: 'absolute',
@@ -90,7 +94,8 @@ var AbsolutePositionTestApp = React.createClass({
   }
 });
 
-var AbsolutePositionBottomRightTestApp = React.createClass({
+var AbsolutePositionBottomRightTestApp = createReactClass({
+  displayName: 'AbsolutePositionBottomRightTestApp',
   _styles: StyleSheet.create({
     container: {
       width: 100,
@@ -113,7 +118,8 @@ var AbsolutePositionBottomRightTestApp = React.createClass({
   }
 });
 
-var CenteredTextView = React.createClass({
+var CenteredTextView = createReactClass({
+  displayName: 'CenteredTextView',
   _styles: StyleSheet.create({
     parent: {
       width: 200,
@@ -139,7 +145,8 @@ var CenteredTextView = React.createClass({
 });
 
 var flushUpdatePositionInList = null;
-var UpdatePositionInListTestApp = React.createClass({
+var UpdatePositionInListTestApp = createReactClass({
+  displayName: 'UpdatePositionInListTestApp',
   _styles: StyleSheet.create({
     element: {
       height: 10,

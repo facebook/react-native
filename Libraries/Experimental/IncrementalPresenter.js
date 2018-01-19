@@ -27,7 +27,7 @@ import type {Context} from 'Incremental';
  *
  * `<IncrementalPresenter>` can be used to group sets of `<Incremental>` renders
  * such that they are initially invisible and removed from layout until all
- * decendents have finished rendering, at which point they are drawn all at once
+ * descendants have finished rendering, at which point they are drawn all at once
  * so the UI doesn't jump around during the incremental rendering process.
  *
  * See Incremental.js for more info.
@@ -40,8 +40,7 @@ type Props = {
   style?: mixed,
   children?: any,
 }
-class IncrementalPresenter extends React.Component {
-  props: Props;
+class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 

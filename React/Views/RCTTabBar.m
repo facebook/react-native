@@ -14,7 +14,6 @@
 #import "RCTTabBarItem.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTViewControllerProtocol.h"
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 
@@ -73,7 +72,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
+  // Do nothing, as subviews are managed by `uiManagerDidPerformMounting`
 }
 
 - (void)layoutSubviews
@@ -83,7 +82,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.view.frame = self.bounds;
 }
 
-- (void)reactBridgeDidFinishTransaction
+- (void)uiManagerDidPerformMounting
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here whenever a transaction has finished
@@ -115,9 +114,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
 
     controller.tabBarItem = tab.barItem;
+#if TARGET_OS_TV
+// On Apple TV, disable JS control of selection after initial render
+    if (tab.selected && !tab.wasSelectedInJS) {
+      self->_tabController.selectedViewController = controller;
+    }
+    tab.wasSelectedInJS = YES;
+#else
     if (tab.selected) {
       self->_tabController.selectedViewController = controller;
     }
+#endif
   }];
 }
 
@@ -141,13 +148,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.tintColor = tintColor;
 }
 
-- (BOOL)translucent {
+- (BOOL)translucent
+{
   return _tabController.tabBar.isTranslucent;
 }
 
-- (void)setTranslucent:(BOOL)translucent {
+- (void)setTranslucent:(BOOL)translucent
+{
   _tabController.tabBar.translucent = translucent;
 }
+
+#if !TARGET_OS_TV
+- (UIBarStyle)barStyle
+{
+  return _tabController.tabBar.barStyle;
+}
+
+- (void)setBarStyle:(UIBarStyle)barStyle
+{
+  _tabController.tabBar.barStyle = barStyle;
+}
+#endif
 
 - (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -157,7 +178,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #endif
 }
 
-- (UITabBarItemPositioning)itemPositoning
+- (UITabBarItemPositioning)itemPositioning
 {
 #if TARGET_OS_TV
   return 0;
@@ -175,6 +196,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - UITabBarControllerDelegate
 
+#if TARGET_OS_TV
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(nonnull UIViewController *)viewController
+{
+  NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
+  if (tab.onPress) tab.onPress(nil);
+  return;
+}
+
+#else
+
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
@@ -182,6 +215,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#endif
 
 #if TARGET_OS_TV
 

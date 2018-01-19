@@ -27,7 +27,7 @@ Start an Android emulator ([Genymotion](https://www.genymotion.com) is recommend
 
     cd react-native
     ./gradlew :RNTester:android:app:installDebug
-    ./packager/packager.sh
+    ./scripts/packager.sh
 
 _Note: Building for the first time can take a while._
 
@@ -46,7 +46,7 @@ Run the following commands from the react-native folder:
     ./gradlew :ReactAndroid:packageReactNdkLibsForBuck
     buck fetch rntester
     buck install -r rntester
-    ./packager/packager.sh
+    ./scripts/packager.sh
 
 _Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
 

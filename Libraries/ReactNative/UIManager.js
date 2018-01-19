@@ -8,6 +8,7 @@
  *
  * @providesModule UIManager
  * @flow
+ * @format
  */
 'use strict';
 
@@ -17,9 +18,12 @@ const Platform = require('Platform');
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 
-const { UIManager } = NativeModules;
+const {UIManager} = NativeModules;
 
-invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
+invariant(
+  UIManager,
+  'UIManager is undefined. The native module config is probably incorrect.',
+);
 
 // In past versions of ReactNative users called UIManager.takeSnapshot()
 // However takeSnapshot was moved to ReactNative in order to support flat
@@ -31,7 +35,7 @@ UIManager.takeSnapshot = function() {
   invariant(
     false,
     'UIManager.takeSnapshot should not be called directly. ' +
-    'Use ReactNative.takeSnapshot instead.'
+      'Use ReactNative.takeSnapshot instead.',
   );
 };
 
@@ -48,12 +52,13 @@ if (Platform.OS === 'ios') {
         get: () => {
           const viewManager = NativeModules[viewConfig.Manager];
           const constants = {};
-          viewManager && Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value !== 'function') {
-              constants[key] = value;
-            }
-          });
+          viewManager &&
+            Object.keys(viewManager).forEach(key => {
+              const value = viewManager[key];
+              if (typeof value !== 'function') {
+                constants[key] = value;
+              }
+            });
           return constants;
         },
       });
@@ -62,21 +67,22 @@ if (Platform.OS === 'ios') {
           const viewManager = NativeModules[viewConfig.Manager];
           const commands = {};
           let index = 0;
-          viewManager && Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value === 'function') {
-              commands[key] = index++;
-            }
-          });
+          viewManager &&
+            Object.keys(viewManager).forEach(key => {
+              const value = viewManager[key];
+              if (typeof value === 'function') {
+                commands[key] = index++;
+              }
+            });
           return commands;
         },
       });
     }
   });
-} else if (Platform.OS === 'android' && UIManager.AndroidLazyViewManagersEnabled) {
+} else if (Platform.OS === 'android' && UIManager.ViewManagerNames) {
   UIManager.ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(UIManager, viewManagerName, {
-      get: () => NativeModules[viewManagerName.replace(/^(RCT|RK)/, '')],
+      get: () => UIManager.getConstantsForViewManager(viewManagerName),
     });
   });
 }

@@ -20,11 +20,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 type State = { animating: boolean; };
 type Timer = number;
 
-class ToggleAnimatingActivityIndicator extends Component {
-  /**
-   * Optional Flowtype state and timer types
-   */
-  state: State;
+class ToggleAnimatingActivityIndicator extends Component<$FlowFixMeProps, State> {
   _timer: Timer;
 
   constructor(props) {
@@ -39,10 +35,16 @@ class ToggleAnimatingActivityIndicator extends Component {
   }
 
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timer);
   }
 
   setToggleTimeout() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     this._timer = setTimeout(() => {
       this.setState({animating: !this.state.animating});
       this.setToggleTimeout();

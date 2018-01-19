@@ -1,3 +1,5 @@
+include_defs("//ReactAndroid/DEFS")
+
 prebuilt_jar(
     name = "okhttp3",
     binary_jar = ":okhttp3-binary-jar",
@@ -6,8 +8,8 @@ prebuilt_jar(
 
 remote_file(
     name = "okhttp3-binary-jar",
-    sha1 = "5a11f020cce2d11eb71ba916700600e18c4547e7",
-    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.8.0",
+    sha1 = "69edde9fc4b01c9fd51d25b83428837478c27254",
+    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.6.0",
 )
 
 prebuilt_jar(
@@ -18,6 +20,6 @@ prebuilt_jar(
 
 remote_file(
     name = "okhttp3-urlconnection-binary-jar",
-    sha1 = "265257b82f20bb0371a926cc8ceb5f7bb17c0df8",
-    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.8.0",
+    sha1 = "3f9b16b774f2c36cfd86dd2053d0b3059531dacc",
+    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.6.0",
 )

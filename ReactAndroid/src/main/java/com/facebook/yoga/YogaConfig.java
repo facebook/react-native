@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -14,6 +14,8 @@ import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class YogaConfig {
+
+  public static int SPACING_TYPE = 1;
 
   static {
     SoLoader.loadLibrary("yoga");

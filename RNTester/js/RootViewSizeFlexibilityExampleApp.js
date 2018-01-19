@@ -20,9 +20,7 @@ const {
   View,
 } = ReactNative;
 
-class RootViewSizeFlexibilityExampleApp extends React.Component {
-  state: any;
-
+class RootViewSizeFlexibilityExampleApp extends React.Component<{toggled: boolean}, any> {
   constructor(props: {toggled: boolean}) {
     super(props);
     this.state = { toggled: false };
@@ -47,7 +45,6 @@ class RootViewSizeFlexibilityExampleApp extends React.Component {
       </TouchableHighlight>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

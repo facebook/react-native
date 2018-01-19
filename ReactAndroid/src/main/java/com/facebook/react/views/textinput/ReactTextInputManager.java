@@ -9,15 +9,9 @@
 
 package com.facebook.react.views.textinput;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Field;
-import java.util.LinkedList;
-import java.util.Map;
-
-import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -28,11 +22,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-
-import com.facebook.yoga.YogaConstants;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -57,8 +48,12 @@ import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
-import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.yoga.YogaConstants;
+import java.lang.reflect.Field;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of TextInput.
@@ -78,10 +73,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int INPUT_TYPE_KEYBOARD_NUMBERED =
       InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
           InputType.TYPE_NUMBER_FLAG_SIGNED;
+  private static final int PASSWORD_VISIBILITY_FLAG = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
+        ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+  private static final int KEYBOARD_TYPE_FLAGS = INPUT_TYPE_KEYBOARD_NUMBERED |
+            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
+            InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE |
+            PASSWORD_VISIBILITY_FLAG;
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
+  private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
@@ -92,26 +94,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public ReactEditText createViewInstance(ThemedReactContext context) {
-    final ReactEditText editText = new ReactEditText(context);
+    ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
-    // Fixes an issue where the EditText is not selectable if nested within a
-    // ViewPagerAndroid on some versions of Android (API 16, 23)
-    editText.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-      @Override
-      public boolean onPreDraw() {
-        editText.getViewTreeObserver().removeOnPreDrawListener(this);
-        int selectionStart = editText.getSelectionStart();
-        int selectionEnd = editText.getSelectionEnd();
-        editText.setTextIsSelectable(true);
-        editText.setSelection(selectionStart, selectionEnd);
-        return true;
-      }
-    });
     return editText;
   }
 
@@ -155,6 +144,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .put(
+            "topKeyPress",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
+        .build();
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
         .build();
   }
 
@@ -283,8 +285,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = "blurOnSubmit", defaultBoolean = true)
-  public void setBlurOnSubmit(ReactEditText view, boolean blurOnSubmit) {
+  @ReactProp(name = "blurOnSubmit")
+  public void setBlurOnSubmit(ReactEditText view, @Nullable Boolean blurOnSubmit) {
     view.setBlurOnSubmit(blurOnSubmit);
   }
 
@@ -340,6 +342,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
       cursorDrawableResField.setAccessible(true);
       int drawableResId = cursorDrawableResField.getInt(view);
+
+      // The view has no cursor drawable.
+      if (drawableResId == 0) {
+        return;
+      }
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
       if (color != null) {
@@ -538,11 +545,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
+    } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
+      // This will supercede secureTextEntry={false}. If it doesn't, due to the way
+      //  the flags work out, the underlying field will end up a URI-type field.
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
     updateStagedInputTypeFlag(
         view,
-        INPUT_TYPE_KEYBOARD_NUMBERED | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
-            InputType.TYPE_CLASS_TEXT,
+        KEYBOARD_TYPE_FLAGS,
         flagsToSet);
     checkPasswordType(view);
   }
@@ -686,26 +696,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // TODO: remove contentSize from onTextChanged entirely now that onChangeContentSize exists?
-      int contentWidth = mEditText.getWidth();
-      int contentHeight = mEditText.getHeight();
-
-      // Use instead size of text content within EditText when available
-      if (mEditText.getLayout() != null) {
-        contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
-          mEditText.getCompoundPaddingRight();
-        contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingBottom();
-      }
-
       // The event that contains the event counter and updates it must be sent first.
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              PixelUtil.toDIPFromPixel(contentWidth),
-              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
@@ -756,16 +752,31 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             // Any 'Enter' action will do
             if ((actionId & EditorInfo.IME_MASK_ACTION) > 0 ||
                 actionId == EditorInfo.IME_NULL) {
+              boolean blurOnSubmit = editText.getBlurOnSubmit();
+              boolean isMultiline = ((editText.getInputType() &
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
+
+              // Motivation:
+              // * blurOnSubmit && isMultiline => Clear focus; prevent default behaviour (return true);
+              // * blurOnSubmit && !isMultiline => Clear focus; prevent default behaviour (return true);
+              // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
+              // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
+              // Additionally we always generate a `submit` event.
+
               EventDispatcher eventDispatcher =
                   reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
                       editText.getText().toString()));
-            }
 
-            if (editText.getBlurOnSubmit()) {
-              editText.clearFocus();
+              if (blurOnSubmit) {
+                editText.clearFocus();
+              }
+
+              // Prevent default behavior except when we want it to insert a newline.
+              return blurOnSubmit || !isMultiline;
             }
 
             return true;
@@ -864,11 +875,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           ScrollEventType.SCROLL,
           horiz,
           vert,
+          0f, // can't get x velocity
+          0f, // can't get y velocity
           0, // can't get content width
           0, // can't get content height
           mReactEditText.getWidth(),
-          mReactEditText.getHeight()
-        );
+          mReactEditText.getHeight());
 
         mEventDispatcher.dispatchEvent(event);
 

@@ -12,7 +12,8 @@
  */
 'use strict';
 
-const {PropTypes, checkPropTypes} = require('React');
+const PropTypes = require('prop-types');
+const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -32,6 +33,15 @@ const ASSET_TYPE_OPTIONS = {
   All: 'All',
   Videos: 'Videos',
   Photos: 'Photos',
+};
+
+type GetPhotosParams = {
+  first: number,
+  after?: string,
+  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
+  groupName?: string,
+  assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
+  mimeTypes?: Array<string>,
 };
 
 /**
@@ -62,8 +72,8 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
   groupName: PropTypes.string,
 
   /**
-  * Specifies filter on asset type
-  */
+   * Specifies filter on asset type
+   */
   assetType: PropTypes.oneOf(Object.keys(ASSET_TYPE_OPTIONS)),
 
   /**
@@ -71,6 +81,35 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
    */
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
+
+type GetPhotosReturn = Promise<{
+  edges: Array<{
+    node: {
+      type: string,
+      group_name: string,
+      image: {
+        uri: string,
+        height: number,
+        width: number,
+        isStored?: boolean,
+        playableDuration: number,
+      },
+      timestamp: number,
+      location?: {
+        latitude?: number,
+        longitude?: number,
+        altitude?: number,
+        heading?: number,
+        speed?: number,
+      },
+    },
+  }>,
+  page_info: {
+    has_next_page: boolean,
+    start_cursor?: string,
+    end_cursor?: string,
+  },
+}>;
 
 /**
  * Shape of the return value of the `getPhotos` function.
@@ -87,6 +126,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
           isStored: PropTypes.bool,
+          playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
         location: createStrictShapeTypeChecker({
@@ -121,11 +161,18 @@ class CameraRoll {
   static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
   static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
 
-  static saveImageWithTag(tag: string): Promise<Object> {
+  /**
+   * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
+   */
+  static saveImageWithTag(tag: string): Promise<string> {
     console.warn(
-      'CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead',
+      '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
     return this.saveToCameraRoll(tag, 'photo');
+  }
+
+  static deletePhotos(photos: Array<string>) {
+    return RCTCameraRollManager.deletePhotos(photos);
   }
 
   /**
@@ -145,7 +192,7 @@ class CameraRoll {
   static saveToCameraRoll(
     tag: string,
     type?: 'photo' | 'video',
-  ): Promise<Object> {
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
@@ -153,8 +200,8 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      // $FlowFixMe(>=0.28.0)
-      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
+        'unknown'}`,
     );
 
     let mediaType = 'photo';
@@ -210,10 +257,47 @@ class CameraRoll {
    *              - `speed`: {number}
    * - `page_info` : {object} : An object with the following shape:
    *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {boolean}
-   *      - `end_cursor`: {boolean}
+   *      - `start_cursor`: {string}
+   *      - `end_cursor`: {string}
+   *
+   * Loading images:
+   * ```
+   * _handleButtonPress = () => {
+   *    CameraRoll.getPhotos({
+   *        first: 20,
+   *        assetType: 'All',
+   *      })
+   *      .then(r => {
+   *        this.setState({ photos: r.edges });
+   *      })
+   *      .catch((err) => {
+   *         //Error Loading Images
+   *      });
+   *    };
+   * render() {
+   *  return (
+   *    <View>
+   *      <Button title="Load Images" onPress={this._handleButtonPress} />
+   *      <ScrollView>
+   *        {this.state.photos.map((p, i) => {
+   *        return (
+   *          <Image
+   *            key={i}
+   *            style={{
+   *              width: 300,
+   *              height: 100,
+   *            }}
+   *            source={{ uri: p.node.image.uri }}
+   *          />
+   *        );
+   *      })}
+   *      </ScrollView>
+   *    </View>
+   *  );
+   * }
+   * ```
    */
-  static getPhotos(params) {
+  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},

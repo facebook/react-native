@@ -10,7 +10,6 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
-
 import com.facebook.react.common.DebugServerException;
 
 /**
@@ -26,11 +25,12 @@ public abstract class JSBundleLoader {
    */
   public static JSBundleLoader createAssetLoader(
       final Context context,
-      final String assetUrl) {
+      final String assetUrl,
+      final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromAssets(context.getAssets(), assetUrl);
+        instance.loadScriptFromAssets(context.getAssets(), assetUrl, loadSynchronously);
         return assetUrl;
       }
     };
@@ -38,19 +38,20 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader loads bundle from file system. The bundle will be read in native code to save on
-   * passing large strings from java to native memorory.
+   * passing large strings from java to native memory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
-    return createFileLoader(fileName, fileName);
+    return createFileLoader(fileName, fileName, false);
   }
 
   public static JSBundleLoader createFileLoader(
       final String fileName,
-      final String assetUrl) {
+      final String assetUrl,
+      final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(fileName, assetUrl);
+        instance.loadScriptFromFile(fileName, assetUrl, loadSynchronously);
         return fileName;
       }
     };
@@ -70,7 +71,7 @@ public abstract class JSBundleLoader {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
         try {
-          instance.loadScriptFromFile(cachedFileLocation, sourceURL);
+          instance.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);
@@ -95,8 +96,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * Loads the script, returning the URL of the source it loaded.
-   */
+  /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(CatalystInstanceImpl instance);
 }

@@ -8,12 +8,27 @@
  *
  * @providesModule ViewabilityHelper
  * @flow
+ * @format
  */
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
 
-export type ViewToken = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
+export type ViewToken = {
+  item: any,
+  key: string,
+  index: ?number,
+  isViewable: boolean,
+  section?: any,
+};
+
+export type ViewabilityConfigCallbackPair = {
+  viewabilityConfig: ViewabilityConfig,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
 
 export type ViewabilityConfig = {|
   /**
@@ -45,26 +60,30 @@ export type ViewabilityConfig = {|
 |};
 
 /**
-* A Utility class for calculating viewable items based on current metrics like scroll position and
-* layout.
-*
-* An item is said to be in a "viewable" state when any of the following
-* is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
-* is true):
-*
-* - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
-*   visible in the view area >= `itemVisiblePercentThreshold`.
-* - Entirely visible on screen
-*/
+ * A Utility class for calculating viewable items based on current metrics like scroll position and
+ * layout.
+ *
+ * An item is said to be in a "viewable" state when any of the following
+ * is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
+ * is true):
+ *
+ * - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
+ *   visible in the view area >= `itemVisiblePercentThreshold`.
+ * - Entirely visible on screen
+ */
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
-  _lastUpdateTime: number = 0;
+  /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.63 was deployed. To see the error delete this comment
+   * and run Flow. */
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
 
-  constructor(config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0}) {
+  constructor(
+    config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0},
+  ) {
     this._config = config;
   }
 
@@ -85,14 +104,18 @@ class ViewabilityHelper {
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): Array<number> {
-    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} = this._config;
+    const {
+      itemVisiblePercentThreshold,
+      viewAreaCoveragePercentThreshold,
+    } = this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
-    const viewablePercentThreshold = viewAreaMode ?
-      viewAreaCoveragePercentThreshold :
-      itemVisiblePercentThreshold;
+    const viewablePercentThreshold = viewAreaMode
+      ? viewAreaCoveragePercentThreshold
+      : itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-      (itemVisiblePercentThreshold != null) !== (viewAreaCoveragePercentThreshold != null),
+        (itemVisiblePercentThreshold != null) !==
+          (viewAreaCoveragePercentThreshold != null),
       'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
     const viewableIndices = [];
@@ -103,7 +126,7 @@ class ViewabilityHelper {
     const {first, last} = renderRange || {first: 0, last: itemCount - 1};
     invariant(
       last < itemCount,
-      'Invalid render range ' + JSON.stringify({renderRange, itemCount})
+      'Invalid render range ' + JSON.stringify({renderRange, itemCount}),
     );
     for (let idx = first; idx <= last; idx++) {
       const metrics = getFrameMetrics(idx);
@@ -112,16 +135,18 @@ class ViewabilityHelper {
       }
       const top = metrics.offset - scrollOffset;
       const bottom = top + metrics.length;
-      if ((top < viewportHeight) && (bottom > 0)) {
+      if (top < viewportHeight && bottom > 0) {
         firstVisible = idx;
-        if (_isViewable(
-          viewAreaMode,
-          viewablePercentThreshold,
-          top,
-          bottom,
-          viewportHeight,
-          metrics.length,
-        )) {
+        if (
+          _isViewable(
+            viewAreaMode,
+            viewablePercentThreshold,
+            top,
+            bottom,
+            viewportHeight,
+            metrics.length,
+          )
+        ) {
           viewableIndices.push(idx);
         }
       } else if (firstVisible >= 0) {
@@ -141,16 +166,17 @@ class ViewabilityHelper {
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     createViewToken: (index: number, isViewable: boolean) => ViewToken,
-    onViewableItemsChanged: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+    onViewableItemsChanged: ({
+      viewableItems: Array<ViewToken>,
+      changed: Array<ViewToken>,
+    }) => void,
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
-    const updateTime = Date.now();
-    if (this._lastUpdateTime === 0 && itemCount > 0 && getFrameMetrics(0)) {
-      // Only count updates after the first item is rendered and has a frame.
-      this._lastUpdateTime = updateTime;
-    }
-    const updateElapsed = this._lastUpdateTime ? updateTime - this._lastUpdateTime : 0;
-    if (this._config.waitForInteraction && !this._hasInteracted) {
+    if (
+      (this._config.waitForInteraction && !this._hasInteracted) ||
+      itemCount === 0 ||
+      !getFrameMetrics(0)
+    ) {
       return;
     }
     let viewableIndices = [];
@@ -163,26 +189,39 @@ class ViewabilityHelper {
         renderRange,
       );
     }
-    if (this._viewableIndices.length === viewableIndices.length &&
-        this._viewableIndices.every((v, ii) => v === viewableIndices[ii])) {
+    if (
+      this._viewableIndices.length === viewableIndices.length &&
+      this._viewableIndices.every((v, ii) => v === viewableIndices[ii])
+    ) {
       // We might get a lot of scroll events where visibility doesn't change and we don't want to do
       // extra work in those cases.
       return;
     }
     this._viewableIndices = viewableIndices;
-    this._lastUpdateTime = updateTime;
-    if (this._config.minimumViewTime && updateElapsed < this._config.minimumViewTime) {
-      const handle = setTimeout(
-        () => {
-          this._timers.delete(handle);
-          this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
-        },
-        this._config.minimumViewTime,
-      );
+    if (this._config.minimumViewTime) {
+      const handle = setTimeout(() => {
+        this._timers.delete(handle);
+        this._onUpdateSync(
+          viewableIndices,
+          onViewableItemsChanged,
+          createViewToken,
+        );
+      }, this._config.minimumViewTime);
       this._timers.add(handle);
     } else {
-      this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
+      this._onUpdateSync(
+        viewableIndices,
+        onViewableItemsChanged,
+        createViewToken,
+      );
     }
+  }
+
+  /**
+   * clean-up cached _viewableIndices to evaluate changed items on next update
+   */
+  resetViewableIndices() {
+    this._viewableIndices = [];
   }
 
   /**
@@ -192,17 +231,21 @@ class ViewabilityHelper {
     this._hasInteracted = true;
   }
 
-  _onUpdateSync(viewableIndicesToCheck, onViewableItemsChanged, createViewToken) {
+  _onUpdateSync(
+    viewableIndicesToCheck,
+    onViewableItemsChanged,
+    createViewToken,
+  ) {
     // Filter out indices that have gone out of view since this call was scheduled.
-    viewableIndicesToCheck = viewableIndicesToCheck.filter(
-      (ii) => this._viewableIndices.includes(ii)
+    viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>
+      this._viewableIndices.includes(ii),
     );
     const prevItems = this._viewableItems;
     const nextItems = new Map(
       viewableIndicesToCheck.map(ii => {
         const viewable = createViewToken(ii, true);
         return [viewable.key, viewable];
-      })
+      }),
     );
 
     const changed = [];
@@ -218,11 +261,14 @@ class ViewabilityHelper {
     }
     if (changed.length > 0) {
       this._viewableItems = nextItems;
-      onViewableItemsChanged({viewableItems: Array.from(nextItems.values()), changed});
+      onViewableItemsChanged({
+        viewableItems: Array.from(nextItems.values()),
+        changed,
+        viewabilityConfig: this._config,
+      });
     }
   }
 }
-
 
 function _isViewable(
   viewAreaMode: boolean,
@@ -231,12 +277,13 @@ function _isViewable(
   bottom: number,
   viewportHeight: number,
   itemLength: number,
-): bool {
+): boolean {
   if (_isEntirelyVisible(top, bottom, viewportHeight)) {
     return true;
   } else {
     const pixels = _getPixelsVisible(top, bottom, viewportHeight);
-    const percent = 100 * (viewAreaMode ? pixels / viewportHeight : pixels / itemLength);
+    const percent =
+      100 * (viewAreaMode ? pixels / viewportHeight : pixels / itemLength);
     return percent >= viewablePercentThreshold;
   }
 }
@@ -244,7 +291,7 @@ function _isViewable(
 function _getPixelsVisible(
   top: number,
   bottom: number,
-  viewportHeight: number
+  viewportHeight: number,
 ): number {
   const visibleHeight = Math.min(bottom, viewportHeight) - Math.max(top, 0);
   return Math.max(0, visibleHeight);
@@ -253,8 +300,8 @@ function _getPixelsVisible(
 function _isEntirelyVisible(
   top: number,
   bottom: number,
-  viewportHeight: number
-): bool {
+  viewportHeight: number,
+): boolean {
   return top >= 0 && bottom <= viewportHeight && bottom > top;
 }
 

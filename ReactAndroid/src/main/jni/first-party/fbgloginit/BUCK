@@ -1,20 +1,21 @@
+include_defs("//ReactAndroid/DEFS")
+
 include_defs("//ReactCommon/DEFS")
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "fbgloginit",
     srcs = [
         "glog_init.cpp",
     ],
+    exported_headers = ["fb/glog_init.h"],
     compiler_flags = [
         "-fexceptions",
         "-fno-omit-frame-pointer",
     ],
-    exported_headers = ["fb/glog_init.h"],
     linker_flags = [
         "-llog",
     ],
     visibility = ["PUBLIC"],
-    xcode_public_headers_symlinks = True,
     deps = [
         GLOG_DEP,
     ],

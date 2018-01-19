@@ -34,7 +34,7 @@ var styles = StyleSheet.create({
   },
 });
 
-class ViewBorderStyleExample extends React.Component {
+class ViewBorderStyleExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     showBorder: true
   };
@@ -73,7 +73,7 @@ class ViewBorderStyleExample extends React.Component {
   };
 }
 
-class ZIndexExample extends React.Component {
+class ZIndexExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     flipped: false
   };

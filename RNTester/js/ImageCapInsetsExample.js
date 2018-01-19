@@ -22,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-class ImageCapInsetsExample extends React.Component {
+class ImageCapInsetsExample extends React.Component<{}> {
   render() {
     return (
       <View>

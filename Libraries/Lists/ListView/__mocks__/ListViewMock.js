@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 'use strict';
 
@@ -15,11 +16,16 @@ const React = require('React');
 const ScrollView = require('ScrollView');
 const StaticRenderer = require('StaticRenderer');
 
-class ListViewMock extends React.Component {
+class ListViewMock extends React.Component<$FlowFixMeProps> {
   static latestRef: ?ListViewMock;
   static defaultProps = {
-    renderScrollComponent: (props) => <ScrollView {...props} />,
-  }
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
+    renderScrollComponent: props => <ScrollView {...props} />,
+  };
   componentDidMount() {
     ListViewMock.latestRef = this;
   }
@@ -32,17 +38,18 @@ class ListViewMock extends React.Component {
       const rowIDs = allRowIDs[sectionIdx];
       for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         const rowID = rowIDs[rowIdx];
+        // Row IDs are only unique in a section
         rows.push(
           <StaticRenderer
-            key={rowID}
+            key={'section_' + sectionID + '_row_' + rowID}
             shouldUpdate={true}
             render={this.props.renderRow.bind(
               null,
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
-              rowID
+              rowID,
             )}
-          />
+          />,
         );
       }
     }

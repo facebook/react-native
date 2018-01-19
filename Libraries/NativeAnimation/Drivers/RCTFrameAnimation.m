@@ -34,6 +34,8 @@
   NSTimeInterval _animationStartTime;
   NSTimeInterval _animationCurrentTime;
   RCTResponseSenderBlock _callback;
+  NSInteger _iterations;
+  NSInteger _currentLoop;
 }
 
 - (instancetype)initWithId:(NSNumber *)animationId
@@ -44,6 +46,7 @@
   if ((self = [super init])) {
     NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
     NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
+    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
 
     _animationId = animationId;
     _toValue = toValue.floatValue;
@@ -51,6 +54,9 @@
     _valueNode = valueNode;
     _frames = [frames copy];
     _callback = [callback copy];
+    _animationHasFinished = iterations.integerValue == 0;
+    _iterations = iterations.integerValue;
+    _currentLoop = 1;
   }
   return self;
 }
@@ -93,15 +99,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSUInteger nextIndex = startIndex + 1;
 
   if (nextIndex >= _frames.count) {
-    // We are at the end of the animation
-    // Update value and flag animation has ended.
-    NSNumber *finalValue = _frames.lastObject;
-    [self updateOutputWithFrameOutput:finalValue.doubleValue];
-    _animationHasFinished = YES;
+    if (_iterations == -1 || _currentLoop < _iterations) {
+      // Looping, reset to the first frame value.
+      _animationStartTime = currentTime;
+      _currentLoop++;
+      NSNumber *firstValue = _frames.firstObject;
+      [self updateOutputWithFrameOutput:firstValue.doubleValue];
+    } else {
+      _animationHasFinished = YES;
+      // We are at the end of the animation
+      // Update value and flag animation has ended.
+      NSNumber *finalValue = _frames.lastObject;
+      [self updateOutputWithFrameOutput:finalValue.doubleValue];
+    }
     return;
   }
 
-  // Do a linear remap of the two frames to safegaurd against variable framerates
+  // Do a linear remap of the two frames to safeguard against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
   NSTimeInterval fromInterval = startIndex * RCTSingleFrameInterval;

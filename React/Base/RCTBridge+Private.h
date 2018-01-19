@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <JavaScriptCore/JavaScriptCore.h>
 #import <JavaScriptCore/JSBase.h>
 
 #import <React/RCTBridge.h>
@@ -34,6 +35,9 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 @property (nonatomic, assign) int64_t flowID;
 @property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
 @property (nonatomic, strong) NSLock *flowIDMapLock;
+
+// Used by RCTDevMenu
+@property (nonatomic, copy) NSString *bridgeDescription;
 
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
@@ -115,6 +119,11 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
 
 /**
+* Registers additional classes with the ModuleRegistry.
+*/
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules;
+
+/**
  * Systrace profiler toggling methods exposed for the RCTDevMenu
  */
 - (void)startProfiling;
@@ -147,6 +156,21 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
+
+@end
+
+@interface RCTBridge (JavaScriptCore)
+
+/**
+ * The raw JSGlobalContextRef used by the bridge.
+ */
+@property (nonatomic, readonly, assign) JSGlobalContextRef jsContextRef;
+
+@end
+
+@interface RCTBridge (Inspector)
+
+@property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
 
 @end
 

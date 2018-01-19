@@ -1,5 +1,7 @@
+include_defs("//ReactAndroid/DEFS")
+
 prebuilt_jar(
-  name = "infer-annotations",
-  binary_jar = "infer-annotations-4.0.jar",
-  visibility = ["//ReactAndroid/..."],
+    name = "infer-annotations",
+    binary_jar = "infer-annotations-4.0.jar",
+    visibility = ["//ReactAndroid/..."],
 )

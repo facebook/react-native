@@ -1,7 +1,8 @@
+include_defs("xplat//configurations/buck/apple/flag_defs.bzl")
+
 include_defs("//ReactCommon/DEFS")
 
 EXPORTED_HEADERS = [
-    "InspectorInterfaces.h",
     "JavaScriptCore.h",
     "JSCHelpers.h",
     "JSCWrapper.h",
@@ -16,12 +17,11 @@ rn_xplat_cxx_library(
         ["*.cpp"],
         excludes = ["systemJSCWrapper.cpp"],
     ),
-    compiler_flags = [
-        "-Wall",
-        "-fexceptions",
-        "-fvisibility=hidden",
-        "-std=c++1y",
-    ],
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
+    header_namespace = "",
     exported_headers = dict([
         (
             "jschelpers/%s" % header,
@@ -29,18 +29,23 @@ rn_xplat_cxx_library(
         )
         for header in EXPORTED_HEADERS
     ]),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-frtti",
+        "-fvisibility=hidden",
+        "-std=c++1y",
+    ],
+    exported_deps = [
+        react_native_xplat_target("privatedata:privatedata"),
+    ],
     fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     force_static = True,
-    header_namespace = "",
-    headers = glob(
-        ["*.h"],
-        excludes = EXPORTED_HEADERS,
-    ),
     visibility = [
         "PUBLIC",
     ],
     deps = JSC_INTERNAL_DEPS + [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 

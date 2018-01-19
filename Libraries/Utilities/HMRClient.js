@@ -33,10 +33,12 @@ const HMRClient = {
       ? `${host}:${port}`
       : host;
 
+    bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
+
     // Build the websocket url
     const wsUrl = `ws://${wsHostPort}/hot?` +
       `platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+      `bundleEntry=${bundleEntry}`;
 
     const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
@@ -87,7 +89,6 @@ Error: ${e.message}`
             modules,
             sourceMappingURLs,
             sourceURLs,
-            inverseDependencies,
           } = data.body;
 
           if (Platform.OS === 'ios') {
@@ -106,17 +107,7 @@ Error: ${e.message}`
             // evaluating code) but on Chrome we can simply use eval
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
-              : eval;
-
-            code = [
-              '__accept(',
-                `${id},`,
-                'function(global,require,module,exports){',
-                  `${code}`,
-                '\n},',
-                `${JSON.stringify(inverseDependencies)}`,
-              ');',
-            ].join('');
+              : eval; // eslint-disable-line no-eval
 
             injectFunction(code, sourceURLs[i]);
           });
@@ -130,7 +121,7 @@ Error: ${e.message}`
         }
         case 'error': {
           HMRLoadingView.hide();
-          throw new Error(data.body.type + ' ' + data.body.description);
+          throw new Error(`${data.body.type}: ${data.body.message}`);
         }
         default: {
           throw new Error(`Unexpected message: ${data}`);

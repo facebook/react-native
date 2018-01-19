@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   ActivityIndicator,
@@ -20,6 +21,7 @@ var {
   StyleSheet,
   Text,
   View,
+  ImageBackground,
 } = ReactNative;
 
 var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACSR7JhAAADtUlEQVR4Ac3YA2Bj6QLH0XPT1Fzbtm29tW3btm3bfLZtv7e2ObZnms7d8Uw098tuetPzrxv8wiISrtVudrG2JXQZ4VOv+qUfmqCGGl1mqLhoA52oZlb0mrjsnhKpgeUNEs91Z0pd1kvihA3ULGVHiQO2narKSHKkEMulm9VgUyE60s1aWoMQUbpZOWE+kaqs4eLEjdIlZTcFZB0ndc1+lhB1lZrIuk5P2aib1NBpZaL+JaOGIt0ls47SKzLC7CqrlGF6RZ09HGoNy1lYl2aRSWL5GuzqWU1KafRdoRp0iOQEiDzgZPnG6DbldcomadViflnl/cL93tOoVbsOLVM2jylvdWjXolWX1hmfZbGR/wjypDjFLSZIRov09BgYmtUqPQPlQrPapecLgTIy0jMgPKtTeob2zWtrGH3xvjUkPCtNg/tm1rjwrMa+mdUkPd3hWbH0jArPGiU9ufCsNNWFZ40wpwn+62/66R2RUtoso1OB34tnLOcy7YB1fUdc9e0q3yru8PGM773vXsuZ5YIZX+5xmHwHGVvlrGPN6ZSiP1smOsMMde40wKv2VmwPPVXNut4sVpUreZiLBHi0qln/VQeI/LTMYXpsJtFiclUN+5HVZazim+Ky+7sAvxWnvjXrJFneVtLWLyPJu9K3cXLWeOlbMTlrIelbMDlrLenrjEQOtIF+fuI9xRp9ZBFp6+b6WT8RrxEpdK64BuvHgDk+vUy+b5hYk6zfyfs051gRoNO1usU12WWRWL73/MMEy9pMi9qIrR4ZpV16Rrvduxazmy1FSvuFXRkqTnE7m2kdb5U8xGjLw/spRr1uTov4uOgQE+0N/DvFrG/Jt7i/FzwxbA9kDanhf2w+t4V97G8lrT7wc08aA2QNUkuTfW/KimT01wdlfK4yEw030VfT0RtZbzjeMprNq8m8tnSTASrTLti64oBNdpmMQm0eEwvfPwRbUBywG5TzjPCsdwk3IeAXjQblLCoXnDVeoAz6SfJNk5TTzytCNZk/POtTSV40NwOFWzw86wNJRpubpXsn60NJFlHeqlYRbslqZm2jnEZ3qcSKgm0kTli3zZVS7y/iivZTweYXJ26Y+RTbV1zh3hYkgyFGSTKPfRVbRqWWVReaxYeSLarYv1Qqsmh1s95S7G+eEWK0f3jYKTbV6bOwepjfhtafsvUsqrQvrGC8YhmnO9cSCk3yuY984F1vesdHYhWJ5FvASlacshUsajFt2mUM9pqzvKGcyNJW0arTKN1GGGzQlH0tXwLDgQTurS8eIQAAAABJRU5ErkJggg==';
@@ -28,7 +30,11 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-var NetworkImageCallbackExample = React.createClass({
+/* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.63 was deployed. To see the error delete this comment and
+ * run Flow. */
+var NetworkImageCallbackExample = createReactClass({
+  displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
     return {
       events: [],
@@ -101,7 +107,7 @@ var NetworkImageCallbackExample = React.createClass({
   }
 });
 
-var NetworkImageExample = React.createClass({
+var NetworkImageExample = createReactClass({
   getInitialState: function() {
     return {
       error: false,
@@ -117,7 +123,7 @@ var NetworkImageExample = React.createClass({
       </View> : null;
     return this.state.error ?
       <Text>{this.state.error}</Text> :
-      <Image
+      <ImageBackground
         source={this.props.source}
         style={[styles.base, {overflow: 'visible'}]}
         onLoadStart={(e) => this.setState({loading: true})}
@@ -125,11 +131,11 @@ var NetworkImageExample = React.createClass({
         onProgress={(e) => this.setState({progress: Math.round(100 * e.nativeEvent.loaded / e.nativeEvent.total)})}
         onLoad={() => this.setState({loading: false, error: false})}>
         {loader}
-      </Image>;
+      </ImageBackground>;
   }
 });
 
-var ImageSizeExample = React.createClass({
+var ImageSizeExample = createReactClass({
   getInitialState: function() {
     return {
       width: 0,
@@ -161,7 +167,7 @@ var ImageSizeExample = React.createClass({
   },
 });
 
-var MultipleSourcesExample = React.createClass({
+var MultipleSourcesExample = createReactClass({
   getInitialState: function() {
     return {
       width: 30,
@@ -189,9 +195,9 @@ var MultipleSourcesExample = React.createClass({
           <Image
             style={{flex: 1}}
             source={[
-              {uri: 'https://facebook.github.io/react/img/logo_small.png', width: 38, height: 38},
-              {uri: 'https://facebook.github.io/react/img/logo_small_2x.png', width: 76, height: 76},
-              {uri: 'https://facebook.github.io/react/img/logo_og.png', width: 400, height: 400}
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 38, height: 38},
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 76, height: 76},
+              {uri: 'https://facebook.github.io/react-native/img/opengraph.png', width: 400, height: 400}
             ]}
           />
         </View>
@@ -231,7 +237,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+          source={fullImage}
           style={styles.base}
         />
       );
@@ -265,7 +271,7 @@ exports.examples = [
     title: 'Error Handler',
     render: function() {
       return (
-        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/logo-og.png'}} />
       );
     },
     platform: 'ios',
@@ -433,16 +439,31 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting',
+    title: 'Nesting content inside <Image> component',
     render: function() {
       return (
-        <Image
+        <View style={{width: 60, height: 60}}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}/>
+          <Text style={styles.nestedText}>
+            React
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
+    render: function() {
+      return (
+        <ImageBackground
           style={{width: 60, height: 60, backgroundColor: 'transparent'}}
           source={fullImage}>
           <Text style={styles.nestedText}>
             React
           </Text>
-        </Image>
+        </ImageBackground>
       );
     },
   },
@@ -706,8 +727,8 @@ exports.examples = [
   },
 ];
 
-var fullImage = {uri: 'https://facebook.github.io/react/img/logo_og.png'};
-var smallImage = {uri: 'https://facebook.github.io/react/img/logo_small_2x.png'};
+var fullImage = {uri: 'https://facebook.github.io/react-native/img/opengraph.png'};
+var smallImage = {uri: 'https://facebook.github.io/react-native/img/favicon.png'};
 
 var styles = StyleSheet.create({
   base: {

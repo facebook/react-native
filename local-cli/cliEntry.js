@@ -13,8 +13,14 @@
 const config = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 const childProcess = require('child_process');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const commander = require('commander');
 const commands = require('./commands');
 const init = require('./init/init');

@@ -11,33 +11,16 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
-public class JSCJavaScriptExecutor extends JavaScriptExecutor {
-  public static class Factory implements JavaScriptExecutor.Factory {
-    private ReadableNativeArray mJSCConfig;
-
-    public Factory(WritableNativeMap jscConfig) {
-      // TODO (t10707444): use NativeMap, which requires moving NativeMap out of OnLoad.
-      WritableNativeArray array = new WritableNativeArray();
-      array.pushMap(jscConfig);
-      mJSCConfig = array;
-    }
-
-    @Override
-    public JavaScriptExecutor create() throws Exception {
-      return new JSCJavaScriptExecutor(mJSCConfig);
-    }
-  }
-
+/* package */ class JSCJavaScriptExecutor extends JavaScriptExecutor {
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
-  public JSCJavaScriptExecutor(ReadableNativeArray jscConfig) {
+  /* package */ JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
     super(initHybrid(jscConfig));
   }
 
-  private native static HybridData initHybrid(ReadableNativeArray jscConfig);
+  private native static HybridData initHybrid(ReadableNativeMap jscConfig);
 }

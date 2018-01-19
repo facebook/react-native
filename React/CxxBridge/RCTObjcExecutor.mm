@@ -15,7 +15,9 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <cxxreact/Executor.h>
+#import <cxxreact/JSBigString.h>
+#import <cxxreact/JSExecutor.h>
+#import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
 #import <folly/json.h>
 
@@ -32,26 +34,34 @@ public:
 
 class RCTObjcExecutor : public JSExecutor {
 public:
-  RCTObjcExecutor(id<RCTJavaScriptExecutor> jse, RCTJavaScriptCompleteBlock errorBlock,
-                  std::shared_ptr<facebook::react::ExecutorDelegate> delegate)
+  RCTObjcExecutor(id<RCTJavaScriptExecutor> jse,
+                  RCTJavaScriptCompleteBlock errorBlock,
+                  std::shared_ptr<MessageQueueThread> jsThread,
+                  std::shared_ptr<ExecutorDelegate> delegate)
     : m_jse(jse)
     , m_errorBlock(errorBlock)
-    , m_delegate(delegate)
+    , m_jsThread(std::move(jsThread))
+    , m_delegate(std::move(delegate))
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {
-        m_errorBlock(error);
+        // Do not use "m_errorBlock" here as the bridge might be in the middle
+        // of invalidation as a result of error handling and "this" can be
+        // already deallocated.
+        errorBlock(error);
         return;
       }
 
-      m_delegate->callNativeModules(*this, [RCTConvert folly_dynamic:json], true);
+      m_jsThread->runOnQueue([this, json]{
+        m_delegate->callNativeModules(*this, convertIdToFollyDynamic(json), true);
+      });
     };
 
     // Synchronously initialize the executor
     [jse setUp];
 
     folly::dynamic nativeModuleConfig = folly::dynamic::array;
-    auto moduleRegistry = delegate->getModuleRegistry();
+    auto moduleRegistry = m_delegate->getModuleRegistry();
     for (const auto &name : moduleRegistry->moduleNames()) {
       auto config = moduleRegistry->getConfig(name);
       nativeModuleConfig.push_back(config ? config->config : nullptr);
@@ -84,8 +94,12 @@ public:
       }];
   }
 
-  void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
-    RCTLogWarn(@"Unbundle is not supported in RCTObjcExecutor");
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
+  }
+
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,
@@ -110,17 +124,15 @@ public:
            callback:m_errorBlock];
   }
 
-  virtual bool supportsProfiling() override {
-    return false;
-  };
-  virtual void startProfiler(const std::string &titleString) override {};
-  virtual void stopProfiler(const std::string &titleString,
-                            const std::string &filename) override {};
+  virtual std::string getDescription() override {
+    return [NSStringFromClass([m_jse class]) UTF8String];
+  }
 
 private:
   id<RCTJavaScriptExecutor> m_jse;
   RCTJavaScriptCompleteBlock m_errorBlock;
-  std::shared_ptr<facebook::react::ExecutorDelegate> m_delegate;
+  std::shared_ptr<ExecutorDelegate> m_delegate;
+  std::shared_ptr<MessageQueueThread> m_jsThread;
   RCTJavaScriptCallback m_jsCallback;
 };
 
@@ -135,7 +147,7 @@ std::unique_ptr<JSExecutor> RCTObjcExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) {
   return std::unique_ptr<JSExecutor>(
-    new RCTObjcExecutor(m_jse, m_errorBlock, delegate));
+    new RCTObjcExecutor(m_jse, m_errorBlock, jsQueue, delegate));
 }
 
 }

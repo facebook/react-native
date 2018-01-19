@@ -8,14 +8,12 @@
  *
  * @providesModule MessageQueue
  * @flow
+ * @format
  */
-
-/*eslint no-bitwise: 0*/
 
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -25,9 +23,9 @@ const stringifySafe = require('stringifySafe');
 export type SpyData = {
   type: number,
   module: ?string,
-  method: string|number,
-  args: any
-}
+  method: string | number,
+  args: any[],
+};
 
 const TO_JS = 0;
 const TO_NATIVE = 1;
@@ -37,34 +35,45 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
+// eslint-disable-next-line no-bitwise
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
 
+// Work around an initialization order issue
+let JSTimers = null;
+
 class MessageQueue {
-  _callableModules: {[key: string]: Object};
-  _queue: [Array<number>, Array<number>, Array<any>, number];
-  _successCallbacks: Array<?Function>;
-  _failureCallbacks: Array<?Function>;
+  _lazyCallableModules: {[key: string]: (void) => Object};
+  _queue: [number[], number[], any[], number];
+  _successCallbacks: (?Function)[];
+  _failureCallbacks: (?Function)[];
   _callID: number;
   _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
 
-  _debugInfo: Object;
-  _remoteModuleTable: Object;
-  _remoteMethodTable: Object;
+  _debugInfo: {[number]: [number, number]};
+  _remoteModuleTable: {[number]: string};
+  _remoteMethodTable: {[number]: string[]};
 
   __spy: ?(data: SpyData) => void;
 
-  constructor() {
-    this._callableModules = {};
+  __guard: (() => void) => void;
+
+  constructor(shouldUninstallGlobalErrorHandler: boolean = false) {
+    this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
     this._successCallbacks = [];
     this._failureCallbacks = [];
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+    if (shouldUninstallGlobalErrorHandler) {
+      this.uninstallGlobalErrorHandler();
+    } else {
+      this.installGlobalErrorHandler();
+    }
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -72,22 +81,30 @@ class MessageQueue {
       this._remoteMethodTable = {};
     }
 
-    (this:any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(this);
-    (this:any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(this);
-    (this:any).flushedQueue = this.flushedQueue.bind(this);
-    (this:any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(this);
+    (this: any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
+      this,
+    );
+    (this: any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(
+      this,
+    );
+    (this: any).flushedQueue = this.flushedQueue.bind(this);
+    (this: any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
+      this,
+    );
   }
 
   /**
    * Public APIs
    */
 
-  static spy(spyOrToggle: boolean|(data: SpyData) => void){
-    if (spyOrToggle === true){
+  static spy(spyOrToggle: boolean | ((data: SpyData) => void)) {
+    if (spyOrToggle === true) {
       MessageQueue.prototype.__spy = info => {
-        console.log(`${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
-                    `${info.module ? (info.module + '.') : ''}${info.method}` +
-                    `(${JSON.stringify(info.args)})`);
+        console.log(
+          `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
+            `${info.module ? info.module + '.' : ''}${info.method}` +
+            `(${JSON.stringify(info.args)})`,
+        );
       };
     } else if (spyOrToggle === false) {
       MessageQueue.prototype.__spy = null;
@@ -96,36 +113,39 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnFlushedQueue(module: string, method: string, args: any[]) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
   }
 
-  callFunctionReturnResultAndFlushedQueue(module: string, method: string, args: Array<any>) {
+  callFunctionReturnResultAndFlushedQueue(
+    module: string,
+    method: string,
+    args: any[],
+  ) {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return [result, this.flushedQueue()];
   }
 
-  invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
+  invokeCallbackAndReturnFlushedQueue(cbID: number, args: any[]) {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
   }
 
   flushedQueue() {
-    this.__callImmediates();
+    this.__guard(() => {
+      this.__callImmediates();
+    });
 
     const queue = this._queue;
     this._queue = [[], [], [], this._callID];
@@ -137,10 +157,33 @@ class MessageQueue {
   }
 
   registerCallableModule(name: string, module: Object) {
-    this._callableModules[name] = module;
+    this._lazyCallableModules[name] = () => module;
   }
 
-  enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
+  registerLazyCallableModule(name: string, factory: void => Object) {
+    let module: Object;
+    let getValue: ?(void) => Object = factory;
+    this._lazyCallableModules[name] = () => {
+      if (getValue) {
+        module = getValue();
+        getValue = null;
+      }
+      return module;
+    };
+  }
+
+  getCallableModule(name: string) {
+    const getValue = this._lazyCallableModules[name];
+    return getValue ? getValue() : null;
+  }
+
+  enqueueNativeCall(
+    moduleID: number,
+    methodID: number,
+    params: any[],
+    onFail: ?Function,
+    onSucc: ?Function,
+  ) {
     if (onFail || onSucc) {
       if (__DEV__) {
         this._debugInfo[this._callID] = [moduleID, methodID];
@@ -150,7 +193,9 @@ class MessageQueue {
       }
       // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       // to indicate fail (0) or success (1)
+      // eslint-disable-next-line no-bitwise
       onFail && params.push(this._callID << 1);
+      // eslint-disable-next-line no-bitwise
       onSucc && params.push((this._callID << 1) | 1);
       this._successCallbacks[this._callID] = onSucc;
       this._failureCallbacks[this._callID] = onFail;
@@ -158,7 +203,11 @@ class MessageQueue {
 
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
-        global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+        global.nativeTraceBeginAsyncFlow(
+          TRACE_TAG_REACT_APPS,
+          'native',
+          this._callID,
+        );
     }
     this._callID++;
 
@@ -166,18 +215,52 @@ class MessageQueue {
     this._queue[METHOD_IDS].push(methodID);
 
     if (__DEV__) {
-      // Any params sent over the bridge should be encodable as JSON
-      JSON.stringify(params);
+      // Validate that parameters passed over the bridge are
+      // folly-convertible.  As a special case, if a prop value is a
+      // function it is permitted here, and special-cased in the
+      // conversion.
+      const isValidArgument = val => {
+        const t = typeof val;
+        if (
+          t === 'undefined' ||
+          t === 'null' ||
+          t === 'boolean' ||
+          t === 'number' ||
+          t === 'string'
+        ) {
+          return true;
+        }
+        if (t === 'function' || t !== 'object') {
+          return false;
+        }
+        if (Array.isArray(val)) {
+          return val.every(isValidArgument);
+        }
+        for (const k in val) {
+          if (typeof val[k] !== 'function' && !isValidArgument(val[k])) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      invariant(
+        isValidArgument(params),
+        '%s is not usable as a native method argument',
+        params,
+      );
 
       // The params object should not be mutated after being queued
-      deepFreezeAndThrowOnMutationInDev((params:any));
+      deepFreezeAndThrowOnMutationInDev((params: any));
     }
     this._queue[PARAMS].push(params);
 
     const now = new Date().getTime();
-    if (global.nativeFlushQueueImmediate &&
-        (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-         this._inCall === 0)) {
+    if (
+      global.nativeFlushQueueImmediate &&
+      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
+        this._inCall === 0)
+    ) {
       var queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
@@ -185,29 +268,49 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
-      this.__spy(
-        { type: TO_NATIVE,
-          module: this._remoteModuleTable[moduleID],
-          method: this._remoteMethodTable[moduleID][methodID],
-          args: params }
-      );
+      this.__spy({
+        type: TO_NATIVE,
+        module: this._remoteModuleTable[moduleID],
+        method: this._remoteMethodTable[moduleID][methodID],
+        args: params,
+      });
     } else if (this.__spy) {
-      this.__spy({type: TO_NATIVE, module: moduleID + '', method: methodID, args: params});
+      this.__spy({
+        type: TO_NATIVE,
+        module: moduleID + '',
+        method: methodID,
+        args: params,
+      });
     }
   }
 
-  createDebugLookup(moduleID: number, name: string, methods: Array<string>) {
+  createDebugLookup(moduleID: number, name: string, methods: string[]) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
       this._remoteMethodTable[moduleID] = methods;
     }
   }
 
+  uninstallGlobalErrorHandler() {
+    this.__guard = this.__guardUnsafe;
+  }
+
+  installGlobalErrorHandler() {
+    this.__guard = this.__guardSafe;
+  }
+
   /**
    * Private methods
    */
 
-  __guard(fn: () => void) {
+  // Lets exceptions propagate to be handled by the VM at the origin
+  __guardUnsafe(fn: () => void) {
+    this._inCall++;
+    fn();
+    this._inCall--;
+  }
+
+  __guardSafe(fn: () => void) {
     this._inCall++;
     try {
       fn();
@@ -219,41 +322,51 @@ class MessageQueue {
   }
 
   __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    this.__guard(() => JSTimersExecution.callImmediates());
+    Systrace.beginEvent('JSTimers.callImmediates()');
+    if (!JSTimers) {
+      JSTimers = require('JSTimers');
+    }
+    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 
-  __callFunction(module: string, method: string, args: Array<any>) {
+  __callFunction(module: string, method: string, args: any[]): any {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
     if (this.__spy) {
-      this.__spy({ type: TO_JS, module, method, args});
+      this.__spy({type: TO_JS, module, method, args});
     }
-    const moduleMethods = this._callableModules[module];
+    const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',
-      module, method
+      module,
+      method,
     );
     invariant(
       !!moduleMethods[method],
       'Method %s does not exist on module %s',
-      method, module
+      method,
+      module,
     );
     const result = moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();
     return result;
   }
 
-  __invokeCallback(cbID: number, args: Array<any>) {
+  __invokeCallback(cbID: number, args: any[]) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
 
     // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
+    // eslint-disable-next-line no-bitwise
     const callID = cbID >>> 1;
-    const callback = (cbID & 1) ? this._successCallbacks[callID] : this._failureCallbacks[callID];
+    // eslint-disable-next-line no-bitwise
+    const isSuccess = cbID & 1;
+    const callback = isSuccess
+      ? this._successCallbacks[callID]
+      : this._failureCallbacks[callID];
 
     if (__DEV__) {
       const debug = this._debugInfo[callID];
@@ -262,20 +375,21 @@ class MessageQueue {
       if (!callback) {
         let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
-          errorMessage = `The callback ${method}() exists in module ${module}, `
-          + 'but only one callback may be registered to a function in a native module.';
+          errorMessage =
+            `The callback ${method}() exists in module ${module}, ` +
+            'but only one callback may be registered to a function in a native module.';
         }
-        invariant(
-          callback,
-          errorMessage
-        );
+        invariant(callback, errorMessage);
       }
-      const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
+      const profileName = debug
+        ? '<callback for ' + module + '.' + method + '>'
+        : cbID;
       if (callback && this.__spy) {
-        this.__spy({ type: TO_JS, module:null, method:profileName, args });
+        this.__spy({type: TO_JS, module: null, method: profileName, args});
       }
       Systrace.beginEvent(
-        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
+        `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`,
+      );
     }
 
     if (!callback) {
@@ -283,7 +397,7 @@ class MessageQueue {
     }
 
     this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
-    callback.apply(null, args);
+    callback(...args);
 
     if (__DEV__) {
       Systrace.endEvent();

@@ -18,13 +18,16 @@ var {
   TextInput,
   View,
   StyleSheet,
+  Slider,
+  Switch,
 } = ReactNative;
 
-class TextEventsExample extends React.Component {
+class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
   updateText = (text) => {
@@ -33,6 +36,7 @@ class TextEventsExample extends React.Component {
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   };
@@ -44,10 +48,14 @@ class TextEventsExample extends React.Component {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={(event) => this.updateText(
             'onChange text: ' + event.nativeEvent.text
+          )}
+          onContentSizeChange={(event) => this.updateText(
+            'onContentSizeChange size: ' + event.nativeEvent.contentSize
           )}
           onEndEditing={(event) => this.updateText(
             'onEndEditing text: ' + event.nativeEvent.text
@@ -55,45 +63,23 @@ class TextEventsExample extends React.Component {
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onKeyPress={(event) => this.updateText(
+            'onKeyPress key: ' + event.nativeEvent.key
+          )}
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
   }
 }
 
-class AutoExpandingTextInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      text: 'React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.',
-      height: 0,
-    };
-  }
-  render() {
-    return (
-      <TextInput
-        {...this.props}
-        multiline={true}
-        onContentSizeChange={(event) => {
-          this.setState({height: event.nativeEvent.contentSize.height});
-        }}
-        onChangeText={(text) => {
-          this.setState({text});
-        }}
-        style={[styles.default, {height: Math.max(35, this.state.height)}]}
-        value={this.state.text}
-      />
-    );
-  }
-}
-
-class RewriteExample extends React.Component {
+class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -122,7 +108,7 @@ class RewriteExample extends React.Component {
   }
 }
 
-class TokenizedTextExample extends React.Component {
+class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -176,7 +162,7 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
-class BlurOnSubmitExample extends React.Component {
+class BlurOnSubmitExample extends React.Component<{}> {
   focusNextField = (nextField) => {
     this.refs[nextField].focus();
   };
@@ -230,7 +216,7 @@ class BlurOnSubmitExample extends React.Component {
   }
 }
 
-class ToggleDefaultPaddingExample extends React.Component {
+class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
@@ -255,9 +241,7 @@ type SelectionExampleState = {
   value: string;
 };
 
-class SelectionExample extends React.Component {
-  state: SelectionExampleState;
-
+class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExampleState> {
   _textInput: any;
 
   constructor(props) {
@@ -334,12 +318,65 @@ class SelectionExample extends React.Component {
   }
 }
 
+class AutogrowingTextInputExample extends React.Component<{}> {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      width: 100,
+      multiline: true,
+      text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
+    };
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({
+      multiline: props.multiline,
+    });
+  }
+
+  render() {
+    var {style, multiline, ...props} = this.props;
+    return (
+      <View>
+        <Text>Width:</Text>
+        <Slider
+          value={100}
+          minimumValue={0}
+          maximumValue={100}
+          step={10}
+          onValueChange={(value) => this.setState({width: value})}
+        />
+        <Text>Multiline:</Text>
+        <Switch
+          value={this.state.multiline}
+          onValueChange={(value) => this.setState({multiline: value})}
+        />
+        <Text>TextInput:</Text>
+        <TextInput
+          multiline={this.state.multiline}
+          style={[style, {width: this.state.width + '%'}]}
+          onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
+          {...props}
+        />
+        <Text>Plain text value representation:</Text>
+        <Text>{this.state.text}</Text>
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
     fontSize: 16,
-    padding: 4,
-    marginBottom: 10,
   },
   eventLabel: {
     margin: 3,
@@ -347,7 +384,6 @@ var styles = StyleSheet.create({
   },
   singleLine: {
     fontSize: 16,
-    padding: 4,
   },
   singleLineWithHeightTextInput: {
     height: 30,
@@ -367,7 +403,8 @@ exports.examples = [
       return (
         <TextInput
           autoFocus={true}
-          style={styles.singleLine}
+          multiline={true}
+          style={styles.input}
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
@@ -444,11 +481,11 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element { return <TextEventsExample />; },
+    render: function(): React.Element<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colors and text inputs',
@@ -491,8 +528,7 @@ exports.examples = [
           <TextInput
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
-            style={styles.singleLine}>
-          </TextInput>
+            style={styles.singleLine} />
         </View>
       );
     }
@@ -617,11 +653,22 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <AutoExpandingTextInput
-            placeholder="height increases with content"
+          <AutogrowingTextInputExample
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
-          />
+            multiline={true}
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}
+          >
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
         </View>
       );
     }
@@ -697,7 +744,7 @@ exports.examples = [
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element { return <ToggleDefaultPaddingExample />; },
+    render: function(): React.Element<any> { return <ToggleDefaultPaddingExample />; },
   },
   {
     title: 'Text selection & cursor placement',
@@ -711,7 +758,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

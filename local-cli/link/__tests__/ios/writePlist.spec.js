@@ -1,12 +1,22 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+javascript_foundation
+ */
+
 'use strict';
 
-jest.autoMockOff();
 jest.mock('fs');
 
 let plistPath = null;
 jest.mock('../../ios/getPlistPath', () => () => plistPath);
 
-const { readFileSync } = require.requireActual('fs')
+const { readFileSync } = require.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');
@@ -16,11 +26,7 @@ const writePlist = require('../../ios/writePlist');
 const projectPath = path.join(__dirname, '../../__fixtures__/project.pbxproj');
 const infoPlistPath = path.join(__dirname, '../../__fixtures__/Info.plist');
 
-fs.__setMockFilesystem({
-  'Basic': {
-    'project.pbxproj': readFileSync(projectPath).toString(),
-  }
-});
+fs.readFileSync = jest.fn(() => readFileSync(projectPath).toString());
 
 const project = xcode.project('/Basic/project.pbxproj');
 

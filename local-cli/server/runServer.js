@@ -12,36 +12,59 @@
 
 'use strict';
 
-const InspectorProxy = require('./util/inspectorProxy.js');
-const ReactPackager = require('../../packager/react-packager');
+require('../../setupBabel')();
 
-const attachHMRServer = require('./util/attachHMRServer');
+const Metro = require('metro');
+
+const HmrServer = require('metro/src/HmrServer');
+
+const {Terminal} = require('metro-core');
+
+const attachWebsocketServer = require('./util/attachWebsocketServer');
+const compression = require('compression');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
-const defaultSourceExts = require('../../packager/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/defaults')
-  .providesModuleNodeModules;
+const defaultAssetExts = Metro.defaults.assetExts;
+const defaultSourceExts = Metro.defaults.sourceExts;
+const defaultPlatforms = Metro.defaults.platforms;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const defaultProvidesModuleNodeModules =
+  Metro.defaults.providesModuleNodeModules;
+const errorhandler = require('errorhandler');
+const fs = require('fs');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
+const https = require('https');
 const indexPageMiddleware = require('./middleware/indexPage');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
+const morgan = require('morgan');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
+const serveStatic = require('serve-static');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-import type {ConfigT} from '../util/Config';
-import type {Reporter} from '../../packager/src/lib/reporting';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const TransformCaching = require('metro/src/lib/TransformCaching');
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
+import type {ConfigT} from 'metro';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+import type {Reporter} from 'metro/src/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
   +host: string,
+  +maxWorkers: number,
   +nonPersistent: boolean,
   +platforms: $ReadOnlyArray<string>,
   +port: number,
@@ -61,13 +84,20 @@ function runServer(
 ) {
   var wsProxy = null;
   var ms = null;
-  const packagerServer = getPackagerServer(args, config);
-  startedCallback(packagerServer._reporter);
 
-  const inspectorProxy = new InspectorProxy();
+  const terminal = new Terminal(process.stdout);
+  const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
+  const reporter = new ReporterImpl(terminal);
+  const packagerServer = getPackagerServer(args, config, reporter);
+  startedCallback(reporter);
+
   const app = connect()
     .use(loadRawBodyMiddleware)
-    .use(connect.compress())
+    .use(compression())
+    .use(
+      '/debugger-ui',
+      serveStatic(path.join(__dirname, 'util', 'debugger-ui')),
+    )
     .use(
       getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
     )
@@ -76,86 +106,101 @@ function runServer(
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
-    .use(
-      unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)),
-    )
     .use(packagerServer.processRequest.bind(packagerServer));
 
-  args.projectRoots.forEach(root => app.use(connect.static(root)));
+  args.projectRoots.forEach(root => app.use(serveStatic(root)));
 
-  app.use(connect.logger()).use(connect.errorHandler());
+  app.use(morgan('combined')).use(errorhandler());
 
-  const serverInstance = http
-    .createServer(app)
-    .listen(args.port, args.host, 511, function() {
-      attachHMRServer({
-        httpServer: serverInstance,
-        path: '/hot',
-        packagerServer,
-      });
+  if (args.https && (!args.key || !args.cert)) {
+    throw new Error('Cannot use https without specifying key and cert options');
+  }
 
-      wsProxy = webSocketProxy.attachToServer(
-        serverInstance,
-        '/debugger-proxy',
-      );
-      ms = messageSocket.attachToServer(serverInstance, '/message');
-      inspectorProxy.attachToServer(serverInstance, '/inspector');
-      readyCallback(packagerServer._reporter);
+  const serverInstance = args.https
+    ? https.createServer(
+        {
+          key: fs.readFileSync(args.key),
+          cert: fs.readFileSync(args.cert),
+        },
+        app,
+      )
+    : http.createServer(app);
+
+  serverInstance.listen(args.port, args.host, 511, function() {
+    attachWebsocketServer({
+      httpServer: serverInstance,
+      path: '/hot',
+      websocketServer: new HmrServer(packagerServer, reporter),
     });
+
+    wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+    ms = messageSocket.attachToServer(serverInstance, '/message');
+    readyCallback(reporter);
+  });
   // Disable any kind of automatic timeout behavior for incoming
   // requests in case it takes the packager more than the default
   // timeout of 120 seconds to respond to a request.
   serverInstance.timeout = 0;
 }
 
-function getPackagerServer(args, config) {
+function getReporterImpl(customLogReporterPath: ?string) {
+  if (customLogReporterPath == null) {
+    return require('metro/src/lib/TerminalReporter');
+  }
+  try {
+    // First we let require resolve it, so we can require packages in node_modules
+    // as expected. eg: require('my-package/reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(customLogReporterPath);
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+    // If that doesn't work, then we next try relative to the cwd, eg:
+    // require('./reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(path.resolve(customLogReporterPath));
+  }
+}
+
+function getPackagerServer(args, config, reporter) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-        ? config.getTransformModulePath()
-        : undefined;
+    : config.getTransformModulePath();
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
-  let LogReporter;
-  if (args.customLogReporterPath) {
-    try {
-      // First we let require resolve it, so we can require packages in node_modules
-      // as expected. eg: require('my-package/reporter');
-      /* $FlowFixMe: can't type dynamic require */
-      LogReporter = require(args.customLogReporterPath);
-    } catch (e) {
-      // If that doesn't work, then we next try relative to the cwd, eg:
-      // require('./reporter');
-      /* $FlowFixMe: can't type dynamic require */
-      LogReporter = require(path.resolve(args.customLogReporterPath));
-    }
-  } else {
-    LogReporter = require('../../packager/src/lib/TerminalReporter');
-  }
-
-  return ReactPackager.createServer({
+  return Metro.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
+    getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
+    globalTransformCache: null,
     hasteImpl: config.hasteImpl,
+    maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
-    postProcessModules: config.postProcessModules,
     postMinifyProcess: config.postMinifyProcess,
+    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
+    postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
-    reporter: new LogReporter(),
+    reporter,
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
+    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
+    workerPath: config.getWorkerPath(),
   });
 }
 

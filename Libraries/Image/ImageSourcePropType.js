@@ -8,10 +8,11 @@
  *
  * @providesModule ImageSourcePropType
  * @no-flow
+ * @format
  */
 'use strict';
 
-const {PropTypes} = require('React');
+const PropTypes = require('prop-types');
 
 const ImageURISourcePropType = PropTypes.shape({
   /**

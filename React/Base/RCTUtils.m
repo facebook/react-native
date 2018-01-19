@@ -264,14 +264,29 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 }
 
+static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
+{
+  // The solution was borrowed from a post by Ben Alpert:
+  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
+  if (RCTIsMainQueue()) {
+    dispatch_once(onceToken, block);
+  } else {
+    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        dispatch_once(onceToken, block);
+      });
+    }
+  }
+}
+
 CGFloat RCTScreenScale()
 {
-  static CGFloat scale;
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      scale = [UIScreen mainScreen].scale;
-    });
+  static CGFloat scale;
+
+  RCTUnsafeExecuteOnMainQueueOnceSync(&onceToken, ^{
+    scale = [UIScreen mainScreen].scale;
   });
 
   return scale;
@@ -397,7 +412,7 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%zd", error.domain.uppercaseString, error.code];
+  NSString *codeWithDomain = [NSString stringWithFormat:@"E%@%lld", error.domain.uppercaseString, (long long)error.code];
   return RCTJSErrorFromCodeMessageAndNSError(codeWithDomain,
                                              error.localizedDescription,
                                              error);
@@ -581,34 +596,64 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   return output;
 }
 
-NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
+static NSString *RCTRelativePathForURL(NSString *basePath, NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path
     return nil;
   }
-  NSString *path = URL.path;
-  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
-  if (![path hasPrefix:bundlePath]) {
+  NSString *path = [NSString stringWithUTF8String:[URL fileSystemRepresentation]];
+  if (![path hasPrefix:basePath]) {
     // Not a bundle-relative file
     return nil;
   }
-  path = [path substringFromIndex:bundlePath.length];
+  path = [path substringFromIndex:basePath.length];
   if ([path hasPrefix:@"/"]) {
     path = [path substringFromIndex:1];
   }
   return path;
 }
 
+NSString *__nullable RCTLibraryPath(void)
+{
+    static NSString *libraryPath = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+    });
+    return libraryPath;
+}
+
+NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL([[NSBundle mainBundle] resourcePath], URL);
+
+}
+
+NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTLibraryPath(), URL);
+}
+
+static BOOL RCTIsImageAssetsPath(NSString *path)
+{
+  NSString *extension = [path pathExtension];
+  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+}
+
+BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTBundlePathForURL(imageURL));
+}
+
+BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTLibraryPathForURL(imageURL));
+}
+
 BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
-  NSString *name = RCTBundlePathForURL(imageURL);
-  if (!name) {
-    return NO;
-  }
-
-  NSString *extension = [name pathExtension];
-  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return RCTIsBundleAssetURL(imageURL) || RCTIsLibraryAssetURL(imageURL);
 }
 
 static NSString *bundleName(NSBundle *bundle)
@@ -643,10 +688,6 @@ static NSBundle *bundleForPath(NSString *key)
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
-  if (!RCTIsLocalAssetURL(imageURL)) {
-    return nil;
-  }
-
   NSString *imageName = RCTBundlePathForURL(imageURL);
 
   NSBundle *bundle = nil;
@@ -665,6 +706,17 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     image = [UIImage imageNamed:imageName];
   }
 
+  if (!image) {
+    // Attempt to load from the file system
+    NSData *fileData;
+    if (imageURL.pathExtension.length == 0) {
+      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
+    } else {
+      fileData = [NSData dataWithContentsOfURL:imageURL];
+    }
+    image = [UIImage imageWithData:fileData];
+  }
+
   if (!image && !bundle) {
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
@@ -680,7 +732,6 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       }
     }
   }
-
   return image;
 }
 

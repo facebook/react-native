@@ -1,9 +1,15 @@
 #!/bin/bash
 set -e
 
-# Only set when not running in an Xcode context
-if [ -z "$ACTION" ] || [ -z "$BUILD_DIR" ]; then
-  export CC="$(xcrun -find -sdk iphoneos cc) -arch armv7 -isysroot $(xcrun -sdk iphoneos --show-sdk-path)"
+PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
+CURRENT_ARCH="${CURRENT_ARCH:-armv7}"
+
+export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+export CXX="$CC"
+
+# Remove automake symlink if it exists
+if [ -h "test-driver" ]; then
+    rm test-driver
 fi
 
 ./configure --host arm-apple-darwin
@@ -22,5 +28,14 @@ cat << EOF >> src/config.h
 #undef HAVE_SYSCALL_H
 #undef HAVE_SYS_SYSCALL_H
 #undef OS_MACOSX
+#endif
+
+/* Special configuration for ucontext */
+#undef HAVE_UCONTEXT_H
+#undef PC_FROM_UCONTEXT
+#if defined(__x86_64__)
+#define PC_FROM_UCONTEXT uc_mcontext->__ss.__rip
+#elif defined(__i386__)
+#define PC_FROM_UCONTEXT uc_mcontext->__ss.__eip
 #endif
 EOF
