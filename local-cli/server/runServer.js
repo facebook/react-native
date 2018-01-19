@@ -131,7 +131,7 @@ function runServer(
     attachWebsocketServer({
       httpServer: serverInstance,
       path: '/hot',
-      websocketServer: new HmrServer(packagerServer, reporter),
+      websocketServer: new HmrServer(packagerServer),
     });
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
