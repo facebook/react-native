@@ -212,7 +212,6 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - run: *run-js-tests
       - run: *run-lint-checks
       - run: *run-flow-checks
 
