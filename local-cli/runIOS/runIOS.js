@@ -271,6 +271,10 @@ module.exports = {
     desc: "Run on a connected device, e.g. Max's iPhone",
     cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
+  {
+    desc: 'Run on the AppleTV simulator',
+    cmd: 'react-native run-ios --simulator "Apple TV"  --scheme "helloworld-tvOS"',
+  }
   ],
   options: [{
     command: '--simulator [string]',
