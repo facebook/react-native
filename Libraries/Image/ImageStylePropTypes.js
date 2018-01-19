@@ -8,6 +8,7 @@
  *
  * @providesModule ImageStylePropTypes
  * @flow
+ * @format
  */
 'use strict';
 
@@ -51,7 +52,7 @@ var ImageStylePropTypes = {
    * http://frescolib.org/docs/rounded-corners-and-circles.html
    *
    * @platform android
-  */
+   */
   overlayColor: ReactPropTypes.string,
 
   // Android-Specific styles

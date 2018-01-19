@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.modal;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -24,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -36,6 +31,8 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -171,8 +168,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   @Override
   public void onHostPause() {
-    // We dismiss the dialog and reconstitute it onHostResume
-    dismiss();
+    // do nothing
   }
 
   @Override
@@ -184,6 +180,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   @VisibleForTesting
   public @Nullable Dialog getDialog() {
     return mDialog;
+  }
+
+  private @Nullable Activity getCurrentActivity() {
+    return ((ReactContext) getContext()).getCurrentActivity();
   }
 
   /**
@@ -215,6 +215,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
+
     mDialog.setContentView(getContentView());
     updateProperties();
 
@@ -237,7 +238,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             } else {
               // We redirect the rest of the key events to the current activity, since the activity
               // expects to receive those events and react to them, ie. in the case of the dev menu
-              Activity currentActivity = getCurrentActivity();
+              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
               if (currentActivity != null) {
                 return currentActivity.onKeyUp(keyCode, event);
               }
@@ -254,10 +255,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (currentActivity == null || !currentActivity.isFinishing()) {
       mDialog.show();
     }
-  }
-
-  private @Nullable Activity getCurrentActivity() {
-    return ((ReactContext) getContext()).getCurrentActivity();
   }
 
   /**
@@ -315,16 +312,25 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
         final int viewTag = getChildAt(0).getId();
-        ReactContext reactContext = (ReactContext) getContext();
+        ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactContext) {
             @Override
             public void runGuarded() {
-              ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
+              (getReactContext()).getNativeModule(UIManagerModule.class)
                 .updateNodeSize(viewTag, w, h);
             }
           });
       }
+    }
+
+    @Override
+    public void handleException(Throwable t) {
+      getReactContext().handleException(new RuntimeException(t));
+    }
+
+    private ReactContext getReactContext() {
+      return (ReactContext) getContext();
     }
 
     @Override
@@ -354,7 +360,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
 
     private EventDispatcher getEventDispatcher() {
-      ReactContext reactContext = (ReactContext) getContext();
+      ReactContext reactContext = getReactContext();
       return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
   }

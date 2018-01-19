@@ -54,10 +54,10 @@ describe('MessageQueue', function() {
   });
 
   it('should call a local function with the function name', () => {
-    MessageQueueTestModule.testHook2 = jasmine.createSpy();
-    expect(MessageQueueTestModule.testHook2.calls.count()).toEqual(0);
+    MessageQueueTestModule.testHook2 = jest.fn();
+    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(0);
     queue.__callFunction('MessageQueueTestModule', 'testHook2', [2]);
-    expect(MessageQueueTestModule.testHook2.calls.count()).toEqual(1);
+    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(1);
   });
 
   it('should store callbacks', () => {

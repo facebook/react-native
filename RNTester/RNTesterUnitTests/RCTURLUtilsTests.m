@@ -90,4 +90,17 @@
   XCTAssertNil(result);
 }
 
+- (void)testIsLocalAssetsURLParam
+{
+  NSString *libraryAssetsPath = [RCTLibraryPath() stringByAppendingPathComponent:@"assets/foo.png"];
+  NSURL *libraryAssetsURL = [NSURL fileURLWithPath:libraryAssetsPath];
+  XCTAssertTrue(RCTIsLocalAssetURL(libraryAssetsURL));
+  NSString *bundleAssetsPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets/foo.png"];
+  NSURL *bundleAssetsURL = [NSURL fileURLWithPath:bundleAssetsPath];
+  XCTAssertTrue(RCTIsLocalAssetURL(bundleAssetsURL));
+  NSString *otherAssetsPath = @"/assets/foo.png";
+  NSURL *otherAssetsURL = [NSURL fileURLWithPath:otherAssetsPath];
+  XCTAssertFalse(RCTIsLocalAssetURL(otherAssetsURL));
+}
+
 @end
