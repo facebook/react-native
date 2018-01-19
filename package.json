@@ -198,6 +198,7 @@
     "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
+    "uuid": "^3.1.0",
     "whatwg-fetch": "^1.0.0",
     "ws": "^1.1.0",
     "xcode": "^0.9.1",
