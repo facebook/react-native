@@ -304,13 +304,13 @@ public class ReactContext extends ContextWrapper {
    * {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} if one exists, rethrowing
    * otherwise.
    */
-  public void handleException(RuntimeException e) {
+  public void handleException(Exception e) {
     if (mCatalystInstance != null &&
         !mCatalystInstance.isDestroyed() &&
         mNativeModuleCallExceptionHandler != null) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
-      throw e;
+      throw new RuntimeException(e);
     }
   }
 

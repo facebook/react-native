@@ -315,16 +315,25 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
         final int viewTag = getChildAt(0).getId();
-        ReactContext reactContext = (ReactContext) getContext();
+        ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactContext) {
             @Override
             public void runGuarded() {
-              ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
+              (getReactContext()).getNativeModule(UIManagerModule.class)
                 .updateNodeSize(viewTag, w, h);
             }
           });
       }
+    }
+
+    @Override
+    public void handleException(Exception e) {
+      getReactContext().handleException(e);
+    }
+
+    private ReactContext getReactContext() {
+      return (ReactContext) getContext();
     }
 
     @Override
@@ -354,7 +363,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
 
     private EventDispatcher getEventDispatcher() {
-      ReactContext reactContext = (ReactContext) getContext();
+      ReactContext reactContext = getReactContext();
       return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     }
   }

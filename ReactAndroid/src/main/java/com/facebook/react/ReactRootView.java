@@ -12,6 +12,7 @@ package com.facebook.react;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
@@ -199,6 +201,17 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  @Override
+  protected void dispatchDraw(Canvas canvas) {
+    try {
+      super.dispatchDraw(canvas);
+    } catch (StackOverflowError e) {
+      // Adding special exception management for StackOverflowError for logging purposes.
+      // This will be removed in the future.
+      handleException(new IllegalViewOperationException("StackOverflowError", e));
+    }
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -494,6 +507,15 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
+  }
+
+  @Override
+  public void handleException(Exception e) {
+    if (mReactInstanceManager != null && mReactInstanceManager.getCurrentReactContext() != null)  {
+      mReactInstanceManager.getCurrentReactContext().handleException(e);
+    } else {
+      throw new RuntimeException(e);
+    }
   }
 
   @Nullable
