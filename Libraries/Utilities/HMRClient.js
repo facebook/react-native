@@ -107,7 +107,7 @@ Error: ${e.message}`
             // evaluating code) but on Chrome we can simply use eval
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
-              : eval;
+              : eval; // eslint-disable-line no-eval
 
             injectFunction(code, sourceURLs[i]);
           });
@@ -121,7 +121,7 @@ Error: ${e.message}`
         }
         case 'error': {
           HMRLoadingView.hide();
-          throw new Error(data.body.type + ' ' + data.body.description);
+          throw new Error(`${data.body.type}: ${data.body.message}`);
         }
         default: {
           throw new Error(`Unexpected message: ${data}`);

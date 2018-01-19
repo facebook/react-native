@@ -32,7 +32,7 @@ RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load the JS bundle. The
- * `error` key can be used to determine the error that occured.
+ * `error` key can be used to determine the error that occurred.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
@@ -220,7 +220,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)requestReload __deprecated_msg("Call reload instead");
 
 /**
- * Says whether bridge has started recieving calls from javascript.
+ * Says whether bridge has started receiving calls from javascript.
  */
 - (BOOL)isBatchActive;
 

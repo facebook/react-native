@@ -11,7 +11,7 @@
  * @nolint
  */
 
-/* eslint-disable */
+/* eslint-disable consistent-this */
 
 /**
  * Creates an array from array like objects.

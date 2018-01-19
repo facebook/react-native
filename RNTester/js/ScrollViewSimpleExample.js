@@ -50,7 +50,7 @@ class ScrollViewSimpleExample extends React.Component<{}> {
       <ScrollView
         key={'scrollViewSnap'}
         horizontal
-        snapToInterval={210}
+        snapToInterval={210.0}
         pagingEnabled
       >
         {this.makeItems(NUM_ITEMS, [

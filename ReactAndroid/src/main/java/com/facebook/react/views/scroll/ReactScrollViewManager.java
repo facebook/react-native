@@ -10,6 +10,7 @@
 package com.facebook.react.views.scroll;
 
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.graphics.Color;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -33,6 +34,7 @@ import javax.annotation.Nullable;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@TargetApi(11)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
@@ -101,7 +103,7 @@ public class ReactScrollViewManager
    * @param scrollPerfTag
    */
   @ReactProp(name = "scrollPerfTag")
-  public void setScrollPerfTag(ReactScrollView view, String scrollPerfTag) {
+  public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
   }
 
@@ -194,8 +196,8 @@ public class ReactScrollViewManager
   }, customType = "Color")
   public void setBorderColor(ReactScrollView view, int index, Integer color) {
     float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
+        color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
@@ -214,12 +216,12 @@ public class ReactScrollViewManager
   }
 
   @Override
-  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+  public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
   }
 
-  public static Map createExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.builder()
+  public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
         .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
         .put(ScrollEventType.BEGIN_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollBeginDrag"))
         .put(ScrollEventType.END_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollEndDrag"))

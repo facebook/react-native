@@ -24,7 +24,7 @@ const SamplingProfiler = {
       }
     } catch (e) {
       console.log(
-        'Error occured when restarting Sampling Profiler: ' + e.toString());
+        'Error occurred when restarting Sampling Profiler: ' + e.toString());
       error = e.toString();
     }
 

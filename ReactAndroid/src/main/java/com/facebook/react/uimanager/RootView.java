@@ -21,4 +21,6 @@ public interface RootView {
    * from the child's onTouchIntercepted implementation.
    */
   void onChildStartedNativeGesture(MotionEvent androidEvent);
+
+  void handleException(Exception e);
 }

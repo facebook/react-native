@@ -28,7 +28,6 @@ YG_EXTERN_C_END
 
 extern const std::array<YGEdge, 4> trailing;
 extern const std::array<YGEdge, 4> leading;
-extern bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;

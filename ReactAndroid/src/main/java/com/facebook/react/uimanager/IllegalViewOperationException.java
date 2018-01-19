@@ -19,4 +19,8 @@ public class IllegalViewOperationException extends JSApplicationCausedNativeExce
   public IllegalViewOperationException(String msg) {
     super(msg);
   }
+
+  public IllegalViewOperationException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
 }
