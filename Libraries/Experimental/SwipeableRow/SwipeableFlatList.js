@@ -21,6 +21,7 @@ const SwipeableRow = require('SwipeableRow');
 const FlatList = require('FlatList');
 
 type SwipableListProps = {
+  preventSwipeRight: boolean,
   /**
    * To alert the user that swiping is possible, the first row can bounce
    * on component mount.
@@ -65,6 +66,8 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
   static propTypes = {
     ...FlatList.propTypes,
 
+    preventSwipeRight: PropTypes.bool.isRequired,
+
     /**
      * To alert the user that swiping is possible, the first row can bounce
      * on component mount.
@@ -81,6 +84,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
 
   static defaultProps = {
     ...FlatList.defaultProps,
+    preventSwipeRight: false,
     bounceFirstRowOnMount: true,
     renderQuickActions: () => null,
   };
@@ -103,6 +107,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
         }}
         onScroll={this._onScroll}
         renderItem={this._renderItem}
+        extraData={this.state.openRowKey}
       />
     );
   }
@@ -135,6 +140,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
 
     return (
       <SwipeableRow
+        preventSwipeRight={this.props.preventSwipeRight}
         slideoutView={slideoutView}
         isOpen={key === this.state.openRowKey}
         maxSwipeDistance={this._getMaxSwipeDistance(info)}
