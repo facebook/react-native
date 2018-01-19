@@ -17,6 +17,7 @@ const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 
 const processColor = require('processColor');
+const StatusBarOrientation = require('StatusBarOrientation');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
 
@@ -261,6 +262,19 @@ class StatusBar extends React.Component<{
     StatusBar._defaultProps.translucent = translucent;
     StatusBarManager.setTranslucent(translucent);
   }
+
+  /**
+   * Get the current orientation of the status bar (portrait, portraitUpsideDown, landscapeLeft, landscapeRight)
+   */
+  static getOrientation(): Promise<?string> {
+    if (Platform.OS !== 'ios') {
+      console.warn('`getOrientation` is only available on iOS');
+      return;
+    }
+    return StatusBarManager.getOrientation();
+  }
+
+  static orientation = StatusBarOrientation;
 
   static propTypes = {
     /**
