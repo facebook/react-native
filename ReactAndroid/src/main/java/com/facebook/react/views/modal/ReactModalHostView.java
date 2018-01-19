@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.modal;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -24,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -36,6 +31,8 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -328,8 +325,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
 
     @Override
-    public void handleException(Exception e) {
-      getReactContext().handleException(e);
+    public void handleException(Throwable t) {
+      getReactContext().handleException(new RuntimeException(t));
     }
 
     private ReactContext getReactContext() {

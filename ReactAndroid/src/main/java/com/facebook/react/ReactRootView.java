@@ -210,7 +210,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     } catch (StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
-      handleException(new IllegalViewOperationException("StackOverflowError", e));
+      handleException(e);
     }
   }
 
@@ -510,12 +510,19 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   @Override
-  public void handleException(Exception e) {
-    if (mReactInstanceManager != null && mReactInstanceManager.getCurrentReactContext() != null)  {
-      mReactInstanceManager.getCurrentReactContext().handleException(e);
-    } else {
-      throw new RuntimeException(e);
+  public void handleException(Throwable t) {
+    if (mReactInstanceManager == null
+      || mReactInstanceManager.getCurrentReactContext() == null) {
+        throw new RuntimeException(t);
     }
+
+    // Adding special exception management for StackOverflowError for logging purposes.
+    // This will be removed in the future.
+    Exception e = (t instanceof StackOverflowError) ?
+      new IllegalViewOperationException("StackOverflowException", this, t) :
+      t instanceof Exception ? (Exception) t : new RuntimeException(t);
+
+    mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
   @Nullable

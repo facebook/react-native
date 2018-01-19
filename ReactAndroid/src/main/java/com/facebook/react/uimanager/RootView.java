@@ -22,5 +22,5 @@ public interface RootView {
    */
   void onChildStartedNativeGesture(MotionEvent androidEvent);
 
-  void handleException(Exception e);
+  void handleException(Throwable t);
 }

@@ -667,12 +667,10 @@ public class ReactViewGroup extends ViewGroup implements
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
-      IllegalViewOperationException wrappedException =
-        new IllegalViewOperationException("StackOverflowError", e);
       if (rootView != null) {
-        rootView.handleException(wrappedException);
+        rootView.handleException(e);
       } else {
-        throw wrappedException;
+        throw e;
       }
     }
   }
