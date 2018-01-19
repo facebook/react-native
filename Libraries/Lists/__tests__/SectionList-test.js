@@ -8,6 +8,7 @@
  *
  *
  * @format
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -40,20 +41,23 @@ describe('SectionList', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         initialNumToRender={Infinity}
-        ItemSeparatorComponent={props =>
-          <defaultItemSeparator v={propStr(props)} />}
+        ItemSeparatorComponent={props => (
+          <defaultItemSeparator v={propStr(props)} />
+        )}
         ListEmptyComponent={props => <empty v={propStr(props)} />}
         ListFooterComponent={props => <footer v={propStr(props)} />}
         ListHeaderComponent={props => <header v={propStr(props)} />}
-        SectionSeparatorComponent={props =>
-          <sectionSeparator v={propStr(props)} />}
+        SectionSeparatorComponent={props => (
+          <sectionSeparator v={propStr(props)} />
+        )}
         sections={[
           {
             renderItem: props => <itemForSection1 v={propStr(props)} />,
             key: 's1',
             keyExtractor: (item, index) => item.id,
-            ItemSeparatorComponent: props =>
-              <itemSeparatorForSection1 v={propStr(props)} />,
+            ItemSeparatorComponent: props => (
+              <itemSeparatorForSection1 v={propStr(props)} />
+            ),
             data: [{id: 'i1s1'}, {id: 'i2s1'}],
           },
           {

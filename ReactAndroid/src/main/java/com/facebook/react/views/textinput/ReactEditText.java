@@ -19,6 +19,7 @@ import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.text.style.AbsoluteSizeSpan;
@@ -33,6 +34,8 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -115,23 +118,12 @@ public class ReactEditText extends EditText {
   // TODO: t6408636 verify if we should schedule a layout after a View does a requestLayout()
   @Override
   public boolean isLayoutRequested() {
-    // If we are watching and updating container height based on content size
-    // then we don't want to scroll right away. This isn't perfect -- you might
-    // want to limit the height the text input can grow to. Possible solution
-    // is to add another prop that determines whether we should scroll to end
-    // of text.
-    if (mContentSizeWatcher != null) {
-      return isMultiline();
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mContentSizeWatcher != null) {
-      mContentSizeWatcher.onLayout();
-    }
+    onContentSizeChange();
   }
 
   @Override
@@ -181,12 +173,15 @@ public class ReactEditText extends EditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    InputConnection connection = super.onCreateInputConnection(outAttrs);
+    ReactContext reactContext = (ReactContext) getContext();
+    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
+        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
+
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return connection;
+    return inputConnectionWrapper;
   }
 
   @Override
@@ -351,6 +346,11 @@ public class ReactEditText extends EditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
+    if( isSecureText() &&
+        TextUtils.equals(getText(), reactTextUpdate.getText())) {
+      return;
+    }
+
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
     if (mMostRecentEventCount < mNativeEventCount) {
@@ -366,7 +366,9 @@ public class ReactEditText extends EditText {
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
+
     getText().replace(0, length(), spannableStringBuilder);
+
     mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
@@ -444,6 +446,29 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private boolean isSecureText() {
+    return
+      (getInputType() &
+        (InputType.TYPE_NUMBER_VARIATION_PASSWORD |
+          InputType.TYPE_TEXT_VARIATION_PASSWORD))
+      != 0;
+  }
+
+  private void onContentSizeChange() {
+    if (mContentSizeWatcher != null) {
+      mContentSizeWatcher.onLayout();
+    }
+
+    setIntrinsicContentSize();
+  }
+
+  private void setIntrinsicContentSize() {
+    ReactContext reactContext = (ReactContext) getContext();
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+    uiManager.setViewLocalData(getId(), localData);
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
@@ -621,9 +646,7 @@ public class ReactEditText extends EditText {
         }
       }
 
-      if (mContentSizeWatcher != null) {
-        mContentSizeWatcher.onLayout();
-      }
+      onContentSizeChange();
     }
 
     @Override

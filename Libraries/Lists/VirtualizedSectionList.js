@@ -233,6 +233,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return {
       ...viewable,
       index: info.index,
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       key: keyExtractor(viewable.item, info.index),
       section: info.section,
     };
@@ -484,19 +487,21 @@ class ItemWithSeparator extends React.Component<
       section,
       separators: this._separators,
     });
-    const leadingSeparator =
-      LeadingSeparatorComponent &&
-      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />;
-    const separator =
-      SeparatorComponent &&
-      <SeparatorComponent {...this.state.separatorProps} />;
-    return leadingSeparator || separator
-      ? <View>
-          {leadingSeparator}
-          {element}
-          {separator}
-        </View>
-      : element;
+    const leadingSeparator = LeadingSeparatorComponent && (
+      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />
+    );
+    const separator = SeparatorComponent && (
+      <SeparatorComponent {...this.state.separatorProps} />
+    );
+    return leadingSeparator || separator ? (
+      <View>
+        {leadingSeparator}
+        {element}
+        {separator}
+      </View>
+    ) : (
+      element
+    );
   }
 }
 

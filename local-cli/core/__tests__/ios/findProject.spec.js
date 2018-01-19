@@ -7,53 +7,56 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @format
+ * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
+jest.mock('fs');
+
 const findProject = require('../../ios/findProject');
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const projects = require('../../__fixtures__/projects');
 const ios = require('../../__fixtures__/ios');
 
 describe('ios::findProject', () => {
   it('returns path to xcodeproj if found', () => {
-    mockFS(projects.flat);
-    expect(findProject('')).not.toBeNull();
+    fs.__setMockFilesystem(projects.flat);
+    expect(findProject('/')).not.toBeNull();
   });
 
   it('returns null if there are no projects', () => {
-    mockFS({testDir: projects});
-    expect(findProject('')).toBeNull();
+    fs.__setMockFilesystem({testDir: projects});
+    expect(findProject('/')).toBeNull();
   });
 
   it('returns ios project regardless of its name', () => {
-    mockFS({ios: ios.validTestName});
-    expect(findProject('')).not.toBeNull();
+    fs.__setMockFilesystem({ios: ios.validTestName});
+    expect(findProject('/')).not.toBeNull();
   });
 
   it('ignores node_modules', () => {
-    mockFS({node_modules: projects.flat});
-    expect(findProject('')).toBeNull();
+    fs.__setMockFilesystem({node_modules: projects.flat});
+    expect(findProject('/')).toBeNull();
   });
 
   it('ignores Pods', () => {
-    mockFS({Pods: projects.flat});
-    expect(findProject('')).toBeNull();
+    fs.__setMockFilesystem({Pods: projects.flat});
+    expect(findProject('/')).toBeNull();
   });
 
   it('ignores Pods inside `ios` folder', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       ios: {
         Pods: projects.flat,
         DemoApp: projects.flat.ios,
       },
     });
-    expect(findProject('')).toBe('ios/DemoApp/demoProject.xcodeproj');
+    expect(findProject('/')).toBe('ios/DemoApp/demoProject.xcodeproj');
   });
 
   it('ignores xcodeproj from example folders', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       examples: projects.flat,
       Examples: projects.flat,
       example: projects.flat,
@@ -61,11 +64,11 @@ describe('ios::findProject', () => {
       Zpp: projects.flat,
     });
 
-    expect(findProject('').toLowerCase()).not.toContain('example');
+    expect(findProject('/').toLowerCase()).not.toContain('example');
   });
 
   it('ignores xcodeproj from sample folders', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       samples: projects.flat,
       Samples: projects.flat,
       sample: projects.flat,
@@ -73,11 +76,11 @@ describe('ios::findProject', () => {
       Zpp: projects.flat,
     });
 
-    expect(findProject('').toLowerCase()).not.toContain('sample');
+    expect(findProject('/').toLowerCase()).not.toContain('sample');
   });
 
   it('ignores xcodeproj from test folders at any level', () => {
-    mockFS({
+    fs.__setMockFilesystem({
       test: projects.flat,
       IntegrationTests: projects.flat,
       tests: projects.flat,
@@ -87,10 +90,6 @@ describe('ios::findProject', () => {
       },
     });
 
-    expect(findProject('').toLowerCase()).not.toContain('test');
-  });
-
-  afterEach(() => {
-    mockFS.restore();
+    expect(findProject('/').toLowerCase()).not.toContain('test');
   });
 });

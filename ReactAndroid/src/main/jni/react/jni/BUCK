@@ -13,13 +13,14 @@ EXPORTED_HEADERS = [
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
+    "ReactMarker.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
     "WritableNativeArray.h",
     "WritableNativeMap.h",
 ]
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(

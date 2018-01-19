@@ -11,8 +11,6 @@
  * @nolint
  */
 
-/* eslint-disable strict */
-
 if (Number.EPSILON === undefined) {
   Object.defineProperty(Number, 'EPSILON', {
     value: Math.pow(2, -52),
@@ -29,7 +27,6 @@ if (Number.MIN_SAFE_INTEGER === undefined) {
   });
 }
 if (!Number.isNaN) {
-  // eslint-disable-next-line max-len
   // https://github.com/dherman/tc39-codex-wiki/blob/master/data/es6/number/index.md#polyfill-for-numberisnan
   const globalIsNaN = global.isNaN;
   Object.defineProperty(Number, 'isNaN', {

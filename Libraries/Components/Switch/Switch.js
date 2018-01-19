@@ -38,7 +38,6 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
 var Switch = createReactClass({
   displayName: 'Switch',
   propTypes: {

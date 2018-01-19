@@ -50,7 +50,11 @@
 // mixed usage of regular and custom JSC methods.
 // See https://gcc.gnu.org/onlinedocs/gcc-3.3/cpp/Pragmas.html for details
 #define jsc_pragma(x) _Pragma(#x)
+#ifndef NO_JSC_POISON
 #define jsc_poison(methods) jsc_pragma(GCC poison methods)
+#else
+#define jsc_poison(methods)
+#endif
 
 #else
 
@@ -187,9 +191,13 @@ jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
 jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
-#define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
-// jsc_poison(JSInspectorGetInstance)
+#define JSC_JSGlobalContextEnableDebugger(...) __jsc_wrapper(JSGlobalContextEnableDebugger, __VA_ARGS__)
+// no need to poison JSGlobalContextEnableDebugger because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSGlobalContextEnableDebugger)
+
+#define JSC_JSGlobalContextDisableDebugger(...) __jsc_wrapper(JSGlobalContextDisableDebugger, __VA_ARGS__)
+// no need to poison JSGlobalContextDisableDebugger because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSGlobalContextDisableDebugger)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)

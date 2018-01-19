@@ -1,3 +1,5 @@
+include_defs("xplat//configurations/buck/apple/flag_defs.bzl")
+
 include_defs("//ReactCommon/DEFS")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
@@ -7,7 +9,7 @@ CXX_LIBRARY_COMPILER_FLAGS = [
 
 if THIS_IS_FBOBJC:
   inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
-  CXX_LIBRARY_COMPILER_FLAGS += inherited_buck_flags.get_flag_value('compiler_flags')
+  CXX_LIBRARY_COMPILER_FLAGS += flags.get_flag_value(inherited_buck_flags, 'compiler_flags')
 
 rn_xplat_cxx_library(
     name = "module",
@@ -80,7 +82,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "JSCExecutor.h",
     "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
-    "JSIndexedRAMBundleRegistry.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
     "MethodCall.h",
@@ -144,6 +145,7 @@ rn_xplat_cxx_library(
         "xplat//fbsystrace:fbsystrace",
         "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
     ] + JSC_DEPS,
 )

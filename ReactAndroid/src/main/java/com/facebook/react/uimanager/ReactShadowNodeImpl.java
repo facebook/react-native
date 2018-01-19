@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
-
 package com.facebook.react.uimanager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
@@ -52,6 +51,7 @@ import javax.annotation.Nullable;
  * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
  * NativeViewHierarchyOptimizer} for more information.
  */
+@ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private int mReactTag;
@@ -192,9 +192,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       YogaNode childYogaNode = child.mYogaNode;
       if (childYogaNode == null) {
         throw new RuntimeException(
-          "Cannot add a child that doesn't have a YogaNode to a parent without a measure " +
-            "function! (Trying to add a '" + child.getClass().getSimpleName() + "' to a '" +
-            getClass().getSimpleName() + "')");
+            "Cannot add a child that doesn't have a YogaNode to a parent without a measure "
+                + "function! (Trying to add a '"
+                + child.getClass().getSimpleName()
+                + "' to a '"
+                + getClass().getSimpleName()
+                + "')");
       }
       mYogaNode.addChildAt(childYogaNode, i);
     }
@@ -336,10 +339,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
 
       boolean layoutHasChanged =
-          newScreenX != mScreenX ||
-          newScreenY != mScreenY ||
-          newScreenWidth != mScreenWidth ||
-          newScreenHeight != mScreenHeight;
+          newScreenX != mScreenX
+              || newScreenY != mScreenY
+              || newScreenWidth != mScreenWidth
+              || newScreenHeight != mScreenHeight;
 
       mScreenX = newScreenX;
       mScreenY = newScreenY;
@@ -497,7 +500,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     return mTotalNativeChildren;
   }
 
-
   @Override
   public boolean isDescendantOf(ReactShadowNodeImpl ancestorNode) {
     ReactShadowNodeImpl parentNode = getParent();
@@ -515,6 +517,18 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
     return isDescendant;
   }
+
+  /*
+   * In some cases we need a way to specify some environmental data to shadow node
+   * to improve layout (or do something similar), so {@code localData} serves these needs.
+   * For example, any stateful embedded native views may benefit from this.
+   * Have in mind that this data is not supposed to interfere with the state of
+   * the shadow node.
+   * Please respect one-directional data flow of React.
+   * Use  {@link ReactUIManagerModule#setViewLocalData} to set this property
+   * (to provide local/environmental data for a shadow node) from the main thread.
+   */
+  public void setLocalData(Object data) {}
 
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
@@ -540,7 +554,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    *
    * <p>In that case: getNativeOffsetForChild(Node 0) => 0 getNativeOffsetForChild(Node 1) => 1
    * getNativeOffsetForChild(Node 2) => 4 getNativeOffsetForChild(Node 3) => 4
-   * getNativeOffsetForChild(Node 4) => 6
+   *
+   * <p>getNativeOffsetForChild(Node 4) => 6
    */
   @Override
   public final int getNativeOffsetForChild(ReactShadowNodeImpl child) {
@@ -817,20 +832,20 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   private void updatePadding() {
     for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
-      if (spacingType == Spacing.LEFT ||
-          spacingType == Spacing.RIGHT ||
-          spacingType == Spacing.START ||
-          spacingType == Spacing.END) {
-        if (YogaConstants.isUndefined(mPadding[spacingType]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.HORIZONTAL]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
+      if (spacingType == Spacing.LEFT
+          || spacingType == Spacing.RIGHT
+          || spacingType == Spacing.START
+          || spacingType == Spacing.END) {
+        if (YogaConstants.isUndefined(mPadding[spacingType])
+            && YogaConstants.isUndefined(mPadding[Spacing.HORIZONTAL])
+            && YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
           mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
           continue;
         }
       } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
-        if (YogaConstants.isUndefined(mPadding[spacingType]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.VERTICAL]) &&
-            YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
+        if (YogaConstants.isUndefined(mPadding[spacingType])
+            && YogaConstants.isUndefined(mPadding[Spacing.VERTICAL])
+            && YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
           mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
           continue;
         }
@@ -881,11 +896,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
-    if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) &&
-        getChildCount() != 0) {
+    if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) && getChildCount() != 0) {
       throw new RuntimeException(
-        "Since a node with a measure function does not add any native yoga children, it's " +
-          "not safe to transition to/from having a measure function unless a node has no children");
+          "Since a node with a measure function does not add any native yoga children, it's "
+              + "not safe to transition to/from having a measure function unless a node has no children");
     }
     mYogaNode.setMeasureFunction(measureFunction);
   }
@@ -908,14 +922,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       result.append("__");
     }
 
-    result
-      .append(getClass().getSimpleName())
-      .append(" ");
+    result.append(getClass().getSimpleName()).append(" ");
     if (mYogaNode != null) {
-      result
-        .append(getLayoutWidth())
-        .append(",")
-        .append(getLayoutHeight());
+      result.append(getLayoutWidth()).append(",").append(getLayoutHeight());
     } else {
       result.append("(virtual node)");
     }

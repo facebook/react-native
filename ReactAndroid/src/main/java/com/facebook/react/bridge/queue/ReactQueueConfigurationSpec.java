@@ -25,21 +25,14 @@ public class ReactQueueConfigurationSpec {
 
   private static final long LEGACY_STACK_SIZE_BYTES = 2000000;
 
-  private final @Nullable MessageQueueThreadSpec mUIBackgroundQueueThreadSpec;
   private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
   private ReactQueueConfigurationSpec(
-    @Nullable MessageQueueThreadSpec uiBackgroundQueueThreadSpec,
     MessageQueueThreadSpec nativeModulesQueueThreadSpec,
     MessageQueueThreadSpec jsQueueThreadSpec) {
-    mUIBackgroundQueueThreadSpec = uiBackgroundQueueThreadSpec;
     mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
     mJSQueueThreadSpec = jsQueueThreadSpec;
-  }
-
-  public @Nullable MessageQueueThreadSpec getUIBackgroundQueueThreadSpec() {
-    return mUIBackgroundQueueThreadSpec;
   }
 
   public MessageQueueThreadSpec getNativeModulesQueueThreadSpec() {
@@ -64,31 +57,10 @@ public class ReactQueueConfigurationSpec {
         .build();
   }
 
-  public static ReactQueueConfigurationSpec createWithSeparateUIBackgroundThread() {
-    MessageQueueThreadSpec spec = Build.VERSION.SDK_INT < 21 ?
-      MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules", LEGACY_STACK_SIZE_BYTES) :
-      MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");
-    return builder()
-      .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("js"))
-      .setNativeModulesQueueThreadSpec(spec)
-      .setUIBackgroundQueueThreadSpec(
-        MessageQueueThreadSpec.newUIBackgroundTreadSpec("ui_background"))
-      .build();
-  }
-
   public static class Builder {
 
-    private @Nullable MessageQueueThreadSpec mUIBackgroundQueueSpec;
     private @Nullable MessageQueueThreadSpec mNativeModulesQueueSpec;
     private @Nullable MessageQueueThreadSpec mJSQueueSpec;
-
-    public Builder setUIBackgroundQueueThreadSpec(MessageQueueThreadSpec spec) {
-      Assertions.assertCondition(
-        mUIBackgroundQueueSpec == null,
-        "Setting UI background queue multiple times!");
-      mUIBackgroundQueueSpec = spec;
-      return this;
-    }
 
     public Builder setNativeModulesQueueThreadSpec(MessageQueueThreadSpec spec) {
       Assertions.assertCondition(
@@ -106,7 +78,6 @@ public class ReactQueueConfigurationSpec {
 
     public ReactQueueConfigurationSpec build() {
       return new ReactQueueConfigurationSpec(
-        mUIBackgroundQueueSpec,
         Assertions.assertNotNull(mNativeModulesQueueSpec),
         Assertions.assertNotNull(mJSQueueSpec));
     }

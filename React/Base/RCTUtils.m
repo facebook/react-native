@@ -596,34 +596,64 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   return output;
 }
 
-NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
+static NSString *RCTRelativePathForURL(NSString *basePath, NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path
     return nil;
   }
   NSString *path = [NSString stringWithUTF8String:[URL fileSystemRepresentation]];
-  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
-  if (![path hasPrefix:bundlePath]) {
+  if (![path hasPrefix:basePath]) {
     // Not a bundle-relative file
     return nil;
   }
-  path = [path substringFromIndex:bundlePath.length];
+  path = [path substringFromIndex:basePath.length];
   if ([path hasPrefix:@"/"]) {
     path = [path substringFromIndex:1];
   }
   return path;
 }
 
+NSString *__nullable RCTLibraryPath(void)
+{
+    static NSString *libraryPath = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+    });
+    return libraryPath;
+}
+
+NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL([[NSBundle mainBundle] resourcePath], URL);
+
+}
+
+NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTLibraryPath(), URL);
+}
+
+static BOOL RCTIsImageAssetsPath(NSString *path)
+{
+  NSString *extension = [path pathExtension];
+  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+}
+
+BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTBundlePathForURL(imageURL));
+}
+
+BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTLibraryPathForURL(imageURL));
+}
+
 BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
-  NSString *name = RCTBundlePathForURL(imageURL);
-  if (!name) {
-    return NO;
-  }
-
-  NSString *extension = [name pathExtension];
-  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return RCTIsBundleAssetURL(imageURL) || RCTIsLibraryAssetURL(imageURL);
 }
 
 static NSString *bundleName(NSBundle *bundle)

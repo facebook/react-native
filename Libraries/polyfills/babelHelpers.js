@@ -11,7 +11,7 @@
  * @nolint
  */
 
-/* eslint-disable */
+/* eslint-disable quotes, curly, no-proto, no-undef-init, dot-notation */
 
 // Created by running:
 // require('babel-core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray taggedTemplateLiteral toArray toConsumableArray '.split(' '))

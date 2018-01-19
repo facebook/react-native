@@ -68,7 +68,7 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
         assertEquals(-1, endEventIndex);
         endEventIndex = i;
       } else if (call.equals("move;2")) {
-        // this will happen more than once, let's just capture the last occurence
+        // this will happen more than once, let's just capture the last occurrence
         moveWithBothPointersEventIndex = i;
       }
     }

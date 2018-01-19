@@ -17,6 +17,76 @@ void ReadableNativeMap::mapException(const std::exception& ex) {
   }
 }
 
+local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
+  auto pairs = map_.items();
+  keys_ = folly::dynamic::array();
+  for (auto &pair : pairs) {
+    keys_.value().push_back(pair.first.asString());
+  }
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jstring>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    jarray->setElement(i, make_jstring(keys_.value()[i].getString().c_str()).release());
+  }
+  return jarray;
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    std::string key = keys_.value()[i].getString().c_str();
+    const auto element = map_.at(key);
+    switch(element.type()) {
+      case folly::dynamic::Type::NULLT: {
+        jarray->setElement(i, nullptr);
+        break;
+      }
+      case folly::dynamic::Type::BOOL: {
+        jarray->
+          setElement(i,
+              JBoolean::valueOf(ReadableNativeMap::getBooleanKey(key)).release());
+        break;
+      }
+      case folly::dynamic::Type::INT64:
+      case folly::dynamic::Type::DOUBLE: {
+        jarray->setElement(i,
+          JDouble::valueOf(ReadableNativeMap::getDoubleKey(key)).release());
+        break;
+      }
+      case folly::dynamic::Type::STRING: {
+        jarray->
+          setElement(i,
+                     ReadableNativeMap::getStringKey(key).release());
+        break;
+      }
+      case folly::dynamic::Type::OBJECT: {
+        jarray->setElement(i,ReadableNativeMap::getMapKey(key).release());
+        break;
+      }
+      case folly::dynamic::Type::ARRAY: {
+        jarray->setElement(i,ReadableNativeMap::getArrayKey(key).release());
+        break;
+      }
+      default: {
+        jarray->setElement(i,nullptr);
+        break;
+      }
+    }
+  }
+  return jarray;
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    std::string key = keys_.value()[i].getString().c_str();
+    jarray->setElement(i, ReadableNativeMap::getValueType(key).release());
+  }
+  return jarray;
+}
+
 bool ReadableNativeMap::hasKey(const std::string& key) {
   return map_.find(key) != map_.items().end();
 }
@@ -46,14 +116,9 @@ double ReadableNativeMap::getDoubleKey(const std::string& key) {
 }
 
 jint ReadableNativeMap::getIntKey(const std::string& key) {
-  auto integer = getMapValue(key).getInt();
-  jint javaint = static_cast<jint>(integer);
-  if (integer != javaint) {
-    throwNewJavaException(
-      exceptions::gUnexpectedNativeTypeExceptionClass,
-      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
-  }
-  return javaint;
+  const folly::dynamic& val = getMapValue(key);
+  int64_t integer = convertDynamicIfIntegral(val);
+  return makeJIntOrThrow(integer);
 }
 
 local_ref<jstring> ReadableNativeMap::getStringKey(const std::string& key) {
@@ -104,15 +169,18 @@ local_ref<ReadableNativeMap::jhybridobject> ReadableNativeMap::createWithContent
 
 void ReadableNativeMap::registerNatives() {
   registerHybrid({
-      makeNativeMethod("hasKey", ReadableNativeMap::hasKey),
-      makeNativeMethod("isNull", ReadableNativeMap::isNull),
-      makeNativeMethod("getBoolean", ReadableNativeMap::getBooleanKey),
-      makeNativeMethod("getDouble", ReadableNativeMap::getDoubleKey),
-      makeNativeMethod("getInt", ReadableNativeMap::getIntKey),
-      makeNativeMethod("getString", ReadableNativeMap::getStringKey),
-      makeNativeMethod("getArray", ReadableNativeMap::getArrayKey),
-      makeNativeMethod("getMap", ReadableNativeMap::getMapKey),
-      makeNativeMethod("getType", ReadableNativeMap::getValueType),
+      makeNativeMethod("importKeys", ReadableNativeMap::importKeys),
+      makeNativeMethod("importValues", ReadableNativeMap::importValues),
+      makeNativeMethod("importTypes", ReadableNativeMap::importTypes),
+      makeNativeMethod("hasKeyNative", ReadableNativeMap::hasKey),
+      makeNativeMethod("isNullNative", ReadableNativeMap::isNull),
+      makeNativeMethod("getBooleanNative", ReadableNativeMap::getBooleanKey),
+      makeNativeMethod("getDoubleNative", ReadableNativeMap::getDoubleKey),
+      makeNativeMethod("getIntNative", ReadableNativeMap::getIntKey),
+      makeNativeMethod("getStringNative", ReadableNativeMap::getStringKey),
+      makeNativeMethod("getArrayNative", ReadableNativeMap::getArrayKey),
+      makeNativeMethod("getMapNative", ReadableNativeMap::getMapKey),
+      makeNativeMethod("getTypeNative", ReadableNativeMap::getValueType),
   });
 }
 
@@ -144,6 +212,30 @@ void ReadableNativeMapKeySetIterator::registerNatives() {
       makeNativeMethod("nextKey", ReadableNativeMapKeySetIterator::nextKey),
       makeNativeMethod("initHybrid", ReadableNativeMapKeySetIterator::initHybrid),
     });
+}
+
+jint makeJIntOrThrow(int64_t integer) {
+  jint javaint = static_cast<jint>(integer);
+  if (integer != javaint) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+  }
+  return javaint;
+}
+
+int64_t convertDynamicIfIntegral(const folly::dynamic& val) {
+  if (val.isInt()) {
+    return val.getInt();
+  }
+  double dbl = val.getDouble();
+  int64_t result = static_cast<int64_t>(dbl);
+  if (dbl != result) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Tried to read an int, but got a non-integral double: %f", dbl);
+  }
+  return result;
 }
 
 }  // namespace react

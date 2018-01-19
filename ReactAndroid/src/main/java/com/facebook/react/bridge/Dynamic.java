@@ -10,7 +10,7 @@
 package com.facebook.react.bridge;
 
 /**
- * Type representing a piece of data with unkown runtime type. Useful for allowing javascript to
+ * Type representing a piece of data with unknown runtime type. Useful for allowing javascript to
  * pass one of multiple types down to the native layer.
  */
 public interface Dynamic {

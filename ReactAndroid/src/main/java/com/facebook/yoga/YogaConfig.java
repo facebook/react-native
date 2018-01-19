@@ -15,6 +15,8 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class YogaConfig {
 
+  public static int SPACING_TYPE = 1;
+
   static {
     SoLoader.loadLibrary("yoga");
   }

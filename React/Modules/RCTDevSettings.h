@@ -38,6 +38,7 @@
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
 @property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
+@property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
@@ -93,9 +94,7 @@
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
 #if RCT_DEV
-
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name;
-
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
 #endif
 
 @end

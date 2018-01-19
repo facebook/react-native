@@ -26,7 +26,7 @@ module.exports = function makeCommand(command) {
 
     commandProcess.on('close', function prelink(code) {
       if (code) {
-        throw new Error(`Error occured during executing "${command}" command`);
+        throw new Error(`Error occurred during executing "${command}" command`);
       }
 
       cb();

@@ -233,21 +233,38 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
+    int numericTypeFlags =
+        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+        InputType.TYPE_NUMBER_FLAG_SIGNED;
+    int emailTypeFlags = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+    int passwordVisibilityFlag = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
+        ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
+    int generalKeyboardTypeFlags = numericTypeFlags |
+        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
+        InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE |
+        passwordVisibilityFlag;
 
     mManager.updateProperties(view, buildStyles());
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "text"));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "numeric"));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isNotZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numericTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "email-address"));
-    assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS).isNotZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(emailTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "phone-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_PHONE);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "visible-password"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag);
 
     mManager.updateProperties(view, buildStyles("keyboardType", null));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
   }
 
   @Test

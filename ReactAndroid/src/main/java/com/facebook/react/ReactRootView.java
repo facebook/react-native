@@ -12,6 +12,7 @@ package com.facebook.react;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
@@ -57,9 +59,9 @@ import javax.annotation.Nullable;
  * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
  * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
  * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular touch event
+ * intercepting it. In case when no child view is interested in handling some particular touch event,
  * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
- * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
 public class ReactRootView extends SizeMonitoringFrameLayout
@@ -87,6 +89,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+  private @Nullable Runnable mJSEntryPoint;
 
   public ReactRootView(Context context) {
     super(context);
@@ -198,6 +201,17 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  @Override
+  protected void dispatchDraw(Canvas canvas) {
+    try {
+      super.dispatchDraw(canvas);
+    } catch (StackOverflowError e) {
+      // Adding special exception management for StackOverflowError for logging purposes.
+      // This will be removed in the future.
+      handleException(e);
+    }
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -330,7 +344,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
     if (reactApplicationContext != null) {
-      reactApplicationContext.runUIBackgroundRunnable(
+      reactApplicationContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactApplicationContext) {
             @Override
             public void runGuarded() {
@@ -379,7 +393,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
     if (getRootViewTag() != 0) {
-      runApplication();
+      invokeJSEntryPoint();
     }
   }
 
@@ -387,34 +401,61 @@ public class ReactRootView extends SizeMonitoringFrameLayout
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /* package */ void runApplication() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
-    try {
-      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
-        return;
-      }
-
-      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-      if (reactContext == null) {
-        return;
-      }
-
-      CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-
-      WritableNativeMap appParams = new WritableNativeMap();
-      appParams.putDouble("rootTag", getRootViewTag());
-      @Nullable Bundle appProperties = getAppProperties();
-      if (appProperties != null) {
-        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-      }
-
-      mShouldLogContentAppeared = true;
-
-      String jsAppModuleName = getJSModuleName();
-      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+  /*package */ void invokeJSEntryPoint() {
+    if (mJSEntryPoint == null) {
+      defaultJSEntryPoint();
+    } else {
+      mJSEntryPoint.run();
     }
+  }
+
+  /**
+   * Set a custom entry point for invoking JS. By default, this is AppRegistry.runApplication
+   * @param jsEntryPoint
+   */
+  public void setJSEntryPoint(Runnable jsEntryPoint) {
+    mJSEntryPoint = jsEntryPoint;
+  }
+
+  public void invokeDefaultJSEntryPoint(@Nullable Bundle appProperties) {
+    UiThreadUtil.assertOnUiThread();
+    if (appProperties != null) {
+      mAppProperties = appProperties;
+    }
+    defaultJSEntryPoint();
+  }
+
+  /**
+   * Calls the default entry point into JS which is AppRegistry.runApplication()
+   */
+  private void defaultJSEntryPoint() {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+      try {
+        if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+          return;
+        }
+
+        ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+        if (reactContext == null) {
+          return;
+        }
+
+        CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+        WritableNativeMap appParams = new WritableNativeMap();
+        appParams.putDouble("rootTag", getRootViewTag());
+        @Nullable Bundle appProperties = getAppProperties();
+        if (appProperties != null) {
+          appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+        }
+
+        mShouldLogContentAppeared = true;
+
+        String jsAppModuleName = getJSModuleName();
+        catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
   }
 
   /**
@@ -466,6 +507,27 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
+  }
+
+  @Override
+  public void handleException(Throwable t) {
+    if (mReactInstanceManager == null
+      || mReactInstanceManager.getCurrentReactContext() == null) {
+        throw new RuntimeException(t);
+    }
+
+    // Adding special exception management for StackOverflowError for logging purposes.
+    // This will be removed in the future.
+    Exception e = (t instanceof StackOverflowError) ?
+      new IllegalViewOperationException("StackOverflowException", this, t) :
+      t instanceof Exception ? (Exception) t : new RuntimeException(t);
+
+    mReactInstanceManager.getCurrentReactContext().handleException(e);
+  }
+
+  @Nullable
+  public ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {

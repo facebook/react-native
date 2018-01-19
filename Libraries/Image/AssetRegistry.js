@@ -8,9 +8,9 @@
  *
  * @providesModule AssetRegistry
  * @flow
+ * @format
  */
 'use strict';
-
 
 export type PackagerAsset = {
   +__packager_asset: boolean,
@@ -24,7 +24,6 @@ export type PackagerAsset = {
   +type: string,
 };
 
-
 var assets: Array<PackagerAsset> = [];
 
 function registerAsset(asset: PackagerAsset): number {
@@ -37,4 +36,4 @@ function getAssetByID(assetId: number): PackagerAsset {
   return assets[assetId - 1];
 }
 
-module.exports = { registerAsset, getAssetByID };
+module.exports = {registerAsset, getAssetByID};

@@ -8,9 +8,9 @@
  */
 
 declare module 'fbjs/lib/invariant' {
-  declare function exports<T>(condition: any, message: string, ...args: Array<any>): void;
+  declare module.exports: <T>(condition: any, message: string, ...args: Array<any>) => void;
 }
 
 declare module 'fbjs/lib/nullthrows' {
-  declare function exports<T>(value: ?T): T;
+  declare module.exports: <T>(value: ?T) => T;
 }

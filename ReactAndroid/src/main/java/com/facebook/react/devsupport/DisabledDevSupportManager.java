@@ -9,6 +9,7 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import javax.annotation.Nullable;
 
 import java.io.File;
@@ -159,6 +160,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
   @Override
   public @Nullable StackFrame[] getLastErrorStack() {
     return null;
+  }
+
+  @Override
+  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {
+    
   }
 
   @Override

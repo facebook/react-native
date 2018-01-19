@@ -59,7 +59,9 @@ class URL {
     if (BLOB_URL_PREFIX === null) {
       throw new Error('Cannot create URL for blob!');
     }
-    return `${BLOB_URL_PREFIX}${blob.blobId}?offset=${blob.offset}&size=${blob.size}`;
+    return `${BLOB_URL_PREFIX}${blob.blobId}?offset=${blob.offset}&size=${
+      blob.size
+    }`;
   }
 
   static revokeObjectURL(url: string) {

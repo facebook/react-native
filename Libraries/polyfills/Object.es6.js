@@ -11,8 +11,6 @@
  * @nolint
  */
 
-/* eslint-disable strict */
-
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
 // This is only needed for iOS 8 and current Android JSC.

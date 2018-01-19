@@ -29,13 +29,14 @@ import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JSC_CALLS;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Process;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
@@ -65,7 +66,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
+import com.facebook.react.devsupport.ReactInstanceManagerDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -88,6 +89,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -111,31 +113,30 @@ import javax.annotation.Nullable;
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
-
   /**
    * Listener interface for react instance events.
    */
   public interface ReactInstanceEventListener {
+
     /**
      * Called when the react context is initialized (all modules registered). Always called on the
      * UI thread.
      */
     void onReactContextInitialized(ReactContext context);
   }
-
   private final List<ReactRootView> mAttachedRootViews = Collections.synchronizedList(
     new ArrayList<ReactRootView>());
 
   private volatile LifecycleState mLifecycleState;
+
   private @Nullable @ThreadConfined(UI) ReactContextInitParams mPendingReactContextInitParams;
   private volatile @Nullable Thread mCreateReactContextThread;
-
   /* accessed from any thread */
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
+
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on packager server */
   private final List<ReactPackage> mPackages;
-  private final List<CatalystInstanceImpl.PendingJSCall> mInitFunctions;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
@@ -148,44 +149,13 @@ public class ReactInstanceManager {
       Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
-  // Identifies whether the insance manager destroy function is in process,
+  // Identifies whether the instance manager destroy function is in process,
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
-  private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
-  private final boolean mLazyViewManagersEnabled;
-  private final boolean mUseSeparateUIBackgroundThread;
-  private final int mMinNumShakes;
-  private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
-
-  private final ReactInstanceDevCommandsHandler mDevInterface =
-      new ReactInstanceDevCommandsHandler() {
-
-        @Override
-        public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-          ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-        }
-
-        @Override
-        public void onJSBundleLoadedFromServer() {
-          ReactInstanceManager.this.onJSBundleLoadedFromServer();
-        }
-
-        @Override
-        public void toggleElementInspector() {
-          ReactInstanceManager.this.toggleElementInspector();
-        }
-      };
-
-  private final DefaultHardwareBackBtnHandler mBackBtnHandler =
-      new DefaultHardwareBackBtnHandler() {
-        @Override
-        public void invokeDefaultOnBackPressed() {
-          ReactInstanceManager.this.invokeDefaultOnBackPressed();
-        }
-      };
+  private final boolean mDelayViewManagerClassLoadsEnabled;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -230,11 +200,9 @@ public class ReactInstanceManager {
       @Nullable RedBoxHandler redBoxHandler,
       boolean lazyNativeModulesEnabled,
       boolean lazyViewManagersEnabled,
+      boolean delayViewManagerClassLoadsEnabled,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      boolean useSeparateUIBackgroundThread,
       int minNumShakes,
-      boolean splitPackagesEnabled,
-      boolean useOnlyDefaultPackages,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
@@ -248,59 +216,72 @@ public class ReactInstanceManager {
     mBundleLoader = bundleLoader;
     mJSMainModulePath = jsMainModulePath;
     mPackages = new ArrayList<>();
-    mInitFunctions = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
-    mDevSupportManager = DevSupportManagerFactory.create(
-        applicationContext,
-        mDevInterface,
-        mJSMainModulePath,
-        useDeveloperSupport,
-        redBoxHandler,
-        devBundleDownloadListener,
-        minNumShakes);
+    mDevSupportManager =
+        DevSupportManagerFactory.create(
+            applicationContext,
+            createDevHelperInterface(),
+            mJSMainModulePath,
+            useDeveloperSupport,
+            redBoxHandler,
+            devBundleDownloadListener,
+            minNumShakes);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
-    mUIImplementationProvider = uiImplementationProvider;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
-    mLazyViewManagersEnabled = lazyViewManagersEnabled;
-    mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
-    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-    mMinNumShakes = minNumShakes;
-
-    if (!splitPackagesEnabled) {
-      CoreModulesPackage coreModulesPackage =
-          new CoreModulesPackage(
-              this,
-              mBackBtnHandler,
-              mUIImplementationProvider,
-              mLazyViewManagersEnabled,
-              mMinTimeLeftInFrameForNonBatchedOperationMs);
-      mPackages.add(coreModulesPackage);
-    } else {
+    mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
+    synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
+      mPackages.add(
+          new CoreModulesPackage(
+              this,
+              new DefaultHardwareBackBtnHandler() {
+                @Override
+                public void invokeDefaultOnBackPressed() {
+                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+                }
+              },
+              uiImplementationProvider,
+              lazyViewManagersEnabled,
+              minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
       }
-      if (!useOnlyDefaultPackages) {
-        mPackages.add(
-            new ReactNativeCorePackage(
-                this,
-                mUIImplementationProvider,
-                mLazyViewManagersEnabled,
-                mMinTimeLeftInFrameForNonBatchedOperationMs));
-      }
+      mPackages.addAll(packages);
     }
-    mPackages.addAll(packages);
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
+  }
+
+  private ReactInstanceManagerDevHelper createDevHelperInterface() {
+    return new ReactInstanceManagerDevHelper() {
+      @Override
+      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
+        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
+      }
+
+      @Override
+      public void onJSBundleLoadedFromServer() {
+        ReactInstanceManager.this.onJSBundleLoadedFromServer();
+      }
+
+      @Override
+      public void toggleElementInspector() {
+        ReactInstanceManager.this.toggleElementInspector();
+      }
+
+      @Override
+      public @Nullable Activity getCurrentActivity() {
+        return ReactInstanceManager.this.mCurrentActivity;
+      }
+    };
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -352,9 +333,11 @@ public class ReactInstanceManager {
 
     // CatalystInstance hasn't been created, so add packages for later evaluation
     if (!hasStartedCreatingInitialContext()) {
-      for (ReactPackage p : packages) {
-        if (!mPackages.contains(p)) {
-          mPackages.add(p);
+      synchronized (mPackages) {
+        for (ReactPackage p : packages) {
+          if (!mPackages.contains(p)) {
+            mPackages.add(p);
+          }
         }
       }
       return;
@@ -369,28 +352,6 @@ public class ReactInstanceManager {
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, packages, true);
     catalystInstance.extendNativeModules(nativeModuleRegistry);
-  }
-
-  /**
-   * If the JavaScript bundle for this app requires initialization as part of bridge start up,
-   * register a function using its @param module and @param method and optional arguments.
-   */
-  public void registerInitFunction(String module, String method, @Nullable NativeArray arguments) {
-    CatalystInstanceImpl.PendingJSCall init =
-        new CatalystInstanceImpl.PendingJSCall(module, method, arguments);
-    synchronized (this) {
-      mInitFunctions.add(init);
-    }
-    ReactContext context = getCurrentReactContext();
-    CatalystInstance catalystInstance = context == null ? null : context.getCatalystInstance();
-    if (catalystInstance == null) {
-      return;
-    } else {
-      // CatalystInstance is only visible after running jsBundle, so these will be put on the native
-      // JS queue
-      // TODO T20546472 remove cast when catalystInstance and InstanceImpl are renamed/merged
-      ((CatalystInstanceImpl) catalystInstance).callFunction(init);
-    }
   }
 
   /**
@@ -416,8 +377,9 @@ public class ReactInstanceManager {
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport && mJSMainModulePath != null &&
-      !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
+    if (mUseDeveloperSupport
+        && mJSMainModulePath != null
+        && !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.
@@ -583,11 +545,40 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
+    mCurrentActivity = activity;
+
     if (mUseDeveloperSupport) {
-      mDevSupportManager.setDevSupportEnabled(true);
+      // Resume can be called from one of two different states:
+      // a) when activity was paused
+      // b) when activity has just been created
+      // In case of (a) the activity is attached to window and it is ok to add new views to it or
+      // open dialogs. In case of (b) there is often a slight delay before such a thing happens.
+      // As dev support manager can add views or open dialogs immediately after it gets enabled
+      // (e.g. in the case when JS bundle is being fetched in background) we only want to enable
+      // it once we know for sure the current activity is attached.
+
+      // We check if activity is attached to window by checking if decor view is attached
+      final View decorView = mCurrentActivity.getWindow().getDecorView();
+      if (!ViewCompat.isAttachedToWindow(decorView)) {
+        decorView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+          @Override
+          public void onViewAttachedToWindow(View v) {
+            // we can drop listener now that we know the view is attached
+            decorView.removeOnAttachStateChangeListener(this);
+            mDevSupportManager.setDevSupportEnabled(true);
+          }
+
+          @Override
+          public void onViewDetachedFromWindow(View v) {
+            // do nothing
+          }
+        });
+      } else {
+        // activity is attached to window, we can enable dev support immediately
+        mDevSupportManager.setDevSupportEnabled(true);
+      }
     }
 
-    mCurrentActivity = activity;
     moveToResumedLifecycleState(false);
   }
 
@@ -771,14 +762,65 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_VIEW_MANAGERS_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
     try {
-      List<ViewManager> allViewManagers = new ArrayList<>();
-      for (ReactPackage reactPackage : mPackages) {
-        allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+      synchronized (mPackages) {
+        List<ViewManager> allViewManagers = new ArrayList<>();
+        for (ReactPackage reactPackage : mPackages) {
+          allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+        }
+        return allViewManagers;
       }
-      return allViewManagers;
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_VIEW_MANAGERS_END);
+    }
+  }
+
+  public @Nullable ViewManager createViewManager(String viewManagerName) {
+    ReactApplicationContext context;
+    synchronized (mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
+    synchronized (mPackages) {
+      for (ReactPackage reactPackage : mPackages) {
+        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+          ViewManager viewManager =
+              ((ViewManagerOnDemandReactPackage) reactPackage)
+                  .createViewManager(context, viewManagerName, !mDelayViewManagerClassLoadsEnabled);
+          if (viewManager != null) {
+            return viewManager;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  public @Nullable List<String> getViewManagerNames() {
+    ReactApplicationContext context;
+    synchronized(mReactContextLock) {
+      context = (ReactApplicationContext) getCurrentReactContext();
+      if (context == null || !context.hasActiveCatalystInstance()) {
+        return null;
+      }
+    }
+
+    synchronized (mPackages) {
+      Set<String> uniqueNames = new HashSet<>();
+      for (ReactPackage reactPackage : mPackages) {
+        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+          List<String> names =
+              ((ViewManagerOnDemandReactPackage) reactPackage)
+                  .getViewManagerNames(context, !mDelayViewManagerClassLoadsEnabled);
+          if (names != null) {
+            uniqueNames.addAll(names);
+          }
+        }
+      }
+      return new ArrayList<>(uniqueNames);
     }
   }
 
@@ -805,10 +847,6 @@ public class ReactInstanceManager {
 
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
-  }
-
-  public int getMinNumShakes() {
-    return mMinNumShakes;
   }
 
   @ThreadConfined(UI)
@@ -972,15 +1010,6 @@ public class ReactInstanceManager {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           }
         });
-    if (mUseSeparateUIBackgroundThread) {
-      reactContext.runOnUiBackgroundQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-            }
-          });
-    }
   }
 
   private void attachRootViewToInstance(
@@ -991,7 +1020,7 @@ public class ReactInstanceManager {
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
-    rootView.runApplication();
+    rootView.invokeJSEntryPoint();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",
@@ -1057,9 +1086,7 @@ public class ReactInstanceManager {
       ? mNativeModuleCallExceptionHandler
       : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-      .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
-        ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
-        ReactQueueConfigurationSpec.createDefault())
+      .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
       .setJSExecutor(jsExecutor)
       .setRegistry(nativeModuleRegistry)
       .setJSBundleLoader(jsBundleLoader)
@@ -1079,18 +1106,11 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
-    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
+    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
     catalystInstance.runJSBundle();
-    // Transitions functions in the minitFunctions list to catalystInstance, to run after the bundle
-    // TODO T20546472
-    if (!mInitFunctions.isEmpty()) {
-      for (CatalystInstanceImpl.PendingJSCall function : mInitFunctions) {
-        ((CatalystInstanceImpl) catalystInstance).callFunction(function);
-      }
-    }
     reactContext.initializeWithInstance(catalystInstance);
 
     return reactContext;
@@ -1108,20 +1128,20 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 
     // TODO(6818138): Solve use-case of native modules overriding
-    for (ReactPackage reactPackage : packages) {
-      if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
-        continue;
-      }
-      Systrace.beginSection(
-        TRACE_TAG_REACT_JAVA_BRIDGE,
-        "createAndProcessCustomReactPackage");
-      try {
-        if (checkAndUpdatePackageMembership) {
-          mPackages.add(reactPackage);
+    synchronized (mPackages) {
+      for (ReactPackage reactPackage : packages) {
+        if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
+          continue;
         }
-        processPackage(reactPackage, nativeModuleRegistryBuilder);
-      } finally {
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
+        try {
+          if (checkAndUpdatePackageMembership) {
+            mPackages.add(reactPackage);
+          }
+          processPackage(reactPackage, nativeModuleRegistryBuilder);
+        } finally {
+          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        }
       }
     }
     ReactMarker.logMarker(PROCESS_PACKAGES_END);

@@ -8,9 +8,11 @@
  *
  * @providesModule requireNativeComponent
  * @flow
+ * @format
  */
 'use strict';
 
+const Platform = require('Platform');
 const ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
@@ -44,23 +46,72 @@ const warning = require('fbjs/lib/warning');
  * Common types are lined up with the appropriate prop differs with
  * `TypeToDifferMap`.  Non-scalar types not in the map default to `deepDiffer`.
  */
-import type { ComponentInterface } from 'verifyPropTypes';
+import type {ComponentInterface} from 'verifyPropTypes';
+
+let hasAttachedDefaultEventTypes: boolean = false;
 
 function requireNativeComponent(
   viewName: string,
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): React$ComponentType<any> | string {
+  function attachDefaultEventTypes(viewConfig: any) {
+    if (Platform.OS === 'android') {
+      // This is supported on Android platform only,
+      // as lazy view managers discovery is Android-specific.
+      if (UIManager.ViewManagerNames) {
+        // Lazy view managers enabled.
+        viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+      } else {
+        viewConfig.bubblingEventTypes = merge(
+          viewConfig.bubblingEventTypes,
+          UIManager.genericBubblingEventTypes,
+        );
+        viewConfig.directEventTypes = merge(
+          viewConfig.directEventTypes,
+          UIManager.genericDirectEventTypes,
+        );
+      }
+    }
+  }
+
+  function merge(destination: ?Object, source: ?Object): ?Object {
+    if (!source) {
+      return destination;
+    }
+    if (!destination) {
+      return source;
+    }
+
+    for (const key in source) {
+      if (!source.hasOwnProperty(key)) {
+        continue;
+      }
+
+      var sourceValue = source[key];
+      if (destination.hasOwnProperty(key)) {
+        const destinationValue = destination[key];
+        if (
+          typeof sourceValue === 'object' &&
+          typeof destinationValue === 'object'
+        ) {
+          sourceValue = merge(destinationValue, sourceValue);
+        }
+      }
+      destination[key] = sourceValue;
+    }
+    return destination;
+  }
+
   // Don't load the ViewConfig from UIManager until it's needed for rendering.
   // Lazy-loading this can help avoid Prepack deopts.
   function getViewConfig() {
     const viewConfig = UIManager[viewName];
 
     invariant(
-      viewConfig != null &&
-      !viewConfig.NativeProps != null,
+      viewConfig != null && !viewConfig.NativeProps != null,
       'Native component for "%s" does not exist',
-      viewName
+      viewName,
     );
 
     viewConfig.uiViewClassName = viewName;
@@ -73,7 +124,8 @@ function requireNativeComponent(
     // TODO (bvaughn) Revert this particular change any time after April 1
     if (componentInterface) {
       viewConfig.propTypes =
-        typeof componentInterface.__propTypesSecretDontUseThesePlease === 'object'
+        typeof componentInterface.__propTypesSecretDontUseThesePlease ===
+        'object'
           ? componentInterface.__propTypesSecretDontUseThesePlease
           : componentInterface.propTypes;
     } else {
@@ -81,17 +133,33 @@ function requireNativeComponent(
     }
 
     let baseModuleName = viewConfig.baseModuleName;
-    let nativeProps = { ...viewConfig.NativeProps };
+    let bubblingEventTypes = viewConfig.bubblingEventTypes;
+    let directEventTypes = viewConfig.directEventTypes;
+    let nativeProps = viewConfig.NativeProps;
     while (baseModuleName) {
       const baseModule = UIManager[baseModuleName];
       if (!baseModule) {
         warning(false, 'Base module "%s" does not exist', baseModuleName);
         baseModuleName = null;
       } else {
-        nativeProps = { ...nativeProps, ...baseModule.NativeProps };
+        bubblingEventTypes = {
+          ...baseModule.bubblingEventTypes,
+          ...bubblingEventTypes,
+        };
+        directEventTypes = {
+          ...baseModule.directEventTypes,
+          ...directEventTypes,
+        };
+        nativeProps = {
+          ...baseModule.NativeProps,
+          ...nativeProps,
+        };
         baseModuleName = baseModule.baseModuleName;
       }
     }
+
+    viewConfig.bubblingEventTypes = bubblingEventTypes;
+    viewConfig.directEventTypes = directEventTypes;
 
     for (const key in nativeProps) {
       let useAttribute = false;
@@ -120,11 +188,17 @@ function requireNativeComponent(
     viewConfig.validAttributes.style = ReactNativeStyleAttributes;
 
     if (__DEV__) {
-      componentInterface && verifyPropTypes(
-        componentInterface,
-        viewConfig,
-        extraConfig && extraConfig.nativeOnly
-      );
+      componentInterface &&
+        verifyPropTypes(
+          componentInterface,
+          viewConfig,
+          extraConfig && extraConfig.nativeOnly,
+        );
+    }
+
+    if (!hasAttachedDefaultEventTypes) {
+      attachDefaultEventTypes(viewConfig);
+      hasAttachedDefaultEventTypes = true;
     }
 
     // Register this view's event types with the ReactNative renderer.

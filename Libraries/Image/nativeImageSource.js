@@ -8,6 +8,7 @@
  *
  * @providesModule nativeImageSource
  * @flow
+ * @format
  */
 'use strict';
 
@@ -21,7 +22,7 @@ type SourceSpec = {
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything
   width: number,
   height: number,
-}
+};
 
 /**
  * In hybrid apps, use `nativeImageSource` to access images that are already available
@@ -40,7 +41,9 @@ type SourceSpec = {
 function nativeImageSource(spec: SourceSpec): Object {
   const uri = Platform.select(spec);
   if (!uri) {
-    console.warn(`No image name given for ${Platform.OS}: ${JSON.stringify(spec)}`);
+    console.warn(
+      `No image name given for ${Platform.OS}: ${JSON.stringify(spec)}`,
+    );
   }
 
   return {
