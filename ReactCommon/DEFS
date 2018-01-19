@@ -2,8 +2,7 @@
 
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
-  cxx_library(name = name)
-
+  cxx_library(name, **kwargs)
 # Helper for referring to an Android RN target
 def react_native_target(path):
   return '//ReactAndroid/src/main/' + path

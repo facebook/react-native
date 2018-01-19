@@ -144,7 +144,7 @@ function attachToServer(server, path) {
           });
           break;
         default:
-          throw `unkown method: ${message.method}`;
+          throw `unknown method: ${message.method}`;
       }
 
       clientWs.send(JSON.stringify({

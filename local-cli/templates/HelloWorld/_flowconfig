@@ -16,11 +16,15 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
+; Ignore metro
+.*/node_modules/metro/.*
+
 [include]
 
 [libs]
 node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow/
+node_modules/react-native/flow-github/
 
 [options]
 emoji=true
@@ -46,7 +50,5 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
-unsafe.enable_getters_and_setters=true
-
 [version]
-^0.61.0
+^0.63.0

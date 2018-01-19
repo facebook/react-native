@@ -11,7 +11,7 @@
  * @nolint
  */
 
-/* eslint-disable strict, no-extend-native, no-bitwise */
+/* eslint-disable no-extend-native, no-bitwise */
 
 /*
  * NOTE: We use (Number(x) || 0) to replace NaN values with zero.

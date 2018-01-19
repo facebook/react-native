@@ -31,6 +31,7 @@ function dependencies(argv, config, args, packagerInstance) {
     assetRegistryPath: ASSET_REGISTRY_PATH,
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
@@ -52,7 +53,7 @@ function dependencies(argv, config, args, packagerInstance) {
     platform: args.platform,
     entryFile: relativePath,
     dev: args.dev,
-    minify: !args.dev,
+    minify: false,
     generateSourceMaps: !args.dev,
   };
 
