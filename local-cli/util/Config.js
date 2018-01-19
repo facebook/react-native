@@ -17,7 +17,7 @@ const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {Config: MetroConfig} = require('metro');
+const {Config: MetroConfig, createBlacklist} = require('metro');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
@@ -56,6 +56,10 @@ const getProjectRoots = () => {
   return resolveSymlinksForRoots([getProjectPath()]);
 };
 
+const getBlacklistRE = () => {
+  return createBlacklist([/.*\/__fixtures__\/.*/]);
+};
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
@@ -67,6 +71,7 @@ const getProjectRoots = () => {
 const Config = {
   DEFAULT: ({
     ...MetroConfig.DEFAULT,
+    getBlacklistRE,
     getProjectRoots,
     getPolyfills,
     getModulesRunBeforeMainModule: () => [
