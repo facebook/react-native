@@ -354,13 +354,22 @@ class TextExample extends React.Component<{}> {
             <Text style={{letterSpacing: 9, marginTop: 5}}>
               letterSpacing = 9
             </Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{letterSpacing: 9, backgroundColor: 'fuchsia', marginTop: 5}}>
+                With background color
+              </Text>
+            </View>
             <Text style={{letterSpacing: -1, marginTop: 5}}>
               letterSpacing = -1
             </Text>
-            <Text style={{letterSpacing: 3, marginTop: 5}}>
+            <Text style={{letterSpacing: 3, backgroundColor: '#dddddd', marginTop: 5}}>
               [letterSpacing = 3]
-              <Text style={{letterSpacing: 0}}>[Nested letterSpacing = 0]</Text>
-              <Text style={{letterSpacing: 6}}>[Nested letterSpacing = 6]</Text>
+              <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
+                [Nested letterSpacing = 0]
+              </Text>
+              <Text style={{letterSpacing: 6, backgroundColor: '#eeeeee'}}>
+                [Nested letterSpacing = 6]
+              </Text>
             </Text>
           </View>
         </RNTesterBlock>
