@@ -66,7 +66,7 @@ afterEvaluate { project ->
 
     task androidJavadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
-        classpath += files(android.bootClasspath)
+        classpath += files(android.bootstrapClasspath)
         classpath += files(project.getConfigurations().getByName('compile').asList())
         include '**/*.java'
         exclude '**/ReactBuildConfig.java'
