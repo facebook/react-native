@@ -31,6 +31,9 @@
 
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
+#if !TARGET_OS_TV
+@property (nonatomic, assign) UIInterfaceOrientationMask appSupportedOrientationMask;
+#endif
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
 

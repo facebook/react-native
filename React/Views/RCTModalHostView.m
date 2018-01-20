@@ -236,11 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {
   if (_supportedOrientations.count == 0) {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-      return UIInterfaceOrientationMaskAll;
-    } else {
-      return UIInterfaceOrientationMaskPortrait;
-    }
+    return self.appSupportedOrientationMask;
   }
 
   UIInterfaceOrientationMask supportedOrientations = 0;
