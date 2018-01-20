@@ -51,7 +51,9 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "xplat//folly:headers_only",
         "xplat//folly:molly",
+        "xplat//folly:scope_guard",
     ],
 )
 
@@ -69,7 +71,9 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "xplat//folly:headers_only",
         "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
         ":module",
     ],
 )
@@ -143,9 +147,14 @@ rn_xplat_cxx_library(
         ":module",
         ":jsbigstring",
         "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
         "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
+        "xplat//folly:optional",
+        "xplat//third-party/glog:glog",
+        react_native_xplat_target("jschelpers:jscinternalhelpers"),
+        react_native_xplat_target("privatedata:privatedata"),
     ] + JSC_DEPS,
 )

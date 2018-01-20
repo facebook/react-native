@@ -46,6 +46,8 @@ rn_xplat_cxx_library(
     ],
     deps = JSC_INTERNAL_DEPS + [
         "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
+        react_native_xplat_target("privatedata:privatedata"),
     ],
 )
 
