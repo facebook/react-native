@@ -131,7 +131,7 @@ if (Platform.OS === 'ios') {
   exports.examples.push({
     title: '<ScrollView> smooth bi-directional content loading\n',
     description:
-      'The `maintainPositionAtOrBeyondIndex` prop allows insertions to either end of the content ' +
+      'The `maintainVisibleContentPosition` prop allows insertions to either end of the content ' +
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function() {
       let itemCount = 6;
@@ -146,7 +146,10 @@ if (Platform.OS === 'ios') {
             <View>
               <ScrollView
                 automaticallyAdjustContentInsets={false}
-                maintainPositionAtOrBeyondIndex={1}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 1,
+                  autoscrollToTopThreshold: 10,
+                }}
                 style={styles.scrollView}>
                 <ActivityIndicator style={{height: 40}} />
                 {this.state.items.map(item =>
@@ -156,9 +159,12 @@ if (Platform.OS === 'ios') {
               <ScrollView
                 horizontal={true}
                 automaticallyAdjustContentInsets={false}
-                maintainPositionAtOrBeyondIndex={1}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 1,
+                  autoscrollToTopThreshold: 10,
+                }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                <ActivityIndicator style={{height: 40}} />
+                <ActivityIndicator style={{width: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}

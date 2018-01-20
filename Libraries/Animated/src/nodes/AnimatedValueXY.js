@@ -33,7 +33,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
   _listeners: {[key: string]: {x: string, y: string}};
 
   constructor(
-    valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue},
+    valueIn?: ?{+x: number | AnimatedValue, +y: number | AnimatedValue},
   ) {
     super();
     const value: any = valueIn || {x: 0, y: 0}; // @flowfixme: shouldn't need `: any`
