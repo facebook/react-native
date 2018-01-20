@@ -355,8 +355,8 @@ class TextExample extends React.Component<{}> {
               letterSpacing = 9
             </Text>
             <View style={{flexDirection: 'row'}}>
-              <Text style={{letterSpacing: 9, backgroundColor: 'fuchsia', marginTop: 5}}>
-                With background color
+              <Text style={{fontSize: 12, letterSpacing: 2, backgroundColor: 'fuchsia', marginTop: 5}}>
+                With size and background color
               </Text>
             </View>
             <Text style={{letterSpacing: -1, marginTop: 5}}>
