@@ -60,6 +60,11 @@ RCT_EXPORT_MODULE()
   return [self initWithRedirectDelegate:nil];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return NO;
+}
+
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
 {
     if (self = [super init]) {
