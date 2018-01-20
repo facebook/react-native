@@ -18,26 +18,41 @@ const spawnOpts = {
 
 log.heading = 'rnpm-install';
 
-function install(args, config) {
+function install(args, config, options) {
   const name = args[0];
 
-  let res = PackageManager.add(name);
+  let res;
+  if (options.plugin) {
+    res = PackageManager.addDev(name);
+  } else {
+    res = PackageManager.add(name);
+  }
 
   if (res.status) {
     process.exit(res.status);
   }
 
-  res = spawnSync('react-native', ['link', name], spawnOpts);
-
-  if (res.status) {
-    process.exit(res.status);
+  if (!options.plugin) {
+    res = spawnSync('react-native', ['link', name], spawnOpts);
+    if (res.status) {
+      process.exit(res.status);
+    }
   }
 
-  log.info(`Module ${name} has been successfully installed & linked`);
+  if (options.plugin) {
+    log.info(`Plugin ${name} has been successfully installed`);
+  } else {
+    log.info(`Module ${name} has been successfully installed & linked`);
+  }
 }
 
 module.exports = {
   func: install,
   description: 'install and link native dependencies',
   name: 'install <packageName>',
+  options: [{
+    command: '--plugin',
+    description: 'signals that the target is a plugin',
+    default: false,
+  }],
 };

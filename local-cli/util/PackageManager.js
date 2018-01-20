@@ -38,8 +38,12 @@ function callYarnOrNpm(yarnCommand, npmCommand) {
 
   const args = command.split(' ');
   const cmd = args.shift();
+  let fixedCmd = cmd;
+  if (process.platform === 'win32') {
+    fixedCmd = `${cmd}.cmd`;
+  }
 
-  const res = spawnSync(cmd, args, spawnOpts);
+  const res = spawnSync(fixedCmd, args, spawnOpts);
 
   return res;
 }
@@ -68,7 +72,34 @@ function remove(packageName) {
   );
 }
 
+/**
+ * Install package into project using npm or yarn if available
+ * @param  {[type]} packageName Package to be installed
+ * @return {[type]}             spawnSync's result object
+ */
+function addDev(packageName) {
+  return callYarnOrNpm(
+    `yarn add ${packageName} --dev`,
+    `npm install ${packageName} --save-dev`
+  );
+}
+
+/**
+ * Uninstall package from project using npm or yarn if available
+ * @param  {[type]} packageName Package to be uninstalled
+ * @return {Object}             spawnSync's result object
+ */
+function removeDev(packageName) {
+  return callYarnOrNpm(
+    `yarn remove ${packageName} --dev`,
+    `npm uninstall --save-dev ${packageName}`
+  );
+}
+
+
 module.exports = {
   add: add,
+  addDev: addDev,
   remove: remove,
+  removeDev: removeDev,
 };
