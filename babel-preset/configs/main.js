@@ -32,12 +32,14 @@ const getPreset = (src, options) => {
     'transform-flow-strip-types',
     'transform-react-jsx',
     'transform-regenerator',
-    [
-      'transform-es2015-modules-commonjs',
-      {strict: false, allowTopLevelThis: true},
-    ]
   );
 
+  if (options.modules === 'commonjs') {
+    plugins.push([
+      'transform-es2015-modules-commonjs',
+      { strict: false, allowTopLevelThis: true },
+    ]);
+  }
   if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
     plugins.push('syntax-async-functions');
   }
@@ -77,7 +79,7 @@ const getPreset = (src, options) => {
     plugins.push('transform-react-display-name');
   }
 
-  if (options && options.dev) {
+  if (options.dev) {
     plugins.push('transform-react-jsx-source');
   }
 
@@ -88,17 +90,21 @@ const getPreset = (src, options) => {
   };
 };
 
-const base = getPreset(null);
-const devTools = getPreset(null, {dev: true});
-
-module.exports = options => {
-  if (options.withDevTools == null) {
+module.exports = (api, options = {}) => {
+  let presetOptions = {
+    dev: false,
+    modules: 'commonjs',
+  };
+  if (api.withDevTools == null) {
     const env = process.env.BABEL_ENV || process.env.NODE_ENV;
     if (!env || env === 'development') {
-      return devTools;
+      presetOptions.dev = true;
     }
   }
-  return base;
+  if (options.modules === false) {
+    presetOptions.modules = false;
+  }
+  return getPreset(null, presetOptions);
 };
 
 module.exports.getPreset = getPreset;

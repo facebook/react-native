@@ -26,6 +26,21 @@ Then, create a file called `.babelrc` in your project's root directory. The exis
 
 You can further customize your Babel configuration by specifying plugins and other options. See [Babel's `.babelrc` documentation](https://babeljs.io/docs/usage/babelrc/) to learn more.
 
+## Options ##
+
+### `modules`
+
+`"commonjs" | false`, defaults to `"commonjs"`
+
+Enable transformation of ES6 module syntax to CommonJS. E.g:
+```
+{
+  "presets": [
+    ["react-native", { "modules": false }]
+  ]
+}
+```
+
 ## Help and Support
 
 If you get stuck configuring Babel, please ask a question on Stack Overflow or find a consultant for help. If you discover a bug, please open up an issue.
