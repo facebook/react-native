@@ -88,8 +88,7 @@ aliases:
   - &run-flow-checks
     | 
       npm run flow -- check
-
-
+          
   - &filter-only-master-stable
     branches:
       only:
@@ -141,18 +140,22 @@ aliases:
       buck build ReactAndroid/src/main/java/com/facebook/react
       buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
+  - &create-avd
+    name: Create Android Virtual Device
+    command: source scripts/circle-ci-android-setup.sh && createAVD
+ 
+  - &launch-avd
+    name: Launch Android Virtual Device in Background
+    command: source scripts/circle-ci-android-setup.sh && launchAVD
+    background: true
+
   - &wait-for-avd
     name: Wait for Android Virtual Device
     command: source scripts/circle-ci-android-setup.sh && waitForAVD
 
-  - &check-js-bundle
-    name: Check for JavaScript Bundle
-    command: |
-      if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-        echo "JavaScript bundle missing, verify build-js-bundle step"; exit 1;
-      else
-        echo "JavaScript bundle found.";
-      fi
+  - &build-js-bundle
+    name: Build JavaScript Bundle
+    command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
@@ -160,11 +163,11 @@ aliases:
     no_output_timeout: 6m
 
   - &run-android-unit-tests
-    name: Unit Tests
+    name: Run Unit Tests
     command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
 
-  - &run-android-integration-tests
-    name: Build and Install Test APK
+  - &run-android-instrumentation-tests
+    name: Run Instrumentation Tests
     command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
   
   - &collect-android-test-results
@@ -330,26 +333,6 @@ jobs:
               echo "Skipping deploy."            
             fi
 
-  # Build JavaScript bundle for Android tests
-  build-js-bundle:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
-    steps:
-      - checkout
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-      - run:
-          name: Build JavaScript Bundle
-          command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-      - persist_to_workspace:
-          root: ReactAndroid/src/androidTest/assets/
-          paths:
-            - AndroidTestBundle.js
-      - store_artifacts:
-          path: ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-
   # Runs unit tests tests on Android
   test-android:
     <<: *android_defaults
@@ -364,13 +347,8 @@ jobs:
       - save-cache: *save-cache-android-packages
 
       # Starting emulator in advance as it takes some time to boot.      
-      - run:
-          name: Create Android Virtual Device
-          command: source scripts/circle-ci-android-setup.sh && createAVD
-      - run:
-          name: Launch Android Virtual Device in Background
-          command: source scripts/circle-ci-android-setup.sh && launchAVD
-          background: true
+      - run: *create-avd
+      - run: *launch-avd
       
       # Keep configuring Android dependencies while AVD boots up
       - run: *create-ndk-directory
@@ -382,12 +360,6 @@ jobs:
       - run: *install-buck
       - save-cache: *save-cache-buck
 
-      - run: *install-node
-
-      - restore-cache: *restore-node-cache
-      - run: *install-node-dependencies
-      - save-cache: *save-node-cache
-
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
@@ -398,18 +370,19 @@ jobs:
       - run: *build-android-app
       - run: *compile-native-libs
 
-      # The JavaScript Bundle is built as part of the build-js-bundle workflow, 
-      # and is required for instrumentation tests.
-      - attach_workspace:
-          at: ReactAndroid/src/androidTest/assets/
-      - run: *check-js-bundle
+      # The JavaScript Bundle is required for instrumentation tests.
+      - run: *install-node
+      - restore-cache: *restore-node-cache
+      - run: *install-node-dependencies
+      - save-cache: *save-node-cache
+      - run: *build-js-bundle
 
       # Wait for AVD to finish booting before running tests
       - run: *wait-for-avd
             
       # Tests
       - run: *run-android-unit-tests
-      - run: *run-android-integration-tests
+      - run: *run-android-instrumentation-tests
       
       # post (always runs)
       - run: *collect-android-test-results
@@ -474,11 +447,8 @@ workflows:
           filters: *filter-ignore-gh-pages
 
       # Test Android
-      - build-js-bundle:
-          filters: *filter-ignore-gh-pages
       - test-android:
-          requires:
-            - build-js-bundle
+          filters: *filter-ignore-gh-pages
 
       # Test iOS & tvOS
       - test-objc-ios:
