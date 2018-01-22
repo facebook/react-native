@@ -1,14 +1,14 @@
 aliases:
   - &restore-node-cache
     keys:
-      - v1-dependencies-{{ arch }}-{{ checksum "package.json" }}
+      - v2-dependencies-{{ arch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ arch }}-
+      - v2-dependencies-{{ arch }}-
 
   - &save-node-cache
     paths:
       - node_modules
-    key: v1-dependencies-{{ arch }}-{{ checksum "package.json" }}
+    key: v2-dependencies-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
