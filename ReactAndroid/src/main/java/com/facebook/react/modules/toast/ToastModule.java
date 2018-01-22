@@ -10,6 +10,9 @@
 package com.facebook.react.modules.toast;
 
 import android.view.Gravity;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.view.View;
 import android.widget.Toast;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -59,6 +62,22 @@ public class ToastModule extends ReactContextBaseJavaModule {
       @Override
       public void run() {
         Toast.makeText(getReactApplicationContext(), message, duration).show();
+      }
+    });
+  }
+
+  @ReactMethod
+  public void showWithColor(final String message, final int duration ,final String backgroundColor) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Toast toast = Toast.makeText(getReactApplicationContext(), message, duration);
+        View view = toast.getView();
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(Color.parseColor(backgroundColor));
+        view.setBackground(gd);
+        toast.setView(view);
+        toast.show();
       }
     });
   }
