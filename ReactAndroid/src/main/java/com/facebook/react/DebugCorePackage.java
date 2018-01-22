@@ -12,8 +12,9 @@ package com.facebook.react;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
+import com.facebook.react.devsupport.JSDevSupport;
+import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.inject.Provider;
   nativeModules = {
     JSCHeapCapture.class,
     JSCSamplingProfiler.class,
+    JSDevSupport.class,
   }
 )
 /* package */ class DebugCorePackage extends LazyReactPackage {
@@ -48,6 +50,15 @@ import javax.inject.Provider;
                 return new JSCHeapCapture(reactContext);
               }
             }));
+    moduleSpecList.add(
+      ModuleSpec.nativeModuleSpec(
+        JSDevSupport.class,
+        new Provider<NativeModule>() {
+          @Override
+          public NativeModule get() {
+            return new JSDevSupport(reactContext);
+          }
+        }));
     moduleSpecList.add(
         ModuleSpec.nativeModuleSpec(
             JSCSamplingProfiler.class,

@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 java_library(
     name = "java",
     srcs = glob(["**/*.java"]),

@@ -15,20 +15,37 @@
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
-const UIManager = require('UIManager');
 
 const createReactClass = require('create-react-class');
-const requireNativeComponent = require('requireNativeComponent');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
 const {ViewContextTypes} = require('ViewContext');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
+
+const viewConfig = {
+  validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
+    isHighlighted: true,
+    numberOfLines: true,
+    ellipsizeMode: true,
+    allowFontScaling: true,
+    disabled: true,
+    selectable: true,
+    selectionColor: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    textBreakStrategy: true,
+  }),
+  uiViewClassName: 'RCTText',
+};
 
 import type {ViewChildContext} from 'ViewContext';
 
@@ -404,6 +421,7 @@ const Text = createReactClass({
     });
   },
   mixins: [NativeMethodsMixin],
+  viewConfig: viewConfig,
   getChildContext(): ViewChildContext {
     return {
       isInAParentText: true,
@@ -551,11 +569,21 @@ type RectOffset = {
   bottom: number,
 };
 
-const PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-const RCTText = requireNativeComponent('RCTText');
-const RCTVirtualText = UIManager.RCTVirtualText
-  ? requireNativeComponent('RCTVirtualText')
-  : RCTText;
+var RCTText = createReactNativeComponentClass(
+  viewConfig.uiViewClassName,
+  () => viewConfig,
+);
+var RCTVirtualText = RCTText;
+
+if (Platform.OS === 'android') {
+  RCTVirtualText = createReactNativeComponentClass('RCTVirtualText', () => ({
+    validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
+      isHighlighted: true,
+    }),
+    uiViewClassName: 'RCTVirtualText',
+  }));
+}
 
 module.exports = Text;
