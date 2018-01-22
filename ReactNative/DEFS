@@ -30,7 +30,7 @@ with allow_unsafe_import():
 
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
-  cxx_library(name = name)
+  cxx_library(name = name, **kwargs)
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
