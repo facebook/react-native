@@ -20,7 +20,7 @@ public enum YogaJustify {
   SPACE_AROUND(4),
   SPACE_EVENLY(5);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaJustify(int intValue) {
     mIntValue = intValue;
