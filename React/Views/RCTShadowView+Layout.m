@@ -81,6 +81,12 @@ CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value)
   return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
 }
 
+- (CGRect)contentFrame
+{
+  CGRect bounds = (CGRect){CGPointZero, self.frame.size};
+  return UIEdgeInsetsInsetRect(bounds, self.compoundInsets);
+}
+
 #pragma mark - Measuring
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize

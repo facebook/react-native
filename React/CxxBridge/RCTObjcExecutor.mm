@@ -45,7 +45,10 @@ public:
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {
-        m_errorBlock(error);
+        // Do not use "m_errorBlock" here as the bridge might be in the middle
+        // of invalidation as a result of error handling and "this" can be
+        // already deallocated.
+        errorBlock(error);
         return;
       }
 

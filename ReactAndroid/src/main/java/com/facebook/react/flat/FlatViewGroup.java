@@ -119,7 +119,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
     }
 
     /**
-     * Propogates image load events to javascript if the hosting view is still alive.
+     * Propagates image load events to javascript if the hosting view is still alive.
      *
      * @param reactTag The view id.
      * @param imageLoadEvent The event type.

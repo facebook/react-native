@@ -1,8 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "cxx_library", "GLOG_DEP")
 
-include_defs("//ReactCommon/DEFS")
-
-fb_xplat_cxx_library(
+cxx_library(
     name = "fbgloginit",
     srcs = [
         "glog_init.cpp",

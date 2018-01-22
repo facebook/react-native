@@ -26,6 +26,7 @@ RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
 @property (nonatomic, readonly) UIEdgeInsets borderAsInsets;
 @property (nonatomic, readonly) UIEdgeInsets compoundInsets;
 @property (nonatomic, readonly) CGSize availableSize;
+@property (nonatomic, readonly) CGRect contentFrame;
 
 #pragma mark - Measuring
 

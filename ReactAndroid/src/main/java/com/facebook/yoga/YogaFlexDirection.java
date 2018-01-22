@@ -18,7 +18,7 @@ public enum YogaFlexDirection {
   ROW(2),
   ROW_REVERSE(3);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaFlexDirection(int intValue) {
     mIntValue = intValue;
