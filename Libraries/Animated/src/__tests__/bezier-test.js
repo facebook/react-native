@@ -121,7 +121,7 @@ describe('bezier', function() {
         assertClose(easing(0.5), 0.5, 2);
       });
     });
-    it('should be symetrical', function() {
+    it('should be symmetrical', function() {
       repeat(10)(function() {
         var a = Math.random(),
           b = 2 * Math.random() - 0.5,

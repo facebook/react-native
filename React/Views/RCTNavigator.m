@@ -47,7 +47,7 @@ NSInteger kNeverProgressed = -10000;
 
 @interface UINavigationController ()
 
-// need to declare this since `UINavigationController` doesnt publicly declare the fact that it implements
+// need to declare this since `UINavigationController` doesn't publicly declare the fact that it implements
 // UINavigationBarDelegate :(
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item;
 
