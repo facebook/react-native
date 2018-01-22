@@ -12,15 +12,15 @@ Pod::Spec.new do |spec|
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-  spec.source_files = 'folly/Bits.cpp',
-                      'folly/Conv.cpp',
-                      'folly/Demangle.cpp',
-                      'folly/StringBase.cpp',
-                      'folly/Unicode.cpp',
-                      'folly/dynamic.cpp',
-                      'folly/json.cpp',
-                      'folly/portability/BitsFunctexcept.cpp',
-                      'folly/detail/MallocImpl.cpp'
+  spec.source_files = 'folly/Bits.{h,cpp}',
+                      'folly/Conv.{h,cpp}',
+                      'folly/Demangle.{h,cpp}',
+                      'folly/StringBase.{h,cpp}',
+                      'folly/Unicode.{h,cpp}',
+                      'folly/dynamic.{h,cpp}',
+                      'folly/json.{h,cpp}',
+                      'folly/portability/BitsFunctexcept.{h,cpp}',
+                      'folly/detail/MallocImpl.{h,cpp}'
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
                         'folly/detail/*.h',
