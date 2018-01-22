@@ -1,14 +1,14 @@
 aliases:
   - &restore-yarn-cache
     keys:
-      - v1-dependencies-{{ arch }}-{{ checksum "package.json" }}
+      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-dependencies-{{ arch }}-
+      - v1-yarn-{{ arch }}-
   - &save-yarn-cache
     paths:
       - node_modules
       - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ checksum "yarn.lock" }}
+    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
