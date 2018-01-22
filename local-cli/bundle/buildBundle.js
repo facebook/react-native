@@ -71,7 +71,7 @@ async function buildBundle(
     entryFile: args.entryFile,
     sourceMapUrl,
     dev: args.dev,
-    minify: !args.dev,
+    minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
   };
 
