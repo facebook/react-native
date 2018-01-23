@@ -13,7 +13,7 @@
 
 'use strict';
 
-const uuid = require('uuid');
+const uuid = require('uuid/v4');
 const Blob = require('Blob');
 const BlobRegistry = require('BlobRegistry');
 const {BlobModule} = require('NativeModules');
@@ -36,7 +36,7 @@ class BlobManager {
     parts: Array<Blob | string>,
     options?: BlobOptions,
   ): Blob {
-    const blobId = uuid.v4();
+    const blobId = uuid();
     const items = parts.map(part => {
       if (
         part instanceof ArrayBuffer ||
