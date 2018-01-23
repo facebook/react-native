@@ -94,29 +94,34 @@ static NSString *RCTGetManifestFilePath()
 }
 
 // Only merges objects - all other types are just clobbered (including arrays)
-static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
+static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source, NSError **error)
 {
   BOOL modified = NO;
-  for (NSString *key in source) {
-    id sourceValue = source[key];
-    id destinationValue = destination[key];
-    if ([sourceValue isKindOfClass:[NSDictionary class]]) {
-      if ([destinationValue isKindOfClass:[NSDictionary class]]) {
-        if ([destinationValue classForCoder] != [NSMutableDictionary class]) {
-          destinationValue = [destinationValue mutableCopy];
-        }
-        if (RCTMergeRecursive(destinationValue, sourceValue)) {
-          destination[key] = destinationValue;
+  @try {
+    for (NSString *key in source) {
+      id sourceValue = source[key];
+      id destinationValue = destination[key];
+      if ([sourceValue isKindOfClass:[NSDictionary class]]) {
+        if ([destinationValue isKindOfClass:[NSDictionary class]]) {
+          if ([destinationValue classForCoder] != [NSMutableDictionary class]) {
+            destinationValue = [destinationValue mutableCopy];
+          }
+          if (RCTMergeRecursive(destinationValue, sourceValue, error)) {
+            destination[key] = destinationValue;
+            modified = YES;
+          }
+        } else {
+          destination[key] = [sourceValue copy];
           modified = YES;
         }
-      } else {
+      } else if (![source isEqual:destinationValue]) {
         destination[key] = [sourceValue copy];
         modified = YES;
       }
-    } else if (![source isEqual:destinationValue]) {
-      destination[key] = [sourceValue copy];
-      modified = YES;
     }
+  }
+  @catch (NSException *exception) {
+    *error = RCTErrorWithMessage(exception.description);
   }
   return modified;
 }
@@ -389,11 +394,14 @@ RCT_EXPORT_METHOD(multiMerge:(NSArray<NSArray<NSString *> *> *)kvPairs
       if (value) {
         NSError *jsonError;
         NSMutableDictionary *mergedVal = RCTJSONParseMutable(value, &jsonError);
-        if (RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError))) {
+        NSError *mergeError;
+        if (RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError), &mergeError)) {
           entry = @[entry[0], RCTNullIfNil(RCTJSONStringify(mergedVal, NULL))];
         }
         if (jsonError) {
           keyError = RCTJSErrorFromNSError(jsonError);
+        } else if (mergeError) {
+          keyError = RCTJSErrorFromNSError(mergeError);
         }
       }
       if (!keyError) {
