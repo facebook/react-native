@@ -43,7 +43,7 @@ function launchDevTools({host, projectRoots}, isChromeConnected) {
   }
 }
 
-module.exports = function(host, options, isChromeConnected) {
+module.exports = function(options, isChromeConnected) {
   return function(req, res, next) {
     var host = req.headers.host;
     if (req.url === '/launch-safari-devtools') {
