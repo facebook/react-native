@@ -1,4 +1,4 @@
-load("@xplat//ReactNative:DEFS", "rn_android_library")
+load("//ReactNative:DEFS", "rn_android_library")
 
 android_prebuilt_aar(
     name = "fresco-react-native",
