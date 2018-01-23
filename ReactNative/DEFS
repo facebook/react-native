@@ -89,16 +89,16 @@ def rn_android_library(
     **kwargs)
 
 def rn_android_binary(*args, **kwargs):
-  android_binary(*args, **kargs)
+  android_binary(*args, **kwargs)
 
 def rn_android_build_config(*args, **kwargs):
-  android_build_config(*args, **kargs)
+  android_build_config(*args, **kwargs)
 
 def rn_android_resource(*args, **kwargs):
   android_resource(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
-  java_library(*args, **kargs)
+  java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):
   java_annotation_processor(*args, **kwargs)
