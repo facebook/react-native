@@ -11,9 +11,9 @@
  */
 'use strict';
 
+var DeviceInfo = require('DeviceInfo');
 var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
-var UIManager = require('UIManager');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
@@ -107,7 +107,7 @@ class Dimensions {
     handler: Function
   ) {
     invariant(
-      'change' === type,
+      type === 'change',
       'Trying to subscribe to unknown event: "%s"', type
     );
     eventEmitter.addListener(type, handler);
@@ -121,14 +121,14 @@ class Dimensions {
     handler: Function
   ) {
     invariant(
-      'change' === type,
+      type === 'change',
       'Trying to remove listener for unknown event: "%s"', type
     );
     eventEmitter.removeListener(type, handler);
   }
 }
 
-Dimensions.set(UIManager.Dimensions);
+Dimensions.set(DeviceInfo.Dimensions);
 RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
   Dimensions.set(update);
 });

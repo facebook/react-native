@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <sstream>
 #include <unordered_map>
@@ -11,39 +12,24 @@
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
+#include <privatedata/PrivateDataBase.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
 class Value;
-class Context;
 
-class JSException : public std::exception {
-public:
-  explicit JSException(const char* msg)
-    : msg_(msg), stack_("") {}
-
-  JSException(const char* msg, const char* stack)
-    : msg_(msg), stack_(stack) {}
-
-  const std::string& getStack() const {
-    return stack_;
-  }
-
-  virtual const char* what() const noexcept override {
-    return msg_.c_str();
-  }
-
-private:
-  std::string msg_;
-  std::string stack_;
-};
-
+// C++ object wrapper for JSStringRef
 class String : public noncopyable {
 public:
-  explicit String(JSContextRef context, const char* utf8) :
-    m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8))
-  {}
+  explicit String(): m_context(nullptr), m_string(nullptr) {} // dummy empty constructor
+
+  explicit String(JSContextRef context, const char* utf8)
+  : m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8)) {}
 
   String(String&& other) :
     m_context(other.m_context), m_string(other.m_string)
@@ -65,18 +51,34 @@ public:
     }
   }
 
+  String& operator=(String&& other) {
+    if (m_string) {
+      JSC_JSStringRelease(m_context, m_string);
+    }
+
+    m_context = other.m_context;
+    m_string = other.m_string;
+    other.m_string = nullptr;
+
+    return *this;
+  }
+
   operator JSStringRef() const {
     return m_string;
   }
 
-  // Length in characters
-  size_t length() const {
-    return JSC_JSStringGetLength(m_context, m_string);
+  JSContextRef context() const {
+    return m_context;
   }
 
-  // Length in bytes of a null-terminated utf8 encoded value
+  // Length in characters
+  size_t length() const {
+    return m_string ? JSC_JSStringGetLength(m_context, m_string) : 0;
+  }
+
+  // Length in bytes of a nul-terminated utf8 encoded value
   size_t utf8Size() const {
-    return JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string);
+    return m_string ? JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string) : 0;
   }
 
   /*
@@ -94,14 +96,17 @@ public:
    * https://mathiasbynens.be/notes/javascript-unicode
    */
   std::string str() const {
+    if (!m_string) {
+      return "";
+    }
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
-    int stringLength = JSC_JSStringGetLength(m_context, m_string);
+    size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 
-  // Assumes that utf8 is null terminated
+  // Assumes that utf8 is nul-terminated
   bool equals(const char* utf8) {
-    return JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8);
+    return m_string ? JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8) : false;
   }
 
   // This assumes ascii is nul-terminated.
@@ -117,10 +122,13 @@ public:
     return createExpectingAscii(context, ascii.c_str(), ascii.size());
   }
 
+  // Creates a String wrapper and increases the refcount of the JSStringRef
   static String ref(JSContextRef context, JSStringRef string) {
     return String(context, string, false);
   }
 
+  // Creates a String wrapper that takes over ownership of the string. The
+  // JSStringRef passed in must previously have been created or retained.
   static String adopt(JSContextRef context, JSStringRef string) {
     return String(context, string, true);
   }
@@ -138,8 +146,13 @@ private:
   JSStringRef m_string;
 };
 
+// C++ object wrapper for JSObjectRef. The underlying JSObjectRef can be
+// optionally protected. You must protect the object if it is ever
+// heap-allocated, since otherwise you may end up with an invalid reference.
 class Object : public noncopyable {
 public:
+  using TimeType = std::chrono::time_point<std::chrono::system_clock>;
+
   Object(JSContextRef context, JSObjectRef obj) :
     m_context(context),
     m_obj(obj)
@@ -185,9 +198,10 @@ public:
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
-  Value getPropertyAtIndex(unsigned index) const;
-  void setProperty(const String& propName, const Value& value) const;
-  void setProperty(const char *propName, const Value& value) const;
+  Value getPropertyAtIndex(unsigned int index) const;
+  void setProperty(const String& propName, const Value& value);
+  void setProperty(const char *propName, const Value& value);
+  void setPropertyAtIndex(unsigned int index, const Value& value);
   std::vector<String> getPropertyNames() const;
   std::unordered_map<std::string, std::string> toJSONMap() const;
 
@@ -198,13 +212,16 @@ public:
     }
   }
 
+  RN_EXPORT static Object makeArray(JSContextRef ctx, JSValueRef* elements, unsigned length);
+  RN_EXPORT static Object makeDate(JSContextRef ctx, TimeType time);
+
   template<typename ReturnType>
   ReturnType* getPrivate() const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
-    return static_cast<ReturnType*>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
+    return PrivateDataBase::cast<ReturnType>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
   }
 
-  void setPrivate(void* data) const {
+  void setPrivate(PrivateDataBase* data) const {
     const bool isCustomJSC = isCustomJSCPtr(m_context);
     JSC_JSObjectSetPrivate(isCustomJSC, m_obj, data);
   }
@@ -231,11 +248,23 @@ private:
   Value callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const;
 };
 
+// C++ object wrapper for JSValueRef. The underlying JSValueRef is not
+// protected, so this class should always be used as a stack-allocated
+// variable.
 class Value : public noncopyable {
 public:
-  Value(JSContextRef context, JSValueRef value);
-  Value(JSContextRef context, JSStringRef value);
-  Value(Value&&);
+  RN_EXPORT Value(JSContextRef context, JSValueRef value);
+  RN_EXPORT Value(JSContextRef context, JSStringRef value);
+
+  RN_EXPORT Value(const Value &o) : Value(o.m_context, o.m_value) {}
+  RN_EXPORT Value(const String &o) : Value(o.context(), o) {}
+
+  Value& operator=(Value&& other) {
+    m_context = other.m_context;
+    m_value = other.m_value;
+    other.m_value = NULL;
+    return *this;
+  };
 
   operator JSValueRef() const {
     return m_value;
@@ -273,6 +302,13 @@ public:
     }
   }
 
+  double getNumberOrThrow() const {
+    if (!isNumber()) {
+      throwTypeException("Number");
+    }
+    return JSC_JSValueToNumber(context(), m_value, nullptr);
+  }
+
   int32_t asInteger() const {
     return static_cast<int32_t>(asNumber());
   }
@@ -285,17 +321,17 @@ public:
     return getType() == kJSTypeObject;
   }
 
-  Object asObject();
+  RN_EXPORT Object asObject() const;
 
   bool isString() const {
     return getType() == kJSTypeString;
   }
 
-  String toString() noexcept {
-    return String::adopt(context(), JSC_JSValueToStringCopy(context(), m_value, nullptr));
-  }
+  RN_EXPORT String toString() const;
 
-  static Value makeError(JSContextRef ctx, const char *error);
+  // Create an error, optionally adding an additional number of lines to the stack.
+  // Stack must be empty or newline terminated.
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error, const char *stack = nullptr);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
@@ -305,14 +341,30 @@ public:
     return Value(ctx, JSC_JSValueMakeUndefined(ctx));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
-  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
-  JSContextRef context() const;
-protected:
+  static Value makeNull(JSContextRef ctx) {
+    return Value(ctx, JSC_JSValueMakeNull(ctx));
+  }
+
+  static Value makeBoolean(JSContextRef ctx, bool value) {
+    return Value(ctx, JSC_JSValueMakeBoolean(ctx, value));
+  }
+
+  static Value makeString(JSContextRef ctx, const char* utf8) {
+    return Value(ctx, String(ctx, utf8));
+  }
+
+  RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
+  RN_EXPORT static Value fromJSON(const String& json);
+  RN_EXPORT static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
+  RN_EXPORT JSContextRef context() const;
+
+private:
   JSContextRef m_context;
   JSValueRef m_value;
+
+  void throwTypeException(const std::string &expectedType) const;
   static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
+
 };
 
 } }

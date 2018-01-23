@@ -1,18 +1,63 @@
-include_defs('//ReactAndroid/DEFS')
+load("//ReactNative:DEFS", "cxx_library", "react_native_xplat_target", "FBJNI_TARGET", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "IS_OSS_BUILD")
 
-# TODO(cjhopman): Remove this target (or move the xreact target to this directory).
+EXPORTED_HEADERS = [
+    "AndroidJSCFactory.h",
+    "CxxModuleWrapper.h",
+    "CxxModuleWrapperBase.h",
+    "CxxSharedModuleWrapper.h",
+    "JavaModuleWrapper.h",
+    "JavaScriptExecutorHolder.h",
+    "JSLoader.h",
+    "MethodInvoker.h",
+    "ModuleRegistryBuilder.h",
+    "NativeArray.h",
+    "NativeCommon.h",
+    "NativeMap.h",
+    "ReactMarker.h",
+    "ReadableNativeArray.h",
+    "ReadableNativeMap.h",
+    "WritableNativeArray.h",
+    "WritableNativeMap.h",
+]
+
 cxx_library(
-  name='jni',
-  soname = 'libreactnativejni.$(ext)',
-  header_namespace = 'react/jni',
-  srcs = [
-    'Dummy.cpp',
-  ],
-  deps = [
-    react_native_target('jni/xreact/jni:jni'),
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
+    header_namespace = "react/jni",
+    exported_headers = EXPORTED_HEADERS,
+    compiler_flags = [
+        "-Wall",
+        "-Werror",
+        "-fexceptions",
+        "-std=c++1y",
+        "-frtti",
+        "-Wno-pessimizing-move",
+        "-Wno-inconsistent-missing-override",
+    ],
+    fbandroid_allow_jni_merging = True,
+    fbandroid_deps = ANDROID_JSC_DEPS,
+    fbobjc_deps = APPLE_JSC_DEPS,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNativeJNI\"",
+        "-DWITH_FBSYSTRACE=1",
+        "-DWITH_INSPECTOR=1",
+        "-DWITH_JSC_MEMORY_PRESSURE=1",
+    ],
+    soname = "libreactnativejni.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = ([
+        "xplat//third-party/linker_lib:android",
+        "xplat//folly:molly",
+        "fbandroid//xplat/fbgloginit:fbgloginit",
+        "xplat//fbsystrace:fbsystrace",
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:module"),
+        FBJNI_TARGET,
+    ]) if not IS_OSS_BUILD else [],
 )
-

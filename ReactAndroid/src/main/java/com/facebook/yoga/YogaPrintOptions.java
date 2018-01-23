@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -17,7 +17,7 @@ public enum YogaPrintOptions {
   STYLE(2),
   CHILDREN(4);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaPrintOptions(int intValue) {
     mIntValue = intValue;

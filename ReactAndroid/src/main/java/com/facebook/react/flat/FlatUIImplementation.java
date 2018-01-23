@@ -9,15 +9,11 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -26,6 +22,11 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaDirection;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * FlatUIImplementation builds on top of UIImplementation and allows pre-creating everything
@@ -34,15 +35,67 @@ import com.facebook.yoga.YogaDirection;
  */
 public class FlatUIImplementation extends UIImplementation {
 
+  private static final Map<String, Class<? extends ViewManager>> flatManagerClassMap;
+
+  static {
+    flatManagerClassMap = new HashMap<>();
+    flatManagerClassMap.put(RCTViewManager.REACT_CLASS, RCTViewManager.class);
+    flatManagerClassMap.put(RCTTextManager.REACT_CLASS, RCTTextManager.class);
+    flatManagerClassMap.put(RCTRawTextManager.REACT_CLASS, RCTRawTextManager.class);
+    flatManagerClassMap.put(RCTVirtualTextManager.REACT_CLASS, RCTVirtualTextManager.class);
+    flatManagerClassMap.put(RCTTextInlineImageManager.REACT_CLASS, RCTTextInlineImageManager.class);
+    flatManagerClassMap.put(RCTImageViewManager.REACT_CLASS, RCTImageViewManager.class);
+    flatManagerClassMap.put(RCTTextInputManager.REACT_CLASS, RCTTextInputManager.class);
+    flatManagerClassMap.put(RCTViewPagerManager.REACT_CLASS, RCTViewPagerManager.class);
+    flatManagerClassMap.put(FlatARTSurfaceViewManager.REACT_CLASS, FlatARTSurfaceViewManager.class);
+    flatManagerClassMap.put(RCTModalHostManager.REACT_CLASS, RCTModalHostManager.class);
+  }
+
+  /**
+   * Build the map of view managers, checking that the managers FlatUI requires are correctly
+   * overridden.
+   */
+  private static Map<String, ViewManager> buildViewManagerMap(List<ViewManager> viewManagers) {
+    Map<String, ViewManager> viewManagerMap = new HashMap<>();
+    for (ViewManager viewManager : viewManagers) {
+      viewManagerMap.put(viewManager.getName(), viewManager);
+    }
+    for (Map.Entry<String, Class<? extends ViewManager>> entry : flatManagerClassMap.entrySet()) {
+      String name = entry.getKey();
+      ViewManager maybeFlatViewManager = viewManagerMap.get(name);
+      if (maybeFlatViewManager == null) {
+        // We don't have a view manager for this name in the package, no need to add one.
+        continue;
+      }
+
+      Class<? extends ViewManager> flatClazz = entry.getValue();
+      if (maybeFlatViewManager.getClass() != flatClazz) {
+        // If we have instances that have flat equivalents, override them.
+        try {
+          viewManagerMap.put(name, flatClazz.newInstance());
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException("Unable to access flat class for " + name, e);
+        } catch (InstantiationException e) {
+          throw new RuntimeException("Unable to instantiate flat class for " + name, e);
+        }
+      }
+    }
+    return viewManagerMap;
+  }
+
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher,
-      boolean memoryImprovementEnabled) {
+      boolean memoryImprovementEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
 
-    RCTImageViewManager rctImageViewManager = findRCTImageManager(viewManagers);
-    if (rctImageViewManager != null) {
-      Object callerContext = rctImageViewManager.getCallerContext();
+    Map<String, ViewManager> viewManagerMap = buildViewManagerMap(viewManagers);
+
+    RCTImageViewManager imageViewManager =
+      (RCTImageViewManager) viewManagerMap.get(RCTImageViewManager.REACT_CLASS);
+    if (imageViewManager != null) {
+      Object callerContext = imageViewManager.getCallerContext();
       if (callerContext != null) {
         RCTImageView.setCallerContext(callerContext);
       }
@@ -51,15 +104,15 @@ public class FlatUIImplementation extends UIImplementation {
 
     TypefaceCache.setAssetManager(reactContext.getAssets());
 
-    ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
+    ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagerMap);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(
-        viewManagerRegistry);
-    FlatUIViewOperationQueue operationsQueue = new FlatUIViewOperationQueue(
-        reactContext,
-        nativeViewHierarchyManager);
+      viewManagerRegistry);
+    FlatUIViewOperationQueue operationsQueue =
+        new FlatUIViewOperationQueue(
+            reactContext, nativeViewHierarchyManager, minTimeLeftInFrameForNonBatchedOperationMs);
     return new FlatUIImplementation(
       reactContext,
-      rctImageViewManager,
+      imageViewManager,
       viewManagerRegistry,
       operationsQueue,
       eventDispatcher,
@@ -96,8 +149,9 @@ public class FlatUIImplementation extends UIImplementation {
     if (mRCTImageViewManager != null) {
       // This is not the best place to initialize DraweeRequestHelper, but order of module
       // initialization is undefined, and this is pretty much the earliest when we are guarantied
-      // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
+      // that Fresco is initialized and DraweeControllerBuilder can be queried. This also happens
       // relatively rarely to have any performance considerations.
+      mReactContext.getNativeModule(FrescoModule.class); // initialize Fresco
       DraweeRequestHelper.setDraweeControllerBuilder(
         mRCTImageViewManager.getDraweeControllerBuilder());
       mRCTImageViewManager = null;
@@ -124,9 +178,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void handleCreateView(
-      ReactShadowNode cssNode,
-      int rootViewTag,
-      @Nullable ReactStylesDiffMap styles) {
+    ReactShadowNode cssNode,
+    int rootViewTag,
+    @Nullable ReactStylesDiffMap styles) {
     if (cssNode instanceof FlatShadowNode) {
       FlatShadowNode node = (FlatShadowNode) cssNode;
 
@@ -144,9 +198,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void handleUpdateView(
-      ReactShadowNode cssNode,
-      String className,
-      ReactStylesDiffMap styles) {
+    ReactShadowNode cssNode,
+    String className,
+    ReactStylesDiffMap styles) {
     if (cssNode instanceof FlatShadowNode) {
       FlatShadowNode node = (FlatShadowNode) cssNode;
 
@@ -162,12 +216,12 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void manageChildren(
-      int viewTag,
-      @Nullable ReadableArray moveFrom,
-      @Nullable ReadableArray moveTo,
-      @Nullable ReadableArray addChildTags,
-      @Nullable ReadableArray addAtIndices,
-      @Nullable ReadableArray removeFrom) {
+    int viewTag,
+    @Nullable ReadableArray moveFrom,
+    @Nullable ReadableArray moveTo,
+    @Nullable ReadableArray addChildTags,
+    @Nullable ReadableArray addAtIndices,
+    @Nullable ReadableArray removeFrom) {
 
     ReactShadowNode parentNode = resolveShadowNode(viewTag);
 
@@ -180,8 +234,8 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void setChildren(
-      int viewTag,
-      ReadableArray children) {
+    int viewTag,
+    ReadableArray children) {
 
     ReactShadowNode parentNode = resolveShadowNode(viewTag);
 
@@ -242,13 +296,13 @@ public class FlatUIImplementation extends UIImplementation {
 
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueMeasureVirtualView(
-        node.getReactTag(),
-        xInParent / parentWidth,
-        yInParent / parentHeight,
-        width / parentWidth,
-        height / parentHeight,
-        relativeToWindow,
-        callback);
+      node.getReactTag(),
+      xInParent / parentWidth,
+      yInParent / parentHeight,
+      width / parentWidth,
+      height / parentHeight,
+      relativeToWindow,
+      callback);
   }
 
   private void ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
@@ -302,10 +356,10 @@ public class FlatUIImplementation extends UIImplementation {
    * preparing elements in moveFrom to be re-added at proper index.
    */
   private void removeChildren(
-      ReactShadowNode parentNode,
-      @Nullable ReadableArray moveFrom,
-      @Nullable ReadableArray moveTo,
-      @Nullable ReadableArray removeFrom) {
+    ReactShadowNode parentNode,
+    @Nullable ReadableArray moveFrom,
+    @Nullable ReadableArray moveTo,
+    @Nullable ReadableArray removeFrom) {
 
     int prevIndex = Integer.MAX_VALUE;
 
@@ -386,7 +440,7 @@ public class FlatUIImplementation extends UIImplementation {
           if (tmpNode instanceof FlatShadowNode) {
             FlatShadowNode flatTmpNode = (FlatShadowNode) tmpNode;
             if (flatTmpNode.mountsToView() && flatTmpNode.isBackingViewCreated() &&
-                flatTmpNode.getParent() != null) {
+              flatTmpNode.getParent() != null) {
               tag = flatTmpNode.getReactTag();
               break;
             }
@@ -416,9 +470,9 @@ public class FlatUIImplementation extends UIImplementation {
    * Adds all children from addChildTags and moveFrom/moveTo.
    */
   private void addChildren(
-      ReactShadowNode parentNode,
-      @Nullable ReadableArray addChildTags,
-      @Nullable ReadableArray addAtIndices) {
+    ReactShadowNode parentNode,
+    @Nullable ReadableArray addChildTags,
+    @Nullable ReadableArray addAtIndices) {
 
     int prevIndex = -1;
 
@@ -483,12 +537,12 @@ public class FlatUIImplementation extends UIImplementation {
    * Removes a child from parent, verifying that we are removing in descending order.
    */
   private static ReactShadowNode removeChildAt(
-      ReactShadowNode parentNode,
-      int index,
-      int prevIndex) {
+    ReactShadowNode parentNode,
+    int index,
+    int prevIndex) {
     if (index >= prevIndex) {
       throw new RuntimeException(
-          "Invariant failure, needs sorting! " + index + " >= " + prevIndex);
+        "Invariant failure, needs sorting! " + index + " >= " + prevIndex);
     }
 
     return parentNode.removeChildAt(index);
@@ -498,13 +552,13 @@ public class FlatUIImplementation extends UIImplementation {
    * Adds a child to parent, verifying that we are adding in ascending order.
    */
   private static void addChildAt(
-      ReactShadowNode parentNode,
-      ReactShadowNode childNode,
-      int index,
-      int prevIndex) {
+    ReactShadowNode parentNode,
+    ReactShadowNode childNode,
+    int index,
+    int prevIndex) {
     if (index <= prevIndex) {
       throw new RuntimeException(
-          "Invariant failure, needs sorting! " + index + " <= " + prevIndex);
+        "Invariant failure, needs sorting! " + index + " <= " + prevIndex);
     }
 
     parentNode.addChildAt(childNode, index);
@@ -518,9 +572,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   protected void applyUpdatesRecursive(
-      ReactShadowNode cssNode,
-      float absoluteX,
-      float absoluteY) {
+    ReactShadowNode cssNode,
+    float absoluteX,
+    float absoluteY) {
     mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
   }
 
@@ -549,18 +603,8 @@ public class FlatUIImplementation extends UIImplementation {
 
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueSetJSResponder(
-        node == null ? tag : node.getReactTag(),
-        possiblyVirtualReactTag,
-        blockNativeResponder);
-  }
-
-  private static @Nullable RCTImageViewManager findRCTImageManager(List<ViewManager> viewManagers) {
-    for (int i = 0, size = viewManagers.size(); i != size; ++i) {
-      if (viewManagers.get(i) instanceof RCTImageViewManager) {
-        return (RCTImageViewManager) viewManagers.get(i);
-      }
-    }
-
-    return null;
+      node == null ? tag : node.getReactTag(),
+      possiblyVirtualReactTag,
+      blockNativeResponder);
   }
 }

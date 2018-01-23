@@ -14,7 +14,7 @@
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
-const NSUInteger kRCTBundleURLProviderDefaultPort = 8081;
+const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
@@ -111,26 +111,30 @@ static NSURL *serverRootWithHost(NSString *host)
   return nil;
 }
 
-- (NSURL *)packagerServerURL
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
-  NSString *const host = [self packagerServerHost];
-  return host ? serverRootWithHost(host) : nil;
+  NSString *packagerServerHost = [self packagerServerHost];
+  if (!packagerServerHost) {
+    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+  } else {
+    return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
+                                             packagerHost:packagerServerHost
+                                                enableDev:[self enableDev]
+                                       enableMinification:[self enableMinification]];
+  }
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
 {
+  return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
+}
+
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
+                        fallbackExtension:(NSString *)extension
+{
   resourceName = resourceName ?: @"main";
-  NSString *packagerServerHost = [self packagerServerHost];
-  if (!packagerServerHost) {
-    return [[NSBundle mainBundle] URLForResource:resourceName withExtension:@"jsbundle"];
-  } else {
-    NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-    // When we support only iOS 8 and above, use queryItems for a better API.
-    NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
-                       [self enableDev] ? @"true" : @"false",
-                       [self enableMinification] ? @"true": @"false"];
-    return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHost query:query];
-  }
+  extension = extension ?: @"jsbundle";
+  return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
 }
 
 - (NSURL *)resourceURLForResourceRoot:(NSString *)root

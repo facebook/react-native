@@ -9,30 +9,29 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
+import android.os.SystemClock;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager} or on
@@ -46,6 +45,8 @@ import com.facebook.systrace.SystraceMessage;
  * TODO(5694019): Consider a better data structure for operations queue to save on allocations
  */
 public class UIViewOperationQueue {
+
+  public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
 
   private final int[] mMeasureBuffer = new int[4];
 
@@ -531,22 +532,40 @@ public class UIViewOperationQueue {
   private final Object mNonBatchedOperationsLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
-  @GuardedBy("mDispatchRunnablesLock")
-  private final ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
 
+  // Only called from the UIManager queue?
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
+
+  @GuardedBy("mDispatchRunnablesLock")
+  private ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
+
   @GuardedBy("mNonBatchedOperationsLock")
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
+
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
   private boolean mIsDispatchUIFrameCallbackEnqueued = false;
   private boolean mIsInIllegalUIState = false;
+  private boolean mIsProfilingNextBatch = false;
+  private long mNonBatchedExecutionTotalTime;
+  private long mProfiledBatchCommitStartTime;
+  private long mProfiledBatchLayoutTime;
+  private long mProfiledBatchDispatchViewUpdatesTime;
+  private long mProfiledBatchRunStartTime;
+  private long mProfiledBatchBatchedExecutionTime;
+  private long mProfiledBatchNonBatchedExecutionTime;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
-      NativeViewHierarchyManager nativeViewHierarchyManager) {
+      NativeViewHierarchyManager nativeViewHierarchyManager,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
     mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
-    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+    mDispatchUIFrameCallback =
+        new DispatchUIFrameCallback(
+            reactContext,
+            minTimeLeftInFrameForNonBatchedOperationMs == -1
+                ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
+                : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
   }
 
@@ -559,34 +578,31 @@ public class UIViewOperationQueue {
     mViewHierarchyUpdateDebugListener = listener;
   }
 
+  public void profileNextBatch() {
+    mIsProfilingNextBatch = true;
+    mProfiledBatchCommitStartTime = 0;
+  }
+
+  public Map<String, Long> getProfiledBatchPerfCounters() {
+    Map<String, Long> perfMap = new HashMap<>();
+    perfMap.put("CommitStartTime", mProfiledBatchCommitStartTime);
+    perfMap.put("LayoutTime", mProfiledBatchLayoutTime);
+    perfMap.put("DispatchViewUpdatesTime", mProfiledBatchDispatchViewUpdatesTime);
+    perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
+    perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
+    perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
+    return perfMap;
+  }
+
   public boolean isEmpty() {
     return mOperations.isEmpty();
   }
 
   public void addRootView(
-      final int tag,
-      final SizeMonitoringFrameLayout rootView,
-      final ThemedReactContext themedRootContext) {
-    if (UiThreadUtil.isOnUiThread()) {
-      mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-    } else {
-      final Semaphore semaphore = new Semaphore(0);
-      mReactApplicationContext.runOnUiQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-              semaphore.release();
-            }
-          });
-      try {
-        SoftAssertions.assertCondition(
-            semaphore.tryAcquire(5000, TimeUnit.MILLISECONDS),
-            "Timed out adding root view");
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    final int tag,
+    final SizeMonitoringFrameLayout rootView,
+    final ThemedReactContext themedRootContext) {
+    mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
   }
 
   /**
@@ -722,8 +738,7 @@ public class UIViewOperationQueue {
       final int reactTag,
       final Callback callback) {
     mOperations.add(
-        new MeasureInWindowOperation(reactTag, callback)
-    );
+        new MeasureInWindowOperation(reactTag, callback));
   }
 
   public void enqueueFindTargetForTouch(
@@ -743,79 +758,135 @@ public class UIViewOperationQueue {
     mOperations.add(new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(final int batchId) {
-    // Store the current operation queues to dispatch and create new empty ones to continue
-    // receiving new operations
-    final ArrayList<UIOperation> operations = mOperations.isEmpty() ? null : mOperations;
-    if (operations != null) {
-      mOperations = new ArrayList<>();
-    }
+  public void prependUIBlock(UIBlock block) {
+    mOperations.add(0, new UIBlockOperation(block));
+  }
 
-    final UIOperation[] nonBatchedOperations;
-    synchronized (mNonBatchedOperationsLock) {
-      if (!mNonBatchedOperations.isEmpty()) {
-        nonBatchedOperations =
-          mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
-        mNonBatchedOperations.clear();
+  /* package */ void dispatchViewUpdates(
+      final int batchId, final long commitStartTime, final long layoutTime) {
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIViewOperationQueue.dispatchViewUpdates")
+      .arg("batchId", batchId)
+      .flush();
+    try {
+      final long dispatchViewUpdatesTime = SystemClock.uptimeMillis();
+
+      // Store the current operation queues to dispatch and create new empty ones to continue
+      // receiving new operations
+      final ArrayList<UIOperation> batchedOperations;
+      if (!mOperations.isEmpty()) {
+        batchedOperations = mOperations;
+        mOperations = new ArrayList<>();
       } else {
-        nonBatchedOperations = null;
+        batchedOperations = null;
       }
-    }
 
-    if (mViewHierarchyUpdateDebugListener != null) {
-      mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
-    }
+      final ArrayDeque<UIOperation> nonBatchedOperations;
+      synchronized (mNonBatchedOperationsLock) {
+        if (!mNonBatchedOperations.isEmpty()) {
+          nonBatchedOperations = mNonBatchedOperations;
+          mNonBatchedOperations = new ArrayDeque<>();
+        } else {
+          nonBatchedOperations = null;
+        }
+      }
 
-    synchronized (mDispatchRunnablesLock) {
-      mDispatchUIRunnables.add(
+      if (mViewHierarchyUpdateDebugListener != null) {
+        mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
+      }
+
+      Runnable runOperations =
           new Runnable() {
-             @Override
-             public void run() {
-               SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
-                   .arg("BatchId", batchId)
-                   .flush();
-               try {
-                 // All nonBatchedOperations should be executed before regular operations as
-                 // regular operations may depend on them
-                 if (nonBatchedOperations != null) {
-                   for (UIOperation op : nonBatchedOperations) {
-                     op.execute();
-                   }
-                 }
+            @Override
+            public void run() {
+              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+                  .arg("BatchId", batchId)
+                  .flush();
+              try {
+                long runStartTime = SystemClock.uptimeMillis();
 
-                 if (operations != null) {
-                   for (int i = 0; i < operations.size(); i++) {
-                     operations.get(i).execute();
-                   }
-                 }
+                // All nonBatchedOperations should be executed before regular operations as
+                // regular operations may depend on them
+                if (nonBatchedOperations != null) {
+                  for (UIOperation op : nonBatchedOperations) {
+                    op.execute();
+                  }
+                }
 
-                 // Clear layout animation, as animation only apply to current UI operations batch.
-                 mNativeViewHierarchyManager.clearLayoutAnimation();
+                if (batchedOperations != null) {
+                  for (UIOperation op : batchedOperations) {
+                    op.execute();
+                  }
+                }
 
-                 if (mViewHierarchyUpdateDebugListener != null) {
-                   mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
-                 }
-               } catch (Exception e) {
-                 mIsInIllegalUIState = true;
-                 throw e;
-               } finally {
-                 Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-               }
-             }
-           });
-    }
+                if (mIsProfilingNextBatch && mProfiledBatchCommitStartTime == 0) {
+                  mProfiledBatchCommitStartTime = commitStartTime;
+                  mProfiledBatchLayoutTime = layoutTime;
+                  mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
+                  mProfiledBatchRunStartTime = runStartTime;
 
-    // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-    // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
-    // sure any late-arriving UI commands are executed.
-    if (!mIsDispatchUIFrameCallbackEnqueued) {
-      UiThreadUtil.runOnUiThread(
+                  Systrace.beginAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeDispatchViewUpdates",
+                      0,
+                      mProfiledBatchCommitStartTime * 1000000);
+                  Systrace.endAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeDispatchViewUpdates",
+                      0,
+                      mProfiledBatchDispatchViewUpdatesTime * 1000000);
+                  Systrace.beginAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeBatchRunStart",
+                      0,
+                      mProfiledBatchDispatchViewUpdatesTime * 1000000);
+                  Systrace.endAsyncSection(
+                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      "delayBeforeBatchRunStart",
+                      0,
+                      mProfiledBatchRunStartTime * 1000000);
+                }
+
+                // Clear layout animation, as animation only apply to current UI operations batch.
+                mNativeViewHierarchyManager.clearLayoutAnimation();
+
+                if (mViewHierarchyUpdateDebugListener != null) {
+                  mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+                }
+              } catch (Exception e) {
+                mIsInIllegalUIState = true;
+                throw e;
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+              }
+            }
+          };
+
+      SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "acquiring mDispatchRunnablesLock")
+        .arg("batchId", batchId)
+        .flush();
+      synchronized (mDispatchRunnablesLock) {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        mDispatchUIRunnables.add(runOperations);
+      }
+
+      // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
+      // destroyed. In this case it's no longer important to align to frames, but it is important to make
+      // sure any late-arriving UI commands are executed.
+      if (!mIsDispatchUIFrameCallbackEnqueued) {
+        UiThreadUtil.runOnUiThread(
           new GuardedRunnable(mReactApplicationContext) {
             @Override
             public void runGuarded() {
               flushPendingBatches();
             }
           });
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -839,12 +910,35 @@ public class UIViewOperationQueue {
         "Not flushing pending UI operations because of previously thrown Exception");
       return;
     }
+
+    final ArrayList<Runnable> runnables;
     synchronized (mDispatchRunnablesLock) {
-      for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
-        mDispatchUIRunnables.get(i).run();
+      if (!mDispatchUIRunnables.isEmpty()) {
+        runnables = mDispatchUIRunnables;
+        mDispatchUIRunnables = new ArrayList<>();
+      } else {
+        return;
       }
-      mDispatchUIRunnables.clear();
     }
+
+    final long batchedExecutionStartTime = SystemClock.uptimeMillis();
+    for (Runnable runnable : runnables) {
+      runnable.run();
+    }
+
+    if (mIsProfilingNextBatch) {
+      mProfiledBatchBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
+      mIsProfilingNextBatch = false;
+
+      Systrace.beginAsyncSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "batchedExecutionTime",
+          0,
+          batchedExecutionStartTime * 1000000);
+      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+    }
+    mNonBatchedExecutionTotalTime = 0;
   }
 
   /**
@@ -862,13 +956,15 @@ public class UIViewOperationQueue {
    * Using a Choreographer callback (which runs immediately before traversals), we guarantee we run
    * before the next traversal.
    */
-  private class DispatchUIFrameCallback extends GuardedChoreographerFrameCallback {
+  private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
-    private static final int MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS = 8;
     private static final int FRAME_TIME_MS = 16;
+    private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
-    private DispatchUIFrameCallback(ReactContext reactContext) {
+    private DispatchUIFrameCallback(
+        ReactContext reactContext, int minTimeLeftInFrameForNonBatchedOperationMs) {
       super(reactContext);
+      mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
     }
 
     @Override
@@ -896,7 +992,7 @@ public class UIViewOperationQueue {
     private void dispatchPendingNonBatchedOperations(long frameTimeNanos) {
       while (true) {
         long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
-        if (timeLeftInFrame < MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS) {
+        if (timeLeftInFrame < mMinTimeLeftInFrameForNonBatchedOperationMs) {
           break;
         }
 
@@ -910,7 +1006,10 @@ public class UIViewOperationQueue {
         }
 
         try {
+          long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
           nextOperation.execute();
+          mNonBatchedExecutionTotalTime +=
+              SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
         } catch (Exception e) {
           mIsInIllegalUIState = true;
           throw e;

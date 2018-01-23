@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule ImageSnapshotTest
  */
 'use strict';
 
@@ -18,7 +19,7 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-class ImageSnapshotTest extends React.Component {
+class ImageSnapshotTest extends React.Component<{}> {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');

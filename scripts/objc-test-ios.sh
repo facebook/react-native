@@ -1,16 +1,21 @@
 #!/bin/bash
 set -ex
 
+# Script used to run iOS tests.
+# If not arguments are passed to the script, it will only compile
+# the RNTester.
+# If the script is called with a single argument "test", we'll
+# also run the RNTester integration test (needs JS and packager):
+# ./objc-test-ios.sh test
+
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+ROOT=$(dirname "$SCRIPTS")
 
-cd $ROOT
+cd "$ROOT"
 
-XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer"
-XCODE_SDK="iphonesimulator"
-if [ -z ${XCODE_DESTINATION+x} ]; then
-  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.0"
-fi
+SCHEME="RNTester"
+SDK="iphonesimulator"
+DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.3.1"
 
-. ./scripts/objc-test.sh
+# If there's a "test" argument, pass it to the test script.
+. ./scripts/objc-test.sh $1

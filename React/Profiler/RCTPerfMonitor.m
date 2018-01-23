@@ -16,16 +16,19 @@
 #import <mach/mach.h>
 
 #import "RCTBridge.h"
-#import "RCTDevMenu.h"
 #import "RCTDevSettings.h"
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
-#import "RCTJSCExecutor.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
+#import "RCTUtils.h"
+
+#if __has_include("RCTDevMenu.h")
+#import "RCTDevMenu.h"
+#endif
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
@@ -74,11 +77,11 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return info.resident_size;
 }
 
-@class RCTDevMenuItem;
-
 @interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
+#if __has_include("RCTDevMenu.h")
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
+#endif
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *gestureRecognizer;
 @property (nonatomic, strong, readonly) UIView *container;
 @property (nonatomic, strong, readonly) UILabel *memory;
@@ -93,7 +96,9 @@ static vm_size_t RCTGetResidentMemorySize(void)
 @end
 
 @implementation RCTPerfMonitor {
+#if __has_include("RCTDevMenu.h")
   RCTDevMenuItem *_devMenuItem;
+#endif
   UIPanGestureRecognizer *_gestureRecognizer;
   UIView *_container;
   UILabel *_memory;
@@ -126,11 +131,9 @@ static vm_size_t RCTGetResidentMemorySize(void)
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
++ (BOOL)requiresMainQueueSetup
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+  return YES;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -142,7 +145,9 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
+#if __has_include("RCTDevMenu.h")
   [_bridge.devMenu addItem:self.devMenuItem];
+#endif
 }
 
 - (void)invalidate
@@ -150,6 +155,7 @@ RCT_EXPORT_MODULE()
   [self hide];
 }
 
+#if __has_include("RCTDevMenu.h")
 - (RCTDevMenuItem *)devMenuItem
 {
   if (!_devMenuItem) {
@@ -173,6 +179,7 @@ RCT_EXPORT_MODULE()
 
   return _devMenuItem;
 }
+#endif
 
 - (UIPanGestureRecognizer *)gestureRecognizer
 {
@@ -313,7 +320,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [UIApplication sharedApplication].delegate.window;
+  UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
 
@@ -489,10 +496,12 @@ RCT_EXPORT_MODULE()
 
 - (void)tap
 {
+  [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
     _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
-    [self loadPerformanceLoggerData];
+  } else {
+    [_metrics reloadData];
   }
 
   [UIView animateWithDuration:.25 animations:^{

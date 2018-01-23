@@ -9,6 +9,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   hasTVPreferredFocus={undefined}
   hitSlop={undefined}
   isTVSelectable={true}
+  nativeID={undefined}
   onLayout={undefined}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
@@ -16,14 +17,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
-  style={
-    Array [
-      Object {
-        "backgroundColor": "transparent",
-      },
-      Object {},
-    ]
-  }
+  style={Object {}}
   testID={undefined}
   tvParallaxProperties={undefined}
 >
@@ -31,6 +25,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
     accessible={true}
     allowFontScaling={true}
     ellipsizeMode="tail"
+    style={null}
   >
     Touchable
   </Text>

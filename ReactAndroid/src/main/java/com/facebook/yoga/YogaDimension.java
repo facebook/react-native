@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -16,7 +16,7 @@ public enum YogaDimension {
   WIDTH(0),
   HEIGHT(1);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaDimension(int intValue) {
     mIntValue = intValue;

@@ -35,7 +35,7 @@ function library(argv, config, args) {
   }
 
   if (fs.existsSync(libraryDest)) {
-    return Promise.reject(`Library already exists in ${libraryDest}`);
+    return Promise.reject(new Error(`Library already exists in ${libraryDest}`));
   }
 
   walk(source).forEach(f => {
@@ -44,7 +44,7 @@ function library(argv, config, args) {
       return;
     }
 
-    const dest = f.replace(/Sample/g, args.name).replace(/^_/, '.');
+    const dest = path.relative(source, f.replace(/Sample/g, args.name).replace(/^_/, '.'));
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(libraryDest, dest),

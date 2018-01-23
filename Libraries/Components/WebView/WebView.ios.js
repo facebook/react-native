@@ -14,11 +14,13 @@
 var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
@@ -28,7 +30,6 @@ var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
@@ -115,9 +116,20 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
+  static get extraNativeComponentConfig() {
+    return {
+      nativeOnly: {
+        onLoadingStart: true,
+        onLoadingError: true,
+        onLoadingFinish: true,
+        onMessage: true,
+        messagingEnabled: PropTypes.bool,
+      },
+    };
+  }
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -229,6 +241,7 @@ class WebView extends React.Component {
     /**
      * The amount by which the web view content is inset from the edges of
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+     * @platform ios
      */
     contentInset: EdgeInsetsPropType,
     /**
@@ -253,10 +266,10 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
-     * Determines the types of data converted to clickable URLs in the web view’s content.
+     * Determines the types of data converted to clickable URLs in the web view's content.
      * By default only phone numbers are detected.
      *
      * You can provide one type or an array of many types.
@@ -283,6 +296,14 @@ class WebView extends React.Component {
      * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Boolean value to enable third party cookies in the `WebView`. Used on
+     * Android Lollipop and above only as third party cookies are enabled by
+     * default on Android Kitkat and below and on iOS. The default value is `true`.
+     * @platform android
+     */
+    thirdPartyCookiesEnabled: PropTypes.bool,
 
     /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
@@ -334,6 +355,53 @@ class WebView extends React.Component {
      * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Function that accepts a string that will be passed to the WebView and
+     * executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.func,
+
+    /**
+     * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
+     *
+     * Possible values for `mixedContentMode` are:
+     *
+     * - `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
+     * - `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+     * - `'compatibility'` -  WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+     * @platform android
+     */
+    mixedContentMode: PropTypes.oneOf([
+      'never',
+      'always',
+      'compatibility'
+    ]),
+
+    /**
+     * Override the native component used to render the WebView. Enables a custom native
+     * WebView which uses the same JavaScript as the original WebView.
+     */
+    nativeConfig: PropTypes.shape({
+      /*
+       * The native component used to render the WebView.
+       */
+      component: PropTypes.any,
+      /*
+       * Set props directly on the native component WebView. Enables custom props which the
+       * original WebView doesn't pass through.
+       */
+      props: PropTypes.object,
+      /*
+       * Set the ViewManager to use for communcation with the native side.
+       * @platform ios
+       */
+      viewManager: PropTypes.object,
+    }),
+  };
+
+  static defaultProps = {
+    scalesPageToFit: true,
   };
 
   state = {
@@ -377,10 +445,14 @@ class WebView extends React.Component {
       webViewStyles.push(styles.hidden);
     }
 
+    const nativeConfig = this.props.nativeConfig || {};
+
+    const viewManager = nativeConfig.viewManager || RCTWebViewManager;
+
     var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
       var shouldStart = this.props.onShouldStartLoadWithRequest &&
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
-      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+      viewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
     var decelerationRate = processDecelerationRate(this.props.decelerationRate);
@@ -394,8 +466,10 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
+    const NativeWebView = nativeConfig.component || RCTWebView;
+
     var webView =
-      <RCTWebView
+      <NativeWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -416,6 +490,7 @@ class WebView extends React.Component {
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         dataDetectorTypes={this.props.dataDetectorTypes}
+        {...nativeConfig.props}
       />;
 
     return (
@@ -555,15 +630,7 @@ class WebView extends React.Component {
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
-  nativeOnly: {
-    onLoadingStart: true,
-    onLoadingError: true,
-    onLoadingFinish: true,
-    onMessage: true,
-    messagingEnabled: PropTypes.bool,
-  },
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
 
 var styles = StyleSheet.create({
   container: {

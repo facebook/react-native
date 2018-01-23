@@ -9,19 +9,8 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -34,29 +23,56 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.view.WindowManager;
+import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.RequestHandler;
+import com.facebook.react.packagerconnection.Responder;
+
+import com.facebook.react.uimanager.IllegalViewOperationException;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Queue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.Nullable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -78,17 +94,18 @@ import okhttp3.RequestBody;
  * bound to make sure that we don't display overlay or that we we don't listen for sensor events
  * when app is backgrounded.
  *
- * {@link ReactInstanceDevCommandsHandler} implementation is responsible for instantiating this
- * instance and for populating with an instance of {@link CatalystInstance} whenever instance
- * manager recreates it (through {@link #onNewCatalystContextCreated}). Also, instance manager is
- * responsible for enabling/disabling dev support in case when app is backgrounded or when all the
- * views has been detached from the instance (through {@link #setDevSupportEnabled} method).
+ * {@link com.facebook.react.ReactInstanceManager} implementation is responsible for instantiating
+ * this class as well as for populating with a reference to {@link CatalystInstance} whenever
+ * instance manager recreates it (through {@link #onNewReactContextCreated). Also, instance manager
+ * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
+ * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  *
  * IMPORTANT: In order for developer support to work correctly it is required that the
  * manifest of your application contain the following entries:
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
+@TargetApi(11)
 public class DevSupportManagerImpl implements
     DevSupportManager,
     PackagerCommandListener,
@@ -97,7 +114,7 @@ public class DevSupportManagerImpl implements
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
-  private static enum ErrorType {
+  private enum ErrorType {
     JS,
     NATIVE
   }
@@ -105,20 +122,27 @@ public class DevSupportManagerImpl implements
   private static final String EXOPACKAGE_LOCATION_FORMAT
       = "/data/local/tmp/exopackage/%s//secondary-dex";
 
+  public static final String EMOJI_HUNDRED_POINTS_SYMBOL = " \uD83D\uDCAF";
+  public static final String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " \uD83D\uDE45";
+
+  private final List<ExceptionLogger> mExceptionLoggers = new ArrayList<>();
+
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
   private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions =
       new LinkedHashMap<>();
-  private final ReactInstanceDevCommandsHandler mReactInstanceCommandsHandler;
+  private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DevLoadingViewController mDevLoadingViewController;
 
   private @Nullable RedBoxDialog mRedBoxDialog;
   private @Nullable AlertDialog mDevOptionsDialog;
   private @Nullable DebugOverlayController mDebugOverlayController;
+  private boolean mDevLoadingViewVisible = false;
   private @Nullable ReactContext mCurrentContext;
   private DevInternalSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
@@ -129,6 +153,8 @@ public class DevSupportManagerImpl implements
   private @Nullable StackFrame[] mLastErrorStack;
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
+  private @Nullable DevBundleDownloadListener mBundleDownloadListener;
+  private @Nullable List<ErrorCustomizer> mErrorCustomizers;
 
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
@@ -165,29 +191,34 @@ public class DevSupportManagerImpl implements
 
   public DevSupportManagerImpl(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManagerDevHelper reactInstanceManagerHelper,
     @Nullable String packagerPathForJSBundleName,
-    boolean enableOnCreate) {
+    boolean enableOnCreate,
+    int minNumShakes) {
 
     this(applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManagerHelper,
       packagerPathForJSBundleName,
       enableOnCreate,
-      null);
+      null,
+      null,
+      minNumShakes);
   }
 
   public DevSupportManagerImpl(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler) {
-
-    mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
+      @Nullable RedBoxHandler redBoxHandler,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      int minNumShakes) {
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
+    mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -195,7 +226,7 @@ public class DevSupportManagerImpl implements
       public void onShake() {
         showDevOptionsDialog();
       }
-    });
+    }, minNumShakes);
 
     // Prepare reload APP broadcast receiver (will be registered/unregistered from #reload)
     mReloadAppBroadcastReceiver = new BroadcastReceiver() {
@@ -226,24 +257,115 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
+    mDevLoadingViewController =
+            new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
+
+    mExceptionLoggers.add(new JSExceptionLogger());
+    mExceptionLoggers.add(new StackOverflowExceptionLogger());
   }
 
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
-      if (e instanceof JSException) {
-        FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-        // TODO #11638796: convert the stack into something useful
-        showNewError(
-            e.getMessage() + "\n\n" + ((JSException) e).getStack(),
-            new StackFrame[] {},
-            JSEXCEPTION_ERROR_COOKIE,
-            ErrorType.JS);
-      } else {
-        showNewJavaError(e.getMessage(), e);
+
+      for (ExceptionLogger logger : mExceptionLoggers) {
+        logger.log(e);
       }
+
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
+    }
+  }
+
+  private interface ExceptionLogger {
+    void log(Exception ex);
+  }
+
+  private class JSExceptionLogger implements ExceptionLogger {
+
+    @Override
+    public void log(Exception e) {
+      StringBuilder message = new StringBuilder(e.getMessage());
+      Throwable cause = e.getCause();
+      while (cause != null) {
+        message.append("\n\n").append(cause.getMessage());
+        cause = cause.getCause();
+      }
+
+      if (e instanceof JSException) {
+        FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
+        String stack = ((JSException) e).getStack();
+        message.append("\n\n").append(stack);
+
+        // TODO #11638796: convert the stack into something useful
+        showNewError(
+          message.toString(),
+          new StackFrame[]{},
+          JSEXCEPTION_ERROR_COOKIE,
+          ErrorType.JS);
+      } else {
+        showNewJavaError(message.toString(), e);
+      }
+    }
+  }
+
+  private class StackOverflowExceptionLogger implements ExceptionLogger {
+
+    @Override
+    public void log(Exception e) {
+      if (e instanceof IllegalViewOperationException
+        && e.getCause() instanceof StackOverflowError) {
+        IllegalViewOperationException ivoe = (IllegalViewOperationException) e;
+        View view = ivoe.getView();
+        if (view != null)
+          logDeepestJSHierarchy(view);
+      }
+    }
+
+    private void logDeepestJSHierarchy(View view) {
+      if (mCurrentContext == null || view == null) return;
+
+      final Pair<View, Integer> deepestPairView = getDeepestNativeView(view);
+
+      View deepestView = deepestPairView.first;
+      Integer tagId = deepestView.getId();
+      final int depth = deepestPairView.second;
+      JSDevSupport JSDevSupport = mCurrentContext.getNativeModule(JSDevSupport.class);
+      JSDevSupport.getJSHierarchy(tagId.toString(), new JSDevSupport.DevSupportCallback() {
+        @Override
+        public void onSuccess(String hierarchy) {
+          FLog.e(ReactConstants.TAG,
+            "StackOverflowError when rendering JS Hierarchy (depth of native hierarchy = " +
+              depth +  "): \n" + hierarchy);
+        }
+
+        @Override
+        public void onFailure(Exception ex) {
+          FLog.e(ReactConstants.TAG, ex,
+            "Error retrieving JS Hierarchy (depth of native hierarchy = " + depth + ").");
+        }
+      });
+    }
+
+    private Pair<View, Integer> getDeepestNativeView(View root) {
+      Queue<Pair<View, Integer>> queue = new LinkedList<>();
+      Pair<View, Integer> maxPair = new Pair<>(root, 1);
+
+      queue.add(maxPair);
+      while (!queue.isEmpty()) {
+        Pair<View, Integer> current = queue.poll();
+        if (current.second > maxPair.second) {
+          maxPair = current;
+        }
+        if (current.first instanceof ViewGroup) {
+          ViewGroup viewGroup = (ViewGroup) current.first;
+          Integer depth = current.second + 1;
+          for (int i = 0 ; i < viewGroup.getChildCount() ; i++) {
+            queue.add(new Pair<>(viewGroup.getChildAt(i), depth));
+          }
+        }
+      }
+      return maxPair;
     }
   }
 
@@ -271,33 +393,58 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
+  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer){
+    if (mErrorCustomizers == null){
+      mErrorCustomizers = new ArrayList<>();
+    }
+    mErrorCustomizers.add(errorCustomizer);
+  }
+
+  private Pair<String, StackFrame[]> processErrorCustomizers(
+      Pair<String, StackFrame[]> errorInfo) {
+    if (mErrorCustomizers == null) {
+      return errorInfo;
+    } else {
+      for (ErrorCustomizer errorCustomizer : mErrorCustomizers) {
+        Pair<String, StackFrame[]> result = errorCustomizer.customizeErrorInfo(errorInfo);
+        if (result != null) {
+          errorInfo = result;
+        }
+      }
+      return errorInfo;
+    }
+  }
+
+  @Override
   public void updateJSError(
-      final String message,
-      final ReadableArray details,
-      final int errorCookie) {
+    final String message,
+    final ReadableArray details,
+    final int errorCookie) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Since we only show the first JS error in a succession of JS errors, make sure we only
-            // update the error message for that error message. This assumes that updateJSError
-            // belongs to the most recent showNewJSError
-            if (mRedBoxDialog == null ||
-                !mRedBoxDialog.isShowing() ||
-                errorCookie != mLastErrorCookie) {
-              return;
-            }
-            StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
-            mRedBoxDialog.setExceptionDetails(message, stack);
-            updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
-            // JS errors are reported here after source mapping.
-            if (mRedBoxHandler != null) {
-              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
-              mRedBoxDialog.resetReporting(true);
-            }
-            mRedBoxDialog.show();
+      new Runnable() {
+        @Override
+        public void run() {
+          // Since we only show the first JS error in a succession of JS errors, make sure we only
+          // update the error message for that error message. This assumes that updateJSError
+          // belongs to the most recent showNewJSError
+          if (mRedBoxDialog == null ||
+            !mRedBoxDialog.isShowing() ||
+            errorCookie != mLastErrorCookie) {
+            return;
           }
-        });
+          StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
+          Pair<String, StackFrame[]> errorInfo =
+            processErrorCustomizers(Pair.create(message, stack));
+          mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
+          updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
+          // JS errors are reported here after source mapping.
+          if (mRedBoxHandler != null) {
+            mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
+            mRedBoxDialog.resetReporting();
+          }
+          mRedBoxDialog.show();
+        }
+      });
   }
 
   @Override
@@ -305,6 +452,14 @@ public class DevSupportManagerImpl implements
     // dismiss redbox if exists
     if (mRedBoxDialog != null) {
       mRedBoxDialog.dismiss();
+      mRedBoxDialog = null;
+    }
+  }
+
+  private void hideDevOptionsDialog() {
+    if (mDevOptionsDialog != null) {
+      mDevOptionsDialog.dismiss();
+      mDevOptionsDialog = null;
     }
   }
 
@@ -318,24 +473,28 @@ public class DevSupportManagerImpl implements
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-              mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+              Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+              if (context == null || context.isFinishing()) {
+                FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " +
+                  "is not available, here is the error that redbox would've displayed: " + message);
+                return;
+              }
+              mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerImpl.this, mRedBoxHandler);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
               // show the first and most actionable one.
               return;
             }
-            mRedBoxDialog.setExceptionDetails(message, stack);
+            Pair<String, StackFrame[]> errorInfo = processErrorCustomizers(Pair.create(message, stack));
+            mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
             updateLastErrorInfo(message, stack, errorCookie, errorType);
             // Only report native errors here. JS errors are reported
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
-              mRedBoxDialog.resetReporting(true);
-            } else {
-              mRedBoxDialog.resetReporting(false);
             }
+            mRedBoxDialog.resetReporting();
             mRedBoxDialog.show();
           }
         });
@@ -349,16 +508,36 @@ public class DevSupportManagerImpl implements
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
     /* register standard options */
     options.put(
-        mApplicationContext.getString(R.string.catalyst_reloadjs), new DevOptionHandler() {
+        mApplicationContext.getString(R.string.catalyst_reloadjs),
+        new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
             handleReloadJS();
           }
         });
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      // The concatenation is applied directly here because XML isn't emoji-friendly
+      String nuclideJsDebugMenuItemTitle =
+          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide)
+              + EMOJI_HUNDRED_POINTS_SYMBOL;
+      options.put(
+          nuclideJsDebugMenuItemTitle,
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+            }
+          });
+    }
+    String remoteJsDebugMenuItemTitle =
+        mDevSettings.isRemoteJSDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_debugjs_off)
+            : mApplicationContext.getString(R.string.catalyst_debugjs);
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
+    }
     options.put(
-        mDevSettings.isRemoteJSDebugEnabled() ?
-            mApplicationContext.getString(R.string.catalyst_debugjs_off) :
-            mApplicationContext.getString(R.string.catalyst_debugjs),
+        remoteJsDebugMenuItemTitle,
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -366,19 +545,6 @@ public class DevSupportManagerImpl implements
             handleReloadJS();
           }
         });
-    if (Inspector.isSupported()) {
-      options.put(
-        "Debug JS on-device (experimental)", new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            List<Inspector.Page> pages = Inspector.getPages();
-            if (pages.size() > 0) {
-              // TODO: We should get the actual page id instead of the first one.
-              mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
-            }
-          }
-        });
-    }
     options.put(
       mDevSettings.isReloadOnJSChangeEnabled()
         ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
@@ -406,7 +572,7 @@ public class DevSupportManagerImpl implements
           @Override
           public void onOptionSelected() {
             mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-            mReactInstanceCommandsHandler.toggleElementInspector();
+            mReactInstanceManagerHelper.toggleElementInspector();
           }
         });
     options.put(
@@ -416,23 +582,24 @@ public class DevSupportManagerImpl implements
       new DevOptionHandler() {
         @Override
         public void onOptionSelected() {
+          if (!mDevSettings.isFpsDebugEnabled()) {
+            // Request overlay permission if needed when "Show Perf Monitor" option is selected
+            Context context = mReactInstanceManagerHelper.getCurrentActivity();
+            if (context == null) {
+              FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+            } else {
+              DebugOverlayController.requestPermission(context);
+            }
+          }
           mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
         }
       });
-    options.put(
-        mApplicationContext.getString(R.string.catalyst_heap_capture),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            handleCaptureHeap();
-          }
-        });
     options.put(
         mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            handlePokeSamplingProfiler(null);
+            handlePokeSamplingProfiler();
           }
         });
     options.put(
@@ -451,8 +618,14 @@ public class DevSupportManagerImpl implements
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
+    Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+    if (context == null || context.isFinishing()) {
+      FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " +
+              "isn't available");
+      return;
+    }
     mDevOptionsDialog =
-        new AlertDialog.Builder(mApplicationContext)
+        new AlertDialog.Builder(context)
             .setItems(
                 options.keySet().toArray(new String[0]),
                 new DialogInterface.OnClickListener() {
@@ -469,7 +642,6 @@ public class DevSupportManagerImpl implements
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
 
@@ -481,7 +653,7 @@ public class DevSupportManagerImpl implements
   @Override
   public void setDevSupportEnabled(boolean isDevSupportEnabled) {
     mIsDevSupportEnabled = isDevSupportEnabled;
-    reload();
+    reloadSettings();
   }
 
   @Override
@@ -537,11 +709,6 @@ public class DevSupportManagerImpl implements
     return mJSBundleTempFile.getAbsolutePath();
   }
 
-  @Override
-  public String getHeapCaptureUploadUrl() {
-    return mDevServerHelper.getHeapCaptureUploadUrl();
-  }
-
   /**
    * @return {@code true} if {@link com.facebook.react.ReactInstanceManager} should use downloaded JS bundle file
    * instead of using JS file from assets. This may happen when app has not been updated since
@@ -555,7 +722,7 @@ public class DevSupportManagerImpl implements
         PackageInfo thisPackage = mApplicationContext.getPackageManager()
             .getPackageInfo(packageName, 0);
         if (mJSBundleTempFile.lastModified() > thisPackage.lastUpdateTime) {
-          // Base APK has not been updated since we donwloaded JS, but if app is using exopackage
+          // Base APK has not been updated since we downloaded JS, but if app is using exopackage
           // it may only be a single dex that has been updated. We check for exopackage dir update
           // time in that case.
           File exopackageDir = new File(
@@ -575,8 +742,8 @@ public class DevSupportManagerImpl implements
 
   /**
    * @return {@code true} if JS bundle {@param bundleAssetName} exists, in that case
-   * {@link ReactInstanceManager} should use that file from assets instead of downloading bundle
-   * from dev server
+   * {@link com.facebook.react.ReactInstanceManager} should use that file from assets instead of
+   * downloading bundle from dev server
    */
   public boolean hasBundleInAssets(String bundleAssetName) {
     try {
@@ -626,23 +793,39 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void reloadSettings() {
-    reload();
+    if (UiThreadUtil.isOnUiThread()) {
+      reload();
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          reload();
+        }
+      });
+    }
   }
 
   public void onInternalSettingsChanged() { reloadSettings(); }
 
   @Override
   public void handleReloadJS() {
+
     UiThreadUtil.assertOnUiThread();
 
+    ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
+
     // dismiss redbox if exists
-    if (mRedBoxDialog != null) {
-      mRedBoxDialog.dismiss();
-    }
+    hideRedboxDialog();
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      reloadJSInProxyMode(showProgressDialog());
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
+      mDevLoadingViewController.showForRemoteJSEnabled();
+      mDevLoadingViewVisible = true;
+      reloadJSInProxyMode();
     } else {
+      PrinterHolder.getPrinter()
+          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
       String bundleURL =
         mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
       reloadJSFromServer(bundleURL);
@@ -672,7 +855,19 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
+  public void onPackagerConnected() {
+    // No-op
+  }
+
+  @Override
+  public void onPackagerDisconnected() {
+    // No-op
+  }
+
+  @Override
   public void onPackagerReloadCommand() {
+    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+    mDevServerHelper.disableDebugger();
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -682,32 +877,69 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onCaptureHeapCommand() {
+  public void onPackagerDevMenuCommand() {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handleCaptureHeap();
+        showDevOptionsDialog();
       }
     });
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
+  public void onCaptureHeapCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler(responder);
+        handleCaptureHeap(responder);
       }
     });
   }
 
-  private void handleCaptureHeap() {
-    JSCHeapCapture.captureHeap(
-      mApplicationContext.getCacheDir().getPath(),
-      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+  @Override
+  public void onPokeSamplingProfilerCommand(final Responder responder) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if (mCurrentContext == null) {
+          responder.error("JSCContext is missing, unable to profile");
+          return;
+        }
+        try {
+          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
+          synchronized (jsContext) {
+            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
+            handler.onRequest(null, responder);
+          }
+        } catch (Exception e) {
+          // Module not present
+        }
+      }
+    });
   }
 
-  private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
+  private void handleCaptureHeap(final Responder responder) {
+    if (mCurrentContext == null) {
+      return;
+    }
+    JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
+    heapCapture.captureHeap(
+      mApplicationContext.getCacheDir().getPath(),
+      new JSCHeapCapture.CaptureCallback() {
+        @Override
+        public void onSuccess(File capture) {
+          responder.respond(capture.toString());
+        }
+
+        @Override
+        public void onFailure(JSCHeapCapture.CaptureException error) {
+          responder.error(error.toString());
+        }
+      });
+  }
+
+  private void handlePokeSamplingProfiler() {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -717,16 +949,9 @@ public class DevSupportManagerImpl implements
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (responder != null) {
-          // Responder is provided, so there is a client waiting our response
-          responder.respond(result == null ? "started" : result);
-        } else if (result != null) {
-          // The profile was not initiated by external client, so process the
-          // profile if there is one in the result
-          new JscProfileTask(getSourceUrl()).executeOnExecutor(
-              AsyncTask.THREAD_POOL_EXECUTOR,
-              result);
-        }
+        new JscProfileTask(getSourceUrl()).executeOnExecutor(
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            result);
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
       showNewJavaError(e.getMessage(), e);
@@ -744,7 +969,7 @@ public class DevSupportManagerImpl implements
     mLastErrorType = errorType;
   }
 
-  private void reloadJSInProxyMode(final AlertDialog progressDialog) {
+  private void reloadJSInProxyMode() {
     // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
     // anyway
     mDevServerHelper.launchJSDevtools();
@@ -756,7 +981,7 @@ public class DevSupportManagerImpl implements
         SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
         executor.connect(
             mDevServerHelper.getWebsocketProxyURL(),
-            getExecutorConnectCallback(progressDialog, future));
+            getExecutorConnectCallback(future));
         // TODO(t9349129) Don't use timeout
         try {
           future.get(90, TimeUnit.SECONDS);
@@ -768,22 +993,23 @@ public class DevSupportManagerImpl implements
         }
       }
     };
-    mReactInstanceCommandsHandler.onReloadWithJSDebugger(factory);
+    mReactInstanceManagerHelper.onReloadWithJSDebugger(factory);
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final AlertDialog progressDialog,
       final SimpleSettableFuture<Boolean> future) {
     return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
       @Override
       public void onSuccess() {
         future.set(true);
-        progressDialog.dismiss();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
       }
 
       @Override
       public void onFailure(final Throwable cause) {
-        progressDialog.dismiss();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
         FLog.e(ReactConstants.TAG, "Unable to connect to remote debugger", cause);
         future.setException(
             new IOException(
@@ -792,39 +1018,48 @@ public class DevSupportManagerImpl implements
     };
   }
 
-  private AlertDialog showProgressDialog() {
-    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
-      .setTitle(R.string.catalyst_jsload_title)
-      .setMessage(mApplicationContext.getString(
-          mDevSettings.isRemoteJSDebugEnabled() ?
-          R.string.catalyst_remotedbg_message :
-          R.string.catalyst_jsload_message))
-      .create();
-    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-    dialog.show();
-    return dialog;
-  }
-
   public void reloadJSFromServer(final String bundleURL) {
-    final AlertDialog progressDialog = showProgressDialog();
+    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
-    mDevServerHelper.downloadBundleFromURL(
-        new DevServerHelper.BundleDownloadCallback() {
+    mDevLoadingViewController.showForUrl(bundleURL);
+    mDevLoadingViewVisible = true;
+
+    final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
+
+    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+        new DevBundleDownloadListener() {
           @Override
           public void onSuccess() {
-            progressDialog.dismiss();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onSuccess();
+            }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
                   public void run() {
-                    mReactInstanceCommandsHandler.onJSBundleLoadedFromServer();
+                    ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }
 
           @Override
+          public void onProgress(@Nullable final String status, @Nullable final Integer done, @Nullable final Integer total) {
+            mDevLoadingViewController.updateProgress(status, done, total);
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onProgress(status, done, total);
+            }
+          }
+
+          @Override
           public void onFailure(final Exception cause) {
-            progressDialog.dismiss();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
+            if (mBundleDownloadListener != null) {
+              mBundleDownloadListener.onFailure(cause);
+            }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -843,17 +1078,25 @@ public class DevSupportManagerImpl implements
           }
         },
         mJSBundleTempFile,
-        bundleURL);
-    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-      @Override
-      public void onCancel(DialogInterface dialog) {
-        mDevServerHelper.cancelDownloadBundleFromURL();
-      }
-    });
-    progressDialog.setCancelable(true);
+        bundleURL,
+        bundleInfo);
+  }
+
+  @Override
+  public void startInspector() {
+    if (mIsDevSupportEnabled) {
+      mDevServerHelper.openInspectorConnection();
+    }
+  }
+
+  @Override
+  public void stopInspector() {
+    mDevServerHelper.closeInspectorConnection();
   }
 
   private void reload() {
+    UiThreadUtil.assertOnUiThread();
+
     // reload settings, show/hide debug overlay if required & start/stop shake detector
     if (mIsDevSupportEnabled) {
       // update visibility of FPS debug overlay depending on the settings
@@ -876,8 +1119,12 @@ public class DevSupportManagerImpl implements
         mIsReceiverRegistered = true;
       }
 
-      mDevServerHelper.openPackagerConnection(this);
-      mDevServerHelper.openInspectorConnection();
+      // show the dev loading if it should be
+      if (mDevLoadingViewVisible) {
+        mDevLoadingViewController.show();
+      }
+
+      mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -908,18 +1155,16 @@ public class DevSupportManagerImpl implements
       }
 
       // hide redbox dialog
-      if (mRedBoxDialog != null) {
-        mRedBoxDialog.dismiss();
-      }
+      hideRedboxDialog();
 
       // hide dev options dialog
-      if (mDevOptionsDialog != null) {
-        mDevOptionsDialog.dismiss();
-      }
+      hideDevOptionsDialog();
 
+      // hide loading view
+      mDevLoadingViewController.hide();
       mDevServerHelper.closePackagerConnection();
-      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }
+
 }

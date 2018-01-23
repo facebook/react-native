@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule IntegrationTestsApp
  */
 'use strict';
 
@@ -21,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-// Keep this list in sync with UIExplorerIntegrationTests.m
+// Keep this list in sync with RNTesterIntegrationTests.m
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
@@ -32,10 +33,16 @@ var TESTS = [
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./WebViewTest'),
+  require('./SyncMethodTest'),
   require('./WebSocketTest'),
+  require('./AccessibilityManagerTest'),
 ];
 
 TESTS.forEach(
+  /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
+   * suppresses an error found when Flow v0.54 was deployed. To see the error
+   * delete this comment and run Flow. */
   (test) => AppRegistry.registerComponent(test.displayName, () => test)
 );
 
@@ -44,7 +51,7 @@ require('LoggingTestModule');
 
 type Test = any;
 
-class IntegrationTestsApp extends React.Component {
+class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
   state = {
     test: (null: ?Test),
   };
@@ -53,6 +60,9 @@ class IntegrationTestsApp extends React.Component {
     if (this.state.test) {
       return (
         <ScrollView>
+          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+            * comment suppresses an error when upgrading Flow's support for
+            * React. To see the error delete this comment and run Flow. */}
           <this.state.test />
         </ScrollView>
       );

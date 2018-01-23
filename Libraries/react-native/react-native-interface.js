@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule react-native-interface
  */
 'use strict';
 
@@ -23,5 +24,5 @@ declare var Headers: any;
 declare var Request: any;
 declare var Response: any;
 declare module requestAnimationFrame {
-  declare var exports: (callback: any) => any;
+  declare module.exports: (callback: any) => any;
 }

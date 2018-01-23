@@ -9,13 +9,11 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
 import android.util.SparseBooleanArray;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import javax.annotation.Nullable;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI

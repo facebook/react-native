@@ -8,16 +8,21 @@
  *
  * @providesModule LayoutAnimation
  * @flow
+ * @format
  */
 'use strict';
 
-var {PropTypes} = require('React');
-var UIManager = require('UIManager');
+const PropTypes = require('prop-types');
+const UIManager = require('UIManager');
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var keyMirror = require('fbjs/lib/keyMirror');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const keyMirror = require('fbjs/lib/keyMirror');
 
-var TypesEnum = {
+const {checkPropTypes} = PropTypes;
+
+const TypesEnum = {
   spring: true,
   linear: true,
   easeInEaseOut: true,
@@ -25,24 +30,23 @@ var TypesEnum = {
   easeOut: true,
   keyboard: true,
 };
-var Types = keyMirror(TypesEnum);
+const Types = keyMirror(TypesEnum);
 
-var PropertiesEnum = {
+const PropertiesEnum = {
   opacity: true,
   scaleXY: true,
 };
-var Properties = keyMirror(PropertiesEnum);
+const Properties = keyMirror(PropertiesEnum);
 
-var animChecker = createStrictShapeTypeChecker({
+const animType = PropTypes.shape({
   duration: PropTypes.number,
   delay: PropTypes.number,
   springDamping: PropTypes.number,
   initialVelocity: PropTypes.number,
-  type: PropTypes.oneOf(
-    Object.keys(Types)
-  ).isRequired,
-  property: PropTypes.oneOf( // Only applies to create/delete
-    Object.keys(Properties)
+  type: PropTypes.oneOf(Object.keys(Types)).isRequired,
+  property: PropTypes.oneOf(
+    // Only applies to create/delete
+    Object.keys(Properties),
   ),
 });
 
@@ -53,13 +57,13 @@ type Anim = {
   initialVelocity?: number,
   type?: $Enum<typeof TypesEnum>,
   property?: $Enum<typeof PropertiesEnum>,
-}
+};
 
-var configChecker = createStrictShapeTypeChecker({
+const configType = PropTypes.shape({
   duration: PropTypes.number.isRequired,
-  create: animChecker,
-  update: animChecker,
-  delete: animChecker,
+  create: animType,
+  update: animType,
+  delete: animType,
 });
 
 type Config = {
@@ -67,14 +71,22 @@ type Config = {
   create?: Anim,
   update?: Anim,
   delete?: Anim,
+};
+
+function checkConfig(config: Config, location: string, name: string) {
+  checkPropTypes({config: configType}, {config}, location, name);
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
   if (__DEV__) {
-    configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+    checkConfig(config, 'config', 'LayoutAnimation.configureNext');
   }
   UIManager.configureNextLayoutAnimation(
-    config, onAnimationDidEnd || function() {}, function() { /* unused */ }
+    config,
+    onAnimationDidEnd || function() {},
+    function() {
+      /* unused */
+    },
   );
 }
 
@@ -95,13 +107,9 @@ function create(duration: number, type, creationProp): Config {
   };
 }
 
-var Presets = {
-  easeInEaseOut: create(
-    300, Types.easeInEaseOut, Properties.opacity
-  ),
-  linear: create(
-    500, Types.linear, Properties.opacity
-  ),
+const Presets = {
+  easeInEaseOut: create(300, Types.easeInEaseOut, Properties.opacity),
+  linear: create(500, Types.linear, Properties.opacity),
   spring: {
     duration: 700,
     create: {
@@ -129,7 +137,7 @@ var Presets = {
  *
  *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
-var LayoutAnimation = {
+const LayoutAnimation = {
   /**
    * Schedules an animation to happen on the next layout.
    *
@@ -151,17 +159,11 @@ var LayoutAnimation = {
   create,
   Types,
   Properties,
-  configChecker: configChecker,
+  checkConfig,
   Presets,
-  easeInEaseOut: configureNext.bind(
-    null, Presets.easeInEaseOut
-  ),
-  linear: configureNext.bind(
-    null, Presets.linear
-  ),
-  spring: configureNext.bind(
-    null, Presets.spring
-  ),
+  easeInEaseOut: configureNext.bind(null, Presets.easeInEaseOut),
+  linear: configureNext.bind(null, Presets.linear),
+  spring: configureNext.bind(null, Presets.spring),
 };
 
 module.exports = LayoutAnimation;

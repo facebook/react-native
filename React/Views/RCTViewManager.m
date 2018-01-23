@@ -16,6 +16,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
@@ -114,11 +115,20 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
+RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
+
+// Acessibility related properties
+RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
+RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifier, NSString)
+
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
-RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
-RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
@@ -219,8 +229,6 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
     }
   }
 }
-RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
@@ -240,6 +248,8 @@ RCT_VIEW_BORDER_PROPERTY(Top)
 RCT_VIEW_BORDER_PROPERTY(Right)
 RCT_VIEW_BORDER_PROPERTY(Bottom)
 RCT_VIEW_BORDER_PROPERTY(Left)
+RCT_VIEW_BORDER_PROPERTY(Start)
+RCT_VIEW_BORDER_PROPERTY(End)
 
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                           \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)        \
@@ -251,19 +261,24 @@ RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)        \
 
 RCT_VIEW_BORDER_RADIUS_PROPERTY(TopLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopEnd)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomEnd)
 
+RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
 
-RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
-
 RCT_EXPORT_SHADOW_PROPERTY(top, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(right, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(start, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(end, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(bottom, YGValue)
-RCT_EXPORT_SHADOW_PROPERTY(left, YGValue);
+RCT_EXPORT_SHADOW_PROPERTY(left, YGValue)
 
 RCT_EXPORT_SHADOW_PROPERTY(width, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(height, YGValue)
@@ -277,12 +292,16 @@ RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderStartWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderEndWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderWidth, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(marginTop, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginRight, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginBottom, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginLeft, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginStart, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginEnd, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginVertical, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(margin, YGValue)
@@ -291,6 +310,8 @@ RCT_EXPORT_SHADOW_PROPERTY(paddingTop, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(paddingRight, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingStart, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingEnd, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, YGValue)
 RCT_EXPORT_SHADOW_PROPERTY(padding, YGValue)
@@ -304,14 +325,15 @@ RCT_EXPORT_SHADOW_PROPERTY(flexWrap, YGWrap)
 RCT_EXPORT_SHADOW_PROPERTY(justifyContent, YGJustify)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
+RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
-RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
 RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end

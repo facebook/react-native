@@ -1,18 +1,20 @@
-cxx_library(
-  name = 'yoga',
-  force_static = True,
-  srcs = glob(['yoga/*.c']),
-  header_namespace = '',
-  compiler_flags = [
-    '-fno-omit-frame-pointer',
-    '-fexceptions',
-    '-Wall',
-    '-Werror',
-    '-std=c99',
-    '-O3',
-  ],
-  exported_headers = glob(['yoga/*.h']),
-  deps = [
-  ],
-  visibility = ['PUBLIC'],
+load("//ReactNative:DEFS", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "yoga",
+    srcs = glob(["yoga/*.cpp"]),
+    header_namespace = "",
+    exported_headers = glob(["yoga/*.h"]),
+    compiler_flags = [
+        "-fno-omit-frame-pointer",
+        "-fexceptions",
+        "-Wall",
+        "-Werror",
+        "-std=c++1y",
+        "-O3",
+    ],
+    force_static = True,
+    visibility = ["PUBLIC"],
+    deps = [
+    ],
 )

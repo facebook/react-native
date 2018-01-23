@@ -1,3 +1,5 @@
+load("//ReactNative:DEFS", "cxx_library")
+
 # Copyright (c) 2014-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -6,12 +8,12 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 cxx_library(
-  name = 'jni-hack',
-  force_static = True,
-  header_namespace = '',
-  exported_headers = [
-    'jni.h',
-    'real/jni.h',
-  ],
-  visibility = ['PUBLIC'],
+    name = "jni-hack",
+    header_namespace = "",
+    exported_headers = [
+        "jni.h",
+        "real/jni.h",
+    ],
+    force_static = True,
+    visibility = ["PUBLIC"],
 )

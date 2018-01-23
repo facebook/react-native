@@ -9,25 +9,22 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
+import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.view.View;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.Spacing;
-import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -35,6 +32,7 @@ import com.facebook.yoga.YogaConstants;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@TargetApi(11)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
@@ -102,7 +100,7 @@ public class ReactScrollViewManager
    * @param scrollPerfTag
    */
   @ReactProp(name = "scrollPerfTag")
-  public void setScrollPerfTag(ReactScrollView view, String scrollPerfTag) {
+  public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
   }
 
@@ -144,9 +142,13 @@ public class ReactScrollViewManager
   }
 
   @Override
+  public void flashScrollIndicators(ReactScrollView scrollView) {
+    scrollView.flashScrollIndicators();
+  }
+
+  @Override
   public void scrollTo(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+      ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.smoothScrollTo(data.mDestX, data.mDestY);
     } else {
@@ -196,8 +198,8 @@ public class ReactScrollViewManager
   }, customType = "Color")
   public void setBorderColor(ReactScrollView view, int index, Integer color) {
     float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
+        color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
@@ -216,16 +218,15 @@ public class ReactScrollViewManager
   }
 
   @Override
-  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+  public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
   }
 
-  public static Map createExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.builder()
+  public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
         .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
         .put(ScrollEventType.BEGIN_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollBeginDrag"))
         .put(ScrollEventType.END_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollEndDrag"))
-        .put(ScrollEventType.ANIMATION_END.getJSEventName(), MapBuilder.of("registrationName", "onScrollAnimationEnd"))
         .put(ScrollEventType.MOMENTUM_BEGIN.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
         .put(ScrollEventType.MOMENTUM_END.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();

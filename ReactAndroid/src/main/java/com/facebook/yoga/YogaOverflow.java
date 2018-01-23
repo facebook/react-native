@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -17,7 +17,7 @@ public enum YogaOverflow {
   HIDDEN(1),
   SCROLL(2);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaOverflow(int intValue) {
     mIntValue = intValue;

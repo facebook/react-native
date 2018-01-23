@@ -1,24 +1,25 @@
+load("//ReactNative:DEFS", "cxx_library", "GLOG_DEP")
+
 cxx_library(
-  name = 'microprofiler',
-  force_static = True,
-  compiler_flags = [
-    '-Wall',
-    '-Werror',
-    '-std=c++11',
-    '-fexceptions',
-  ],
-  xcode_public_headers_symlinks = True,
-  exported_headers = [
-    'MicroProfiler.h',
-  ],
-  srcs = [
-    'MicroProfiler.cpp',
-  ],
-  header_namespace = 'microprofiler',
-  deps = [
-    '//xplat/third-party/glog:glog',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "microprofiler",
+    srcs = [
+        "MicroProfiler.cpp",
+    ],
+    header_namespace = "microprofiler",
+    exported_headers = [
+        "MicroProfiler.h",
+    ],
+    compiler_flags = [
+        "-Wall",
+        "-Werror",
+        "-std=c++11",
+        "-fexceptions",
+    ],
+    force_static = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        GLOG_DEP,
+    ],
 )

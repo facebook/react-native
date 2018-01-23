@@ -1,8 +1,9 @@
-android_library(
-  name = 'perftest',
-  srcs = glob(['*.java']),
-  visibility = [
-    'PUBLIC',
-  ],
-)
+load("//ReactNative:DEFS", "rn_android_library")
 
+rn_android_library(
+    name = "perftest",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+)

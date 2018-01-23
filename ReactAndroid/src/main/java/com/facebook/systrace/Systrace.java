@@ -19,9 +19,10 @@ import android.os.Trace;
 public class Systrace {
 
   public static final long TRACE_TAG_REACT_JAVA_BRIDGE = 0L;
-  public static final long TRACE_TAG_REACT_FRESCO = 0L;
   public static final long TRACE_TAG_REACT_APPS = 0L;
+  public static final long TRACE_TAG_REACT_FRESCO = 0L;
   public static final long TRACE_TAG_REACT_VIEW = 0L;
+  public static final long TRACE_TAG_REACT_JS_VM_CALLS = 0L;
 
   public enum EventScope {
     THREAD('t'),
@@ -73,12 +74,18 @@ public class Systrace {
       final int cookie) {
   }
 
+  public static void beginAsyncSection(
+      long tag, final String sectionName, final int cookie, final long startNanos) {}
+  
   public static void endAsyncSection(
       long tag,
       final String sectionName,
       final int cookie) {
   }
 
+  public static void endAsyncSection(
+      long tag, final String sectionName, final int cookie, final long endNanos) {}
+  
   public static void traceCounter(
       long tag,
       final String counterName,
@@ -88,18 +95,18 @@ public class Systrace {
   public static void startAsyncFlow(
       long tag,
       final String sectionName,
-      final int cookie){
+      final int cookie) {
   }
 
   public static void stepAsyncFlow(
       long tag,
       final String sectionName,
-      final int cookie){
+      final int cookie) {
   }
 
   public static void endAsyncFlow(
       long tag,
       final String sectionName,
-      final int cookie){
+      final int cookie) {
   }
 }

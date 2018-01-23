@@ -14,13 +14,15 @@
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
+const ProgressBarAndroid = require('ProgressBarAndroid');
+const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
-
-const PropTypes = React.PropTypes;
 
 const GRAY = '#999999';
 
@@ -35,23 +37,32 @@ type DefaultProps = {
 
 /**
  * Displays a circular loading indicator.
+ *
+ * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
-const ActivityIndicator = React.createClass({
+const ActivityIndicator = createReactClass({
+  displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Whether to show the indicator (true, the default) or hide it (false).
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
      */
     animating: PropTypes.bool,
     /**
      * The foreground color of the spinner (default is gray).
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#color
      */
     color: ColorPropType,
     /**
      * Size of the indicator (default is 'small').
      * Passing a number to the size prop is only supported on Android.
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#size
      */
     size: PropTypes.oneOfType([
       PropTypes.oneOf([ 'small', 'large' ]),
@@ -61,6 +72,8 @@ const ActivityIndicator = React.createClass({
      * Whether the indicator should hide when not animating (true by default).
      *
      * @platform ios
+     * 
+     * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
      */
     hidesWhenStopped: PropTypes.bool,
   },
@@ -90,16 +103,20 @@ const ActivityIndicator = React.createClass({
         break;
     }
 
+    const nativeProps = {
+      ...props,
+      style: sizeStyle,
+      styleAttr: 'Normal',
+      indeterminate: true,
+    };
+
     return (
-      <View
-        onLayout={onLayout}
-        style={[styles.container, style]}>
-        <RCTActivityIndicator
-          {...props}
-          style={sizeStyle}
-          styleAttr="Normal"
-          indeterminate
-        />
+      <View onLayout={onLayout} style={[styles.container, style]}>
+        {Platform.OS === 'ios' ? (
+          <RCTActivityIndicator {...nativeProps} />
+        ) : (
+          <ProgressBarAndroid {...nativeProps} />
+        )}
       </View>
     );
   }
@@ -124,18 +141,7 @@ if (Platform.OS === 'ios') {
   var RCTActivityIndicator = requireNativeComponent(
     'RCTActivityIndicatorView',
     ActivityIndicator,
-    {nativeOnly: {activityIndicatorViewStyle: true}},
-  );
-} else if (Platform.OS === 'android') {
-  var RCTActivityIndicator = requireNativeComponent(
-    'AndroidProgressBar',
-    ActivityIndicator,
-    // Ignore props that are specific to non inderterminate ProgressBar.
-    {nativeOnly: {
-      indeterminate: true,
-      progress: true,
-      styleAttr: true,
-    }},
+    { nativeOnly: { activityIndicatorViewStyle: true } }
   );
 }
 

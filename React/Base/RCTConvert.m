@@ -68,7 +68,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   for (NSNumber *number in json) {
     NSInteger index = number.integerValue;
     if (RCT_DEBUG && index < 0) {
-      RCTLogError(@"Invalid index value %zd. Indices must be positive.", index);
+      RCTLogError(@"Invalid index value %lld. Indices must be positive.", (long long)index);
     }
     [indexSet addIndex:index];
   }
@@ -218,6 +218,20 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
     return date;
   } else if (json) {
     RCTLogConvertError(json, @"a date");
+  }
+  return nil;
+}
+
++ (NSLocale *)NSLocale:(id)json
+{
+  if ([json isKindOfClass:[NSString class]]) {
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:json];
+    if (!locale) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
+    }
+    return locale;
+  } else if (json) {
+    RCTLogConvertError(json, @"a locale");
   }
   return nil;
 }
@@ -398,32 +412,20 @@ RCT_ENUM_CONVERTER(UIBarStyle, (@{
 }), UIBarStyleDefault, integerValue)
 #endif
 
-// TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
-static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
+static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, id json)
 {
   NSUInteger count = fields.count;
   if ([json isKindOfClass:[NSArray class]]) {
     if (RCT_DEBUG && [json count] != count) {
-      RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json);
+      RCTLogError(@"Expected array with count %llu, but count is %llu: %@", (unsigned long long)count, (unsigned long long)[json count], json);
     } else {
       for (NSUInteger i = 0; i < count; i++) {
-        result[i] = [RCTConvert CGFloat:json[i]];
+        result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[i])];
       }
     }
   } else if ([json isKindOfClass:[NSDictionary class]]) {
-    if (aliases.count) {
-      json = [json mutableCopy];
-      for (NSString *alias in aliases) {
-        NSString *key = aliases[alias];
-        NSNumber *number = json[alias];
-        if (number != nil) {
-          RCTLogWarn(@"Using deprecated '%@' property for '%s'. Use '%@' instead.", alias, type, key);
-          ((NSMutableDictionary *)json)[key] = number;
-        }
-      }
-    }
     for (NSUInteger i = 0; i < count; i++) {
-      result[i] = [RCTConvert CGFloat:json[fields[i]]];
+      result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[fields[i]])];
     }
   } else if (json) {
     RCTLogConvertError(json, @(type));
@@ -434,24 +436,25 @@ static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDiction
  * This macro is used for creating converter functions for structs that consist
  * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values, aliases) \
-+ (type)type:(id)json                                 \
-{                                                     \
-  static NSArray *fields;                             \
-  static dispatch_once_t onceToken;                   \
-  dispatch_once(&onceToken, ^{                        \
-    fields = values;                                  \
-  });                                                 \
-  type result;                                        \
-  RCTConvertCGStructValue(#type, fields, aliases, (CGFloat *)&result, json); \
-  return result;                                      \
+#define RCT_CGSTRUCT_CONVERTER(type, values)                \
++ (type)type:(id)json                                       \
+{                                                           \
+  static NSArray *fields;                                   \
+  static dispatch_once_t onceToken;                         \
+  dispatch_once(&onceToken, ^{                              \
+    fields = values;                                        \
+  });                                                       \
+  type result;                                              \
+  convertCGStruct(#type, fields, (CGFloat *)&result, json); \
+  return result;                                            \
 }
 
 RCT_CUSTOM_CONVERTER(CGFloat, CGFloat, [self double:json])
-RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]), (@{@"l": @"x", @"t": @"y"}))
-RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]), (@{@"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]), (@{@"l": @"x", @"t": @"y", @"w": @"width", @"h": @"height"}))
-RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]), nil)
+
+RCT_CGSTRUCT_CONVERTER(CGPoint, (@[@"x", @"y"]))
+RCT_CGSTRUCT_CONVERTER(CGSize, (@[@"width", @"height"]))
+RCT_CGSTRUCT_CONVERTER(CGRect, (@[@"x", @"y", @"width", @"height"]))
+RCT_CGSTRUCT_CONVERTER(UIEdgeInsets, (@[@"top", @"left", @"bottom", @"right"]))
 
 RCT_ENUM_CONVERTER(CGLineJoin, (@{
   @"miter": @(kCGLineJoinMiter),
@@ -467,7 +470,7 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
 
 RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
-]), nil)
+]))
 
 + (UIColor *)UIColor:(id)json
 {
@@ -507,7 +510,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
-    if ([s hasSuffix:@"%"]) {
+    if ([s isEqualToString:@"auto"]) {
+      return (YGValue) { YGUndefined, YGUnitAuto };
+    } else if ([s hasSuffix:@"%"]) {
       return (YGValue) { [[s substringToIndex:s.length] floatValue], YGUnitPercent };
     } else {
       RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
@@ -541,12 +546,6 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
     }
   }];
   return values;
-}
-
-SEL RCTConvertSelectorForType(NSString *type)
-{
-  const char *input = type.UTF8String;
-  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
 }
 
 RCT_ARRAY_CONVERTER(NSURL)
@@ -643,6 +642,11 @@ RCT_ENUM_CONVERTER(YGOverflow, (@{
   @"scroll": @(YGOverflowScroll),
 }), YGOverflowVisible, intValue)
 
+RCT_ENUM_CONVERTER(YGDisplay, (@{
+  @"flex": @(YGDisplayFlex),
+  @"none": @(YGDisplayNone),
+}), YGDisplayFlex, intValue)
+
 RCT_ENUM_CONVERTER(YGFlexDirection, (@{
   @"row": @(YGFlexDirectionRow),
   @"row-reverse": @(YGFlexDirectionRowReverse),
@@ -664,7 +668,9 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"center": @(YGAlignCenter),
   @"auto": @(YGAlignAuto),
   @"stretch": @(YGAlignStretch),
-  @"baseline": @(YGAlignBaseline)
+  @"baseline": @(YGAlignBaseline),
+  @"space-between": @(YGAlignSpaceBetween),
+  @"space-around": @(YGAlignSpaceAround)
 }), YGAlignFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGDirection, (@{
@@ -727,7 +733,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     // thread safe, so we'll pick the lesser of two evils here and block rather
     // than run the risk of crashing
     RCTLogWarn(@"Calling [RCTConvert UIImage:] on a background thread is not recommended");
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       image = [self UIImage:json];
     });
     return image;
@@ -736,18 +742,9 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   NSURL *URL = imageSource.request.URL;
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
-    NSString *assetName = RCTBundlePathForURL(URL);
-    image = assetName ? [UIImage imageNamed:assetName] : nil;
+    image = RCTImageFromLocalAssetURL(URL);
     if (!image) {
-      // Attempt to load from the file system
-      NSString *filePath = URL.path;
-      if (filePath.pathExtension.length == 0) {
-        filePath = [filePath stringByAppendingPathExtension:@"png"];
-      }
-      image = [UIImage imageWithContentsOfFile:filePath];
-      if (!image) {
-        RCTLogConvertError(json, @"an image. File not found.");
-      }
+      RCTLogConvertError(json, @"an image. File not found.");
     }
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];

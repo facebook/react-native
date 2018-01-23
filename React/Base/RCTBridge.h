@@ -15,7 +15,6 @@
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
 
-@class JSContext;
 @class JSValue;
 @class RCTBridge;
 @class RCTEventDispatcher;
@@ -33,7 +32,7 @@ RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load the JS bundle. The
- * `error` key can be used to determine the error that occured.
+ * `error` key can be used to determine the error that occurred.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
@@ -46,6 +45,30 @@ RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
 /**
+ * This notification fires just before the bridge starts processing a request to
+ * reload.
+ */
+RCT_EXTERN NSString *const RCTBridgeWillReloadNotification;
+
+/**
+ * This notification fires just before the bridge begins downloading a script
+ * from the packager.
+ */
+RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
+
+/**
+ * This notification fires just after the bridge finishes downloading a script
+ * from the packager.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
+
+/**
+ * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification
+ * userInfo dictionary.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
+
+/**
  * This block can be used to instantiate modules that require additional
  * init parameters, or additional configuration prior to being used.
  * The bridge will call this block to instatiate the modules, and will
@@ -53,7 +76,7 @@ RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
+typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleListProvider)(void);
 
 /**
  * This function returns the module name for a given class.
@@ -88,7 +111,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * parameters or configuration.
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions;
 
 /**
@@ -116,6 +139,13 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
                             error:(NSError **)error;
 
 /**
+ * This method registers the file path of an additional JS segment by its ID.
+ *
+ * @experimental
+ */
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path;
+
+/**
  * Retrieve a bridge module instance by name or class. Note that modules are
  * lazily instantiated, so calling these methods for the first time with a given
  * module name/class may cause the class to be sychronously instantiated,
@@ -137,17 +167,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * to be instantiated if it hasn't been already.
  */
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
-
-/**
- * Call when your delegate's `whitelistedModulesForBridge:` value has changed.
- * In response to this, the bridge will immediately instantiate any (whitelisted)
- * native modules that require main thread initialization. Modules that do not require
- * main thread initialization will still be created lazily.
- *
- * This method must be called on the main thread, as any pending native modules
- * will be initialized immediately.
- */
-- (void)whitelistedModulesDidChange;
 
 /**
  * All registered bridge module classes.
@@ -186,11 +205,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
 
 /**
- * The JSContext used by the bridge.
- */
-@property (nonatomic, readonly, weak) JSContext *jsContext;
-
-/**
  * Link to the Performance Logger that logs React Native perf events.
  */
 @property (nonatomic, readonly, strong) RCTPerformanceLogger *performanceLogger;
@@ -206,7 +220,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)requestReload __deprecated_msg("Call reload instead");
 
 /**
- * Says whether bridge has started recieving calls from javascript.
+ * Says whether bridge has started receiving calls from javascript.
  */
 - (BOOL)isBatchActive;
 

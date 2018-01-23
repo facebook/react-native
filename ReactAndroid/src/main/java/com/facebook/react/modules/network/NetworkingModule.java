@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -30,12 +30,14 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CookieJar;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
@@ -51,7 +53,7 @@ import okio.ByteString;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = NetworkingModule.NAME, supportsWebWorkers = true)
+@ReactModule(name = NetworkingModule.NAME)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   protected static final String NAME = "Networking";
@@ -159,7 +161,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param timeout value of 0 results in no timeout
    */
   public void sendRequest(
-      final ExecutorToken executorToken,
       String method,
       String url,
       final int requestId,
@@ -167,15 +168,20 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReadableMap data,
       final String responseType,
       final boolean useIncrementalUpdates,
-      int timeout) {
+      int timeout,
+      boolean withCredentials) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
     }
 
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    if (!withCredentials) {
+      clientBuilder.cookieJar(CookieJar.NO_COOKIES);
+    }
 
     // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
     // response and counts bytes received.
@@ -297,7 +303,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
       MultipartBody.Builder multipartBuilder =
-          constructMultipartBody(executorToken, parts, contentType, requestId);
+          constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
@@ -332,7 +338,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               return;
             }
             removeRequest(requestId);
-            ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+            String errorMessage = e.getMessage() != null
+                    ? e.getMessage()
+                    : "Error while executing request: " + e.getClass().getSimpleName();
+            ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
           }
 
           @Override
@@ -362,7 +371,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               // Otherwise send the data in one big chunk, in the format that JS requested.
               String responseString = "";
               if (responseType.equals("text")) {
-                responseString = responseBody.string();
+                try {
+                  responseString = responseBody.string();
+                } catch (IOException e) {
+                  if (response.request().method().equalsIgnoreCase("HEAD")) {
+                    // The request is an `HEAD` and the body is empty,
+                    // the OkHttp will produce an exception.
+                    // Ignore the exception to not invalidate the request in the
+                    // Javascript layer.
+                    // Introduced to fix issue #7463.
+                  } else {
+                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                  }
+                }
               } else if (responseType.equals("base64")) {
                 responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
               }
@@ -389,20 +410,24 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Ignore
     }
 
-    Reader reader = responseBody.charStream();
+    Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
+      responseBody.contentType().charset(StandardCharsets.UTF_8);
+
+    ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
+    InputStream inputStream = responseBody.byteStream();
     try {
-      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+      byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      while ((read = reader.read(buffer)) != -1) {
+      while ((read = inputStream.read(buffer)) != -1) {
         ResponseUtil.onIncrementalDataReceived(
           eventEmitter,
           requestId,
-          new String(buffer, 0, read),
+          streamDecoder.decodeNext(buffer, read),
           totalBytesRead,
           contentLength);
       }
     } finally {
-      reader.close();
+      inputStream.close();
     }
   }
 
@@ -442,7 +467,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void abortRequest(ExecutorToken executorToken, final int requestId) {
+  public void abortRequest(final int requestId) {
     cancelRequest(requestId);
     removeRequest(requestId);
   }
@@ -459,23 +484,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void clearCookies(
-      ExecutorToken executorToken,
-      com.facebook.react.bridge.Callback callback) {
+  public void clearCookies(com.facebook.react.bridge.Callback callback) {
     mCookieHandler.clearCookies(callback);
   }
 
-  @Override
-  public boolean supportsWebWorkers() {
-    return true;
-  }
-
   private @Nullable MultipartBody.Builder constructMultipartBody(
-      ExecutorToken ExecutorToken,
       ReadableArray body,
       String contentType,
       int requestId) {
-    RCTDeviceEventEmitter eventEmitter = getEventEmitter(ExecutorToken);
+    RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 
@@ -568,8 +585,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return headersBuilder.build();
   }
 
-  private RCTDeviceEventEmitter getEventEmitter(ExecutorToken ExecutorToken) {
-    return getReactApplicationContext()
-        .getJSModule(ExecutorToken, RCTDeviceEventEmitter.class);
+  private RCTDeviceEventEmitter getEventEmitter() {
+    return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
   }
 }

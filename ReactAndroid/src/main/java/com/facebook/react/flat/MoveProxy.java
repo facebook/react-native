@@ -9,11 +9,11 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
+import javax.annotation.Nullable;
 
 /**
  * Helper class that sorts moveFrom/moveTo arrays in lockstep.
@@ -23,10 +23,10 @@ import com.facebook.react.uimanager.ReactShadowNode;
   private @Nullable ReadableArray mMoveTo;
   private int mSize;
   private int[] mMapping = new int[8];
-  private ReactShadowNode[] mChildren = new ReactShadowNode[4];
+  private ReactShadowNode[] mChildren = new ReactShadowNodeImpl[4];
 
   /**
-   * Retuns size of underlying moveTo/moveFrom arrays
+   * Returns size of underlying moveTo/moveFrom arrays
    */
   public int size() {
     return mSize;

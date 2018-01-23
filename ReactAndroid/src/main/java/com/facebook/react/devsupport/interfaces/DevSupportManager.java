@@ -32,6 +32,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void hideRedboxDialog();
   void showDevOptionsDialog();
   void setDevSupportEnabled(boolean isDevSupportEnabled);
+  void startInspector();
+  void stopInspector();
   boolean getDevSupportEnabled();
   DeveloperSettings getDevSettings();
   void onNewReactContextCreated(ReactContext reactContext);
@@ -40,7 +42,6 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   String getSourceUrl();
   String getJSBundleURLForRemoteDebugging();
   String getDownloadedJSBundleFile();
-  String getHeapCaptureUploadUrl();
   boolean hasUpToDateJSBundleInCache();
   void reloadSettings();
   void handleReloadJS();
@@ -51,4 +52,5 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
       final File outputFile);
   @Nullable String getLastErrorTitle();
   @Nullable StackFrame[] getLastErrorStack();
+  void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 }

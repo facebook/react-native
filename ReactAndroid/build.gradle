@@ -17,7 +17,7 @@ def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
-//   - boost_1_57_0
+//   - boost_1_63_0
 //   - double-conversion-1.1.1
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.3
@@ -35,18 +35,21 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.57.0-1/boost_1_57_0.tar.gz'
+    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_57_0.tar.gz')
+    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
-    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
+    doLast {
+        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_1_63_0")
+    }
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -165,7 +168,9 @@ def findNdkBuildFullPath() {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
     def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
-            plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder()
+            plugins.getPlugin('com.android.library').hasProperty('sdkHandler') ?
+                    plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder() :
+                    android.ndkDirectory.absolutePath
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
@@ -184,7 +189,7 @@ def getNdkBuildFullPath() {
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
             "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
             "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
             null)
     }
@@ -192,7 +197,7 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/xreact')
+    inputs.file('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
@@ -248,7 +253,7 @@ android {
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "$buildDir/react-ndk/exported"
-        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
+        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal', 'src/main/res/views/uimanager']
         java {
             srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
             exclude 'com/facebook/react/processing'
@@ -275,16 +280,14 @@ dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.0.1'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
+    compile 'com.facebook.fresco:fresco:1.3.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
     compile 'com.facebook.soloader:soloader:0.1.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
-    compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
-    compile 'com.squareup.okio:okio:1.9.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+    compile 'com.squareup.okio:okio:1.13.0'
     compile 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"

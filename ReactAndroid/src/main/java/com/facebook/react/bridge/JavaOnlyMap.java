@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Java {@link HashMap} backed impementation of {@link ReadableMap} and {@link WritableMap}
+ * Java {@link HashMap} backed implementation of {@link ReadableMap} and {@link WritableMap}
  * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
  * of {@link WritableNativeMap} created via {@link Arguments#createMap} or just {@link ReadableMap}
  * interface if you want your "native" module method to take a map from JS as an argument.
@@ -171,6 +171,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   @Override
   public void putArray(String key, WritableArray value) {
     mBackingMap.put(key, value);
+  }
+
+  @Override
+  public HashMap<String, Object> toHashMap() {
+    return new HashMap<String, Object>(mBackingMap);
   }
 
   @Override

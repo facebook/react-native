@@ -15,12 +15,13 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
-
-const PropTypes = React.PropTypes;
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime',
@@ -35,14 +36,15 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-const DatePickerIOS = React.createClass({
+const DatePickerIOS = createReactClass({
+  displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The currently selected date.
      */
@@ -77,6 +79,11 @@ const DatePickerIOS = React.createClass({
     mode: PropTypes.oneOf(['date', 'time', 'datetime']),
 
     /**
+     * The date picker locale.
+     */
+    locale: PropTypes.string,
+
+    /**
      * The interval at which minutes can be selected.
      */
     minuteInterval: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]),
@@ -102,6 +109,7 @@ const DatePickerIOS = React.createClass({
     this.props.onDateChange && this.props.onDateChange(
       new Date(nativeTimeStamp)
     );
+    // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
 
     // We expect the onChange* handlers to be in charge of updating our `date`
@@ -124,6 +132,7 @@ const DatePickerIOS = React.createClass({
           ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
+          locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }
@@ -152,6 +161,7 @@ const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
   propTypes: {
     ...DatePickerIOS.propTypes,
     date: PropTypes.number,
+    locale: PropTypes.string,
     minimumDate: PropTypes.number,
     maximumDate: PropTypes.number,
     onDateChange: () => null,

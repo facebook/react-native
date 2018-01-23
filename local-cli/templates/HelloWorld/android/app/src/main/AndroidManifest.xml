@@ -1,20 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.helloworld"
-    android:versionCode="1"
-    android:versionName="1.0">
+    package="com.helloworld">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="22" />
-
     <application
       android:name=".MainApplication"
-      android:allowBackup="true"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
+      android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
         android:name=".MainActivity"

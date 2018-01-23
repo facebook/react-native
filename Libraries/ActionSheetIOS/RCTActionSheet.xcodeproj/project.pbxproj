@@ -35,6 +35,7 @@
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			usesTabs = 0;
 		};
 /* End PBXGroup section */
 
@@ -138,7 +139,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
-					"-Wextra",
+					"-Werror",
 					"-Wall",
 				);
 			};
@@ -179,7 +180,7 @@
 				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
-					"-Wextra",
+					"-Werror",
 					"-Wall",
 				);
 			};

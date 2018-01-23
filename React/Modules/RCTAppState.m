@@ -16,8 +16,6 @@
 
 static NSString *RCTCurrentAppBackgroundState()
 {
-  RCTAssertMainQueue();
-
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -40,6 +38,11 @@ static NSString *RCTCurrentAppBackgroundState()
 }
 
 RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
 
 - (dispatch_queue_t)methodQueue
 {

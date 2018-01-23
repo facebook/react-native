@@ -8,6 +8,7 @@
  *
  * @providesModule Vibration
  * @flow
+ * @jsdoc
  */
 'use strict';
 
@@ -15,27 +16,46 @@ var RCTVibration = require('NativeModules').Vibration;
 var Platform = require('Platform');
 
 /**
+ * @class
+ * @description
  * The Vibration API is exposed at `Vibration.vibrate()`.
  * The vibration is asynchronous so this method will return immediately.
  *
  * There will be no effect on devices that do not support Vibration, eg. the simulator.
  *
- * **Note for android**
+ * **Note for Android:**
  * add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
  *
- * **Android Usage:**
+ * Since the **vibration duration in iOS is not configurable**, so there are some differences with Android.
+ * In Android, if `pattern` is a number, it specified the vibration duration in ms. If `pattern`
+ * is an array, those odd indices is the vibration duration, while the even one are the separation time.
  *
- * [0, 500, 200, 500]
- * V(0.5s) --wait(0.2s)--> V(0.5s)
+ * In iOS, invoking `vibrate(duration)` will just ignore the duration and vibrate for a fixed time. While the
+ * `pattern` array is used to define the duration between each vibration. See below example for more.
  *
- * [300, 500, 200, 500]
- * --wait(0.3s)--> V(0.5s) --wait(0.2s)--> V(0.5s)
+ * Repeatable vibration is also supported, the vibration will repeat with defined pattern until `cancel()` is called.
  *
- * **iOS Usage:**
- * if first argument is 0, it will not be included in pattern array.
+ * Example:
+ * ```
+ * const DURATION = 10000
+ * const PATTERN = [1000, 2000, 3000]
  *
- * [0, 1000, 2000, 3000]
- * V(fixed) --wait(1s)--> V(fixed) --wait(2s)--> V(fixed) --wait(3s)--> V(fixed)
+ * Vibration.vibrate(DURATION)
+ * // Android: vibrate for 10s
+ * // iOS: duration is not configurable, vibrate for fixed time (about 500ms)
+ *
+ * Vibration.vibrate(PATTERN)
+ * // Android: wait 1s -> vibrate 2s -> wait 3s
+ * // iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate
+ *
+ * Vibration.vibrate(PATTERN, true)
+ * // Android: wait 1s -> vibrate 2s -> wait 3s -> wait 1s -> vibrate 2s -> wait 3s -> ...
+ * // iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> ...
+ *
+ * Vibration.cancel()
+ * // Android: vibration stopped
+ * // iOS: vibration stopped
+ * ```
  */
 
 var _vibrating: boolean = false;
@@ -70,10 +90,15 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
       return;
     }
   }
-  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex+1), pattern[nextIndex]);
+  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex + 1), pattern[nextIndex]);
 }
 
 var Vibration = {
+  /**
+   * Trigger a vibration with specified `pattern`.
+   * @param pattern Vibration pattern, accept a number or an array of number. Default to 400ms.
+   * @param repeat Optional. Repeat vibration pattern until cancel(), default to false.
+   */
   vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
     if (Platform.OS === 'android') {
       if (typeof pattern === 'number') {
@@ -98,6 +123,9 @@ var Vibration = {
   },
   /**
    * Stop vibration
+   * ```
+   * Vibration.cancel()
+   * ```
    */
   cancel: function() {
     if (Platform.OS === 'ios') {

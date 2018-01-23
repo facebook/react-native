@@ -8,103 +8,141 @@
  *
  * @providesModule CameraRoll
  * @flow
+ * @format
  */
 'use strict';
 
-var ReactPropTypes = require('React').PropTypes
-var RCTCameraRollManager = require('NativeModules').CameraRollManager;
+const PropTypes = require('prop-types');
+const {checkPropTypes} = PropTypes;
+const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var deepFreezeAndThrowOnMutationInDev =
-  require('deepFreezeAndThrowOnMutationInDev');
-var invariant = require('fbjs/lib/invariant');
+const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const invariant = require('fbjs/lib/invariant');
 
-var GROUP_TYPES_OPTIONS = [
-  'Album',
-  'All',
-  'Event',
-  'Faces',
-  'Library',
-  'PhotoStream',
-  'SavedPhotos', // default
-];
+const GROUP_TYPES_OPTIONS = {
+  Album: 'Album',
+  All: 'All',
+  Event: 'Event',
+  Faces: 'Faces',
+  Library: 'Library',
+  PhotoStream: 'PhotoStream',
+  SavedPhotos: 'SavedPhotos', // default
+};
 
-var ASSET_TYPE_OPTIONS = [
-  'All',
-  'Videos',
-  'Photos', // default
-];
+const ASSET_TYPE_OPTIONS = {
+  All: 'All',
+  Videos: 'Videos',
+  Photos: 'Photos',
+};
 
-// Flow treats Object and Array as disjoint types, currently.
-deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
-deepFreezeAndThrowOnMutationInDev((ASSET_TYPE_OPTIONS: any));
+type GetPhotosParams = {
+  first: number,
+  after?: string,
+  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
+  groupName?: string,
+  assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
+  mimeTypes?: Array<string>,
+};
 
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
-var getPhotosParamChecker = createStrictShapeTypeChecker({
+const getPhotosParamChecker = createStrictShapeTypeChecker({
   /**
    * The number of photos wanted in reverse order of the photo application
    * (i.e. most recent first for SavedPhotos).
    */
-  first: ReactPropTypes.number.isRequired,
+  first: PropTypes.number.isRequired,
 
   /**
    * A cursor that matches `page_info { end_cursor }` returned from a previous
    * call to `getPhotos`
    */
-  after: ReactPropTypes.string,
+  after: PropTypes.string,
 
   /**
    * Specifies which group types to filter the results to.
    */
-  groupTypes: ReactPropTypes.oneOf(GROUP_TYPES_OPTIONS),
+  groupTypes: PropTypes.oneOf(Object.keys(GROUP_TYPES_OPTIONS)),
 
   /**
    * Specifies filter on group names, like 'Recent Photos' or custom album
    * titles.
    */
-  groupName: ReactPropTypes.string,
+  groupName: PropTypes.string,
 
   /**
-  * Specifies filter on asset type
-  */
-  assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
+   * Specifies filter on asset type
+   */
+  assetType: PropTypes.oneOf(Object.keys(ASSET_TYPE_OPTIONS)),
 
   /**
    * Filter by mimetype (e.g. image/jpeg).
    */
-  mimeTypes: ReactPropTypes.arrayOf(ReactPropTypes.string),
+  mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
+
+type GetPhotosReturn = Promise<{
+  edges: Array<{
+    node: {
+      type: string,
+      group_name: string,
+      image: {
+        uri: string,
+        height: number,
+        width: number,
+        isStored?: boolean,
+        playableDuration: number,
+      },
+      timestamp: number,
+      location?: {
+        latitude?: number,
+        longitude?: number,
+        altitude?: number,
+        heading?: number,
+        speed?: number,
+      },
+    },
+  }>,
+  page_info: {
+    has_next_page: boolean,
+    start_cursor?: string,
+    end_cursor?: string,
+  },
+}>;
 
 /**
  * Shape of the return value of the `getPhotos` function.
  */
-var getPhotosReturnChecker = createStrictShapeTypeChecker({
-  edges: ReactPropTypes.arrayOf(createStrictShapeTypeChecker({
-    node: createStrictShapeTypeChecker({
-      type: ReactPropTypes.string.isRequired,
-      group_name: ReactPropTypes.string.isRequired,
-      image: createStrictShapeTypeChecker({
-        uri: ReactPropTypes.string.isRequired,
-        height: ReactPropTypes.number.isRequired,
-        width: ReactPropTypes.number.isRequired,
-        isStored: ReactPropTypes.bool,
+const getPhotosReturnChecker = createStrictShapeTypeChecker({
+  // $FlowFixMe(>=0.41.0)
+  edges: PropTypes.arrayOf(
+    createStrictShapeTypeChecker({
+      node: createStrictShapeTypeChecker({
+        type: PropTypes.string.isRequired,
+        group_name: PropTypes.string.isRequired,
+        image: createStrictShapeTypeChecker({
+          uri: PropTypes.string.isRequired,
+          height: PropTypes.number.isRequired,
+          width: PropTypes.number.isRequired,
+          isStored: PropTypes.bool,
+          playableDuration: PropTypes.number.isRequired,
+        }).isRequired,
+        timestamp: PropTypes.number.isRequired,
+        location: createStrictShapeTypeChecker({
+          latitude: PropTypes.number,
+          longitude: PropTypes.number,
+          altitude: PropTypes.number,
+          heading: PropTypes.number,
+          speed: PropTypes.number,
+        }),
       }).isRequired,
-      timestamp: ReactPropTypes.number.isRequired,
-      location: createStrictShapeTypeChecker({
-        latitude: ReactPropTypes.number,
-        longitude: ReactPropTypes.number,
-        altitude: ReactPropTypes.number,
-        heading: ReactPropTypes.number,
-        speed: ReactPropTypes.number,
-      }),
-    }).isRequired,
-  })).isRequired,
+    }),
+  ).isRequired,
   page_info: createStrictShapeTypeChecker({
-    has_next_page: ReactPropTypes.bool.isRequired,
-    start_cursor: ReactPropTypes.string,
-    end_cursor: ReactPropTypes.string,
+    has_next_page: PropTypes.bool.isRequired,
+    start_cursor: PropTypes.string,
+    end_cursor: PropTypes.string,
   }).isRequired,
 });
 
@@ -115,18 +153,26 @@ var getPhotosReturnChecker = createStrictShapeTypeChecker({
  *
  * ### Permissions
  * The user's permission is required in order to access the Camera Roll on devices running iOS 10 or later.
- * Fill out the `NSCameraUsageDescription` key in your `Info.plist` with a string that describes how your
- * app will use this data. This key will appear as `Privacy - Camera Usage Description` in Xcode.
+ * Add the `NSPhotoLibraryUsageDescription` key in your `Info.plist` with a string that describes how your
+ * app will use this data. This key will appear as `Privacy - Photo Library Usage Description` in Xcode.
  *
  */
 class CameraRoll {
+  static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
+  static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
 
-  static GroupTypesOptions: Array<string>;
-  static AssetTypeOptions: Array<string>;
-
-  static saveImageWithTag(tag: string): Promise<Object> {
-    console.warn('CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead');
+  /**
+   * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
+   */
+  static saveImageWithTag(tag: string): Promise<string> {
+    console.warn(
+      '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
+    );
     return this.saveToCameraRoll(tag, 'photo');
+  }
+
+  static deletePhotos(photos: Array<string>) {
+    return RCTCameraRollManager.deletePhotos(photos);
   }
 
   /**
@@ -143,16 +189,19 @@ class CameraRoll {
    *
    * Returns a Promise which will resolve with the new URI.
    */
-  static saveToCameraRoll(tag: string, type?: 'photo' | 'video'): Promise<Object> {
+  static saveToCameraRoll(
+    tag: string,
+    type?: 'photo' | 'video',
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
-      'CameraRoll.saveToCameraRoll must be a valid string.'
+      'CameraRoll.saveToCameraRoll must be a valid string.',
     );
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      // $FlowFixMe(>=0.28.0)
-      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type}`
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
+        'unknown'}`,
     );
 
     let mediaType = 'photo';
@@ -208,36 +257,81 @@ class CameraRoll {
    *              - `speed`: {number}
    * - `page_info` : {object} : An object with the following shape:
    *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {boolean}
-   *      - `end_cursor`: {boolean}
+   *      - `start_cursor`: {string}
+   *      - `end_cursor`: {string}
+   *
+   * Loading images:
+   * ```
+   * _handleButtonPress = () => {
+   *    CameraRoll.getPhotos({
+   *        first: 20,
+   *        assetType: 'All',
+   *      })
+   *      .then(r => {
+   *        this.setState({ photos: r.edges });
+   *      })
+   *      .catch((err) => {
+   *         //Error Loading Images
+   *      });
+   *    };
+   * render() {
+   *  return (
+   *    <View>
+   *      <Button title="Load Images" onPress={this._handleButtonPress} />
+   *      <ScrollView>
+   *        {this.state.photos.map((p, i) => {
+   *        return (
+   *          <Image
+   *            key={i}
+   *            style={{
+   *              width: 300,
+   *              height: 100,
+   *            }}
+   *            source={{ uri: p.node.image.uri }}
+   *          />
+   *        );
+   *      })}
+   *      </ScrollView>
+   *    </View>
+   *  );
+   * }
+   * ```
    */
-  static getPhotos(params) {
+  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {
-      getPhotosParamChecker({params}, 'params', 'CameraRoll.getPhotos');
+      checkPropTypes(
+        {params: getPhotosParamChecker},
+        {params},
+        'params',
+        'CameraRoll.getPhotos',
+      );
     }
     if (arguments.length > 1) {
-      console.warn('CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead');
+      console.warn(
+        'CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead',
+      );
       let successCallback = arguments[1];
       if (__DEV__) {
         const callback = arguments[1];
-        successCallback = (response) => {
-          getPhotosReturnChecker(
+        successCallback = response => {
+          checkPropTypes(
+            {response: getPhotosReturnChecker},
             {response},
             'response',
-            'CameraRoll.getPhotos callback'
+            'CameraRoll.getPhotos callback',
           );
           callback(response);
         };
       }
-      const errorCallback = arguments[2] || ( () => {} );
-      RCTCameraRollManager.getPhotos(params).then(successCallback, errorCallback);
+      const errorCallback = arguments[2] || (() => {});
+      RCTCameraRollManager.getPhotos(params).then(
+        successCallback,
+        errorCallback,
+      );
     }
     // TODO: Add the __DEV__ check back in to verify the Promise result
     return RCTCameraRollManager.getPhotos(params);
   }
 }
-
-CameraRoll.GroupTypesOptions = GROUP_TYPES_OPTIONS;
-CameraRoll.AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
 module.exports = CameraRoll;

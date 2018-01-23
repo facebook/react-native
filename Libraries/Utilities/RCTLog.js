@@ -11,11 +11,9 @@
  */
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+const invariant = require('fbjs/lib/invariant');
 
-var invariant = require('fbjs/lib/invariant');
-
-var levelsMap = {
+const levelsMap = {
   log: 'log',
   info: 'info',
   warn: 'warn',
@@ -23,28 +21,36 @@ var levelsMap = {
   fatal: 'error',
 };
 
-class RCTLog {
+let warningHandler: ?(Array<any> => void) = null;
+
+const RCTLog = {
   // level one of log, info, warn, error, mustfix
-  static logIfNoNativeHook() {
-    var args = Array.prototype.slice.call(arguments);
-    var level = args.shift();
-    var logFn = levelsMap[level];
+  logIfNoNativeHook(level: string, ...args: Array<any>): void {
+    // We already printed in the native console, so only log here if using a js debugger
+    if (typeof global.nativeLoggingHook === 'undefined') {
+      RCTLog.logToConsole(level, ...args);
+    } else {
+      // Report native warnings to YellowBox
+      if (warningHandler && level === 'warn') {
+        warningHandler(...args);
+      }
+    }
+  },
+
+  // Log to console regardless of nativeLoggingHook
+  logToConsole(level: string, ...args: Array<any>): void {
+    const logFn = levelsMap[level];
     invariant(
       logFn,
-      'Level "' + level + '" not one of ' + Object.keys(levelsMap)
+      'Level "' + level + '" not one of ' + Object.keys(levelsMap).toString()
     );
-    if (typeof global.nativeLoggingHook === 'undefined') {
-      // We already printed in xcode, so only log here if using a js debugger
-      console[logFn].apply(console, args);
-    }
 
-    return true;
+    console[logFn](...args);
+  },
+
+  setWarningHandler(handler: typeof warningHandler): void {
+    warningHandler = handler;
   }
-}
-
-BatchedBridge.registerCallableModule(
-  'RCTLog',
-  RCTLog
-);
+};
 
 module.exports = RCTLog;

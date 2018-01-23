@@ -12,25 +12,27 @@
 'use strict';
 
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var { TestModule } = require('NativeModules');
 var UIManager = require('UIManager');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var requireNativeComponent = require('requireNativeComponent');
 
-class SnapshotViewIOS extends React.Component {
-  props: {
-    onSnapshotReady?: Function,
-    testIdentifier?: string,
-  };
-
+class SnapshotViewIOS extends React.Component<{
+  onSnapshotReady?: Function,
+  testIdentifier?: string,
+}> {
+  // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     // A callback when the Snapshot view is ready to be compared
-    onSnapshotReady : React.PropTypes.func,
+    onSnapshotReady : PropTypes.func,
     // A name to identify the individual instance to the SnapshotView
-    testIdentifier : React.PropTypes.string,
+    testIdentifier : PropTypes.string,
   };
 
   onDefaultAction = (event: Object) => {

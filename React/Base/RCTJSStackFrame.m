@@ -8,6 +8,7 @@
  */
 
 #import "RCTJSStackFrame.h"
+
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -17,7 +18,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
     NSError *regexError;
-    _regex = [NSRegularExpression regularExpressionWithPattern:@"^([^@]+)@(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
+    _regex = [NSRegularExpression regularExpressionWithPattern:@"^(?:([^@]+)@)?(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
     if (regexError) {
       RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
     }
@@ -55,7 +56,9 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     return nil;
   }
 
-  NSString *methodName = [line substringWithRange:[match rangeAtIndex:1]];
+  // methodName may not be present for e.g. anonymous functions
+  const NSRange methodNameRange = [match rangeAtIndex:1];
+  NSString *methodName = methodNameRange.location == NSNotFound ? nil : [line substringWithRange:methodNameRange];
   NSString *file = [line substringWithRange:[match rangeAtIndex:2]];
   NSString *lineNumber = [line substringWithRange:[match rangeAtIndex:3]];
   NSString *column = [line substringWithRange:[match rangeAtIndex:4]];
@@ -68,10 +71,10 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
 {
-  return [[self alloc] initWithMethodName:dict[@"methodName"]
+  return [[self alloc] initWithMethodName:RCTNilIfNull(dict[@"methodName"])
                                      file:dict[@"file"]
-                               lineNumber:[dict[@"lineNumber"] integerValue]
-                                   column:[dict[@"column"] integerValue]];
+                               lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
+                                   column:[RCTNilIfNull(dict[@"column"]) integerValue]];
 }
 
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithLines:(NSString *)lines
@@ -96,6 +99,16 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     }
   }
   return stack;
+}
+
+- (NSString *)description {
+  return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
+          self.class,
+          self,
+          self.methodName,
+          self.file,
+          (long)self.lineNumber,
+          (long)self.column];
 }
 
 @end

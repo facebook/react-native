@@ -24,7 +24,7 @@ var invariant = require('fbjs/lib/invariant');
 const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 class StyleSheetValidation {
-  static validateStyleProp(prop, style, caller) {
+  static validateStyleProp(prop: string, style: Object, caller: string) {
     if (!__DEV__) {
       return;
     }
@@ -47,7 +47,7 @@ class StyleSheetValidation {
     }
   }
 
-  static validateStyle(name, styles) {
+  static validateStyle(name: string, styles: Object) {
     if (!__DEV__) {
       return;
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -17,7 +17,7 @@ public enum YogaDirection {
   LTR(1),
   RTL(2);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaDirection(int intValue) {
     mIntValue = intValue;

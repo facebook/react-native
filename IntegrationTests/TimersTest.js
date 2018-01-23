@@ -7,11 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule TimersTest
  */
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var TimerMixin = require('react-timer-mixin');
 
 var {
@@ -21,7 +26,8 @@ var {
 } = ReactNative;
 var { TestModule  } = ReactNative.NativeModules;
 
-var TimersTest = React.createClass({
+var TimersTest = createReactClass({
+  displayName: 'TimersTest',
   mixins: [TimerMixin],
 
   _nextTest: () => {},
@@ -81,17 +87,17 @@ var TimersTest = React.createClass({
   },
 
   testClearMulti() {
-    var fails = [this.setTimeout(() => this._fail('testClearMulti-1'), 20)];
+    var fails = [];
+    fails.push(this.setTimeout(() => this._fail('testClearMulti-1'), 20));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-2'), 50));
     var delayClear = this.setTimeout(() => this._fail('testClearMulti-3'), 50);
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
-
-    this.setTimeout(this.testOrdering, 100); // Next test interleaved
-
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
     fails.forEach((timeout) => this.clearTimeout(timeout));
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
+
+    this.setTimeout(this.testOrdering, 50);
   },
 
   testOrdering() {
@@ -109,14 +115,14 @@ var TimersTest = React.createClass({
       () => this._fail('testOrdering-Anim, setTimeout 0 should happen before ' +
         'requestAnimationFrame')
     );
-    var fail50;
-    this.setTimeout(() => this.clearTimeout(fail50), 20);
-    fail50 = this.setTimeout(
-      () => this._fail('testOrdering-t50, setTimeout 20 should happen before ' +
-        'setTimeout 50'),
-      50
+    var fail25;
+    this.setTimeout(() => { this.clearTimeout(fail25); }, 20);
+    fail25 = this.setTimeout(
+      () => this._fail('testOrdering-t25, setTimeout 20 should happen before ' +
+        'setTimeout 25'),
+      25
     );
-    this.setTimeout(this.done, 75);
+    this.setTimeout(this.done, 50);
   },
 
   done() {

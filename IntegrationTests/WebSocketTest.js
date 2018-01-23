@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule WebSocketTest
  */
 'use strict';
 
@@ -41,7 +42,7 @@ type State = {
   testExpectedResponse: string;
 };
 
-class WebSocketTest extends React.Component {
+class WebSocketTest extends React.Component<{}, State> {
   state: State = {
     url: DEFAULT_WS_URL,
     fetchStatus: null,
@@ -157,7 +158,7 @@ class WebSocketTest extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return <View />;
   }
 }

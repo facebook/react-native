@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule ImageCachePolicyTest
  */
 'use strict';
 
@@ -40,14 +41,14 @@ type State = {
   'force-cache'?: boolean,
 }
 
-class ImageCachePolicyTest extends React.Component {
+class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
   state = {}
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
     const results: Array<?boolean> = TESTS.map(x => nextState[x]);
 
     if (!results.includes(undefined)) {
-      const result: boolean = results.reduce((x,y) => x === y === true, true)
+      const result: boolean = results.reduce((x,y) => x === y === true, true);
       TestModule.markTestPassed(result);
     }
 
@@ -64,7 +65,7 @@ class ImageCachePolicyTest extends React.Component {
         <Text>Hello</Text>
       <Image
         source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'only-if-cached'
             }}
         onLoad={() => this.testComplete('only-if-cached', false)}
@@ -73,7 +74,7 @@ class ImageCachePolicyTest extends React.Component {
       />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'default'
             }}
           onLoad={() => this.testComplete('default', true)}
@@ -82,7 +83,7 @@ class ImageCachePolicyTest extends React.Component {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'reload'
             }}
           onLoad={() => this.testComplete('reload', true)}
@@ -91,7 +92,7 @@ class ImageCachePolicyTest extends React.Component {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'force-cache'
             }}
           onLoad={() => this.testComplete('force-cache', true)}
