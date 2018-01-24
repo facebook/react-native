@@ -62,8 +62,8 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *   }
  *
  *   componentWillUnmount () {
- *     this.keyboardDidShowListener.remove();
- *     this.keyboardDidHideListener.remove();
+ *     this.keyboardDidShowListener.removeListner();
+ *     this.keyboardDidHideListener.removeListner();
  *   }
  *
  *   _keyboardDidShow () {
