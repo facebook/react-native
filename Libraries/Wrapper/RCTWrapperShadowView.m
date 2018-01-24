@@ -4,6 +4,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTShadowView+Layout.h>
 
 #import "RCTWrapperView.h"
 
@@ -27,7 +28,7 @@
 static YGSize RCTWrapperShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   CGSize minimumSize = CGSizeMake(0, 0);
-  CGSize maximumSize = CGSizeMake(INFINITY, INFINITY);
+  CGSize maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
@@ -55,7 +56,11 @@ static YGSize RCTWrapperShadowViewMeasure(YGNodeRef node, float width, YGMeasure
 
   RCTWrapperShadowView *shadowView = (__bridge RCTWrapperShadowView *)YGNodeGetContext(node);
   CGSize size = [shadowView measureWithMinimumSize:minimumSize maximumSize:maximumSize];
-  return (YGSize){size.width, size.height};
+
+  return (YGSize){
+    RCTYogaFloatFromCoreGraphicsFloat(size.width),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height)
+  };
 }
 
 - (CGSize)measureWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize

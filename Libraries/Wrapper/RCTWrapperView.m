@@ -77,14 +77,14 @@
 
 - (CGSize)intrinsicContentSize
 {
-  return [self sizeThatFits:CGSizeMake(INFINITY, INFINITY)];
+  return [self sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
   UIView *contentView = self.contentView;
   if (!contentView) {
-    return size;
+    return [super sizeThatFits:size];
   }
 
   return [contentView sizeThatFits:size];

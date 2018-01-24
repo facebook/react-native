@@ -13,8 +13,6 @@
 
 'use strict';
 
-/* eslint-disable no-unclear-flowtypes */
-
 declare var jest: any;
 declare var describe: any;
 declare var beforeEach: any;

@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 # Temp workaround to get the build working e2e, Gradle builds them for us
 
 prebuilt_native_library(

@@ -589,6 +589,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this.props.initialScrollIndex) {
       this._initialScrollIndexTimeout = setTimeout(
         () =>
+          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.63 was deployed. To see the error
+           * delete this comment and run Flow. */
           this.scrollToIndex({
             animated: false,
             index: this.props.initialScrollIndex,
@@ -615,6 +618,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._initialScrollIndexTimeout);
   }
 
@@ -1176,6 +1182,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       distanceFromEnd < onEndReachedThreshold * visibleLength &&
       (this._hasDataChangedSinceEndReached ||
         this._scrollMetrics.contentLength !== this._sentEndForContentLength)
@@ -1298,6 +1307,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const distBottom =
         this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
       const scrollingThreshold =
+        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.63 was deployed. To see the error delete
+         * this comment and run Flow. */
         this.props.onEndReachedThreshold * visibleLength / 2;
       hiPri =
         Math.min(distTop, distBottom) < 0 ||
@@ -1374,6 +1386,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
         const renderAhead =
+          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.63 was deployed. To see the error
+           * delete this comment and run Flow. */
           distanceFromEnd < onEndReachedThreshold * visibleLength
             ? this.props.maxToRenderPerBatch
             : 0;
@@ -1481,6 +1496,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         }
       }
     }
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     return frame;
   };
 

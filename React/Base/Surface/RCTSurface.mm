@@ -15,6 +15,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTShadowView+Layout.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceRootShadowView.h"
 #import "RCTSurfaceRootShadowViewDelegate.h"
@@ -67,7 +68,7 @@
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillLoadJavaScriptNotification:)
@@ -305,8 +306,6 @@
                         method:@"unmountApplicationComponentAtRootTag"
                           args:@[self->_rootViewTag]
                     completion:NULL];
-
-  [self _setStage:RCTSurfaceStageSurfaceDidStop];
 }
 
 - (void)_registerRootView
@@ -436,6 +435,16 @@
 
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
 {
+  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialRendering)) {
+    // This case *temporary* does not supported.
+    stage = RCTSurfaceStageSurfaceDidInitialLayout;
+  }
+
+  if (RCTIsUIManagerQueue()) {
+    RCTLogInfo(@"Synchronous waiting is not supported on UIManager queue.");
+    return NO;
+  }
+
   dispatch_semaphore_t semaphore;
   switch (stage) {
     case RCTSurfaceStageSurfaceDidInitialLayout:
@@ -446,16 +455,6 @@
       break;
     default:
       RCTAssert(NO, @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering` and `RCTSurfaceStageSurfaceDidInitialLayout` stages is supported.");
-  }
-
-  if (RCTIsMainQueue()) {
-    RCTLogInfo(@"Synchronous waiting is not supported on the main queue.");
-    return NO;
-  }
-
-  if (RCTIsUIManagerQueue()) {
-    RCTLogInfo(@"Synchronous waiting is not supported on UIManager queue.");
-    return NO;
   }
 
   BOOL timeoutOccured = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));

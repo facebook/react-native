@@ -23,7 +23,7 @@ public enum YogaEdge {
   VERTICAL(7),
   ALL(8);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaEdge(int intValue) {
     mIntValue = intValue;

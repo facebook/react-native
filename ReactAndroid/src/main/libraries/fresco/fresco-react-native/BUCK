@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library")
 
 android_prebuilt_aar(
     name = "fresco-react-native",
@@ -24,7 +24,7 @@ remote_file(
     url = "mvn:com.facebook.fresco:drawee:aar:1.3.0",
 )
 
-android_library(
+rn_android_library(
     name = "imagepipeline",
     exported_deps = [
         ":bolts",

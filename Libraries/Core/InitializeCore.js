@@ -10,7 +10,6 @@
  * @flow
  */
 
-/* eslint-disable strict */
 /* globals window: true */
 
 /**
@@ -115,9 +114,7 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console */
       throw e;
     }
   };
@@ -206,6 +203,7 @@ BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
 BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
+BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JSDevSupportModule'));
 
 global.fetchSegment = function(
   segmentId: number,

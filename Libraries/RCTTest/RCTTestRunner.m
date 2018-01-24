@@ -186,13 +186,12 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [bridge invalidate];
   }
 
-  // Wait for bridge to disappear before continuing to the next test
+  // Give the bridge a chance to disappear before continuing to the next test.
   NSDate *invalidateTimeout = [NSDate dateWithTimeIntervalSinceNow:30];
   while (invalidateTimeout.timeIntervalSinceNow > 0 && batchedBridge != nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
 }
 
 @end

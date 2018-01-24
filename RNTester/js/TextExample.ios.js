@@ -233,8 +233,20 @@ exports.examples = [
     render: function() {
       return (
         <Text>
+          The text
+          <View style={{borderColor: 'red', borderWidth: 1}}>
+            <Text style={{borderColor: 'blue', borderWidth: 1}}>Text Inside</Text>
+            <Text style={{borderColor: 'green', borderWidth: 1}}>Another text Inside</Text>
+            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
+              Total inseption
+              <View style={{borderColor: 'red', borderWidth: 1}}>
+                <Text style={{borderColor: 'blue', borderWidth: 1}}>Insepted Text Inside</Text>
+              </View>
+            </Text>
+          </View>
           The text should wrap if it goes on multiple lines. See, this is going
           to the next line.
+          The text after.
         </Text>
       );
     },

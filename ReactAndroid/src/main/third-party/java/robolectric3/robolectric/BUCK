@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library", "react_native_dep")
 
-android_library(
+rn_android_library(
     name = "robolectric",
     exported_deps = [
         ":android-all-4.1.2_r1-robolectric-0",
@@ -115,7 +115,7 @@ prebuilt_jar(
 export_file(
     name = "robolectric-android-all-binary-jar",
     src = ":robolectric-android-all-binary-remote-jar",
-    out = "android-all-4.1.2_r1-robolectric-0.jar",  # name defines filename used by robolectric in runtime
+    out = "../android-all-4.1.2_r1-robolectric-0.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -133,7 +133,7 @@ prebuilt_jar(
 export_file(
     name = "json-jar",
     src = ":json-remote-jar",
-    out = "json-20080701.jar",  # name defines filename used by robolectric in runtime
+    out = "../json-20080701.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -151,7 +151,7 @@ prebuilt_jar(
 export_file(
     name = "tagsoup-jar",
     src = ":tagsoup-remote-jar",
-    out = "tagsoup-1.2.jar",  # name defines filename used by robolectric in runtime
+    out = "../tagsoup-1.2.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -169,7 +169,7 @@ prebuilt_jar(
 export_file(
     name = "robolectric-shadows-binary-jar",
     src = ":robolectric-shadows-binary-remote-jar",
-    out = "shadows-core-3.0-16.jar",  # name defines filename used by robolectric in runtime
+    out = "../shadows-core-3.0-16.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
