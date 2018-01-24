@@ -9,6 +9,10 @@
 
 #import <React/RCTViewManager.h>
 
-@interface RCTRawTextViewManager : RCTViewManager
+NS_ASSUME_NONNULL_BEGIN
+
+@interface RCTBaseTextViewManager : RCTViewManager
 
 @end
+
+NS_ASSUME_NONNULL_END

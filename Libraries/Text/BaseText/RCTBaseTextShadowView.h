@@ -7,17 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTShadowView.h>
+
+#import "RCTTextAttributes.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTTextView : UIView
+extern NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName;
 
-@property (nonatomic, assign) BOOL selectable;
+@interface RCTBaseTextShadowView : RCTShadowView
 
-- (void)setTextStorage:(NSTextStorage *)textStorage
-          contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<UIView *> *)descendantViews;
+@property (nonatomic, strong) RCTTextAttributes *textAttributes;
+
+- (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAttributes *)baseTextAttributes;
 
 @end
 

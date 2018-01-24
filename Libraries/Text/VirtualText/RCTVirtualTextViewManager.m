@@ -7,19 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTRawTextViewManager.h"
+#import "RCTVirtualTextViewManager.h"
 
-#import "RCTRawTextShadowView.h"
+#import "RCTVirtualTextShadowView.h"
 
-@implementation RCTRawTextViewManager
+@implementation RCTVirtualTextViewManager
 
-RCT_EXPORT_MODULE(RCTRawText)
+RCT_EXPORT_MODULE(RCTVirtualText)
+
+- (UIView *)view
+{
+  return [UIView new];
+}
 
 - (RCTShadowView *)shadowView
 {
-  return [RCTRawTextShadowView new];
+  return [RCTVirtualTextShadowView new];
 }
-
-RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end

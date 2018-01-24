@@ -9,37 +9,21 @@
 
 #import "RCTRawTextShadowView.h"
 
-#import <React/RCTUIManager.h>
+#import <React/RCTShadowView+Layout.h>
 
 @implementation RCTRawTextShadowView
-
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contentSizeMultiplierDidChange:)
-                                                 name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
-                                               object:nil];
-  }
-  return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)contentSizeMultiplierDidChange:(NSNotification *)note
-{
-  [self dirtyText];
-}
 
 - (void)setText:(NSString *)text
 {
   if (_text != text && ![_text isEqualToString:text]) {
     _text = [text copy];
-    [self dirtyText];
+    [self dirtyLayout];
   }
+}
+
+- (void)dirtyLayout
+{
+  [self.superview dirtyLayout];
 }
 
 - (NSString *)description
