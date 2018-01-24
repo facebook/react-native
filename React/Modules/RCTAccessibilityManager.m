@@ -59,7 +59,8 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  if ((self = [super init])) {
+  if (self = [super init]) {
+    _multiplier = 1.0;
 
     // TODO: can this be moved out of the startup path?
     [[NSNotificationCenter defaultCenter] addObserver:self
