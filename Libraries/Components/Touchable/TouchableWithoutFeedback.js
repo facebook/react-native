@@ -12,7 +12,6 @@
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const PropTypes = require('prop-types');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -46,7 +45,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  */
 const TouchableWithoutFeedback = createReactClass({
   displayName: 'TouchableWithoutFeedback',
-  mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
+  mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
     accessible: PropTypes.bool,
@@ -160,7 +159,8 @@ const TouchableWithoutFeedback = createReactClass({
   },
 
   touchableGetLongPressDelayMS: function(): number {
-    return this.props.delayLongPress != null ? this.props.delayLongPress : 500;
+    return this.props.delayLongPress === 0 ? 0 :
+      this.props.delayLongPress || 500;
   },
 
   touchableGetPressOutDelayMS: function(): number {
@@ -184,8 +184,7 @@ const TouchableWithoutFeedback = createReactClass({
     const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
       [child.props.style, {color: 'red'}] :
       child.props.style;
-
-    return React.cloneElement(child, {
+    return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
@@ -194,7 +193,6 @@ const TouchableWithoutFeedback = createReactClass({
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
-      ...child.props,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
