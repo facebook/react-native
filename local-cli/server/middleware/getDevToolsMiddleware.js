@@ -63,7 +63,7 @@ module.exports = function(options, isChromeConnected) {
       launchDevTools(options, isChromeConnected);
       res.end('OK');
     } else if (req.url === '/launch-js-devtools') {
-      launchDevTools(host, options, isChromeConnected);
+      launchDevTools({...options, host}, isChromeConnected);
       res.end('OK');
     } else {
       next();
