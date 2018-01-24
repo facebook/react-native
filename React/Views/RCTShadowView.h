@@ -109,7 +109,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Convenient alias to `width` and `height` in pixels.
- * Defaults to NAN in case of non-pixel dimention.
+ * Defaults to NAN in case of non-pixel dimension.
  */
 @property (nonatomic, assign) CGSize size;
 
@@ -226,6 +226,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
+- (void)applyLayoutWithFrame:(CGRect)frame
+             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
+            absolutePosition:(CGPoint)absolutePosition;
+
 /**
  * Enumerate the child nodes and tell them to apply layout.
  */
@@ -252,13 +257,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Don't confuse this with `canHaveSubviews`.
  */
 - (BOOL)isYogaLeafNode;
-
-- (void)dirtyPropagation NS_REQUIRES_SUPER;
-- (BOOL)isPropagationDirty;
-
-- (void)dirtyText NS_REQUIRES_SUPER;
-- (void)setTextComputed NS_REQUIRES_SUPER;
-- (BOOL)isTextDirty;
 
 /**
  * As described in RCTComponent protocol.

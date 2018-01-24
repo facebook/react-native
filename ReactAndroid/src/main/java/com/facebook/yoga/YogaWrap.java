@@ -17,7 +17,7 @@ public enum YogaWrap {
   WRAP(1),
   WRAP_REVERSE(2);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaWrap(int intValue) {
     mIntValue = intValue;

@@ -20,7 +20,7 @@ var mixInEventEmitter = require('mixInEventEmitter');
  *
  * It is intended for use by AbstractTextEditor-based components for
  * identifying the appropriate start/end positions to modify the
- * DocumentContent, and for programatically setting browser selection when
+ * DocumentContent, and for programmatically setting browser selection when
  * components re-render.
  */
 class DocumentSelectionState {

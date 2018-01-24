@@ -374,7 +374,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
     return {
       inputRange: this._config.inputRange,
-      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
       outputRange: this.__transformDataType(this._config.outputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',
