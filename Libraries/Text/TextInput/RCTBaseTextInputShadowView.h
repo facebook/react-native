@@ -7,20 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTShadowView.h>
-
 #import "RCTBaseTextShadowView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTTextShadowView : RCTBaseTextShadowView
+@interface RCTBaseTextInputShadowView : RCTBaseTextShadowView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
+@property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, assign) NSInteger maximumNumberOfLines;
-@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
-@property (nonatomic, assign) BOOL adjustsFontSizeToFit;
-@property (nonatomic, assign) CGFloat minimumFontScale;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 
 - (void)uiManagerWillPerformMounting;
 
