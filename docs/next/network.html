@@ -53,57 +53,63 @@
 }
 </code></pre>
 <p>Don't forget to catch any errors that may be thrown by <code>fetch</code>, otherwise they will be dropped silently.</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { ActivityIndicator, ListView, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { FlatList, ActivityIndicator, Text, View  } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Movies</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  <span class="hljs-keyword">constructor</span>(props) {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FetchExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+
+  <span class="hljs-keyword">constructor</span>(props){
     <span class="hljs-keyword">super</span>(props);
-    <span class="hljs-keyword">this</span>.state = {
-      <span class="hljs-attr">isLoading</span>: <span class="hljs-literal">true</span>
-    }
+    <span class="hljs-keyword">this</span>.state ={ <span class="hljs-attr">isLoading</span>: <span class="hljs-literal">true</span>}
   }
 
-  componentDidMount() {
+  componentDidMount(){
     <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">'https://facebook.github.io/react-native/movies.json'</span>)
       .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json())
       .then(<span class="hljs-function">(<span class="hljs-params">responseJson</span>) =&gt;</span> {
-        <span class="hljs-keyword">let</span> ds = <span class="hljs-keyword">new</span> ListView.DataSource({<span class="hljs-attr">rowHasChanged</span>: <span class="hljs-function">(<span class="hljs-params">r1, r2</span>) =&gt;</span> r1 !== r2});
+
         <span class="hljs-keyword">this</span>.setState({
           <span class="hljs-attr">isLoading</span>: <span class="hljs-literal">false</span>,
-          <span class="hljs-attr">dataSource</span>: ds.cloneWithRows(responseJson.movies),
-        }, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-          <span class="hljs-comment">// do something with new state</span>
+          <span class="hljs-attr">dataSource</span>: responseJson.movies,
+        }, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+
         });
+
       })
-      .catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+      .catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span>{
         <span class="hljs-built_in">console</span>.error(error);
       });
   }
 
-  render() {
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.state.isLoading) {
-      <span class="hljs-keyword">return</span> (
-        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">paddingTop:</span> <span class="hljs-attr">20</span>}}&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span> /&gt;</span>
+
+
+  render(){
+
+    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.state.isLoading){
+      <span class="hljs-keyword">return</span>(
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span>}}&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">ActivityIndicator</span>/&gt;</span>
         <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
-      );
+      )
     }
 
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">paddingTop:</span> <span class="hljs-attr">20</span>}}&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">ListView</span>
-          <span class="hljs-attr">dataSource</span>=<span class="hljs-string">{this.state.dataSource}</span>
-          <span class="hljs-attr">renderRow</span>=<span class="hljs-string">{(rowData)</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{rowData.title}, {rowData.releaseYear}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>}
+    <span class="hljs-keyword">return</span>(
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">paddingTop:20</span>}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">FlatList</span>
+          <span class="hljs-attr">data</span>=<span class="hljs-string">{this.state.dataSource}</span>
+          <span class="hljs-attr">renderItem</span>=<span class="hljs-string">{({item})</span> =&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{item.title}, {item.releaseYear}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>}
+          keyExtractor={(item, index) =&gt; index}
         /&gt;
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
     );
   }
 }
+
+
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Fetch Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20ActivityIndicator%2C%20ListView%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20Movies%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20isLoading%3A%20true%0A%20%20%20%20%7D%0A%20%20%7D%0A%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20return%20fetch('https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fmovies.json')%0A%20%20%20%20%20%20.then((response)%20%3D%3E%20response.json())%0A%20%20%20%20%20%20.then((responseJson)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20let%20ds%20%3D%20new%20ListView.DataSource(%7BrowHasChanged%3A%20(r1%2C%20r2)%20%3D%3E%20r1%20!%3D%3D%20r2%7D)%3B%0A%20%20%20%20%20%20%20%20this.setState(%7B%0A%20%20%20%20%20%20%20%20%20%20isLoading%3A%20false%2C%0A%20%20%20%20%20%20%20%20%20%20dataSource%3A%20ds.cloneWithRows(responseJson.movies)%2C%0A%20%20%20%20%20%20%20%20%7D%2C%20function()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%2F%2F%20do%20something%20with%20new%20state%0A%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%7D)%0A%20%20%20%20%20%20.catch((error)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20console.error(error)%3B%0A%20%20%20%20%20%20%7D)%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20if%20(this.state.isLoading)%20%7B%0A%20%20%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20paddingTop%3A%2020%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CActivityIndicator%20%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20)%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20paddingTop%3A%2020%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CListView%0A%20%20%20%20%20%20%20%20%20%20dataSource%3D%7Bthis.state.dataSource%7D%0A%20%20%20%20%20%20%20%20%20%20renderRow%3D%7B(rowData)%20%3D%3E%20%3CText%3E%7BrowData.title%7D%2C%20%7BrowData.releaseYear%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20FlatList%2C%20ActivityIndicator%2C%20Text%2C%20View%20%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20FetchExample%20extends%20React.Component%20%7B%0A%0A%20%20constructor(props)%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%7B%20isLoading%3A%20true%7D%0A%20%20%7D%0A%0A%20%20componentDidMount()%7B%0A%20%20%20%20return%20fetch('https%3A%2F%2Ffacebook.github.io%2Freact-native%2Fmovies.json')%0A%20%20%20%20%20%20.then((response)%20%3D%3E%20response.json())%0A%20%20%20%20%20%20.then((responseJson)%20%3D%3E%20%7B%0A%0A%20%20%20%20%20%20%20%20this.setState(%7B%0A%20%20%20%20%20%20%20%20%20%20isLoading%3A%20false%2C%0A%20%20%20%20%20%20%20%20%20%20dataSource%3A%20responseJson.movies%2C%0A%20%20%20%20%20%20%20%20%7D%2C%20function()%7B%0A%0A%20%20%20%20%20%20%20%20%7D)%3B%0A%0A%20%20%20%20%20%20%7D)%0A%20%20%20%20%20%20.catch((error)%20%3D%3E%7B%0A%20%20%20%20%20%20%20%20console.error(error)%3B%0A%20%20%20%20%20%20%7D)%3B%0A%20%20%7D%0A%0A%0A%0A%20%20render()%7B%0A%0A%20%20%20%20if(this.state.isLoading)%7B%0A%20%20%20%20%20%20return(%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20padding%3A%2020%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CActivityIndicator%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20%20%20)%0A%20%20%20%20%7D%0A%0A%20%20%20%20return(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20paddingTop%3A20%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20%20%20data%3D%7Bthis.state.dataSource%7D%0A%20%20%20%20%20%20%20%20%20%20renderItem%3D%7B(%7Bitem%7D)%20%3D%3E%20%3CText%3E%7Bitem.title%7D%2C%20%7Bitem.releaseYear%7D%3C%2FText%3E%7D%0A%20%20%20%20%20%20%20%20%20%20keyExtractor%3D%7B(item%2C%20index)%20%3D%3E%20index%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%0A"
         data-snack-platform="ios"
         data-snack-preview="true"
         data-snack-sdk-version="23.0.0"
