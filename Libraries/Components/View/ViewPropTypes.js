@@ -177,7 +177,7 @@ module.exports = {
   
   /**
    * A value indicating whether the accessibility elements contained within
-   * this accessibility element are hidden
+   * this accessibility element are hidden.
    *
    * @platform ios
    * 
