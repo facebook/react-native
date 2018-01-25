@@ -84,7 +84,7 @@
 <p>Since I’m thinking about this animation as steps occurring at different points in time along the complete animation, we will start our <code>Animated.Value</code> at 0, representing 0% complete, and end our value at 100, representing 100% complete.</p>
 <p>Our initial component state will be the following.</p>
 <pre><code class="hljs css javascript">state = {
-  <span class="hljs-attr">loadingProgress</span>: Animated.Value(<span class="hljs-number">0</span>),
+  <span class="hljs-attr">loadingProgress</span>: <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>),
 };
 </code></pre>
 <p>When we are ready to begin the animation, we tell Animated to animate this value to 100.</p>
