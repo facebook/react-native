@@ -48,7 +48,6 @@ node_modules
 *.log
 .nvm
 /danger/node_modules/
-scripts/.packager.env
 
 # OS X
 .DS_Store
