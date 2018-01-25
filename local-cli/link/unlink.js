@@ -2,11 +2,9 @@ const log = require('npmlog');
 
 const getProjectDependencies = require('./getProjectDependencies');
 const unregisterDependencyAndroid = require('./android/unregisterNativeModule');
-const unregisterDependencyWindows = require('./windows/unregisterNativeModule');
 const unregisterDependencyIOS = require('./ios/unregisterNativeModule');
 const unregisterDependencyPods = require('./pods/unregisterNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
-const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
 const isInstalledPods = require('./pods/isInstalled');
 const unlinkAssetsAndroid = require('./android/unlinkAssets');
@@ -42,23 +40,38 @@ const unlinkDependencyAndroid = (androidProject, dependency, packageName) => {
   log.info(`Android module ${packageName} has been successfully unlinked`);
 };
 
-const unlinkDependencyWindows = (windowsProject, dependency, packageName) => {
-  if (!windowsProject || !dependency.windows) {
-    return;
-  }
+const unlinkDependencyPlatforms = (platforms, project, dependency, packageName) => {
 
-  const isInstalled = isInstalledWindows(windowsProject, dependency.windows);
+  const ignorePlatforms = ['android', 'ios'];
+  Object.keys(platforms || {})
+    .filter(platform => ignorePlatforms.indexOf(platform) < 0)
+    .forEach(platform => {
+      if (!project[platform] || !dependency[platform]) {
+        return null;
+      }
 
-  if (!isInstalled) {
-    log.info(`Windows module ${packageName} is not installed`);
-    return;
-  }
+      const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
+      if (!linkConfig || !linkConfig.isInstalled || !linkConfig.unregister) {
+        return null;
+      }
 
-  log.info(`Unlinking ${packageName} windows dependency`);
+      const isInstalled = linkConfig.isInstalled(project[platform], dependency[platform]);
 
-  unregisterDependencyWindows(packageName, dependency.windows, windowsProject);
+      if (!isInstalled) {
+        log.info(`Platform '${platform}' module ${packageName} is not installed`);
+        return;
+      }
 
-  log.info(`Windows module ${packageName} has been successfully unlinked`);
+      log.info(`Unlinking ${packageName} ${platform} dependency`);
+
+      linkConfig.unregister(
+        packageName,
+        dependency[platform],
+        project[platform]
+      );
+
+      log.info(`Platform '${platform}' module ${dependency.name} has been successfully unlinked`);
+    });
 };
 
 const unlinkDependencyIOS = (iOSProject, dependency, packageName, iOSDependencies) => {
@@ -94,10 +107,12 @@ const unlinkDependencyIOS = (iOSProject, dependency, packageName, iOSDependencie
 function unlink(args, config) {
   const packageName = args[0];
 
-  var project;
-  var dependency;
+  let platforms;
+  let project;
+  let dependency;
 
   try {
+    platforms = config.getPlatformConfig();
     project = config.getProjectConfig();
   } catch (err) {
     log.error(
@@ -125,7 +140,7 @@ function unlink(args, config) {
     () => promisify(dependency.commands.preunlink || commandStub),
     () => unlinkDependencyAndroid(project.android, dependency, packageName),
     () => unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies),
-    () => unlinkDependencyWindows(project.windows, dependency, packageName),
+    () => unlinkDependencyPlatforms(platforms, project, dependency, packageName),
     () => promisify(dependency.commands.postunlink || commandStub)
   ];
 

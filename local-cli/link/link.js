@@ -27,11 +27,9 @@ const chalk = require('chalk');
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
-const registerDependencyWindows = require('./windows/registerNativeModule');
 const registerDependencyIOS = require('./ios/registerNativeModule');
 const registerDependencyPods = require('./pods/registerNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
-const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
 const isInstalledPods = require('./pods/isInstalled');
 const copyAssetsAndroid = require('./android/copyAssets');
@@ -76,31 +74,40 @@ const linkDependencyAndroid = (androidProject, dependency) => {
   });
 };
 
-const linkDependencyWindows = (windowsProject, dependency) => {
+const linkDependencyPlatforms = (platforms, project, dependency) => {
+  const ignorePlatforms = ['android', 'ios'];
+  Object.keys(platforms || {})
+    .filter(platform => ignorePlatforms.indexOf(platform) < 0)
+    .forEach(platform => {
+      if (!project[platform] || !dependency.config[platform]) {
+        return null;
+      }
 
-  if (!windowsProject || !dependency.config.windows) {
-    return null;
-  }
+      const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
+      if (!linkConfig || !linkConfig.isInstalled || !linkConfig.register) {
+        return null;
+      }
 
-  const isInstalled = isInstalledWindows(windowsProject, dependency.config.windows);
+      const isInstalled = linkConfig.isInstalled(project[platform], dependency.config[platform]);
 
-  if (isInstalled) {
-    log.info(chalk.grey(`Windows module ${dependency.name} is already linked`));
-    return null;
-  }
+      if (isInstalled) {
+        log.info(chalk.grey(`Platform '${platform}' module ${dependency.name} is already linked`));
+        return null;
+      }
 
-  return pollParams(dependency.config.params).then(params => {
-    log.info(`Linking ${dependency.name} windows dependency`);
+      return pollParams(dependency.config.params).then(params => {
+        log.info(`Linking ${dependency.name} ${platform} dependency`);
 
-    registerDependencyWindows(
-      dependency.name,
-      dependency.config.windows,
-      params,
-      windowsProject
-    );
+        linkConfig.register(
+          dependency.name,
+          dependency.config[platform],
+          params,
+          project[platform]
+        );
 
-    log.info(`Windows module ${dependency.name} has been successfully linked`);
-  });
+        log.info(`Platform '${platform}' module ${dependency.name} has been successfully linked`);
+      });
+    });
 };
 
 const linkDependencyIOS = (iOSProject, dependency) => {
@@ -124,7 +131,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
   log.info(`iOS module ${dependency.name} has been successfully linked`);
 };
 
-const linkAssets = (project, assets) => {
+const linkAssets = (platforms, project, assets) => {
   if (isEmpty(assets)) {
     return;
   }
@@ -139,6 +146,19 @@ const linkAssets = (project, assets) => {
     copyAssetsAndroid(assets, project.android.assetsPath);
   }
 
+  const ignorePlatforms = ['android', 'ios'];
+  Object.keys(platforms || {})
+    .filter(platform => ignorePlatforms.indexOf(platform) < 0)
+    .forEach(platform => {
+      const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
+      if (!linkConfig || !linkConfig.copyAssets) {
+        return;
+      }
+
+      log.info(`Linking assets to ${platform} project`);
+      linkConfig.copyAssets(assets, project[platform]);
+    });
+
   log.info('Assets have been successfully linked to your project');
 };
 
@@ -150,9 +170,11 @@ const linkAssets = (project, assets) => {
  * @param config CLI config, see local-cli/core/index.js
  */
 function link(args: Array<string>, config: RNConfig) {
-  var project;
+  let project;
+  let platforms;
   try {
     project = config.getProjectConfig();
+    platforms = config.getPlatformConfig();
   } catch (err) {
     log.error(
       'ERRPACKAGEJSON',
@@ -161,7 +183,8 @@ function link(args: Array<string>, config: RNConfig) {
     return Promise.reject(err);
   }
 
-  if (!project.android && !project.ios && !project.windows && findReactNativeScripts()) {
+  const hasProjectConfig = Object.keys(platforms).reduce((acc, key) => acc || key in project, false);
+  if (!hasProjectConfig && findReactNativeScripts()) {
     throw new Error(
       '`react-native link` can not be used in Create React Native App projects. ' +
       'If you need to include a library that relies on custom native code, ' +
@@ -183,7 +206,7 @@ function link(args: Array<string>, config: RNConfig) {
   );
 
   const assets = dedupeAssets(dependencies.reduce(
-    (assets, dependency) => assets.concat(dependency.config.assets),
+    (acc, dependency) => acc.concat(dependency.config.assets),
     project.assets
   ));
 
@@ -191,11 +214,11 @@ function link(args: Array<string>, config: RNConfig) {
     () => promisify(dependency.config.commands.prelink || commandStub),
     () => linkDependencyAndroid(project.android, dependency),
     () => linkDependencyIOS(project.ios, dependency),
-    () => linkDependencyWindows(project.windows, dependency),
+    () => linkDependencyPlatforms(platforms, project, dependency),
     () => promisify(dependency.config.commands.postlink || commandStub),
   ]));
 
-  tasks.push(() => linkAssets(project, assets));
+  tasks.push(() => linkAssets(platforms, project, assets));
 
   return promiseWaterfall(tasks).catch(err => {
     log.error(
