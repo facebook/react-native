@@ -1,8 +1,8 @@
-load("//ReactNative:DEFS", "rn_android_library", "rn_android_binary", "rn_android_resource", "react_native_dep", "react_native_target")
+load("//ReactNative:DEFS", "rn_android_library", "rn_android_binary", "rn_android_resource", "react_native_dep", "react_native_target", "KEYSTORE_TARGET")
 
 rn_android_binary(
     name = "app",
-    keystore = "//keystores:debug",
+    keystore = KEYSTORE_TARGET,
     manifest = "src/main/AndroidManifest.xml",
     deps = [
         ":rntester-lib",
