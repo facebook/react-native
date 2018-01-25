@@ -143,6 +143,82 @@ describe('link', () => {
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
+      expect(registerNativeModule.calledThrice).toEqual(0);
+      done();
+    });
+  });
+
+  it('should register native modules for plugins', (done) => {
+    const registerNativeModule = sinon.stub();
+    const dependencyConfig = {ios: {}, android: {}, test: {}, assets: [], commands: {}};
+    const linkPluginConfig = { isInstalled: 'testIsInstalled', register: 'testRegister', unregister: 'testUnregister' }
+    const pluginProjectConfig = { test: { link: linkPluginConfig, config: {} } }
+    const config = {
+      getProjectConfig: () => ({ ios: {}, android: {}, plugins: pluginProjectConfig, assets: [] }),
+      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+    };
+
+    jest.setMock(
+      '../ios/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      '../android/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      'testIsInstalled',
+      sinon.stub().returns(false)
+    );
+    
+    jest.setMock(
+      'testRegister',
+      registerNativeModule
+    );
+
+    const link = require('../link').func;
+
+    link(['react-native-blur'], config).then(() => {
+      expect(registerNativeModule.calledOnce);
+      done();
+    });
+  });
+
+  it('should not register native modules for plugins when already installed', (done) => {
+    const registerNativeModule = sinon.stub();
+    const dependencyConfig = {ios: {}, android: {}, test: {}, assets: [], commands: {}};
+    const linkPluginConfig = { isInstalled: 'testIsInstalled', register: 'testRegister', unregister: 'testUnregister' }
+    const pluginProjectConfig = { test: { link: linkPluginConfig, config: {} } }
+    const config = {
+      getProjectConfig: () => ({ ios: {}, android: {}, plugins: pluginProjectConfig, assets: [] }),
+      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+    };
+
+    jest.setMock(
+      '../ios/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      '../android/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      'testIsInstalled',
+      sinon.stub().returns(true)
+    );
+    
+    jest.setMock(
+      'testRegister',
+      registerNativeModule
+    );
+
+    const link = require('../link').func;
+
+    link(['react-native-blur'], config).then(() => {
       expect(registerNativeModule.callCount).toEqual(0);
       done();
     });

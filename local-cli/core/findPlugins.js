@@ -37,6 +37,14 @@ const findPluginsInReactNativePackage = (pjson) => {
   return path.join(pjson.name, pjson.rnpm.plugin);
 };
 
+const findPlatformsInPackage = (pjson) => {
+  if (!pjson.rnpm || !pjson.rnpm.plugin) {
+    return [];
+  }
+
+  return path.join(pjson.name, pjson.rnpm.platform);
+};
+
 const findPluginInFolder = (folder) => {
   const pjson = readPackage(folder);
 
@@ -52,26 +60,30 @@ const findPluginInFolder = (folder) => {
   return deps.reduce(
     (acc, pkg) => {
       if (isRNPMPlugin(pkg)) {
-        return acc.concat(pkg);
+        acc.commands.push(pkg);
       }
       if (isReactNativePlugin(pkg)) {
         const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
-        if (!pkgJson) {
-          return acc;
+        if (pkgJson) {
+          acc.commands.push(findPluginsInReactNativePackage(pkgJson));
+          acc.platforms.push(findPlatformsInPackage(pkgJson));
         }
-        return acc.concat(findPluginsInReactNativePackage(pkgJson));
       }
       return acc;
     },
-    []
+    {commands: [], platforms: []}
   );
 };
 
 /**
  * Find plugins in package.json of the given folder
  * @param {String} folder Path to the folder to get the package.json from
- * @type  {Array}         Array of plugins or an empty array if no package.json found
+ * @type  {Object}        Object of commands and platform plugins
  */
 module.exports = function findPlugins(folders) {
-  return uniq(flatten(folders.map(findPluginInFolder)));
+  const plugins = folders.map(findPluginInFolder);
+  return {
+    commands: uniq(flatten(plugins.map(p => flatten(p.commands)))),
+    platforms: uniq(flatten(plugins.map(p => flatten(p.platforms))))
+  };
 };
