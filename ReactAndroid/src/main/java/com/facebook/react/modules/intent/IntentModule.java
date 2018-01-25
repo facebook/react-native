@@ -52,7 +52,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
-        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        if (Intent.ACTION_VIEW.equals(action) || Intent.ACTION_SEND.equals(action) && uri != null) {
           initialURL = uri.toString();
         }
       }
