@@ -231,12 +231,11 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -277,18 +276,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
-    compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.3.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
-    compile 'com.facebook.soloader:soloader:0.1.0'
-    compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-    compile 'com.squareup.okio:okio:1.13.0'
-    compile 'org.webkit:android-jsc:r174650'
+    api fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    api 'javax.inject:javax.inject:1'
+    api 'com.android.support:appcompat-v7:27.0.2'
+    api 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
+    api 'com.facebook.fresco:fresco:1.3.0'
+    api 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
+    api 'com.facebook.soloader:soloader:0.1.0'
+    api 'com.google.code.findbugs:jsr305:3.0.0'
+    api 'com.squareup.okhttp3:okhttp:3.6.0'
+    api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+    api 'com.squareup.okio:okio:1.13.0'
+    api 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

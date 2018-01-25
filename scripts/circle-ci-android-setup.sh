@@ -1,9 +1,9 @@
 # inspired by https://github.com/Originate/guide/blob/master/android/guide/Continuous%20Integration.md
 
 # SDK Built Tools revision, per http://facebook.github.io/react-native/docs/getting-started.html
-ANDROID_SDK_BUILD_TOOLS_REVISION=23.0.1
+ANDROID_SDK_BUILD_TOOLS_REVISION=27.0.3
 # API Level we build with
-ANDROID_SDK_BUILD_API_LEVEL="23"
+ANDROID_SDK_BUILD_API_LEVEL="27"
 # Minimum API Level we target, used for emulator image
 ANDROID_SDK_TARGET_API_LEVEL="19"
 # Emulator name
