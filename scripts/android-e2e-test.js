@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Used in run-ci-e2e-test.js and executed in Travis and Circle CI.
+ * Used in run-ci-e2e-test.js and executed in Circle CI.
  * E2e test that verifies that init app can be installed, compiled, started and Hot Module reloading and Chrome debugging work.
  * For other examples of appium refer to: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
  * https://www.npmjs.com/package/wd-android
