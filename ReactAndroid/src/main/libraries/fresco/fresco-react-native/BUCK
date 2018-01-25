@@ -1,3 +1,5 @@
+load("//ReactNative:DEFS", "rn_android_library")
+
 android_prebuilt_aar(
     name = "fresco-react-native",
     aar = ":fresco-binary-aar",
@@ -6,8 +8,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fresco-binary-aar",
-    sha1 = "87d86ce36812b7b859f6176e253b71b54d4a39e3",
-    url = "mvn:com.facebook.fresco:fresco:aar:1.0.1",
+    sha1 = "b6271dc58383b4ce119ecc05e2bcaedde0e74ad9",
+    url = "mvn:com.facebook.fresco:fresco:aar:1.3.0",
 )
 
 android_prebuilt_aar(
@@ -18,11 +20,11 @@ android_prebuilt_aar(
 
 remote_file(
     name = "drawee-binary-aar",
-    sha1 = "7eea1c7dd619e7621f6e818c007c30970ac31575",
-    url = "mvn:com.facebook.fresco:drawee:aar:1.0.1",
+    sha1 = "c88fb84ed4ae8a4e0efe6fd3cad1a1d20c19ea69",
+    url = "mvn:com.facebook.fresco:drawee:aar:1.3.0",
 )
 
-android_library(
+rn_android_library(
     name = "imagepipeline",
     exported_deps = [
         ":bolts",
@@ -40,8 +42,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "imagepipeline-base-aar",
-    sha1 = "44d5e4b7c07afaee610ea2dda29535455cd1a20e",
-    url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.0.1",
+    sha1 = "a43f1043fc684d2794438544f73f1968ec9cf21a",
+    url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.3.0",
 )
 
 android_prebuilt_aar(
@@ -52,8 +54,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "imagepipeline-aar",
-    sha1 = "78e637099db724c3963df4515d014c9d7232469e",
-    url = "mvn:com.facebook.fresco:imagepipeline:aar:1.0.1",
+    sha1 = "32c08122d47210d437f34eba5472e880b0f1e8b8",
+    url = "mvn:com.facebook.fresco:imagepipeline:aar:1.3.0",
 )
 
 prebuilt_jar(
@@ -76,8 +78,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fbcore-aar",
-    sha1 = "25cdfb603c04e96486446da625cf8a90666eb55f",
-    url = "mvn:com.facebook.fresco:fbcore:aar:1.0.1",
+    sha1 = "3b941157dd0c36fca9a19c22cae578f37deb97e5",
+    url = "mvn:com.facebook.fresco:fbcore:aar:1.3.0",
 )
 
 android_prebuilt_aar(
@@ -88,6 +90,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "imagepipeline-okhttp3-binary-aar",
-    sha1 = "361e123fd114481ee037199db21337f06994f36e",
-    url = "mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:1.0.1",
+    sha1 = "ac9b1a7c9906ed6be41c8df923a59f6952fce94c",
+    url = "mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:1.3.0",
 )

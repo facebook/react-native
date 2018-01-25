@@ -7,35 +7,45 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @format
+ * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
-require('../../__fixtures__/mockFSWorkaround');
+jest.mock('fs');
 
 const findPackageClassName = require('../../android/findPackageClassName');
-const mockFS = require('mock-fs');
+const fs = require('fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::findPackageClassName', () => {
   beforeAll(() => {
-    mockFS({
+    fs.__setMockFilesystem({
       empty: {},
-      flat: {
+      flatJava: {
         android: mocks.valid,
+      },
+      flatKotlin: {
+        android: mocks.validKotlin,
       },
     });
   });
 
   it('returns manifest content if file exists in the folder', () => {
-    expect(typeof findPackageClassName('flat')).toBe('string');
+    expect(typeof findPackageClassName('/flatJava')).toBe('string');
+  });
+
+  it('returns the name of the java class implementing ReactPackage', () => {
+    expect(findPackageClassName('/flatJava')).toBe('SomeExampleJavaPackage');
+  });
+
+  it('returns the name of the kotlin class implementing ReactPackage', () => {
+    expect(findPackageClassName('/flatKotlin')).toBe(
+      'SomeExampleKotlinPackage',
+    );
   });
 
   it('returns `null` if there are no matches', () => {
-    expect(findPackageClassName('empty')).toBeNull();
-  });
-
-  afterAll(() => {
-    mockFS.restore();
+    expect(findPackageClassName('/empty')).toBeNull();
   });
 });

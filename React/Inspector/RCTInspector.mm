@@ -3,8 +3,8 @@
 
 #if RCT_DEV
 
-#include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JavaScriptCore.h>
+#include <jsinspector/InspectorInterfaces.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
@@ -16,7 +16,7 @@ using namespace facebook::react;
 
 // This is a port of the Android impl, at
 // react-native-github/ReactAndroid/src/main/java/com/facebook/react/bridge/Inspector.java
-// react-native-github/ReactAndroid/src/main/jni/xreact/jni/JInspector.cpp
+// react-native-github/ReactAndroid/src/main/jni/react/jni/JInspector.cpp
 // please keep consistent :)
 
 class RemoteConnection : public IRemoteConnection {
@@ -49,17 +49,9 @@ private:
 - (instancetype)initWithConnection:(std::unique_ptr<ILocalConnection>)connection;
 @end
 
-// Only safe to call with Custom JSC. Custom JSC check must occur earlier
-// in the stack
 static IInspector *getInstance()
 {
-  static dispatch_once_t onceToken;
-  static IInspector *s_inspector;
-  dispatch_once(&onceToken, ^{
-    s_inspector = customJSCWrapper()->JSInspectorGetInstance();
-  });
-
-  return s_inspector;
+  return &facebook::react::getInspectorInstance();
 }
 
 @implementation RCTInspector

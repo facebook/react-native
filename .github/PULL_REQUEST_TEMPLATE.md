@@ -1,18 +1,50 @@
-<details>
-  Thanks for submitting a PR! Please read these instructions carefully:
+<!--
+Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
 
-  - [ ] Explain the **motivation** for making this change.
-  - [ ] Provide a **test plan** demonstrating that the code is solid.
-  - [ ] Match the **code formatting** of the rest of the codebase.
-  - [ ] Target the `master` branch, NOT a "stable" branch.
+Help us understand your motivation by explaining why you decided to make this change.
 
-  Please read the [Contribution Guidelines](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md) to learn more about contributing to React Native.
-</details>
+You can learn more about contributing to React Native here: http://facebook.github.io/react-native/docs/contributing.html
 
-## Motivation (required)
+Happy contributing!
 
-_What existing problem does the pull request solve?_
+-->
 
-## Test Plan (required)
+## Motivation
 
-_A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website._
+(Write your motivation here.)
+
+## Test Plan
+
+(Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!)
+
+## Related PRs
+
+(If this PR adds or changes functionality, please take some time to update the docs at https://github.com/facebook/react-native-website, and link to your PR here.)
+
+## Release Notes
+<!--
+Help reviewers and the release process by writing your own release notes
+
+**INTERNAL and MINOR tagged notes will not be included in the next version's final release notes.**
+
+  CATEGORY
+[----------]        TYPE
+[ CLI      ]   [-------------]      LOCATION
+[ DOCS     ]   [ BREAKING    ]   [-------------]
+[ GENERAL  ]   [ BUGFIX      ]   [-{Component}-]
+[ INTERNAL ]   [ ENHANCEMENT ]   [ {File}      ]
+[ IOS      ]   [ FEATURE     ]   [ {Directory} ]   |-----------|
+[ ANDROID  ]   [ MINOR       ]   [ {Framework} ] - | {Message} |
+[----------]   [-------------]   [-------------]   |-----------|
+
+[CATEGORY] [TYPE] [LOCATION] - MESSAGE
+
+ EXAMPLES:
+
+ [IOS] [BREAKING] [FlatList] - Change a thing that breaks other things
+ [ANDROID] [BUGFIX] [TextInput] - Did a thing to TextInput
+ [CLI] [FEATURE] [local-cli/info/info.js] - CLI easier to do things with
+ [DOCS] [BUGFIX] [GettingStarted.md] - Accidentally a thing/word
+ [GENERAL] [ENHANCEMENT] [Yoga] - Added new yoga thing/position
+ [INTERNAL] [FEATURE] [./scripts] - Added thing to script that nobody will see
+-->

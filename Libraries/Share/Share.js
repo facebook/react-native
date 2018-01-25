@@ -22,7 +22,12 @@ const {
 } = require('NativeModules');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
-type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
+type Options = {
+  dialogTitle?: string,
+  excludedActivityTypes?: Array<string>,
+  tintColor?: string,
+  subject?: string
+};
 
 class Share {
 
@@ -50,12 +55,13 @@ class Share {
    *
    * #### iOS
    *
-   * - `excludedActivityTypes`
-   * - `tintColor`
+   *  - `subject` - a subject to share via email
+   *  - `excludedActivityTypes`
+   *  - `tintColor`
    *
    * #### Android
    *
-   * - `dialogTitle`
+   *  - `dialogTitle`
    *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
@@ -105,13 +111,13 @@ class Share {
   /**
    * The content was successfully shared.
    */
-  static get sharedAction() { return 'sharedAction'; }
+  static get sharedAction(): string { return 'sharedAction'; }
 
   /**
    * The dialog has been dismissed.
    * @platform ios
    */
-  static get dismissedAction() { return 'dismissedAction'; }
+  static get dismissedAction(): string { return 'dismissedAction'; }
 
 }
 

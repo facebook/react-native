@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
@@ -24,11 +25,23 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
+ * The native id of the view, used to locate view from native codes
+ */
+@property (nonatomic, copy) NSString *nativeID;
+
+/**
  * Layout direction of the view.
  * Internally backed to `semanticContentAttribute` property.
  * Defaults to `LeftToRight` in case of ambiguity.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
+
+/**
+ * Yoga `display` style property. Can be `flex` or `none`.
+ * Defaults to `flex`.
+ * May be used to temporary hide the view in a very efficient way.
+ */
+@property (nonatomic, assign) YGDisplay reactDisplay;
 
 /**
  * The z-index of the view.
@@ -48,15 +61,16 @@
 - (void)didUpdateReactSubviews;
 
 /**
+ * Called each time props have been set.
+ * The default implementation does nothing.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
+/**
  * Used by the UIIManager to set the view frame.
  * May be overriden to disable animation, etc.
  */
 - (void)reactSetFrame:(CGRect)frame;
-
-/**
- * Used to improve performance when compositing views with translucent content.
- */
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor;
 
 /**
  * This method finds and returns the containing view controller for the view.
@@ -94,15 +108,5 @@
  * Defaults to `self`.
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
-
-#if RCT_DEV
-
-/**
- Tools for debugging
- */
-
-@property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
-
-#endif
 
 @end

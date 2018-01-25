@@ -14,10 +14,6 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
 public abstract class JavaScriptExecutor {
-  public interface Factory {
-    JavaScriptExecutor create() throws Exception;
-  }
-
   private final HybridData mHybridData;
 
   protected JavaScriptExecutor(HybridData hybridData) {

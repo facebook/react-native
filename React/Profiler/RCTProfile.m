@@ -10,10 +10,10 @@
 #import "RCTProfile.h"
 
 #import <dlfcn.h>
-#import <libkern/OSAtomic.h>
 #import <mach/mach.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <stdatomic.h>
 
 #import <UIKit/UIKit.h>
 
@@ -25,6 +25,7 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
@@ -36,14 +37,13 @@ const uint64_t RCTProfileTagAlways = 1L << 0;
 
 #pragma mark - Constants
 
-NSString *const RCTProfileTraceEvents = @"traceEvents";
-NSString *const RCTProfileSamples = @"samples";
-NSString *const RCTProfilePrefix = @"rct_profile_";
+static NSString *const kProfileTraceEvents = @"traceEvents";
+static NSString *const kProfileSamples = @"samples";
+static NSString *const kProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
-// This is actually a BOOL - but has to be compatible with OSAtomic
-static volatile uint32_t RCTProfileProfiling;
+static atomic_bool RCTProfileProfiling = ATOMIC_VAR_INIT(NO);
 
 static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;
@@ -135,7 +135,7 @@ static NSDictionary *RCTProfileGetMemoryUsage(void)
 
 static const char *RCTProfileProxyClassName(Class class)
 {
-  return [RCTProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
+  return [kProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
 }
 
 static dispatch_group_t RCTProfileGetUnhookGroup(void)
@@ -439,17 +439,16 @@ dispatch_queue_t RCTProfileGetQueue(void)
 
 BOOL RCTProfileIsProfiling(void)
 {
-  return (BOOL)RCTProfileProfiling;
+  return atomic_load(&RCTProfileProfiling);
 }
 
 void RCTProfileInit(RCTBridge *bridge)
 {
   // TODO: enable assert JS thread from any file (and assert here)
-  if (RCTProfileIsProfiling()) {
+  BOOL wasProfiling = atomic_fetch_or(&RCTProfileProfiling, 1);
+  if (wasProfiling) {
     return;
   }
-
-  OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
     systrace_buffer = callbacks->start();
@@ -459,8 +458,8 @@ void RCTProfileInit(RCTBridge *bridge)
       RCTProfileStartTime = time;
       RCTProfileOngoingEvents = [NSMutableDictionary new];
       RCTProfileInfo = @{
-        RCTProfileTraceEvents: [NSMutableArray new],
-        RCTProfileSamples: [NSMutableArray new],
+        kProfileTraceEvents: [NSMutableArray new],
+        kProfileSamples: [NSMutableArray new],
       };
     });
   }
@@ -470,7 +469,7 @@ void RCTProfileInit(RCTBridge *bridge)
     NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript",
                                 @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
-      RCTProfileAddEvent(RCTProfileTraceEvents,
+      RCTProfileAddEvent(kProfileTraceEvents,
         @"ph": @"M", // metadata event
         @"name": @"thread_sort_index",
         @"tid": thread,
@@ -493,12 +492,10 @@ void RCTProfileInit(RCTBridge *bridge)
 void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
 {
   // assert JavaScript thread here again
-
-  if (!RCTProfileIsProfiling()) {
+  BOOL wasProfiling = atomic_fetch_and(&RCTProfileProfiling, 0);
+  if (!wasProfiling) {
     return;
   }
-
-  OSAtomicAnd32Barrier(0, &RCTProfileProfiling);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:bridge];
@@ -587,7 +584,7 @@ void _RCTProfileEndEvent(
     }
 
     NSNumber *start = event[0];
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": event[1],
       @"cat": category,
@@ -650,7 +647,7 @@ void RCTProfileEndAsyncEvent(
     if (event) {
       NSNumber *endTimestamp = RCTProfileTimestamp(time);
 
-      RCTProfileAddEvent(RCTProfileTraceEvents,
+      RCTProfileAddEvent(kProfileTraceEvents,
         @"tid": threadName,
         @"name": event[1],
         @"cat": category,
@@ -680,7 +677,7 @@ void RCTProfileImmediateEvent(
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": name,
       @"ts": RCTProfileTimestamp(time),
@@ -707,7 +704,7 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
       @"id": @(cookie),
@@ -734,7 +731,7 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
       @"id": @(cookie),

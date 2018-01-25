@@ -2,21 +2,21 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.inject.Provider;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.systrace.SystraceMessage;
-
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.systrace.SystraceMessage;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.inject.Provider;
 
 /**
  * Holder to enable us to lazy create native modules.
@@ -62,6 +62,8 @@ public class ModuleHolder {
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
     mHasConstants = true;
     mModule = nativeModule;
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
   }
 
   /*
@@ -155,6 +157,8 @@ public class ModuleHolder {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
       .arg("name", mName)
       .flush();
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
     NativeModule module;
     try {
       module = assertNotNull(mProvider).get();

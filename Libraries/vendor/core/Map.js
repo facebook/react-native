@@ -436,7 +436,7 @@ module.exports = (function(global, undefined) {
     // property of our choosing that we associate with the object. Association
     // is done by ways of keeping a non-enumerable property on the object.
     // Ideally these would be `Object.create(null)` objects but since we're
-    // trying to support ES3 we'll have to gaurd against collisions using
+    // trying to support ES3 we'll have to guard against collisions using
     // prefixes on the keys rather than rely on null prototype objects.
     map._objectIndex = {};
 

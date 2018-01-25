@@ -8,13 +8,41 @@
 
 #include <glog/logging.h>
 
+#if WITH_FBJSCEXTENSIONS
+#include <pthread.h>
+#endif
+
 #include "JavaScriptCore.h"
 #include "Value.h"
+#include <privatedata/PrivateDataBase.h>
+
+#if WITH_FBJSCEXTENSIONS
+#undef ASSERT
+#undef WTF_EXPORT_PRIVATE
+
+#include <JavaScriptCore/config.h>
+#include <wtf/WTFThreadData.h>
+
+#undef TRUE
+#undef FALSE
+#endif
 
 namespace facebook {
 namespace react {
 
 namespace {
+
+class JSFunctionPrivateData : public PrivateDataBase {
+ public:
+  explicit JSFunctionPrivateData(JSFunction&& function) : jsFunction_{std::move(function)} {}
+
+  JSFunction& getJSFunction() {
+    return jsFunction_;
+  }
+
+private:
+  JSFunction jsFunction_;
+};
 
 JSValueRef functionCaller(
     JSContextRef ctx,
@@ -24,29 +52,34 @@ JSValueRef functionCaller(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   const bool isCustomJSC = isCustomJSCPtr(ctx);
-  auto* f = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(isCustomJSC, function));
-  return (*f)(ctx, thisObject, argumentCount, arguments);
+  auto* privateData = PrivateDataBase::cast<JSFunctionPrivateData>(
+    JSC_JSObjectGetPrivate(isCustomJSC, function));
+  return (privateData->getJSFunction())(ctx, thisObject, argumentCount, arguments);
 }
 
 JSClassRef createFuncClass(JSContextRef ctx) {
   JSClassDefinition definition = kJSClassDefinitionEmpty;
   definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+
   // Need to duplicate the two different finalizer blocks, since there's no way
   // for it to capture this static information.
-  if (isCustomJSCPtr(ctx)) {
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  if (isCustomJSC) {
     definition.finalize = [](JSObjectRef object) {
-      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(true, object));
-      delete function;
+      auto* privateData = PrivateDataBase::cast<JSFunctionPrivateData>(
+        JSC_JSObjectGetPrivate(true, object));
+      delete privateData;
     };
   } else {
     definition.finalize = [](JSObjectRef object) {
-      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(false, object));
-      delete function;
+      auto* privateData = PrivateDataBase::cast<JSFunctionPrivateData>(
+        JSC_JSObjectGetPrivate(false, object));
+      delete privateData;
     };
   }
   definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
 
-  return JSC_JSClassCreate(ctx, &definition);
+  return JSC_JSClassCreate(isCustomJSC, &definition);
 }
 
 JSObjectRef makeFunction(
@@ -60,8 +93,8 @@ JSObjectRef makeFunction(
   }
 
   // dealloc in kClassDef.finalize
-  JSFunction *functionPtr = new JSFunction(std::move(function));
-  auto functionObject = Object(ctx, JSC_JSObjectMake(ctx, *classRef, functionPtr));
+  JSFunctionPrivateData *functionDataPtr = new JSFunctionPrivateData(std::move(function));
+  auto functionObject = Object(ctx, JSC_JSObjectMake(ctx, *classRef, functionDataPtr));
   functionObject.setProperty("name", Value(ctx, name));
   return functionObject;
 }
@@ -114,16 +147,7 @@ void JSException::buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sou
 
 namespace ExceptionHandling {
 
-#if __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-
 PlatformErrorExtractor platformErrorExtractor;
-
-#if __clang__
-#pragma clang diagnostic pop
-#endif
 
 }
 
@@ -200,6 +224,42 @@ JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSSt
   return result;
 }
 #endif
+
+JSContextLock::JSContextLock(JSGlobalContextRef ctx) noexcept
+#if WITH_FBJSCEXTENSIONS
+  : ctx_(ctx),
+   globalLock_(PTHREAD_MUTEX_INITIALIZER)
+   {
+  WTFThreadData& threadData = wtfThreadData();
+
+  // Code below is responsible for acquiring locks. It should execute
+  // atomically, thus none of the functions invoked from now on are allowed to
+  // throw an exception
+  try {
+    if (!threadData.isDebuggerThread()) {
+      CHECK(0 == pthread_mutex_lock(&globalLock_));
+    }
+    JSLock(ctx_);
+  } catch (...) {
+    abort();
+  }
+}
+#else
+{}
+#endif
+
+
+JSContextLock::~JSContextLock() noexcept {
+  #if WITH_FBJSCEXTENSIONS
+  WTFThreadData& threadData = wtfThreadData();
+
+  JSUnlock(ctx_);
+  if (!threadData.isDebuggerThread()) {
+    CHECK(0 == pthread_mutex_unlock(&globalLock_));
+  }
+  #endif
+}
+
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
   try {

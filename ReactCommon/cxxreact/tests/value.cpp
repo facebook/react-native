@@ -51,8 +51,8 @@ TEST(Value, ToJSONString) {
   EXPECT_TRUE(dyn.isObject());
   auto val = dyn.at("a");
   ASSERT_NE(nullptr, val);
-  ASSERT_TRUE(val.isInt());
-  EXPECT_EQ(4, val.getInt());
+  ASSERT_TRUE(val.isNumber());
+  EXPECT_EQ(4, val.asInt());
   EXPECT_EQ(4.0f, val.asDouble());
 
   JSC_JSGlobalContextRelease(ctx);

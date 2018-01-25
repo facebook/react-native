@@ -15,12 +15,10 @@ var React = require('React');
 
 var PropTypes = require('prop-types');
 
-class StaticRenderer extends React.Component {
-  props: {
-    shouldUpdate: boolean,
-    render: Function,
-  };
-
+class StaticRenderer extends React.Component<{
+  shouldUpdate: boolean,
+  render: Function,
+}> {
   static propTypes = {
     shouldUpdate: PropTypes.bool.isRequired,
     render: PropTypes.func.isRequired,
@@ -30,7 +28,7 @@ class StaticRenderer extends React.Component {
     return nextProps.shouldUpdate;
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return this.props.render();
   }
 }

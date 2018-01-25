@@ -54,9 +54,9 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
     NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
-    NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%lld/debugger-proxy?role=client", host, (long long)port];
     _url = [RCTConvert NSURL:URLString];
   }
 
@@ -117,7 +117,7 @@ RCT_EXPORT_MODULE()
     initError = error;
     dispatch_semaphore_signal(s);
   }];
-  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC));
+  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5));
   if (initError) {
     RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
   }
@@ -172,6 +172,11 @@ RCT_EXPORT_MODULE()
 
 - (void)executeApplicationScript:(NSData *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
+  // Hack: the bridge transitions out of loading state as soon as this method returns, which prevents us
+  // from completely invalidating the bridge and preventing an endless barage of RCTLog.logIfNoNativeHook
+  // calls if the JS execution environment is broken. We therefore block this thread until this message has returned.
+  dispatch_semaphore_t scriptSem = dispatch_semaphore_create(0);
+
   NSDictionary<NSString *, id> *message = @{
     @"method": @"executeApplicationScript",
     @"url": RCTNullIfNil(URL.absoluteString),
@@ -184,7 +189,10 @@ RCT_EXPORT_MODULE()
       NSString *error = reply[@"error"];
       onComplete(error ? RCTErrorWithMessage(error) : nil);
     }
+    dispatch_semaphore_signal(scriptSem);
   }];
+
+  dispatch_semaphore_wait(scriptSem, DISPATCH_TIME_FOREVER);
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete

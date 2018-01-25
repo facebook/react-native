@@ -30,7 +30,7 @@ const {
 
 var scale = Platform.isTVOS ? 4 : 1;
 
-class ARTExample extends React.Component{
+class ARTExample extends React.Component<{}> {
     render(){
         const pathRect = new Path()
             .moveTo(scale * 0,scale * 0)

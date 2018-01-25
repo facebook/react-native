@@ -1,17 +1,19 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS", "IS_OSS_BUILD", "rn_xplat_cxx_library", "ANDROID_INSPECTOR_FLAGS", "APPLE_INSPECTOR_FLAGS", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "DEBUG_PREPROCESSOR_FLAGS", "react_native_xplat_target")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
     "-Wall",
 ]
 
-if THIS_IS_FBOBJC:
-  inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
-  CXX_LIBRARY_COMPILER_FLAGS += inherited_buck_flags.get_flag_value('compiler_flags')
+APPLE_COMPILER_FLAGS = []
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "STATIC_LIBRARY_IOS_FLAGS", "flags")
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(STATIC_LIBRARY_IOS_FLAGS, 'compiler_flags')
 
 rn_xplat_cxx_library(
     name = "module",
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+    header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "CxxModule.h"),
@@ -20,14 +22,14 @@ rn_xplat_cxx_library(
         ],
         prefix = "cxxreact",
     ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     force_static = True,
-    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:molly",
     ],
 )
 
@@ -36,50 +38,56 @@ rn_xplat_cxx_library(
     srcs = [
         "JSBigString.cpp",
     ],
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
+    header_namespace = "",
     exported_headers = subdir_glob(
         [("", "JSBigString.h")],
         prefix = "cxxreact",
     ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     force_static = True,
-    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/folly:molly",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
+        "xplat//folly:scope_guard",
     ],
 )
 
 rn_xplat_cxx_library(
     name = "samplemodule",
     srcs = ["SampleCxxModule.cpp"],
+    header_namespace = "",
+    exported_headers = ["SampleCxxModule.h"],
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
-    exported_headers = ["SampleCxxModule.h"],
-    header_namespace = "",
-    soname = "libxplat_react_module_samplemodule.so",
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
         ":module",
-        "//xplat/folly:molly",
     ],
 )
 
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
-    "Executor.h",
     "Instance.h",
     "JSBundleType.h",
+    "JSExecutor.h",
     "JSCExecutor.h",
     "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
@@ -90,6 +98,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeModule.h",
     "NativeToJsBridge.h",
     "Platform.h",
+    "RAMBundleRegistry.h",
     "RecoverableError.h",
     "SharedProxyCxxModule.h",
     "SystraceSection.h",
@@ -104,10 +113,11 @@ rn_xplat_cxx_library(
             "SampleCxxModule.cpp",
         ],
     ),
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
+    headers = glob(
+        ["*.h"],
+        excludes = CXXREACT_PUBLIC_HEADERS,
+    ),
+    header_namespace = "",
     exported_headers = dict([
         (
             "cxxreact/%s" % header,
@@ -115,54 +125,44 @@ rn_xplat_cxx_library(
         )
         for header in CXXREACT_PUBLIC_HEADERS
     ]),
-    fbandroid_preprocessor_flags = [
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbandroid_deps = ANDROID_JSC_DEPS,
+    fbandroid_preprocessor_flags = ANDROID_INSPECTOR_FLAGS + [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
-        "-DWITH_REACT_INTERNAL_SETTINGS=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
-    fbandroid_visibility = [
-        # TL;DR: If you depend on this target directly, you're gonna have a
-        # Bad Time(TM).
-        #
-        # `facebook::react::JSCExecutor::initOnJSVMThread` (in `:bridge`) does
-        # some platform-dependant setup. Exactly what setup to do is
-        # determined by some static functors, defined in `Platform.h`, which
-        # are initially `nullptr`. On Android, these functors are properly
-        # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
-        # on the bridge, we can mess up the SO initialisation order, causing
-        # `initOnJSVMThread` to be called before the platform-specific hooks
-        # have been properly initialised. Bad Times(TM).
-        #     -- @ashokmenon (2017/01/03)
-        react_native_target("jni/react/jni:jni"),
-        react_native_xplat_target("cxxreact/..."),
-    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_deps = APPLE_JSC_DEPS,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
-    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
-    fbobjc_visibility = ["PUBLIC"],
+    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + APPLE_INSPECTOR_FLAGS,
     force_static = True,
-    header_namespace = "",
-    headers = glob(
-        ["*.h"],
-        excludes = CXXREACT_PUBLIC_HEADERS,
-    ),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
-    ] + INSPECTOR_FLAGS,
+    ],
     tests = [
         react_native_xplat_target("cxxreact/tests:tests"),
     ],
-    xcode_public_headers_symlinks = True,
+    visibility = ["PUBLIC"],
     deps = [
-        ":module",
+        "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
         ":jsbigstring",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:molly",
+        ":module",
         react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
-    ] + JSC_DEPS,
+        "xplat//folly:optional",
+        "xplat//third-party/glog:glog",
+        react_native_xplat_target("jschelpers:jscinternalhelpers"),
+        react_native_xplat_target("privatedata:privatedata"),
+    ],
 )

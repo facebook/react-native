@@ -8,20 +8,37 @@
  *
  * @flow
  */
+
+/* eslint-env node */
+
 'use strict';
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const babel = require('babel-core');
-const babelRegisterOnly = require('metro-bundler/build/babelRegisterOnly');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const babelRegisterOnly = require('metro/src/babelRegisterOnly');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
-const transformer = require('metro-bundler/build/transformer.js');
+const generate = require('babel-generator').default;
 
 const nodeFiles = RegExp([
   '/local-cli/',
+  '/metro(-bundler)?/',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const transformer = require('metro/src/transformer.js');
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
     if (nodeFiles.test(file)) { // node specific transforms only
@@ -31,23 +48,35 @@ module.exports = {
       ).code;
     }
 
-    return transformer.transform({
+    const {ast} = transformer.transform({
       filename: file,
       localPath: file,
       options: {
+        assetDataPlugins: [],
         dev: true,
         inlineRequires: true,
+        minify: false,
         platform: '',
         projectRoot: '',
         retainLines: true,
       },
       src,
-    }).code;
+    });
+
+    return generate(ast, {
+      code: true,
+      comments: false,
+      compact: false,
+      filename: file,
+      retainLines: true,
+      sourceFileName: file,
+      sourceMaps: true,
+    }, src).code;
   },
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro-bundler/build/transformer.js'),
+    require.resolve('metro/src/transformer.js'),
     require.resolve('babel-core/package.json'),
   ]),
 };

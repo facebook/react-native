@@ -24,7 +24,7 @@ const {
 
 var AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
-class Tester extends React.Component {
+class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     native: new Animated.Value(0),
     js: new Animated.Value(0),
@@ -74,7 +74,7 @@ class Tester extends React.Component {
   }
 }
 
-class ValueListenerExample extends React.Component {
+class ValueListenerExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     anim: new Animated.Value(0),
     progress: 0,
@@ -123,7 +123,7 @@ class ValueListenerExample extends React.Component {
   }
 }
 
-class LoopExample extends React.Component {
+class LoopExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     value: new Animated.Value(0),
   };
@@ -158,9 +158,8 @@ class LoopExample extends React.Component {
 }
 
 const RNTesterSettingSwitchRow = require('RNTesterSettingSwitchRow');
-class InternalSettings extends React.Component {
+class InternalSettings extends React.Component<{}, {busyTime: number | string, filteredStall: number}> {
   _stallInterval: ?number;
-  state: {busyTime: number | string, filteredStall: number};
   render() {
     return (
       <View>
@@ -168,6 +167,9 @@ class InternalSettings extends React.Component {
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
@@ -176,6 +178,9 @@ class InternalSettings extends React.Component {
             }, 300);
           }}
           onDisable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             clearInterval(this._stallInterval || 0);
           }}
         />
@@ -208,7 +213,7 @@ class InternalSettings extends React.Component {
   }
 }
 
-class EventExample extends React.Component {
+class EventExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     scrollX: new Animated.Value(0),
   };
@@ -430,10 +435,36 @@ exports.examples = [
     },
   },
   {
-    title: 'translateX => Animated.spring',
+    title: 'translateX => Animated.spring (bounciness/speed)',
     render: function() {
       return (
         <Tester type="spring" config={{bounciness: 0}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 100],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'translateX => Animated.spring (stiffness/damping/mass)',
+    render: function() {
+      return (
+        <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3 }}>
           {anim => (
             <Animated.View
               style={[

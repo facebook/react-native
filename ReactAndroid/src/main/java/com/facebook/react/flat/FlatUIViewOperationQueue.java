@@ -9,14 +9,10 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-
+import com.facebook.react.uimanager.UIViewOperationQueue;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -25,6 +21,8 @@ import com.facebook.react.uimanager.NoSuchNativeViewException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.TouchTargetHelper;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * FlatUIViewOperationQueue extends {@link UIViewOperationQueue} to add
@@ -37,7 +35,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   private final FlatNativeViewHierarchyManager mNativeViewHierarchyManager;
   private final ProcessLayoutRequests mProcessLayoutRequests = new ProcessLayoutRequests();
 
-  private final class ProcessLayoutRequests implements UIOperation {
+  private final class ProcessLayoutRequests implements UIViewOperationQueue.UIOperation {
     @Override
     public void execute() {
       FlatViewGroup.processLayoutRequests();
@@ -47,7 +45,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   /**
    * UIOperation that updates DrawCommands for a View defined by reactTag.
    */
-  private final class UpdateMountState implements UIOperation {
+  private final class UpdateMountState implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final @Nullable DrawCommand[] mDrawCommands;
@@ -78,7 +76,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   /**
    * UIOperation that updates DrawCommands for a View defined by reactTag.
    */
-  private final class UpdateClippingMountState implements UIOperation {
+  private final class UpdateClippingMountState implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final @Nullable DrawCommand[] mDrawCommands;
@@ -130,7 +128,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  private final class UpdateViewGroup implements UIOperation {
+  private final class UpdateViewGroup implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final int[] mViewsToAdd;
@@ -151,7 +149,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   /**
    * UIOperation that updates View bounds for a View defined by reactTag.
    */
-  public final class UpdateViewBounds implements UIOperation {
+  public final class UpdateViewBounds implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final int mLeft;
@@ -173,7 +171,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  private final class SetPadding implements UIOperation {
+  private final class SetPadding implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final int mPaddingLeft;
@@ -205,7 +203,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  private final class DropViews implements UIOperation {
+  private final class DropViews implements UIViewOperationQueue.UIOperation {
 
     private final SparseIntArray mViewsToDrop;
 
@@ -223,7 +221,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  private final class MeasureVirtualView implements UIOperation {
+  private final class MeasureVirtualView implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final float mScaledX;
@@ -287,7 +285,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  public final class DetachAllChildrenFromViews implements UIOperation {
+  public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
     private @Nullable int[] mViewsToDetachAllChildrenFrom;
 
     public void setViewsToDetachAllChildrenFrom(int[] viewsToDetachAllChildrenFrom) {
@@ -300,7 +298,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
-  private final class FindTargetForTouchOperation implements UIOperation {
+  private final class FindTargetForTouchOperation implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final float mTargetX;
@@ -376,7 +374,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
    * Used to delay view manager command dispatch until after the view hierarchy is updated.
    * Mirrors command operation dispatch, but is only used in Nodes for view manager commands.
    */
-  public final class ViewManagerCommand implements UIOperation {
+  public final class ViewManagerCommand implements UIViewOperationQueue.UIOperation {
 
     private final int mReactTag;
     private final int mCommand;
@@ -399,8 +397,9 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
   public FlatUIViewOperationQueue(
       ReactApplicationContext reactContext,
-      FlatNativeViewHierarchyManager nativeViewHierarchyManager) {
-    super(reactContext, nativeViewHierarchyManager);
+      FlatNativeViewHierarchyManager nativeViewHierarchyManager,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    super(reactContext, nativeViewHierarchyManager, minTimeLeftInFrameForNonBatchedOperationMs);
 
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
   }
@@ -470,7 +469,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     return new ViewManagerCommand(reactTag, command, args);
   }
 
-  /* package */ void enqueueFlatUIOperation(UIOperation operation) {
+  /* package */ void enqueueFlatUIOperation(UIViewOperationQueue.UIOperation operation) {
     enqueueUIOperation(operation);
   }
 

@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
     if (mValueListener == null) {
       return;
     }
-    mValueListener.onValueUpdate(mValue);
+    mValueListener.onValueUpdate(getValue());
   }
 
   public void setValueListener(@Nullable AnimatedNodeValueListener listener) {

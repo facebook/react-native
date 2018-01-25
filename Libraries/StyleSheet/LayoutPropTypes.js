@@ -32,7 +32,10 @@ var LayoutPropTypes = {
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display: ReactPropTypes.string,
+  display: ReactPropTypes.oneOf([
+    'none',
+    'flex',
+  ]),
 
   /** `width` sets the width of this component.
    *
@@ -52,6 +55,28 @@ var LayoutPropTypes = {
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/height for more details.
    */
   height: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When the direction is `ltr`, `start` is equivalent to `left`.
+   * When the direction is `rtl`, `start` is equivalent to `right`.
+   *
+   * This style takes precedence over the `left`, `right`, and `end` styles.
+   */
+  start: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When the direction is `ltr`, `end` is equivalent to `right`.
+   * When the direction is `rtl`, `end` is equivalent to `left`.
+   *
+   * This style takes precedence over the `left` and `right` styles.
+   */
+  end: ReactPropTypes.oneOfType([
     ReactPropTypes.number,
     ReactPropTypes.string,
   ]),
@@ -226,6 +251,24 @@ var LayoutPropTypes = {
     ReactPropTypes.string,
   ]),
 
+  /**
+   * When direction is `ltr`, `marginStart` is equivalent to `marginLeft`.
+   * When direction is `rtl`, `marginStart` is equivalent to `marginRight`.
+   */
+  marginStart: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When direction is `ltr`, `marginEnd` is equivalent to `marginRight`.
+   * When direction is `rtl`, `marginEnd` is equivalent to `marginLeft`.
+   */
+  marginEnd: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
   /** Setting `padding` has the same effect as setting each of
    *  `paddingTop`, `paddingBottom`, `paddingLeft`, and `paddingRight`.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/padding
@@ -288,6 +331,24 @@ var LayoutPropTypes = {
     ReactPropTypes.string,
   ]),
 
+  /**
+   * When direction is `ltr`, `paddingStart` is equivalent to `paddingLeft`.
+   * When direction is `rtl`, `paddingStart` is equivalent to `paddingRight`.
+   */
+  paddingStart: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
+  /**
+   * When direction is `ltr`, `paddingEnd` is equivalent to `paddingRight`.
+   * When direction is `rtl`, `paddingEnd` is equivalent to `paddingLeft`.
+   */
+  paddingEnd: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
+
   /** `borderWidth` works like `border-width` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-width
    * for more details.
@@ -299,6 +360,18 @@ var LayoutPropTypes = {
    * for more details.
    */
   borderTopWidth: ReactPropTypes.number,
+
+  /**
+   * When direction is `ltr`, `borderStartWidth` is equivalent to `borderLeftWidth`.
+   * When direction is `rtl`, `borderStartWidth` is equivalent to `borderRightWidth`.
+   */
+  borderStartWidth: ReactPropTypes.number,
+
+  /**
+   * When direction is `ltr`, `borderEndWidth` is equivalent to `borderRightWidth`.
+   * When direction is `rtl`, `borderEndWidth` is equivalent to `borderLeftWidth`.
+   */
+  borderEndWidth: ReactPropTypes.number,
 
   /** `borderRightWidth` works like `border-right-width` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-right-width
@@ -423,12 +496,14 @@ var LayoutPropTypes = {
     'space-around'
   ]),
 
-  /** `overflow` controls how a children are measured and displayed.
+  /** `overflow` controls how children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
    *  causes views to be measured independently of their parents main axis.
    *  It works like `overflow` in CSS (default: visible).
    *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
    *  for more details.
+   *  `overflow: visible` only works on iOS. On Android, all views will clip
+   *  their children.
    */
   overflow: ReactPropTypes.oneOf([
     'visible',

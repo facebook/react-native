@@ -15,7 +15,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <cxxreact/Executor.h>
+#import <cxxreact/JSBigString.h>
+#import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
 #import <folly/json.h>
@@ -44,12 +45,15 @@ public:
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {
-        m_errorBlock(error);
+        // Do not use "m_errorBlock" here as the bridge might be in the middle
+        // of invalidation as a result of error handling and "this" can be
+        // already deallocated.
+        errorBlock(error);
         return;
       }
 
       m_jsThread->runOnQueue([this, json]{
-        m_delegate->callNativeModules(*this, [RCTConvert folly_dynamic:json], true);
+        m_delegate->callNativeModules(*this, convertIdToFollyDynamic(json), true);
       });
     };
 
@@ -90,8 +94,12 @@ public:
       }];
   }
 
-  void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
-    RCTLogWarn(@"Unbundle is not supported in RCTObjcExecutor");
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
+  }
+
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,
@@ -116,12 +124,9 @@ public:
            callback:m_errorBlock];
   }
 
-  virtual bool supportsProfiling() override {
-    return false;
-  };
-  virtual void startProfiler(const std::string &titleString) override {};
-  virtual void stopProfiler(const std::string &titleString,
-                            const std::string &filename) override {};
+  virtual std::string getDescription() override {
+    return [NSStringFromClass([m_jse class]) UTF8String];
+  }
 
 private:
   id<RCTJavaScriptExecutor> m_jse;

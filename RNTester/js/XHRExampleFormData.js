@@ -31,7 +31,7 @@ const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 
 const PAGE_SIZE = 20;
 
-class XHRExampleFormData extends React.Component {
+class XHRExampleFormData extends React.Component<Object, Object> {
   state: Object = {
     isUploading: false,
     uploadProgress: null,

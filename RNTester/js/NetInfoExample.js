@@ -20,7 +20,7 @@ const {
   TouchableWithoutFeedback,
 } = ReactNative;
 
-class ConnectionInfoSubscription extends React.Component {
+class ConnectionInfoSubscription extends React.Component<{}, $FlowFixMeState> {
   state = {
     connectionInfoHistory: [],
   };
@@ -56,7 +56,7 @@ class ConnectionInfoSubscription extends React.Component {
   }
 }
 
-class ConnectionInfoCurrent extends React.Component {
+class ConnectionInfoCurrent extends React.Component<{}, $FlowFixMeState> {
   state = {
     connectionInfo: null,
   };
@@ -93,7 +93,7 @@ class ConnectionInfoCurrent extends React.Component {
   }
 }
 
-class IsConnected extends React.Component {
+class IsConnected extends React.Component<{}, $FlowFixMeState> {
   state = {
     isConnected: null,
   };
@@ -130,7 +130,7 @@ class IsConnected extends React.Component {
   }
 }
 
-class IsConnectionExpensive extends React.Component {
+class IsConnectionExpensive extends React.Component<{}, $FlowFixMeState> {
   state = {
     isConnectionExpensive: (null : ?boolean),
   };

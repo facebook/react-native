@@ -10,7 +10,7 @@
 - (instancetype)initWithURL:(NSURL *)url;
 - (void)connect;
 - (void)closeQuietly;
-- (void)sendOpenEvent:(NSString *)pageId;
+- (void)sendEventToAllConnections:(NSString *)event;
 @end
 
 @interface RCTInspectorRemoteConnection : NSObject

@@ -22,6 +22,14 @@ export type ViewToken = {
   section?: any,
 };
 
+export type ViewabilityConfigCallbackPair = {
+  viewabilityConfig: ViewabilityConfig,
+  onViewableItemsChanged: (info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
+};
+
 export type ViewabilityConfig = {|
   /**
    * Minimum amount of time (in milliseconds) that an item must be physically viewable before the
@@ -52,21 +60,23 @@ export type ViewabilityConfig = {|
 |};
 
 /**
-* A Utility class for calculating viewable items based on current metrics like scroll position and
-* layout.
-*
-* An item is said to be in a "viewable" state when any of the following
-* is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
-* is true):
-*
-* - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
-*   visible in the view area >= `itemVisiblePercentThreshold`.
-* - Entirely visible on screen
-*/
+ * A Utility class for calculating viewable items based on current metrics like scroll position and
+ * layout.
+ *
+ * An item is said to be in a "viewable" state when any of the following
+ * is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
+ * is true):
+ *
+ * - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
+ *   visible in the view area >= `itemVisiblePercentThreshold`.
+ * - Entirely visible on screen
+ */
 class ViewabilityHelper {
   _config: ViewabilityConfig;
   _hasInteracted: boolean = false;
-  _lastUpdateTime: number = 0;
+  /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.63 was deployed. To see the error delete this comment
+   * and run Flow. */
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
   _viewableItems: Map<string, ViewToken> = new Map();
@@ -104,8 +114,7 @@ class ViewabilityHelper {
       : itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-        itemVisiblePercentThreshold !=
-          null !==
+        (itemVisiblePercentThreshold != null) !==
           (viewAreaCoveragePercentThreshold != null),
       'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
@@ -163,15 +172,11 @@ class ViewabilityHelper {
     }) => void,
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
-    const updateTime = Date.now();
-    if (this._lastUpdateTime === 0 && itemCount > 0 && getFrameMetrics(0)) {
-      // Only count updates after the first item is rendered and has a frame.
-      this._lastUpdateTime = updateTime;
-    }
-    const updateElapsed = this._lastUpdateTime
-      ? updateTime - this._lastUpdateTime
-      : 0;
-    if (this._config.waitForInteraction && !this._hasInteracted) {
+    if (
+      (this._config.waitForInteraction && !this._hasInteracted) ||
+      itemCount === 0 ||
+      !getFrameMetrics(0)
+    ) {
       return;
     }
     let viewableIndices = [];
@@ -193,11 +198,7 @@ class ViewabilityHelper {
       return;
     }
     this._viewableIndices = viewableIndices;
-    this._lastUpdateTime = updateTime;
-    if (
-      this._config.minimumViewTime &&
-      updateElapsed < this._config.minimumViewTime
-    ) {
+    if (this._config.minimumViewTime) {
       const handle = setTimeout(() => {
         this._timers.delete(handle);
         this._onUpdateSync(
@@ -214,6 +215,13 @@ class ViewabilityHelper {
         createViewToken,
       );
     }
+  }
+
+  /**
+   * clean-up cached _viewableIndices to evaluate changed items on next update
+   */
+  resetViewableIndices() {
+    this._viewableIndices = [];
   }
 
   /**
@@ -256,6 +264,7 @@ class ViewabilityHelper {
       onViewableItemsChanged({
         viewableItems: Array.from(nextItems.values()),
         changed,
+        viewabilityConfig: this._config,
       });
     }
   }

@@ -17,22 +17,15 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
-  style={
-    Array [
-      Object {
-        "backgroundColor": "transparent",
-      },
-      Object {},
-    ]
-  }
+  style={Object {}}
   testID={undefined}
   tvParallaxProperties={undefined}
 >
   <Text
     accessible={true}
     allowFontScaling={true}
-    disabled={false}
     ellipsizeMode="tail"
+    style={null}
   >
     Touchable
   </Text>

@@ -5,7 +5,7 @@
 #include <string>
 
 #include <android/asset_manager.h>
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <fb/fbjni.h>
 
 namespace facebook {

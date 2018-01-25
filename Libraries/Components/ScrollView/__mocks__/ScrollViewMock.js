@@ -8,7 +8,12 @@
  *
  * @flow
  */
+
+/* eslint-env jest */
+
 'use strict';
+
+declare var jest: any;
 
 const React = require('React');
 const View = require('View');
@@ -17,7 +22,9 @@ const requireNativeComponent = require('requireNativeComponent');
 
 const RCTScrollView = requireNativeComponent('RCTScrollView');
 
-class ScrollViewMock extends React.Component {
+const ScrollViewComponent = jest.genMockFromModule('ScrollView');
+
+class ScrollViewMock extends ScrollViewComponent {
   render() {
     return (
       <RCTScrollView {...this.props}>

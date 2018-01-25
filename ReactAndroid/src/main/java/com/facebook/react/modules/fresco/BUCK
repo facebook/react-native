@@ -1,8 +1,12 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "fresco",
     srcs = glob(["**/*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
     visibility = [
         "PUBLIC",
     ],
@@ -15,8 +19,6 @@ android_library(
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline-okhttp3"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/okhttp:okhttp3"),
         react_native_dep("third-party/java/okhttp:okhttp3-urlconnection"),

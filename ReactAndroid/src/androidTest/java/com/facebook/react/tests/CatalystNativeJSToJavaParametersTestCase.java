@@ -8,12 +8,6 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.Dynamic;
@@ -40,14 +34,18 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.Ignore;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
  *
  * TODO: we should run these tests with isBlockingSynchronousMethod = true as well,
- * since they currrently use a completely different codepath
+ * since they currently use a completely different codepath
  */
 @Ignore("Fix prop types and view managers.")
 public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTestCase {
@@ -87,11 +85,8 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
-    final UIManagerModule mUIManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    final UIManagerModule mUIManager =
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

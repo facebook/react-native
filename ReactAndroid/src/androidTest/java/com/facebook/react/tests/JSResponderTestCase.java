@@ -18,7 +18,7 @@ import com.facebook.react.testing.SingleTouchGestureGenerator;
  * Test case to verify that JSResponder flow work correctly.
  *
  * In a single test case scenario we have a view with pan gesture recognizer containing a scrollview
- * We werify that by vertical drags affects a scrollview while horizontal drags are suppose to
+ * We verify that by vertical drags affects a scrollview while horizontal drags are suppose to
  * be recognized by pan responder and setJSResponder should be triggered resulting in scrollview
  * events being intercepted.
  */

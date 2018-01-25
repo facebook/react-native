@@ -47,6 +47,7 @@ local.properties
 node_modules
 *.log
 .nvm
+/danger/node_modules/
 
 # OS X
 .DS_Store
