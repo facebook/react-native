@@ -36,7 +36,8 @@ The following are required for the local test suite to run:
 
 ### Step 1: Check everything works
 
-Before cutting a release branch, make sure CI systems [Travis](https://travis-ci.org/facebook/react-native) and [Circle](https://circleci.com/gh/facebook/react-native) are green.
+Before cutting a release branch, make sure [Circle](https://circleci.com/gh/facebook/react-native) CI system is green.
+
 
 Before executing the following script, make sure you have:
 - An Android emulator / Genymotion device running
