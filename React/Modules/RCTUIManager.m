@@ -518,23 +518,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     }
   }
 
-  // These are blocks to be executed on each view, immediately after
-  // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
-  // these won't be called either, so this is not a suitable place to update
-  // properties that aren't related to layout.
-  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
-  [NSMutableDictionary new];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
 
     // We have to do this after we build the parentsAreNew array.
     shadowView.newView = NO;
 
     NSNumber *reactTag = shadowView.reactTag;
-    RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
-    RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
-    if (block) {
-      updateBlocks[reactTag] = block;
-    }
 
     if (shadowView.onLayout) {
       CGRect frame = shadowView.frame;
@@ -607,7 +596,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         view.reactLayoutDirection = layoutDirection;
       }
 
-      RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
       if (creatingLayoutAnimation) {
 
         // Animate view creation
@@ -632,9 +620,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
           } else if ([property isEqualToString:@"opacity"]) {
             view.layer.opacity = finalOpacity;
           }
-          if (updateBlock) {
-            updateBlock(self, viewRegistry);
-          }
         } withCompletionBlock:completion];
 
       } else if (updatingLayoutAnimation) {
@@ -642,18 +627,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         // Animate view update
         [updatingLayoutAnimation performAnimations:^{
           [view reactSetFrame:frame];
-          if (updateBlock) {
-            updateBlock(self, viewRegistry);
-          }
         } withCompletionBlock:completion];
 
       } else {
 
         // Update without animation
         [view reactSetFrame:frame];
-        if (updateBlock) {
-          updateBlock(self, viewRegistry);
-        }
         completion(YES);
       }
     }
@@ -661,20 +640,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     // Clean up
     uiManager->_layoutAnimationGroup = nil;
   };
-}
-
-- (void)_amendPendingUIBlocksWithStylePropagationUpdateForShadowView:(RCTShadowView *)topView
-{
-  NSMutableSet<RCTApplierBlock> *applierBlocks = [NSMutableSet setWithCapacity:1];
-  [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
-
-  if (applierBlocks.count) {
-    [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      for (RCTApplierBlock block in applierBlocks) {
-        block(viewRegistry);
-      }
-    }];
-  }
 }
 
 /**
@@ -1078,13 +1043,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
  */
 - (void)_layoutAndMount
 {
-  // Gather blocks to be executed now that all view hierarchy manipulations have
-  // been completed (note that these may still take place before layout has finished)
-  for (RCTComponentData *componentData in _componentDataByName.allValues) {
-    RCTViewManagerUIBlock uiBlock = [componentData uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
-    [self addUIBlock:uiBlock];
-  }
-
   [self _dispatchPropsDidChangeEvents];
   [self _dispatchChildrenDidChangeEvents];
 
@@ -1097,12 +1055,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   }
 
   [_observerCoordinator uiManagerDidPerformLayout:self];
-
-  // Properies propagation
-  for (NSNumber *reactTag in _rootViewTags) {
-    RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
-    [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:rootView];
-  }
 
   [_observerCoordinator uiManagerWillPerformMounting:self];
 

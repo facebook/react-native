@@ -11,6 +11,8 @@
 
 @protocol RCTBackedTextInputViewProtocol;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTBackedTextInputDelegate <NSObject>
 
 - (BOOL)textInputShouldBeginEditing; // Return `NO` to disallow editing.
@@ -28,3 +30,5 @@
 - (void)textInputDidChangeSelection;
 
 @end
+
+NS_ASSUME_NONNULL_END
