@@ -266,20 +266,23 @@ public class UIViewOperationQueue {
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
+    private final Callback mError;
     private final Callback mSuccess;
 
     public ShowPopupMenuOperation(
         int tag,
         ReadableArray items,
+        Callback error,
         Callback success) {
       super(tag);
       mItems = items;
+      mError = error;
       mSuccess = success;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess);
+      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
     }
   }
 
@@ -651,7 +654,7 @@ public class UIViewOperationQueue {
       ReadableArray items,
       Callback error,
       Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, success));
+    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
   }
 
   public void enqueueCreateView(

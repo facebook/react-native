@@ -66,7 +66,7 @@ static UIColor *defaultPlaceholderColor()
     [accessibilityLabel appendString:superAccessibilityLabel];
   }
   
-  if (self.placeholder.length > 0 && self.text.length == 0) {
+  if (self.placeholder.length > 0 && self.attributedText.string.length == 0) {
     if (accessibilityLabel.length > 0) {
       [accessibilityLabel appendString:@" "];
     }
@@ -193,7 +193,7 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)intrinsicContentSize
 {
   // Returning size DOES contain `textContainerInset` (aka `padding`).
-  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, INFINITY)];
+  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, CGFLOAT_MAX)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
@@ -234,7 +234,7 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)invalidatePlaceholderVisibility
 {
-  BOOL isVisible = _placeholder.length != 0 && self.text.length == 0;
+  BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
 }
 

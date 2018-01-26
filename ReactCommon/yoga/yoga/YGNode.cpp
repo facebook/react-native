@@ -510,6 +510,15 @@ void YGNode::resolveDimension() {
   }
 }
 
+YGDirection YGNode::resolveDirection(const YGDirection parentDirection) {
+  if (style_.direction == YGDirectionInherit) {
+    return parentDirection > YGDirectionInherit ? parentDirection
+                                                : YGDirectionLTR;
+  } else {
+    return style_.direction;
+  }
+}
+
 void YGNode::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
@@ -589,4 +598,71 @@ float YGNode::resolveFlexShrink() {
     return -style_.flex;
   }
   return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+}
+
+bool YGNode::isNodeFlexible() {
+  return (
+      (style_.positionType == YGPositionTypeRelative) &&
+      (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
+}
+
+float YGNode::getLeadingBorder(const YGFlexDirection axis) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.border[YGEdgeStart].unit != YGUnitUndefined &&
+      style_.border[YGEdgeStart].value >= 0.0f) {
+    return style_.border[YGEdgeStart].value;
+  }
+
+  return fmaxf(
+      YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value,
+      0.0f);
+}
+
+float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) {
+  if (YGFlexDirectionIsRow(flexDirection) &&
+      style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
+      style_.border[YGEdgeEnd].value >= 0.0f) {
+    return style_.border[YGEdgeEnd].value;
+  }
+
+  return fmaxf(
+      YGComputedEdgeValue(style_.border, trailing[flexDirection], &YGValueZero)
+          ->value,
+      0.0f);
+}
+
+float YGNode::getLeadingPadding(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
+      YGResolveValue(style_.padding[YGEdgeStart], widthSize) >= 0.0f) {
+    return YGResolveValue(style_.padding[YGEdgeStart], widthSize);
+  }
+  return fmaxf(
+      YGResolveValue(
+          *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
+          widthSize),
+      0.0f);
+}
+
+float YGNode::getTrailingPadding(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  if (YGFlexDirectionIsRow(axis) &&
+      style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize) >= 0.0f) {
+    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  }
+  return fmaxf(
+      YGResolveValue(
+          *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
+          widthSize),
+      0.0f);
+}
+
+float YGNode::getLeadingPaddingAndBorder(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  return getLeadingPadding(axis, widthSize) + getLeadingBorder(axis);
 }

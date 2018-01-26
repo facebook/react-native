@@ -17,7 +17,7 @@ public enum YogaMeasureMode {
   EXACTLY(1),
   AT_MOST(2);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaMeasureMode(int intValue) {
     mIntValue = intValue;

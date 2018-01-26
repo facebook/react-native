@@ -7,18 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
-
-#import <React/RCTComponent.h>
-#import <React/RCTView.h>
-
 #import "RCTBaseTextInputView.h"
 
-@class RCTUITextField;
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSinglelineTextInputView : RCTBaseTextInputView
 
-@property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, strong) NSNumber *maxLength;
-
 @end
+
+NS_ASSUME_NONNULL_END

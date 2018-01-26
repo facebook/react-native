@@ -748,6 +748,27 @@ exports.examples = [
     },
   },
   {
+    title: 'Nested content',
+    render: function() {
+      return (
+        <Text>
+          This text has a view
+          <View style={{borderColor: 'red', borderWidth: 1}}>
+            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
+            <Text style={{borderColor: 'green', borderWidth: 1}}>another text inside.</Text>
+            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
+              And moreover, it has another view
+              <View style={{borderColor: 'red', borderWidth: 1}}>
+                <Text style={{borderColor: 'blue', borderWidth: 1}}>with another text inside!</Text>
+              </View>
+            </Text>
+          </View>
+          Because we need to go deeper.
+        </Text>
+      );
+    },
+  },
+  {
     title: 'Dynamic Font Size Adjustment',
     render: function(): React.Element<any> {
       return <AdjustingFontSize />;

@@ -37,6 +37,7 @@ const requireNativeComponent = require('requireNativeComponent');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const warning = require('fbjs/lib/warning');
+const resolveAssetSource = require('resolveAssetSource');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
@@ -234,18 +235,33 @@ const ScrollView = createReactClass({
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
-     * When non-null, the scroll view will adjust the scroll position so that the content at or
-     * beyond the specified index that is currently visible will not change position. This is useful
-     * for lists that are loading content in both directions, e.g. a chat thread, where new messages
-     * coming in might otherwise cause the scroll position to jump. A value of 1 can be used to skip
-     * a spinner that does not need to maintain position. The default value is null.
+     * When set, the scroll view will adjust the scroll position so that the first child that is
+     * currently visible and at or beyond `minIndexForVisible` will not change position. This is
+     * useful for lists that are loading content in both directions, e.g. a chat thread, where new
+     * messages coming in might otherwise cause the scroll position to jump. A value of 0 is common,
+     * but other values such as 1 can be used to skip loading spinners or other content that should
+     * not maintain position.
      *
-     * Caveat: reordering elements in the scrollview with this enabled will probably cause jumpiness
-     * and jank. It can be fixed, but there are currently no plans to do so.
+     * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
+     * to the top after making the adjustment if the user was within the threshold of the top before
+     * the adjustment was made. This is also useful for chat-like applications where you want to see
+     * new messages scroll into place, but not if the user has scrolled up a ways and it would be
+     * disruptive to scroll a bunch.
+     *
+     * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
+     * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
+     * don't re-order the content of any ScrollViews or Lists that use this feature.
+     *
+     * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
+     * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
+     * whether content is "visible" or not.
      *
      * @platform ios
      */
-    maintainPositionAtOrBeyondIndex: PropTypes.number,
+    maintainVisibleContentPosition: PropTypes.shape({
+      minIndexForVisible: PropTypes.number.isRequired,
+      autoscrollToTopThreshold: PropTypes.number,
+    }),
     /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios
@@ -455,6 +471,25 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
+    /**
+     * Optionally an image can be used for the scroll bar thumb. This will
+     * override the color. While the image is loading or the image fails to
+     * load the color will be used instead. Use an alpha of 0 in the color
+     * to avoid seeing it while the image is loading.
+     *
+     * - `uri` - a string representing the resource identifier for the image, which
+     * should be either a local file path or the name of a static image resource
+     * - `number` - Opaque type returned by something like
+     * `import IMAGE from './image.jpg'`.
+     * @platform vr
+     */
+     scrollBarThumbImage: PropTypes.oneOfType([
+       PropTypes.shape({
+         uri: PropTypes.string,
+       }),
+       // Opaque type returned by import IMAGE from './image.jpg'
+       PropTypes.number,
+     ]),
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -659,14 +694,7 @@ const ScrollView = createReactClass({
   render: function() {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
-    if (Platform.OS === 'ios') {
-      ScrollViewClass = RCTScrollView;
-      ScrollContentContainerViewClass = RCTScrollContentView;
-      warning(
-        !this.props.snapToInterval || !this.props.pagingEnabled,
-        'snapToInterval is currently ignored when pagingEnabled is true.'
-      );
-    } else if (Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
         ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
@@ -674,6 +702,13 @@ const ScrollView = createReactClass({
         ScrollViewClass = AndroidScrollView;
         ScrollContentContainerViewClass = View;
       }
+    } else {
+      ScrollViewClass = RCTScrollView;
+      ScrollContentContainerViewClass = RCTScrollContentView;
+      warning(
+        !this.props.snapToInterval || !this.props.pagingEnabled,
+        'snapToInterval is currently ignored when pagingEnabled is true.'
+      );
     }
 
     invariant(
@@ -790,6 +825,7 @@ const ScrollView = createReactClass({
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchCancel: this.scrollResponderHandleTouchCancel,
+      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
@@ -892,6 +928,17 @@ if (Platform.OS === 'android') {
   RCTScrollView = requireNativeComponent(
     'RCTScrollView',
     (ScrollView: React.ComponentType<any>),
+    nativeOnlyProps,
+  );
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
+} else {
+  nativeOnlyProps = {
+    nativeOnly: {
+    }
+  };
+  RCTScrollView = requireNativeComponent(
+    'RCTScrollView',
+    null,
     nativeOnlyProps,
   );
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
