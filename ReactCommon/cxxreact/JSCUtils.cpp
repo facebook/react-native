@@ -2,6 +2,8 @@
 
 #include "JSCUtils.h"
 
+#include <folly/Conv.h>
+
 namespace facebook {
 namespace react {
 
@@ -17,28 +19,20 @@ std::pair<uint32_t, uint32_t> parseNativeRequireParameters(
     const JSGlobalContextRef& context,
     const JSValueRef arguments[],
     size_t argumentCount) {
-  double moduleId = 0, bundleId = 0;
+  uint32_t moduleId = 0, bundleId = 0;
 
+  // use "getNumber" & "folly::to" to throw explicitely in case of an overflow
+  // error during conversion
   if (argumentCount == 1) {
-    moduleId = Value(context, arguments[0]).asNumber();
+    moduleId = folly::to<uint32_t>(Value(context, arguments[0]).getNumberOrThrow());
   } else if (argumentCount == 2) {
-    moduleId = Value(context, arguments[0]).asNumber();
-    bundleId = Value(context, arguments[1]).asNumber();
+    moduleId = folly::to<uint32_t>(Value(context, arguments[0]).getNumberOrThrow());
+    bundleId = folly::to<uint32_t>(Value(context, arguments[1]).getNumberOrThrow());
   } else {
     throw std::invalid_argument("Got wrong number of args");
   }
 
-  if (moduleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
-                                                       Value(context, arguments[0]).toString().str()));
-  }
-
-  if (bundleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid bundle ID: ",
-                                                       Value(context, arguments[1]).toString().str()));
-  }
-
-  return std::make_pair(static_cast<uint32_t>(bundleId), static_cast<uint32_t>(moduleId));
+  return std::make_pair(bundleId, moduleId);
 }
 
 }

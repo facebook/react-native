@@ -160,22 +160,22 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "minimumTrackTintColor", customType = "Color")
   public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
+    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
     if (color == null) {
-      background.clearColorFilter();
+      progress.clearColorFilter();
     } else {
-      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 
   @ReactProp(name = "maximumTrackTintColor", customType = "Color")
   public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
+    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
     if (color == null) {
-      progress.clearColorFilter();
+      background.clearColorFilter();
     } else {
-      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 

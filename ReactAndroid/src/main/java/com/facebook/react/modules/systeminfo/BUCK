@@ -1,9 +1,10 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "systeminfo",
     srcs = [
         "AndroidInfoModule.java",
+        "ReactNativeVersion.java",
     ],
     exported_deps = [
         ":systeminfo-moduleless",
@@ -19,7 +20,7 @@ android_library(
     ],
 )
 
-android_library(
+rn_android_library(
     name = "systeminfo-moduleless",
     srcs = [
         "AndroidInfoHelpers.java",

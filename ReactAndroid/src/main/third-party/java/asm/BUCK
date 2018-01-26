@@ -1,4 +1,6 @@
-android_library(
+load("//ReactNative:DEFS", "rn_android_library", "rn_prebuilt_jar")
+
+rn_android_library(
     name = "asm",
     exported_deps = [
         ":asm-analysis",
@@ -10,7 +12,7 @@ android_library(
     visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "asm-core",
     binary_jar = ":download-asm",
     visibility = ["//ReactAndroid/..."],
@@ -22,7 +24,7 @@ remote_file(
     url = "mvn:org.ow2.asm:asm:jar:5.0.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "asm-commons",
     binary_jar = ":download-asm-commons",
     visibility = ["//ReactAndroid/..."],
@@ -34,7 +36,7 @@ remote_file(
     url = "mvn:org.ow2.asm:asm-commons:jar:5.0.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "asm-tree",
     binary_jar = ":download-asm-tree",
     visibility = ["//ReactAndroid/..."],
@@ -46,7 +48,7 @@ remote_file(
     url = "mvn:org.ow2.asm:asm-tree:jar:5.0.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "asm-util",
     binary_jar = ":download-asm-util",
     visibility = ["//ReactAndroid/..."],
@@ -58,7 +60,7 @@ remote_file(
     url = "mvn:org.ow2.asm:asm-util:jar:5.0.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "asm-analysis",
     binary_jar = ":download-asm-analysis",
     visibility = ["//ReactAndroid/..."],

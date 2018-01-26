@@ -12,20 +12,25 @@
 #if RCT_DEV // Only supported in dev mode
 
 @class RCTPackagerClientResponder;
-@class RCTSRWebSocket;
+@class RCTReconnectingWebSocket;
 
 extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
 
-@protocol RCTPackagerClientMethod
+@protocol RCTPackagerClientMethod <NSObject>
 
-- (void)handleRequest:(id)params withResponder:(RCTPackagerClientResponder *)responder;
-- (void)handleNotification:(id)params;
+- (void)handleRequest:(NSDictionary<NSString *, id> *)params withResponder:(RCTPackagerClientResponder *)responder;
+- (void)handleNotification:(NSDictionary<NSString *, id> *)params;
+
+@optional
+
+/** By default object will receive its methods on the main queue, unless this method is overriden. */
+- (dispatch_queue_t)methodQueue;
 
 @end
 
 @interface RCTPackagerClientResponder : NSObject
 
-- (instancetype)initWithId:(id)msgId socket:(RCTSRWebSocket *)socket;
+- (instancetype)initWithId:(id)msgId socket:(RCTReconnectingWebSocket *)socket;
 - (void)respondWithResult:(id)result;
 - (void)respondWithError:(id)error;
 

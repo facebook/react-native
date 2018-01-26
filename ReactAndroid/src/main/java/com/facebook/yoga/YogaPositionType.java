@@ -16,7 +16,7 @@ public enum YogaPositionType {
   RELATIVE(0),
   ABSOLUTE(1);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaPositionType(int intValue) {
     mIntValue = intValue;

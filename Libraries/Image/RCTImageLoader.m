@@ -48,11 +48,25 @@
     NSMutableArray *_pendingDecodes;
     NSInteger _scheduledDecodes;
     NSUInteger _activeBytes;
+  __weak id<RCTImageRedirectProtocol> _redirectDelegate;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)init
+{
+  return [self initWithRedirectDelegate:nil];
+}
+
+- (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
+{
+    if (self = [super init]) {
+        _redirectDelegate = redirectDelegate;
+    }
+    return self;
+}
 
 - (void)setUp
 {
@@ -66,7 +80,7 @@ RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
 {
-    return 1;
+    return 2;
 }
 
 - (id<RCTImageCache>)imageCache
@@ -315,6 +329,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         // Add missing png extension
         if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
             mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
+        }
+        if (_redirectDelegate != nil) {
+            mutableRequest.URL = [_redirectDelegate redirectAssetsURL:mutableRequest.URL];
         }
         request = mutableRequest;
     }

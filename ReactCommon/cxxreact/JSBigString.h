@@ -146,7 +146,8 @@ public:
 
   const char *c_str() const override {
     if (!m_data) {
-      m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+      m_data =
+        (const char *)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
       CHECK(m_data != MAP_FAILED)
       << " fd: " << m_fd
       << " size: " << m_size

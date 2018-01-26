@@ -4,7 +4,7 @@
 #include "Instance.h"
 
 #include <iterator>
-
+#include <glog/logging.h>
 #include <folly/json.h>
 
 #include "JsArgumentHelpers.h"
@@ -12,7 +12,6 @@
 #include "MessageQueueThread.h"
 
 using facebook::xplat::module::CxxModule;
-
 namespace facebook {
 namespace react {
 
@@ -111,7 +110,7 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
   params.resize(params.size() - method.callbacks);
 
   // I've got a few flawed options here.  I can let the C++ exception
-  // propogate, and the registry will log/convert them to java exceptions.
+  // propagate, and the registry will log/convert them to java exceptions.
   // This lets all the java and red box handling work ok, but the only info I
   // can capture about the C++ exception is the what() string, not the stack.
   // I can std::terminate() the app.  This causes the full, accurate C++
@@ -140,9 +139,14 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
       method.func(std::move(params), first, second);
     } catch (const facebook::xplat::JsArgumentException& ex) {
       throw;
+    } catch (std::exception& e) {
+      LOG(ERROR) << "std::exception. Method call " << method.name.c_str() << " failed: " << e.what();
+      std::terminate();
+    } catch (std::string& error) {
+      LOG(ERROR) << "std::string. Method call " << method.name.c_str() << " failed: " << error.c_str();
+      std::terminate();
     } catch (...) {
-      // This means some C++ code is buggy.  As above, we fail hard so the C++
-      // developer can debug and fix it.
+      LOG(ERROR) << "Method call " << method.name.c_str() << " failed. unknown error";
       std::terminate();
     }
   });

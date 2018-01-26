@@ -1,8 +1,10 @@
+load("//ReactNative:DEFS", "react_native_dep")
+
 java_library(
     name = "java",
     srcs = glob(["**/*.java"]),
     visibility = ["PUBLIC"],
     deps = [
-        "//java/com/facebook/proguard/annotations:annotations",
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
     ],
 )

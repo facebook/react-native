@@ -13,5 +13,5 @@
 // TODO (acdlite) Remove this file once flowtype/flow-typed/pull/773 is merged
 
 declare module 'create-react-class' {
-  declare var exports: React$CreateClass;
+  declare module.exports: React$CreateClass;
 }

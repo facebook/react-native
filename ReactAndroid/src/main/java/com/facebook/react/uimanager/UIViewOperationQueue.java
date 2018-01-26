@@ -266,20 +266,23 @@ public class UIViewOperationQueue {
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
+    private final Callback mError;
     private final Callback mSuccess;
 
     public ShowPopupMenuOperation(
         int tag,
         ReadableArray items,
+        Callback error,
         Callback success) {
       super(tag);
       mItems = items;
+      mError = error;
       mSuccess = success;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess);
+      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
     }
   }
 
@@ -651,7 +654,7 @@ public class UIViewOperationQueue {
       ReadableArray items,
       Callback error,
       Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, success));
+    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
   }
 
   public void enqueueCreateView(
@@ -756,6 +759,10 @@ public class UIViewOperationQueue {
 
   public void enqueueUIBlock(UIBlock block) {
     mOperations.add(new UIBlockOperation(block));
+  }
+
+  public void prependUIBlock(UIBlock block) {
+    mOperations.add(0, new UIBlockOperation(block));
   }
 
   /* package */ void dispatchViewUpdates(
@@ -870,7 +877,7 @@ public class UIViewOperationQueue {
       }
 
       // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-      // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+      // destroyed. In this case it's no longer important to align to frames, but it is important to make
       // sure any late-arriving UI commands are executed.
       if (!mIsDispatchUIFrameCallbackEnqueued) {
         UiThreadUtil.runOnUiThread(

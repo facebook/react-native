@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+javascript_foundation
  */
 
 'use strict';
@@ -14,7 +16,7 @@ jest.mock('fs');
 let plistPath = null;
 jest.mock('../../ios/getPlistPath', () => () => plistPath);
 
-const { readFileSync } = require.requireActual('fs')
+const { readFileSync } = require.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');

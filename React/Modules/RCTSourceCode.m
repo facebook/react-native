@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
-    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @""
+    @"scriptURL": self.bridge.bundleURL.absoluteString ?: @"",
   };
 }
 

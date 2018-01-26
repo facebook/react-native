@@ -99,7 +99,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
  * behavior of automatically renaming .gitignore to .npmignore.
  */
 function dotFilePath(path) {
-  if (!path) return path;
+  if (!path) {return path;}
   return path
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')
@@ -137,7 +137,7 @@ function upgradeFileContentChangedCallback(
   } else if (contentChanged === 'identical') {
     return 'keep';
   } else {
-    throw new Error(`Unkown file changed state: ${relativeDestPath}, ${contentChanged}`);
+    throw new Error(`Unknown file changed state: ${relativeDestPath}, ${contentChanged}`);
   }
 }
 

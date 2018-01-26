@@ -30,6 +30,9 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
+/* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.63 was deployed. To see the error delete this comment and
+ * run Flow. */
 var NetworkImageCallbackExample = createReactClass({
   displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
@@ -98,9 +101,6 @@ var NetworkImageCallbackExample = createReactClass({
   },
 
   _loadEventFired(event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this.setState((state) => {
       return state.events = [...state.events, event];
     });
@@ -195,9 +195,9 @@ var MultipleSourcesExample = createReactClass({
           <Image
             style={{flex: 1}}
             source={[
-              {uri: 'https://facebook.github.io/react/img/logo_small.png', width: 38, height: 38},
-              {uri: 'https://facebook.github.io/react/img/logo_small_2x.png', width: 76, height: 76},
-              {uri: 'https://facebook.github.io/react/img/logo_og.png', width: 400, height: 400}
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 38, height: 38},
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 76, height: 76},
+              {uri: 'https://facebook.github.io/react-native/img/opengraph.png', width: 400, height: 400}
             ]}
           />
         </View>
@@ -237,7 +237,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+          source={fullImage}
           style={styles.base}
         />
       );
@@ -271,7 +271,7 @@ exports.examples = [
     title: 'Error Handler',
     render: function() {
       return (
-        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+        <NetworkImageExample source={{uri: 'https://TYPO_ERROR_facebook.github.io/react/logo-og.png'}} />
       );
     },
     platform: 'ios',
@@ -439,7 +439,22 @@ exports.examples = [
     },
   },
   {
-    title: 'Nesting',
+    title: 'Nesting content inside <Image> component',
+    render: function() {
+      return (
+        <View style={{width: 60, height: 60}}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}/>
+          <Text style={styles.nestedText}>
+            React
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
     render: function() {
       return (
         <ImageBackground
@@ -712,8 +727,8 @@ exports.examples = [
   },
 ];
 
-var fullImage = {uri: 'https://facebook.github.io/react/img/logo_og.png'};
-var smallImage = {uri: 'https://facebook.github.io/react/img/logo_small_2x.png'};
+var fullImage = {uri: 'https://facebook.github.io/react-native/img/opengraph.png'};
+var smallImage = {uri: 'https://facebook.github.io/react-native/img/favicon.png'};
 
 var styles = StyleSheet.create({
   base: {

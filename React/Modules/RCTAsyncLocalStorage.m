@@ -51,14 +51,20 @@ static NSString *RCTReadFile(NSString *filePath, NSString *key, NSDictionary **e
     NSError *error;
     NSStringEncoding encoding;
     NSString *entryString = [NSString stringWithContentsOfFile:filePath usedEncoding:&encoding error:&error];
+    NSDictionary *extraData = @{@"key": RCTNullIfNil(key)};
+
     if (error) {
-      *errorOut = RCTMakeError(@"Failed to read storage file.", error, @{@"key": key});
-    } else if (encoding != NSUTF8StringEncoding) {
-      *errorOut = RCTMakeError(@"Incorrect encoding of storage file: ", @(encoding), @{@"key": key});
-    } else {
-      return entryString;
+      if (errorOut) *errorOut = RCTMakeError(@"Failed to read storage file.", error, extraData);
+      return nil;
     }
+
+    if (encoding != NSUTF8StringEncoding) {
+      if (errorOut) *errorOut = RCTMakeError(@"Incorrect encoding of storage file: ", @(encoding), extraData);
+      return nil;
+    }
+    return entryString;
   }
+
   return nil;
 }
 
@@ -235,7 +241,7 @@ RCT_EXPORT_MODULE()
   }
   if (!_haveSetup) {
     NSDictionary *errorOut;
-    NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
+    NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), RCTManifestFileName, &errorOut);
     _manifest = serialized ? RCTJSONParseMutable(serialized, &error) : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);

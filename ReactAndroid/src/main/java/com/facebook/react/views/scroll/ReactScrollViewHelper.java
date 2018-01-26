@@ -44,8 +44,11 @@ public class ReactScrollViewHelper {
     emitScrollEvent(scrollView, ScrollEventType.END_DRAG, xVelocity, yVelocity);
   }
 
-  public static void emitScrollMomentumBeginEvent(ViewGroup scrollView) {
-    emitScrollEvent(scrollView, ScrollEventType.MOMENTUM_BEGIN);
+  public static void emitScrollMomentumBeginEvent(
+      ViewGroup scrollView,
+      int xVelocity,
+      int yVelocity) {
+    emitScrollEvent(scrollView, ScrollEventType.MOMENTUM_BEGIN, xVelocity, yVelocity);
   }
 
   public static void emitScrollMomentumEndEvent(ViewGroup scrollView) {

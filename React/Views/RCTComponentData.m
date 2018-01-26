@@ -14,6 +14,7 @@
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
+#import "RCTParserUtils.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -21,12 +22,21 @@
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 typedef NSMutableDictionary<NSString *, RCTPropBlock> RCTPropBlockDictionary;
 
+/**
+ * Get the converter function for the specified type
+ */
+static SEL selectorForType(NSString *type)
+{
+  const char *input = type.UTF8String;
+  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
+}
+
+
 @implementation RCTComponentData
 {
   id<RCTComponent> _defaultView; // Only needed for RCT_CUSTOM_VIEW_PROPERTY
   RCTPropBlockDictionary *_viewPropBlocks;
   RCTPropBlockDictionary *_shadowPropBlocks;
-  BOOL _implementsUIBlockToAmendWithShadowViewRegistry;
   __weak RCTBridge *_bridge;
 }
 
@@ -42,14 +52,6 @@ typedef NSMutableDictionary<NSString *, RCTPropBlock> RCTPropBlockDictionary;
     _shadowPropBlocks = [NSMutableDictionary new];
 
     _name = moduleNameForClass(managerClass);
-
-    _implementsUIBlockToAmendWithShadowViewRegistry = NO;
-    Class cls = _managerClass;
-    while (cls != [RCTViewManager class]) {
-      _implementsUIBlockToAmendWithShadowViewRegistry = _implementsUIBlockToAmendWithShadowViewRegistry ||
-      RCTClassOverridesInstanceMethod(cls, @selector(uiBlockToAmendWithShadowViewRegistry:));
-      cls = [cls superclass];
-    }
   }
   return self;
 }
@@ -196,7 +198,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   SEL selector = NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", isShadowView ? @"Shadow" : @"", name]);
   if ([_managerClass respondsToSelector:selector]) {
     NSArray<NSString *> *typeAndKeyPath = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector);
-    type = RCTConvertSelectorForType(typeAndKeyPath[0]);
+    type = selectorForType(typeAndKeyPath[0]);
     keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
   } else {
     return ^(__unused id view, __unused id json) {};
@@ -344,10 +346,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
     [self propBlockForKey:key isShadowView:NO](view, json);
   }];
-
-  if ([view respondsToSelector:@selector(didSetProps:)]) {
-    [view didSetProps:[props allKeys]];
-  }
 }
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
@@ -359,10 +357,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
     [self propBlockForKey:key isShadowView:YES](shadowView, json);
   }];
-
-  if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
-    [shadowView didSetProps:[props allKeys]];
-  }
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig
@@ -432,14 +426,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"bubblingEvents": bubblingEvents,
     @"baseModuleName": superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
   };
-}
-
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry
-{
-  if (_implementsUIBlockToAmendWithShadowViewRegistry) {
-    return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
-  }
-  return nil;
 }
 
 static NSString *moduleNameForClass(Class managerClass)

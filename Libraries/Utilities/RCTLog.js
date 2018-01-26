@@ -51,6 +51,6 @@ const RCTLog = {
   setWarningHandler(handler: typeof warningHandler): void {
     warningHandler = handler;
   }
-}
+};
 
 module.exports = RCTLog;

@@ -10,8 +10,8 @@
 #include "JSBigString.h"
 #include "SystraceSection.h"
 #include "MethodCall.h"
-#include "JSModulesUnbundle.h"
 #include "MessageQueueThread.h"
+#include "RAMBundleRegistry.h"
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -91,17 +91,17 @@ NativeToJsBridge::~NativeToJsBridge() {
 }
 
 void NativeToJsBridge::loadApplication(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
-      [unbundleWrap=folly::makeMoveWrapper(std::move(unbundle)),
+      [bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
-    auto unbundle = unbundleWrap.move();
-    if (unbundle) {
-      executor->setJSModulesUnbundle(std::move(unbundle));
+    auto bundleRegistry = bundleRegistryWrap.move();
+    if (bundleRegistry) {
+      executor->setBundleRegistry(std::move(bundleRegistry));
     }
     executor->loadApplicationScript(std::move(*startupScript),
                                     std::move(startupScriptSourceURL));
@@ -109,11 +109,11 @@ void NativeToJsBridge::loadApplication(
 }
 
 void NativeToJsBridge::loadApplicationSync(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
-  if (unbundle) {
-    m_executor->setJSModulesUnbundle(std::move(unbundle));
+  if (bundleRegistry) {
+    m_executor->setBundleRegistry(std::move(bundleRegistry));
   }
   m_executor->loadApplicationScript(std::move(startupScript),
                                         std::move(startupScriptSourceURL));
@@ -171,6 +171,12 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
     });
 }
 
+void NativeToJsBridge::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  runOnExecutorQueue([bundleId, bundlePath] (JSExecutor* executor) {
+    executor->registerBundle(bundleId, bundlePath);
+  });
+}
+
 void NativeToJsBridge::setGlobalVariable(std::string propName,
                                          std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
@@ -182,6 +188,10 @@ void NativeToJsBridge::setGlobalVariable(std::string propName,
 void* NativeToJsBridge::getJavaScriptContext() {
   // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.
   return m_executor->getJavaScriptContext();
+}
+
+bool NativeToJsBridge::isInspectable() {
+  return m_executor->isInspectable();
 }
 
 #ifdef WITH_JSC_MEMORY_PRESSURE

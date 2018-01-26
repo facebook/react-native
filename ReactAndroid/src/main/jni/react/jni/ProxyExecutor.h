@@ -35,8 +35,10 @@ public:
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
-  virtual void setJSModulesUnbundle(
-    std::unique_ptr<JSModulesUnbundle> bundle) override;
+  virtual void setBundleRegistry(
+    std::unique_ptr<RAMBundleRegistry> bundle) override;
+  virtual void registerBundle(
+    uint32_t bundleId, const std::string& bundlePath) override;
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,

@@ -89,7 +89,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static final String REACT_CLASS = "RCTWebView";
 
   protected static final String HTML_ENCODING = "UTF-8";
-  protected static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+  protected static final String HTML_MIME_TYPE = "text/html";
   protected static final String BRIDGE_NAME = "__REACT_WEB_VIEW_BRIDGE";
 
   protected static final String HTTP_METHOD_POST = "POST";
@@ -217,7 +217,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   /**
    * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
-   * to call {@link WebView#destroy} on activty destroy event and also to clear the client
+   * to call {@link WebView#destroy} on activity destroy event and also to clear the client
    */
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
     protected @Nullable String injectedJS;
