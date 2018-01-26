@@ -471,7 +471,7 @@ YGNodeRef YGNodeGetParent(const YGNodeRef node) {
 }
 
 uint32_t YGNodeGetChildCount(const YGNodeRef node) {
-  return static_cast<uint32_t>(node->getChildren().size());
+  return static_cast<uint32_t>(node->children.size());
 }
 
 void YGNodeMarkDirty(const YGNodeRef node) {
