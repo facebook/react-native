@@ -88,11 +88,4 @@
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
 
-/**
- * Specifies the path to folder where additional bundles are located
- *
- * @experimental
- */
-- (NSURL *)jsBundlesDirectory;
-
 @end

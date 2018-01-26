@@ -111,13 +111,13 @@ class Share {
   /**
    * The content was successfully shared.
    */
-  static get sharedAction() { return 'sharedAction'; }
+  static get sharedAction(): string { return 'sharedAction'; }
 
   /**
    * The dialog has been dismissed.
    * @platform ios
    */
-  static get dismissedAction() { return 'dismissedAction'; }
+  static get dismissedAction(): string { return 'dismissedAction'; }
 
 }
 

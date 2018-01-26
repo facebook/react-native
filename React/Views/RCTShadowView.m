@@ -10,16 +10,14 @@
 #import "RCTShadowView.h"
 
 #import "RCTConvert.h"
+#import "RCTI18nUtil.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-#import "RCTI18nUtil.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
-
-static NSString *const RCTBackgroundColorProp = @"backgroundColor";
 
 typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_LEFT,
@@ -43,7 +41,6 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
-  BOOL _didUpdateSubviews;
   YGValue _paddingMetaProps[META_PROP_COUNT];
   YGValue _marginMetaProps[META_PROP_COUNT];
   YGValue _borderMetaProps[META_PROP_COUNT];
@@ -216,38 +213,53 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
 #endif
 
+  CGRect frame = CGRectMake(YGNodeLayoutGetLeft(node), YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node));
+
+  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
+  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
+  UIUserInterfaceLayoutDirection layoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
+
+  [self applyLayoutWithFrame:frame
+             layoutDirection:layoutDirection
+      viewsWithUpdatedLayout:viewsWithNewFrame
+            absolutePosition:absolutePosition];
+}
+
+- (void)applyLayoutWithFrame:(CGRect)frame
+             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
+            absolutePosition:(CGPoint)absolutePosition
+{
   CGPoint absoluteTopLeft = {
-    absolutePosition.x + YGNodeLayoutGetLeft(node),
-    absolutePosition.y + YGNodeLayoutGetTop(node)
+    absolutePosition.x + frame.origin.x,
+    absolutePosition.y + frame.origin.y
   };
 
   CGPoint absoluteBottomRight = {
-    absolutePosition.x + YGNodeLayoutGetLeft(node) + YGNodeLayoutGetWidth(node),
-    absolutePosition.y + YGNodeLayoutGetTop(node) + YGNodeLayoutGetHeight(node)
+    absolutePosition.x + frame.origin.x + frame.size.width,
+    absolutePosition.y + frame.origin.y + frame.size.height
   };
 
-  CGRect frame = {{
-    RCTRoundPixelValue(YGNodeLayoutGetLeft(node)),
-    RCTRoundPixelValue(YGNodeLayoutGetTop(node)),
+  CGRect roundedFrame = {{
+    RCTRoundPixelValue(frame.origin.x),
+    RCTRoundPixelValue(frame.origin.y),
   }, {
     RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
     RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
   }};
 
-  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
-  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
-  UIUserInterfaceLayoutDirection updatedLayoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
-
-  if (!CGRectEqualToRect(frame, _frame) || _layoutDirection != updatedLayoutDirection) {
-    _frame = frame;
-    _layoutDirection = updatedLayoutDirection;
-    [viewsWithNewFrame addObject:self];
+  if (!CGRectEqualToRect(_frame, roundedFrame) || _layoutDirection != layoutDirection) {
+    _frame = roundedFrame;
+    _layoutDirection = layoutDirection;
+    [viewsWithUpdatedLayout addObject:self];
   }
 
-  absolutePosition.x += YGNodeLayoutGetLeft(node);
-  absolutePosition.y += YGNodeLayoutGetTop(node);
+  absolutePosition.x += frame.origin.x;
+  absolutePosition.y += frame.origin.y;
 
-  [self applyLayoutToChildren:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+  [self applyLayoutToChildren:_yogaNode
+            viewsWithNewFrame:viewsWithUpdatedLayout
+             absolutePosition:absolutePosition];
 }
 
 - (void)applyLayoutToChildren:(YGNodeRef)node
@@ -265,39 +277,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                                           parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
-  // TODO: we always refresh all propagated properties when propagation is
-  // dirtied, but really we should track which properties have changed and
-  // only update those.
-
-  if (_didUpdateSubviews) {
-    _didUpdateSubviews = NO;
-    [self didUpdateReactSubviews];
-    [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[self->_reactTag];
-      [view didUpdateReactSubviews];
-    }];
-  }
-
-  if (!_backgroundColor) {
-    UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
-    if (parentBackgroundColor) {
-      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[self->_reactTag];
-        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
-      }];
-    }
-  } else {
-    // Update parent properties for children
-    NSMutableDictionary<NSString *, id> *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
-    CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
-    if (alpha < 1.0) {
-      // If bg is non-opaque, don't propagate further
-      properties[RCTBackgroundColorProp] = [UIColor clearColor];
-    } else {
-      properties[RCTBackgroundColorProp] = _backgroundColor;
-    }
-    return properties;
-  }
   return parentProperties;
 }
 
@@ -320,7 +299,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                       hidden:(BOOL)hidden
             absolutePosition:(CGPoint)absolutePosition
 {
-  // This is not the core layout method. It is only used by RCTShadowText to layout
+  // This is not the core layout method. It is only used by RCTTextShadowView to layout
   // nested views.
 
   if (_hidden != hidden) {
@@ -391,8 +370,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _reactSubviews = [NSMutableArray array];
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
-    YGNodeSetContext(_yogaNode, (__bridge void *)self);
-    YGNodeSetPrintFunc(_yogaNode, RCTPrint);
+     YGNodeSetContext(_yogaNode, (__bridge void *)self);
+     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
   return self;
 }
@@ -417,37 +396,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return NO;
 }
 
-- (void)dirtyPropagation
-{
-  if (_propagationLifecycle != RCTUpdateLifecycleDirtied) {
-    _propagationLifecycle = RCTUpdateLifecycleDirtied;
-    [_superview dirtyPropagation];
-  }
-}
-
-- (BOOL)isPropagationDirty
-{
-  return _propagationLifecycle != RCTUpdateLifecycleComputed;
-}
-
-- (void)dirtyText
-{
-  if (_textLifecycle != RCTUpdateLifecycleDirtied) {
-    _textLifecycle = RCTUpdateLifecycleDirtied;
-    [_superview dirtyText];
-  }
-}
-
-- (BOOL)isTextDirty
-{
-  return _textLifecycle != RCTUpdateLifecycleComputed;
-}
-
-- (void)setTextComputed
-{
-  _textLifecycle = RCTUpdateLifecycleComputed;
-}
-
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   RCTAssert(self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
@@ -457,16 +405,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     YGNodeInsertChild(_yogaNode, subview.yogaNode, (uint32_t)atIndex);
   }
   subview->_superview = self;
-  _didUpdateSubviews = YES;
-  [self dirtyText];
-  [self dirtyPropagation];
 }
 
 - (void)removeReactSubview:(RCTShadowView *)subview
 {
-  [subview dirtyText];
-  [subview dirtyPropagation];
-  _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
   if (![self isYogaLeafNode]) {
@@ -598,7 +540,6 @@ RCT_BORDER_PROPERTY(End, END)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode);  \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -609,7 +550,6 @@ RCT_BORDER_PROPERTY(End, END)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE(value, YGNodeStyleSet##cssProp, _yogaNode);       \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -629,7 +569,6 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);  \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -646,7 +585,6 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 {
   YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-  [self dirtyText];
 }
 - (YGValue)left
 {
@@ -658,7 +596,6 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 {
   YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-  [self dirtyText];
 }
 - (YGValue)right
 {
@@ -785,22 +722,6 @@ RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, YGOverflow)
 RCT_STYLE_PROPERTY(Display, display, Display, YGDisplay)
 RCT_STYLE_PROPERTY(Direction, direction, Direction, YGDirection)
 RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
-
-- (void)setBackgroundColor:(UIColor *)color
-{
-  _backgroundColor = color;
-  [self dirtyPropagation];
-}
-
-- (void)setZIndex:(NSInteger)zIndex
-{
-  _zIndex = zIndex;
-  if (_superview) {
-    // Changing zIndex means the subview order of the parent needs updating
-    _superview->_didUpdateSubviews = YES;
-    [_superview dirtyPropagation];
-  }
-}
 
 - (void)didUpdateReactSubviews
 {

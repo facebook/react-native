@@ -10,7 +10,6 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
-
 import com.facebook.react.common.DebugServerException;
 
 /**
@@ -39,7 +38,7 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader loads bundle from file system. The bundle will be read in native code to save on
-   * passing large strings from java to native memorory.
+   * passing large strings from java to native memory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
     return createFileLoader(fileName, fileName, false);
@@ -97,8 +96,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * Loads the script, returning the URL of the source it loaded.
-   */
+  /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(CatalystInstanceImpl instance);
 }

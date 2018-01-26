@@ -20,7 +20,6 @@
  * --package - com.facebook.react.tests
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
-/*eslint-disable no-undef */
 
 const argv = require('yargs').argv;
 const async = require('async');

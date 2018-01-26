@@ -54,6 +54,11 @@ public:
   virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
 
   /**
+   * Register a file path for an additional "RAM" bundle
+   */
+  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) = 0;
+
+  /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
    * method ID and optional additional arguments in JS. The executor is responsible
    * for using Bridge->callNativeModules to invoke any necessary native modules methods.
@@ -70,8 +75,17 @@ public:
 
   virtual void setGlobalVariable(std::string propName,
                                  std::unique_ptr<const JSBigString> jsonValue) = 0;
+
   virtual void* getJavaScriptContext() {
     return nullptr;
+  }
+
+  /**
+   * Returns whether or not the underlying executor supports debugging via the
+   * Chrome remote debugging protocol.
+   */
+  virtual bool isInspectable() {
+    return false;
   }
 
   /**

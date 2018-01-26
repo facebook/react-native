@@ -16,7 +16,7 @@ public enum YogaNodeType {
   DEFAULT(0),
   TEXT(1);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaNodeType(int intValue) {
     mIntValue = intValue;

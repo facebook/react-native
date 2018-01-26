@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTDefines.h>
@@ -99,3 +99,8 @@ RCT_EXTERN void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block);
  */
 #define RCTAssertUIManagerQueue() RCTAssert(RCTIsUIManagerQueue() || RCTIsPseudoUIManagerQueue(), \
 @"This function must be called on the UIManager queue")
+
+/**
+ * Returns new unique root view tag.
+ */
+RCT_EXTERN NSNumber *RCTAllocateRootViewTag(void);

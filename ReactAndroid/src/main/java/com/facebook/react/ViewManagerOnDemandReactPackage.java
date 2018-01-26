@@ -21,7 +21,7 @@ public interface ViewManagerOnDemandReactPackage {
    *
    * @param loadClasses defines if View Managers classes should be loaded or be avoided.
    */
-  List<String> getViewManagerNames(ReactApplicationContext reactContext, boolean loadClasses);
+  @Nullable List<String> getViewManagerNames(ReactApplicationContext reactContext, boolean loadClasses);
   /**
    * Creates and returns a ViewManager with a specific name {@param viewManagerName}. It's up to an
    * implementing package how to interpret the name.

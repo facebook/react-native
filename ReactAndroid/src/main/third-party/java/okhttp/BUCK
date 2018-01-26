@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 prebuilt_jar(
     name = "okhttp3",
     binary_jar = ":okhttp3-binary-jar",

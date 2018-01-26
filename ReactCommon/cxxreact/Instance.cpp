@@ -3,6 +3,7 @@
 #include "Instance.h"
 
 #include "JSBigString.h"
+#include "JSBundleType.h"
 #include "JSExecutor.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
@@ -11,6 +12,7 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
+#include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
@@ -18,6 +20,7 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
+#include <fstream>
 #include <mutex>
 #include <string>
 
@@ -91,6 +94,31 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   }
 }
 
+bool Instance::isIndexedRAMBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+
+  if (!bundle_stream ||
+      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return false;
+  }
+
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
+                           const std::string& sourceURL,
+                           bool loadSynchronously) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
+    auto startupScript = bundle->getStartupCode();
+    auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
+    loadRAMBundle(
+      std::move(registry),
+      std::move(startupScript),
+      sourceURL,
+      loadSynchronously);
+}
+
 void Instance::loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                              std::unique_ptr<const JSBigString> startupScript,
                              std::string startupScriptSourceURL,
@@ -115,6 +143,10 @@ void *Instance::getJavaScriptContext() {
                            : nullptr;
 }
 
+bool Instance::isInspectable() {
+  return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
+}
+
 void Instance::callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) {
   callback_->incrementPendingJSCalls();
@@ -126,6 +158,10 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
+}
+
+void Instance::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  nativeToJsBridge_->registerBundle(bundleId, bundlePath);
 }
 
 const ModuleRegistry &Instance::getModuleRegistry() const {
