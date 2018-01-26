@@ -73,6 +73,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted;  // *
   _tag = textAttributes->_tag ?: _tag;
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
+  
+  // Transform
+  _textTransform = textAttributes->_textTransform ?: _textTransform;
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
@@ -214,6 +217,22 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
+- (NSString*) effectiveText: (NSString*) text
+{
+  switch (_textTransform)
+  {
+    case RCTTextTransformNone:
+    default:
+      return text;
+    case RCTTextTransformLowercase:
+      return [text lowercaseString];
+    case RCTTextTransformUppercase:
+      return [text uppercaseString];
+    case RCTTextTransformCapitalize:
+      return [text capitalizedString];
+  }
+}
+
 - (RCTTextAttributes *)copyWithZone:(NSZone *)zone
 {
   RCTTextAttributes *textAttributes = [RCTTextAttributes new];
@@ -263,7 +282,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     // Special
     RCTTextAttributesCompareOthers(_isHighlighted) &&
     RCTTextAttributesCompareObjects(_tag) &&
-    RCTTextAttributesCompareOthers(_layoutDirection);
+    RCTTextAttributesCompareOthers(_layoutDirection) &&
+    // Transform
+    RCTTextAttributesCompareOthers(_textTransform);
 }
 
 @end
