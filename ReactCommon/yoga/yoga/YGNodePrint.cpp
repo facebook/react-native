@@ -205,11 +205,7 @@ void YGNodeToString(
   }
   appendFormatedString(str, ">");
 
-<<<<<<< HEAD
   const uint32_t childCount = node->children.size();
-=======
-  const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
->>>>>>> a8d466665... Fix warnings of casting and null pointer handling
   if (options & YGPrintOptionsChildren && childCount > 0) {
     for (uint32_t i = 0; i < childCount; i++) {
       appendFormatedString(str, "\n");
