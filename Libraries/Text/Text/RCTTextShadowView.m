@@ -235,6 +235,21 @@
   return textStorage;
 }
 
+- (void)applyLayoutNode:(YGNodeRef)node
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition
+{
+  if (YGNodeGetHasNewLayout(self.yogaNode)) {
+    // If the view got new layout, we have to redraw it because `contentFrame`
+    // and sizes of embedded views may change.
+    _needsUpdateView = YES;
+  }
+
+  [super applyLayoutNode:node
+       viewsWithNewFrame:viewsWithNewFrame
+        absolutePosition:absolutePosition];
+}
+
 - (void)applyLayoutWithFrame:(CGRect)frame
              layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
       viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
