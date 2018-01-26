@@ -8,24 +8,29 @@
  *
  * @providesModule convertRequestBody
  * @flow
+ * @format
  */
 'use strict';
 
 const binaryToBase64 = require('binaryToBase64');
 
+const Blob = require('Blob');
 const FormData = require('FormData');
 
 export type RequestBody =
-    string
+  | string
+  | Blob
   | FormData
   | {uri: string}
   | ArrayBuffer
-  | $ArrayBufferView
-  ;
+  | $ArrayBufferView;
 
 function convertRequestBody(body: RequestBody): Object {
   if (typeof body === 'string') {
     return {string: body};
+  }
+  if (body instanceof Blob) {
+    return {blob: body.data};
   }
   if (body instanceof FormData) {
     return {formData: body.getParts()};

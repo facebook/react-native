@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 prebuilt_jar(
     name = "jsr-330",
     binary_jar = ":jsr330-binary-jar",
