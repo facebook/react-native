@@ -131,7 +131,7 @@ function runServer(
     attachWebsocketServer({
       httpServer: serverInstance,
       path: '/hot',
-      websocketServer: new HmrServer(packagerServer, reporter),
+      websocketServer: new HmrServer(packagerServer),
     });
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
@@ -179,6 +179,7 @@ function getPackagerServer(args, config, reporter) {
     cacheVersion: '3',
     enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,

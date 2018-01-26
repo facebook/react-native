@@ -24,6 +24,8 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
@@ -55,14 +57,17 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -119,6 +124,8 @@ public class DevSupportManagerImpl implements
 
   public static final String EMOJI_HUNDRED_POINTS_SYMBOL = " \uD83D\uDCAF";
   public static final String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " \uD83D\uDE45";
+
+  private final List<ExceptionLogger> mExceptionLoggers = new ArrayList<>();
 
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
@@ -252,11 +259,32 @@ public class DevSupportManagerImpl implements
     mRedBoxHandler = redBoxHandler;
     mDevLoadingViewController =
             new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
+
+    mExceptionLoggers.add(new JSExceptionLogger());
+    mExceptionLoggers.add(new StackOverflowExceptionLogger());
   }
 
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
+
+      for (ExceptionLogger logger : mExceptionLoggers) {
+        logger.log(e);
+      }
+
+    } else {
+      mDefaultNativeModuleCallExceptionHandler.handleException(e);
+    }
+  }
+
+  private interface ExceptionLogger {
+    void log(Exception ex);
+  }
+
+  private class JSExceptionLogger implements ExceptionLogger {
+
+    @Override
+    public void log(Exception e) {
       StringBuilder message = new StringBuilder(e.getMessage());
       Throwable cause = e.getCause();
       while (cause != null) {
@@ -270,12 +298,74 @@ public class DevSupportManagerImpl implements
         message.append("\n\n").append(stack);
 
         // TODO #11638796: convert the stack into something useful
-        showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+        showNewError(
+          message.toString(),
+          new StackFrame[]{},
+          JSEXCEPTION_ERROR_COOKIE,
+          ErrorType.JS);
       } else {
         showNewJavaError(message.toString(), e);
       }
-    } else {
-      mDefaultNativeModuleCallExceptionHandler.handleException(e);
+    }
+  }
+
+  private class StackOverflowExceptionLogger implements ExceptionLogger {
+
+    @Override
+    public void log(Exception e) {
+      if (e instanceof IllegalViewOperationException
+        && e.getCause() instanceof StackOverflowError) {
+        IllegalViewOperationException ivoe = (IllegalViewOperationException) e;
+        View view = ivoe.getView();
+        if (view != null)
+          logDeepestJSHierarchy(view);
+      }
+    }
+
+    private void logDeepestJSHierarchy(View view) {
+      if (mCurrentContext == null || view == null) return;
+
+      final Pair<View, Integer> deepestPairView = getDeepestNativeView(view);
+
+      View deepestView = deepestPairView.first;
+      Integer tagId = deepestView.getId();
+      final int depth = deepestPairView.second;
+      JSDevSupport JSDevSupport = mCurrentContext.getNativeModule(JSDevSupport.class);
+      JSDevSupport.getJSHierarchy(tagId.toString(), new JSDevSupport.DevSupportCallback() {
+        @Override
+        public void onSuccess(String hierarchy) {
+          FLog.e(ReactConstants.TAG,
+            "StackOverflowError when rendering JS Hierarchy (depth of native hierarchy = " +
+              depth +  "): \n" + hierarchy);
+        }
+
+        @Override
+        public void onFailure(Exception ex) {
+          FLog.e(ReactConstants.TAG, ex,
+            "Error retrieving JS Hierarchy (depth of native hierarchy = " + depth + ").");
+        }
+      });
+    }
+
+    private Pair<View, Integer> getDeepestNativeView(View root) {
+      Queue<Pair<View, Integer>> queue = new LinkedList<>();
+      Pair<View, Integer> maxPair = new Pair<>(root, 1);
+
+      queue.add(maxPair);
+      while (!queue.isEmpty()) {
+        Pair<View, Integer> current = queue.poll();
+        if (current.second > maxPair.second) {
+          maxPair = current;
+        }
+        if (current.first instanceof ViewGroup) {
+          ViewGroup viewGroup = (ViewGroup) current.first;
+          Integer depth = current.second + 1;
+          for (int i = 0 ; i < viewGroup.getChildCount() ; i++) {
+            queue.add(new Pair<>(viewGroup.getChildAt(i), depth));
+          }
+        }
+      }
+      return maxPair;
     }
   }
 
@@ -386,7 +476,7 @@ public class DevSupportManagerImpl implements
               Activity context = mReactInstanceManagerHelper.getCurrentActivity();
               if (context == null || context.isFinishing()) {
                 FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " +
-                        "is not available, here is the error that redbox would've displayed: " + message);
+                  "is not available, here is the error that redbox would've displayed: " + message);
                 return;
               }
               mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerImpl.this, mRedBoxHandler);

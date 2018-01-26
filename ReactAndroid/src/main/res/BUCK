@@ -1,15 +1,17 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_resource", "react_native_target", "android_react_native_target", "apple_react_native_target")
 
-android_resource(
+rn_android_resource(
     name = "devsupport",
     package = "com.facebook.react",
     res = "devsupport",
     visibility = [
         react_native_target("java/com/facebook/react/devsupport/..."),
+        android_react_native_target("java/com/facebook/react/devsupport/..."),
+        apple_react_native_target("java/com/facebook/react/devsupport/..."),
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "shell",
     package = "com.facebook.react",
     res = "shell",
@@ -18,7 +20,7 @@ android_resource(
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "modal",
     package = "com.facebook.react",
     res = "views/modal",
@@ -27,7 +29,7 @@ android_resource(
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "uimanager",
     package = "com.facebook.react",
     res = "views/uimanager",

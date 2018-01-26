@@ -724,11 +724,13 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
+  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success,
+                                         Callback error) {
     UiThreadUtil.assertOnUiThread();
     View anchor = mTagsToViews.get(reactTag);
     if (anchor == null) {
-      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
+      error.invoke("Can't display popup. Could not find view with tag " + reactTag);
+      return;
     }
     PopupMenu popupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
 

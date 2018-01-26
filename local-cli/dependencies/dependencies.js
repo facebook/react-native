@@ -31,6 +31,7 @@ function dependencies(argv, config, args, packagerInstance) {
     assetRegistryPath: ASSET_REGISTRY_PATH,
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
