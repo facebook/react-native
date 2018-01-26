@@ -29,15 +29,15 @@ static bool areFourValuesEqual(const std::array<YGValue, YGEdgeCount>& four) {
 }
 
 static void appendFormatedString(string* str, const char* fmt, ...) {
-  char buffer[1024];
   va_list args;
   va_start(args, fmt);
   va_list argsCopy;
   va_copy(argsCopy, args);
+  std::vector<char> buf(1 + vsnprintf(NULL, 0, fmt, args));
   va_end(args);
-  vsnprintf(buffer, 1024, fmt, argsCopy);
+  vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
-  string result = string(buffer);
+  string result = string(buf.begin(), buf.end() - 1);
   str->append(result);
 }
 

@@ -22,7 +22,7 @@ public enum YogaAlign {
   SPACE_BETWEEN(6),
   SPACE_AROUND(7);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaAlign(int intValue) {
     mIntValue = intValue;

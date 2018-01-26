@@ -33,13 +33,13 @@ public class YogaNode {
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
-  private long mNativePointer;
+  private final long mNativePointer;
   private Object mData;
 
   /* Those flags needs be in sync with YGJNI.cpp */
-  private final static int MARGIN = 1;
-  private final static int PADDING = 2;
-  private final static int BORDER = 4;
+  private static final int MARGIN = 1;
+  private static final int PADDING = 2;
+  private static final int BORDER = 4;
 
   @DoNotStrip
   private int mEdgeSetFlag = 0;
@@ -100,6 +100,7 @@ public class YogaNode {
   }
 
   private native void jni_YGNodeFree(long nativePointer);
+  @Override
   protected void finalize() throws Throwable {
     try {
       jni_YGNodeFree(mNativePointer);
@@ -170,7 +171,8 @@ public class YogaNode {
     return child;
   }
 
-  public @Nullable
+  @Nullable
+  public
   YogaNode getParent() {
     return mParent;
   }
