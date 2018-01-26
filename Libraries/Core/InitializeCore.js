@@ -171,6 +171,8 @@ polyfillGlobal('Request', () => require('fetch').Request);
 polyfillGlobal('Response', () => require('fetch').Response);
 polyfillGlobal('WebSocket', () => require('WebSocket'));
 polyfillGlobal('Blob', () => require('Blob'));
+polyfillGlobal('File', () => require('File'));
+polyfillGlobal('FileReader', () => require('FileReader'));
 polyfillGlobal('URL', () => require('URL'));
 
 // Set up alert
