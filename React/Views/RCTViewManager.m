@@ -96,16 +96,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
-{
-  return nil;
-}
-
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
-{
-  return nil;
-}
-
 #pragma mark - View properties
 
 #if TARGET_OS_TV

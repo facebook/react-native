@@ -64,20 +64,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 - (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
- * Called to notify manager that layout has finished, in case any calculated
- * properties need to be copied over from shadow view to view.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView;
-
-/**
- * Called after view hierarchy manipulation has finished, and all shadow props
- * have been set, but before layout has been performed. Useful for performing
- * custom layout logic or tasks that involve walking the view hierarchy.
- * To be deprecated, hopefully.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
-
-/**
  * This handles the simple case, where JS and native property names match.
  */
 #define RCT_EXPORT_VIEW_PROPERTY(name, type) \

@@ -213,38 +213,53 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
 #endif
 
+  CGRect frame = CGRectMake(YGNodeLayoutGetLeft(node), YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node));
+
+  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
+  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
+  UIUserInterfaceLayoutDirection layoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
+
+  [self applyLayoutWithFrame:frame
+             layoutDirection:layoutDirection
+      viewsWithUpdatedLayout:viewsWithNewFrame
+            absolutePosition:absolutePosition];
+}
+
+- (void)applyLayoutWithFrame:(CGRect)frame
+             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
+            absolutePosition:(CGPoint)absolutePosition
+{
   CGPoint absoluteTopLeft = {
-    absolutePosition.x + YGNodeLayoutGetLeft(node),
-    absolutePosition.y + YGNodeLayoutGetTop(node)
+    absolutePosition.x + frame.origin.x,
+    absolutePosition.y + frame.origin.y
   };
 
   CGPoint absoluteBottomRight = {
-    absolutePosition.x + YGNodeLayoutGetLeft(node) + YGNodeLayoutGetWidth(node),
-    absolutePosition.y + YGNodeLayoutGetTop(node) + YGNodeLayoutGetHeight(node)
+    absolutePosition.x + frame.origin.x + frame.size.width,
+    absolutePosition.y + frame.origin.y + frame.size.height
   };
 
-  CGRect frame = {{
-    RCTRoundPixelValue(YGNodeLayoutGetLeft(node)),
-    RCTRoundPixelValue(YGNodeLayoutGetTop(node)),
+  CGRect roundedFrame = {{
+    RCTRoundPixelValue(frame.origin.x),
+    RCTRoundPixelValue(frame.origin.y),
   }, {
     RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
     RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
   }};
 
-  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
-  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
-  UIUserInterfaceLayoutDirection updatedLayoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
-
-  if (!CGRectEqualToRect(frame, _frame) || _layoutDirection != updatedLayoutDirection) {
-    _frame = frame;
-    _layoutDirection = updatedLayoutDirection;
-    [viewsWithNewFrame addObject:self];
+  if (!CGRectEqualToRect(_frame, roundedFrame) || _layoutDirection != layoutDirection) {
+    _frame = roundedFrame;
+    _layoutDirection = layoutDirection;
+    [viewsWithUpdatedLayout addObject:self];
   }
 
-  absolutePosition.x += YGNodeLayoutGetLeft(node);
-  absolutePosition.y += YGNodeLayoutGetTop(node);
+  absolutePosition.x += frame.origin.x;
+  absolutePosition.y += frame.origin.y;
 
-  [self applyLayoutToChildren:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+  [self applyLayoutToChildren:_yogaNode
+            viewsWithNewFrame:viewsWithUpdatedLayout
+             absolutePosition:absolutePosition];
 }
 
 - (void)applyLayoutToChildren:(YGNodeRef)node
@@ -381,37 +396,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return NO;
 }
 
-- (void)dirtyPropagation
-{
-  if (_propagationLifecycle != RCTUpdateLifecycleDirtied) {
-    _propagationLifecycle = RCTUpdateLifecycleDirtied;
-    [_superview dirtyPropagation];
-  }
-}
-
-- (BOOL)isPropagationDirty
-{
-  return _propagationLifecycle != RCTUpdateLifecycleComputed;
-}
-
-- (void)dirtyText
-{
-  if (_textLifecycle != RCTUpdateLifecycleDirtied) {
-    _textLifecycle = RCTUpdateLifecycleDirtied;
-    [_superview dirtyText];
-  }
-}
-
-- (BOOL)isTextDirty
-{
-  return _textLifecycle != RCTUpdateLifecycleComputed;
-}
-
-- (void)setTextComputed
-{
-  _textLifecycle = RCTUpdateLifecycleComputed;
-}
-
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   RCTAssert(self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
@@ -421,14 +405,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     YGNodeInsertChild(_yogaNode, subview.yogaNode, (uint32_t)atIndex);
   }
   subview->_superview = self;
-  [self dirtyText];
-  [self dirtyPropagation];
 }
 
 - (void)removeReactSubview:(RCTShadowView *)subview
 {
-  [subview dirtyText];
-  [subview dirtyPropagation];
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
   if (![self isYogaLeafNode]) {
@@ -560,7 +540,6 @@ RCT_BORDER_PROPERTY(End, END)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode);  \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -571,7 +550,6 @@ RCT_BORDER_PROPERTY(End, END)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE(value, YGNodeStyleSet##cssProp, _yogaNode);       \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -591,7 +569,6 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);  \
-  [self dirtyText];                                                 \
 }                                                                   \
 - (YGValue)getProp                                                  \
 {                                                                   \
@@ -608,7 +585,6 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 {
   YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-  [self dirtyText];
 }
 - (YGValue)left
 {
@@ -620,7 +596,6 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 {
   YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
   RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-  [self dirtyText];
 }
 - (YGValue)right
 {
