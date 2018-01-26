@@ -44,10 +44,12 @@ class ILocalConnection : public IDestructible {
 };
 
 /// IInspector tracks debuggable JavaScript targets (pages).
-class IInspector {
+class IInspector : public IDestructible {
  public:
   using ConnectFunc = std::function<std::unique_ptr<ILocalConnection>(
       std::unique_ptr<IRemoteConnection>)>;
+
+  virtual ~IInspector() = 0;
 
   /// addPage is called by the VM to add a page to the list of debuggable pages.
   virtual int addPage(const std::string& title, ConnectFunc connectFunc) = 0;
