@@ -13,7 +13,7 @@ import android.view.View;
 
 /**
  * Base class for {@link AnimationPropertyUpdater} subclasses that updates a single float property
- * value. It helps to handle convertion from animation progress to the actual value as well as the
+ * value. It helps to handle conversion from animation progress to the actual value as well as the
  * quite common case when no starting value is provided.
  */
 public abstract class AbstractSingleFloatProperyUpdater implements AnimationPropertyUpdater {

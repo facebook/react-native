@@ -6,7 +6,7 @@
 :: of patent rights can be found in the PATENTS file in the same directory.
 
 @echo off
-title React Packager
+title Metro Bundler
 node "%~dp0..\local-cli\cli.js" start
 pause
 exit

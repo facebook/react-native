@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library", "react_native_dep", "react_native_target", "IS_OSS_BUILD")
 
-android_library(
+rn_android_library(
     name = "bridge",
     srcs = glob(["**/*.java"]),
     exported_deps = [

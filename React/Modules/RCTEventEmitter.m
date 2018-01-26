@@ -37,9 +37,10 @@
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-  RCTAssert(_bridge != nil, @"bridge is not set. This is probably because you've "
+  RCTAssert(_bridge != nil, @"Error when sending event: %@ with body: %@. "
+            "Bridge is not set. This is probably because you've "
             "explicitly synthesized the bridge in %@, even though it's inherited "
-            "from RCTEventEmitter.", [self class]);
+            "from RCTEventEmitter.", eventName, body, [self class]);
 
   if (RCT_DEBUG && ![[self supportedEvents] containsObject:eventName]) {
     RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
@@ -84,12 +85,13 @@ RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
   }
 }
 
-RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
+RCT_EXPORT_METHOD(removeListeners:(double)count)
 {
-  if (RCT_DEBUG && count > _listenerCount) {
+  int currentCount = (int)count;
+  if (RCT_DEBUG && currentCount > _listenerCount) {
     RCTLogError(@"Attempted to remove more %@ listeners than added", [self class]);
   }
-  _listenerCount = MAX(_listenerCount - count, 0);
+  _listenerCount = MAX(_listenerCount - currentCount, 0);
   if (_listenerCount == 0) {
     [self stopObserving];
   }

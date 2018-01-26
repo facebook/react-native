@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -235,9 +237,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     String contentEncoding = requestHeaders.get(CONTENT_ENCODING_HEADER_NAME);
     requestBuilder.headers(requestHeaders);
 
-    RequestBody requestBody;
     if (data == null) {
-      requestBody = RequestBodyUtil.getEmptyBody(method);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -250,13 +251,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       String body = data.getString(REQUEST_BODY_KEY_STRING);
       MediaType contentMediaType = MediaType.parse(contentType);
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
-        requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
+        RequestBody requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
           ResponseUtil.onRequestError(eventEmitter, requestId, "Failed to gzip request body", null);
           return;
         }
+        requestBuilder.method(method, requestBody);
       } else {
-        requestBody = RequestBody.create(contentMediaType, body);
+        requestBuilder.method(method, RequestBody.create(contentMediaType, body));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {
@@ -269,7 +271,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
       MediaType contentMediaType = MediaType.parse(contentType);
-      requestBody = RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String));
+      requestBuilder.method(
+        method,
+        RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String)));
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -290,7 +294,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           null);
         return;
       }
-      requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream);
+      requestBuilder.method(
+          method,
+          RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
@@ -301,15 +307,27 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (multipartBuilder == null) {
         return;
       }
-      requestBody = multipartBuilder.build();
+
+      requestBuilder.method(
+        method,
+        RequestBodyUtil.createProgressRequest(
+          multipartBuilder.build(),
+          new ProgressListener() {
+        long last = System.nanoTime();
+
+        @Override
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
+          long now = System.nanoTime();
+          if (done || shouldDispatch(now, last)) {
+            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+            last = now;
+          }
+        }
+      }));
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      requestBody = RequestBodyUtil.getEmptyBody(method);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
-
-    requestBuilder.method(
-      method,
-      wrapRequestBodyWithProgressEmitter(requestBody, eventEmitter, requestId));
 
     addRequest(requestId);
     client.newCall(requestBuilder.build()).enqueue(
@@ -378,29 +396,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         });
   }
 
-  private RequestBody wrapRequestBodyWithProgressEmitter(
-      final RequestBody requestBody,
-      final RCTDeviceEventEmitter eventEmitter,
-      final int requestId) {
-    if(requestBody == null) {
-      return null;
-    }
-    return RequestBodyUtil.createProgressRequest(
-      requestBody,
-      new ProgressListener() {
-        long last = System.nanoTime();
-
-        @Override
-        public void onProgress(long bytesWritten, long contentLength, boolean done) {
-          long now = System.nanoTime();
-          if (done || shouldDispatch(now, last)) {
-            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
-            last = now;
-          }
-        }
-      });
-  }
-
   private void readWithProgress(
       RCTDeviceEventEmitter eventEmitter,
       int requestId,
@@ -415,20 +410,24 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Ignore
     }
 
-    Reader reader = responseBody.charStream();
+    Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
+      responseBody.contentType().charset(StandardCharsets.UTF_8);
+
+    ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
+    InputStream inputStream = responseBody.byteStream();
     try {
-      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+      byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      while ((read = reader.read(buffer)) != -1) {
+      while ((read = inputStream.read(buffer)) != -1) {
         ResponseUtil.onIncrementalDataReceived(
           eventEmitter,
           requestId,
-          new String(buffer, 0, read),
+          streamDecoder.decodeNext(buffer, read),
           totalBytesRead,
           contentLength);
       }
     } finally {
-      reader.close();
+      inputStream.close();
     }
   }
 

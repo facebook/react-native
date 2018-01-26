@@ -179,6 +179,22 @@ var invokeGuardedCallback = function(name, func, context, a, b, c, d, e, f) {
       e,
       f
     ) {
+      // If document doesn't exist we know for sure we will crash in this method
+      // when we call document.createEvent(). However this can cause confusing
+      // errors: https://github.com/facebookincubator/create-react-app/issues/3482
+      // So we preemptively throw with a better message instead.
+      invariant(
+        typeof document !== "undefined",
+        "The `document` global was defined when React was initialized, but is not " +
+          "defined anymore. This can happen in a test environment if a component " +
+          "schedules an update from an asynchronous callback, but the test has already " +
+          "finished running. To solve this, you can either unmount the component at " +
+          "the end of your test (and ensure that any asynchronous operations get " +
+          "canceled in `componentWillUnmount`), or you can change the test itself " +
+          "to be asynchronous."
+      );
+      var evt = document.createEvent("Event");
+
       // Keeps track of whether the user-provided callback threw an error. We
       // set this to true at the beginning, then set it to false right after
       // calling the function. If the function errors, `didError` will never be
@@ -234,7 +250,6 @@ var invokeGuardedCallback = function(name, func, context, a, b, c, d, e, f) {
 
       // Synchronously dispatch our fake event. If the user-provided function
       // errors, it will trigger our global error handler.
-      var evt = document.createEvent("Event");
       evt.initEvent(evtType, false, false);
       fakeNode.dispatchEvent(evt);
 
@@ -393,13 +408,11 @@ function publishRegistrationName(registrationName, pluginModule, eventName) {
     registrationName
   );
   registrationNameModules[registrationName] = pluginModule;
+  registrationNameDependencies[registrationName] =
+    pluginModule.eventTypes[eventName].dependencies;
+
   {
     var lowerCasedName = registrationName.toLowerCase();
-    possibleRegistrationNames[lowerCasedName] = registrationName;
-
-    if (registrationName === "onDoubleClick") {
-      possibleRegistrationNames.ondblclick = registrationName;
-    }
   }
 }
 
@@ -427,6 +440,7 @@ var registrationNameModules = {};
 /**
  * Mapping from registration name to event name
  */
+var registrationNameDependencies = {};
 
 /**
  * Mapping from lowercase registration names to the properly cased version,
@@ -434,7 +448,7 @@ var registrationNameModules = {};
  * only in true.
  * @type {Object}
  */
-var possibleRegistrationNames = {};
+
 // Trust the developer to only use possibleRegistrationNames in true
 
 /**
@@ -919,6 +933,11 @@ function processEventQueue(simulated) {
   // events get enqueued while processing.
   var processingEventQueue = eventQueue;
   eventQueue = null;
+
+  if (!processingEventQueue) {
+    return;
+  }
+
   if (simulated) {
     forEachAccumulated(
       processingEventQueue,
@@ -2796,6 +2815,12 @@ function logCapturedError(capturedError) {
     return;
   }
 
+  var error = capturedError.error;
+  var suppressLogging = error && error.suppressReactErrorLogging;
+  if (suppressLogging) {
+    return;
+  }
+
   {
     var componentName = capturedError.componentName,
       componentStack = capturedError.componentStack,
@@ -2859,13 +2884,31 @@ var injection$4 = {
   }
 };
 
-// The Symbol used to tag the special React types. If there is no native Symbol
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
-var REACT_PORTAL_TYPE =
-  (typeof Symbol === "function" &&
-    Symbol["for"] &&
-    Symbol["for"]("react.portal")) ||
-  0xeaca;
+var hasSymbol = typeof Symbol === "function" && Symbol["for"];
+
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]("react.element") : 0xeac7;
+var REACT_CALL_TYPE = hasSymbol ? Symbol["for"]("react.call") : 0xeac8;
+var REACT_RETURN_TYPE = hasSymbol ? Symbol["for"]("react.return") : 0xeac9;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol["for"]("react.portal") : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol["for"]("react.fragment") : 0xeacb;
+
+var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
+var FAUX_ITERATOR_SYMBOL = "@@iterator";
+
+function getIteratorFn(maybeIterable) {
+  if (maybeIterable === null || typeof maybeIterable === "undefined") {
+    return null;
+  }
+  var maybeIterator =
+    (MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL]) ||
+    maybeIterable[FAUX_ITERATOR_SYMBOL];
+  if (typeof maybeIterator === "function") {
+    return maybeIterator;
+  }
+  return null;
+}
 
 function createPortal(
   children,
@@ -3041,7 +3084,7 @@ var ReactGlobalSharedState = Object.freeze({
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.1.1";
+var ReactVersion = "16.2.0";
 
 // Module provided by RN:
 /**
@@ -3685,19 +3728,16 @@ function getComponentName(fiber) {
   return null;
 }
 
+// Re-export dynamic flags from the fbsource version.
+var _require = require("ReactFeatureFlags");
+
+var debugRenderPhaseSideEffects = _require.debugRenderPhaseSideEffects;
+
 var enableAsyncSubtreeAPI = true;
 
-// Exports React.Fragment
-var enableReactFragment = false;
-// Exports ReactDOM.createRoot
-
 var enableUserTimingAPI = true;
-
-// Mutating mode (React DOM, React ART, React Native):
 var enableMutatingReconciler = true;
-// Experimental noop mode (currently unused):
 var enableNoopReconciler = false;
-// Experimental persistent mode (CS):
 var enablePersistentReconciler = false;
 
 // Only used in www builds.
@@ -4840,6 +4880,10 @@ function msToExpirationTime(ms) {
   return ((ms / UNIT_SIZE) | 0) + MAGIC_NUMBER_OFFSET;
 }
 
+function expirationTimeToMs(expirationTime) {
+  return (expirationTime - MAGIC_NUMBER_OFFSET) * UNIT_SIZE;
+}
+
 function ceiling(num, precision) {
   return (((num / precision) | 0) + 1) * precision;
 }
@@ -4875,7 +4919,7 @@ var AsyncUpdates = 1;
   var debugCounter = 1;
 }
 
-function FiberNode(tag, key, internalContextTag) {
+function FiberNode(tag, pendingProps, key, internalContextTag) {
   // Instance
   this.tag = tag;
   this.key = key;
@@ -4890,7 +4934,7 @@ function FiberNode(tag, key, internalContextTag) {
 
   this.ref = null;
 
-  this.pendingProps = null;
+  this.pendingProps = pendingProps;
   this.memoizedProps = null;
   this.updateQueue = null;
   this.memoizedState = null;
@@ -4932,9 +4976,9 @@ function FiberNode(tag, key, internalContextTag) {
 //    is faster.
 // 5) It should be easy to port this to a C struct and keep a C implementation
 //    compatible.
-var createFiber = function(tag, key, internalContextTag) {
+var createFiber = function(tag, pendingProps, key, internalContextTag) {
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
-  return new FiberNode(tag, key, internalContextTag);
+  return new FiberNode(tag, pendingProps, key, internalContextTag);
 };
 
 function shouldConstruct(Component) {
@@ -4952,6 +4996,7 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
     // reclaim the extra memory if needed.
     workInProgress = createFiber(
       current.tag,
+      pendingProps,
       current.key,
       current.internalContextTag
     );
@@ -4968,6 +5013,8 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
     workInProgress.alternate = current;
     current.alternate = workInProgress;
   } else {
+    workInProgress.pendingProps = pendingProps;
+
     // We already have an alternate.
     // Reset the effect tag.
     workInProgress.effectTag = NoEffect;
@@ -4979,7 +5026,6 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
   }
 
   workInProgress.expirationTime = expirationTime;
-  workInProgress.pendingProps = pendingProps;
 
   workInProgress.child = current.child;
   workInProgress.memoizedProps = current.memoizedProps;
@@ -5006,19 +5052,22 @@ function createFiberFromElement(element, internalContextTag, expirationTime) {
   }
 
   var fiber = void 0;
-  var type = element.type,
-    key = element.key;
-
+  var type = element.type;
+  var key = element.key;
+  var pendingProps = element.props;
   if (typeof type === "function") {
     fiber = shouldConstruct(type)
-      ? createFiber(ClassComponent, key, internalContextTag)
-      : createFiber(IndeterminateComponent, key, internalContextTag);
+      ? createFiber(ClassComponent, pendingProps, key, internalContextTag)
+      : createFiber(
+          IndeterminateComponent,
+          pendingProps,
+          key,
+          internalContextTag
+        );
     fiber.type = type;
-    fiber.pendingProps = element.props;
   } else if (typeof type === "string") {
-    fiber = createFiber(HostComponent, key, internalContextTag);
+    fiber = createFiber(HostComponent, pendingProps, key, internalContextTag);
     fiber.type = type;
-    fiber.pendingProps = element.props;
   } else if (
     typeof type === "object" &&
     type !== null &&
@@ -5031,7 +5080,7 @@ function createFiberFromElement(element, internalContextTag, expirationTime) {
     // we don't know if we can reuse that fiber or if we need to clone it.
     // There is probably a clever way to restructure this.
     fiber = type;
-    fiber.pendingProps = element.props;
+    fiber.pendingProps = pendingProps;
   } else {
     var info = "";
     {
@@ -5075,42 +5124,44 @@ function createFiberFromFragment(
   expirationTime,
   key
 ) {
-  var fiber = createFiber(Fragment, key, internalContextTag);
-  fiber.pendingProps = elements;
+  var fiber = createFiber(Fragment, elements, key, internalContextTag);
   fiber.expirationTime = expirationTime;
   return fiber;
 }
 
 function createFiberFromText(content, internalContextTag, expirationTime) {
-  var fiber = createFiber(HostText, null, internalContextTag);
-  fiber.pendingProps = content;
+  var fiber = createFiber(HostText, content, null, internalContextTag);
   fiber.expirationTime = expirationTime;
   return fiber;
 }
 
 function createFiberFromHostInstanceForDeletion() {
-  var fiber = createFiber(HostComponent, null, NoContext);
+  var fiber = createFiber(HostComponent, null, null, NoContext);
   fiber.type = "DELETED";
   return fiber;
 }
 
 function createFiberFromCall(call, internalContextTag, expirationTime) {
-  var fiber = createFiber(CallComponent, call.key, internalContextTag);
+  var fiber = createFiber(CallComponent, call, call.key, internalContextTag);
   fiber.type = call.handler;
-  fiber.pendingProps = call;
   fiber.expirationTime = expirationTime;
   return fiber;
 }
 
 function createFiberFromReturn(returnNode, internalContextTag, expirationTime) {
-  var fiber = createFiber(ReturnComponent, null, internalContextTag);
+  var fiber = createFiber(ReturnComponent, null, null, internalContextTag);
   fiber.expirationTime = expirationTime;
   return fiber;
 }
 
 function createFiberFromPortal(portal, internalContextTag, expirationTime) {
-  var fiber = createFiber(HostPortal, portal.key, internalContextTag);
-  fiber.pendingProps = portal.children || [];
+  var pendingProps = portal.children !== null ? portal.children : [];
+  var fiber = createFiber(
+    HostPortal,
+    pendingProps,
+    portal.key,
+    internalContextTag
+  );
   fiber.expirationTime = expirationTime;
   fiber.stateNode = {
     containerInfo: portal.containerInfo,
@@ -5119,6 +5170,8 @@ function createFiberFromPortal(portal, internalContextTag, expirationTime) {
   };
   return fiber;
 }
+
+// TODO: This should be lifted into the renderer.
 
 function createFiberRoot(containerInfo, hydrate) {
   // Cyclic construction. This cheats the type system right now because
@@ -5134,6 +5187,7 @@ function createFiberRoot(containerInfo, hydrate) {
     context: null,
     pendingContext: null,
     hydrate: hydrate,
+    firstBatch: null,
     nextScheduledRoot: null
   };
   uninitializedFiber.stateNode = root;
@@ -5339,6 +5393,12 @@ function getStateFromUpdate(update, instance, prevState, props) {
   var partialState = update.partialState;
   if (typeof partialState === "function") {
     var updateFn = partialState;
+
+    // Invoke setState callback an extra time to help detect side-effects.
+    if (debugRenderPhaseSideEffects) {
+      updateFn.call(instance, prevState, props);
+    }
+
     return updateFn.call(instance, prevState, props);
   } else {
     return partialState;
@@ -5633,6 +5693,11 @@ var ReactFiberClassComponent = function(
       );
       stopPhaseTimer();
 
+      // Simulate an async bailout/interruption by invoking lifecycle twice.
+      if (debugRenderPhaseSideEffects) {
+        instance.shouldComponentUpdate(newProps, newState, newContext);
+      }
+
       {
         warning(
           shouldUpdate !== undefined,
@@ -5785,14 +5850,14 @@ var ReactFiberClassComponent = function(
 
     var state = instance.state;
     if (state && (typeof state !== "object" || isArray(state))) {
-      invariant(
+      warning(
         false,
         "%s.state: must be set to an object or null",
         getComponentName(workInProgress)
       );
     }
     if (typeof instance.getChildContext === "function") {
-      invariant(
+      warning(
         typeof workInProgress.type.childContextTypes === "object",
         "%s.getChildContext(): childContextTypes must be defined in order to " +
           "use getChildContext().",
@@ -5839,8 +5904,12 @@ var ReactFiberClassComponent = function(
     startPhaseTimer(workInProgress, "componentWillMount");
     var oldState = instance.state;
     instance.componentWillMount();
-
     stopPhaseTimer();
+
+    // Simulate an async bailout/interruption by invoking lifecycle twice.
+    if (debugRenderPhaseSideEffects) {
+      instance.componentWillMount();
+    }
 
     if (oldState !== instance.state) {
       {
@@ -5866,6 +5935,11 @@ var ReactFiberClassComponent = function(
     var oldState = instance.state;
     instance.componentWillReceiveProps(newProps, newContext);
     stopPhaseTimer();
+
+    // Simulate an async bailout/interruption by invoking lifecycle twice.
+    if (debugRenderPhaseSideEffects) {
+      instance.componentWillReceiveProps(newProps, newContext);
+    }
 
     if (instance.state !== oldState) {
       {
@@ -5895,14 +5969,7 @@ var ReactFiberClassComponent = function(
 
     var instance = workInProgress.stateNode;
     var state = instance.state || null;
-
     var props = workInProgress.pendingProps;
-    invariant(
-      props,
-      "There must be pending props for an initial mount. This error is " +
-        "likely caused by a bug in React. Please file an issue."
-    );
-
     var unmaskedContext = getUnmaskedContext(workInProgress);
 
     instance.props = props;
@@ -6052,16 +6119,6 @@ var ReactFiberClassComponent = function(
 
     var oldProps = workInProgress.memoizedProps;
     var newProps = workInProgress.pendingProps;
-    if (!newProps) {
-      // If there aren't any new props, then we'll reuse the memoized props.
-      // This could be from already completed work.
-      newProps = oldProps;
-      invariant(
-        newProps != null,
-        "There should always be pending or memoized props. This error is " +
-          "likely caused by a bug in React. Please file an issue."
-      );
-    }
     var oldContext = instance.context;
     var newUnmaskedContext = getUnmaskedContext(workInProgress);
     var newContext = getMaskedContext(workInProgress, newUnmaskedContext);
@@ -6135,6 +6192,11 @@ var ReactFiberClassComponent = function(
         startPhaseTimer(workInProgress, "componentWillUpdate");
         instance.componentWillUpdate(newProps, newState, newContext);
         stopPhaseTimer();
+
+        // Simulate an async bailout/interruption by invoking lifecycle twice.
+        if (debugRenderPhaseSideEffects) {
+          instance.componentWillUpdate(newProps, newState, newContext);
+        }
       }
       if (typeof instance.componentDidUpdate === "function") {
         workInProgress.effectTag |= Update;
@@ -6223,40 +6285,6 @@ var getCurrentFiberStackAddendum$1 =
 }
 
 var isArray$1 = Array.isArray;
-
-var ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
-var FAUX_ITERATOR_SYMBOL = "@@iterator"; // Before Symbol spec.
-
-// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
-// nor polyfill, then a plain number is used for performance.
-var REACT_ELEMENT_TYPE;
-var REACT_CALL_TYPE;
-var REACT_RETURN_TYPE;
-var REACT_FRAGMENT_TYPE;
-if (typeof Symbol === "function" && Symbol["for"]) {
-  REACT_ELEMENT_TYPE = Symbol["for"]("react.element");
-  REACT_CALL_TYPE = Symbol["for"]("react.call");
-  REACT_RETURN_TYPE = Symbol["for"]("react.return");
-  REACT_FRAGMENT_TYPE = Symbol["for"]("react.fragment");
-} else {
-  REACT_ELEMENT_TYPE = 0xeac7;
-  REACT_CALL_TYPE = 0xeac8;
-  REACT_RETURN_TYPE = 0xeac9;
-  REACT_FRAGMENT_TYPE = 0xeacb;
-}
-
-function getIteratorFn(maybeIterable) {
-  if (maybeIterable === null || typeof maybeIterable === "undefined") {
-    return null;
-  }
-  var iteratorFn =
-    (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL]) ||
-    maybeIterable[FAUX_ITERATOR_SYMBOL];
-  if (typeof iteratorFn === "function") {
-    return iteratorFn;
-  }
-  return null;
-}
 
 function coerceRef(current, element) {
   var mixedRef = element.ref;
@@ -6359,20 +6387,11 @@ function warnOnFunctionType() {
 // to be able to optimize each path individually by branching early. This needs
 // a compiler or we can do it manually. Helpers that don't need this branching
 // live outside of this function.
-function ChildReconciler(shouldClone, shouldTrackSideEffects) {
+function ChildReconciler(shouldTrackSideEffects) {
   function deleteChild(returnFiber, childToDelete) {
     if (!shouldTrackSideEffects) {
       // Noop.
       return;
-    }
-    if (!shouldClone) {
-      // When we're reconciling in place we have a work in progress copy. We
-      // actually want the current copy. If there is no current copy, then we
-      // don't need to track deletion side-effects.
-      if (childToDelete.alternate === null) {
-        return;
-      }
-      childToDelete = childToDelete.alternate;
     }
     // Deletions are added in reversed order so we add it to the front.
     // At this point, the return fiber's effect list is empty except for
@@ -6426,22 +6445,10 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
   function useFiber(fiber, pendingProps, expirationTime) {
     // We currently set sibling to null and index to 0 here because it is easy
     // to forget to do before returning it. E.g. for the single child case.
-    if (shouldClone) {
-      var clone = createWorkInProgress(fiber, pendingProps, expirationTime);
-      clone.index = 0;
-      clone.sibling = null;
-      return clone;
-    } else {
-      // We override the expiration time even if it is earlier, because if
-      // we're reconciling at a later time that means that this was
-      // down-prioritized.
-      fiber.expirationTime = expirationTime;
-      fiber.effectTag = NoEffect;
-      fiber.index = 0;
-      fiber.sibling = null;
-      fiber.pendingProps = pendingProps;
-      return fiber;
-    }
+    var clone = createWorkInProgress(fiber, pendingProps, expirationTime);
+    clone.index = 0;
+    clone.sibling = null;
+    return clone;
   }
 
   function placeChild(newFiber, lastPlacedIndex, newIndex) {
@@ -7503,7 +7510,6 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
     // This leads to an ambiguity between <>{[...]}</> and <>...</>.
     // We treat the ambiguous cases above the same.
     if (
-      enableReactFragment &&
       typeof newChild === "object" &&
       newChild !== null &&
       newChild.type === REACT_FRAGMENT_TYPE &&
@@ -7632,11 +7638,8 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
   return reconcileChildFibers;
 }
 
-var reconcileChildFibers = ChildReconciler(true, true);
-
-var reconcileChildFibersInPlace = ChildReconciler(false, true);
-
-var mountChildFibersInPlace = ChildReconciler(false, false);
+var reconcileChildFibers = ChildReconciler(true);
+var mountChildFibers = ChildReconciler(false);
 
 function cloneChildFibers(current, workInProgress) {
   invariant(
@@ -7723,13 +7726,13 @@ var ReactFiberBeginWork = function(
       // won't update its child set by applying minimal side-effects. Instead,
       // we will add them all to the child before it gets rendered. That means
       // we can optimize this reconciliation pass by not tracking side-effects.
-      workInProgress.child = mountChildFibersInPlace(
+      workInProgress.child = mountChildFibers(
         workInProgress,
-        workInProgress.child,
+        null,
         nextChildren,
         renderExpirationTime
       );
-    } else if (current.child === workInProgress.child) {
+    } else {
       // If the current child is the same as the work in progress, it means that
       // we haven't yet started any work on these children. Therefore, we use
       // the clone algorithm to create a copy of all the current children.
@@ -7738,17 +7741,7 @@ var ReactFiberBeginWork = function(
       // let's throw it out.
       workInProgress.child = reconcileChildFibers(
         workInProgress,
-        workInProgress.child,
-        nextChildren,
-        renderExpirationTime
-      );
-    } else {
-      // If, on the other hand, it is already using a clone, that means we've
-      // already begun some work on this tree and we can continue where we left
-      // off by reconciling against the existing children.
-      workInProgress.child = reconcileChildFibersInPlace(
-        workInProgress,
-        workInProgress.child,
+        current.child,
         nextChildren,
         renderExpirationTime
       );
@@ -7760,9 +7753,6 @@ var ReactFiberBeginWork = function(
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
-      if (nextChildren === null) {
-        nextChildren = workInProgress.memoizedProps;
-      }
     } else if (
       nextChildren === null ||
       workInProgress.memoizedProps === nextChildren
@@ -7786,15 +7776,11 @@ var ReactFiberBeginWork = function(
     var fn = workInProgress.type;
     var nextProps = workInProgress.pendingProps;
 
-    var memoizedProps = workInProgress.memoizedProps;
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
-      if (nextProps === null) {
-        nextProps = memoizedProps;
-      }
     } else {
-      if (nextProps === null || memoizedProps === nextProps) {
+      if (workInProgress.memoizedProps === nextProps) {
         return bailoutOnAlreadyFinishedWork(current, workInProgress);
       }
       // TODO: consider bringing fn.shouldComponentUpdate() back.
@@ -7878,6 +7864,9 @@ var ReactFiberBeginWork = function(
     {
       ReactDebugCurrentFiber.setCurrentPhase("render");
       nextChildren = instance.render();
+      if (debugRenderPhaseSideEffects) {
+        instance.render();
+      }
       ReactDebugCurrentFiber.setCurrentPhase(null);
     }
     // React DevTools reads this flag.
@@ -7951,9 +7940,9 @@ var ReactFiberBeginWork = function(
         // Ensure that children mount into this root without tracking
         // side-effects. This ensures that we don't store Placement effects on
         // nodes that will be hydrated.
-        workInProgress.child = mountChildFibersInPlace(
+        workInProgress.child = mountChildFibers(
           workInProgress,
-          workInProgress.child,
+          null,
           element,
           renderExpirationTime
         );
@@ -7981,20 +7970,12 @@ var ReactFiberBeginWork = function(
     var type = workInProgress.type;
     var memoizedProps = workInProgress.memoizedProps;
     var nextProps = workInProgress.pendingProps;
-    if (nextProps === null) {
-      nextProps = memoizedProps;
-      invariant(
-        nextProps !== null,
-        "We should always have pending or current props. This error is " +
-          "likely caused by a bug in React. Please file an issue."
-      );
-    }
     var prevProps = current !== null ? current.memoizedProps : null;
 
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
-    } else if (nextProps === null || memoizedProps === nextProps) {
+    } else if (memoizedProps === nextProps) {
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
 
@@ -8037,9 +8018,6 @@ var ReactFiberBeginWork = function(
       tryToClaimNextHydratableInstance(workInProgress);
     }
     var nextProps = workInProgress.pendingProps;
-    if (nextProps === null) {
-      nextProps = workInProgress.memoizedProps;
-    }
     memoizeProps(workInProgress, nextProps);
     // Nothing to do here. This is terminal. We'll do the completion step
     // immediately after.
@@ -8143,15 +8121,7 @@ var ReactFiberBeginWork = function(
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
-      if (nextCall === null) {
-        nextCall = current && current.memoizedProps;
-        invariant(
-          nextCall !== null,
-          "We should always have pending or current props. This error is " +
-            "likely caused by a bug in React. Please file an issue."
-        );
-      }
-    } else if (nextCall === null || workInProgress.memoizedProps === nextCall) {
+    } else if (workInProgress.memoizedProps === nextCall) {
       nextCall = workInProgress.memoizedProps;
       // TODO: When bailing out, we might need to return the stateNode instead
       // of the child. To check it for work.
@@ -8163,21 +8133,14 @@ var ReactFiberBeginWork = function(
     // The following is a fork of reconcileChildrenAtExpirationTime but using
     // stateNode to store the child.
     if (current === null) {
-      workInProgress.stateNode = mountChildFibersInPlace(
-        workInProgress,
-        workInProgress.stateNode,
-        nextChildren,
-        renderExpirationTime
-      );
-    } else if (current.child === workInProgress.child) {
-      workInProgress.stateNode = reconcileChildFibers(
+      workInProgress.stateNode = mountChildFibers(
         workInProgress,
         workInProgress.stateNode,
         nextChildren,
         renderExpirationTime
       );
     } else {
-      workInProgress.stateNode = reconcileChildFibersInPlace(
+      workInProgress.stateNode = reconcileChildFibers(
         workInProgress,
         workInProgress.stateNode,
         nextChildren,
@@ -8201,18 +8164,7 @@ var ReactFiberBeginWork = function(
     if (hasContextChanged()) {
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
-      if (nextChildren === null) {
-        nextChildren = current && current.memoizedProps;
-        invariant(
-          nextChildren != null,
-          "We should always have pending or current props. This error is " +
-            "likely caused by a bug in React. Please file an issue."
-        );
-      }
-    } else if (
-      nextChildren === null ||
-      workInProgress.memoizedProps === nextChildren
-    ) {
+    } else if (workInProgress.memoizedProps === nextChildren) {
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
 
@@ -8222,9 +8174,9 @@ var ReactFiberBeginWork = function(
       // flow doesn't do during mount. This doesn't happen at the root because
       // the root always starts with a "current" with a null child.
       // TODO: Consider unifying this with how the root works.
-      workInProgress.child = reconcileChildFibersInPlace(
+      workInProgress.child = reconcileChildFibers(
         workInProgress,
-        workInProgress.child,
+        null,
         nextChildren,
         renderExpirationTime
       );
@@ -8761,18 +8713,7 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
   }
 
   function completeWork(current, workInProgress, renderExpirationTime) {
-    // Get the latest props.
     var newProps = workInProgress.pendingProps;
-    if (newProps === null) {
-      newProps = workInProgress.memoizedProps;
-    } else if (
-      workInProgress.expirationTime !== Never ||
-      renderExpirationTime === Never
-    ) {
-      // Reset the pending props, unless this was a down-prioritization.
-      workInProgress.pendingProps = null;
-    }
-
     switch (workInProgress.tag) {
       case FunctionalComponent:
         return null;
@@ -10139,6 +10080,7 @@ var ReactFiberScheduler = function(config) {
 
   var now = config.now,
     scheduleDeferredCallback = config.scheduleDeferredCallback,
+    cancelDeferredCallback = config.cancelDeferredCallback,
     useSyncScheduling = config.useSyncScheduling,
     prepareForCommit = config.prepareForCommit,
     resetAfterCommit = config.resetAfterCommit;
@@ -10147,6 +10089,9 @@ var ReactFiberScheduler = function(config) {
 
   var startTime = now();
   var mostRecentCurrentTime = msToExpirationTime(0);
+
+  // Used to ensure computeUniqueAsyncExpiration is monotonically increases.
+  var lastUniqueAsyncExpiration = 0;
 
   // Represents the expiration time that incoming updates should use. (If this
   // is NoWork, use the default strategy: async updates in async mode, sync
@@ -10564,6 +10509,7 @@ var ReactFiberScheduler = function(config) {
     {
       ReactDebugCurrentFiber.setCurrentFiber(workInProgress);
     }
+
     var next = beginWork(current, workInProgress, nextRenderExpirationTime);
     {
       ReactDebugCurrentFiber.resetCurrentFiber();
@@ -10923,7 +10869,10 @@ var ReactFiberScheduler = function(config) {
       } catch (e) {
         // Prevent cycle if logCapturedError() throws.
         // A cycle may still occur if logCapturedError renders a component that throws.
-        console.error(e);
+        var suppressLogging = e && e.suppressReactErrorLogging;
+        if (!suppressLogging) {
+          console.error(e);
+        }
       }
 
       // If we're in the commit phase, defer scheduling an update on the
@@ -11051,6 +11000,19 @@ var ReactFiberScheduler = function(config) {
     return computeExpirationBucket(currentTime, expirationMs, bucketSizeMs);
   }
 
+  // Creates a unique async expiration time.
+  function computeUniqueAsyncExpiration() {
+    var result = computeAsyncExpiration();
+    if (result <= lastUniqueAsyncExpiration) {
+      // Since we assume the current time monotonically increases, we only hit
+      // this branch when computeUniqueAsyncExpiration is fired multiple times
+      // within a 200ms window (or whatever the async bucket size is).
+      result = lastUniqueAsyncExpiration + 1;
+    }
+    lastUniqueAsyncExpiration = result;
+    return lastUniqueAsyncExpiration;
+  }
+
   function computeExpirationForFiber(fiber) {
     var expirationTime = void 0;
     if (expirationContext !== NoWork) {
@@ -11084,6 +11046,23 @@ var ReactFiberScheduler = function(config) {
     return scheduleWorkImpl(fiber, expirationTime, false);
   }
 
+  function checkRootNeedsClearing(root, fiber, expirationTime) {
+    if (
+      !isWorking &&
+      root === nextRoot &&
+      expirationTime < nextRenderExpirationTime
+    ) {
+      // Restart the root from the top.
+      if (nextUnitOfWork !== null) {
+        // This is an interruption. (Used for performance tracking.)
+        interruptedBy = fiber;
+      }
+      nextRoot = null;
+      nextUnitOfWork = null;
+      nextRenderExpirationTime = NoWork;
+    }
+  }
+
   function scheduleWorkImpl(fiber, expirationTime, isErrorRecovery) {
     recordScheduleUpdate();
 
@@ -11115,21 +11094,10 @@ var ReactFiberScheduler = function(config) {
       if (node["return"] === null) {
         if (node.tag === HostRoot) {
           var root = node.stateNode;
-          if (
-            !isWorking &&
-            root === nextRoot &&
-            expirationTime <= nextRenderExpirationTime
-          ) {
-            // Restart the root from the top.
-            if (nextUnitOfWork !== null) {
-              // This is an interruption. (Used for performance tracking.)
-              interruptedBy = fiber;
-            }
-            nextRoot = null;
-            nextUnitOfWork = null;
-            nextRenderExpirationTime = NoWork;
-          }
+
+          checkRootNeedsClearing(root, fiber, expirationTime);
           requestWork(root, expirationTime);
+          checkRootNeedsClearing(root, fiber, expirationTime);
         } else {
           {
             if (!isErrorRecovery && fiber.tag === ClassComponent) {
@@ -11181,7 +11149,8 @@ var ReactFiberScheduler = function(config) {
   var firstScheduledRoot = null;
   var lastScheduledRoot = null;
 
-  var isCallbackScheduled = false;
+  var callbackExpirationTime = NoWork;
+  var callbackID = -1;
   var isRendering = false;
   var nextFlushedRoot = null;
   var nextFlushedExpirationTime = NoWork;
@@ -11193,11 +11162,40 @@ var ReactFiberScheduler = function(config) {
   var isBatchingUpdates = false;
   var isUnbatchingUpdates = false;
 
+  var completedBatches = null;
+
   // Use these to prevent an infinite loop of nested updates
   var NESTED_UPDATE_LIMIT = 1000;
   var nestedUpdateCount = 0;
 
   var timeHeuristicForUnitOfWork = 1;
+
+  function scheduleCallbackWithExpiration(expirationTime) {
+    if (callbackExpirationTime !== NoWork) {
+      // A callback is already scheduled. Check its expiration time (timeout).
+      if (expirationTime > callbackExpirationTime) {
+        // Existing callback has sufficient timeout. Exit.
+        return;
+      } else {
+        // Existing callback has insufficient timeout. Cancel and schedule a
+        // new one.
+        cancelDeferredCallback(callbackID);
+      }
+      // The request callback timer is already running. Don't start a new one.
+    } else {
+      startRequestCallbackTimer();
+    }
+
+    // Compute a timeout for the given expiration time.
+    var currentMs = now() - startTime;
+    var expirationMs = expirationTimeToMs(expirationTime);
+    var timeout = expirationMs - currentMs;
+
+    callbackExpirationTime = expirationTime;
+    callbackID = scheduleDeferredCallback(performAsyncWork, {
+      timeout: timeout
+    });
+  }
 
   // requestWork is called by the scheduler whenever a root receives an update.
   // It's up to the renderer to call renderRoot at some point in the future.
@@ -11248,7 +11246,9 @@ var ReactFiberScheduler = function(config) {
       if (isUnbatchingUpdates) {
         // ...unless we're inside unbatchedUpdates, in which case we should
         // flush it now.
-        performWorkOnRoot(root, Sync);
+        nextFlushedRoot = root;
+        nextFlushedExpirationTime = Sync;
+        performWorkOnRoot(root, Sync, recalculateCurrentTime());
       }
       return;
     }
@@ -11256,10 +11256,8 @@ var ReactFiberScheduler = function(config) {
     // TODO: Get rid of Sync and use current time?
     if (expirationTime === Sync) {
       performWork(Sync, null);
-    } else if (!isCallbackScheduled) {
-      isCallbackScheduled = true;
-      startRequestCallbackTimer();
-      scheduleDeferredCallback(performAsyncWork);
+    } else {
+      scheduleCallbackWithExpiration(expirationTime);
     }
   }
 
@@ -11362,7 +11360,11 @@ var ReactFiberScheduler = function(config) {
         nextFlushedExpirationTime <= minExpirationTime) &&
       !deadlineDidExpire
     ) {
-      performWorkOnRoot(nextFlushedRoot, nextFlushedExpirationTime);
+      performWorkOnRoot(
+        nextFlushedRoot,
+        nextFlushedExpirationTime,
+        recalculateCurrentTime()
+      );
       // Find the next highest priority work.
       findHighestPriorityRoot();
     }
@@ -11372,19 +11374,51 @@ var ReactFiberScheduler = function(config) {
 
     // If we're inside a callback, set this to false since we just completed it.
     if (deadline !== null) {
-      isCallbackScheduled = false;
+      callbackExpirationTime = NoWork;
+      callbackID = -1;
     }
     // If there's work left over, schedule a new callback.
-    if (nextFlushedRoot !== null && !isCallbackScheduled) {
-      isCallbackScheduled = true;
-      startRequestCallbackTimer();
-      scheduleDeferredCallback(performAsyncWork);
+    if (nextFlushedExpirationTime !== NoWork) {
+      scheduleCallbackWithExpiration(nextFlushedExpirationTime);
     }
 
     // Clean-up.
     deadline = null;
     deadlineDidExpire = false;
     nestedUpdateCount = 0;
+
+    finishRendering();
+  }
+
+  function flushRoot(root, expirationTime) {
+    invariant(
+      !isRendering,
+      "work.commit(): Cannot commit while already rendering. This likely " +
+        "means you attempted to commit from inside a lifecycle method."
+    );
+    // Perform work on root as if the given expiration time is the current time.
+    // This has the effect of synchronously flushing all work up to and
+    // including the given time.
+    performWorkOnRoot(root, expirationTime, expirationTime);
+    finishRendering();
+  }
+
+  function finishRendering() {
+    if (completedBatches !== null) {
+      var batches = completedBatches;
+      completedBatches = null;
+      for (var i = 0; i < batches.length; i++) {
+        var batch = batches[i];
+        try {
+          batch._onComplete();
+        } catch (error) {
+          if (!hasUnhandledError) {
+            hasUnhandledError = true;
+            unhandledError = error;
+          }
+        }
+      }
+    }
 
     if (hasUnhandledError) {
       var _error4 = unhandledError;
@@ -11394,7 +11428,7 @@ var ReactFiberScheduler = function(config) {
     }
   }
 
-  function performWorkOnRoot(root, expirationTime) {
+  function performWorkOnRoot(root, expirationTime, currentTime) {
     invariant(
       !isRendering,
       "performWorkOnRoot was called recursively. This error is likely caused " +
@@ -11404,20 +11438,18 @@ var ReactFiberScheduler = function(config) {
     isRendering = true;
 
     // Check if this is async work or sync/expired work.
-    // TODO: Pass current time as argument to renderRoot, commitRoot
-    if (expirationTime <= recalculateCurrentTime()) {
+    if (expirationTime <= currentTime) {
       // Flush sync work.
       var finishedWork = root.finishedWork;
       if (finishedWork !== null) {
         // This root is already complete. We can commit it.
-        root.finishedWork = null;
-        root.remainingExpirationTime = commitRoot(finishedWork);
+        completeRoot(root, finishedWork, expirationTime);
       } else {
         root.finishedWork = null;
         finishedWork = renderRoot(root, expirationTime);
         if (finishedWork !== null) {
           // We've completed the root. Commit it.
-          root.remainingExpirationTime = commitRoot(finishedWork);
+          completeRoot(root, finishedWork, expirationTime);
         }
       }
     } else {
@@ -11425,8 +11457,7 @@ var ReactFiberScheduler = function(config) {
       var _finishedWork = root.finishedWork;
       if (_finishedWork !== null) {
         // This root is already complete. We can commit it.
-        root.finishedWork = null;
-        root.remainingExpirationTime = commitRoot(_finishedWork);
+        completeRoot(root, _finishedWork, expirationTime);
       } else {
         root.finishedWork = null;
         _finishedWork = renderRoot(root, expirationTime);
@@ -11435,7 +11466,7 @@ var ReactFiberScheduler = function(config) {
           // before committing.
           if (!shouldYield()) {
             // Still time left. Commit the root.
-            root.remainingExpirationTime = commitRoot(_finishedWork);
+            completeRoot(root, _finishedWork, expirationTime);
           } else {
             // There's no time left. Mark this root as complete. We'll come
             // back and commit it later.
@@ -11448,6 +11479,29 @@ var ReactFiberScheduler = function(config) {
     isRendering = false;
   }
 
+  function completeRoot(root, finishedWork, expirationTime) {
+    // Check if there's a batch that matches this expiration time.
+    var firstBatch = root.firstBatch;
+    if (firstBatch !== null && firstBatch._expirationTime <= expirationTime) {
+      if (completedBatches === null) {
+        completedBatches = [firstBatch];
+      } else {
+        completedBatches.push(firstBatch);
+      }
+      if (firstBatch._defer) {
+        // This root is blocked from committing by a batch. Unschedule it until
+        // we receive another update.
+        root.finishedWork = finishedWork;
+        root.remainingExpirationTime = NoWork;
+        return;
+      }
+    }
+
+    // Commit the root.
+    root.finishedWork = null;
+    root.remainingExpirationTime = commitRoot(finishedWork);
+  }
+
   // When working on async work, the reconciler asks the renderer if it should
   // yield execution. For DOM, we implement this with requestIdleCallback.
   function shouldYield() {
@@ -11455,6 +11509,8 @@ var ReactFiberScheduler = function(config) {
       return false;
     }
     if (deadline.timeRemaining() > timeHeuristicForUnitOfWork) {
+      // Disregard deadline.didTimeout. Only expired work should be flushed
+      // during a timeout. This path is only hit for non-expired work.
       return false;
     }
     deadlineDidExpire = true;
@@ -11529,10 +11585,13 @@ var ReactFiberScheduler = function(config) {
     computeAsyncExpiration: computeAsyncExpiration,
     computeExpirationForFiber: computeExpirationForFiber,
     scheduleWork: scheduleWork,
+    requestWork: requestWork,
+    flushRoot: flushRoot,
     batchedUpdates: batchedUpdates,
     unbatchedUpdates: unbatchedUpdates,
     flushSync: flushSync,
-    deferredUpdates: deferredUpdates
+    deferredUpdates: deferredUpdates,
+    computeUniqueAsyncExpiration: computeUniqueAsyncExpiration
   };
 };
 
@@ -11560,14 +11619,37 @@ var ReactFiberReconciler$1 = function(config) {
 
   var _ReactFiberScheduler = ReactFiberScheduler(config),
     computeAsyncExpiration = _ReactFiberScheduler.computeAsyncExpiration,
+    computeUniqueAsyncExpiration =
+      _ReactFiberScheduler.computeUniqueAsyncExpiration,
     computeExpirationForFiber = _ReactFiberScheduler.computeExpirationForFiber,
     scheduleWork = _ReactFiberScheduler.scheduleWork,
+    requestWork = _ReactFiberScheduler.requestWork,
+    flushRoot = _ReactFiberScheduler.flushRoot,
     batchedUpdates = _ReactFiberScheduler.batchedUpdates,
     unbatchedUpdates = _ReactFiberScheduler.unbatchedUpdates,
     flushSync = _ReactFiberScheduler.flushSync,
     deferredUpdates = _ReactFiberScheduler.deferredUpdates;
 
-  function scheduleTopLevelUpdate(current, element, callback) {
+  function computeRootExpirationTime(current, element) {
+    var expirationTime = void 0;
+    // Check if the top-level element is an async wrapper component. If so,
+    // treat updates to the root as async. This is a bit weird but lets us
+    // avoid a separate `renderAsync` API.
+    if (
+      enableAsyncSubtreeAPI &&
+      element != null &&
+      element.type != null &&
+      element.type.prototype != null &&
+      element.type.prototype.unstable_isAsyncReactComponent === true
+    ) {
+      expirationTime = computeAsyncExpiration();
+    } else {
+      expirationTime = computeExpirationForFiber(current);
+    }
+    return expirationTime;
+  }
+
+  function scheduleRootUpdate(current, element, expirationTime, callback) {
     {
       if (
         ReactDebugCurrentFiber.phase === "render" &&
@@ -11596,33 +11678,50 @@ var ReactFiberReconciler$1 = function(config) {
       );
     }
 
-    var expirationTime = void 0;
-    // Check if the top-level element is an async wrapper component. If so,
-    // treat updates to the root as async. This is a bit weird but lets us
-    // avoid a separate `renderAsync` API.
-    if (
-      enableAsyncSubtreeAPI &&
-      element != null &&
-      element.type != null &&
-      element.type.prototype != null &&
-      element.type.prototype.unstable_isAsyncReactComponent === true
-    ) {
-      expirationTime = computeAsyncExpiration();
-    } else {
-      expirationTime = computeExpirationForFiber(current);
-    }
-
     var update = {
       expirationTime: expirationTime,
       partialState: { element: element },
       callback: callback,
       isReplace: false,
       isForced: false,
-      nextCallback: null,
       next: null
     };
     insertUpdateIntoFiber(current, update);
     scheduleWork(current, expirationTime);
+
+    return expirationTime;
+  }
+
+  function updateContainerAtExpirationTime(
+    element,
+    container,
+    parentComponent,
+    expirationTime,
+    callback
+  ) {
+    // TODO: If this is a nested container, this won't be the root.
+    var current = container.current;
+
+    {
+      if (ReactFiberInstrumentation_1.debugTool) {
+        if (current.alternate === null) {
+          ReactFiberInstrumentation_1.debugTool.onMountContainer(container);
+        } else if (element === null) {
+          ReactFiberInstrumentation_1.debugTool.onUnmountContainer(container);
+        } else {
+          ReactFiberInstrumentation_1.debugTool.onUpdateContainer(container);
+        }
+      }
+    }
+
+    var context = getContextForSubtree(parentComponent);
+    if (container.context === null) {
+      container.context = context;
+    } else {
+      container.pendingContext = context;
+    }
+
+    return scheduleRootUpdate(current, element, expirationTime, callback);
   }
 
   function findHostInstance(fiber) {
@@ -11638,30 +11737,24 @@ var ReactFiberReconciler$1 = function(config) {
       return createFiberRoot(containerInfo, hydrate);
     },
     updateContainer: function(element, container, parentComponent, callback) {
-      // TODO: If this is a nested container, this won't be the root.
       var current = container.current;
-
-      {
-        if (ReactFiberInstrumentation_1.debugTool) {
-          if (current.alternate === null) {
-            ReactFiberInstrumentation_1.debugTool.onMountContainer(container);
-          } else if (element === null) {
-            ReactFiberInstrumentation_1.debugTool.onUnmountContainer(container);
-          } else {
-            ReactFiberInstrumentation_1.debugTool.onUpdateContainer(container);
-          }
-        }
-      }
-
-      var context = getContextForSubtree(parentComponent);
-      if (container.context === null) {
-        container.context = context;
-      } else {
-        container.pendingContext = context;
-      }
-
-      scheduleTopLevelUpdate(current, element, callback);
+      var expirationTime = computeRootExpirationTime(current, element);
+      return updateContainerAtExpirationTime(
+        element,
+        container,
+        parentComponent,
+        expirationTime,
+        callback
+      );
     },
+
+    updateContainerAtExpirationTime: updateContainerAtExpirationTime,
+
+    flushRoot: flushRoot,
+
+    requestWork: requestWork,
+
+    computeUniqueAsyncExpiration: computeUniqueAsyncExpiration,
 
     batchedUpdates: batchedUpdates,
 
@@ -11854,10 +11947,6 @@ var ReactNativeFiberHostComponent = (function() {
   return ReactNativeFiberHostComponent;
 })();
 
-// eslint-disable-next-line no-unused-expressions
-
-ReactNativeFiberHostComponent.prototype;
-
 var hasNativePerformanceNow =
   typeof performance === "object" && typeof performance.now === "function";
 
@@ -11869,7 +11958,6 @@ var now = hasNativePerformanceNow
       return Date.now();
     };
 
-var isCallbackScheduled = false;
 var scheduledCallback = null;
 var frameDeadline = 0;
 
@@ -11880,8 +11968,6 @@ var frameDeadlineObject = {
 };
 
 function setTimeoutCallback() {
-  isCallbackScheduled = false;
-
   // TODO (bvaughn) Hard-coded 5ms unblocks initial async testing.
   // React API probably changing to boolean rather than time remaining.
   // Longer-term plan is to rewrite this using shared memory,
@@ -11901,13 +11987,12 @@ function setTimeoutCallback() {
 function scheduleDeferredCallback(callback) {
   // We assume only one callback is scheduled at a time b'c that's how Fiber works.
   scheduledCallback = callback;
+  return setTimeout(setTimeoutCallback, 1);
+}
 
-  if (!isCallbackScheduled) {
-    isCallbackScheduled = true;
-    setTimeout(setTimeoutCallback, 1);
-  }
-
-  return 0;
+function cancelDeferredCallback(callbackID) {
+  scheduledCallback = null;
+  clearTimeout(callbackID);
 }
 
 // Modules provided by RN:
@@ -12037,6 +12122,7 @@ var NativeRenderer = reactReconciler({
   },
 
   scheduleDeferredCallback: scheduleDeferredCallback,
+  cancelDeferredCallback: cancelDeferredCallback,
 
   shouldDeprioritizeSubtree: function(type, props) {
     return false;
@@ -12663,10 +12749,6 @@ var ReactNativeComponent = (function(_React$Component) {
 
   return ReactNativeComponent;
 })(React.Component);
-
-// eslint-disable-next-line no-unused-expressions
-
-ReactNativeComponent.prototype;
 
 // Module provided by RN:
 var getInspectorDataForViewTag = void 0;

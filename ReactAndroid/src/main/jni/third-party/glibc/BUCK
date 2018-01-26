@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 # NOTE(agallagher): The platform really should be responsible for providing
 # this type of provided dependency.  As it is now, we need to setup dummy
 # rules to model glibc's libraries.

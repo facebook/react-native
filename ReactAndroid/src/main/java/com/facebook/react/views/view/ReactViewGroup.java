@@ -28,12 +28,15 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
+import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
@@ -229,11 +232,37 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   public void setBorderRadius(float borderRadius) {
-    getOrCreateReactViewBackground().setRadius(borderRadius);
+    ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
+    backgroundDrawable.setRadius(borderRadius);
+
+    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
+      && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      final int UPDATED_LAYER_TYPE =
+        backgroundDrawable.hasRoundedBorders()
+          ? View.LAYER_TYPE_SOFTWARE
+          : View.LAYER_TYPE_HARDWARE;
+
+      if (UPDATED_LAYER_TYPE != getLayerType()) {
+        setLayerType(UPDATED_LAYER_TYPE, null);
+      }
+    }
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
+    backgroundDrawable.setRadius(borderRadius, position);
+
+    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
+        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      final int UPDATED_LAYER_TYPE =
+          backgroundDrawable.hasRoundedBorders()
+              ? View.LAYER_TYPE_SOFTWARE
+              : View.LAYER_TYPE_HARDWARE;
+
+      if (UPDATED_LAYER_TYPE != getLayerType()) {
+        setLayerType(UPDATED_LAYER_TYPE, null);
+      }
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -631,6 +660,22 @@ public class ReactViewGroup extends ViewGroup implements
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
+    try {
+      dispatchOverflowDraw(canvas);
+      super.dispatchDraw(canvas);
+    } catch (StackOverflowError e) {
+      // Adding special exception management for StackOverflowError for logging purposes.
+      // This will be removed in the future.
+      RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
+      if (rootView != null) {
+        rootView.handleException(e);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
         case "visible":
@@ -648,9 +693,9 @@ public class ReactViewGroup extends ViewGroup implements
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
-                || borderWidth.left > 0
-                || borderWidth.bottom > 0
-                || borderWidth.right > 0) {
+              || borderWidth.left > 0
+              || borderWidth.bottom > 0
+              || borderWidth.right > 0) {
               left += borderWidth.left;
               top += borderWidth.top;
               right -= borderWidth.right;
@@ -659,32 +704,32 @@ public class ReactViewGroup extends ViewGroup implements
 
             final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
             float topLeftBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
             float topRightBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
             float bottomLeftBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
             float bottomRightBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
               final boolean isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL;
               float topStartBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_START);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_START);
               float topEndBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_END);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_END);
               float bottomStartBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_START);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_START);
               float bottomEndBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
 
               if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(getContext())) {
                 if (YogaConstants.isUndefined(topStartBorderRadius)) {
@@ -704,13 +749,13 @@ public class ReactViewGroup extends ViewGroup implements
                 }
 
                 final float directionAwareTopLeftRadius =
-                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                  isRTL ? topEndBorderRadius : topStartBorderRadius;
                 final float directionAwareTopRightRadius =
-                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                  isRTL ? topStartBorderRadius : topEndBorderRadius;
                 final float directionAwareBottomLeftRadius =
-                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                  isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
                 final float directionAwareBottomRightRadius =
-                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+                  isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
 
                 topLeftBorderRadius = directionAwareTopLeftRadius;
                 topRightBorderRadius = directionAwareTopRightRadius;
@@ -718,13 +763,13 @@ public class ReactViewGroup extends ViewGroup implements
                 bottomRightBorderRadius = directionAwareBottomRightRadius;
               } else {
                 final float directionAwareTopLeftRadius =
-                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                  isRTL ? topEndBorderRadius : topStartBorderRadius;
                 final float directionAwareTopRightRadius =
-                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                  isRTL ? topStartBorderRadius : topEndBorderRadius;
                 final float directionAwareBottomLeftRadius =
-                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                  isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
                 final float directionAwareBottomRightRadius =
-                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+                  isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
 
                 if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
                   topLeftBorderRadius = directionAwareTopLeftRadius;
@@ -745,27 +790,27 @@ public class ReactViewGroup extends ViewGroup implements
             }
 
             if (topLeftBorderRadius > 0
-                || topRightBorderRadius > 0
-                || bottomRightBorderRadius > 0
-                || bottomLeftBorderRadius > 0) {
+              || topRightBorderRadius > 0
+              || bottomRightBorderRadius > 0
+              || bottomLeftBorderRadius > 0) {
               if (mPath == null) {
                 mPath = new Path();
               }
 
               mPath.rewind();
               mPath.addRoundRect(
-                  new RectF(left, top, right, bottom),
-                  new float[] {
-                    Math.max(topLeftBorderRadius - borderWidth.left, 0),
-                    Math.max(topLeftBorderRadius - borderWidth.top, 0),
-                    Math.max(topRightBorderRadius - borderWidth.right, 0),
-                    Math.max(topRightBorderRadius - borderWidth.top, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth.right, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth.bottom, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth.left, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
-                  },
-                  Path.Direction.CW);
+                new RectF(left, top, right, bottom),
+                new float[]{
+                  Math.max(topLeftBorderRadius - borderWidth.left, 0),
+                  Math.max(topLeftBorderRadius - borderWidth.top, 0),
+                  Math.max(topRightBorderRadius - borderWidth.right, 0),
+                  Math.max(topRightBorderRadius - borderWidth.top, 0),
+                  Math.max(bottomRightBorderRadius - borderWidth.right, 0),
+                  Math.max(bottomRightBorderRadius - borderWidth.bottom, 0),
+                  Math.max(bottomLeftBorderRadius - borderWidth.left, 0),
+                  Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
+                },
+                Path.Direction.CW);
               canvas.clipPath(mPath);
             } else {
               canvas.clipRect(new RectF(left, top, right, bottom));
@@ -776,6 +821,5 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
-    super.dispatchDraw(canvas);
   }
 }

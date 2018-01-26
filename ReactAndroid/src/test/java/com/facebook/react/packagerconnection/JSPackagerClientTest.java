@@ -9,6 +9,8 @@
 
 package com.facebook.react.packagerconnection;
 
+import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,6 +119,22 @@ public class JSPackagerClientTest {
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage("{\"version\": 1, \"method\": \"methodValue\"}");
+    verify(handler, never()).onNotification(any());
+    verify(handler, never()).onRequest(any(), any(Responder.class));
+  }
+
+  @Test
+  public void test_onDisconnection_ShouldTriggerDisconnectionCallback() throws IOException {
+    ConnectionCallback connectionHandler = mock(ConnectionCallback.class);
+    RequestHandler handler = mock(RequestHandler.class);
+    final JSPackagerClient client =
+      new JSPackagerClient("test_client", mSettings, new HashMap<String,RequestHandler>(), connectionHandler);
+
+    client.close();
+
+    verify(connectionHandler, never()).onConnected();
+    verify(connectionHandler, times(1)).onDisconnected();
+
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
