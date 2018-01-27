@@ -241,6 +241,10 @@ const Image = createReactClass({
      *
      * - `repeat`: Repeat the image to cover the frame of the view. The
      * image will keep it's size and aspect ratio. (iOS only)
+     *
+     * - 'center': Scale the image down so that it is completely visible,
+     * if bigger than the area of the view.
+     * The image will not be scaled up.
      */
     resizeMode: PropTypes.oneOf([
       'cover',
