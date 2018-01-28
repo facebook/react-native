@@ -26,6 +26,7 @@ type Props = {
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
   inverted: ?boolean,
+  // The height of the parent ScrollView. Currently only set when inverted.
   scrollViewHeight: ?number,
 };
 
@@ -36,7 +37,7 @@ type State = {
   nextHeaderLayoutY: ?number,
 };
 
-class ScrollViewStickyHeader extends React.PureComponent<Props, State> {
+class ScrollViewStickyHeader extends React.Component<Props, State> {
   state = {
     measured: false,
     layoutY: 0,
