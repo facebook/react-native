@@ -55,6 +55,9 @@ class AccessibilityIOSExample extends React.Component<{}> {
           accessible={true}>
           This text component's accessibilityLabel is set explicitly.
         </Text>
+        <View accessibilityElementsHidden={true}>
+          <Text>This view's children are hidden from the accessibility tree</Text>
+        </View>
       </View>
     );
   }
