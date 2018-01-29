@@ -191,6 +191,11 @@ const ScrollView = createReactClass({
       'white',
     ]),
     /**
+     * If sticky headers should stick at the bottom instead of the top of the
+     * ScrollView. This is usually used with inverted ScrollViews.
+     */
+    invertStickyHeaders: PropTypes.bool,
+    /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
      * @platform ios
@@ -499,7 +504,10 @@ const ScrollView = createReactClass({
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
   _headerLayoutYs: (new Map(): Map<string, number>),
   getInitialState: function() {
-    return this.scrollResponderMixinGetInitialState();
+    return {
+      ...this.scrollResponderMixinGetInitialState(),
+      layoutHeight: null,
+    };
   },
 
   componentWillMount: function() {
@@ -676,6 +684,15 @@ const ScrollView = createReactClass({
     this.scrollResponderHandleScroll(e);
   },
 
+  _handleLayout: function(e: Object) {
+    if (this.props.invertStickyHeaders) {
+      this.setState({ layoutHeight: e.nativeEvent.layout.height });
+    }
+    if (this.props.onLayout) {
+      this.props.onLayout(e);
+    }
+  },
+
   _handleContentOnLayout: function(e: Object) {
     const {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
@@ -761,7 +778,9 @@ const ScrollView = createReactClass({
                 this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
               }
               onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
-              scrollAnimatedValue={this._scrollAnimatedValue}>
+              scrollAnimatedValue={this._scrollAnimatedValue}
+              inverted={this.props.invertStickyHeaders}
+              scrollViewHeight={this.state.layoutHeight}>
               {child}
             </ScrollViewStickyHeader>
           );
@@ -808,6 +827,7 @@ const ScrollView = createReactClass({
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
+      onLayout: this._handleLayout,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
