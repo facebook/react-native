@@ -375,6 +375,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   recordInteraction() {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref.recordInteraction();
+    });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
     });
@@ -511,6 +514,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ref: childList.ref,
       state: null,
     });
+
+    if (this._hasInteracted) {
+      childList.ref.recordInteraction();
+    }
 
     return existingChildData && existingChildData.state;
   };
@@ -941,6 +948,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _frames = {};
   _footerLength = 0;
   _hasDataChangedSinceEndReached = true;
+  _hasInteracted = false;
   _hasMore = false;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
@@ -1334,9 +1342,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onScrollBeginDrag = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onScrollBeginDrag(e);
+    });
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.recordInteraction();
     });
+    this._hasInteracted = true;
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 
