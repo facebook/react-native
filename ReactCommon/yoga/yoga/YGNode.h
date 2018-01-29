@@ -146,7 +146,7 @@ struct YGNode {
   void removeChild(uint32_t index);
 
   void cloneChildrenIfNeeded();
-  void markDirtyAndPropagate();
+  void markDirtyAndPropogate();
   float resolveFlexGrow();
   float resolveFlexShrink();
   bool isNodeFlexible();

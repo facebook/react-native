@@ -562,12 +562,12 @@ void YGNode::cloneChildrenIfNeeded() {
   }
 }
 
-void YGNode::markDirtyAndPropagate() {
+void YGNode::markDirtyAndPropogate() {
   if (!isDirty_) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGUndefined);
     if (parent_) {
-      parent_->markDirtyAndPropagate();
+      parent_->markDirtyAndPropogate();
     }
   }
 }
