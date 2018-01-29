@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var DeviceInfo = require('DeviceInfo');
 var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
@@ -21,22 +20,59 @@ var invariant = require('fbjs/lib/invariant');
 var eventEmitter = new EventEmitter();
 var dimensionsInitialized = false;
 var dimensions = {};
+
+var dimensionsProvider: ?(() => {[key:string]: Object});
+
 class Dimensions {
-  /**
-   * This should only be called from native code by sending the
-   * didUpdateDimensions event.
-   *
-   * @param {object} dims Simple string-keyed object of dimensions to set
-   */
-  static set(dims: {[key:string]: any}): void {
+  static setProvider(value: () => {[key:string]: Object}): void {
+    dimensionsProvider = value;
+    dimensionsInitialized = false;
+    dimensions = {};
+  }
+
+  static getDimensions(): {[key:string]: Object} {
+    if (dimensionsInitialized) {
+      return dimensions;
+    }
+
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
+    const dims = (dimensionsProvider || defaultDimProvider)();
+    const result = Dimensions.updateDimensions(dims);
+    RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
+      Dimensions.updateDimensions(update);
+    });
+    return result;
+  }
+
+  /**
+   * Initial dimensions are set before `runApplication` is called so they should
+   * be available before any other require's are run, but may be updated later.
+   *
+   * Note: Although dimensions are available immediately, they may change (e.g
+   * due to device rotation) so any rendering logic or styles that depend on
+   * these constants should try to call this function on every render, rather
+   * than caching the value (for example, using inline styles rather than
+   * setting a value in a `StyleSheet`).
+   *
+   * Example: `var {height, width} = Dimensions.get('window');`
+   *
+   * @param {string} dim Name of dimension as defined when calling `set`.
+   * @returns {Object?} Value for the dimension.
+   */
+  static get(dim: string): Object {
+    const dims = Dimensions.getDimensions();
+    invariant(dims[dim], 'No dimension set for key ' + dim);
+    return dims[dim];
+  }
+
+  static updateDimensions(dims: ?{[key:string]: Object}): {[key:string]: Object} {
     if (dims && dims.windowPhysicalPixels) {
       // parse/stringify => Clone hack
       dims = JSON.parse(JSON.stringify(dims));
 
-      var windowPhysicalPixels = dims.windowPhysicalPixels;
+      const windowPhysicalPixels = dims.windowPhysicalPixels;
       dims.window = {
         width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
         height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
@@ -45,7 +81,7 @@ class Dimensions {
       };
       if (Platform.OS === 'android') {
         // Screen and window dimensions are different on android
-        var screenPhysicalPixels = dims.screenPhysicalPixels;
+        const screenPhysicalPixels = dims.screenPhysicalPixels;
         dims.screen = {
           width: screenPhysicalPixels.width / screenPhysicalPixels.scale,
           height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
@@ -72,26 +108,7 @@ class Dimensions {
     } else {
       dimensionsInitialized = true;
     }
-  }
-
-  /**
-   * Initial dimensions are set before `runApplication` is called so they should
-   * be available before any other require's are run, but may be updated later.
-   *
-   * Note: Although dimensions are available immediately, they may change (e.g
-   * due to device rotation) so any rendering logic or styles that depend on
-   * these constants should try to call this function on every render, rather
-   * than caching the value (for example, using inline styles rather than
-   * setting a value in a `StyleSheet`).
-   *
-   * Example: `var {height, width} = Dimensions.get('window');`
-   *
-   * @param {string} dim Name of dimension as defined when calling `set`.
-   * @returns {Object?} Value for the dimension.
-   */
-  static get(dim: string): Object {
-    invariant(dimensions[dim], 'No dimension set for key ' + dim);
-    return dimensions[dim];
+    return dimensions;
   }
 
   /**
@@ -128,9 +145,8 @@ class Dimensions {
   }
 }
 
-Dimensions.set(DeviceInfo.Dimensions);
-RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
-  Dimensions.set(update);
-});
+function defaultDimProvider(): {[key:string]: Object} {
+  return require('DeviceInfo').Dimensions;
+}
 
 module.exports = Dimensions;

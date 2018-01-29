@@ -12,6 +12,7 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUIUtils.h"
 #import "RCTUtils.h"
 
 @implementation RCTDeviceInfo {
@@ -72,18 +73,18 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
-  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *dims = @{
-                         @"width": @(screenSize.size.width),
-                         @"height": @(screenSize.size.height),
-                         @"scale": @(RCTScreenScale()),
-                         @"fontScale": @(bridge.accessibilityManager.multiplier)
-                         };
+  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
+  NSDictionary<NSString *, NSNumber *> *dims = @{
+      @"width": @(window.width),
+      @"height": @(window.height),
+      @"scale": @(window.scale),
+      @"fontScale": @(window.fontScale)
+  };
   return @{
-           @"window": dims,
-           @"screen": dims
-           };
+      @"window": dims,
+      @"screen": dims
+  };
 }
 
 - (void)dealloc

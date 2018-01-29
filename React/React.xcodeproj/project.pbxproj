@@ -1203,6 +1203,7 @@
 		EBF21BFE1FC499840052F4D5 /* InspectorInterfaces.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BFF1FC4998E0052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
 		EBF21C001FC499A80052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
+		F1EFDA50201F661000EE6E4C /* RCTUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */; };
 		FEFAAC9E1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FEFAAC9C1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.m */; };
 		FEFAAC9F1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFAAC9D1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.h */; };
 /* End PBXBuildFile section */
@@ -2279,6 +2280,8 @@
 		EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspectorInterfaces.cpp; sourceTree = "<group>"; };
 		EBF21BDC1FC498900052F4D5 /* libjsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsinspector.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsinspector-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIUtils.m; sourceTree = "<group>"; };
+		F1EFDA4F201F660F00EE6E4C /* RCTUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIUtils.h; sourceTree = "<group>"; };
 		FEFAAC9C1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRedBoxExtraDataViewController.m; sourceTree = "<group>"; };
 		FEFAAC9D1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRedBoxExtraDataViewController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2888,6 +2891,7 @@
 				657734881EE8352500A0E9EA /* Inspector */,
 				13B07FE01A69315300A75B9A /* Modules */,
 				1450FF7F1BCFF28A00208362 /* Profiler */,
+				F1EFDA4D201F660F00EE6E4C /* UIUtils */,
 				13B07FF31A6947C200A75B9A /* Views */,
 			);
 			name = React;
@@ -3046,6 +3050,15 @@
 				EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */,
 			);
 			path = jsinspector;
+			sourceTree = "<group>";
+		};
+		F1EFDA4D201F660F00EE6E4C /* UIUtils */ = {
+			isa = PBXGroup;
+			children = (
+				F1EFDA4F201F660F00EE6E4C /* RCTUIUtils.h */,
+				F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */,
+			);
+			path = UIUtils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4508,6 +4521,7 @@
 				13AB90C11B6FA36700713B4F /* RCTComponentData.m in Sources */,
 				13B0801B1A69489C00A75B9A /* RCTNavigatorManager.m in Sources */,
 				916F9C2D1F743F57002E5920 /* RCTModalManager.m in Sources */,
+				F1EFDA50201F661000EE6E4C /* RCTUIUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
