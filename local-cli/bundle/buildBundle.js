@@ -54,6 +54,7 @@ async function buildBundle(
     maxWorkers: number,
     resetCache: boolean,
     transformer: string,
+    minify: boolean,
   },
   config: ConfigT,
   output = outputBundle,
