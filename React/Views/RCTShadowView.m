@@ -203,16 +203,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     return;
   }
 
-#if RCT_DEBUG
-  // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
-  // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
-  if (YGNodeStyleGetFlexBasis(node).unit == YGUnitPoint && YGNodeStyleGetFlexBasis(node).value == 0 &&
-      ((YGNodeStyleGetWidth(node).unit == YGUnitPoint && YGNodeStyleGetWidth(node).value > 0 && YGNodeLayoutGetWidth(node) == 0) ||
-      (YGNodeStyleGetHeight(node).unit == YGUnitPoint && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0))) {
-    RCTLogError(@"View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:) View: %@", self);
-  }
-#endif
-
   CGRect frame = CGRectMake(YGNodeLayoutGetLeft(node), YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node));
 
   // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
