@@ -40,12 +40,37 @@
   }
 }
 </code></pre>
+<h4><a class="anchor" aria-hidden="true" name="permissions-that-require-prompting-the-user"></a><a href="#permissions-that-require-prompting-the-user" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Permissions that require prompting the user</h4>
+<ul>
+<li><code>READ_CALENDAR</code>: 'android.permission.READ_CALENDAR'</li>
+<li><code>WRITE_CALENDAR</code>: 'android.permission.WRITE_CALENDAR'</li>
+<li><code>CAMERA</code>: 'android.permission.CAMERA'</li>
+<li><code>READ_CONTACTS</code>: 'android.permission.READ_CONTACTS'</li>
+<li><code>WRITE_CONTACTS</code>: 'android.permission.WRITE_CONTACTS'</li>
+<li><code>GET_ACCOUNTS</code>: 'android.permission.GET_ACCOUNTS'</li>
+<li><code>ACCESS_FINE_LOCATION</code>: 'android.permission.ACCESS_FINE_LOCATION'</li>
+<li><code>ACCESS_COARSE_LOCATION</code>: 'android.permission.ACCESS_COARSE_LOCATION'</li>
+<li><code>RECORD_AUDIO</code>: 'android.permission.RECORD_AUDIO'</li>
+<li><code>READ_PHONE_STATE</code>: 'android.permission.READ_PHONE_STATE'</li>
+<li><code>CALL_PHONE</code>: 'android.permission.CALL_PHONE'</li>
+<li><code>READ_CALL_LOG</code>: 'android.permission.READ_CALL_LOG'</li>
+<li><code>WRITE_CALL_LOG</code>: 'android.permission.WRITE_CALL_LOG'</li>
+<li><code>ADD_VOICEMAIL</code>: 'com.android.voicemail.permission.ADD_VOICEMAIL'</li>
+<li><code>USE_SIP</code>: 'android.permission.USE_SIP'</li>
+<li><code>PROCESS_OUTGOING_CALLS</code>: 'android.permission.PROCESS_OUTGOING_CALLS'</li>
+<li><code>BODY_SENSORS</code>: 'android.permission.BODY_SENSORS'</li>
+<li><code>SEND_SMS</code>: 'android.permission.SEND_SMS'</li>
+<li><code>RECEIVE_SMS</code>: 'android.permission.RECEIVE_SMS'</li>
+<li><code>READ_SMS</code>: 'android.permission.READ_SMS'</li>
+<li><code>RECEIVE_WAP_PUSH</code>: 'android.permission.RECEIVE_WAP_PUSH'</li>
+<li><code>RECEIVE_MMS</code>: 'android.permission.RECEIVE_MMS'</li>
+<li><code>READ_EXTERNAL_STORAGE</code>: 'android.permission.READ_EXTERNAL_STORAGE'</li>
+<li><code>WRITE_EXTERNAL_STORAGE</code>: 'android.permission.WRITE_EXTERNAL_STORAGE'</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
 <li><a href="/react-native/docs/next/permissionsandroid.html#constructor"><code>constructor</code></a></li>
-<li><a href="/react-native/docs/next/permissionsandroid.html#checkpermission"><code>checkPermission</code></a></li>
 <li><a href="/react-native/docs/next/permissionsandroid.html#check"><code>check</code></a></li>
-<li><a href="/react-native/docs/next/permissionsandroid.html#requestpermission"><code>requestPermission</code></a></li>
 <li><a href="/react-native/docs/next/permissionsandroid.html#request"><code>request</code></a></li>
 <li><a href="/react-native/docs/next/permissionsandroid.html#requestmultiple"><code>requestMultiple</code></a></li>
 </ul>
@@ -56,36 +81,49 @@
 <pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span>();
 </code></pre>
 <hr>
-<h3><a class="anchor" aria-hidden="true" name="checkpermission"></a><a href="#checkpermission" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>checkPermission()</code></h3>
-<pre><code class="hljs css javascript">checkPermission(permission);
-</code></pre>
-<p>DEPRECATED - use check</p>
-<p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted</p>
-<p>@deprecated</p>
-<hr>
 <h3><a class="anchor" aria-hidden="true" name="check"></a><a href="#check" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>check()</code></h3>
 <pre><code class="hljs css javascript">check(permission);
 </code></pre>
-<p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted</p>
-<hr>
-<h3><a class="anchor" aria-hidden="true" name="requestpermission"></a><a href="#requestpermission" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestPermission()</code></h3>
-<pre><code class="hljs css javascript">requestPermission(permission, rationale?)
-</code></pre>
-<p>DEPRECATED - use request</p>
-<p>Prompts the user to enable a permission and returns a promise resolving to a boolean value indicating whether the user allowed or denied the request</p>
-<p>If the optional rationale argument is included (which is an object with a <code>title</code> and <code>message</code>), this function checks with the OS whether it is necessary to show a dialog explaining why the permission is needed (<a href="https://developer.android.com/training/permissions/requesting.html#explain">https://developer.android.com/training/permissions/requesting.html#explain</a>) and then shows the system permission dialog</p>
-<p>@deprecated</p>
+<p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted. Possible return values are <code>GRANTED</code>, <code>DENIED</code>, and <code>NEVER_ASK_AGAIN</code>.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>permission</td><td>string</td><td>Yes</td><td>The permission to check for.</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="request"></a><a href="#request" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>request()</code></h3>
-<pre><code class="hljs css javascript">request(permission, rationale?)
+<pre><code class="hljs css javascript">request(permission, [rationale]);
 </code></pre>
 <p>Prompts the user to enable a permission and returns a promise resolving to a string value indicating whether the user allowed or denied the request</p>
-<p>If the optional rationale argument is included (which is an object with a <code>title</code> and <code>message</code>), this function checks with the OS whether it is necessary to show a dialog explaining why the permission is needed (<a href="https://developer.android.com/training/permissions/requesting.html#explain">https://developer.android.com/training/permissions/requesting.html#explain</a>) and then shows the system permission dialog</p>
+<p>If <code>rationale</code> is provided, this function checks with the OS whether it is necessary to show a dialog explaining why the permission is needed (<a href="https://developer.android.com/training/permissions/requesting.html#explain">https://developer.android.com/training/permissions/requesting.html#explain</a>) and then shows the system permission dialog.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>permission</td><td>string</td><td>Yes</td><td>The permission to request.</td></tr>
+<tr><td>rationale</td><td>object</td><td>No</td><td>Object with a <code>title</code> and <code>message</code>.</td></tr>
+</tbody>
+</table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="requestmultiple"></a><a href="#requestmultiple" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestMultiple()</code></h3>
 <pre><code class="hljs css javascript">requestMultiple(permissions);
 </code></pre>
 <p>Prompts the user to enable multiple permissions in the same dialog and returns an object with the permissions as keys and strings as values indicating whether the user allowed or denied the request</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>permissions</td><td>array</td><td>Yes</td><td>Array of permission to request.</td></tr>
+</tbody>
+</table>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="panresponder.html">← PanResponder</a><a class="docs-next button" href="pixelratio.html">PixelRatio →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Learn the Basics</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://www.meetup.com/topics/react-native/" target="_blank">Meetups</a><a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a></div><div><h5><a href="/react-native/help.html">Help</a></h5><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a><a href="/react-native/versions.html" target="_blank">Latest Releases</a><a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="http://reactjs.org" target="_blank">React</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><div class="githubButton"><a class="github-button" href="https://github.com/facebook/react-native" data-icon="octicon-star" data-show-count="true" data-count-href="/facebook/react-native/stargazers" data-count-api="/repos/facebook/react-native#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star facebook/react-native on GitHub">Star</a></div></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
