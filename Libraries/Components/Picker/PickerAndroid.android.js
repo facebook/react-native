@@ -70,7 +70,6 @@ class PickerAndroid extends React.Component<{
     this.setState(this._stateFromProps(nextProps));
   }
 
-  // Translate props and children into stuff that the native picker understands.
   _stateFromProps = (props) => {
     var selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
