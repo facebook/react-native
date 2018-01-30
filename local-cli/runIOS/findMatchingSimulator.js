@@ -26,8 +26,8 @@ function findMatchingSimulator(simulators, simulatorName) {
   const devices = simulators.devices;
   var match;
   for (let version in devices) {
-    // Making sure the version of the simulator is an iOS (Removes Apple Watch, etc)
-    if (version.indexOf('iOS') !== 0) {
+    // Making sure the version of the simulator is an iOS or tvOS (Removes Apple Watch, etc)
+    if (!version.startsWith('iOS') && !version.startsWith('tvOS')) {
       continue;
     }
     for (let i in devices[version]) {

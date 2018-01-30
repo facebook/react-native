@@ -102,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
 
-  if (eventLag == 0 && ![attributedText.string isEqualToString:self.backedTextInputView.attributedText.string]) {
+  if (eventLag == 0 && ![attributedText isEqualToAttributedString:self.backedTextInputView.attributedText]) {
     UITextRange *selection = self.backedTextInputView.selectedTextRange;
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
 

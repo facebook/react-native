@@ -54,6 +54,7 @@ async function buildBundle(
     maxWorkers: number,
     resetCache: boolean,
     transformer: string,
+    minify: boolean,
   },
   config: ConfigT,
   output = outputBundle,
@@ -71,7 +72,7 @@ async function buildBundle(
     entryFile: args.entryFile,
     sourceMapUrl,
     dev: args.dev,
-    minify: !args.dev,
+    minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
   };
 

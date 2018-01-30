@@ -208,7 +208,7 @@ class Inspector extends React.Component<{
     });
   }
 
-  setTouchTargetting(val: bool) {
+  setTouchTargeting(val: bool) {
     Touchable.TOUCH_TARGET_DEBUG = val;
     this.props.onRequestRerenderApp((inspectedViewTag) => {
       this.setState({inspectedViewTag});
@@ -247,8 +247,8 @@ class Inspector extends React.Component<{
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
             setSelection={this.setSelection.bind(this)}
-            touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
-            setTouchTargetting={this.setTouchTargetting.bind(this)}
+            touchTargeting={Touchable.TOUCH_TARGET_DEBUG}
+            setTouchTargeting={this.setTouchTargeting.bind(this)}
             networking={this.state.networking}
             setNetworking={this.setNetworking.bind(this)}
           />

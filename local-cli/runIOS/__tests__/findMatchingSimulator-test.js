@@ -453,4 +453,37 @@ describe('findMatchingSimulator', () => {
       version: 'iOS 10.0'
     });
   });
+
+  it('should return AppleTV devices if in the list', () => {
+    expect(findMatchingSimulator({
+      'devices': {
+        'tvOS 11.2' : [
+          {
+            'state' : 'Booted',
+            'availability' : '(available)',
+            'name' : 'Apple TV',
+            'udid' : '816C30EA-38EA-41AC-BFDA-96FB632D522E'
+          },
+          {
+            'state' : 'Shutdown',
+            'availability' : '(available)',
+            'name' : 'Apple TV 4K',
+            'udid' : 'BCBB7E4B-D872-4D61-BC61-7C9805551075'
+          },
+          {
+            'state' : 'Shutdown',
+            'availability' : '(available)',
+            'name' : 'Apple TV 4K (at 1080p)',
+            'udid' : '1DE12308-1C14-4F0F-991E-A3ADC41BDFFC'
+          }
+        ]
+      }
+    },
+    'Apple TV'
+  )).toEqual({
+    udid: '816C30EA-38EA-41AC-BFDA-96FB632D522E',
+    name: 'Apple TV',
+    version: 'tvOS 11.2'
+  });
+  });
 });

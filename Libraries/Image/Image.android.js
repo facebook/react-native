@@ -39,44 +39,19 @@ function generateRequestId() {
 }
 
 /**
- * <Image> - A react component for displaying different types of images,
+ * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
- * images from local disk, such as the camera roll.  Example usage:
+ * images from local disk, such as the camera roll.
  *
- *   renderImages: function() {
- *     return (
- *       <View>
- *         <Image
- *           style={styles.icon}
- *           source={require('./myIcon.png')}
- *         />
- *         <Image
- *           style={styles.logo}
- *           source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
- *         />
- *       </View>
- *     );
- *   },
- *
- * More example code in ImageExample.js
+ * See https://facebook.github.io/react-native/docs/image.html
  */
-
 var Image = createReactClass({
   displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
-     * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or a static image
-     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
-     *
-     * `headers` is an object representing the HTTP headers to send along with the request
-     * for a remote image.
-     *
-     * This prop can also contain several remote `uri`, specified together with
-     * their width and height. The native side will then choose the best `uri` to display
-     * based on the measured size of the image container.
+     * See https://facebook.github.io/react-native/docs/image.html#source
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
@@ -97,12 +72,12 @@ var Image = createReactClass({
     ]),
     /**
      * blurRadius: the blur radius of the blur filter added to the image
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#blurradius
      */
     blurRadius: PropTypes.number,
     /**
-     * similarly to `source`, this property represents the resource used to render
-     * the loading indicator for the image, displayed until image is ready to be
-     * displayed, typically after when it got downloaded from network.
+     * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
      */
     loadingIndicatorSource: PropTypes.oneOfType([
       PropTypes.shape({
@@ -137,40 +112,14 @@ var Image = createReactClass({
      * The mechanism that should be used to resize the image when the image's dimensions
      * differ from the image view's dimensions. Defaults to `auto`.
      *
-     * - `auto`: Use heuristics to pick between `resize` and `scale`.
-     *
-     * - `resize`: A software operation which changes the encoded image in memory before it
-     * gets decoded. This should be used instead of `scale` when the image is much larger
-     * than the view.
-     *
-     * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
-     * faster (usually hardware accelerated) and produces higher quality images. This
-     * should be used if the image is smaller than the view. It should also be used if the
-     * image is slightly bigger than the view.
-     *
-     * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
-     *
-     * @platform android
+     * See https://facebook.github.io/react-native/docs/image.html#resizemethod
      */
     resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
     /**
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
      *
-     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal
-     * to or larger than the corresponding dimension of the view (minus padding).
-     *
-     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal to
-     * or less than the corresponding dimension of the view (minus padding).
-     *
-     * 'stretch': Scale width and height independently, This may change the
-     * aspect ratio of the src.
-     *
-     * 'center': Scale the image down so that it is completely visible,
-     * if bigger than the area of the view.
-     * The image will not be scaled up.
+     * See https://facebook.github.io/react-native/docs/image.html#resizemode
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
@@ -198,6 +147,8 @@ var Image = createReactClass({
     /**
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#prefetch
      */
     prefetch(url: string, callback: ?Function) {
       const requestId = generateRequestId();
@@ -206,7 +157,9 @@ var Image = createReactClass({
     },
 
     /**
-     * Abort prefetch request
+     * Abort prefetch request.
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
      */
     abortPrefetch(requestId: number) {
       ImageLoader.abortRequest(requestId);
@@ -215,9 +168,7 @@ var Image = createReactClass({
     /**
      * Perform cache interrogation.
      *
-     * @param urls the list of image URLs to check the cache for.
-     * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
-     *         not in the mapping, it means it's not in the cache.
+     * See https://facebook.github.io/react-native/docs/image.html#querycache
      */
     async queryCache(
       urls: Array<string>,
@@ -226,9 +177,9 @@ var Image = createReactClass({
     },
 
     /**
-     * Resolves an asset reference into an object which has the properties `uri`, `width`,
-     * and `height`. The input may either be a number (opaque type returned by
-     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     * Resolves an asset reference into an object.
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
      */
     resolveAssetSource: resolveAssetSource,
   },

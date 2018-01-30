@@ -6,20 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
 package com.facebook.react.modules.network;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import android.net.Uri;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
@@ -34,6 +23,17 @@ import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -56,6 +56,52 @@ import okio.ByteString;
 @ReactModule(name = NetworkingModule.NAME)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
+  /**
+   * Allows to implement a custom fetching process for specific URIs. It is the handler's job
+   * to fetch the URI and return the JS body payload.
+   */
+  public interface UriHandler {
+    /**
+     * Returns if the handler should be used for an URI.
+     */
+    boolean supports(Uri uri, String responseType);
+
+    /**
+     * Fetch the URI and return the JS body payload.
+     */
+    WritableMap fetch(Uri uri) throws IOException;
+  }
+
+  /**
+   * Allows adding custom handling to build the {@link RequestBody} from the JS body payload.
+   */
+  public interface RequestBodyHandler {
+    /**
+     * Returns if the handler should be used for a JS body payload.
+     */
+    boolean supports(ReadableMap map);
+
+    /**
+     * Returns the {@link RequestBody} for the JS body payload.
+     */
+    RequestBody toRequestBody(ReadableMap map, String contentType);
+  }
+
+  /**
+   * Allows adding custom handling to build the JS body payload from the {@link ResponseBody}.
+   */
+  public interface ResponseHandler {
+    /**
+     * Returns if the handler should be used for a response type.
+     */
+    boolean supports(String responseType);
+
+    /**
+     * Returns the JS body payload for the {@link ResponseBody}.
+     */
+    WritableMap toResponseData(ResponseBody body) throws IOException;
+  }
+
   protected static final String NAME = "Networking";
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
@@ -73,6 +119,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private final @Nullable String mDefaultUserAgent;
   private final CookieJarContainer mCookieJarContainer;
   private final Set<Integer> mRequestIds;
+  private final List<RequestBodyHandler> mRequestBodyHandlers = new ArrayList<>();
+  private final List<UriHandler> mUriHandlers = new ArrayList<>();
+  private final List<ResponseHandler> mResponseHandlers = new ArrayList<>();
   private boolean mShuttingDown;
 
   /* package */ NetworkingModule(
@@ -154,6 +203,34 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
     mCookieHandler.destroy();
     mCookieJarContainer.removeCookieJar();
+
+    mRequestBodyHandlers.clear();
+    mResponseHandlers.clear();
+    mUriHandlers.clear();
+  }
+
+  public void addUriHandler(UriHandler handler) {
+    mUriHandlers.add(handler);
+  }
+
+  public void addRequestBodyHandler(RequestBodyHandler handler) {
+    mRequestBodyHandlers.add(handler);
+  }
+
+  public void addResponseHandler(ResponseHandler handler) {
+    mResponseHandlers.add(handler);
+  }
+
+  public void removeUriHandler(UriHandler handler) {
+    mUriHandlers.remove(handler);
+  }
+
+  public void removeRequestBodyHandler(RequestBodyHandler handler) {
+    mRequestBodyHandlers.remove(handler);
+  }
+
+  public void removeResponseHandler(ResponseHandler handler) {
+    mResponseHandlers.remove(handler);
   }
 
   @ReactMethod
@@ -170,13 +247,31 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final boolean useIncrementalUpdates,
       int timeout,
       boolean withCredentials) {
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+
+    try {
+      Uri uri = Uri.parse(url);
+
+      // Check if a handler is registered
+      for (UriHandler handler : mUriHandlers) {
+        if (handler.supports(uri, responseType)) {
+          WritableMap res = handler.fetch(uri);
+          ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+          ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+          return;
+        }
+      }
+    } catch (IOException e) {
+      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+      return;
+    }
+
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
     }
 
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
 
     if (!withCredentials) {
@@ -237,8 +332,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     String contentEncoding = requestHeaders.get(CONTENT_ENCODING_HEADER_NAME);
     requestBuilder.headers(requestHeaders);
 
+    // Check if a handler is registered
+    RequestBodyHandler handler = null;
+    if (data != null) {
+      for (RequestBodyHandler curHandler : mRequestBodyHandlers) {
+        if (curHandler.supports(data)) {
+          handler = curHandler;
+          break;
+        }
+      }
+    }
+
     if (data == null) {
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
+    } else if (handler != null) {
+      RequestBody requestBody = handler.toRequestBody(data, contentType);
+      requestBuilder.method(method, requestBody);
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -360,6 +469,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
             ResponseBody responseBody = response.body();
             try {
+              // Check if a handler is registered
+              for (ResponseHandler handler : mResponseHandlers) {
+                if (handler.supports(responseType)) {
+                  WritableMap res = handler.toResponseData(responseBody);
+                  ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+                  ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                  return;
+                }
+              }
+
               // If JS wants progress updates during the download, and it requested a text response,
               // periodically send response data updates to JS.
               if (useIncrementalUpdates && responseType.equals("text")) {

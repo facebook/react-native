@@ -10,6 +10,22 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 
+@protocol RCTNetworkingRequestHandler <NSObject>
+
+// @lint-ignore FBOBJCUNTYPEDCOLLECTION1
+- (BOOL)canHandleNetworkingRequest:(NSDictionary *)data;
+// @lint-ignore FBOBJCUNTYPEDCOLLECTION1
+- (NSDictionary *)handleNetworkingRequest:(NSDictionary *)data;
+
+@end
+
+@protocol RCTNetworkingResponseHandler <NSObject>
+
+- (BOOL)canHandleNetworkingResponse:(NSString *)responseType;
+- (id)handleNetworkingResponse:(NSURLResponse *)response data:(NSData *)data;
+
+@end
+
 @interface RCTNetworking : RCTEventEmitter
 
 /**
@@ -23,6 +39,14 @@
  */
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                            completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+
+- (void)addRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
+
+- (void)addResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
+
+- (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
+
+- (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
 
 @end
 

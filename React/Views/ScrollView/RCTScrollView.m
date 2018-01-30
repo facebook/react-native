@@ -419,7 +419,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, UIUserInterfaceLayoutDirection layoutDirection) {
+static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, UIUserInterfaceLayoutDirection layoutDirection) {
   view.transform =
     layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
       CGAffineTransformIdentity :
@@ -430,8 +430,8 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
 {
   [super setReactLayoutDirection:layoutDirection];
 
-  RCTApplyTranformationAccordingLayoutDirection(_scrollView, layoutDirection);
-  RCTApplyTranformationAccordingLayoutDirection(_contentView, layoutDirection);
+  RCTApplyTransformationAccordingLayoutDirection(_scrollView, layoutDirection);
+  RCTApplyTransformationAccordingLayoutDirection(_contentView, layoutDirection);
 }
 
 - (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
@@ -450,7 +450,7 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   {
     RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
     _contentView = view;
-    RCTApplyTranformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
+    RCTApplyTransformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
     [_scrollView addSubview:view];
   }
 }
