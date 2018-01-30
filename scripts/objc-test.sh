@@ -82,7 +82,7 @@ xcodebuild \
   -sdk $SDK \
   -destination "$DESTINATION" \
   build test \
-  | xcpretty --report junit --output ~/reports/junit
+  | xcpretty --report junit --output ~/reports/junit/objc-xcodebuild-results.xml
 
 else
 
@@ -95,6 +95,6 @@ xcodebuild \
   -scheme $SCHEME \
   -sdk $SDK \
   build \
-  | xcpretty --report junit --output ~/reports/junit
+  | xcpretty --report junit --output ~/reports/junit/objc-xcodebuild-results.xml
 
 fi
