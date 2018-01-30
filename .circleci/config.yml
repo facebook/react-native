@@ -278,6 +278,10 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-ios.sh
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs unit tests on tvOS devices
   test-objc-tvos:
@@ -295,6 +299,10 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-tvos.sh
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs end to end tests
   test-objc-e2e:

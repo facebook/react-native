@@ -81,7 +81,8 @@ xcodebuild \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
-  build test
+  build test \
+  | xcpretty --report junit --output ~/reports/junit
 
 else
 
@@ -93,6 +94,7 @@ xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
-  build
+  build \
+  | xcpretty --report junit --output ~/reports/junit
 
 fi
