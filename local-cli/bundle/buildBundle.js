@@ -52,6 +52,7 @@ async function buildBundle(
     assetsDest: mixed,
     entryFile: string,
     maxWorkers: number,
+    minify: ?boolean,
     resetCache: boolean,
     transformer: string,
   },
@@ -71,7 +72,7 @@ async function buildBundle(
     entryFile: args.entryFile,
     sourceMapUrl,
     dev: args.dev,
-    minify: !args.dev,
+    minify: args.minify != null ? args.minify : !args.dev,
     platform: args.platform,
   };
 
