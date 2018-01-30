@@ -525,8 +525,8 @@ public class ReactEditText extends EditText {
 
   @Override
   protected boolean verifyDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
@@ -539,8 +539,8 @@ public class ReactEditText extends EditText {
 
   @Override
   public void invalidateDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
@@ -554,8 +554,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onDetachedFromWindow();
@@ -566,8 +566,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onStartTemporaryDetach();
@@ -578,8 +578,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onAttachedToWindow();
@@ -590,8 +590,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text =  getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onFinishTemporaryDetach();

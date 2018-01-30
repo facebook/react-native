@@ -57,6 +57,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         // support setting custom switch text, this is fine, as all switches will measure the same
         // on a specific device/theme/locale combination.
         ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
+        reactSwitch.setShowText(false);
         final int spec = View.MeasureSpec.makeMeasureSpec(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             View.MeasureSpec.UNSPECIFIED);

@@ -9,6 +9,10 @@
 
 #import "RCTBaseTextInputViewManager.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RCTMultilineTextInputViewManager : RCTBaseTextInputViewManager
 
 @end
+
+NS_ASSUME_NONNULL_END

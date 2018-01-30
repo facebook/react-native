@@ -166,7 +166,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTBlob" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/Blob/*.{h,m}"
+    ss.source_files         = "Libraries/Blob/*.{h,m,mm}"
     ss.preserve_paths       = "Libraries/Blob/*.js"
   end
 

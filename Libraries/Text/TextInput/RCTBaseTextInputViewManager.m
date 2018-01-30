@@ -9,31 +9,36 @@
 
 #import "RCTBaseTextInputViewManager.h"
 
+#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUIManagerObserverCoordinator.h>
 
-#import "RCTConvert+Text.h"
+#import "RCTBaseTextInputShadowView.h"
 #import "RCTBaseTextInputView.h"
+#import "RCTConvert+Text.h"
+
+@interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
+
+@end
 
 @implementation RCTBaseTextInputViewManager
+{
+  NSHashTable<RCTBaseTextInputShadowView *> *_shadowViews;
+}
 
 RCT_EXPORT_MODULE()
 
 #pragma mark - Unified <TextInput> properties
 
-RCT_REMAP_VIEW_PROPERTY(allowFontScaling, fontAttributes.allowFontScaling, BOOL)
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, backedTextInputView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UITextAutocorrectionType)
-RCT_REMAP_VIEW_PROPERTY(color, backedTextInputView.textColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(editable, backedTextInputView.editable, BOOL)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, backedTextInputView.enablesReturnKeyAutomatically, BOOL)
-RCT_REMAP_VIEW_PROPERTY(fontSize, fontAttributes.fontSize, NSNumber)
-RCT_REMAP_VIEW_PROPERTY(fontWeight, fontAttributes.fontWeight, NSString)
-RCT_REMAP_VIEW_PROPERTY(fontStyle, fontAttributes.fontStyle, NSString)
-RCT_REMAP_VIEW_PROPERTY(fontFamily, fontAttributes.fontFamily, NSString)
 RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboardAppearance, UIKeyboardAppearance)
 RCT_REMAP_VIEW_PROPERTY(keyboardType, backedTextInputView.keyboardType, UIKeyboardType)
 RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
@@ -42,26 +47,74 @@ RCT_REMAP_VIEW_PROPERTY(returnKeyType, backedTextInputView.returnKeyType, UIRetu
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType)
-RCT_REMAP_VIEW_PROPERTY(textAlign, backedTextInputView.textAlignment, NSTextAlignment)
+RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
+RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
-RCT_EXPORT_VIEW_PROPERTY(text, NSString)
+
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
+RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
+RCT_EXPORT_SHADOW_PROPERTY(placeholder, NSString)
+RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
+
+
+- (RCTShadowView *)shadowView
 {
-  NSNumber *reactTag = shadowView.reactTag;
-  UIEdgeInsets borderAsInsets = shadowView.borderAsInsets;
-  UIEdgeInsets paddingAsInsets = shadowView.paddingAsInsets;
-  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTBaseTextInputView *> *viewRegistry) {
-    RCTBaseTextInputView *view = viewRegistry[reactTag];
-    view.reactBorderInsets = borderAsInsets;
-    view.reactPaddingInsets = paddingAsInsets;
-  };
+  RCTBaseTextInputShadowView *shadowView = [[RCTBaseTextInputShadowView alloc] initWithBridge:self.bridge];
+  shadowView.textAttributes.fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+  [_shadowViews addObject:shadowView];
+  return shadowView;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  [super setBridge:bridge];
+
+  _shadowViews = [NSHashTable weakObjectsHashTable];
+
+  [bridge.uiManager.observerCoordinator addObserver:self];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleDidUpdateMultiplierNotification)
+                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                             object:bridge.accessibilityManager];
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - RCTUIManagerObserver
+
+- (void)uiManagerWillPerformMounting:(__unused RCTUIManager *)uiManager
+{
+  for (RCTBaseTextInputShadowView *shadowView in _shadowViews) {
+    [shadowView uiManagerWillPerformMounting];
+  }
+}
+
+#pragma mark - Font Size Multiplier
+
+- (void)handleDidUpdateMultiplierNotification
+{
+  CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+
+  for (RCTBaseTextInputShadowView *shadowView in _shadowViews) {
+    shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
+    [shadowView dirtyLayout];
+  }
+
+  [self.bridge.uiManager setNeedsLayout];
 }
 
 @end

@@ -9,13 +9,13 @@
 
 package com.facebook.react.modules.network;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Util methods to send network responses to JS.
@@ -68,6 +68,17 @@ public class ResponseUtil {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(data);
+
+    eventEmitter.emit("didReceiveNetworkData", args);
+  }
+
+  public static void onDataReceived(
+    RCTDeviceEventEmitter eventEmitter,
+    int requestId,
+    WritableMap data) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushMap(data);
 
     eventEmitter.emit("didReceiveNetworkData", args);
   }

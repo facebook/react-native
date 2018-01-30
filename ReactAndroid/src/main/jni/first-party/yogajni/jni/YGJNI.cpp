@@ -158,8 +158,9 @@ static int YGJNILogFunc(const YGConfigRef config,
                         YGLogLevel level,
                         const char *format,
                         va_list args) {
-  char buffer[256];
-  int result = vsnprintf(buffer, sizeof(buffer), format, args);
+  int result = vsnprintf(NULL, 0, format, args);
+  std::vector<char> buffer(1 + result);
+  vsnprintf(buffer.data(), buffer.size(), format, args);
 
   static auto logFunc =
       findClassStatic("com/facebook/yoga/YogaLogger")
@@ -170,10 +171,12 @@ static int YGJNILogFunc(const YGConfigRef config,
 
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     auto jlogger = reinterpret_cast<global_ref<jobject> *>(YGConfigGetContext(config));
-    logFunc(jlogger->get(),
-            obj,
-            logLevelFromInt(JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
-            Environment::current()->NewStringUTF(buffer));
+    logFunc(
+        jlogger->get(),
+        obj,
+        logLevelFromInt(
+            JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
+        Environment::current()->NewStringUTF(buffer.data()));
   }
 
   return result;

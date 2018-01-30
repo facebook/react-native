@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTUITextView : UITextView <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithFrame:(CGRect)frame textContainer:(nullable NSTextContainer *)textContainer NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 

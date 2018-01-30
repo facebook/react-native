@@ -9,6 +9,8 @@
 
 #import <React/RCTViewManager.h>
 
-@interface RCTTextViewManager : RCTViewManager
+#import "RCTBaseTextViewManager.h"
+
+@interface RCTTextViewManager : RCTBaseTextViewManager
 
 @end

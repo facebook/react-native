@@ -30,6 +30,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
+import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
@@ -123,6 +124,14 @@ public class MainReactPackage extends LazyReactPackage {
               @Override
               public NativeModule get() {
                 return new BlobModule(context);
+              }
+            }),
+        ModuleSpec.nativeModuleSpec(
+            FileReaderModule.class,
+            new Provider<NativeModule>() {
+              @Override
+              public NativeModule get() {
+                return new FileReaderModule(context);
               }
             }),
         ModuleSpec.nativeModuleSpec(
