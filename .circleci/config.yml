@@ -89,8 +89,6 @@ aliases:
 
   - &run-js-tests
     name: JavaScript Test Suite
-    environment:
-      JEST_JUNIT_OUTPUT: "~/reports/junit/js-test-results.xml"
     command: yarn test-ci
     
   - &run-lint-checks
@@ -185,11 +183,15 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      mkdir -p ~/reports/junit/
       find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/reports/junit/ \;
       find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/reports/junit/ \;
       find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/reports/junit/ \;
     when: always
+
+  - &setup-artifacts
+    name: Initial Setup
+    command: | 
+      mkdir -p ~/reports/junit/
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -216,6 +218,8 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -229,6 +233,8 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts      
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -245,6 +251,8 @@ jobs:
       - image: circleci/node:6
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -264,6 +272,8 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -279,6 +289,8 @@ jobs:
         - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -294,6 +306,8 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -306,6 +320,8 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -316,6 +332,7 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
+      - run: *setup-artifacts
 
       # Configure Android dependencies
       - run: *configure-android-path
@@ -360,7 +377,8 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
-      
+      - run: *setup-artifacts
+
       # Configure Android dependencies
       - run: *configure-android-path
       - run: *install-build-dependencies
@@ -420,6 +438,8 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-cache-analysis
       - run: *yarn
       - run:
@@ -446,12 +466,13 @@ jobs:
           name: Analyze Code
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js              
+              cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+              yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
             else
               echo "Skipping code analysis."            
             fi
           when: always
-      - run: yarn --silent lint --format junit -o ~/reports/junit/js-lint-results.xml
+      - run: yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
