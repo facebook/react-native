@@ -81,11 +81,11 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        addtionalStyles: typeof StyleSheet,
+        additionalStyles: typeof StyleSheet,
       ) {
         let _scrollView: ScrollView;
         return (
-          <View style={addtionalStyles}>
+          <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
             <ScrollView
               ref={scrollView => {

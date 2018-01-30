@@ -82,8 +82,8 @@ class InspectorPanel extends React.Component<$FlowFixMeProps> {
             onClick={this.props.setNetworking}
           />
           <Button title={'Touchables'}
-            pressed={this.props.touchTargetting}
-            onClick={this.props.setTouchTargetting}
+            pressed={this.props.touchTargeting}
+            onClick={this.props.setTouchTargeting}
           />
         </View>
       </View>
@@ -98,8 +98,8 @@ InspectorPanel.propTypes = {
   inspected: PropTypes.object,
   perfing: PropTypes.bool,
   setPerfing: PropTypes.func,
-  touchTargetting: PropTypes.bool,
-  setTouchTargetting: PropTypes.func,
+  touchTargeting: PropTypes.bool,
+  setTouchTargeting: PropTypes.func,
   networking: PropTypes.bool,
   setNetworking: PropTypes.func,
 };
