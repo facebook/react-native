@@ -31,6 +31,7 @@ public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
   private static @Nullable OkHttpClient sClient;
+  private static @Nullable OkHttpClient.Builder sClientBuilder;
 
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
@@ -38,22 +39,37 @@ public class OkHttpClientProvider {
     }
     return sClient;
   }
-  
-  // okhttp3 OkHttpClient is immutable
-  // This allows app to init an OkHttpClient with custom settings.
+
+  /**
+   * okhttp3 OkHttpClient is immutable
+   * This allows app to init an OkHttpClient with custom settings.
+   * @deprecated Use {@link #replaceOkHttpClientBuilder(OkHttpClient.Builder)} instead.
+   */
+  @Deprecated
   public static void replaceOkHttpClient(OkHttpClient client) {
     sClient = client;
   }
 
-  public static OkHttpClient createClient() {
-    // No timeouts by default
-    OkHttpClient.Builder client = new OkHttpClient.Builder()
-      .connectTimeout(0, TimeUnit.MILLISECONDS)
-      .readTimeout(0, TimeUnit.MILLISECONDS)
-      .writeTimeout(0, TimeUnit.MILLISECONDS)
-      .cookieJar(new ReactCookieJarContainer());
+  /**
+   * Replace the builder used by {@link #createClient()}
+   */
+  public static void replaceOkHttpClientBuilder(OkHttpClient.Builder builder) {
+    sClientBuilder = builder;
+  }
 
-    return enableTls12OnPreLollipop(client).build();
+  public static OkHttpClient createClient() {
+    if (sClientBuilder != null) {
+      return sClientBuilder.build();
+    } else {
+      // No timeouts by default
+      OkHttpClient.Builder client = new OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar(new ReactCookieJarContainer());
+
+      return enableTls12OnPreLollipop(client).build();
+    }
   }
 
   /*
