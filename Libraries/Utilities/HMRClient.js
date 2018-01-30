@@ -15,6 +15,7 @@
 const Platform = require('Platform');
 const invariant = require('fbjs/lib/invariant');
 
+// $FlowFixMe
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HmrClient');
 
 /**
