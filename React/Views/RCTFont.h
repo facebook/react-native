@@ -11,6 +11,16 @@
 
 #import <React/RCTConvert.h>
 
+typedef UIFont *(^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescription);
+
+/**
+ * React Native will use the System font for rendering by default. If you want to
+ * provide a different base font, use this override. The font weight supplied to your
+ * handler will be one of "ultralight", "thin", "light", "regular", "medium",
+ * "semibold", "extrabold", "bold", "heavy", or "black".
+ */
+RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
+
 @interface RCTFont : NSObject
 
 /**
