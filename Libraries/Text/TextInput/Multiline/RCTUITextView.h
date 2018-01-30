@@ -31,6 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
 
+// The `clearButtonMode` property actually is not supported yet;
+// it's declared here only to conform to the interface.
+@property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+
 @end
 
 NS_ASSUME_NONNULL_END

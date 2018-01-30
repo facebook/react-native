@@ -34,7 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
-    hasteImpl: config.hasteImpl,
+    hasteImplModulePath: config.hasteImplModulePath,
     postMinifyProcess: config.postMinifyProcess,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
