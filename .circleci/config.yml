@@ -445,7 +445,7 @@ jobs:
       - run:
           name: Install Additional Dependencies
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               yarn add github@0.2.4
               cd danger
               yarn install --non-interactive --cache-folder ~/.cache/yarn
@@ -456,11 +456,12 @@ jobs:
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
             else
               echo "Skipping pull request analysis."            
             fi
+          background: true
           when: always
       - run:
           name: Analyze Code
@@ -471,8 +472,8 @@ jobs:
             else
               echo "Skipping code analysis."            
             fi
+          background: true
           when: always
-      - run: yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
