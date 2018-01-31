@@ -7,6 +7,25 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "./detox/runner_config.json",
+    "specs": "RNTester",
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "./build/Build/Products/Debug-iphonesimulator/RNTester.app",
+        "build": "xcodebuild -project ./RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath build",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      },
+      "ios.sim.release": {
+        "binaryPath": "./build/Build/Products/Release-iphonesimulator/RNTester.app",
+        "build": "xcodebuild -project ./RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath build",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      }
+    }
+  },
   "engines": {
     "node": ">=8"
   },
@@ -31,6 +50,7 @@
       "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
     "testPathIgnorePatterns": [
+      "__e2e__",
       "Libraries/Renderer",
       "/node_modules/",
       "local-cli/templates/"
@@ -137,7 +157,8 @@
     "test-android-all": "yarn run docker-build-android && yarn run test-android-run-unit && yarn run test-android-run-instrumentation && yarn run test-android-run-e2e",
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
-    "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e"
+    "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
+    "test-ios-e2e": "detox build -c ios.sim.release && detox test -c ios.sim.release"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -205,6 +226,7 @@
     "async": "^2.4.0",
     "babel-eslint": "8.2.1",
     "babel-generator": "^6.26.0",
+    "detox": "^7.3.7",
     "eslint": "4.17.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
