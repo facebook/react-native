@@ -88,8 +88,8 @@ aliases:
       sudo apt-get install -y nodejs
 
   - &run-js-tests
-    |
-      yarn test --maxWorkers=2
+    name: JavaScript Test Suite
+    command: yarn test-ci
     
   - &run-lint-checks
     |
@@ -183,10 +183,15 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      mkdir -p ~/junit/
-      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/junit/ \;
-      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/junit/ \;
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/reports/junit/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/reports/junit/ \;
+      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/reports/junit/ \;
     when: always
+
+  - &setup-artifacts
+    name: Initial Setup
+    command: | 
+      mkdir -p ~/reports/junit/
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -213,6 +218,8 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -226,10 +233,16 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts      
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: *run-js-tests
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs JavaScript tests on Node 6
   test-js-node-6:
@@ -238,10 +251,16 @@ jobs:
       - image: circleci/node:6
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: *run-js-tests
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs unit tests on iOS devices
   test-objc-ios:
@@ -253,10 +272,16 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-ios.sh
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs unit tests on tvOS devices
   test-objc-tvos:
@@ -268,10 +293,16 @@ jobs:
         - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
       - run: ./scripts/objc-test-tvos.sh
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs end to end tests
   test-objc-e2e:
@@ -283,6 +314,8 @@ jobs:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -295,6 +328,8 @@ jobs:
       xcode: "9.0"
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -305,6 +340,7 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
+      - run: *setup-artifacts
 
       # Configure Android dependencies
       - run: *configure-android-path
@@ -349,7 +385,8 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
-      
+      - run: *setup-artifacts
+
       # Configure Android dependencies
       - run: *configure-android-path
       - run: *install-build-dependencies
@@ -399,9 +436,9 @@ jobs:
       # post (always runs)
       - run: *collect-android-test-results
       - store_test_results:
-          path: ~/junit
+          path: ~/reports/junit
       - store_artifacts:
-          path: ~/junit
+          path: ~/reports/junit
 
   analyze-pull-request:
     <<: *defaults
@@ -409,12 +446,14 @@ jobs:
       - image: circleci/node:8
     steps:
       - checkout
+      - run: *setup-artifacts
+
       - restore-cache: *restore-cache-analysis
       - run: *yarn
       - run:
           name: Install Additional Dependencies
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               yarn add github@0.2.4
               cd danger
               yarn install --non-interactive --cache-folder ~/.cache/yarn
@@ -425,22 +464,29 @@ jobs:
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PULL_REQUEST" ]; then
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
             else
               echo "Skipping pull request analysis."            
             fi
+          background: true
           when: always
       - run:
           name: Analyze Code
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+              yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
             else
               echo "Skipping code analysis."            
             fi
+          background: true
           when: always
-          
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
