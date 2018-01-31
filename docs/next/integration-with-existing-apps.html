@@ -571,7 +571,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
 <blockquote>
 <p>A <code>ReactInstanceManager</code> can be shared by multiple activities and/or fragments. You will want to make your own <code>ReactFragment</code> or <code>ReactActivity</code> and have a singleton <em>holder</em> that holds a <code>ReactInstanceManager</code>. When you need the <code>ReactInstanceManager</code> (e.g., to hook up the <code>ReactInstanceManager</code> to the lifecycle of those Activities or Fragments) use the one provided by the singleton.</p>
 </blockquote>
-<p>Next, we need to pass some activity lifecycle callbacks to the <code>ReactInstanceManager</code>:</p>
+<p>Next, we need to pass some activity lifecycle callbacks to the <code>ReactInstanceManager</code> and <code>ReactRootView</code>:</p>
 <pre><code class="hljs css java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onPause</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">super</span>.onPause();
@@ -596,6 +596,9 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
 
     <span class="hljs-keyword">if</span> (mReactInstanceManager != <span class="hljs-keyword">null</span>) {
         mReactInstanceManager.onHostDestroy(<span class="hljs-keyword">this</span>);
+    }
+    <span class="hljs-keyword">if</span> (mReactRootView != <span class="hljs-keyword">null</span>) {
+        mReactRootView.unmountReactApplication();
     }
 }
 </code></pre>
