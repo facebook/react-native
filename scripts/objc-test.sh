@@ -94,7 +94,6 @@ xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
-  build \
-  | xcpretty --report junit --output ~/reports/junit/objc-xcodebuild-results.xml
+  build
 
 fi
