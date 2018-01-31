@@ -184,7 +184,7 @@ function getPackagerServer(args, config, reporter) {
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     globalTransformCache: null,
-    hasteImpl: config.hasteImpl,
+    hasteImplModulePath: config.hasteImplModulePath,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),

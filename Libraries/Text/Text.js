@@ -22,6 +22,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
+const UIManager = require('UIManager');
 
 const createReactClass = require('create-react-class');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
@@ -333,7 +334,7 @@ var RCTText = createReactNativeComponentClass(
 );
 var RCTVirtualText = RCTText;
 
-if (Platform.OS === 'android') {
+if (UIManager.RCTVirtualText) {
   RCTVirtualText = createReactNativeComponentClass('RCTVirtualText', () => ({
     validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
