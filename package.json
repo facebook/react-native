@@ -161,7 +161,7 @@
     "commander": "^2.9.0",
     "compression": "^1.7.1",
     "connect": "^3.6.5",
-    "create-react-class": "^15.5.2",
+    "create-react-class": "^15.6.3",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
     "envinfo": "^3.0.0",
