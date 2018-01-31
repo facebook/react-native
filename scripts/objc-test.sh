@@ -81,7 +81,8 @@ xcodebuild \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
-  build test
+  build test \
+  | xcpretty --report junit --output ~/reports/junit/objc-xcodebuild-results.xml
 
 else
 

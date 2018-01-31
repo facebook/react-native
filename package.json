@@ -123,6 +123,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test-ci": "JEST_JUNIT_OUTPUT=\"~/reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
     "lint": "eslint .",
     "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
@@ -216,6 +217,7 @@
     "eslint-plugin-react": "^7.2.1",
     "flow-bin": "^0.64.0",
     "jest": "22.1.2",
+    "jest-junit": "^3.4.1",
     "prettier": "1.9.1",
     "react": "16.2.0",
     "react-test-renderer": "16.2.0",
