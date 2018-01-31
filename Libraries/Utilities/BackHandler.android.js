@@ -22,7 +22,9 @@ var _backPressSubscriptions = new Set();
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   var invokeDefault = true;
-  var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+  let subscriptions = [];
+  _backPressSubscriptions.forEach(subscription => subscriptions.push(subscription));
+  subscriptions = subscriptions.reverse();
 
   for (var i = 0; i < subscriptions.length; ++i) {
     if (subscriptions[i]()) {
