@@ -12,14 +12,14 @@ aliases:
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
       # Fallback in case checksum fails
       - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
-      - danger/node_modules
+      - bots/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "danger/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
   - &restore-cache-android-packages
     keys:
@@ -455,7 +455,7 @@ jobs:
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               yarn add github@0.2.4
-              cd danger
+              cd bots
               yarn install --non-interactive --cache-folder ~/.cache/yarn
             else
               echo "Skipping dependency installation."            
@@ -465,7 +465,7 @@ jobs:
           name: Analyze Pull Request
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd danger && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
+              cd bots && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
             else
               echo "Skipping pull request analysis."            
             fi
