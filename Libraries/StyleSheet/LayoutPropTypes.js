@@ -449,7 +449,8 @@ var LayoutPropTypes = {
     'flex-end',
     'center',
     'space-between',
-    'space-around'
+    'space-around',
+    'space-evenly'
   ]),
 
   /** `alignItems` aligns children in the cross direction.

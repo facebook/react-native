@@ -67,7 +67,8 @@ export type LayoutStyle<+Dimension = DimensionValue> = {
     | 'flex-end'
     | 'center'
     | 'space-between'
-    | 'space-around',
+    | 'space-around'
+    | 'space-evenly',
   +alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline',
   +alignSelf?:
     | 'auto'
