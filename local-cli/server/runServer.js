@@ -72,6 +72,7 @@ export type Args = {|
   +resetCache: boolean,
   +sourceExts: $ReadOnlyArray<string>,
   +verbose: boolean,
+  +cacheDir: string,
 |};
 
 function runServer(
@@ -197,7 +198,9 @@ function getPackagerServer(args, config, reporter) {
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
-    transformCache: TransformCaching.useTempDir(),
+
+    transformCache: args.cacheDir || TransformCaching.useTempDir(),
+    useDeltaBundler: false,
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),
