@@ -7,6 +7,25 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "./detox/runner_config.json",
+    "specs": "RNTester",
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "./build/Build/Products/Debug-iphonesimulator/RNTester.app",
+        "build": "xcodebuild -project ./RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath build",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      },
+      "ios.sim.release": {
+        "binaryPath": "./build/Build/Products/Release-iphonesimulator/RNTester.app",
+        "build": "xcodebuild -project ./RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath build",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      }
+    }
+  },
   "engines": {
     "node": ">=4"
   },
@@ -31,6 +50,7 @@
       "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
     "testPathIgnorePatterns": [
+      "__e2e__",
       "Libraries/Renderer",
       "/node_modules/",
       "local-cli/templates/"
@@ -134,7 +154,8 @@
     "test-android-all": "npm run test-android-build && npm run test-android-run-unit && npm run test-android-run-instrumentation && npm run test-android-run-e2e",
     "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
     "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
-    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e"
+    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e",
+    "test-ios-e2e": "detox build -c ios.sim.release && detox test -c ios.sim.release"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -200,6 +221,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "detox": "^7.0.1",
     "eslint": "^3.19.0",
     "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",
