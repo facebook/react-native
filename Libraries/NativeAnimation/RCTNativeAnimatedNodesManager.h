@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <RCTAnimation/RCTValueAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
