@@ -286,7 +286,7 @@ public class BundleDownloader {
     return true;
   }
 
-  private boolean storeDeltaInFile(BufferedSource body, File outputFile) throws IOException {
+  private synchronized boolean storeDeltaInFile(BufferedSource body, File outputFile) throws IOException {
 
     JsonReader jsonReader = new JsonReader(new InputStreamReader(body.inputStream()));
 
