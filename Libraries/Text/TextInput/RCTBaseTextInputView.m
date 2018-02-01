@@ -286,12 +286,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
   }
 
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
-                                 reactTag:self.reactTag
-                                     text:backedTextInputView.attributedText.string
-                                      key:nil
-                               eventCount:_nativeEventCount];
-
   return YES;
 }
 
@@ -324,12 +318,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
        @"eventCount": @(_nativeEventCount),
     });
   }
-
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
-                                 reactTag:self.reactTag
-                                     text:backedTextInputView.attributedText.string
-                                      key:nil
-                               eventCount:_nativeEventCount];
 }
 
 - (void)textInputDidChangeSelection
