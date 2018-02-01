@@ -171,6 +171,7 @@ aliases:
   - &build-js-bundle
     name: Build JavaScript Bundle
     command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    when: always
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
