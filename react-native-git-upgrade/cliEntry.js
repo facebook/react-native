@@ -147,6 +147,28 @@ function configureGitEnv(tmpDir) {
   process.env.GIT_WORK_TREE = '.';
 }
 
+function copyCurrentGitIgnoreFile(tmpDir) {
+  /*
+   * The user may have added new files or directories in the .gitignore file.
+   * We need to keep those files ignored during the process, otherwise they
+   * will be deleted.
+   * See https://github.com/facebook/react-native/issues/12237
+   */
+  try {
+    const gitignorePath = path.resolve(process.cwd(), '.gitignore');
+    const repoExcludePath = path.resolve(tmpDir, process.env.GIT_DIR, 'info/exclude');
+    const content = fs.readFileSync(gitignorePath, 'utf8');
+    fs.appendFileSync(repoExcludePath, content);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      log.info('No .gitignore file found, this step is a no-op');
+      return;
+    }
+
+    throw err;
+  }
+}
+
 function generateTemplates(generatorDir, appName, verbose) {
   try {
     const yeomanGeneratorEntryPoint = path.resolve(generatorDir, 'index.js');
@@ -277,8 +299,11 @@ async function run(requestedVersion, cliArgs) {
     log.info('Configure Git environment');
     configureGitEnv(tmpDir);
 
-    log.info('Init Git repository');
+    log.info('Init temporary Git repository');
     await exec('git init', verbose);
+
+    log.info('Save current .gitignore file');
+    copyCurrentGitIgnoreFile(tmpDir);
 
     log.info('Add all files to commit');
     await exec('git add .', verbose);
