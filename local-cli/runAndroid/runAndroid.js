@@ -172,9 +172,12 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, mainActivity) {
+function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, launcherDir, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + mainActivity];
+    var adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + mainActivity];
+    if(launcherDir !== undefined) {
+        adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + launcherDir + '.' + mainActivity];
+    }
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -189,7 +192,7 @@ function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPat
 function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
   tryRunAdbReverse(args.port, selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
+  tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.activityLauncherDir, args.mainActivity);
 }
 
 function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath){
@@ -237,15 +240,21 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(args.port, device);
-        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
+        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.activityLauncherDir,args.mainActivity);
       });
     } else {
       try {
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
-        const fallbackAdbArgs = [
+        var fallbackAdbArgs = [
           'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
         ];
+
+        if(args.activityLauncherDir !== undefined) {
+            const fallbackAdbArgs = [
+                'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + args.activityLauncherDir + '.MainActivity'
+            ];
+        }
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
         ));
@@ -341,5 +350,9 @@ module.exports = {
     command: '--port [number]',
     default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
+  }, {
+    command: '--activityLauncherDir [string]',
+    description: 'Specify an folder for launcher activity.',
+    default: undefined,
   }],
 };
