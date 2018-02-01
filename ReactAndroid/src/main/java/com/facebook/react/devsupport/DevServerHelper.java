@@ -116,9 +116,15 @@ public class DevServerHelper {
   private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
+  private InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
-  public DevServerHelper(DevInternalSettings settings, String packageName) {
+  public DevServerHelper(
+    DevInternalSettings settings,
+    String packageName,
+    InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider
+  ) {
     mSettings = settings;
+    mBundlerStatusProvider = bundleStatusProvider;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
       .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -212,7 +218,11 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        mInspectorPackagerConnection = new InspectorPackagerConnection(
+          getInspectorDeviceUrl(),
+          mPackageName,
+          mBundlerStatusProvider
+        );
         mInspectorPackagerConnection.connect();
         return null;
       }

@@ -104,7 +104,7 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
   sendEventToAllConnections(kDebuggerMsgDisable);
 }
 
-+ (void)connectWithBundleURL:(NSURL *)bundleURL
++ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL
 {
   NSURL *inspectorURL = getInspectorDeviceUrl(bundleURL);
 
@@ -122,6 +122,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
     socketConnections[key] = connection;
     [connection connect];
   }
+
+  return connection;
 }
 
 @end

@@ -47,6 +47,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.InspectorPackagerConnection;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -156,6 +157,8 @@ public class DevSupportManagerImpl implements
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
 
+  private InspectorPackagerConnection.BundleStatus mBundleStatus;
+
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
       MediaType.parse("application/json; charset=utf-8");
@@ -217,7 +220,17 @@ public class DevSupportManagerImpl implements
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
+    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
+    mDevServerHelper = new DevServerHelper(
+      mDevSettings,
+      mApplicationContext.getPackageName(),
+      new InspectorPackagerConnection.BundleStatusProvider() {
+        @Override
+        public InspectorPackagerConnection.BundleStatus getBundleStatus() {
+          return mBundleStatus;
+        }
+      }
+    );
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -1032,6 +1045,10 @@ public class DevSupportManagerImpl implements
           public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            synchronized (DevSupportManagerImpl.this) {
+              mBundleStatus.isLastDownloadSucess = true;
+              mBundleStatus.updateTimestamp = System.currentTimeMillis();
+            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -1057,6 +1074,9 @@ public class DevSupportManagerImpl implements
           public void onFailure(final Exception cause) {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            synchronized (DevSupportManagerImpl.this) {
+              mBundleStatus.isLastDownloadSucess = false;
+            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
