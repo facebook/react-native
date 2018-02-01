@@ -206,9 +206,13 @@ aliases:
     name: Objective-C tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh
 
-  - &run-objc-e2e-tests
-    name: Objective-C End-to-End Test Suite
+  - &run-objc-ios-e2e-tests
+    name: Objective-C iOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+  - &run-objc-tvos-e2e-tests
+    name: Objective-C tvOS End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -337,7 +341,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs end to end tests
-  test-objc-e2e:
+  test-e2e-objc-ios:
     <<: *defaults
     macos:
       xcode: "9.0"
@@ -352,7 +356,7 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      - run: *run-objc-e2e-tests
+      - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
           path: ~/reports/junit
@@ -546,8 +550,13 @@ workflows:
           filters: *filter-ignore-gh-pages
       - test-objc-tvos:
           filters: *filter-ignore-gh-pages
-      - test-objc-e2e:
+
+      # End-to-end tests
+      - test-e2e-objc-ios:
           filters: *filter-ignore-gh-pages
+          requires:
+            - test-objc-ios
+            - test-js-node-8
     
       # If we are on a stable branch, deploy to `npm`
       - hold:
