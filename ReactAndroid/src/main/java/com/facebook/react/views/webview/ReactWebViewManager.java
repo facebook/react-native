@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
+import android.util.Log;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -359,6 +359,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @Override
   protected WebView createViewInstance(ThemedReactContext reactContext) {
+    Log.e("Logged", "createViewInstance");
     ReactWebView webView = createReactWebViewInstance(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
       @Override
@@ -601,6 +602,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   public void onDropViewInstance(WebView webView) {
     super.onDropViewInstance(webView);
+    Log.e("LOGGED", "onDropViewInstance");
     ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }

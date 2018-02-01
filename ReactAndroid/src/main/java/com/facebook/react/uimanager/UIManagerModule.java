@@ -14,6 +14,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
+import android.util.Log;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -134,6 +136,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
             minTimeLeftInFrameForNonBatchedOperationMs);
 
     reactContext.addLifecycleEventListener(this);
+
   }
 
   public UIManagerModule(
@@ -355,6 +358,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    Log.e("LOgging", "createView");
     if (DEBUG) {
       String message =
           "(UIManager.createView) tag: " + tag + ", class: " + className + ", props: " + props;
@@ -366,6 +370,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
+    Log.e("LOgging", "updateView");
     if (DEBUG) {
       String message =
           "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props;
@@ -650,6 +655,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   @Override
   public void onBatchComplete() {
+    Log.e("LOGGING", "onBatchComplete");
     int batchId = mBatchId;
     mBatchId++;
 
