@@ -19,12 +19,9 @@ export type Layout = {|
   +width: number,
   +height: number,
 |};
-export type LayoutEvent = {|
-  +nativeEvent: {|
-    +layout: Layout,
-  |},
-  +persist: () => void,
-|};
+export type LayoutEvent = SyntheticEvent<{|
+  +layout: Layout,
+|}>;
 
 export type SyntheticEvent<T> = {|
   +bubbles: ?boolean,
@@ -39,6 +36,7 @@ export type SyntheticEvent<T> = {|
   +isPropagationStopped: () => boolean,
   +isTrusted: ?boolean,
   +nativeEvent: T,
+  +persist: () => void,
   +target: ?number,
   +timeStamp: number,
   +type: ?string,
