@@ -33,7 +33,7 @@
 <p>Warnings will be displayed on screen with a yellow background. These alerts are known as YellowBoxes. Click on the alerts to show more information or to dismiss them.</p>
 <p>As with a RedBox, you can use <code>console.warn()</code> to trigger a YellowBox.</p>
 <p>YellowBoxes can be disabled during development by using <code>console.disableYellowBox = true;</code>. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored:</p>
-<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { YellowBox } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> {YellowBox} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 YellowBox.ignoreWarnings([<span class="hljs-string">'Warning: ...'</span>]);
 </code></pre>
 <p>In CI/Xcode, YellowBoxes can also be disabled by setting the <code>IS_TESTING</code> environment variable.</p>
