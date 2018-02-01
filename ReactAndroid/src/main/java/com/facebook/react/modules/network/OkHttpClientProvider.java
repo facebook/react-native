@@ -79,7 +79,7 @@ public class OkHttpClientProvider {
         client.sslSocketFactory(new TLSSocketFactory());
 
         ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_2)
+                .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
                 .build();
 
         List<ConnectionSpec> specs = new ArrayList<>();
