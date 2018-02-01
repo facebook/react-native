@@ -65,16 +65,16 @@ public class OkHttpClientProvider {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
 
-    return enableTls12OnPreLollipop(client);
+    return enableTls12OnLollipopAndBelow(client).build();
   }
 
   /*
-    On Android 4.1-4.4 (API level 16 to 19) TLS 1.1 and 1.2 are
+    On Android 4.1-5.0 (API level 16 to 21) TLS 1.1 and 1.2 are
     available but not enabled by default. The following method
     enables it.
    */
-  public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+  public static OkHttpClient.Builder enableTls12OnLollipopAndBelow(OkHttpClient.Builder client) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
       try {
         client.sslSocketFactory(new TLSSocketFactory());
 
