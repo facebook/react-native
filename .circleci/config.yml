@@ -1,4 +1,5 @@
 aliases:
+  # Cache Management
   - &restore-yarn-cache
     keys:
       - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
@@ -34,11 +35,6 @@ aliases:
   - &restore-cache-ndk
     keys:
       - v1-android-ndk-{{ arch }}-r10e-32-64
-
-  - &install-ndk
-    |
-      source scripts/circle-ci-android-setup.sh && getAndroidNDK
-
   - &save-cache-ndk
     paths:
       - /opt/ndk
@@ -59,6 +55,34 @@ aliases:
     paths:
       - ~/watchman
     key: v1-watchman-{{ arch }}-v4.9.0
+
+  # Branch Filtering
+  - &filter-only-master-stable
+    branches:
+      only:
+        - /.*-stable/
+        - master
+
+  - &filter-only-stable
+    branches:
+      only:
+        - /.*-stable/
+
+  - &filter-ignore-gh-pages
+    branches:
+      ignore: gh-pages
+
+  - &filter-ignore-master-stable
+    branches:
+      ignore:
+        - master
+        - /.*-stable/
+        - gh-pages
+
+  # Dependency Management
+  - &install-ndk
+    |
+      source scripts/circle-ci-android-setup.sh && getAndroidNDK
 
   - &yarn
     |
@@ -87,40 +111,6 @@ aliases:
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
 
-  - &run-js-tests
-    name: JavaScript Test Suite
-    command: yarn test-ci
-    
-  - &run-lint-checks
-    |
-      yarn lint
-
-  - &run-flow-checks
-    |
-      yarn flow check
-
-  - &filter-only-master-stable
-    branches:
-      only:
-        - /.*-stable/
-        - master
-
-  - &filter-only-stable
-    branches:
-      only:
-        - /.*-stable/
-
-  - &filter-ignore-gh-pages
-    branches:
-      ignore: gh-pages
-
-  - &filter-ignore-master-stable
-    branches:
-      ignore:
-        - master
-        - /.*-stable/
-        - gh-pages
-
   - &create-ndk-directory
     |
       if [[ ! -e /opt/ndk ]]; then
@@ -143,6 +133,21 @@ aliases:
     |
       sudo apt-get update -y
       sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+
+  # Test Definitions
+  - &run-js-tests
+    name: JavaScript Test Suite
+    command: yarn test-ci
+    
+  - &run-lint-checks
+    name: Lint code
+    command: yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
+    when: always
+
+  - &run-flow-checks
+    name: Check for errors in code using Flow
+    command: yarn flow check
+    when: always
 
   - &build-android-app
     name: Build Android App
@@ -193,6 +198,22 @@ aliases:
     command: | 
       mkdir -p ~/reports/junit/
 
+  - &run-objc-ios-tests
+    name: Objective-C iOS Test Suite
+    command: ./scripts/objc-test-ios.sh
+
+  - &run-objc-tvos-tests
+    name: Objective-C tvOS Test Suite
+    command: ./scripts/objc-test-tvos.sh
+
+  - &run-objc-ios-e2e-tests
+    name: Objective-C iOS End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+  - &run-objc-tvos-e2e-tests
+    name: Objective-C tvOS End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+
 defaults: &defaults
   working_directory: ~/react-native
 
@@ -211,7 +232,8 @@ android_defaults: &android_defaults
 
 version: 2
 jobs:
-  # Runs JavaScript lint and flow checks
+  # Runs JavaScript lint and flow checks.
+  # Currently will fail a PR if lint/flow raises issues.
   run-js-checks:
     <<: *defaults
     docker:
@@ -223,8 +245,14 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
+
       - run: *run-lint-checks
       - run: *run-flow-checks
+
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Runs JavaScript tests on Node 8
   test-js-node-8:
@@ -238,7 +266,9 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
+
       - run: *run-js-tests
+
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
@@ -256,7 +286,9 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
+
       - run: *run-js-tests
+
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
@@ -277,7 +309,9 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - run: ./scripts/objc-test-ios.sh
+
+      - run: *run-objc-ios-tests
+
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
@@ -298,14 +332,16 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - run: ./scripts/objc-test-tvos.sh
+
+      - run: *run-objc-tvos-tests
+
       - store_test_results:
           path: ~/reports/junit
       - store_artifacts:
           path: ~/reports/junit
 
   # Runs end to end tests
-  test-objc-e2e:
+  test-e2e-objc-ios:
     <<: *defaults
     macos:
       xcode: "9.0"
@@ -319,7 +355,13 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - run: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+
+      - run: *run-objc-ios-e2e-tests
+
+      - store_test_results:
+          path: ~/reports/junit
+      - store_artifacts:
+          path: ~/reports/junit
 
   # Checks podspec
   test-podspec:
@@ -440,13 +482,15 @@ jobs:
       - store_artifacts:
           path: ~/reports/junit
 
+  # Analyze pull request and raise any lint/flow issues.
+  # Issues will be posted to the PR itself via GitHub bots.
+  # This workflow should only fail if the bots fail to run.
   analyze-pull-request:
     <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
       - checkout
-      - run: *setup-artifacts
 
       - restore-cache: *restore-cache-analysis
       - run: *yarn
@@ -469,23 +513,16 @@ jobs:
             else
               echo "Skipping pull request analysis."            
             fi
-          background: true
           when: always
       - run:
           name: Analyze Code
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
-              yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
             else
               echo "Skipping code analysis."            
             fi
-          background: true
           when: always
-      - store_test_results:
-          path: ~/reports/junit
-      - store_artifacts:
-          path: ~/reports/junit
 
 # Workflows enables us to run multiple jobs in parallel
 workflows:
@@ -513,8 +550,13 @@ workflows:
           filters: *filter-ignore-gh-pages
       - test-objc-tvos:
           filters: *filter-ignore-gh-pages
-      - test-objc-e2e:
+
+      # End-to-end tests
+      - test-e2e-objc-ios:
           filters: *filter-ignore-gh-pages
+          requires:
+            - test-objc-ios
+            - test-js-node-8
     
       # If we are on a stable branch, deploy to `npm`
       - hold:
