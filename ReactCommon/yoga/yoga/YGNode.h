@@ -129,6 +129,10 @@ struct YGNode {
       const float mainSize,
       const float crossSize,
       const float parentWidth);
+  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
+  void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
+  void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
+  void markDirtyAndPropogateDownwards();
 
   // Other methods
   YGValue marginLeadingValue(const YGFlexDirection axis) const;
@@ -150,4 +154,6 @@ struct YGNode {
   float resolveFlexGrow();
   float resolveFlexShrink();
   bool isNodeFlexible();
+  bool didUseLegacyFlag();
+  bool isLayoutTreeEqualToNode(const YGNode& node) const;
 };

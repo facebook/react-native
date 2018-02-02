@@ -175,6 +175,7 @@ void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
 YGNodeType YGNodeGetNodeType(YGNodeRef node);
 void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
 bool YGNodeIsDirty(YGNodeRef node);
+bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node);
 
 YG_NODE_STYLE_PROPERTY(YGDirection, Direction, direction);
 YG_NODE_STYLE_PROPERTY(YGFlexDirection, FlexDirection, flexDirection);

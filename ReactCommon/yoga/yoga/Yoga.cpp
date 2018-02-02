@@ -211,6 +211,10 @@ bool YGNodeIsDirty(YGNodeRef node) {
   return node->isDirty();
 }
 
+bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node) {
+  return node->didUseLegacyFlag();
+}
+
 int32_t gNodeInstanceCount = 0;
 int32_t gConfigInstanceCount = 0;
 
@@ -240,6 +244,29 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
       "Could not allocate memory for node");
   gNodeInstanceCount++;
   node->setParent(nullptr);
+  return node;
+}
+
+static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
+  YGNodeRef node = YGNodeClone(oldNode);
+  YGVector vec = YGVector();
+  vec.reserve(oldNode->getChildren().size());
+  YGNodeRef childNode = nullptr;
+  for (auto& item : oldNode->getChildren()) {
+    childNode = YGNodeDeepClone(item);
+    childNode->setParent(node);
+    vec.push_back(childNode);
+  }
+  node->setChildren(vec);
+
+  if (oldNode->getNextChild() != nullptr) {
+    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
+  }
+
+  if (node->getConfig() != nullptr) {
+    node->setConfig(new YGConfig(*node->getConfig()));
+  }
+
   return node;
 }
 
@@ -1975,9 +2002,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
             (totalFlexGrowFactors == 0 || node->resolveFlexGrow() == 0)) {
-          // If we don't have any children to flex or we can't flex the node itself,
-          // space we've used is all space we need. Root node also should be shrunk to minimum
+          // If we don't have any children to flex or we can't flex the node
+          // itself, space we've used is all space we need. Root node also
+          // should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
+        }
+
+        if (node->getConfig()->useLegacyStretchBehaviour) {
+          node->setLayoutDidUseLegacyFlag(true);
         }
         sizeBasedOnContent = !node->getConfig()->useLegacyStretchBehaviour;
       }
@@ -3330,7 +3362,6 @@ void YGNodeCalculateLayout(const YGNodeRef node,
   // input
   // parameters don't change.
   gCurrentGenerationCount++;
-
   node->resolveDimension();
   float width = YGUndefined;
   YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
@@ -3395,6 +3426,59 @@ void YGNodeCalculateLayout(const YGNodeRef node,
               YGPrintOptionsLayout | YGPrintOptionsChildren |
               YGPrintOptionsStyle));
     }
+  }
+
+  bool didUseLegacyFlag = node->didUseLegacyFlag();
+
+  // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
+  // aren't sure whether client's of yoga have gotten rid off this flag or not.
+  // So logging this in YGLayout would help to find out the call sites depending
+  // on this flag. This check would be removed once we are sure no one is
+  // dependent on this flag anymore.
+  if (didUseLegacyFlag) {
+    const YGNodeRef originalNode = YGNodeDeepClone(node);
+    originalNode->resolveDimension();
+    // Recursively mark nodes as dirty
+    originalNode->markDirtyAndPropogateDownwards();
+    gCurrentGenerationCount++;
+    // Rerun the layout, and calculate the diff
+    originalNode->setAndPropogateUseLegacyFlag(false);
+    if (YGLayoutNodeInternal(
+            originalNode,
+            width,
+            height,
+            parentDirection,
+            widthMeasureMode,
+            heightMeasureMode,
+            parentWidth,
+            parentHeight,
+            true,
+            "initial",
+            originalNode->getConfig())) {
+      originalNode->setPosition(
+          originalNode->getLayout().direction,
+          parentWidth,
+          parentHeight,
+          parentWidth);
+      YGRoundToPixelGrid(
+          originalNode,
+          originalNode->getConfig()->pointScaleFactor,
+          0.0f,
+          0.0f);
+
+      // Set whether the two layouts are different or not.
+      node->setLayoutDoesLegacyFlagAffectsLayout(
+          !originalNode->isLayoutTreeEqualToNode(*node));
+
+      if (gPrintTree) {
+        YGNodePrint(
+            originalNode,
+            (YGPrintOptions)(
+                YGPrintOptionsLayout | YGPrintOptionsChildren |
+                YGPrintOptionsStyle));
+      }
+    }
+    YGNodeFreeRecursive(originalNode);
   }
 }
 
