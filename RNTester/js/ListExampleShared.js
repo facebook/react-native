@@ -65,7 +65,7 @@ class ItemComponent extends React.PureComponent<{
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
         tvParallaxProperties={{
-            pressMagnification: 1.1,
+          pressMagnification: 1.1,
         }}
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
