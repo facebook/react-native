@@ -499,6 +499,7 @@ const TextInput = createReactClass({
     defaultValue: PropTypes.string,
     /**
      * When the clear button should appear on the right side of the text view.
+     * This property is supported only for single-line TextInput component.
      * @platform ios
      */
     clearButtonMode: PropTypes.oneOf([
