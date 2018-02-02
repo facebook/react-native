@@ -169,11 +169,33 @@ const TRANSFORM_WHITELIST = {
   perspective: true,
 };
 
+const SUPPORTED_INTERPOLATION_PARAMS = {
+  inputRange: true,
+  outputRange: true,
+  extrapolate: true,
+  extrapolateRight: true,
+  extrapolateLeft: true,
+};
+
+function addWhitelistedStyleProp(prop: string): void {
+  STYLES_WHITELIST[prop] = true;
+}
+
+function addWhitelistedTransformProp(prop: string): void {
+  TRANSFORM_WHITELIST[prop] = true;
+}
+
+function addWhitelistedInterpolationParam(param: string): void {
+  SUPPORTED_INTERPOLATION_PARAMS[param] = true;
+}
+
 function validateTransform(configs: Array<Object>): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
-        `Property '${config.property}' is not supported by native animated module`,
+        `Property '${
+          config.property
+        }' is not supported by native animated module`,
       );
     }
   });
@@ -190,13 +212,6 @@ function validateStyles(styles: Object): void {
 }
 
 function validateInterpolation(config: Object): void {
-  var SUPPORTED_INTERPOLATION_PARAMS = {
-    inputRange: true,
-    outputRange: true,
-    extrapolate: true,
-    extrapolateRight: true,
-    extrapolateLeft: true,
-  };
   for (var key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
       throw new Error(
@@ -240,6 +255,9 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
 
 module.exports = {
   API,
+  addWhitelistedStyleProp,
+  addWhitelistedTransformProp,
+  addWhitelistedInterpolationParam,
   validateStyles,
   validateTransform,
   validateInterpolation,

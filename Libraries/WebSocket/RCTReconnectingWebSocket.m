@@ -58,8 +58,6 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
   RCTSRWebSocket *_socket;
 }
 
-@synthesize delegate = _delegate;
-
 + (void)load
 {
   static dispatch_once_t onceToken;
@@ -75,12 +73,18 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
   });
 }
 
-- (instancetype)initWithURL:(NSURL *)url
+- (instancetype)initWithURL:(NSURL *)url queue:(dispatch_queue_t)queue
 {
   if (self = [super init]) {
     _url = url;
+    _delegateDispatchQueue = queue;
   }
   return self;
+}
+
+- (instancetype)initWithURL:(NSURL *)url
+{
+  return [self initWithURL:url queue:dispatch_get_main_queue()];
 }
 
 - (void)send:(id)data
@@ -93,9 +97,7 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
   [self stop];
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
-  if (_delegateDispatchQueue) {
-    [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
-  }
+  [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
   [_socket open];
 }
 
@@ -108,9 +110,7 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  if (_delegate) {
-    [_delegate webSocket:webSocket didReceiveMessage:message];
-  }
+  [_delegate reconnectingWebSocket:self didReceiveMessage:message];
 }
 
 - (void)reconnect
@@ -126,17 +126,18 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
 
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
-  [self.delegate webSocketDidOpen:webSocket];
+  [_delegate reconnectingWebSocketDidOpen:self];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
+  [_delegate reconnectingWebSocketDidClose:self];
   [self reconnect];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-  [self.delegate webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
+  [_delegate reconnectingWebSocketDidClose:self];
   [self reconnect];
 }
 

@@ -25,9 +25,11 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
+import type {StyleObj} from 'StyleSheetTypes';
+
 class ElementProperties extends React.Component<{
   hierarchy: Array<$FlowFixMe>,
-  style?: Object | Array<$FlowFixMe> | number,
+  style?: StyleObj,
   source?: {
     fileName?: string,
     lineNumber?: number,

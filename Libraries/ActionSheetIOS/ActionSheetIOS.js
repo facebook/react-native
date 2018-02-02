@@ -8,18 +8,25 @@
  *
  * @providesModule ActionSheetIOS
  * @flow
+ * @format
  */
 'use strict';
 
-var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 
-var invariant = require('fbjs/lib/invariant');
-var processColor = require('processColor');
+const invariant = require('fbjs/lib/invariant');
+const processColor = require('processColor');
 
-var ActionSheetIOS = {
+/**
+ * Display action sheets and share sheets on iOS.
+ *
+ * See http://facebook.github.io/react-native/docs/actionsheetios.html
+ */
+const ActionSheetIOS = {
   /**
-   * Display an iOS action sheet. The `options` object must contain one or more
-   * of:
+   * Display an iOS action sheet.
+   *
+   * The `options` object must contain one or more of:
    *
    * - `options` (array of strings) - a list of button titles (required)
    * - `cancelButtonIndex` (int) - index of cancel button in `options`
@@ -30,32 +37,29 @@ var ActionSheetIOS = {
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
    *
-   * Minimal example:
-   * 
-   * ```
-   * ActionSheetIOS.showActionSheetWithOptions({
-   *   options: ['Remove', 'Cancel'],
-   *   destructiveButtonIndex: 1,
-   *   cancelButtonIndex: 0,
-   * },
-   * (buttonIndex) => {
-   *   if (buttonIndex === 1) { // destructive action }
-   * });
-   * ```
-   *
+   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showactionsheetwithoptions
    */
-  showActionSheetWithOptions(options: Object, callback: Function) {
+  showActionSheetWithOptions(
+    options: {|
+      +title?: ?string,
+      +message?: ?string,
+      +options: Array<string>,
+      +destructiveButtonIndex?: ?number,
+      +cancelButtonIndex?: ?number,
+      +anchor?: ?number,
+      +tintColor?: number | string,
+    |},
+    callback: (buttonIndex: number) => void,
+  ) {
     invariant(
       typeof options === 'object' && options !== null,
-      'Options must be a valid object'
+      'Options must be a valid object',
     );
-    invariant(
-      typeof callback === 'function',
-      'Must provide a valid callback'
-    );
+    invariant(typeof callback === 'function', 'Must provide a valid callback');
+
     RCTActionSheetManager.showActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
-      callback
+      callback,
     );
   },
 
@@ -67,11 +71,9 @@ var ActionSheetIOS = {
    * - `url` (string) - a URL to share
    * - `message` (string) - a message to share
    * - `subject` (string) - a subject for the message
-   * - `excludedActivityTypes` (array) - the activities to exclude from the ActionSheet
-   *
-   * NOTE: if `url` points to a local file, or is a base64-encoded
-   * uri, the file it points to will be loaded and shared directly.
-   * In this way, you can share images, videos, PDF files, etc.
+   * - `excludedActivityTypes` (array) - the activities to exclude from
+   *   the ActionSheet
+   * - `tintColor` (color) - tint color of the buttons
    *
    * The 'failureCallback' function takes one parameter, an error object.
    * The only property defined on this object is an optional `stack` property
@@ -81,30 +83,32 @@ var ActionSheetIOS = {
    *
    * - a boolean value signifying success or failure
    * - a string that, in the case of success, indicates the method of sharing
+   *
+   * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
     options: Object,
     failureCallback: Function,
-    successCallback: Function
+    successCallback: Function,
   ) {
     invariant(
       typeof options === 'object' && options !== null,
-      'Options must be a valid object'
+      'Options must be a valid object',
     );
     invariant(
       typeof failureCallback === 'function',
-      'Must provide a valid failureCallback'
+      'Must provide a valid failureCallback',
     );
     invariant(
       typeof successCallback === 'function',
-      'Must provide a valid successCallback'
+      'Must provide a valid successCallback',
     );
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,
-      successCallback
+      successCallback,
     );
-  }
+  },
 };
 
 module.exports = ActionSheetIOS;

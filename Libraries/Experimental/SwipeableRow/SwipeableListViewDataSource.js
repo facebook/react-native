@@ -88,6 +88,16 @@ class SwipeableListViewDataSource {
     return Object.keys(this._dataBlob)[0];
   }
 
+  getLastRowID(): ?string {
+    if (this.rowIdentities && this.rowIdentities.length) {
+      const lastSection = this.rowIdentities[this.rowIdentities.length - 1];
+      if (lastSection && lastSection.length) {
+       return lastSection[lastSection.length - 1];
+     }
+    }
+   return Object.keys(this._dataBlob)[this._dataBlob.length - 1];
+  }
+
   setOpenRowID(rowID: string): SwipeableListViewDataSource {
     this._previousOpenRowID = this._openRowID;
     this._openRowID = rowID;

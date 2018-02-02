@@ -32,10 +32,11 @@
  * Use the RCTInitRunnerForApp macro for typical usage. See FBSnapshotTestCase.h for more information
  * on how to configure the snapshotting system.
  */
-#define RCTInitRunnerForApp(app__, moduleProvider__) \
+#define RCTInitRunnerForApp(app__, moduleProvider__, scriptURL__) \
 [[RCTTestRunner alloc] initWithApp:(app__) \
                 referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
-                    moduleProvider:(moduleProvider__)]
+                    moduleProvider:(moduleProvider__) \
+                    scriptURL: scriptURL__]
 
 @protocol RCTBridgeModule;
 @class RCTBridge;
@@ -68,7 +69,8 @@
  */
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleListProvider)block NS_DESIGNATED_INITIALIZER;
+             moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

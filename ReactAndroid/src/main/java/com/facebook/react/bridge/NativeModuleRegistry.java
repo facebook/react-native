@@ -75,7 +75,7 @@ public class NativeModuleRegistry {
   }
 
   /*
-  * Adds any new modules to the current module regsitry
+  * Adds any new modules to the current module registry
   */
   /* package */ void registerModules(NativeModuleRegistry newRegister) {
 

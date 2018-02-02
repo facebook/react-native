@@ -40,15 +40,12 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
@@ -62,10 +59,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void jniSetSourceURL(const std::string& sourceURL);
 
   /**
-   * Sets the path to folder where additional bundles are located.
-   * Needs to be invoked before "loadScript" methods are called.
+   * Registers the file path of an additional JS segment by its ID.
+   *
    */
-  void jniSetJsBundlesDirectory(const std::string& directoryPath);
+  void jniRegisterSegment(int segmentId, const std::string& path);
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);
@@ -76,14 +73,11 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
 
-  std::string jsBundlesDirectory_;
-   
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
-  std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };
 
 }}

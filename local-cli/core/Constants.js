@@ -13,5 +13,10 @@
 'use strict';
 
 const ASSET_REGISTRY_PATH = 'react-native/Libraries/Image/AssetRegistry';
+const ASSET_SOURCE_RESOLVER_PATH =
+  'react-native/Libraries/Image/AssetSourceResolver';
 
-module.exports = {ASSET_REGISTRY_PATH};
+module.exports = {
+  ASSET_REGISTRY_PATH,
+  ASSET_SOURCE_RESOLVER_PATH,
+};

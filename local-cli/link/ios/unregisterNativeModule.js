@@ -6,6 +6,7 @@ const isEmpty = require('lodash').isEmpty;
 
 const getGroup = require('./getGroup');
 const getProducts = require('./getProducts');
+const getTargets = require('./getTargets');
 const getHeadersInFolder = require('./getHeadersInFolder');
 const getHeaderSearchPath = require('./getHeaderSearchPath');
 const removeProjectFromProject = require('./removeProjectFromProject');
@@ -32,8 +33,8 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
 
   removeProjectFromLibraries(libraries, file);
 
-  getProducts(dependencyProject).forEach(product => {
-    removeFromStaticLibraries(project, product, {
+  getTargets(dependencyProject).forEach(target => {
+    removeFromStaticLibraries(project, target.name, {
       target: project.getFirstTarget().uuid,
     });
   });

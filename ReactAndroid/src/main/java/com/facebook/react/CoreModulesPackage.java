@@ -18,9 +18,6 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.devsupport.JSCHeapCapture;
-import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -28,7 +25,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.Timing;
-import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
@@ -36,35 +32,24 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
+
 /**
- * This module should be removed following the completion of an experiment into splitting this into
- * three modules to allow for more light-weight instantiations of the bridge without UIManager
- * The core modules are now in BridgeCorePackage
- * The debug modules are now in DebugCorePackage
- * The UI manager is in ReactNativeCorePackage
- *
- * Package defining core framework modules (e.g. UIManager). It should be used for modules that
- * require special integration with other framework parts (e.g. with the list of packages to load
- * view managers from).
+ * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
 @ReactModuleList(
   nativeModules = {
     AndroidInfoModule.class,
-    AnimationsDebugModule.class,
     DeviceEventManagerModule.class,
+    DeviceInfoModule.class,
     ExceptionsManagerModule.class,
     HeadlessJsTaskSupportModule.class,
     SourceCodeModule.class,
     Timing.class,
     UIManagerModule.class,
-    DeviceInfoModule.class,
-    // Debug only
-    JSCHeapCapture.class,
-    JSCSamplingProfiler.class,
   }
 )
 /* package */ class CoreModulesPackage extends LazyReactPackage implements ReactPackageLogger {
@@ -90,9 +75,7 @@ import javax.inject.Provider;
 
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
-    List<ModuleSpec> moduleSpecList = new ArrayList<>();
-
-    moduleSpecList.add(
+    return Arrays.asList(
         ModuleSpec.nativeModuleSpec(
             AndroidInfoModule.class,
             new Provider<NativeModule>() {
@@ -100,18 +83,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new AndroidInfoModule();
               }
-            }));
-    moduleSpecList.add(
-        ModuleSpec.nativeModuleSpec(
-            AnimationsDebugModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new AnimationsDebugModule(
-                    reactContext, mReactInstanceManager.getDevSupportManager().getDevSettings());
-              }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             DeviceEventManagerModule.class,
             new Provider<NativeModule>() {
@@ -119,8 +91,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             ExceptionsManagerModule.class,
             new Provider<NativeModule>() {
@@ -128,8 +99,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             HeadlessJsTaskSupportModule.class,
             new Provider<NativeModule>() {
@@ -137,8 +107,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new HeadlessJsTaskSupportModule(reactContext);
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             SourceCodeModule.class,
             new Provider<NativeModule>() {
@@ -146,8 +115,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new SourceCodeModule(reactContext);
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             Timing.class,
             new Provider<NativeModule>() {
@@ -155,8 +123,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             UIManagerModule.class,
             new Provider<NativeModule>() {
@@ -164,8 +131,7 @@ import javax.inject.Provider;
               public NativeModule get() {
                 return createUIManager(reactContext);
               }
-            }));
-    moduleSpecList.add(
+            }),
         ModuleSpec.nativeModuleSpec(
             DeviceInfoModule.class,
             new Provider<NativeModule>() {
@@ -174,29 +140,6 @@ import javax.inject.Provider;
                 return new DeviceInfoModule(reactContext);
               }
             }));
-
-    if (ReactBuildConfig.DEBUG) {
-      moduleSpecList.add(
-          ModuleSpec.nativeModuleSpec(
-              JSCHeapCapture.class,
-              new Provider<NativeModule>() {
-                @Override
-                public NativeModule get() {
-                  return new JSCHeapCapture(reactContext);
-                }
-              }));
-      moduleSpecList.add(
-          ModuleSpec.nativeModuleSpec(
-              JSCSamplingProfiler.class,
-              new Provider<NativeModule>() {
-                @Override
-                public NativeModule get() {
-                  return new JSCSamplingProfiler(reactContext);
-                }
-              }));
-    }
-
-    return moduleSpecList;
   }
 
   @Override

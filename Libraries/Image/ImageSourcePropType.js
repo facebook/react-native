@@ -8,6 +8,7 @@
  *
  * @providesModule ImageSourcePropType
  * @no-flow
+ * @format
  */
 'use strict';
 

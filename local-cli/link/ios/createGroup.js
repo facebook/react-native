@@ -4,7 +4,7 @@ const hasGroup = (pbxGroup, name) => pbxGroup.children.find(group => group.comme
 
 /**
  * Given project and path of the group, it deeply creates a given group
- * making all outer groups if neccessary
+ * making all outer groups if necessary
  *
  * Returns newly created group
  */

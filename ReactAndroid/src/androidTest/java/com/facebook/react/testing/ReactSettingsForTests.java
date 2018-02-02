@@ -38,6 +38,11 @@ public class ReactSettingsForTests implements DeveloperSettings {
   }
 
   @Override
+  public boolean isNuclideJSDebugEnabled() {
+    return false;
+  }
+
+  @Override
   public boolean isRemoteJSDebugEnabled() {
     return false;
   }

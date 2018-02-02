@@ -61,12 +61,8 @@ void JLocalConnection::registerNatives() {
   });
 }
 
-static IInspector* getInspectorInstance() {
-  return JSC_JSInspectorGetInstance(true /*useCustomJSC*/);
-}
-
 jni::global_ref<JInspector::javaobject> JInspector::instance(jni::alias_ref<jclass>) {
-  static auto instance = jni::make_global(newObjectCxxArgs(getInspectorInstance()/*&Inspector::instance()*/));
+  static auto instance = jni::make_global(newObjectCxxArgs(&getInspectorInstance()));
   return instance;
 }
 

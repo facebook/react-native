@@ -57,7 +57,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /**
    * This method should return a subclass of {@link ReactShadowNode} which will be then used for
-   * measuring position and size of the view. In mose of the cases this should just return an
+   * measuring position and size of the view. In most of the cases this should just return an
    * instance of {@link ReactShadowNode}
    */
   public C createShadowNodeInstance() {

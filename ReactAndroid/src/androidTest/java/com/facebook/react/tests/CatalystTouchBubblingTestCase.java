@@ -44,7 +44,7 @@ import com.facebook.react.testing.StringRecordingModule;
  * | +----------------------------------------------------------------------------------+  |
  * +---------------------------------------------------------------------------------------+
  *
- * Then in each test case we eiter tap the center of a particular view (from A to E) or we start
+ * Then in each test case we either tap the center of a particular view (from A to E) or we start
  * a gesture in one view and end it with another.
  * View with names in brackets (e.g. {D}) have touch handlers set whereas all other views are not
  * declared to handler touch events.

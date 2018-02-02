@@ -47,7 +47,7 @@ std::string utf16toUTF8(const uint16_t* utf16Bytes, size_t len) noexcept;
 
 class FBEXPORT LocalString {
 public:
-  // Assumes UTF8 encoding and make a required convertion to modified UTF-8 when the string
+  // Assumes UTF8 encoding and make a required conversion to modified UTF-8 when the string
   // contains unicode supplementary characters.
   explicit LocalString(const std::string& str);
   explicit LocalString(const char* str);

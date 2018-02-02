@@ -226,7 +226,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * Enqueue dropping of the view for a node that has a backing view.  Used in conjuction with
+   * Enqueue dropping of the view for a node that has a backing view.  Used in conjunction with
    * remove the node from the shadow hierarchy.
    *
    * @param node The node to drop the backing view for.

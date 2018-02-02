@@ -17,6 +17,8 @@ import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -39,7 +41,9 @@ public abstract class ReactNativeHost {
    */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);
     }
     return mReactInstanceManager;
   }
@@ -64,6 +68,7 @@ public abstract class ReactNativeHost {
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
       .setJSMainModulePath(getJSMainModuleName())
@@ -83,7 +88,9 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    return builder.build();
+    ReactInstanceManager reactInstanceManager = builder.build();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return reactInstanceManager;
   }
 
   /**

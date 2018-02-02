@@ -159,15 +159,6 @@ const SwipeableRow = createReactClass({
     }
   },
 
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
-    if (this.props.shouldBounceOnMount && !nextProps.shouldBounceOnMount) {
-      // No need to rerender if SwipeableListView is disabling the bounce flag
-      return false;
-    }
-
-    return true;
-  },
-
   render(): React.Element<any> {
     // The view hidden behind the main view
     let slideOutView;

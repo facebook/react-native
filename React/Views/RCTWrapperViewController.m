@@ -14,7 +14,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTNavItem.h"
 #import "RCTUtils.h"
-#import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
 #import "RCTAutoInsetsProtocol.h"
 
@@ -25,10 +24,10 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayoutLength;
   CGFloat _previousBottomLayoutLength;
-}
 
-@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
-@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
+  id<UILayoutSupport> _currentTopLayoutGuide;
+  id<UILayoutSupport> _currentBottomLayoutGuide;
+}
 
 - (instancetype)initWithContentView:(UIView *)contentView
 {

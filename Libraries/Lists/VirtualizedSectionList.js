@@ -233,6 +233,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return {
       ...viewable,
       index: info.index,
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       key: keyExtractor(viewable.item, info.index),
       section: info.section,
     };

@@ -98,8 +98,10 @@ public:
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
 
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
+  bool isInspectable();
 
   #ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);

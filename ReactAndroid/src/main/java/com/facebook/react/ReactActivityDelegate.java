@@ -13,6 +13,8 @@ import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
 import javax.annotation.Nullable;
@@ -24,11 +26,9 @@ import javax.annotation.Nullable;
  */
 public class ReactActivityDelegate {
 
-  @Nullable
-  private final Activity mActivity;
-
-  @Nullable
-  private final FragmentActivity mFragmentActivity;
+  private final @Nullable Activity mActivity;
+  private final @Nullable FragmentActivity mFragmentActivity;
+  private final @Nullable String mMainComponentName;
 
   @Nullable
   private final String mMainComponentName;
@@ -83,7 +83,6 @@ public class ReactActivityDelegate {
     if (mMainComponentName != null && !needToEnableRedboxPermission) {
       mReactDelegate.loadApp();
       getPlainActivity().setContentView(mReactDelegate.getReactRootView());
-
     }
   }
 

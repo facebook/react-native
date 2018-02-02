@@ -74,6 +74,12 @@ var BackHandler = {
     DeviceEventManager.invokeDefaultBackPressHandler();
   },
 
+  /**
+   * Adds an event handler. Supported events:
+   *
+   * - `hardwareBackPress`: Fires when the Android hardware back button is pressed or when the
+   * tvOS menu button is pressed.
+   */
   addEventListener: function (
     eventName: BackPressEventName,
     handler: Function
@@ -84,6 +90,9 @@ var BackHandler = {
     };
   },
 
+  /**
+   * Removes the event handler.
+   */
   removeEventListener: function(
     eventName: BackPressEventName,
     handler: Function

@@ -29,7 +29,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 /**
- * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprahensive test of this
+ * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprehensive test of this
  * annotation can be found in {@link ReactPropAnnotationSetterTest} where we test all possible types
  * of properties to be updated.
  */

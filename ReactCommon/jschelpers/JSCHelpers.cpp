@@ -147,16 +147,7 @@ void JSException::buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sou
 
 namespace ExceptionHandling {
 
-#if __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-
 PlatformErrorExtractor platformErrorExtractor;
-
-#if __clang__
-#pragma clang diagnostic pop
-#endif
 
 }
 

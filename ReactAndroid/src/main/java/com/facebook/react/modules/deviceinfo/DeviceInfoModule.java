@@ -39,6 +39,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
   public DeviceInfoModule(ReactApplicationContext reactContext) {
     this((Context) reactContext);
     mReactApplicationContext = reactContext;
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public DeviceInfoModule(Context context) {

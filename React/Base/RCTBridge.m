@@ -17,7 +17,6 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
-#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -393,13 +392,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
-@end
-
-@implementation RCTBridge (JavaScriptCore)
-
-- (JSContext *)jsContext
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  return [self.batchedBridge jsContext];
+  [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
 - (JSGlobalContextRef)jsContextRef

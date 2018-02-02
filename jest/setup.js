@@ -142,6 +142,12 @@ const mockNativeModules = {
         scale: 2,
         width: 750,
       },
+      screen: {
+        fontScale: 2,
+        height: 1334,
+        scale: 2,
+        width: 750,
+      },
     },
   },
   FacebookSDK: {
@@ -162,7 +168,7 @@ const mockNativeModules = {
   },
   ImageLoader: {
     getSize: jest.fn(
-      (url) => new Promise(() => ({width: 320, height: 240}))
+      (url) => Promise.resolve({width: 320, height: 240})
     ),
     prefetchImage: jest.fn(),
   },
@@ -179,11 +185,11 @@ const mockNativeModules = {
   Linking: {
     openURL: jest.fn(),
     canOpenURL: jest.fn(
-      () => new Promise((resolve) => resolve(true))
+      () => Promise.resolve(true)
     ),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(
-      () => new Promise((resolve) => resolve())
+      () => Promise.resolve()
     ),
     removeEventListener: jest.fn(),
   },
@@ -195,15 +201,23 @@ const mockNativeModules = {
   ModalFullscreenViewManager: {},
   NetInfo: {
     fetch: jest.fn(
-      () => new Promise((resolve) => resolve())
+      () => Promise.resolve()
+    ),
+    getConnectionInfo: jest.fn(
+      () => Promise.resolve()
     ),
     addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
     isConnected: {
       fetch: jest.fn(
-        () => new Promise((resolve) => resolve())
+        () => Promise.resolve()
       ),
       addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
     },
+    isConnectionExpensive: jest.fn(
+      () => Promise.resolve()
+    ),
   },
   Networking: {
     sendRequest: jest.fn(),

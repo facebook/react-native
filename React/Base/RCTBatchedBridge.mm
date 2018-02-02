@@ -1094,4 +1094,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
+#pragma mark - Inspector
+
+- (BOOL)isInspectable {
+  return NO;
+}
+
 @end

@@ -124,6 +124,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     getReactApplicationContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
     mConnectivityBroadcastReceiver.setRegistered(true);
+    updateAndSendConnectionType();
   }
 
   private void unregisterReceiver() {

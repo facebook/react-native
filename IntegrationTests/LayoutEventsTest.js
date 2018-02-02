@@ -29,17 +29,7 @@ function debug(...args) {
   // console.log.apply(null, arguments);
 }
 
-type Layout = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-type LayoutEvent = {
-  nativeEvent: {
-    layout: Layout;
-  };
-};
+import type {Layout, LayoutEvent} from 'CoreEventTypes';
 type Style = {
   margin?: number,
   padding?: number,

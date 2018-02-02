@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTAssert.h"
 #import "RCTFont.h"
 #import "RCTLog.h"
 
@@ -96,6 +97,49 @@ static BOOL isCondensedFont(UIFont *font)
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
+static RCTFontHandler defaultFontHandler;
+
+void RCTSetDefaultFontHandler(RCTFontHandler handler) {
+  defaultFontHandler = handler;
+}
+
+// We pass a string description of the font weight to the defaultFontHandler because UIFontWeight
+// is not defined pre-iOS 8.2.
+// Furthermore, UIFontWeight's are lossy floats, so we must use an inexact compare to figure out
+// which one we actually have.
+static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight) {
+#if CGFLOAT_IS_DOUBLE
+  return fabs(firstWeight - secondWeight) < 0.01;
+#else
+  return fabsf(firstWeight - secondWeight) < 0.01;
+#endif
+}
+
+static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
+{
+  if (CompareFontWeights(fontWeight, UIFontWeightUltraLight)) {
+    return @"ultralight";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightThin)) {
+    return @"thin";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightLight)) {
+    return @"light";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightRegular)) {
+    return @"regular";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightMedium)) {
+    return @"medium";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightSemibold)) {
+    return @"semibold";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightBold)) {
+    return @"bold";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightHeavy)) {
+    return @"heavy";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightBlack)) {
+    return @"black";
+  }
+  RCTAssert(NO, @"Unknown UIFontWeight passed in: %f", fontWeight);
+  return @"regular";
+}
+
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache *fontCache;
@@ -112,8 +156,11 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
   }
 
   if (!font) {
-    // Only supported on iOS8.2 and above
-    if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+    if (defaultFontHandler) {
+      NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
+      font = defaultFontHandler(size, fontWeightDescription);
+    } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+      // Only supported on iOS8.2 and above
       font = [UIFont systemFontOfSize:size weight:weight];
     } else {
       if (weight >= UIFontWeightBold) {

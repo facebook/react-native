@@ -9,6 +9,7 @@
 package com.facebook.react.packagerconnection;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import android.net.Uri;
 
@@ -63,6 +64,13 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
   private Map<String, RequestHandler> mRequestHandlers;
 
   public JSPackagerClient(String clientId, PackagerConnectionSettings settings, Map<String, RequestHandler> requestHandlers) {
+    this(clientId, settings, requestHandlers, null);
+  }
+
+  public JSPackagerClient(
+      String clientId, PackagerConnectionSettings settings,
+      Map<String, RequestHandler> requestHandlers,
+      @Nullable ReconnectingWebSocket.ConnectionCallback connectionCallback) {
     super();
 
     Uri.Builder builder = new Uri.Builder();
@@ -74,7 +82,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       .appendQueryParameter("clientid", clientId);
     String url = builder.build().toString();
 
-    mWebSocket = new ReconnectingWebSocket(url, this, null);
+    mWebSocket = new ReconnectingWebSocket(url, this, connectionCallback);
     mRequestHandlers = requestHandlers;
   }
 

@@ -55,6 +55,7 @@ typedef NSURL RCTFileURL;
 + (RCTFileURL *)RCTFileURL:(id)json;
 
 + (NSDate *)NSDate:(id)json;
++ (NSLocale *)NSLocale:(id)json;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 

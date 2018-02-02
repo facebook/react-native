@@ -18,6 +18,8 @@ const convertRequestBody = require('convertRequestBody');
 
 import type {RequestBody} from 'convertRequestBody';
 
+import type { NativeResponseType } from './XMLHttpRequest';
+
 class RCTNetworking extends NativeEventEmitter {
 
   isAvailable: boolean = true;
@@ -32,7 +34,7 @@ class RCTNetworking extends NativeEventEmitter {
     url: string,
     headers: Object,
     data: RequestBody,
-    responseType: 'text' | 'base64',
+    responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => any,

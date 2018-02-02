@@ -44,6 +44,10 @@ public:
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
+  static bool isIndexedRAMBundle(const char *sourcePath);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
+                             const std::string& sourceURL,
+                             bool loadSynchronously);
   void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                      std::unique_ptr<const JSBigString> startupScript,
                      std::string startupScriptSourceURL, bool loadSynchronously);
@@ -51,9 +55,13 @@ public:
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
+  bool isInspectable();
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+
+  // This method is experimental, and may be modified or removed.
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
   // This method is experimental, and may be modified or removed.
   template <typename T>

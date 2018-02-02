@@ -18,7 +18,7 @@ public enum YogaUnit {
   PERCENT(2),
   AUTO(3);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaUnit(int intValue) {
     mIntValue = intValue;

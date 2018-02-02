@@ -17,6 +17,10 @@ Happy contributing!
 
 (Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!)
 
+## Related PRs
+
+(If this PR adds or changes functionality, please take some time to update the docs at https://github.com/facebook/react-native-website, and link to your PR here.)
+
 ## Release Notes
 <!--
 Help reviewers and the release process by writing your own release notes
@@ -27,7 +31,7 @@ Help reviewers and the release process by writing your own release notes
 [----------]        TYPE
 [ CLI      ]   [-------------]      LOCATION
 [ DOCS     ]   [ BREAKING    ]   [-------------]
-[ GENERAl  ]   [ BUGFIX      ]   [-{Component}-]
+[ GENERAL  ]   [ BUGFIX      ]   [-{Component}-]
 [ INTERNAL ]   [ ENHANCEMENT ]   [ {File}      ]
 [ IOS      ]   [ FEATURE     ]   [ {Directory} ]   |-----------|
 [ ANDROID  ]   [ MINOR       ]   [ {Framework} ] - | {Message} |

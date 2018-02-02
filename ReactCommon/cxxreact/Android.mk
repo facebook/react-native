@@ -18,7 +18,6 @@ LOCAL_SRC_FILES := \
   JSCTracing.cpp \
   JSCUtils.cpp \
   JSIndexedRAMBundle.cpp \
-	JSIndexedRAMBundleRegistry.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
@@ -46,4 +45,5 @@ $(call import-module,folly)
 $(call import-module,jsc)
 $(call import-module,glog)
 $(call import-module,jschelpers)
+$(call import-module,jsinspector)
 $(call import-module,privatedata)

@@ -24,7 +24,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and
- * returns reponse code and body that should be set with {@link #setResponse}
+ * returns response code and body that should be set with {@link #setResponse}
  */
 @ReactModule(name = "Networking", canOverrideExistingModule = true)
 public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {

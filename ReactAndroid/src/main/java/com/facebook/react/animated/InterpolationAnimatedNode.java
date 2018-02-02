@@ -1,9 +1,15 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+ *
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
+ */
 package com.facebook.react.animated;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-
 import javax.annotation.Nullable;
 
 /**
@@ -133,8 +139,9 @@ import javax.annotation.Nullable;
   @Override
   public void update() {
     if (mParent == null) {
-      throw new IllegalStateException("Trying to update interpolation node that has not been " +
-        "attached to the parent");
+      // The graph is in the middle of being created, just skip this
+      // unattached node.
+      return;
     }
     mValue = interpolate(mParent.getValue(), mInputRange, mOutputRange, mExtrapolateLeft, mExtrapolateRight);
   }

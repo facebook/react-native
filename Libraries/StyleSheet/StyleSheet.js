@@ -18,10 +18,19 @@ const StyleSheetValidation = require('StyleSheetValidation');
 
 const flatten = require('flattenStyle');
 
-export type Styles = {[key: string]: Object};
-export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
-export type StyleValue = {[key: string]: Object} | number | false | null;
-export type StyleProp = StyleValue | Array<StyleValue>;
+import type {
+  StyleSheetStyle as _StyleSheetStyle,
+  Styles as _Styles,
+  StyleSheet as _StyleSheet,
+  StyleValue as _StyleValue,
+  StyleObj,
+} from 'StyleSheetTypes';
+
+export type StyleProp = StyleObj;
+export type Styles = _Styles;
+export type StyleSheet<S> = _StyleSheet<S>;
+export type StyleValue = _StyleValue;
+export type StyleSheetStyle = _StyleSheetStyle;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
@@ -29,13 +38,14 @@ if (hairlineWidth === 0) {
 }
 
 const absoluteFillObject = {
-  position: 'absolute',
+  position: ('absolute': 'absolute'),
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: typeof absoluteFillObject =
+  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -125,6 +135,20 @@ module.exports = {
   absoluteFillObject,
 
   /**
+   * Combines two styles such that `style2` will override any styles in `style1`.
+   * If either style is falsy, the other one is returned without allocating an
+   * array, saving allocations and maintaining reference equality for
+   * PureComponent checks.
+   */
+  compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
+    if (style1 && style2) {
+      return [style1, style2];
+    } else {
+      return style1 || style2;
+    }
+  },
+
+  /**
    * Flattens an array of style objects, into one aggregated style object.
    * Alternatively, this method can be used to lookup IDs, returned by
    * StyleSheet.register.
@@ -197,7 +221,7 @@ module.exports = {
    * Creates a StyleSheet style reference from the given object.
    */
   create<S: Styles>(obj: S): StyleSheet<S> {
-    const result: StyleSheet<S> = {};
+    const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
       result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);

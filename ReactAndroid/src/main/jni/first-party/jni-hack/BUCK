@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "cxx_library")
 
 # Copyright (c) 2014-present, Facebook, Inc.
 # All rights reserved.
@@ -9,11 +9,11 @@ include_defs("//ReactAndroid/DEFS")
 
 cxx_library(
     name = "jni-hack",
+    header_namespace = "",
     exported_headers = [
         "jni.h",
         "real/jni.h",
     ],
     force_static = True,
-    header_namespace = "",
     visibility = ["PUBLIC"],
 )

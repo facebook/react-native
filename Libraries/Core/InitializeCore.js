@@ -10,7 +10,6 @@
  * @flow
  */
 
-/* eslint-disable strict */
 /* globals window: true */
 
 /**
@@ -101,6 +100,7 @@ if (!global.process.env.NODE_ENV) {
 // Setup the Systrace profiling hooks if necessary
 if (global.__RCTProfileIsProfiling) {
   const Systrace = require('Systrace');
+  Systrace.installReactHook(true);
   Systrace.setEnabled(true);
 }
 
@@ -114,9 +114,7 @@ if (!global.__fbDisableExceptionsManager) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console */
       throw e;
     }
   };
@@ -173,6 +171,8 @@ polyfillGlobal('Request', () => require('fetch').Request);
 polyfillGlobal('Response', () => require('fetch').Response);
 polyfillGlobal('WebSocket', () => require('WebSocket'));
 polyfillGlobal('Blob', () => require('Blob'));
+polyfillGlobal('File', () => require('File'));
+polyfillGlobal('FileReader', () => require('FileReader'));
 polyfillGlobal('URL', () => require('URL'));
 
 // Set up alert
@@ -205,17 +205,19 @@ BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
 BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
+BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JSDevSupportModule'));
 
-global.fetchBundle = function(
-  bundleId: number,
+global.fetchSegment = function(
+  segmentId: number,
   callback: (?Error) => void,
 ) {
-  const {BundleFetcher} = require('NativeModules');
-  if (!BundleFetcher) {
-    throw new Error('BundleFetcher is missing');
+  const {SegmentFetcher} = require('NativeModules');
+  if (!SegmentFetcher) {
+    throw new Error('SegmentFetcher is missing. Please ensure that it is ' +
+      'included as a NativeModule.');
   }
 
-  BundleFetcher.fetchBundle(bundleId, (errorObject: ?{message: string, code: string}) => {
+  SegmentFetcher.fetchSegment(segmentId, (errorObject: ?{message: string, code: string}) => {
     if (errorObject) {
       const error = new Error(errorObject.message);
       (error: any).code = errorObject.code;

@@ -1,10 +1,10 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS", "rn_android_library", "react_native_dep", "react_native_target", "YOGA_TARGET")
 
 IMAGE_EVENT_FILES = [
     "ImageLoadEvent.java",
 ]
 
-android_library(
+rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
     provided_deps = [
@@ -20,7 +20,7 @@ android_library(
     ],
 )
 
-android_library(
+rn_android_library(
     name = "image",
     srcs = glob(
         ["*.java"],

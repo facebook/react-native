@@ -167,6 +167,9 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
@@ -175,6 +178,9 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
             }, 300);
           }}
           onDisable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             clearInterval(this._stallInterval || 0);
           }}
         />

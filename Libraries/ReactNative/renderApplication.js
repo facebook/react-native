@@ -30,12 +30,32 @@ function renderApplication<Props: Object>(
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
-  ReactNative.render(
+  let renderable = (
     <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
-    </AppContainer>,
-    rootTag,
+    </AppContainer>
   );
+
+  // If the root component is async, the user probably wants the initial render
+  // to be async also. To do this, wrap AppContainer with an async marker.
+  // For more info see https://fb.me/is-component-async
+  if (
+    RootComponent.prototype != null &&
+    RootComponent.prototype.unstable_isAsyncReactComponent === true
+  ) {
+    // $FlowFixMe This is not yet part of the official public API
+    class AppContainerAsyncWrapper extends React.unstable_AsyncComponent {
+      render() {
+        return this.props.children;
+      }
+    }
+
+    renderable = (
+      <AppContainerAsyncWrapper>{renderable}</AppContainerAsyncWrapper>
+    );
+  }
+
+  ReactNative.render(renderable, rootTag);
 }
 
 module.exports = renderApplication;

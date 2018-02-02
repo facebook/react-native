@@ -129,8 +129,8 @@ static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke) {
 }
 #endif
 
-SEL RCTParseMethodSignature(const char *, NSArray<RCTMethodArgument *> **);
-SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
+extern NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments);
+NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
 {
   RCTSkipWhitespace(&input);
 
@@ -175,7 +175,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
   }
 
   *arguments = [args copy];
-  return NSSelectorFromString(selector);
+  return selector;
 }
 
 RCT_EXTERN_C_END
@@ -193,7 +193,7 @@ RCT_EXTERN_C_END
 - (void)processMethodSignature
 {
   NSArray<RCTMethodArgument *> *arguments;
-  _selector = RCTParseMethodSignature(_methodInfo->objcName, &arguments);
+  _selector = NSSelectorFromString(RCTParseMethodSignature(_methodInfo->objcName, &arguments));
   RCTAssert(_selector, @"%s is not a valid selector", _methodInfo->objcName);
 
   // Create method invocation

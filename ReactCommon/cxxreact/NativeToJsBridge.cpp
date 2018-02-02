@@ -171,6 +171,12 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
     });
 }
 
+void NativeToJsBridge::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  runOnExecutorQueue([bundleId, bundlePath] (JSExecutor* executor) {
+    executor->registerBundle(bundleId, bundlePath);
+  });
+}
+
 void NativeToJsBridge::setGlobalVariable(std::string propName,
                                          std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
@@ -182,6 +188,10 @@ void NativeToJsBridge::setGlobalVariable(std::string propName,
 void* NativeToJsBridge::getJavaScriptContext() {
   // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.
   return m_executor->getJavaScriptContext();
+}
+
+bool NativeToJsBridge::isInspectable() {
+  return m_executor->isInspectable();
 }
 
 #ifdef WITH_JSC_MEMORY_PRESSURE

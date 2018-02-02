@@ -9,6 +9,7 @@
 
 package com.facebook.react.modules.datepicker;
 
+import android.app.DatePickerDialog;
 import javax.annotation.Nullable;
 
 import android.app.DatePickerDialog;
@@ -29,7 +30,7 @@ public class DismissableDatePickerDialog extends DatePickerDialog {
 
   public DismissableDatePickerDialog(
       Context context,
-      @Nullable OnDateSetListener callback,
+      @Nullable DatePickerDialog.OnDateSetListener callback,
       int year,
       int monthOfYear,
       int dayOfMonth) {
@@ -39,7 +40,7 @@ public class DismissableDatePickerDialog extends DatePickerDialog {
   public DismissableDatePickerDialog(
       Context context,
       int theme,
-      @Nullable OnDateSetListener callback,
+      @Nullable DatePickerDialog.OnDateSetListener callback,
       int year,
       int monthOfYear,
       int dayOfMonth) {

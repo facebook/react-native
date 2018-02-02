@@ -24,7 +24,7 @@ var invariant = require('fbjs/lib/invariant');
 const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 class StyleSheetValidation {
-  static validateStyleProp(prop, style, caller) {
+  static validateStyleProp(prop: string, style: Object, caller: string) {
     if (!__DEV__) {
       return;
     }
@@ -32,12 +32,6 @@ class StyleSheetValidation {
       var message1 = '"' + prop + '" is not a valid style property.';
       var message2 = '\nValid style props: ' +
         JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
-      /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.56 was deployed. To see
-       * the error delete this comment and run Flow. */
       styleError(message1, style, caller, message2);
     }
     var error = allStylePropTypes[prop](
@@ -49,17 +43,11 @@ class StyleSheetValidation {
       ReactPropTypesSecret,
     );
     if (error) {
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
-      /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.56 was deployed. To see
-       * the error delete this comment and run Flow. */
       styleError(error.message, style, caller);
     }
   }
 
-  static validateStyle(name, styles) {
+  static validateStyle(name: string, styles: Object) {
     if (!__DEV__) {
       return;
     }

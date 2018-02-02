@@ -176,6 +176,11 @@ class WindowedListView extends React.Component<Props, State> {
     maxNumToRender: 30,
     numToRenderAhead: 10,
     viewablePercentThreshold: 50,
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     renderScrollComponent: (props) => <ScrollView {...props} />,
     disableIncrementalRendering: false,
     recomputeRowsBatchingPeriod: 10, // This should capture most events that happen within a frame
@@ -387,7 +392,7 @@ class WindowedListView extends React.Component<Props, State> {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
@@ -682,6 +687,9 @@ class CellRenderer extends React.Component<CellProps> {
     }
   };
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timeout);
     this.props.onProgressChange({rowKey: this.props.rowKey, inProgress: false});
     this.props.onWillUnmount(this.props.rowKey);

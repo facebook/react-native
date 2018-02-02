@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -369,7 +371,7 @@ describe('Animated tests', () => {
       loop.start(cb);
 
       expect(animation.start).not.toBeCalled();
-      expect(cb).toBeCalledWith({ finished: true });
+      expect(cb).toBeCalledWith({finished: true});
     });
 
     it('supports interrupting an indefinite loop', () => {

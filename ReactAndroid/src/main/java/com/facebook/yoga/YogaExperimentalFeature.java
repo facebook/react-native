@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public enum YogaExperimentalFeature {
   WEB_FLEX_BASIS(0);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaExperimentalFeature(int intValue) {
     mIntValue = intValue;

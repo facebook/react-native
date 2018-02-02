@@ -52,12 +52,18 @@ function exec(command, logOutput) {
       process.stderr.write(data);
     });
 
-    child.on('exit', code => {
-      (code === 0)
-        ? resolve(stdout)
-        : reject(new Error(`Command '${command}' exited with code ${code}:
+    child.on('exit', (code, signal) => {
+      if (code === 0) {
+        resolve(stdout);
+      } else if (code) {
+        reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
 stdout: ${stdout}`));
+      } else {
+        reject(new Error(`Command '${command}' terminated with signal '${signal}':
+stderr: ${stderr}
+stdout: ${stdout}`));
+      }
     });
   });
 }
@@ -139,6 +145,28 @@ function configureGitEnv(tmpDir) {
    */
   process.env.GIT_DIR = path.resolve(tmpDir, '.gitrn');
   process.env.GIT_WORK_TREE = '.';
+}
+
+function copyCurrentGitIgnoreFile(tmpDir) {
+  /*
+   * The user may have added new files or directories in the .gitignore file.
+   * We need to keep those files ignored during the process, otherwise they
+   * will be deleted.
+   * See https://github.com/facebook/react-native/issues/12237
+   */
+  try {
+    const gitignorePath = path.resolve(process.cwd(), '.gitignore');
+    const repoExcludePath = path.resolve(tmpDir, process.env.GIT_DIR, 'info/exclude');
+    const content = fs.readFileSync(gitignorePath, 'utf8');
+    fs.appendFileSync(repoExcludePath, content);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      log.info('No .gitignore file found, this step is a no-op');
+      return;
+    }
+
+    throw err;
+  }
 }
 
 function generateTemplates(generatorDir, appName, verbose) {
@@ -271,14 +299,17 @@ async function run(requestedVersion, cliArgs) {
     log.info('Configure Git environment');
     configureGitEnv(tmpDir);
 
-    log.info('Init Git repository');
+    log.info('Init temporary Git repository');
     await exec('git init', verbose);
+
+    log.info('Save current .gitignore file');
+    copyCurrentGitIgnoreFile(tmpDir);
 
     log.info('Add all files to commit');
     await exec('git add .', verbose);
 
     log.info('Commit current project sources');
-    await exec('git commit -m "Project snapshot"', verbose);
+    await exec('git commit -m "Project snapshot" --no-verify', verbose);
 
     log.info('Create a tag before updating sources');
     await exec('git tag project-snapshot', verbose);
@@ -291,7 +322,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit old version template');
-    await exec('git commit -m "Old version" --allow-empty', verbose);
+    await exec('git commit -m "Old version" --allow-empty --no-verify', verbose);
 
     log.info('Install the new version');
     let installCommand;
@@ -314,7 +345,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit new version template');
-    await exec('git commit -m "New version" --allow-empty', verbose);
+    await exec('git commit -m "New version" --allow-empty --no-verify', verbose);
 
     log.info('Generate the patch between the 2 versions');
     const diffOutput = await exec('git diff --binary --no-color HEAD~1 HEAD', verbose);
@@ -345,7 +376,7 @@ async function run(requestedVersion, cliArgs) {
     log.error(err.stack);
     if (projectBackupCreated) {
       log.error('Restore initial sources');
-      await exec('git checkout project-snapshot', true);
+      await exec('git checkout project-snapshot --no-verify', true);
     }
   }
 }

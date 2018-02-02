@@ -86,6 +86,9 @@ public interface CatalystInstance
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
 
+  /** This method registers the file path of an additional JS segment by its ID. */
+  void registerSegment(int segmentId, String path);
+
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
 

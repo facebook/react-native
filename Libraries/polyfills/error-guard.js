@@ -11,8 +11,6 @@
  * @nolint
  */
 
-/* eslint-disable strict */
-
 let _inGuard = 0;
 
 /**

@@ -66,30 +66,10 @@ fs.readdir.mockImplementation((filepath, callback) => {
   return callback(null, Object.keys(node));
 });
 
-fs.readFile.mockImplementation(function(filepath, encoding, callback) {
-  callback = asyncCallback(callback);
-  if (arguments.length === 2) {
-    callback = encoding;
-    encoding = null;
-  }
-
-  let node;
-  try {
-    node = getToNode(filepath);
-    if (isDirNode(node)) {
-      callback(new Error('Error readFile a dir: ' + filepath));
-    }
-    if (node == null) {
-      return callback(Error('No such file: ' + filepath));
-    } else {
-      return callback(null, node);
-    }
-  } catch (e) {
-    return callback(e);
-  }
-});
+fs.readFile.mockImplementation(asyncify(fs.readFileSync));
 
 fs.readFileSync.mockImplementation(function(filepath, encoding) {
+  filepath = path.normalize(filepath);
   const node = getToNode(filepath);
   if (isDirNode(node)) {
     throw new Error('Error readFileSync a dir: ' + filepath);
@@ -103,6 +83,7 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
 fs.writeFile.mockImplementation(asyncify(fs.writeFileSync));
 
 fs.writeFileSync.mockImplementation((filePath, content, options) => {
+  filePath = path.normalize(filePath);
   if (options == null || typeof options === 'string') {
     options = {encoding: options};
   }
@@ -118,6 +99,33 @@ fs.writeFileSync.mockImplementation((filePath, content, options) => {
   node[path.basename(filePath)] = content;
 });
 
+const openFds = new Map();
+let nextFd = 3;
+
+fs.openSync.mockImplementation((filePath, flags) => {
+  const dirPath = path.dirname(filePath);
+  const node = getToNode(dirPath);
+  if (!isDirNode(node)) {
+    throw fsError('ENOTDIR', 'not a directory: ' + dirPath);
+  }
+  node[path.basename(filePath)] = '';
+  openFds.set(nextFd, {filePath, flags, node});
+  return nextFd++;
+});
+
+fs.writeSync.mockImplementation((fd, str) => {
+  invariant(typeof str === 'string', 'only strings supported');
+  const data = openFds.get(fd);
+  if (data == null || data.flags !== 'w') {
+    throw fsError('EBADF', 'bad file descriptor, write');
+  }
+  data.node[path.basename(data.filePath)] += str;
+});
+
+fs.closeSync.mockImplementation(fd => {
+  openFds.delete(fd);
+});
+
 fs.mkdir.mockImplementation(asyncify(fs.mkdirSync));
 
 fs.mkdirSync.mockImplementation((dirPath, mode) => {
@@ -126,7 +134,9 @@ fs.mkdirSync.mockImplementation((dirPath, mode) => {
   if (!isDirNode(node)) {
     throw fsError('ENOTDIR', 'not a directory: ' + parentPath);
   }
-  node[path.basename(dirPath)] = {};
+  if (node[path.basename(dirPath)] == null) {
+    node[path.basename(dirPath)] = {};
+  }
 });
 
 function fsError(code, message) {
@@ -255,7 +265,7 @@ fs.open.mockImplementation(function(filepath) {
   }
 
   if (error || data == null) {
-    error = Error(`ENOENT: no such file or directory, open ${filepath}`);
+    error = Error(`ENOENT: no such file or directory: \`${filepath}\``);
   }
   if (data != null) {
     /* global Buffer: true */
@@ -332,26 +342,31 @@ fs.createReadStream.mockImplementation(filepath => {
   });
 });
 
-fs.createWriteStream.mockImplementation(file => {
+fs.createWriteStream.mockImplementation(filePath => {
   let node;
+  const writeStream = new stream.Writable({
+    write(chunk, encoding, callback) {
+      this.__chunks.push(chunk);
+      node[path.basename(filePath)] = this.__chunks.join('');
+      callback();
+    },
+  });
+  writeStream.__file = filePath;
+  writeStream.__chunks = [];
+  writeStream.end = jest.fn(writeStream.end);
+  fs.createWriteStream.mock.returned.push(writeStream);
   try {
-    node = getToNode(dirname(file));
-  } finally {
-    if (typeof node === 'object') {
-      const writeStream = new stream.Writable({
-        write(chunk) {
-          this.__chunks.push(chunk);
-        },
-      });
-      writeStream.__file = file;
-      writeStream.__chunks = [];
-      writeStream.end = jest.fn(writeStream.end);
-      fs.createWriteStream.mock.returned.push(writeStream);
-      return writeStream;
-    } else {
-      throw new Error('Cannot open file ' + file);
+    const dirPath = dirname(filePath);
+    node = getToNode(dirPath);
+    if (!isDirNode(node)) {
+      throw fsError('ENOTDIR', 'not a directory: ' + dirPath);
     }
+    // Truncate the file on opening.
+    node[path.basename(filePath)] = '';
+  } catch (error) {
+    process.nextTick(() => writeStream.emit('error', error));
   }
+  return writeStream;
 });
 fs.createWriteStream.mock.returned = [];
 
@@ -409,7 +424,9 @@ function getToNode(filepath) {
     }
     node = node[part];
     if (node == null) {
-      const err = new Error('ENOENT: no such file or directory');
+      const err = new Error(
+        `ENOENT: no such file or directory: \`${filepath}\``,
+      );
       err.code = 'ENOENT';
       throw err;
     }

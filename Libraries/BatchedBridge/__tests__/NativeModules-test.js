@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -56,8 +57,8 @@ describe('MessageQueue', function() {
   });
 
   it('should make round trip and clear memory', function() {
-    const onFail = jasmine.createSpy();
-    const onSucc = jasmine.createSpy();
+    const onFail = jest.fn();
+    const onSucc = jest.fn();
 
     // Perform communication
     NativeModules.RemoteModule1.promiseMethod('paloAlto', 'menloPark', onFail, onSucc);
@@ -97,8 +98,8 @@ describe('MessageQueue', function() {
     expect(function() {
       BatchedBridge.__invokeCallback(firstSuccCBID, ['firstSucc']);
     }).toThrow();
-    expect(onFail.calls.count()).toBe(1);
-    expect(onSucc.calls.count()).toBe(0);
+    expect(onFail.mock.calls.length).toBe(1);
+    expect(onSucc.mock.calls.length).toBe(0);
 
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
@@ -106,7 +107,7 @@ describe('MessageQueue', function() {
     expect(function() {
       BatchedBridge.__invokeCallback(secondFailCBID, ['secondFail']);
     }).toThrow();
-    expect(onFail.calls.count()).toBe(1);
-    expect(onSucc.calls.count()).toBe(1);
+    expect(onFail.mock.calls.length).toBe(1);
+    expect(onSucc.mock.calls.length).toBe(1);
   });
 });
