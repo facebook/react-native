@@ -11,11 +11,15 @@ import android.os.Build;
 
 import com.facebook.common.logging.FLog;
 
+import javax.annotation.Nullable;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
@@ -76,7 +80,16 @@ public class OkHttpClientProvider {
   public static OkHttpClient.Builder enableTls12OnLollipopAndBelow(OkHttpClient.Builder client) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
       try {
-        client.sslSocketFactory(new TLSSocketFactory());
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+                        TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init((KeyStore) null);
+        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+        if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
+          throw new IllegalStateException("Unexpected default trust managers:" + Arrays.toString(trustManagers));
+        }
+        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+
+        client.sslSocketFactory(new TLSSocketFactory(trustManager), trustManager);
 
         ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                 .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
