@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^AnimatedPostOperation)(id nodesManager);
+
 @interface RCTAnimatedNode : NSObject
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -30,7 +32,13 @@
 /**
  * The node will update its value if necesarry and only after its parents have updated.
  */
-- (void)updateNodeIfNecessary NS_REQUIRES_SUPER;
+- (void)updateNodeIfNecessary:(NSMutableArray<AnimatedPostOperation> *)postUpdateQueue NS_REQUIRES_SUPER;
+
+/**
+ * The node can call this method to enqueue some actions to be executed after all the values
+ * are updated.
+ */
+- (void)schedulePostUpdate:(AnimatedPostOperation)operation NS_REQUIRES_SUPER;
 
 /**
  * Where the actual update code lives. Called internally from updateNodeIfNecessary
