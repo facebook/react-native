@@ -81,8 +81,10 @@ describe('link', () => {
   it('should register native module when android/ios projects are present', (done) => {
     const registerNativeModule = sinon.stub();
     const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};
+    const androidLinkConfig = require('../android');
+    const iosLinkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getPlatformConfig: () => ({ios: { linkConfig: iosLinkConfig }, android: { linkConfig: androidLinkConfig }}),
       getProjectConfig: () => ({android: {}, ios: {}, assets: []}),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
@@ -223,8 +225,9 @@ describe('link', () => {
       sinon.stub().returns(false)
     );
 
+    const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: {}}),
+      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig }}),
       getProjectConfig: () => ({ ios: {}, assets: [] }),
       getDependencyConfig: sinon.stub().returns({
         ios: {}, assets: [], commands: { prelink, postlink },
@@ -251,8 +254,9 @@ describe('link', () => {
       copyAssets
     );
 
+    const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: {} }),
+      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig } }),
       getProjectConfig: () => ({ ios: {}, assets: projectAssets }),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
