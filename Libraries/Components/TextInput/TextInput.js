@@ -591,6 +591,7 @@ const TextInput = createReactClass({
     ]),
     /**
      * If `true`, caret is hidden. The default value is `false`.
+     * This property is supported only for single-line TextInput component on iOS.
      */
     caretHidden: PropTypes.bool,
   },
