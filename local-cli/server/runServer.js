@@ -198,7 +198,6 @@ function getPackagerServer(args, config, reporter) {
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
-
     transformCache: args.cacheDir || TransformCaching.useTempDir(),
     useDeltaBundler: false,
     verbose: args.verbose,
