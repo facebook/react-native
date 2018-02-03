@@ -592,22 +592,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.state = initialState;
   }
 
-  componentDidMount() {
-    if (this.props.initialScrollIndex) {
-      this._initialScrollIndexTimeout = setTimeout(
-        () =>
-          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.63 was deployed. To see the error
-           * delete this comment and run Flow. */
-          this.scrollToIndex({
-            animated: false,
-            index: this.props.initialScrollIndex,
-          }),
-        0,
-      );
-    }
-  }
-
   componentWillUnmount() {
     if (this._isNestedWithSameOrientation()) {
       this.context.virtualizedList.unregisterAsNestedChild({
@@ -625,10 +609,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
-    clearTimeout(this._initialScrollIndexTimeout);
   }
 
   componentWillReceiveProps(newProps: Props) {
@@ -954,7 +934,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _initialScrollIndexTimeout = 0;
+  _hasDoneInitialScroll = false;
   _nestedChildLists: Map<
     string,
     {ref: ?VirtualizedList, state: ?ChildListState},
@@ -1206,6 +1186,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    if (
+      width > 0 &&
+      height > 0 &&
+      this.props.initialScrollIndex != null &&
+      this.props.initialScrollIndex > 0 &&
+      !this._hasDoneInitialScroll
+    ) {
+      this.scrollToIndex({
+        animated: false,
+        index: this.props.initialScrollIndex,
+      });
+      this._hasDoneInitialScroll = true;
+    }
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
