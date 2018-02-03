@@ -293,7 +293,7 @@ const sequence = function(
 
       if (animations.length === 0) {
         callback && callback({finished: true});
-      } else {
+      } else if (animations[current]){
         animations[current].start(onComplete);
       }
     },
