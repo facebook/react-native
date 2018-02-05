@@ -72,6 +72,7 @@ struct YGNode {
   uint32_t getLineIndex() const;
   YGNodeRef getParent() const;
   YGVector getChildren() const;
+  uint32_t getChildrenCount() const;
   YGNodeRef getChild(uint32_t index) const;
   YGNodeRef getNextChild() const;
   YGConfigRef getConfig() const;

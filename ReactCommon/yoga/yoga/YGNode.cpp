@@ -59,6 +59,10 @@ YGVector YGNode::getChildren() const {
   return children_;
 }
 
+uint32_t YGNode::getChildrenCount() const {
+  return static_cast<uint32_t>(children_.size());
+}
+
 YGNodeRef YGNode::getChild(uint32_t index) const {
   return children_.at(index);
 }
