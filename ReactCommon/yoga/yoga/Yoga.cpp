@@ -1701,6 +1701,10 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
   return flexAlgoRowMeasurement;
 }
 
+// It distributes the free space to the flexible items and ensures that the size
+// of the flex items abide the min and max constraints. At the end of this
+// function the child nodes would have proper size. Prior using this function
+// please ensure that YGDistributeFreeSpaceFirstPass is called.
 static void YGDistributeFreeSpaceSecondPass(
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const YGNodeRef node,
@@ -1878,9 +1882,9 @@ static void YGDistributeFreeSpaceSecondPass(
   collectedFlexItemsValues.remainingFreeSpace += deltaFreeSpace;
 }
 
-// It distributes the free space to the flexible items, for those flexible items
-// whose min and max constraints are triggered, the clamped size is removed from
-// the remaingfreespace.
+// It distributes the free space to the flexible items.For those flexible items
+// whose min and max constraints are triggered, those flex item's clamped size
+// is removed from the remaingfreespace.
 static void YGDistributeFreeSpaceFirstPass(
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const YGFlexDirection mainAxis,
@@ -1957,6 +1961,70 @@ static void YGDistributeFreeSpaceFirstPass(
     }
   }
   collectedFlexItemsValues.remainingFreeSpace -= deltaFreeSpace;
+}
+
+// Do two passes over the flex items to figure out how to distribute the
+// remaining space.
+// The first pass finds the items whose min/max constraints trigger,
+// freezes them at those
+// sizes, and excludes those sizes from the remaining space. The second
+// pass sets the size
+// of each flexible item. It distributes the remaining space amongst the
+// items whose min/max
+// constraints didn't trigger in pass 1. For the other items, it sets
+// their sizes by forcing
+// their min/max constraints to trigger again.
+//
+// This two pass approach for resolving min/max constraints deviates from
+// the spec. The
+// spec (https://www.w3.org/TR/YG-flexbox-1/#resolve-flexible-lengths)
+// describes a process
+// that needs to be repeated a variable number of times. The algorithm
+// implemented here
+// won't handle all cases but it was simpler to implement and it mitigates
+// performance
+// concerns because we know exactly how many passes it'll do.
+//
+// At the end of this function the child nodes would have the proper size
+// assigned to them.
+//
+static void YGResolveFlexibleLength(
+    const YGNodeRef node,
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
+    const YGFlexDirection mainAxis,
+    const YGFlexDirection crossAxis,
+    const float mainAxisParentSize,
+    const float availableInnerMainDim,
+    const float availableInnerCrossDim,
+    const float availableInnerWidth,
+    const float availableInnerHeight,
+    const bool flexBasisOverflows,
+    const YGMeasureMode measureModeCrossDim,
+    const bool performLayout,
+    const YGConfigRef config) {
+  // First pass: detect the flex items whose min/max constraints trigger
+  YGDistributeFreeSpaceFirstPass(
+      collectedFlexItemsValues,
+      mainAxis,
+      mainAxisParentSize,
+      availableInnerMainDim,
+      availableInnerWidth);
+
+  // Second pass: resolve the sizes of the flexible items
+  YGDistributeFreeSpaceSecondPass(
+      collectedFlexItemsValues,
+      node,
+      mainAxis,
+      crossAxis,
+      mainAxisParentSize,
+      availableInnerMainDim,
+      availableInnerCrossDim,
+      availableInnerWidth,
+      availableInnerHeight,
+      flexBasisOverflows,
+      measureModeCrossDim,
+      performLayout,
+      config);
 }
 
 //
@@ -2304,40 +2372,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     }
 
     if (!canSkipFlex) {
-      // Do two passes over the flex items to figure out how to distribute the
-      // remaining space.
-      // The first pass finds the items whose min/max constraints trigger,
-      // freezes them at those
-      // sizes, and excludes those sizes from the remaining space. The second
-      // pass sets the size
-      // of each flexible item. It distributes the remaining space amongst the
-      // items whose min/max
-      // constraints didn't trigger in pass 1. For the other items, it sets
-      // their sizes by forcing
-      // their min/max constraints to trigger again.
-      //
-      // This two pass approach for resolving min/max constraints deviates from
-      // the spec. The
-      // spec (https://www.w3.org/TR/YG-flexbox-1/#resolve-flexible-lengths)
-      // describes a process
-      // that needs to be repeated a variable number of times. The algorithm
-      // implemented here
-      // won't handle all cases but it was simpler to implement and it mitigates
-      // performance
-      // concerns because we know exactly how many passes it'll do.
-
-      // First pass: detect the flex items whose min/max constraints trigger
-      YGDistributeFreeSpaceFirstPass(
-          collectedFlexItemsValues,
-          mainAxis,
-          mainAxisParentSize,
-          availableInnerMainDim,
-          availableInnerWidth);
-
-      // Second pass: resolve the sizes of the flexible items
-      YGDistributeFreeSpaceSecondPass(
-          collectedFlexItemsValues,
+      YGResolveFlexibleLength(
           node,
+          collectedFlexItemsValues,
           mainAxis,
           crossAxis,
           mainAxisParentSize,
