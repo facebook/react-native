@@ -184,16 +184,16 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   @autoreleasepool {
     bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:nil launchOptions:nil];
     batchedBridge = bridge.batchedBridge;
-    XCTAssertTrue([batchedBridge isValid], @"RCTBatchedBridge should be valid");
+    XCTAssertTrue([batchedBridge isValid], @"RCTBridge impl should be valid");
     [bridge reload];
   }
 
   RCT_RUN_RUNLOOP_WHILE(batchedBridge != nil)
 
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
-  XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
+  XCTAssertNil(batchedBridge, @"RCTBridge impl should have been deallocated");
 
-  // Wait to complete the test until the new batchedbridge is also deallocated
+  // Wait to complete the test until the new bridge impl is also deallocated
   @autoreleasepool {
     batchedBridge = bridge.batchedBridge;
     [bridge invalidate];

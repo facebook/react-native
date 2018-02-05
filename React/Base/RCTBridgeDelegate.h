@@ -50,20 +50,6 @@
 - (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
 
 /**
- * Configure whether the legacy RCTBatchedBridge or new RCTCxxBridge
- * should be used.  If this method is implemented and the specified
- * bridge is not linked in, startup will fail.  If this method is not
- * implemented, the implementation will default to RCTBatchedBridge,
- * but if it is not linked in, will try RCTCxxBridge instead.  If
- * neither bridge is linked in, startup will fail.  This order will be
- * reversed in the near future, as the legacy bridge is closer to
- * being removed.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeUseCxxBridge:(RCTBridge *)bridge;
-
-/**
 * The bridge will call this method when a module been called from JS
 * cannot be found among registered modules.
 * It should return YES if the module with name 'moduleName' was registered

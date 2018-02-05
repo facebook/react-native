@@ -1,3 +1,4 @@
+# coding: utf-8
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
@@ -50,8 +51,6 @@ Pod::Spec.new do |s|
                               "React/Inspector/*",
                               "ReactCommon/yoga/*",
                               "React/Cxx*/*",
-                              "React/Base/RCTBatchedBridge.mm",
-                              "React/Executors/*"
     ss.ios.exclude_files    = "React/**/RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
                               "React/Views/RCTDatePicker*",
@@ -64,12 +63,6 @@ Pod::Spec.new do |s|
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-  end
-
-  s.subspec "BatchedBridge" do |ss|
-    ss.dependency             "React/Core"
-    ss.dependency             "React/cxxreact_legacy"
-    ss.source_files         = "React/Base/RCTBatchedBridge.mm", "React/Executors/*"
   end
 
   s.subspec "CxxBridge" do |ss|
@@ -91,27 +84,6 @@ Pod::Spec.new do |s|
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
     ss.source_files         = "React/**/RCTTV*.{h, m}"
-  end
-
-  s.subspec "jschelpers_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
-    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-    ss.framework            = "JavaScriptCore"
-  end
-
-  s.subspec "jsinspector_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jsinspector/{InspectorInterfaces}.{cpp,h}"
-    ss.private_header_files = "ReactCommon/jsinspector/{InspectorInterfaces}.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-  end
-
-  s.subspec "cxxreact_legacy" do |ss|
-    ss.dependency             "React/jschelpers_legacy"
-    ss.dependency             "React/jsinspector_legacy"
-    ss.source_files         = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}"
-    ss.private_header_files = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "jschelpers" do |ss|

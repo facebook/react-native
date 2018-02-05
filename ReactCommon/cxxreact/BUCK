@@ -53,7 +53,6 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//folly:scope_guard",
@@ -75,7 +74,6 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",

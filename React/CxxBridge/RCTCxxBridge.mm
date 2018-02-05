@@ -52,9 +52,6 @@
 #import "RCTDevLoadingView.h"
 #endif
 
-@interface RCTCxxBridge : RCTBridge
-@end
-
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
             @"This method must be called on JS thread")
@@ -522,11 +519,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
-- (NSArray *)configForModuleName:(NSString *)moduleName
-{
-  return _moduleDataByName[moduleName].config;
-}
-
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
@@ -535,13 +527,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClasses.count];
   for (Class moduleClass in moduleClasses) {
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
-
-    // Don't initialize the old executor in the new bridge.
-    // TODO mhorowitz #10487027: after D3175632 lands, we won't need
-    // this, because it won't be eagerly initialized.
-    if ([moduleName isEqualToString:@"RCTJSCExecutor"]) {
-      continue;
-    }
 
     // Check for module name collisions
     RCTModuleData *moduleData = _moduleDataByName[moduleName];
@@ -685,7 +670,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)_prepareModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
 {
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge prepareModulesWithDispatch]", nil);
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCxxBridge _prepareModulesWithDispatchGroup]", nil);
 
   BOOL initializeImmediately = NO;
   if (dispatchGroup == NULL) {
