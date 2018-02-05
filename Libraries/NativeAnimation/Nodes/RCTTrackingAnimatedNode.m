@@ -25,7 +25,7 @@
     _animationId = config[@"animationId"];
     _nodeTag = config[@"toValue"];
     _valueNodeTag = config[@"value"];
-    _animationConfig = config[@"animationConfig"];
+    _animationConfig = [NSMutableDictionary dictionaryWithDictionary:config[@"animationConfig"]];
   }
   return self;
 }
@@ -40,11 +40,11 @@
 {
   [super performUpdate];
 
-  // clone animation config and update "toValue" to reflect updated value of the parent node
+  // change animation config's "toValue" to reflect updated value of the parent node
   RCTValueAnimatedNode *node = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_nodeTag];
-  NSMutableDictionary *config = [NSMutableDictionary dictionaryWithDictionary:_animationConfig];
-  [config setValue:@(node.value) forKey:@"toValue"];
+  [_animationConfig setValue:@(node.value) forKey:@"toValue"];
 
+  NSDictionary *config = _animationConfig;
   NSNumber *animationId = _animationId;
   NSNumber *valueNodeTag = _valueNodeTag;
   [self.manager schedulePostUpdateOperation:^(RCTNativeAnimatedNodesManager * _Nonnull manager) {
