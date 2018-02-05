@@ -44,6 +44,7 @@ struct YGCollectFlexItemsRowValues {
   float totalFlexShrinkScaledFactors;
   float endOfLineIndex;
   std::vector<YGNodeRef> relativeChildren;
+  float remainingFreeSpace;
 };
 
 bool YGValueEqual(const YGValue a, const YGValue b);

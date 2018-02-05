@@ -1701,6 +1701,87 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
   return flexAlgoRowMeasurement;
 }
 
+// It distributes the free space to the flexible items, for those flexible items
+// whose min and max constraints are triggered, the clamped size is removed from
+// the remaingfreespace.
+static void YGDistributeFreeSpaceFirstPass(
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
+    const YGFlexDirection mainAxis,
+    const float mainAxisParentSize,
+    const float availableInnerMainDim,
+    const float availableInnerWidth) {
+  float flexShrinkScaledFactor = 0;
+  float flexGrowFactor = 0;
+  float baseMainSize = 0;
+  float boundMainSize = 0;
+  float deltaFreeSpace = 0;
+
+  for (auto currentRelativeChild : collectedFlexItemsValues.relativeChildren) {
+    float childFlexBasis = YGNodeBoundAxisWithinMinAndMax(
+        currentRelativeChild,
+        mainAxis,
+        currentRelativeChild->getLayout().computedFlexBasis,
+        mainAxisParentSize);
+
+    if (collectedFlexItemsValues.remainingFreeSpace < 0) {
+      flexShrinkScaledFactor =
+          -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
+
+      // Is this child able to shrink?
+      if (flexShrinkScaledFactor != 0) {
+        baseMainSize = childFlexBasis +
+            collectedFlexItemsValues.remainingFreeSpace /
+                collectedFlexItemsValues.totalFlexShrinkScaledFactors *
+                flexShrinkScaledFactor;
+        boundMainSize = YGNodeBoundAxis(
+            currentRelativeChild,
+            mainAxis,
+            baseMainSize,
+            availableInnerMainDim,
+            availableInnerWidth);
+        if (baseMainSize != boundMainSize) {
+          // By excluding this item's size and flex factor from remaining,
+          // this item's
+          // min/max constraints should also trigger in the second pass
+          // resulting in the
+          // item's size calculation being identical in the first and second
+          // passes.
+          deltaFreeSpace += boundMainSize - childFlexBasis;
+          collectedFlexItemsValues.totalFlexShrinkScaledFactors -=
+              flexShrinkScaledFactor;
+        }
+      }
+    } else if (collectedFlexItemsValues.remainingFreeSpace > 0) {
+      flexGrowFactor = currentRelativeChild->resolveFlexGrow();
+
+      // Is this child able to grow?
+      if (flexGrowFactor != 0) {
+        baseMainSize = childFlexBasis +
+            collectedFlexItemsValues.remainingFreeSpace /
+                collectedFlexItemsValues.totalFlexGrowFactors * flexGrowFactor;
+        boundMainSize = YGNodeBoundAxis(
+            currentRelativeChild,
+            mainAxis,
+            baseMainSize,
+            availableInnerMainDim,
+            availableInnerWidth);
+
+        if (baseMainSize != boundMainSize) {
+          // By excluding this item's size and flex factor from remaining,
+          // this item's
+          // min/max constraints should also trigger in the second pass
+          // resulting in the
+          // item's size calculation being identical in the first and second
+          // passes.
+          deltaFreeSpace += boundMainSize - childFlexBasis;
+          collectedFlexItemsValues.totalFlexGrowFactors -= flexGrowFactor;
+        }
+      }
+    }
+  }
+  collectedFlexItemsValues.remainingFreeSpace -= deltaFreeSpace;
+}
+
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
@@ -2033,27 +2114,26 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
-    float remainingFreeSpace = 0;
     if (!sizeBasedOnContent && !YGFloatIsUndefined(availableInnerMainDim)) {
-      remainingFreeSpace = availableInnerMainDim -
+      collectedFlexItemsValues.remainingFreeSpace = availableInnerMainDim -
           collectedFlexItemsValues.sizeConsumedOnCurrentLine;
     } else if (collectedFlexItemsValues.sizeConsumedOnCurrentLine < 0) {
       // availableInnerMainDim is indefinite which means the node is being sized based on its
       // content.
       // sizeConsumedOnCurrentLine is negative which means the node will allocate 0 points for
       // its content. Consequently, remainingFreeSpace is 0 - sizeConsumedOnCurrentLine.
-      remainingFreeSpace = -collectedFlexItemsValues.sizeConsumedOnCurrentLine;
+      collectedFlexItemsValues.remainingFreeSpace =
+          -collectedFlexItemsValues.sizeConsumedOnCurrentLine;
     }
 
-    const float originalRemainingFreeSpace = remainingFreeSpace;
+    const float originalRemainingFreeSpace =
+        collectedFlexItemsValues.remainingFreeSpace;
     float deltaFreeSpace = 0;
 
     if (!canSkipFlex) {
       float childFlexBasis;
       float flexShrinkScaledFactor;
       float flexGrowFactor;
-      float baseMainSize;
-      float boundMainSize;
 
       // Do two passes over the flex items to figure out how to distribute the
       // remaining space.
@@ -2078,80 +2158,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       // concerns because we know exactly how many passes it'll do.
 
       // First pass: detect the flex items whose min/max constraints trigger
-      float deltaFlexShrinkScaledFactors = 0;
-      float deltaFlexGrowFactors = 0;
-
-      for (auto currentRelativeChild :
-           collectedFlexItemsValues.relativeChildren) {
-        childFlexBasis = YGNodeBoundAxisWithinMinAndMax(
-            currentRelativeChild,
-            mainAxis,
-            currentRelativeChild->getLayout().computedFlexBasis,
-            mainAxisParentSize);
-
-        if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor =
-              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
-
-          // Is this child able to shrink?
-          if (flexShrinkScaledFactor != 0) {
-            baseMainSize = childFlexBasis +
-                remainingFreeSpace /
-                    collectedFlexItemsValues.totalFlexShrinkScaledFactors *
-                    flexShrinkScaledFactor;
-            boundMainSize = YGNodeBoundAxis(
-                currentRelativeChild,
-                mainAxis,
-                baseMainSize,
-                availableInnerMainDim,
-                availableInnerWidth);
-            if (baseMainSize != boundMainSize) {
-              // By excluding this item's size and flex factor from remaining,
-              // this item's
-              // min/max constraints should also trigger in the second pass
-              // resulting in the
-              // item's size calculation being identical in the first and second
-              // passes.
-              deltaFreeSpace -= boundMainSize - childFlexBasis;
-              deltaFlexShrinkScaledFactors -= flexShrinkScaledFactor;
-            }
-          }
-        } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
-
-          // Is this child able to grow?
-          if (flexGrowFactor != 0) {
-            baseMainSize = childFlexBasis +
-                remainingFreeSpace /
-                    collectedFlexItemsValues.totalFlexGrowFactors *
-                    flexGrowFactor;
-            boundMainSize = YGNodeBoundAxis(
-                currentRelativeChild,
-                mainAxis,
-                baseMainSize,
-                availableInnerMainDim,
-                availableInnerWidth);
-
-            if (baseMainSize != boundMainSize) {
-              // By excluding this item's size and flex factor from remaining,
-              // this item's
-              // min/max constraints should also trigger in the second pass
-              // resulting in the
-              // item's size calculation being identical in the first and second
-              // passes.
-              deltaFreeSpace -= boundMainSize - childFlexBasis;
-              deltaFlexGrowFactors -= flexGrowFactor;
-            }
-          }
-        }
-
-        currentRelativeChild = currentRelativeChild->getNextChild();
-      }
-
-      collectedFlexItemsValues.totalFlexShrinkScaledFactors +=
-          deltaFlexShrinkScaledFactors;
-      collectedFlexItemsValues.totalFlexGrowFactors += deltaFlexGrowFactors;
-      remainingFreeSpace += deltaFreeSpace;
+      YGDistributeFreeSpaceFirstPass(
+          collectedFlexItemsValues,
+          mainAxis,
+          mainAxisParentSize,
+          availableInnerMainDim,
+          availableInnerWidth);
 
       // Second pass: resolve the sizes of the flexible items
       deltaFreeSpace = 0;
@@ -2164,7 +2176,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             mainAxisParentSize);
         float updatedMainSize = childFlexBasis;
 
-        if (remainingFreeSpace < 0) {
+        if (collectedFlexItemsValues.remainingFreeSpace < 0) {
           flexShrinkScaledFactor =
               -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
           // Is this child able to shrink?
@@ -2175,7 +2187,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               childSize = childFlexBasis + flexShrinkScaledFactor;
             } else {
               childSize = childFlexBasis +
-                  (remainingFreeSpace /
+                  (collectedFlexItemsValues.remainingFreeSpace /
                    collectedFlexItemsValues.totalFlexShrinkScaledFactors) *
                       flexShrinkScaledFactor;
             }
@@ -2187,7 +2199,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 availableInnerMainDim,
                 availableInnerWidth);
           }
-        } else if (remainingFreeSpace > 0) {
+        } else if (collectedFlexItemsValues.remainingFreeSpace > 0) {
           flexGrowFactor = currentRelativeChild->resolveFlexGrow();
 
           // Is this child able to grow?
@@ -2196,7 +2208,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 currentRelativeChild,
                 mainAxis,
                 childFlexBasis +
-                    remainingFreeSpace /
+                    collectedFlexItemsValues.remainingFreeSpace /
                         collectedFlexItemsValues.totalFlexGrowFactors *
                         flexGrowFactor,
                 availableInnerMainDim,
@@ -2315,9 +2327,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
-    remainingFreeSpace = originalRemainingFreeSpace + deltaFreeSpace;
+    collectedFlexItemsValues.remainingFreeSpace =
+        originalRemainingFreeSpace + deltaFreeSpace;
     node->setLayoutHadOverflow(
-        node->getLayout().hadOverflow | (remainingFreeSpace < 0));
+        node->getLayout().hadOverflow |
+        (collectedFlexItemsValues.remainingFreeSpace < 0));
 
     // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
 
@@ -2331,20 +2345,22 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If we are using "at most" rules in the main axis. Calculate the remaining space when
     // constraint by the min size defined for the main axis.
 
-    if (measureModeMainDim == YGMeasureModeAtMost && remainingFreeSpace > 0) {
+    if (measureModeMainDim == YGMeasureModeAtMost &&
+        collectedFlexItemsValues.remainingFreeSpace > 0) {
       if (node->getStyle().minDimensions[dim[mainAxis]].unit !=
               YGUnitUndefined &&
           YGResolveValue(
               node->getStyle().minDimensions[dim[mainAxis]],
               mainAxisParentSize) >= 0) {
-        remainingFreeSpace = fmaxf(
+        collectedFlexItemsValues.remainingFreeSpace = fmaxf(
             0,
             YGResolveValue(
                 node->getStyle().minDimensions[dim[mainAxis]],
                 mainAxisParentSize) -
-                (availableInnerMainDim - remainingFreeSpace));
+                (availableInnerMainDim -
+                 collectedFlexItemsValues.remainingFreeSpace));
       } else {
-        remainingFreeSpace = 0;
+        collectedFlexItemsValues.remainingFreeSpace = 0;
       }
     }
 
@@ -2371,14 +2387,15 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     if (numberOfAutoMarginsOnCurrentLine == 0) {
       switch (justifyContent) {
         case YGJustifyCenter:
-          leadingMainDim = remainingFreeSpace / 2;
+          leadingMainDim = collectedFlexItemsValues.remainingFreeSpace / 2;
           break;
         case YGJustifyFlexEnd:
-          leadingMainDim = remainingFreeSpace;
+          leadingMainDim = collectedFlexItemsValues.remainingFreeSpace;
           break;
         case YGJustifySpaceBetween:
           if (collectedFlexItemsValues.itemsOnLine > 1) {
-            betweenMainDim = fmaxf(remainingFreeSpace, 0) /
+            betweenMainDim =
+                fmaxf(collectedFlexItemsValues.remainingFreeSpace, 0) /
                 (collectedFlexItemsValues.itemsOnLine - 1);
           } else {
             betweenMainDim = 0;
@@ -2386,14 +2403,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           break;
         case YGJustifySpaceEvenly:
           // Space is distributed evenly across all elements
-          betweenMainDim =
-              remainingFreeSpace / (collectedFlexItemsValues.itemsOnLine + 1);
+          betweenMainDim = collectedFlexItemsValues.remainingFreeSpace /
+              (collectedFlexItemsValues.itemsOnLine + 1);
           leadingMainDim = betweenMainDim;
           break;
         case YGJustifySpaceAround:
           // Space on the edges is half of the space between elements
-          betweenMainDim =
-              remainingFreeSpace / collectedFlexItemsValues.itemsOnLine;
+          betweenMainDim = collectedFlexItemsValues.remainingFreeSpace /
+              collectedFlexItemsValues.itemsOnLine;
           leadingMainDim = betweenMainDim / 2;
           break;
         case YGJustifyFlexStart:
@@ -2427,7 +2444,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         // do not take part in that phase.
         if (child->getStyle().positionType == YGPositionTypeRelative) {
           if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
-            mainDim += remainingFreeSpace / numberOfAutoMarginsOnCurrentLine;
+            mainDim += collectedFlexItemsValues.remainingFreeSpace /
+                numberOfAutoMarginsOnCurrentLine;
           }
 
           if (performLayout) {
@@ -2437,7 +2455,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           }
 
           if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
-            mainDim += remainingFreeSpace / numberOfAutoMarginsOnCurrentLine;
+            mainDim += collectedFlexItemsValues.remainingFreeSpace /
+                numberOfAutoMarginsOnCurrentLine;
           }
 
           if (canSkipFlex) {
