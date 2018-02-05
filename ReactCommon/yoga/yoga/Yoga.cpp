@@ -1701,6 +1701,183 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
   return flexAlgoRowMeasurement;
 }
 
+static void YGDistributeFreeSpaceSecondPass(
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
+    const YGNodeRef node,
+    const YGFlexDirection mainAxis,
+    const YGFlexDirection crossAxis,
+    const float mainAxisParentSize,
+    const float availableInnerMainDim,
+    const float availableInnerCrossDim,
+    const float availableInnerWidth,
+    const float availableInnerHeight,
+    const bool flexBasisOverflows,
+    const YGMeasureMode measureModeCrossDim,
+    const bool performLayout,
+    const YGConfigRef config) {
+  float childFlexBasis = 0;
+  float flexShrinkScaledFactor = 0;
+  float flexGrowFactor = 0;
+  float deltaFreeSpace = 0;
+  const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
+  const bool isNodeFlexWrap = node->getStyle().flexWrap != YGWrapNoWrap;
+
+  for (auto currentRelativeChild : collectedFlexItemsValues.relativeChildren) {
+    childFlexBasis = YGNodeBoundAxisWithinMinAndMax(
+        currentRelativeChild,
+        mainAxis,
+        currentRelativeChild->getLayout().computedFlexBasis,
+        mainAxisParentSize);
+    float updatedMainSize = childFlexBasis;
+
+    if (collectedFlexItemsValues.remainingFreeSpace < 0) {
+      flexShrinkScaledFactor =
+          -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
+      // Is this child able to shrink?
+      if (flexShrinkScaledFactor != 0) {
+        float childSize;
+
+        if (collectedFlexItemsValues.totalFlexShrinkScaledFactors == 0) {
+          childSize = childFlexBasis + flexShrinkScaledFactor;
+        } else {
+          childSize = childFlexBasis +
+              (collectedFlexItemsValues.remainingFreeSpace /
+               collectedFlexItemsValues.totalFlexShrinkScaledFactors) *
+                  flexShrinkScaledFactor;
+        }
+
+        updatedMainSize = YGNodeBoundAxis(
+            currentRelativeChild,
+            mainAxis,
+            childSize,
+            availableInnerMainDim,
+            availableInnerWidth);
+      }
+    } else if (collectedFlexItemsValues.remainingFreeSpace > 0) {
+      flexGrowFactor = currentRelativeChild->resolveFlexGrow();
+
+      // Is this child able to grow?
+      if (flexGrowFactor != 0) {
+        updatedMainSize = YGNodeBoundAxis(
+            currentRelativeChild,
+            mainAxis,
+            childFlexBasis +
+                collectedFlexItemsValues.remainingFreeSpace /
+                    collectedFlexItemsValues.totalFlexGrowFactors *
+                    flexGrowFactor,
+            availableInnerMainDim,
+            availableInnerWidth);
+      }
+    }
+
+    deltaFreeSpace -= updatedMainSize - childFlexBasis;
+
+    const float marginMain = YGNodeMarginForAxis(
+        currentRelativeChild, mainAxis, availableInnerWidth);
+    const float marginCross = YGNodeMarginForAxis(
+        currentRelativeChild, crossAxis, availableInnerWidth);
+
+    float childCrossSize;
+    float childMainSize = updatedMainSize + marginMain;
+    YGMeasureMode childCrossMeasureMode;
+    YGMeasureMode childMainMeasureMode = YGMeasureModeExactly;
+
+    if (!YGFloatIsUndefined(currentRelativeChild->getStyle().aspectRatio)) {
+      childCrossSize = isMainAxisRow ? (childMainSize - marginMain) /
+              currentRelativeChild->getStyle().aspectRatio
+                                     : (childMainSize - marginMain) *
+              currentRelativeChild->getStyle().aspectRatio;
+      childCrossMeasureMode = YGMeasureModeExactly;
+
+      childCrossSize += marginCross;
+    } else if (
+        !YGFloatIsUndefined(availableInnerCrossDim) &&
+        !YGNodeIsStyleDimDefined(
+            currentRelativeChild, crossAxis, availableInnerCrossDim) &&
+        measureModeCrossDim == YGMeasureModeExactly &&
+        !(isNodeFlexWrap && flexBasisOverflows) &&
+        YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
+        currentRelativeChild->marginLeadingValue(crossAxis).unit !=
+            YGUnitAuto &&
+        currentRelativeChild->marginTrailingValue(crossAxis).unit !=
+            YGUnitAuto) {
+      childCrossSize = availableInnerCrossDim;
+      childCrossMeasureMode = YGMeasureModeExactly;
+    } else if (!YGNodeIsStyleDimDefined(
+                   currentRelativeChild, crossAxis, availableInnerCrossDim)) {
+      childCrossSize = availableInnerCrossDim;
+      childCrossMeasureMode = YGFloatIsUndefined(childCrossSize)
+          ? YGMeasureModeUndefined
+          : YGMeasureModeAtMost;
+    } else {
+      childCrossSize =
+          YGResolveValue(
+              currentRelativeChild->getResolvedDimension(dim[crossAxis]),
+              availableInnerCrossDim) +
+          marginCross;
+      const bool isLoosePercentageMeasurement =
+          currentRelativeChild->getResolvedDimension(dim[crossAxis]).unit ==
+              YGUnitPercent &&
+          measureModeCrossDim != YGMeasureModeExactly;
+      childCrossMeasureMode =
+          YGFloatIsUndefined(childCrossSize) || isLoosePercentageMeasurement
+          ? YGMeasureModeUndefined
+          : YGMeasureModeExactly;
+    }
+
+    YGConstrainMaxSizeForMode(
+        currentRelativeChild,
+        mainAxis,
+        availableInnerMainDim,
+        availableInnerWidth,
+        &childMainMeasureMode,
+        &childMainSize);
+    YGConstrainMaxSizeForMode(
+        currentRelativeChild,
+        crossAxis,
+        availableInnerCrossDim,
+        availableInnerWidth,
+        &childCrossMeasureMode,
+        &childCrossSize);
+
+    const bool requiresStretchLayout =
+        !YGNodeIsStyleDimDefined(
+            currentRelativeChild, crossAxis, availableInnerCrossDim) &&
+        YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
+        currentRelativeChild->marginLeadingValue(crossAxis).unit !=
+            YGUnitAuto &&
+        currentRelativeChild->marginTrailingValue(crossAxis).unit != YGUnitAuto;
+
+    const float childWidth = isMainAxisRow ? childMainSize : childCrossSize;
+    const float childHeight = !isMainAxisRow ? childMainSize : childCrossSize;
+
+    const YGMeasureMode childWidthMeasureMode =
+        isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
+    const YGMeasureMode childHeightMeasureMode =
+        !isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
+
+    // Recursively call the layout algorithm for this child with the updated
+    // main size.
+    YGLayoutNodeInternal(
+        currentRelativeChild,
+        childWidth,
+        childHeight,
+        node->getLayout().direction,
+        childWidthMeasureMode,
+        childHeightMeasureMode,
+        availableInnerWidth,
+        availableInnerHeight,
+        performLayout && !requiresStretchLayout,
+        "flex",
+        config);
+    node->setLayoutHadOverflow(
+        node->getLayout().hadOverflow |
+        currentRelativeChild->getLayout().hadOverflow);
+  }
+
+  collectedFlexItemsValues.remainingFreeSpace += deltaFreeSpace;
+}
+
 // It distributes the free space to the flexible items, for those flexible items
 // whose min and max constraints are triggered, the clamped size is removed from
 // the remaingfreespace.
@@ -2126,15 +2303,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           -collectedFlexItemsValues.sizeConsumedOnCurrentLine;
     }
 
-    const float originalRemainingFreeSpace =
-        collectedFlexItemsValues.remainingFreeSpace;
-    float deltaFreeSpace = 0;
-
     if (!canSkipFlex) {
-      float childFlexBasis;
-      float flexShrinkScaledFactor;
-      float flexGrowFactor;
-
       // Do two passes over the flex items to figure out how to distribute the
       // remaining space.
       // The first pass finds the items whose min/max constraints trigger,
@@ -2166,169 +2335,22 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           availableInnerWidth);
 
       // Second pass: resolve the sizes of the flexible items
-      deltaFreeSpace = 0;
-      for (auto currentRelativeChild :
-           collectedFlexItemsValues.relativeChildren) {
-        childFlexBasis = YGNodeBoundAxisWithinMinAndMax(
-            currentRelativeChild,
-            mainAxis,
-            currentRelativeChild->getLayout().computedFlexBasis,
-            mainAxisParentSize);
-        float updatedMainSize = childFlexBasis;
-
-        if (collectedFlexItemsValues.remainingFreeSpace < 0) {
-          flexShrinkScaledFactor =
-              -currentRelativeChild->resolveFlexShrink() * childFlexBasis;
-          // Is this child able to shrink?
-          if (flexShrinkScaledFactor != 0) {
-            float childSize;
-
-            if (collectedFlexItemsValues.totalFlexShrinkScaledFactors == 0) {
-              childSize = childFlexBasis + flexShrinkScaledFactor;
-            } else {
-              childSize = childFlexBasis +
-                  (collectedFlexItemsValues.remainingFreeSpace /
-                   collectedFlexItemsValues.totalFlexShrinkScaledFactors) *
-                      flexShrinkScaledFactor;
-            }
-
-            updatedMainSize = YGNodeBoundAxis(
-                currentRelativeChild,
-                mainAxis,
-                childSize,
-                availableInnerMainDim,
-                availableInnerWidth);
-          }
-        } else if (collectedFlexItemsValues.remainingFreeSpace > 0) {
-          flexGrowFactor = currentRelativeChild->resolveFlexGrow();
-
-          // Is this child able to grow?
-          if (flexGrowFactor != 0) {
-            updatedMainSize = YGNodeBoundAxis(
-                currentRelativeChild,
-                mainAxis,
-                childFlexBasis +
-                    collectedFlexItemsValues.remainingFreeSpace /
-                        collectedFlexItemsValues.totalFlexGrowFactors *
-                        flexGrowFactor,
-                availableInnerMainDim,
-                availableInnerWidth);
-          }
-        }
-
-        deltaFreeSpace -= updatedMainSize - childFlexBasis;
-
-        const float marginMain = YGNodeMarginForAxis(
-            currentRelativeChild, mainAxis, availableInnerWidth);
-        const float marginCross = YGNodeMarginForAxis(
-            currentRelativeChild, crossAxis, availableInnerWidth);
-
-        float childCrossSize;
-        float childMainSize = updatedMainSize + marginMain;
-        YGMeasureMode childCrossMeasureMode;
-        YGMeasureMode childMainMeasureMode = YGMeasureModeExactly;
-
-        if (!YGFloatIsUndefined(currentRelativeChild->getStyle().aspectRatio)) {
-          childCrossSize = isMainAxisRow ? (childMainSize - marginMain) /
-                  currentRelativeChild->getStyle().aspectRatio
-                                         : (childMainSize - marginMain) *
-                  currentRelativeChild->getStyle().aspectRatio;
-          childCrossMeasureMode = YGMeasureModeExactly;
-
-          childCrossSize += marginCross;
-        } else if (
-            !YGFloatIsUndefined(availableInnerCrossDim) &&
-            !YGNodeIsStyleDimDefined(
-                currentRelativeChild, crossAxis, availableInnerCrossDim) &&
-            measureModeCrossDim == YGMeasureModeExactly &&
-            !(isNodeFlexWrap && flexBasisOverflows) &&
-            YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
-            currentRelativeChild->marginLeadingValue(crossAxis).unit !=
-                YGUnitAuto &&
-            currentRelativeChild->marginTrailingValue(crossAxis).unit !=
-                YGUnitAuto) {
-          childCrossSize = availableInnerCrossDim;
-          childCrossMeasureMode = YGMeasureModeExactly;
-        } else if (!YGNodeIsStyleDimDefined(
-                       currentRelativeChild,
-                       crossAxis,
-                       availableInnerCrossDim)) {
-          childCrossSize = availableInnerCrossDim;
-          childCrossMeasureMode = YGFloatIsUndefined(childCrossSize)
-              ? YGMeasureModeUndefined
-              : YGMeasureModeAtMost;
-        } else {
-          childCrossSize =
-              YGResolveValue(
-                  currentRelativeChild->getResolvedDimension(dim[crossAxis]),
-                  availableInnerCrossDim) +
-              marginCross;
-          const bool isLoosePercentageMeasurement =
-              currentRelativeChild->getResolvedDimension(dim[crossAxis]).unit ==
-                  YGUnitPercent &&
-              measureModeCrossDim != YGMeasureModeExactly;
-          childCrossMeasureMode =
-              YGFloatIsUndefined(childCrossSize) || isLoosePercentageMeasurement
-              ? YGMeasureModeUndefined
-              : YGMeasureModeExactly;
-        }
-
-        YGConstrainMaxSizeForMode(
-            currentRelativeChild,
-            mainAxis,
-            availableInnerMainDim,
-            availableInnerWidth,
-            &childMainMeasureMode,
-            &childMainSize);
-        YGConstrainMaxSizeForMode(
-            currentRelativeChild,
-            crossAxis,
-            availableInnerCrossDim,
-            availableInnerWidth,
-            &childCrossMeasureMode,
-            &childCrossSize);
-
-        const bool requiresStretchLayout =
-            !YGNodeIsStyleDimDefined(
-                currentRelativeChild, crossAxis, availableInnerCrossDim) &&
-            YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
-            currentRelativeChild->marginLeadingValue(crossAxis).unit !=
-                YGUnitAuto &&
-            currentRelativeChild->marginTrailingValue(crossAxis).unit !=
-                YGUnitAuto;
-
-        const float childWidth = isMainAxisRow ? childMainSize : childCrossSize;
-        const float childHeight =
-            !isMainAxisRow ? childMainSize : childCrossSize;
-
-        const YGMeasureMode childWidthMeasureMode =
-            isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
-        const YGMeasureMode childHeightMeasureMode =
-            !isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
-
-        // Recursively call the layout algorithm for this child with the updated
-        // main size.
-        YGLayoutNodeInternal(
-            currentRelativeChild,
-            childWidth,
-            childHeight,
-            direction,
-            childWidthMeasureMode,
-            childHeightMeasureMode,
-            availableInnerWidth,
-            availableInnerHeight,
-            performLayout && !requiresStretchLayout,
-            "flex",
-            config);
-        node->setLayoutHadOverflow(
-            node->getLayout().hadOverflow |
-            currentRelativeChild->getLayout().hadOverflow);
-        currentRelativeChild = currentRelativeChild->getNextChild();
-      }
+      YGDistributeFreeSpaceSecondPass(
+          collectedFlexItemsValues,
+          node,
+          mainAxis,
+          crossAxis,
+          mainAxisParentSize,
+          availableInnerMainDim,
+          availableInnerCrossDim,
+          availableInnerWidth,
+          availableInnerHeight,
+          flexBasisOverflows,
+          measureModeCrossDim,
+          performLayout,
+          config);
     }
 
-    collectedFlexItemsValues.remainingFreeSpace =
-        originalRemainingFreeSpace + deltaFreeSpace;
     node->setLayoutHadOverflow(
         node->getLayout().hadOverflow |
         (collectedFlexItemsValues.remainingFreeSpace < 0));
