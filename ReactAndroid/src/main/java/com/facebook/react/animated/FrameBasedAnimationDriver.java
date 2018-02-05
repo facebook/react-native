@@ -22,17 +22,24 @@ class FrameBasedAnimationDriver extends AnimationDriver {
   // 60FPS
   private static final double FRAME_TIME_MILLIS = 1000d / 60d;
 
-  private long mStartFrameTimeNanos = -1;
-  private final double[] mFrames;
-  private final double mToValue;
+  private long mStartFrameTimeNanos;
+  private double[] mFrames;
+  private double mToValue;
   private double mFromValue;
   private int mIterations;
   private int mCurrentLoop;
 
   FrameBasedAnimationDriver(ReadableMap config) {
+    resetConfig(config);
+  }
+
+  @Override
+  public void resetConfig(ReadableMap config) {
     ReadableArray frames = config.getArray("frames");
     int numberOfFrames = frames.size();
-    mFrames = new double[numberOfFrames];
+    if (mFrames == null || mFrames.length != numberOfFrames) {
+      mFrames = new double[numberOfFrames];
+    }
     for (int i = 0; i < numberOfFrames; i++) {
       mFrames[i] = frames.getDouble(i);
     }
@@ -40,6 +47,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
     mHasFinished = mIterations == 0;
+    mStartFrameTimeNanos = -1;
   }
 
   @Override
