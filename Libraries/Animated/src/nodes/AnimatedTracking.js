@@ -58,14 +58,6 @@ class AnimatedTracking extends AnimatedNode {
 
   __attach(): void {
     this._parent.__addChild(this);
-  }
-
-  __detach(): void {
-    this._parent.__removeChild(this);
-    super.__detach();
-  }
-
-  start() {
     if (this._useNativeDriver) {
       // when the tracking starts we need to convert this node to a "native node"
       // so that the parent node will be made "native" too. This is necessary as
@@ -74,8 +66,11 @@ class AnimatedTracking extends AnimatedNode {
       // updating node values
       this.__makeNative();
     }
-    // if the node does not use native driver we don't need to take any action
-    // the animation will be created when the "toValue" gets updated
+  }
+
+  __detach(): void {
+    this._parent.__removeChild(this);
+    super.__detach();
   }
 
   update(): void {

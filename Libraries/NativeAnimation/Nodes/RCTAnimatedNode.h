@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^AnimatedPostOperation)(id nodesManager);
+@class RCTNativeAnimatedNodesManager;
 
 @interface RCTAnimatedNode : NSObject
 
@@ -17,6 +17,7 @@ typedef void (^AnimatedPostOperation)(id nodesManager);
                      config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSNumber *nodeTag;
+@property (nonatomic, weak) RCTNativeAnimatedNodesManager *manager;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *config;
 
 @property (nonatomic, copy, readonly) NSMapTable<NSNumber *, RCTAnimatedNode *> *childNodes;
@@ -32,13 +33,7 @@ typedef void (^AnimatedPostOperation)(id nodesManager);
 /**
  * The node will update its value if necesarry and only after its parents have updated.
  */
-- (void)updateNodeIfNecessary:(NSMutableArray<AnimatedPostOperation> *)postUpdateQueue NS_REQUIRES_SUPER;
-
-/**
- * The node can call this method to enqueue some actions to be executed after all the values
- * are updated.
- */
-- (void)schedulePostUpdate:(AnimatedPostOperation)operation NS_REQUIRES_SUPER;
+- (void)updateNodeIfNecessary;
 
 /**
  * Where the actual update code lives. Called internally from updateNodeIfNecessary

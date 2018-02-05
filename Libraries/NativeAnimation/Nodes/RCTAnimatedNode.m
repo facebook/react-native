@@ -15,7 +15,6 @@
 {
   NSMapTable<NSNumber *, RCTAnimatedNode *> *_childNodes;
   NSMapTable<NSNumber *, RCTAnimatedNode *> *_parentNodes;
-  NSMutableArray<AnimatedPostOperation> *_postUpdateQueue;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -100,21 +99,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)updateNodeIfNecessary:(NSMutableArray<AnimatedPostOperation> *)postUpdateQueue
+- (void)updateNodeIfNecessary
 {
   if (_needsUpdate) {
     for (RCTAnimatedNode *parent in _parentNodes.objectEnumerator) {
-      [parent updateNodeIfNecessary:postUpdateQueue];
+      [parent updateNodeIfNecessary];
     }
-    _postUpdateQueue = postUpdateQueue;
     [self performUpdate];
-    _postUpdateQueue = nil;
   }
-}
-
-- (void)schedulePostUpdate:(AnimatedPostOperation)operation
-{
-  [_postUpdateQueue addObject:operation];
 }
 
 - (void)performUpdate

@@ -314,7 +314,6 @@ class AnimatedValue extends AnimatedWithChildren {
   track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
-    this._tracking.start();
   }
 
   _updateValue(value: number, flush: boolean): void {

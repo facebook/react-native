@@ -13,6 +13,10 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
+@class RCTNativeAnimatedNodesManager;
+
+typedef void (^AnimatedPostOperation)(RCTNativeAnimatedNodesManager * _Nonnull manager);
+
 @interface RCTNativeAnimatedNodesManager : NSObject
 
 - (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager;
@@ -84,5 +88,9 @@
                             valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
 
 - (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag;
+
+// other
+
+- (void)schedulePostUpdateOperation:(nonnull AnimatedPostOperation)operartion;
 
 @end
