@@ -19,6 +19,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
@@ -391,8 +392,10 @@ public class DevServerHelper {
         AndroidInfoHelpers.getFriendlyDeviceName());
   }
 
-  public BundleDownloader getBundleDownloader() {
-    return mBundleDownloader;
+  public void downloadBundleFromURL(
+    DevBundleDownloadListener callback,
+    File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
   }
 
   /**

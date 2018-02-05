@@ -1039,7 +1039,7 @@ public class DevSupportManagerImpl implements
 
     final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
 
-    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+    mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
           public void onSuccess() {
