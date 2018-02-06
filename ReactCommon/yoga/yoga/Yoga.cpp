@@ -1705,7 +1705,7 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
 // of the flex items abide the min and max constraints. At the end of this
 // function the child nodes would have proper size. Prior using this function
 // please ensure that YGDistributeFreeSpaceFirstPass is called.
-static void YGDistributeFreeSpaceSecondPass(
+static float YGDistributeFreeSpaceSecondPass(
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const YGNodeRef node,
     const YGFlexDirection mainAxis,
@@ -1774,7 +1774,7 @@ static void YGDistributeFreeSpaceSecondPass(
       }
     }
 
-    deltaFreeSpace -= updatedMainSize - childFlexBasis;
+    deltaFreeSpace += updatedMainSize - childFlexBasis;
 
     const float marginMain = YGNodeMarginForAxis(
         currentRelativeChild, mainAxis, availableInnerWidth);
@@ -1878,8 +1878,7 @@ static void YGDistributeFreeSpaceSecondPass(
         node->getLayout().hadOverflow |
         currentRelativeChild->getLayout().hadOverflow);
   }
-
-  collectedFlexItemsValues.remainingFreeSpace += deltaFreeSpace;
+  return deltaFreeSpace;
 }
 
 // It distributes the free space to the flexible items.For those flexible items
@@ -2002,6 +2001,7 @@ static void YGResolveFlexibleLength(
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config) {
+  const float originalFreeSpace = collectedFlexItemsValues.remainingFreeSpace;
   // First pass: detect the flex items whose min/max constraints trigger
   YGDistributeFreeSpaceFirstPass(
       collectedFlexItemsValues,
@@ -2011,7 +2011,7 @@ static void YGResolveFlexibleLength(
       availableInnerWidth);
 
   // Second pass: resolve the sizes of the flexible items
-  YGDistributeFreeSpaceSecondPass(
+  const float distributedFreeSpace = YGDistributeFreeSpaceSecondPass(
       collectedFlexItemsValues,
       node,
       mainAxis,
@@ -2025,6 +2025,9 @@ static void YGResolveFlexibleLength(
       measureModeCrossDim,
       performLayout,
       config);
+
+  collectedFlexItemsValues.remainingFreeSpace =
+      originalFreeSpace - distributedFreeSpace;
 }
 
 //
