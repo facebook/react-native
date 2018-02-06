@@ -106,6 +106,22 @@ public class DevServerHelper {
     void onSymbolicationComplete(@Nullable Iterable<StackFrame> stackFrames);
   }
 
+  private enum BundleType {
+    BUNDLE("bundle"),
+    DELTA("delta"),
+    MAP("map");
+
+    private final String mTypeID;
+
+    BundleType(String typeID) {
+      mTypeID = typeID;
+    }
+
+    public String typeID() {
+      return mTypeID;
+    }
+  }
+
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
   private final Handler mRestartOnChangePollingHandler;
@@ -427,16 +443,20 @@ public class DevServerHelper {
     return mSettings.isJSMinifyEnabled();
   }
 
-  private static String createBundleURL(
-      String host, String jsModulePath, boolean devMode, boolean jsMinify, boolean useDeltas) {
+  private String createBundleURL(String mainModuleID, BundleType type, String host) {
     return String.format(
         Locale.US,
         BUNDLE_URL_FORMAT,
         host,
-        jsModulePath,
-        useDeltas ? "delta" : "bundle",
-        devMode,
-        jsMinify);
+        mainModuleID,
+        type.typeID(),
+        getDevMode(),
+        getJSMinifyMode());
+  }
+
+  private String createBundleURL(String mainModuleID, BundleType type) {
+    return createBundleURL(
+        mainModuleID, type, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   private static String createResourceURL(String host, String resourcePath) {
@@ -453,11 +473,10 @@ public class DevServerHelper {
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
-        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
-        jsModulePath,
-        getDevMode(),
-        getJSMinifyMode(),
-        mSettings.isBundleDeltasEnabled());
+      jsModulePath,
+      mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE,
+      mSettings.getPackagerConnectionSettings().getDebugServerHost()
+    );
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -614,25 +633,12 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(
-        Locale.US,
-        BUNDLE_URL_FORMAT,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
-        mainModuleName,
-        "map",
-        getDevMode(),
-        getJSMinifyMode());
+    return createBundleURL(mainModuleName, BundleType.MAP);
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(
-        Locale.US,
-        BUNDLE_URL_FORMAT,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
-        mainModuleName,
-        mSettings.isBundleDeltasEnabled() ? "delta" : "bundle",
-        getDevMode(),
-        getJSMinifyMode());
+    return createBundleURL(
+        mainModuleName, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE);
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
@@ -640,7 +646,7 @@ public class DevServerHelper {
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
     return createBundleURL(
-        getHostForJSProxy(), mainModuleName, getDevMode(), getJSMinifyMode(), false);
+      mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
   }
 
   /**
