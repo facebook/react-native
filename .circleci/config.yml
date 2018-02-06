@@ -260,6 +260,8 @@ jobs:
           path: ~/reports/junit
       - store_artifacts:
           path: ~/reports/junit
+      - store_artifacts:
+          path: ~/react-native/yarn.lock
 
   # Runs JavaScript tests on Node 8
   js-node-8:
