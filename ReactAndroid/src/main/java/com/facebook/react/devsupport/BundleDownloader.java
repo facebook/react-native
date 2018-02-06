@@ -198,13 +198,6 @@ public class BundleDownloader {
     });
   }
 
-  public void cancelDownloadBundleFromURL() {
-    if (mDownloadBundleFromURLCall != null) {
-      mDownloadBundleFromURLCall.cancel();
-      mDownloadBundleFromURLCall = null;
-    }
-  }
-
   private void processBundleResult(
       String url,
       int statusCode,
