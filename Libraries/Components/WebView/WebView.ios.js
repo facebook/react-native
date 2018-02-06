@@ -259,6 +259,10 @@ class WebView extends React.Component {
      */
     onMessage: PropTypes.func,
     /**
+     * On Scroll event
+     */
+    onScroll: PropTypes.func,
+    /**
      * Boolean value that forces the `WebView` to show the loading view
      * on the first load.
      */
@@ -485,6 +489,7 @@ class WebView extends React.Component {
         onLoadingError={this._onLoadingError}
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
+        onScroll={this._onScroll}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
@@ -627,6 +632,11 @@ class WebView extends React.Component {
   _onMessage = (event: Event) => {
     var {onMessage} = this.props;
     onMessage && onMessage(event);
+  }
+
+  _onScroll = (event: Event) => {
+    var {onScroll} = this.props;
+    onScroll && onScroll(event);
   }
 }
 

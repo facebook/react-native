@@ -50,13 +50,14 @@ static NSString *const kCookieHeaderName = @"Cookie"; // https://www.ietf.org/rf
 @end
 
 
-@interface RCTWebView () <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, WKHTTPCookieStoreObserver, RCTAutoInsetsProtocol>
+@interface RCTWebView () <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, WKHTTPCookieStoreObserver, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 
 @end
 
@@ -395,11 +396,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [_webView removeFromSuperview];
     _webView.navigationDelegate = nil;
     _webView.UIDelegate = nil;
+    _webView.scrollView.delegate = self;
     _webView = webView;
     [self addSubview:_webView];
     [self reload];
   }
 }
+
+  #pragma mark - UIScrollViewDelegate methods
+
+  - (void)scrollViewDidScroll:(UIScrollView *)scrollView
+  {
+    NSDictionary *event = @{
+      @"contentOffset": @{
+        @"x": @(scrollView.contentOffset.x),
+        @"y": @(scrollView.contentOffset.y)
+      },
+      @"contentInset": @{
+        @"top": @(scrollView.contentInset.top),
+        @"left": @(scrollView.contentInset.left),
+        @"bottom": @(scrollView.contentInset.bottom),
+        @"right": @(scrollView.contentInset.right)
+      },
+      @"contentSize": @{
+        @"width": @(scrollView.contentSize.width),
+        @"height": @(scrollView.contentSize.height)
+      },
+      @"layoutMeasurement": @{
+        @"width": @(scrollView.frame.size.width),
+        @"height": @(scrollView.frame.size.height)
+      },
+      @"zoomScale": @(scrollView.zoomScale ?: 1),
+    };
+
+    _onScroll(event);
+  }
 
 #pragma mark - WKNavigationDelegate methods
 
