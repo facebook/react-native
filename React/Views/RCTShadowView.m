@@ -154,35 +154,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeStyleSetBorder(node, YGEdgeAll, metaProps[META_PROP_ALL].value);
 }
 
-// The absolute stuff is so that we can take into account our absolute position when rounding in order to
-// snap to the pixel grid. For example, say you have the following structure:
-//
-// +--------+---------+--------+
-// |        |+-------+|        |
-// |        ||       ||        |
-// |        |+-------+|        |
-// +--------+---------+--------+
-//
-// Say the screen width is 320 pts so the three big views will get the following x bounds from our layout system:
-// {0, 106.667}, {106.667, 213.333}, {213.333, 320}
-//
-// Assuming screen scale is 2, these numbers must be rounded to the nearest 0.5 to fit the pixel grid:
-// {0, 106.5}, {106.5, 213.5}, {213.5, 320}
-// You'll notice that the three widths are 106.5, 107, 106.5.
-//
-// This is great for the parent views but it gets trickier when we consider rounding for the subview.
-//
-// When we go to round the bounds for the subview in the middle, it's relative bounds are {0, 106.667}
-// which gets rounded to {0, 106.5}. This will cause the subview to be one pixel smaller than it should be.
-// this is why we need to pass in the absolute position in order to do the rounding relative to the screen's
-// grid rather than the view's grid.
-//
-// After passing in the absolutePosition of {106.667, y}, we do the following calculations:
-// absoluteLeft = round(absolutePosition.x + viewPosition.left) = round(106.667 + 0) = 106.5
-// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.left) + round(106.667 + 0 + 106.667) = 213.5
-// width = 213.5 - 106.5 = 107
-// You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
-
 - (void)applyLayoutNode:(YGNodeRef)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
@@ -218,26 +189,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
       viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
             absolutePosition:(CGPoint)absolutePosition
 {
-  CGPoint absoluteTopLeft = {
-    absolutePosition.x + frame.origin.x,
-    absolutePosition.y + frame.origin.y
-  };
-
-  CGPoint absoluteBottomRight = {
-    absolutePosition.x + frame.origin.x + frame.size.width,
-    absolutePosition.y + frame.origin.y + frame.size.height
-  };
-
-  CGRect roundedFrame = {{
-    RCTRoundPixelValue(frame.origin.x),
-    RCTRoundPixelValue(frame.origin.y),
-  }, {
-    RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
-    RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
-  }};
-
-  if (!CGRectEqualToRect(_frame, roundedFrame) || _layoutDirection != layoutDirection) {
-    _frame = roundedFrame;
+  if (!CGRectEqualToRect(_frame, frame) || _layoutDirection != layoutDirection) {
+    _frame = frame;
     _layoutDirection = layoutDirection;
     [viewsWithUpdatedLayout addObject:self];
   }
