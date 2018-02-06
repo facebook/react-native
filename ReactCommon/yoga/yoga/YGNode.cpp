@@ -678,6 +678,12 @@ float YGNode::getLeadingPaddingAndBorder(
   return getLeadingPadding(axis, widthSize) + getLeadingBorder(axis);
 }
 
+float YGNode::getTrailingPaddingAndBorder(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  return getTrailingPadding(axis, widthSize) + getTrailingBorder(axis);
+}
+
 bool YGNode::didUseLegacyFlag() {
   bool didUseLegacyFlag = layout_.didUseLegacyFlag;
   if (didUseLegacyFlag) {

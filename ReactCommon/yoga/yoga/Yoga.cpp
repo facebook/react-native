@@ -797,13 +797,6 @@ static const std::array<YGEdge, 4> pos = {{
 static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
-static inline float YGNodeTrailingPaddingAndBorder(const YGNodeRef node,
-                                                   const YGFlexDirection axis,
-                                                   const float widthSize) {
-  return node->getTrailingPadding(axis, widthSize) +
-      node->getTrailingBorder(axis);
-}
-
 static inline float YGNodeMarginForAxis(const YGNodeRef node,
                                         const YGFlexDirection axis,
                                         const float widthSize) {
@@ -815,7 +808,7 @@ static inline float YGNodePaddingAndBorderForAxis(const YGNodeRef node,
                                                   const YGFlexDirection axis,
                                                   const float widthSize) {
   return node->getLeadingPaddingAndBorder(axis, widthSize) +
-      YGNodeTrailingPaddingAndBorder(node, axis, widthSize);
+      node->getTrailingPaddingAndBorder(axis, widthSize);
 }
 
 static inline YGAlign YGNodeAlignItem(const YGNodeRef node, const YGNodeRef child) {
@@ -2202,7 +2195,7 @@ static void YGJustifyMainAxis(
     }
   }
   collectedFlexItemsValues.mainDim +=
-      YGNodeTrailingPaddingAndBorder(node, mainAxis, parentWidth);
+      node->getTrailingPaddingAndBorder(mainAxis, parentWidth);
 }
 
 //
