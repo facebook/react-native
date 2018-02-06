@@ -34,8 +34,6 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 @implementation RCTShadowView
 {
-  RCTUpdateLifecycle _propagationLifecycle;
-  RCTUpdateLifecycle _textLifecycle;
   NSDictionary *_lastParentProperties;
   NSMutableArray<RCTShadowView *> *_reactSubviews;
   BOOL _recomputePadding;
@@ -264,26 +262,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
 }
 
-- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties
-{
-  return parentProperties;
-}
-
-- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                parentProperties:(NSDictionary<NSString *, id> *)parentProperties
-{
-  if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
-    return;
-  }
-  _propagationLifecycle = RCTUpdateLifecycleComputed;
-  _lastParentProperties = parentProperties;
-  NSDictionary<NSString *, id> *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
-  for (RCTShadowView *child in _reactSubviews) {
-    [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
-  }
-}
-
 - (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
                    withFrame:(CGRect)frame
                       hidden:(BOOL)hidden
@@ -354,8 +332,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _intrinsicContentSize = CGSizeMake(UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric);
 
     _newView = YES;
-    _propagationLifecycle = RCTUpdateLifecycleUninitialized;
-    _textLifecycle = RCTUpdateLifecycleUninitialized;
 
     _reactSubviews = [NSMutableArray array];
 

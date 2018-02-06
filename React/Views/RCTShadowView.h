@@ -16,12 +16,6 @@
 @class RCTRootShadowView;
 @class RCTSparseArray;
 
-typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
-  RCTUpdateLifecycleUninitialized = 0,
-  RCTUpdateLifecycleComputed,
-  RCTUpdateLifecycleDirtied,
-};
-
 typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 /**
@@ -189,21 +183,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
  */
 @property (nonatomic, assign) CGSize intrinsicContentSize;
-
-/**
- * Calculate property changes that need to be propagated to the view.
- * The applierBlocks set contains RCTApplierBlock functions that must be applied
- * on the main thread in order to update the view.
- */
-- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                parentProperties:(NSDictionary<NSString *, id> *)parentProperties;
-
-/**
- * Process the updated properties and apply them to view. Shadow view classes
- * that add additional propagating properties should override this method.
- */
-- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
 
 /**
  * Can be called by a parent on a child in order to calculate all views whose frame needs
