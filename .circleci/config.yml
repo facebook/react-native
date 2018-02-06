@@ -235,7 +235,7 @@ version: 2
 jobs:
   # Runs JavaScript lint and flow checks.
   # Currently will fail a PR if lint/flow raises issues.
-  run-js-checks:
+  js-checks:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -256,7 +256,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs JavaScript tests on Node 8
-  test-js-node-8:
+  js-node-8:
     <<: *defaults
     docker:
       - image: circleci/node:8
@@ -276,7 +276,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs JavaScript tests on Node 6
-  test-js-node-6:
+  js-node-6:
     <<: *defaults
     docker:
       - image: circleci/node:6
@@ -296,7 +296,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs unit tests on iOS devices
-  test-objc-ios:
+  objc-ios:
     <<: *defaults
     macos:
       xcode: "9.0"
@@ -319,7 +319,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs unit tests on tvOS devices
-  test-objc-tvos:
+  objc-tvos:
     <<: *defaults
     macos:
       xcode: "9.0"
@@ -342,7 +342,7 @@ jobs:
           path: ~/reports/junit
 
   # Runs end to end tests
-  test-e2e-objc-ios:
+  objc-ios-e2e:
     <<: *defaults
     macos:
       xcode: "9.0"
@@ -424,7 +424,7 @@ jobs:
             fi
 
   # Runs unit tests tests on Android
-  test-android:
+  android:
     <<: *android_defaults
     steps:
       - checkout
@@ -533,31 +533,31 @@ workflows:
     jobs:
 
       # Run lint and flow checks
-      - run-js-checks:
+      - js-checks:
           filters: *filter-ignore-gh-pages
 
       # Test JavaScript on Node 8 and 6
-      - test-js-node-8:
+      - js-node-8:
           filters: *filter-ignore-gh-pages
-      - test-js-node-6:
+      - js-node-6:
           filters: *filter-ignore-gh-pages
 
       # Test Android
-      - test-android:
+      - android:
           filters: *filter-ignore-gh-pages
 
       # Test iOS & tvOS
-      - test-objc-ios:
+      - objc-ios:
           filters: *filter-ignore-gh-pages
-      - test-objc-tvos:
+      - objc-tvos:
           filters: *filter-ignore-gh-pages
 
       # End-to-end tests
-      - test-e2e-objc-ios:
+      - objc-ios-e2e:
           filters: *filter-ignore-gh-pages
           requires:
-            - test-objc-ios
-            - test-js-node-8
+            - objc-ios
+            - js-node-8
     
       # If we are on a stable branch, deploy to `npm`
       - hold:
