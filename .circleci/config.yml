@@ -112,7 +112,8 @@ aliases:
       sudo apt-get install -y nodejs
 
   - &create-ndk-directory
-    |
+    name: Create Android NDK Directory
+    command: |
       if [[ ! -e /opt/ndk ]]; then
         sudo mkdir /opt/ndk
       fi
@@ -121,7 +122,8 @@ aliases:
   # CircleCI does not support interpolating env variables in the environment
   #  https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
   - &configure-android-path
-    | 
+    name: Configure Environment Variables
+    command: |
       echo 'export PATH=${ANDROID_NDK}:~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
       source $BASH_ENV
 
@@ -129,8 +131,9 @@ aliases:
     | 
       source scripts/circle-ci-android-setup.sh && getAndroidSDK
 
-  - &install-build-dependencies
-    |
+  - &install-android-build-dependencies
+    name: Install Android Build Dependencies
+    command: |
       sudo apt-get update -y
       sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
 
@@ -171,7 +174,6 @@ aliases:
   - &build-js-bundle
     name: Build JavaScript Bundle
     command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-    when: always
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
@@ -184,7 +186,11 @@ aliases:
 
   - &run-android-instrumentation-tests
     name: Run Instrumentation Tests
-    command: source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+    command: |
+      if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then	
+        echo "JavaScript bundle missing, cannot run instrumentation tests. Verify build-js-bundle step completed successfully."; exit 1;
+      fi
+      source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
   
   - &collect-android-test-results
     name: Collect Test Results
@@ -254,6 +260,8 @@ jobs:
           path: ~/reports/junit
       - store_artifacts:
           path: ~/reports/junit
+      - store_artifacts:
+          path: ~/react-native/yarn.lock
 
   # Runs JavaScript tests on Node 8
   js-node-8:
@@ -387,7 +395,7 @@ jobs:
 
       # Configure Android dependencies
       - run: *configure-android-path
-      - run: *install-build-dependencies
+      - run: *install-android-build-dependencies
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -430,9 +438,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      # Configure Android dependencies
+      # Configure Android SDK and related dependencies
       - run: *configure-android-path
-      - run: *install-build-dependencies
+      - run: *install-android-build-dependencies
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -442,11 +450,8 @@ jobs:
       - run: *launch-avd
       
       # Keep configuring Android dependencies while AVD boots up
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
-      - save-cache: *save-cache-ndk
 
+      # Fetch dependencies using BUCK
       - restore-cache: *restore-cache-buck
       - run: *install-buck
       - save-cache: *save-cache-buck
@@ -458,10 +463,17 @@ jobs:
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
+      # Install Android NDK
+      - run: *create-ndk-directory
+      - restore-cache: *restore-cache-ndk
+      - run: *install-ndk
+      - save-cache: *save-cache-ndk
+
+      # Build and compile
       - run: *build-android-app
       - run: *compile-native-libs
 
-      # The JavaScript Bundle is required for instrumentation tests.
+      # Build JavaScript Bundle for instrumentation tests
       - run: *install-node
       - run: *install-yarn
       - restore-cache: *restore-yarn-cache
@@ -472,7 +484,7 @@ jobs:
       # Wait for AVD to finish booting before running tests
       - run: *wait-for-avd
             
-      # Tests
+      # Test Suite
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
       
