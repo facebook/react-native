@@ -50,8 +50,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-    // Turnig off pixel rounding.
-    YGConfigSetPointScaleFactor(yogaConfig, 0.0);
+    YGConfigSetPointScaleFactor(yogaConfig, RCTScreenScale());
     YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
   });
   return yogaConfig;
