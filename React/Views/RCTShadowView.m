@@ -262,34 +262,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
 }
 
-- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-                   withFrame:(CGRect)frame
-                      hidden:(BOOL)hidden
-            absolutePosition:(CGPoint)absolutePosition
-{
-  // This is not the core layout method. It is only used by RCTTextShadowView to layout
-  // nested views.
-
-  if (_hidden != hidden) {
-    // The hidden state has changed. Even if the frame hasn't changed, add
-    // this ShadowView to viewsWithNewFrame so the UIManager will process
-    // this ShadowView's UIView and update its hidden state.
-    _hidden = hidden;
-    [viewsWithNewFrame addObject:self];
-  }
-
-  if (!CGRectEqualToRect(frame, _frame)) {
-    YGNodeStyleSetPositionType(_yogaNode, YGPositionTypeAbsolute);
-    YGNodeStyleSetWidth(_yogaNode, frame.size.width);
-    YGNodeStyleSetHeight(_yogaNode, frame.size.height);
-    YGNodeStyleSetPosition(_yogaNode, YGEdgeLeft, frame.origin.x);
-    YGNodeStyleSetPosition(_yogaNode, YGEdgeTop, frame.origin.y);
-  }
-
-  YGNodeCalculateLayout(_yogaNode, frame.size.width, frame.size.height, YGDirectionInherit);
-  [self applyLayoutNode:_yogaNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
-}
-
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGPoint offset = CGPointZero;

@@ -185,17 +185,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CGSize intrinsicContentSize;
 
 /**
- * Can be called by a parent on a child in order to calculate all views whose frame needs
- * updating in that branch. Adds these frames to `viewsWithNewFrame`. Useful if layout
- * enters a view where flex doesn't apply (e.g. Text) and then you want to resume flex
- * layout on a subview.
- */
-- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-                   withFrame:(CGRect)frame
-                      hidden:(BOOL)hidden
-            absolutePosition:(CGPoint)absolutePosition;
-
-/**
  * Apply the CSS layout.
  * This method also calls `applyLayoutToChildren:` internally. The functionality
  * is split into two methods so subclasses can override `applyLayoutToChildren:`
