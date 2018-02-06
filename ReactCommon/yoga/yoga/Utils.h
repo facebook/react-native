@@ -45,6 +45,13 @@ struct YGCollectFlexItemsRowValues {
   float endOfLineIndex;
   std::vector<YGNodeRef> relativeChildren;
   float remainingFreeSpace;
+  // The size of the mainDim for the row after considering size, padding, margin
+  // and border of flex items. This is used to calculate maxLineDim after going
+  // through all the rows to decide on the main axis size of parent.
+  float mainDim;
+  // The size of the crossDim for the row after considering size, padding,
+  // margin and border of flex items. Used for calculating containers crossSize.
+  float crossDim;
 };
 
 bool YGValueEqual(const YGValue a, const YGValue b);
