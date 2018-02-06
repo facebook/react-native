@@ -167,6 +167,12 @@ float YGNode::getTrailingMargin(
       widthSize);
 }
 
+float YGNode::getMarginForAxis(
+    const YGFlexDirection axis,
+    const float widthSize) {
+  return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
+}
+
 // Setters
 
 void YGNode::setContext(void* context) {
