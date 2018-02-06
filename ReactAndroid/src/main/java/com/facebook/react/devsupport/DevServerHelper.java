@@ -64,7 +64,6 @@ import org.json.JSONObject;
  */
 public class DevServerHelper {
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-  private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
   private static final String BUNDLE_URL_FORMAT =
       "http://%s/%s.%s?platform=android&dev=%s&minify=%s";
@@ -75,7 +74,6 @@ public class DevServerHelper {
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
-  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
   private static final String INSPECTOR_ATTACH_URL_FORMAT = "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
@@ -246,12 +244,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void sendEventToAllConnections(String event) {
-    if (mInspectorPackagerConnection != null) {
-      mInspectorPackagerConnection.sendEventToAllConnections(event);
-    }
-  }
-
   public void disableDebugger() {
     if (mInspectorPackagerConnection != null) {
       mInspectorPackagerConnection.sendEventToAllConnections(DEBUGGER_MSG_DISABLE);
@@ -370,11 +362,6 @@ public class DevServerHelper {
     });
   }
 
-    /** Intent action for reloading the JS */
-  public static String getReloadAppAction(Context context) {
-    return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
-  }
-
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
@@ -382,14 +369,7 @@ public class DevServerHelper {
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
-  public String getHeapCaptureUploadUrl() {
-    return String.format(
-        Locale.US,
-        HEAP_CAPTURE_UPLOAD_URL_FORMAT,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost());
-  }
-
-  public String getInspectorDeviceUrl() {
+  private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
@@ -398,7 +378,7 @@ public class DevServerHelper {
         mPackageName);
   }
 
-  public String getInspectorAttachUrl(String title) {
+  private String getInspectorAttachUrl(String title) {
     return String.format(
         Locale.US,
         INSPECTOR_ATTACH_URL_FORMAT,

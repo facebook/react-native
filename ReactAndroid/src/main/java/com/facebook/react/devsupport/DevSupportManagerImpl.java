@@ -115,6 +115,8 @@ public class DevSupportManagerImpl implements
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
+  private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
+
   private enum ErrorType {
     JS,
     NATIVE
@@ -246,7 +248,7 @@ public class DevSupportManagerImpl implements
       @Override
       public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (DevServerHelper.getReloadAppAction(context).equals(action)) {
+        if (getReloadAppAction(context).equals(action)) {
           if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
             mDevSettings.setRemoteJSDebugEnabled(true);
             mDevServerHelper.launchJSDevtools();
@@ -1134,7 +1136,7 @@ public class DevSupportManagerImpl implements
       // register reload app broadcast receiver
       if (!mIsReceiverRegistered) {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(DevServerHelper.getReloadAppAction(mApplicationContext));
+        filter.addAction(getReloadAppAction(mApplicationContext));
         mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
         mIsReceiverRegistered = true;
       }
@@ -1187,4 +1189,8 @@ public class DevSupportManagerImpl implements
     }
   }
 
+  /** Intent action for reloading the JS */
+  private static String getReloadAppAction(Context context) {
+    return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
+  }
 }
