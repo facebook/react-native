@@ -52,14 +52,6 @@ import javax.annotation.Nullable;
  */
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
-  /**
-   * This interface can be used to enqueue callbacks that will be executed once all the updates for
-   * all modified nodes are completed in a current animation loop.
-   */
-  public interface PostUpdateCallback {
-    void onPostUpdate();
-  }
-
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
@@ -71,7 +63,6 @@ import javax.annotation.Nullable;
   private int mAnimatedGraphBFSColor = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
-  private final List<PostUpdateCallback> mPostUpdateQueue = new ArrayList<>(5);
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
@@ -441,9 +432,6 @@ import javax.annotation.Nullable;
   public void runUpdates(long frameTimeNanos) {
     UiThreadUtil.assertOnUiThread();
     boolean hasFinishedAnimations = false;
-    // make sure post update is clean before we start updating in case something got enqueued in
-    // the meantime and not as a result of AnimatedNode#update call
-    mPostUpdateQueue.clear();
 
     for (int i = 0; i < mUpdatedNodes.size(); i++) {
       AnimatedNode node = mUpdatedNodes.valueAt(i);
@@ -465,12 +453,6 @@ import javax.annotation.Nullable;
 
     updateNodes(mRunUpdateNodeList);
     mRunUpdateNodeList.clear();
-
-    // Run post update callbacks
-    for (int i = 0, size = mPostUpdateQueue.size(); i < size; i++) {
-      mPostUpdateQueue.get(i).onPostUpdate();
-    }
-    mPostUpdateQueue.clear();
 
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
@@ -596,9 +578,5 @@ import javax.annotation.Nullable;
       throw new IllegalStateException("Looks like animated nodes graph has cycles, there are "
         + activeNodesCount + " but toposort visited only " + updatedNodesCount);
     }
-  }
-
-  public void enqueuePostUpdateCallback(PostUpdateCallback clb) {
-    mPostUpdateQueue.add(clb);
   }
 }

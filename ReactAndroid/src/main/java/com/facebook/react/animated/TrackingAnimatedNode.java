@@ -12,8 +12,7 @@ package com.facebook.react.animated;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 
-/* package */ class TrackingAnimatedNode extends AnimatedNode implements
-        NativeAnimatedNodesManager.PostUpdateCallback {
+/* package */ class TrackingAnimatedNode extends AnimatedNode {
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final int mAnimationId;
@@ -33,11 +32,6 @@ import com.facebook.react.bridge.ReadableMap;
   public void update() {
     AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mParentNode);
     mAnimationConfig.putDouble("toValue", ((ValueAnimatedNode) animatedNode).getValue());
-    mNativeAnimatedNodesManager.enqueuePostUpdateCallback(this);
-  }
-
-  @Override
-  public void onPostUpdate() {
     mNativeAnimatedNodesManager.startAnimatingNode(mAnimationId, mAnimatingNode, mAnimationConfig, null);
   }
 }
