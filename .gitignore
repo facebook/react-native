@@ -65,3 +65,6 @@ node_modules
 
 /coverage
 /third-party
+
+# Bundle artifact
+*.jsbundle
