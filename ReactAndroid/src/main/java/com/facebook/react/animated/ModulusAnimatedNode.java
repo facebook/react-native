@@ -17,14 +17,14 @@ import com.facebook.react.bridge.ReadableMap;
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final int mInputNode;
-  private final int mModulus;
+  private final double mModulus;
 
   public ModulusAnimatedNode(
       ReadableMap config,
       NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     mInputNode = config.getInt("input");
-    mModulus = config.getInt("modulus");
+    mModulus = config.getDouble("modulus");
   }
 
   @Override
