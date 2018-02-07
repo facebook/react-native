@@ -225,7 +225,7 @@
       MAX(_minimumFontScale * (self.textAttributes.effectiveFont.pointSize), 4.0);
     [textStorage scaleFontSizeToFitSize:size
                         minimumFontSize:minimumFontSize
-                        maximumFontSize:72.0];
+                        maximumFontSize:self.textAttributes.effectiveFont.pointSize];
   }
 
   if (!exclusiveOwnership) {
