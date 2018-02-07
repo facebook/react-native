@@ -239,8 +239,8 @@ public class ReactEditText extends EditText {
 
   @Override
   public void setSelection(int start, int end) {
-    // Skip setting the selection if the text wasn't set because of an out of date value.
-    if (mMostRecentEventCount < mNativeEventCount) {
+    // Skip setting the selection if the text wasn't set or selection is out of bound.
+    if (start < 0 || end > getText().length()) {
       return;
     }
 
