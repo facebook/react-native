@@ -1142,7 +1142,7 @@ public class NativeAnimatedNodeTraversalTest {
               .isEqualTo(100d * (1d - frames.getDouble(i)));
     }
 
-    // at this point we expect tracking value to be 25
+    // at this point we expect tracking value to be at 75
     assertThat(((ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(3)).getValue())
             .isEqualTo(75d);
 
@@ -1239,12 +1239,8 @@ public class NativeAnimatedNodeTraversalTest {
 
     createAnimatedGraphWithTrackingNode(1000, 0d, springConfig);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-            ArgumentCaptor.forClass(ReactStylesDiffMap.class);
-
     // update "toValue" to 1, we expect tracking animation to animate now from 0 to 1
     mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 1d);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
 
     // we run several steps of animation until the value starts bouncing, has negative speed and
@@ -1265,6 +1261,7 @@ public class NativeAnimatedNodeTraversalTest {
     // we now update "toValue" to 1.5 but since the value have negative speed and has also pretty
     // low friction we expect it to keep going in the opposite direction for a few more frames
     mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.5d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     int bounceBackInitialFrames = 0;
     boolean hasTurnedForward = false;
 
@@ -1282,7 +1279,7 @@ public class NativeAnimatedNodeTraversalTest {
       previousValue = currentValue;
     }
     assertThat(hasTurnedForward).isEqualTo(true);
-    assertThat(bounceBackInitialFrames).isGreaterThan(4);
+    assertThat(bounceBackInitialFrames).isGreaterThan(3);
 
     // we verify that the value settled at 2
     assertThat(previousValue).isEqualTo(1.5d);

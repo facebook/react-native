@@ -63,7 +63,7 @@
   _fromValue = _lastPosition;
   _toValue = toValue.floatValue;
   _frames = [frames copy];
-  _animationStartTime = -1;
+  _animationStartTime = _animationCurrentTime = -1;
   _animationHasFinished = iterations.integerValue == 0;
   _iterations = iterations.integerValue;
   _currentLoop = 1;
@@ -152,6 +152,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             EXTRAPOLATE_TYPE_EXTEND,
                                             EXTRAPOLATE_TYPE_EXTEND);
 
+  _lastPosition = outputValue;
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
 }

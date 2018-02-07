@@ -38,7 +38,6 @@
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
-  NSMutableArray<AnimatedPostOperation> *_postUpdateQueue;
 }
 
 - (instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager
@@ -431,23 +430,13 @@
 
 #pragma mark -- Updates
 
-- (void)schedulePostUpdateOperation:(AnimatedPostOperation)operartion
-{
-  [_postUpdateQueue addObject:operartion];
-}
-
 - (void)updateAnimations
 {
-  _postUpdateQueue = [NSMutableArray new];
   [_animationNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, RCTAnimatedNode *node, BOOL *stop) {
     if (node.needsUpdate) {
       [node updateNodeIfNecessary];
     }
   }];
-  for (AnimatedPostOperation op in _postUpdateQueue) {
-    op(self);
-  }
-  _postUpdateQueue = nil;
 }
 
 @end

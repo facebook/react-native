@@ -44,15 +44,10 @@
   RCTValueAnimatedNode *node = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_nodeTag];
   [_animationConfig setValue:@(node.value) forKey:@"toValue"];
 
-  NSDictionary *config = _animationConfig;
-  NSNumber *animationId = _animationId;
-  NSNumber *valueNodeTag = _valueNodeTag;
-  [self.manager schedulePostUpdateOperation:^(RCTNativeAnimatedNodesManager * _Nonnull manager) {
-    [manager startAnimatingNode:animationId
-                        nodeTag:valueNodeTag
-                         config:config
-                    endCallback:nil];
-  }];
+  [self.manager startAnimatingNode:_animationId
+                           nodeTag:_valueNodeTag
+                            config:_animationConfig
+                       endCallback:nil];
 }
 
 @end
