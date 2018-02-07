@@ -33,7 +33,7 @@
 /**
  * The node will update its value if necesarry and only after its parents have updated.
  */
-- (void)updateNodeIfNecessary;
+- (void)updateNodeIfNecessary NS_REQUIRES_SUPER;
 
 /**
  * Where the actual update code lives. Called internally from updateNodeIfNecessary
