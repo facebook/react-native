@@ -519,10 +519,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "secureTextEntry", defaultBoolean = false)
   public void setSecureTextEntry(ReactEditText view, boolean password) {
-    int selectionStart = view.getSelectionStart();
-    view.setTransformationMethod(password ? new PasswordTransformationMethod() : null);
+    updateStagedInputTypeFlag(
+        view,
+        password ? 0 :
+            InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_TEXT_VARIATION_PASSWORD,
+        password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
     checkPasswordType(view);
-    view.setSelection(selectionStart);
   }
 
   @ReactProp(name = "autoCapitalize")

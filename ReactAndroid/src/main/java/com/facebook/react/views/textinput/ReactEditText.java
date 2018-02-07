@@ -309,7 +309,10 @@ public class ReactEditText extends EditText {
 
   /*package*/ void commitStagedInputType() {
     if (getInputType() != mStagedInputType) {
+      int selectionStart = getSelectionStart();
+      int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
+      setSelection(selectionStart, selectionEnd);
     }
   }
 
