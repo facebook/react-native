@@ -1,3 +1,4 @@
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "DEBUG_PREPROCESSOR_FLAGS")
 load("//ReactNative:DEFS", "IS_OSS_BUILD", "rn_xplat_cxx_library", "ANDROID_INSPECTOR_FLAGS", "APPLE_INSPECTOR_FLAGS", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "DEBUG_PREPROCESSOR_FLAGS", "react_native_xplat_target")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
