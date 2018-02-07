@@ -115,16 +115,18 @@ namespace facebook {
 
     std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
                                                                      std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
-      return folly::make_unique<JSCExecutor>(delegate, jsQueue, m_jscConfig);
+      return folly::make_unique<JSCExecutor>(delegate, jsQueue, m_jscConfig, m_nativeExtensionsProvider);
     }
 
     JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                              std::shared_ptr<MessageQueueThread> messageQueueThread,
-                             const folly::dynamic& jscConfig) throw(JSException) :
+                             const folly::dynamic& jscConfig,
+                             std::function<folly::dynamic(const std::string &)> nativeExtensionsProvider) throw(JSException) :
     m_delegate(delegate),
     m_messageQueueThread(messageQueueThread),
     m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
-    m_jscConfig(jscConfig) {
+    m_jscConfig(jscConfig),
+    m_nativeExtensionsProvider(nativeExtensionsProvider) {
       initOnJSVMThread();
 
       {
@@ -132,6 +134,8 @@ namespace facebook {
         installGlobalProxy(m_context, "nativeModuleProxy",
                            exceptionWrapMethod<&JSCExecutor::getNativeModule>());
       }
+      installGlobalProxy(m_context, "nativeExtensions",
+                         exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
     }
 
     JSCExecutor::~JSCExecutor() {
@@ -632,8 +636,8 @@ namespace facebook {
       return String::adopt(m_context, jsString);
 #else
       return script->isAscii()
-      ? String::createExpectingAscii(m_context, script->c_str(), script->size())
-      : String(m_context, script->c_str());
+          ? String::createExpectingAscii(m_context, script->c_str(), script->size())
+          : String(m_context, script->c_str());
 #endif
     }
 
@@ -675,6 +679,14 @@ namespace facebook {
       }
 
       return m_nativeModules.getModule(m_context, propertyName);
+    }
+
+    JSValueRef JSCExecutor::getNativeExtension(JSObjectRef object, JSStringRef propertyName) {
+      if (m_nativeExtensionsProvider) {
+        folly::dynamic value = m_nativeExtensionsProvider(String::ref(m_context, propertyName).str());
+        return Value::fromDynamic(m_context, std::move(value));
+      }
+      return JSC_JSValueMakeUndefined(m_context);
     }
 
     JSValueRef JSCExecutor::nativeRequire(

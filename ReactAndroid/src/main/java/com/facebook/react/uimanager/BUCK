@@ -2,13 +2,17 @@ load("//ReactNative:DEFS", "rn_android_library", "YOGA_TARGET", "react_native_de
 
 rn_android_library(
     name = "uimanager",
-    srcs = glob([
-        "*.java",
-        "debug/*.java",
-        "events/*.java",
-        "layoutanimation/*.java",
-    ]),
+    srcs = glob(
+        [
+            "*.java",
+            "debug/*.java",
+            "events/*.java",
+            "layoutanimation/*.java",
+        ],
+        excludes = ["DisplayMetricsHolder.java"],
+    ),
     exported_deps = [
+        ":DisplayMetrics",
         react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
     provided_deps = [
@@ -21,6 +25,7 @@ rn_android_library(
     ],
     deps = [
         YOGA_TARGET,
+        ":DisplayMetrics",
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
@@ -36,5 +41,21 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager/util:util"),
         react_native_target("res:uimanager"),
+    ],
+)
+
+rn_android_library(
+    name = "DisplayMetrics",
+    srcs = glob([
+        "DisplayMetricsHolder.java",
+    ]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
     ],
 )
