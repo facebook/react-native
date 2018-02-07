@@ -65,20 +65,6 @@ import org.json.JSONObject;
 public class DevServerHelper {
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
 
-  private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.%s?platform=android&dev=%s&minify=%s";
-  private static final String RESOURCE_URL_FORMAT = "http://%s/%s";
-  private static final String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s/launch-js-devtools";
-  private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
-      "http://%s/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
-  private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
-  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
-  private static final String INSPECTOR_ATTACH_URL_FORMAT = "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s";
-  private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
-  private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
-
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
@@ -365,14 +351,14 @@ public class DevServerHelper {
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
-        WEBSOCKET_PROXY_URL_FORMAT,
+        "ws://%s/debugger-proxy?role=client",
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        INSPECTOR_DEVICE_URL_FORMAT,
+        "http://%s/inspector/device?name=%s&app=%s",
         mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName(),
         mPackageName);
@@ -381,7 +367,7 @@ public class DevServerHelper {
   private String getInspectorAttachUrl(String title) {
     return String.format(
         Locale.US,
-        INSPECTOR_ATTACH_URL_FORMAT,
+        "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s",
         AndroidInfoHelpers.getServerHost(),
         title,
         mPackageName,
@@ -426,7 +412,7 @@ public class DevServerHelper {
   private String createBundleURL(String mainModuleID, BundleType type, String host) {
     return String.format(
         Locale.US,
-        BUNDLE_URL_FORMAT,
+        "http://%s/%s.%s?platform=android&dev=%s&minify=%s",
         host,
         mainModuleID,
         type.typeID(),
@@ -440,15 +426,15 @@ public class DevServerHelper {
   }
 
   private static String createResourceURL(String host, String resourcePath) {
-    return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
+    return String.format(Locale.US, "http://%s/%s", host, resourcePath);
   }
 
   private static String createSymbolicateURL(String host) {
-    return String.format(Locale.US, SYMBOLICATE_URL_FORMAT, host);
+    return String.format(Locale.US, "http://%s/symbolicate", host);
   }
 
   private static String createOpenStackFrameURL(String host) {
-    return String.format(Locale.US, OPEN_STACK_FRAME_URL_FORMAT, host);
+    return String.format(Locale.US, "http://%s/open-stack-frame", host);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
@@ -508,7 +494,7 @@ public class DevServerHelper {
   }
 
   private static String createPackagerStatusURL(String host) {
-    return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, host);
+    return String.format(Locale.US, "http://%s/status", host);
   }
 
   public void stopPollingOnChangeEndpoint() {
@@ -583,14 +569,14 @@ public class DevServerHelper {
   private String createOnChangeEndpointUrl() {
     return String.format(
         Locale.US,
-        ONCHANGE_ENDPOINT_URL_FORMAT,
+        "http://%s/onchange",
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
     return String.format(
         Locale.US,
-        LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT,
+        "http://%s/launch-js-devtools",
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
