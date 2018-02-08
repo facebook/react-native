@@ -451,6 +451,12 @@ jobs:
       
       # Keep configuring Android dependencies while AVD boots up
 
+      # Install Android NDK
+      - run: *create-ndk-directory
+      - restore-cache: *restore-cache-ndk
+      - run: *install-ndk
+      - save-cache: *save-cache-ndk
+      
       # Fetch dependencies using BUCK
       - restore-cache: *restore-cache-buck
       - run: *install-buck
@@ -462,12 +468,6 @@ jobs:
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-
-      # Install Android NDK
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
-      - save-cache: *save-cache-ndk
 
       # Build and compile
       - run: *build-android-app
