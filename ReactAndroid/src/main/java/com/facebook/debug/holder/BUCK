@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "rn_android_library", "react_native_dep")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep")
 
 rn_android_library(
     name = "holder",

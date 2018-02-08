@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "rn_android_library", "react_native_dep", "react_native_target", "IS_OSS_BUILD")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_native_target", "IS_OSS_BUILD")
 
 rn_android_library(
     name = "bridge",

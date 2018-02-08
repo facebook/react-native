@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "react_native_dep")
+load("//ReactNative:DEFS.bzl", "react_native_dep")
 
 java_library(
     name = "java",

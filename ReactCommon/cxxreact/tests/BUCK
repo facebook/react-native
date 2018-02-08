@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "IS_OSS_BUILD", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target")
 
 TEST_SRCS = [
     "RecoverableErrorTest.cpp",
