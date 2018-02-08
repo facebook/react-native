@@ -611,7 +611,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper.deactivateAndFlush();
   }
 
-  componentWillReceiveProps(newProps: Props) {
+  UNSAFE_componentWillReceiveProps(newProps: Props) {
     const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.

@@ -203,7 +203,7 @@ const TouchableHighlight = createReactClass({
     clearTimeout(this._hideTimeout);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
   },
 

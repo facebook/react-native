@@ -66,7 +66,7 @@ class PickerAndroid extends React.Component<{
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   }
 

@@ -57,7 +57,7 @@ const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 

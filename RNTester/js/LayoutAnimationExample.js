@@ -26,7 +26,7 @@ class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
     views: [],
   };
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
 

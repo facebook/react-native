@@ -423,11 +423,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._checkProps(this.props);
   }
 
-  componentWillReceiveProps(nextProps: Props<ItemT>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props<ItemT>) {
     invariant(
       nextProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +

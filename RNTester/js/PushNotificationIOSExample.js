@@ -38,7 +38,7 @@ class Button extends React.Component<$FlowFixMeProps> {
 }
 
 class NotificationExample extends React.Component<{}> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     PushNotificationIOS.addEventListener('register', this._onRegistered);
     PushNotificationIOS.addEventListener('registrationError', this._onRegistrationError);
     PushNotificationIOS.addEventListener('notification', this._onRemoteNotification);

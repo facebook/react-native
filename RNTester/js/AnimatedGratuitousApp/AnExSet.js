@@ -75,7 +75,7 @@ class AnExSet extends React.Component<Object, any> {
     );
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.state.dismissY = new Animated.Value(0);
     this.state.dismissResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => this.props.isActive,

@@ -92,7 +92,7 @@ class Inspector extends React.Component<{
     hook.off('react-devtools', this.attachToDevtools);
   }
 
-  componentWillReceiveProps(newProps: Object) {
+  UNSAFE_componentWillReceiveProps(newProps: Object) {
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
