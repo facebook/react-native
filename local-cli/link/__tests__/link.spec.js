@@ -37,6 +37,7 @@ describe('link', () => {
 
   it('should accept a name of a dependency to link', (done) => {
     const config = {
+      getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({ assets: [] }),
       getDependencyConfig: sinon.stub().returns({ assets: [], commands: {} }),
     };
@@ -52,6 +53,7 @@ describe('link', () => {
 
   it('should read dependencies from package.json when name not provided', (done) => {
     const config = {
+      getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({ assets: [] }),
       getDependencyConfig: sinon.stub().returns({ assets: [], commands: {} }),
     };
@@ -78,6 +80,7 @@ describe('link', () => {
     const registerNativeModule = sinon.stub();
     const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};
     const config = {
+      getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({android: {}, ios: {}, assets: []}),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
@@ -114,6 +117,7 @@ describe('link', () => {
     const registerNativeModule = sinon.stub();
     const dependencyConfig = {ios: {}, android: {}, assets: [], commands: {}};
     const config = {
+      getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({ ios: {}, android: {}, assets: [] }),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
@@ -146,6 +150,62 @@ describe('link', () => {
     });
   });
 
+  it('should register native modules for plugins', (done) => {
+    const registerNativeModule = sinon.stub();
+    const dependencyConfig = {ios: {}, android: {}, test: {}, assets: [], commands: {}};
+    const linkPluginConfig = { isInstalled: () => false, register: registerNativeModule };
+    const config = {
+      getPlatformConfig: () => ({ ios: {}, android: {}, test: { linkConfig: () => linkPluginConfig }}),
+      getProjectConfig: () => ({ ios: {}, android: {}, test: {}, assets: [] }),
+      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+    };
+
+    jest.setMock(
+      '../ios/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      '../android/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    const link = require('../link').func;
+
+    link(['react-native-blur'], config).then(() => {
+      expect(registerNativeModule.calledOnce).toBeTruthy();
+      done();
+    });
+  });
+
+  it('should not register native modules for plugins when already installed', (done) => {
+    const registerNativeModule = sinon.stub();
+    const dependencyConfig = {ios: {}, android: {}, test: {}, assets: [], commands: {}};
+    const linkPluginConfig = { isInstalled: () => true, register: registerNativeModule};
+    const config = {
+      getPlatformConfig: () => ({ ios: {}, android: {}, test: { linkConfig: () => linkPluginConfig }}),
+      getProjectConfig: () => ({ ios: {}, android: {}, test: {}, assets: [] }),
+      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+    };
+
+    jest.setMock(
+      '../ios/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    jest.setMock(
+      '../android/isInstalled.js',
+      sinon.stub().returns(true)
+    );
+
+    const link = require('../link').func;
+
+    link(['react-native-blur'], config).then(() => {
+      expect(registerNativeModule.callCount).toEqual(0);
+      done();
+    });
+  });
+
   it('should run prelink and postlink commands at the appropriate times', (done) => {
     const registerNativeModule = sinon.stub();
     const prelink = sinon.stub().yieldsAsync();
@@ -162,6 +222,7 @@ describe('link', () => {
     );
 
     const config = {
+      getPlatformConfig: () => ({ ios: {}}),
       getProjectConfig: () => ({ ios: {}, assets: [] }),
       getDependencyConfig: sinon.stub().returns({
         ios: {}, assets: [], commands: { prelink, postlink },
@@ -179,7 +240,7 @@ describe('link', () => {
 
   it('should copy assets from both project and dependencies projects', (done) => {
     const dependencyAssets = ['Fonts/Font.ttf'];
-    const dependencyConfig = {assets: dependencyAssets, commands: {}};
+    const dependencyConfig = {assets: dependencyAssets, ios: {}, commands: {}};
     const projectAssets = ['Fonts/FontC.ttf'];
     const copyAssets = sinon.stub();
 
@@ -189,6 +250,7 @@ describe('link', () => {
     );
 
     const config = {
+      getPlatformConfig: () => ({ ios: {} }),
       getProjectConfig: () => ({ ios: {}, assets: projectAssets }),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
