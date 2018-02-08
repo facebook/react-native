@@ -7,6 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
- module.exports = (func) => new Promise((resolve, reject) =>
+module.exports = (func) => new Promise((resolve, reject) =>
   func((err, res) => err ? reject(err) : resolve(res))
 );

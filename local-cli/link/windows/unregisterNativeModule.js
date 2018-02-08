@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
- const fs = require('fs');
+const fs = require('fs');
 const toCamelCase = require('lodash').camelCase;
 
 const revokePatch = require('./patches/revokePatch');
