@@ -195,13 +195,11 @@ RCT_EXPORT_MODULE()
   // finished with its initialisation. But it does finish by the time it
   // relinquishes control of the main thread, so only queue on the JS thread
   // after the current main thread operation is done.
-  if (self.isNuclideDebuggingAvailable) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [bridge dispatchBlock:^{
-        [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
-      } queue:RCTJSThread];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [bridge dispatchBlock:^{
+      [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
+    } queue:RCTJSThread];
+  });
 #endif
 }
 
