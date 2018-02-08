@@ -537,7 +537,7 @@ jobs:
 workflows:
   version: 2
 
-  build:
+  test:
     jobs:
 
       # Checkout repo and run Yarn
@@ -581,16 +581,19 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-    
-      # If we are on a stable branch, deploy to `npm`
+
+      # Run code checks
+      - analyze_pr:            
+          filters: *filter-ignore-master-stable
+          requires:            
+            - checkout_code
+
+  deploy:
+    jobs:
+      # If we are on a stable branch, wait for approval to deploy to npm
       - approve_publish_npm_package:
+          filters: *filter-only-stable
           type: approval
       - publish_npm_package:
-          filters: *filter-only-stable
           requires:
             - approve_publish_npm_package
-      
-      - analyze_pr:
-          filters: *filter-ignore-master-stable
-          requires:
-            - checkout_code
