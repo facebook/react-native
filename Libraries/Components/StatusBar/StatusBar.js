@@ -16,9 +16,21 @@ const PropTypes = require('prop-types');
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 
+const invariant = require('fbjs/lib/invariant');
 const processColor = require('processColor');
 
+const NativeEventEmitter = require('NativeEventEmitter');
 const StatusBarManager = require('NativeModules').StatusBarManager;
+
+const StatusBarManagerEventEmitter = new NativeEventEmitter(StatusBarManager);
+
+const FRAME_DID_CHANGE_EVENT = 'statusBarFrameDidChange';
+
+type EventName = $Enum<{
+  statusBarFrameDidChange: string,
+}>;
+
+var _subscriptions = new Map();
 
 /**
  * Status bar style
@@ -148,6 +160,73 @@ function createStackEntry(props: any): any {
  * ### Constants
  *
  * `currentHeight` (Android only) The height of the status bar.
+ *
+ * ### Frame
+ *
+ * If you need to know the size of the Status Bar in a reliable cross-platform
+ * way you can ask for the Status Bar's frame.
+ *
+ * A frame object looks something like this:
+ * ```js
+ * // Recent Android phones
+ * {
+ *   "top": 0,
+ *   "height": 24,
+ * }
+ * // iPhone
+ * {
+ *   "top": 0,
+ *   "height": 20,
+ * }
+ * // iPhone with In-Call Status Bar
+ * {
+ *   "top": 20,
+ *   "height": 20,
+ * }
+ * // Landscape iOS 11 iPhone
+ * {
+ *   "top": 0,
+ *   "height": 0,
+ * }
+ * // iPhone X
+ * {
+ *   "top": 0,
+ *   "height": 44,
+ * }
+ *
+ * ```
+ *
+ * * The `height` key is the height of the Status Bar that would overlap the app
+ *   if the status bar were translucent.
+ * * When iOS' In-Call status bar is displayed the app content is pushed down
+ *   instead of increasing the overlapping height. When this happens this offset
+ *   is exposed in the `top` key instead of being part of the `height`.
+ *
+ * If you want the "real height" of the status bar instead of the overlapping
+ * height of the status bar you can add these two numbers together `frame.top + frame.height`.
+ *
+ * To get the current frame you can use `getCurrentFrame` which returns a Promise
+ * for the current Status Bar frame.
+ *
+ * ```js
+ * StatusBar.getCurrentFrame()
+ *   .then((frame) => {
+ *     // frame.top - Overlap offset
+ *     // frame.height - Height of the Status Bar overlap
+ *   })
+ * ```
+ *
+ * The height of the status bar can change for various reasons. Orientation changes
+ * on some platforms, UI elements that expand or push down the status bar, or
+ * changes to the device's screen dimensions at runtime.
+ *
+ * You can listen for these changes with the `statusBarFrameDidChange` event.
+ *
+ * ```js
+ * StatusBar.addEventListener('statusBarFrameDidChange', (frame) => {
+ *   ...
+ * });
+ * ```
  */
 class StatusBar extends React.Component<{
   hidden?: boolean,
@@ -184,6 +263,55 @@ class StatusBar extends React.Component<{
    * @platform android
    */
   static currentHeight = StatusBarManager.HEIGHT;
+
+  /**
+   * Get the current frame (top and height) of the Status Bar.
+   *
+   * Returns a Promise that resolves to a frame object with a `top` and `height`.
+   */
+  static getCurrentFrame(): Promise<{top: number, height: number}> {
+    return StatusBarManager.getCurrentFrame();
+  }
+
+  /**
+   * Adds an event handler. Supported events:
+   *
+   * - `statusBarFrameDidChange`: Fires when the status bar frame has changed.
+   *   The argument to the event handler is a frame object with the keys:
+   *   - `height`: The current height of the status bar.
+   *   - `top`: How far the top of the status bar is offset from the top of the
+   *     screen. This generally only happens when the iOS In-Call Status Bar is
+   *     visible and pushes the app down instead of changing the size.
+   */
+  static addEventListener(
+    eventName: EventName,
+    handler: Function
+  ): {remove: () => void} {
+    invariant(eventName === FRAME_DID_CHANGE_EVENT, `Trying to subscribe to unknown event: "${eventName}"`);
+
+    let listener = StatusBarManagerEventEmitter.addListener(eventName, handler);
+    _subscriptions.set(handler, listener);
+    return {
+      remove: () => StatusBar.removeEventListener(eventName, handler)
+    };
+  }
+
+  /**
+   * Removes the event listener. Do this in `componentWillUnmount` to prevent
+   * memory leaks
+   */
+  static removeEventListener(
+    eventName: EventName,
+    handler: Function
+  ): void {
+    const listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
+  }
+
 
   // Provide an imperative API as static functions of the component.
   // See the corresponding prop for more detail.

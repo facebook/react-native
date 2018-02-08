@@ -20,12 +20,15 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -50,17 +53,33 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
     return "StatusBarManager";
   }
 
-  @Override
-  public @Nullable Map<String, Object> getConstants() {
+  // TODO(dantman): Detect rare status bar height changing events (such as a Phone+Tablet or docking device that can change
+  // screen dimensions at runtime) and emit a statusBarFrameDidChange when they happen.
+
+  private float getStatusBarHeight() {
     final Context context = getReactApplicationContext();
     final int heightResId = context.getResources()
       .getIdentifier("status_bar_height", "dimen", "android");
-    final float height = heightResId > 0 ?
+    return heightResId > 0 ?
       PixelUtil.toDIPFromPixel(context.getResources().getDimensionPixelSize(heightResId)) :
       0;
+  }
 
+  @Override
+  public @Nullable Map<String, Object> getConstants() {
     return MapBuilder.<String, Object>of(
-      HEIGHT_KEY, height);
+      HEIGHT_KEY, getStatusBarHeight());
+  }
+
+  @ReactMethod
+  public void getCurrentFrame(Promise promise) {
+    WritableMap frame = Arguments.createMap();
+
+    // Android doesn't have a In-Call StatusBar offset so always return top=0
+    frame.putInt("top", 0);
+    frame.putDouble("height", getStatusBarHeight());
+
+    promise.resolve(frame);
   }
 
   @ReactMethod
