@@ -24,21 +24,21 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v2-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v2-android-sdkmanager-packages-{{ arch }}-
+      - v3-android-sdkmanager-packages-{{ arch }}-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v2-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v1-android-ndk-{{ arch }}-r10e-32-64
+      - v2-android-ndk-{{ arch }}-r10e-32-64
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v1-android-ndk-{{ arch }}-r10e-32-64
+    key: v2-android-ndk-{{ arch }}-r10e-32-64
 
   - &restore-cache-buck
     keys:
@@ -106,7 +106,7 @@ aliases:
       cd ~/buck && ant
       buck --version
 
-  - &install-node 
+  - &install-node
     |
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
@@ -144,7 +144,7 @@ aliases:
     
   - &run-lint-checks
     name: Lint code
-    command: yarn lint --format junit -o ~/reports/junit/js-lint-results.xml
+    command: yarn lint --format junit -o ~/react-native/reports/junit/js-lint-results.xml
     when: always
 
   - &run-flow-checks
@@ -195,17 +195,17 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/reports/junit/ \;
-      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/reports/junit/ \;
-      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/reports/junit/ \;
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
     when: always
 
   - &setup-artifacts
     name: Initial Setup
     command: | 
-      mkdir -p ~/reports/junit/
+      mkdir -p ~/react-native/reports/junit/
 
-  - &run-objc-ios-tests
+  - &run-objc_ios-tests
     name: Objective-C iOS Test Suite
     command: ./scripts/objc-test-ios.sh
 
@@ -224,6 +224,11 @@ aliases:
 defaults: &defaults
   working_directory: ~/react-native
 
+js_defaults: &js_defaults
+  <<: *defaults
+  docker:
+    - image: circleci/node:8
+
 android_defaults: &android_defaults
   <<: *defaults
   docker:
@@ -237,14 +242,17 @@ android_defaults: &android_defaults
     - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
     - BUILD_THREADS: 2
 
+macos_defaults: &macos_defaults
+  <<: *defaults
+  macos:
+    xcode: "9.0"
+
 version: 2
 jobs:
-  # Runs JavaScript lint and flow checks.
-  # Currently will fail a PR if lint/flow raises issues.
-  js-checks:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
+
+  # Set up a Node environment for downstream jobs
+  checkout_code:
+    <<: *js_defaults
     steps:
       - checkout
       - run: *setup-artifacts
@@ -253,38 +261,44 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  # Runs JavaScript lint and flow checks.
+  # Currently will fail a PR if lint/flow raises issues.
+  js_checks:
+    <<: *js_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
       - run: *run-lint-checks
       - run: *run-flow-checks
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
           path: ~/react-native/yarn.lock
 
   # Runs JavaScript tests on Node 8
-  js-node-8:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
+  test_javascript:
+    <<: *js_defaults
     steps:
-      - checkout
-      - run: *setup-artifacts      
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+      - attach_workspace:
+          at: ~/react-native
 
       - run: *run-js-tests
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
 
   # Runs JavaScript tests on Node 6
-  js-node-6:
+  test_javascript_node6_compatibility:
     <<: *defaults
     docker:
       - image: circleci/node:6
@@ -299,118 +313,97 @@ jobs:
       - run: *run-js-tests
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
 
   # Runs unit tests on iOS devices
-  objc-ios:
-    <<: *defaults
-    macos:
-      xcode: "9.0"
+  test_objc_ios:
+    <<: *macos_defaults
     dependencies:
       pre:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
-      - checkout
-      - run: *setup-artifacts
+      - attach_workspace:
+          at: ~/react-native
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
-
-      - run: *run-objc-ios-tests
+      - run: *run-objc_ios-tests
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
 
   # Runs unit tests on tvOS devices
-  objc-tvos:
-    <<: *defaults
-    macos:
-      xcode: "9.0"
+  test_objc_tvos:
+    <<: *macos_defaults
     dependencies:
       pre:
         - xcrun instruments -w "Apple TV 1080p (10.0)" || true
     steps:
-      - checkout
-      - run: *setup-artifacts
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+      - attach_workspace:
+          at: ~/react-native
 
       - run: *run-objc-tvos-tests
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
 
   # Runs end to end tests
-  objc-ios-e2e:
-    <<: *defaults
-    macos:
-      xcode: "9.0"
+  test_objc_ios_e2e:
+    <<: *macos_defaults
     dependencies:
       pre:
         - xcrun instruments -w "iPhone 5s (10.3.1)" || true
     steps:
-      - checkout
-      - run: *setup-artifacts
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+      - attach_workspace:
+          at: ~/react-native
 
       - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
 
   # Checks podspec
-  test-podspec:
+  test_podspec:
     <<: *defaults
     macos:
       xcode: "9.0"
     steps:
-      - checkout
-      - run: *setup-artifacts
+      - attach_workspace:
+          at: ~/react-native
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
       - run: ./scripts/process-podspecs.sh
       
   # Publishes new version onto npm
-  deploy:
+  publish_npm_package:
     <<: *android_defaults
     steps:
-      - checkout
-      - run: *setup-artifacts
+      - attach_workspace:
+          at: ~/react-native
 
-      # Configure Android dependencies
+      # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
+
+      # Install Android NDK
       - run: *create-ndk-directory
       - restore-cache: *restore-cache-ndk
       - run: *install-ndk
       - save-cache: *save-cache-ndk
+
+      # Fetch dependencies using BUCK
       - restore-cache: *restore-cache-buck
       - run: *install-buck
       - save-cache: *save-cache-buck
-      - run: *install-node
-      - run: *install-yarn
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
@@ -418,6 +411,12 @@ jobs:
       - run: buck fetch ReactAndroid/src/androidTest/...
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
+      - run: *install-node
+      - run: *install-yarn
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+      
       - run:
           name: Publish React Native Package
           command: |
@@ -431,12 +430,12 @@ jobs:
               echo "Skipping deploy."            
             fi
 
-  # Runs unit tests tests on Android
-  android:
+  # Set up an Android environment for downstream jobs
+  test_android:
     <<: *android_defaults
     steps:
-      - checkout
-      - run: *setup-artifacts
+      - attach_workspace:
+          at: ~/react-native
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
@@ -448,7 +447,7 @@ jobs:
       # Starting emulator in advance as it takes some time to boot.      
       - run: *create-avd
       - run: *launch-avd
-      
+
       # Keep configuring Android dependencies while AVD boots up
 
       # Install Android NDK
@@ -456,7 +455,7 @@ jobs:
       - restore-cache: *restore-cache-ndk
       - run: *install-ndk
       - save-cache: *save-cache-ndk
-      
+
       # Fetch dependencies using BUCK
       - restore-cache: *restore-cache-buck
       - run: *install-buck
@@ -475,10 +474,6 @@ jobs:
 
       # Build JavaScript Bundle for instrumentation tests
       - run: *install-node
-      - run: *install-yarn
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
       - run: *build-js-bundle
 
       # Wait for AVD to finish booting before running tests
@@ -491,19 +486,19 @@ jobs:
       # post (always runs)
       - run: *collect-android-test-results
       - store_test_results:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/reports/junit
+          path: ~/react-native/reports/junit
+
 
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
-  analyze-pull-request:
-    <<: *defaults
-    docker:
-      - image: circleci/node:8
+  analyze_pr:
+    <<: *js_defaults
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/react-native
 
       - restore-cache: *restore-cache-analysis
       - run: *yarn
@@ -518,6 +513,7 @@ jobs:
               echo "Skipping dependency installation."            
             fi
       - save-cache: *save-cache-analysis
+
       - run:
           name: Analyze Pull Request
           command: |
@@ -544,40 +540,57 @@ workflows:
   build:
     jobs:
 
-      # Run lint and flow checks
-      - js-checks:
+      # Checkout repo and run Yarn
+      - checkout_code:
           filters: *filter-ignore-gh-pages
 
-      # Test JavaScript on Node 8 and 6
-      - js-node-8:
+      # Run lint and flow checks
+      - js_checks:
           filters: *filter-ignore-gh-pages
-      - js-node-6:
+          requires:
+            - checkout_code
+
+      # Test JavaScript
+      - test_javascript:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
+      # Test JavaScript using Node 6, the minimum supported version
+      - test_javascript_node6_compatibility:
           filters: *filter-ignore-gh-pages
 
       # Test Android
-      - android:
+      - test_android:
           filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
 
       # Test iOS & tvOS
-      - objc-ios:
+      - test_objc_ios:
           filters: *filter-ignore-gh-pages
-      - objc-tvos:
+          requires:
+            - checkout_code
+      - test_objc_tvos:
           filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
 
       # End-to-end tests
-      - objc-ios-e2e:
+      - test_objc_ios_e2e:
           filters: *filter-ignore-gh-pages
           requires:
-            - objc-ios
-            - js-node-8
+            - checkout_code
     
       # If we are on a stable branch, deploy to `npm`
-      - hold:
+      - approve_publish_npm_package:
           type: approval
-      - deploy:
+      - publish_npm_package:
           filters: *filter-only-stable
           requires:
-            - hold
+            - approve_publish_npm_package
       
-      - analyze-pull-request:
+      - analyze_pr:
           filters: *filter-ignore-master-stable
+          requires:
+            - checkout_code
