@@ -215,7 +215,7 @@
     "eslint-plugin-jest": "^21.5.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.64.0",
+    "flow-bin": "^0.65.0",
     "jest": "22.2.1",
     "jest-junit": "3.5.0",
     "prettier": "1.9.1",
