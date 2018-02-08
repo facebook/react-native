@@ -99,6 +99,10 @@ WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
 // marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
 
+// This function marks the current node and all its descendants as dirty. This function is added to test yoga benchmarks.
+// This function is not expected to be used in production as calling `YGCalculateLayout` will cause the recalculation of each and every node.
+WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node);
+
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 
 WIN_EXPORT bool YGFloatIsUndefined(const float value);

@@ -215,6 +215,10 @@ bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node) {
   return node->didUseLegacyFlag();
 }
 
+void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
+  return node->markDirtyAndPropogateDownwards();
+}
+
 int32_t gNodeInstanceCount = 0;
 int32_t gConfigInstanceCount = 0;
 

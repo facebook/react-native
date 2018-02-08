@@ -9,13 +9,11 @@
 
 package com.facebook.yoga;
 
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 @DoNotStrip
 public class YogaNode {
@@ -193,6 +191,12 @@ public class YogaNode {
   private native void jni_YGNodeMarkDirty(long nativePointer);
   public void dirty() {
     jni_YGNodeMarkDirty(mNativePointer);
+  }
+
+  private native void jni_YGNodeMarkDirtyAndPropogateToDescendants(long nativePointer);
+
+  public void dirtyAllDescendants() {
+    jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
   }
 
   private native boolean jni_YGNodeIsDirty(long nativePointer);
