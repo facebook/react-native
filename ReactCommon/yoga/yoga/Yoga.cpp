@@ -1037,9 +1037,9 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
     childHeightMeasureMode = YGMeasureModeUndefined;
 
     const float marginRow =
-        node->getMarginForAxis(YGFlexDirectionRow, parentWidth);
+        child->getMarginForAxis(YGFlexDirectionRow, parentWidth);
     const float marginColumn =
-        node->getMarginForAxis(YGFlexDirectionColumn, parentWidth);
+        child->getMarginForAxis(YGFlexDirectionColumn, parentWidth);
 
     if (isRowStyleDimDefined) {
       childWidth =
@@ -2624,9 +2624,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         }
         if (child->getStyle().positionType == YGPositionTypeAbsolute) {
           // If the child is absolutely positioned and has a
-          // top/left/bottom/right
-          // set, override all the previously computed positions to set it
-          // correctly.
+          // top/left/bottom/right set, override
+          // all the previously computed positions to set it correctly.
           const bool isChildLeadingPosDefined =
               child->isLeadingPositionDefined(crossAxis);
           if (isChildLeadingPosDefined) {
