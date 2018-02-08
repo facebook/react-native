@@ -115,6 +115,7 @@ const mockNativeModules = {
   },
   AppState: {
     addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
     multiGet: jest.fn((keys, callback) => process.nextTick(() => callback(null, []))),
