@@ -90,8 +90,8 @@ public class ReactScrollViewCommandHelper {
         int duration = 0;
         if (args.size() == 4 && args.getDouble(3) > 0) {
           duration = (int) Math.round(args.getDouble(3));
-        } else if (args.getBoolean(2)) {
-          duration = LEGACY_ANIMATION_DURATION;
+        } else {
+          duration = args.getBoolean(2) ? LEGACY_ANIMATION_DURATION : 0;
         }
         viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, duration));
         return;
@@ -103,8 +103,8 @@ public class ReactScrollViewCommandHelper {
         int duration = 0;
         if (args.size() == 2 && args.getDouble(1) > 0) {
           duration = (int) Math.round(args.getDouble(1));
-        } else if (args.getBoolean(0)) {
-          duration = LEGACY_ANIMATION_DURATION;
+        } else {
+          duration = args.getBoolean(2) ? LEGACY_ANIMATION_DURATION : 0;
         }
         viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(duration));
         return;
