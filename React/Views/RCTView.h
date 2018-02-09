@@ -23,8 +23,14 @@
 /**
  * Accessibility event handlers
  */
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
+
+/**
+ * Accessibility properties
+ */
+@property (nonatomic, copy) NSArray <NSString *> *accessibilityActions;
 
 /**
  * Used to control how touch events are processed.
@@ -43,7 +49,7 @@
 /**
  * Layout direction of the view.
  * This is inherited from UIView+React, but we override it here
- * to improve perfomance and make subclassing/overriding possible/easier.
+ * to improve performance and make subclassing/overriding possible/easier.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 

@@ -217,7 +217,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   /**
    * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
-   * to call {@link WebView#destroy} on activty destroy event and also to clear the client
+   * to call {@link WebView#destroy} on activity destroy event and also to clear the client
    */
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
     protected @Nullable String injectedJS;

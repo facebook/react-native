@@ -15,16 +15,15 @@
 
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
-const NativeModules = require('NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
-let _customSourceTransformer, _serverURL, _scriptURL, _embeddedBundleURL;
+let _customSourceTransformer, _serverURL, _scriptURL;
+let _sourceCodeScriptURL: ?string;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
-    var scriptURL = NativeModules.SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
+    const match = _sourceCodeScriptURL && _sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
       // jsBundle was loaded from network
       _serverURL = match[0];
@@ -54,18 +53,9 @@ function _coerceLocalScriptURL(scriptURL: ?string): ?string {
 
 function getScriptURL(): ?string {
   if (_scriptURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.scriptURL;
-    _scriptURL = _coerceLocalScriptURL(scriptURL);
+    _scriptURL = _coerceLocalScriptURL(_sourceCodeScriptURL);
   }
   return _scriptURL;
-}
-
-function getEmbeddedBundledURL(): ?string {
-  if (_embeddedBundleURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.embeddedBundleURL;
-    _embeddedBundleURL = _coerceLocalScriptURL(scriptURL);
-  }
-  return _embeddedBundleURL;
 }
 
 function setCustomSourceTransformer(
@@ -91,7 +81,6 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   const resolver = new AssetSourceResolver(
     getDevServerURL(),
     getScriptURL(),
-    getEmbeddedBundledURL(),
     asset,
   );
   if (_customSourceTransformer) {
@@ -99,6 +88,13 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   }
   return resolver.defaultAsset();
 }
+
+let sourceCodeScriptURL: ?string = global.nativeExtensions && global.nativeExtensions.SourceCode && global.nativeExtensions.SourceCode.scriptURL;
+if (!sourceCodeScriptURL) {
+  const NativeModules = require('NativeModules');
+  sourceCodeScriptURL = NativeModules && NativeModules.SourceCode && NativeModules.SourceCode.scriptURL;
+}
+_sourceCodeScriptURL = sourceCodeScriptURL;
 
 module.exports = resolveAssetSource;
 module.exports.pickScale = AssetSourceResolver.pickScale;

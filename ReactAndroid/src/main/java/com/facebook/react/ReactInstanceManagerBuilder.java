@@ -97,7 +97,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes
-   * prior invcations of {@link setJSBundleFile} and {@link setBundleAssetName}.
+   * prior invocations of {@link setJSBundleFile} and {@link setBundleAssetName}.
    *
    * Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
    */
@@ -231,7 +231,7 @@ public class ReactInstanceManagerBuilder {
    * <li> {@link #setApplication}
    * <li> {@link #setCurrentActivity} if the activity has already resumed
    * <li> {@link #setDefaultHardwareBackBtnHandler} if the activity has already resumed
-   * <li> {@link #setJSBundleFile} or {@link #setJSMainModuleName}
+   * <li> {@link #setJSBundleFile} or {@link #setJSMainModulePath}
    * </ul>
    */
   public ReactInstanceManager build() {

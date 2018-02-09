@@ -17,7 +17,6 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
-#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -277,30 +276,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (Class)bridgeClass
 {
-  // In order to facilitate switching between bridges with only build
-  // file changes, this uses reflection to check which bridges are
-  // available.  This is a short-term hack until RCTBatchedBridge is
-  // removed.
-
-  Class batchedBridgeClass = objc_lookUpClass("RCTBatchedBridge");
-  Class cxxBridgeClass = objc_lookUpClass("RCTCxxBridge");
-
-  Class implClass = nil;
-
-  if ([self.delegate respondsToSelector:@selector(shouldBridgeUseCxxBridge:)]) {
-    if ([self.delegate shouldBridgeUseCxxBridge:self]) {
-      implClass = cxxBridgeClass;
-    } else {
-      implClass = batchedBridgeClass;
-    }
-  } else if (cxxBridgeClass != nil) {
-    implClass = cxxBridgeClass;
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
-  }
-
-  RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
-  return implClass;
+  return [RCTCxxBridge class];
 }
 
 - (void)setUp
@@ -328,11 +304,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
-
-  if ([self.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
-    _embeddedBundleURL = [self.delegate embeddedBundleURLForBridge:self];
-    _embeddedBundleURL = [RCTConvert NSURL:_embeddedBundleURL.absoluteString];
-  }
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
@@ -401,15 +372,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
-}
-
-@end
-
-@implementation RCTBridge (JavaScriptCore)
-
-- (JSContext *)jsContext
-{
-  return [self.batchedBridge jsContext];
 }
 
 - (JSGlobalContextRef)jsContextRef

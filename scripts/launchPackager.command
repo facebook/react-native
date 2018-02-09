@@ -8,7 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 # Set terminal title
-echo -en "\033]0;React Packager\a"
+echo -en "\033]0;Metro Bundler\a"
 clear
 
 THIS_DIR=$(dirname "$0")

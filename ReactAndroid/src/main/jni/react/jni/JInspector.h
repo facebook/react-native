@@ -4,7 +4,7 @@
 
 #ifdef WITH_INSPECTOR
 
-#include <jschelpers/InspectorInterfaces.h>
+#include <jsinspector/InspectorInterfaces.h>
 
 #include <fb/fbjni.h>
 #include <folly/Memory.h>

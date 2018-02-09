@@ -30,7 +30,7 @@ var ReactContentSizeUpdateTest = createReactClass({
   mixins: [Subscribable.Mixin,
            TimerMixin],
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this.addListenerOn(
       RCTNativeAppEventEmitter,
       'rootViewDidChangeIntrinsicSize',

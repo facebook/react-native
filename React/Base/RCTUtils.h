@@ -30,7 +30,7 @@ RCT_EXTERN id RCTJSONClean(id object);
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
 // Check if we are currently on the main queue (not to be confused with
-// the main thread, which is not neccesarily the same thing)
+// the main thread, which is not necessarily the same thing)
 // https://twitter.com/olebegemann/status/738656134731599872
 RCT_EXTERN BOOL RCTIsMainQueue(void);
 
@@ -114,6 +114,19 @@ RCT_EXTERN NSData *__nullable RCTGzipData(NSData *__nullable data, float level);
 // Returns the relative path within the main bundle for an absolute URL
 // (or nil, if the URL does not specify a path within the main bundle)
 RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
+
+// Returns the Path of Library directory
+RCT_EXTERN NSString *__nullable RCTLibraryPath(void);
+
+// Returns the relative path within the library for an absolute URL
+// (or nil, if the URL does not specify a path within the Library directory)
+RCT_EXTERN NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL);
+
+// Determines if a given image URL refers to a image in bundle
+RCT_EXTERN BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL);
+
+// Determines if a given image URL refers to a image in library
+RCT_EXTERN BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL);
 
 // Determines if a given image URL refers to a local image
 RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);

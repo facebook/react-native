@@ -77,13 +77,14 @@ typedef YG_ENUM_BEGIN(YGFlexDirection) {
 } YG_ENUM_END(YGFlexDirection);
 WIN_EXPORT const char *YGFlexDirectionToString(const YGFlexDirection value);
 
-#define YGJustifyCount 5
-typedef YG_ENUM_BEGIN(YGJustify) {
-  YGJustifyFlexStart,
-  YGJustifyCenter,
-  YGJustifyFlexEnd,
-  YGJustifySpaceBetween,
-  YGJustifySpaceAround,
+#define YGJustifyCount 6
+typedef YG_ENUM_BEGIN(YGJustify){
+    YGJustifyFlexStart,
+    YGJustifyCenter,
+    YGJustifyFlexEnd,
+    YGJustifySpaceBetween,
+    YGJustifySpaceAround,
+    YGJustifySpaceEvenly,
 } YG_ENUM_END(YGJustify);
 WIN_EXPORT const char *YGJustifyToString(const YGJustify value);
 

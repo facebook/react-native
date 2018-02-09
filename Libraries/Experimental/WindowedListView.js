@@ -243,7 +243,7 @@ class WindowedListView extends React.Component<Props, State> {
     DEBUG && infoLog('  knope');
     return false;
   }
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this._computeRowsToRenderBatcher.schedule();
   }
   _onMomentumScrollEnd = (e: Object) => {
@@ -392,7 +392,7 @@ class WindowedListView extends React.Component<Props, State> {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
@@ -624,7 +624,7 @@ class CellRenderer extends React.Component<CellProps> {
   _perfUpdateID: number = 0;
   _asyncCookie: any;
   _includeInLayoutLatch: boolean = false;
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.asyncRowPerfEventName) {
       this._perfUpdateID = g_perf_update_id++;
       this._asyncCookie = Systrace.beginAsyncEvent(
@@ -687,11 +687,14 @@ class CellRenderer extends React.Component<CellProps> {
     }
   };
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timeout);
     this.props.onProgressChange({rowKey: this.props.rowKey, inProgress: false});
     this.props.onWillUnmount(this.props.rowKey);
   }
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.includeInLayout && !this.props.includeInLayout) {
       invariant(this._offscreenRenderDone, 'Should never try to add to layout before render done');
       this._includeInLayoutLatch = true; // Once we render in layout, make sure it sticks.

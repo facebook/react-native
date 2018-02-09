@@ -13,15 +13,42 @@
 #import "RCTConvert.h"
 #import "RCTNavigator.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerObserverCoordinator.h"
 #import "UIView+React.h"
 
+@interface RCTNavigatorManager () <RCTUIManagerObserver>
+
+@end
+
 @implementation RCTNavigatorManager
+{
+  // The main thread only.
+  NSHashTable<RCTNavigator *> *_viewRegistry;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  [super setBridge:bridge];
+
+  [self.bridge.uiManager.observerCoordinator addObserver:self];
+}
+
+- (void)invalidate
+{
+  [self.bridge.uiManager.observerCoordinator removeObserver:self];
+}
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTNavigator alloc] initWithBridge:self.bridge];
+  if (!_viewRegistry) {
+    _viewRegistry = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
+  }
+
+  RCTNavigator *view = [[RCTNavigator alloc] initWithBridge:self.bridge];
+  [_viewRegistry addObject:view];
+  return view;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
@@ -42,6 +69,17 @@ RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reac
       RCTLogError(@"Cannot set lock: %@ (tag #%@) is not an RCTNavigator", navigator, reactTag);
     }
   }];
+}
+
+#pragma mark - RCTUIManagerObserver
+
+- (void)uiManagerDidPerformMounting:(__unused RCTUIManager *)manager
+{
+  RCTExecuteOnMainQueue(^{
+    for (RCTNavigator *view in self->_viewRegistry) {
+      [view uiManagerDidPerformMounting];
+    }
+  });
 }
 
 @end

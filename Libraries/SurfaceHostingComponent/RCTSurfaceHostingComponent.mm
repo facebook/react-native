@@ -16,9 +16,15 @@
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceView.h>
 
+#import "RCTSurfaceHostingComponentController.h"
 #import "RCTSurfaceHostingComponentState.h"
 
 @implementation RCTSurfaceHostingComponent
+
++ (Class<CKComponentControllerProtocol>)controllerClass
+{
+  return [RCTSurfaceHostingComponentController class];
+}
 
 + (id)initialState
 {

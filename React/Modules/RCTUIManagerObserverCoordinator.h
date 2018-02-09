@@ -40,11 +40,16 @@
 - (void)uiManagerDidPerformLayout:(RCTUIManager *)manager;
 
 /**
- * Called before flushing UI blocks at the end of a batch. Note that this won't
- * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
+ * Called before flushing UI blocks at the end of a batch.
  * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
+
+/**
+ * Called just after flushing UI blocks.
+ * This is called from the UIManager queue.
+ */
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager;
 
 @end
 

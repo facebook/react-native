@@ -117,12 +117,15 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
   __weak RCTBridge *batchedBridge;
 
   @autoreleasepool {
-    __block NSString *error = nil;
+    __block NSMutableArray<NSString *> *errors = nil;
     RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       defaultLogFunction(level, source, fileName, lineNumber, message);
       if (level >= RCTLogLevelError) {
-        error = message;
+        if (errors == nil) {
+          errors = [NSMutableArray new];
+        }
+        [errors addObject:message];
       }
     });
 
@@ -155,7 +158,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     }
 
     NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
-    while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && error == nil) {
+    while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && errors == nil) {
       [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
       [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     }
@@ -173,9 +176,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 #endif
 
     if (expectErrorBlock) {
-      RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
+      RCTAssert(expectErrorBlock(errors[0]), @"Expected an error but the first one was missing or did not match.");
     } else {
-      RCTAssert(error == nil, @"RedBox error: %@", error);
+      RCTAssert(errors == nil, @"RedBox errors: %@", errors);
       RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
     }
@@ -183,13 +186,12 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [bridge invalidate];
   }
 
-  // Wait for bridge to disappear before continuing to the next test
+  // Give the bridge a chance to disappear before continuing to the next test.
   NSDate *invalidateTimeout = [NSDate dateWithTimeIntervalSinceNow:30];
   while (invalidateTimeout.timeIntervalSinceNow > 0 && batchedBridge != nil) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
 }
 
 @end

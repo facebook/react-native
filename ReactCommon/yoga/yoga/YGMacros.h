@@ -31,10 +31,6 @@
 #define WIN_STRUCT_REF(value) value
 #endif
 
-#ifndef FB_ASSERTIONS_ENABLED
-#define FB_ASSERTIONS_ENABLED 1
-#endif
-
 #ifdef NS_ENUM
 // Cannot use NSInteger as NSInteger has a different size than int (which is the default type of a
 // enum).

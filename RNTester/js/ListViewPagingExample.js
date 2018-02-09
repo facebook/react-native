@@ -46,7 +46,7 @@ var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
 class Thumb extends React.Component<{}, $FlowFixMeState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
   }

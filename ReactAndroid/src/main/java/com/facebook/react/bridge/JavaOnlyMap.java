@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Java {@link HashMap} backed impementation of {@link ReadableMap} and {@link WritableMap}
+ * Java {@link HashMap} backed implementation of {@link ReadableMap} and {@link WritableMap}
  * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
  * of {@link WritableNativeMap} created via {@link Arguments#createMap} or just {@link ReadableMap}
  * interface if you want your "native" module method to take a map from JS as an argument.

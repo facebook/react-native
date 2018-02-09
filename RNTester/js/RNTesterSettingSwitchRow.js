@@ -19,7 +19,7 @@ const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
 class RNTesterSettingSwitchRow extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     const {onEnable, onDisable, persister} = this.props;
     if (newProps.persister.state !== persister.state) {
       newProps.persister.state ? onEnable() : onDisable();

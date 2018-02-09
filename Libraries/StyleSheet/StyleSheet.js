@@ -135,6 +135,20 @@ module.exports = {
   absoluteFillObject,
 
   /**
+   * Combines two styles such that `style2` will override any styles in `style1`.
+   * If either style is falsy, the other one is returned without allocating an
+   * array, saving allocations and maintaining reference equality for
+   * PureComponent checks.
+   */
+  compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
+    if (style1 && style2) {
+      return [style1, style2];
+    } else {
+      return style1 || style2;
+    }
+  },
+
+  /**
    * Flattens an array of style objects, into one aggregated style object.
    * Alternatively, this method can be used to lookup IDs, returned by
    * StyleSheet.register.

@@ -26,7 +26,6 @@ RCT_EXPORT_MODULE()
 {
   return @{
     @"scriptURL": self.bridge.bundleURL.absoluteString ?: @"",
-    @"embeddedBundleURL": self.bridge.embeddedBundleURL.absoluteString ?: @""
   };
 }
 

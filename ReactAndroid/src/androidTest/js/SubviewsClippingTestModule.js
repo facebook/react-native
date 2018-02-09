@@ -267,7 +267,7 @@ var appInstance = null;
 class SubviewsClippingTestApp extends React.Component {
   state = {};
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     appInstance = this;
   }
 

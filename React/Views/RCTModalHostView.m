@@ -18,7 +18,9 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#if TARGET_OS_TV
 #import "RCTTVRemoteHandler.h"
+#endif
 
 @implementation RCTModalHostView
 {

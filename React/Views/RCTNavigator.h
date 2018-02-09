@@ -31,4 +31,6 @@
  */
 - (BOOL)requestSchedulingJavaScriptNavigation;
 
+- (void)uiManagerDidPerformMounting;
+
 @end

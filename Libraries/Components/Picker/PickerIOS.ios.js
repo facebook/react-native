@@ -41,7 +41,7 @@ var PickerIOS = createReactClass({
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   },
 

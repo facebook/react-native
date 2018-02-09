@@ -15,7 +15,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
@@ -100,9 +99,6 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     super.initialize();
     getReactApplicationContext().addLifecycleEventListener(this);
     if (!hasBeenInitialized()) {
-      // Make sure the SoLoaderShim is configured to use our loader for native libraries.
-      // This code can be removed if using Fresco from Maven rather than from source
-      SoLoaderShim.setHandler(new FrescoHandler());
       if (mConfig == null) {
         mConfig = getDefaultConfig(getReactApplicationContext());
       }
@@ -184,13 +180,6 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     // backgrounded.
     if (hasBeenInitialized() && mClearOnDestroy) {
       Fresco.getImagePipeline().clearMemoryCaches();
-    }
-  }
-
-  private static class FrescoHandler implements SoLoaderShim.Handler {
-    @Override
-    public void loadLibrary(String libraryName) {
-      SoLoader.loadLibrary(libraryName);
     }
   }
 }

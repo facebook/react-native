@@ -9,6 +9,7 @@
 
 package com.facebook.react.modules.timepicker;
 
+import android.app.TimePickerDialog;
 import javax.annotation.Nullable;
 
 import android.app.TimePickerDialog;
@@ -31,7 +32,7 @@ public class DismissableTimePickerDialog extends TimePickerDialog {
 
   public DismissableTimePickerDialog(
       Context context,
-      @Nullable OnTimeSetListener callback,
+      @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
       boolean is24HourView) {
@@ -41,7 +42,7 @@ public class DismissableTimePickerDialog extends TimePickerDialog {
   public DismissableTimePickerDialog(
       Context context,
       int theme,
-      @Nullable OnTimeSetListener callback,
+      @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
       boolean is24HourView) {

@@ -133,12 +133,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 #endif
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  _contentView.backgroundColor = backgroundColor;
-}
-
 #pragma mark - passThroughTouches
 
 - (BOOL)passThroughTouches
@@ -282,7 +276,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                             sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
-  _contentView.backgroundColor = self.backgroundColor;
   _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 

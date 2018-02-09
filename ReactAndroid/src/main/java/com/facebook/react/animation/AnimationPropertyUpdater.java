@@ -37,7 +37,7 @@ public interface AnimationPropertyUpdater {
 
   /**
    * This method will be called at the end of animation. It should be used to set the final values
-   * for animated properties in order to avoid floating point inacurracy calculated in
+   * for animated properties in order to avoid floating point inaccuracy calculated in
    * {@link #onUpdate} by passing value close to 1.0 or in a case some frames got dropped.
    *
    * @param view view to update property

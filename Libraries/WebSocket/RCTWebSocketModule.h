@@ -13,8 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTWebSocketContentHandler <NSObject>
 
-- (id)processMessage:(id __nullable)message forSocketID:(NSNumber *)socketID
-            withType:(NSString *__nonnull __autoreleasing *__nonnull)type;
+- (id)processWebsocketMessage:(id __nullable)message
+                  forSocketID:(NSNumber *)socketID
+                     withType:(NSString *__nonnull __autoreleasing *__nonnull)type;
 
 @end
 

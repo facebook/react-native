@@ -133,17 +133,33 @@ function requireNativeComponent(
     }
 
     let baseModuleName = viewConfig.baseModuleName;
-    let nativeProps = {...viewConfig.NativeProps};
+    let bubblingEventTypes = viewConfig.bubblingEventTypes;
+    let directEventTypes = viewConfig.directEventTypes;
+    let nativeProps = viewConfig.NativeProps;
     while (baseModuleName) {
       const baseModule = UIManager[baseModuleName];
       if (!baseModule) {
         warning(false, 'Base module "%s" does not exist', baseModuleName);
         baseModuleName = null;
       } else {
-        nativeProps = {...nativeProps, ...baseModule.NativeProps};
+        bubblingEventTypes = {
+          ...baseModule.bubblingEventTypes,
+          ...bubblingEventTypes,
+        };
+        directEventTypes = {
+          ...baseModule.directEventTypes,
+          ...directEventTypes,
+        };
+        nativeProps = {
+          ...baseModule.NativeProps,
+          ...nativeProps,
+        };
         baseModuleName = baseModule.baseModuleName;
       }
     }
+
+    viewConfig.bubblingEventTypes = bubblingEventTypes;
+    viewConfig.directEventTypes = directEventTypes;
 
     for (const key in nativeProps) {
       let useAttribute = false;

@@ -35,12 +35,18 @@ class BugReporting {
   static _extraSources: Map<string, SourceCallback> = new Map();
   static _fileSources: Map<string, SourceCallback> = new Map();
   static _subscription: ?EmitterSubscription = null;
+  static _redboxSubscription: ?EmitterSubscription = null;
 
   static _maybeInit() {
     if (!BugReporting._subscription) {
       BugReporting._subscription = RCTDeviceEventEmitter
           .addListener('collectBugExtraData', BugReporting.collectExtraData, null);
       defaultExtras();
+    }
+
+    if (!BugReporting._redboxSubscription) {
+      BugReporting._redboxSubscription = RCTDeviceEventEmitter
+          .addListener('collectRedBoxExtraData', BugReporting.collectExtraData, null);
     }
   }
 
@@ -97,6 +103,11 @@ class BugReporting {
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
+
+    const RedBoxNativeModule = require('NativeModules').RedBox;
+    RedBoxNativeModule &&
+      RedBoxNativeModule.setExtraData &&
+      RedBoxNativeModule.setExtraData(extraData, 'From BugReporting.js');
 
     return { extras: extraData, files: fileData };
   }

@@ -38,7 +38,7 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader loads bundle from file system. The bundle will be read in native code to save on
-   * passing large strings from java to native memorory.
+   * passing large strings from java to native memory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
     return createFileLoader(fileName, fileName, false);

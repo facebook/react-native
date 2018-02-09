@@ -16,12 +16,6 @@
 @class RCTRootShadowView;
 @class RCTSparseArray;
 
-typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
-  RCTUpdateLifecycleUninitialized = 0,
-  RCTUpdateLifecycleComputed,
-  RCTUpdateLifecycleDirtied,
-};
-
 typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 /**
@@ -55,7 +49,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
-@property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
@@ -76,12 +69,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * corresponding UIViews.
  */
 @property (nonatomic, assign, getter=isNewView) BOOL newView;
-
-/**
- * isHidden - RCTUIManager uses this to determine whether or not the UIView should be hidden. Useful if the
- * ShadowView determines that its UIView will be clipped and wants to hide it.
- */
-@property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
  * Computed layout direction of the view.
@@ -110,7 +97,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Convenient alias to `width` and `height` in pixels.
- * Defaults to NAN in case of non-pixel dimention.
+ * Defaults to NAN in case of non-pixel dimension.
  */
 @property (nonatomic, assign) CGSize size;
 
@@ -171,11 +158,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float aspectRatio;
 
 /**
- * z-index, used to override sibling order in the view
- */
-@property (nonatomic, assign) NSInteger zIndex;
-
-/**
  * Interface direction (LTR or RTL)
  */
 @property (nonatomic, assign) YGDirection direction;
@@ -197,32 +179,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CGSize intrinsicContentSize;
 
 /**
- * Calculate property changes that need to be propagated to the view.
- * The applierBlocks set contains RCTApplierBlock functions that must be applied
- * on the main thread in order to update the view.
- */
-- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                parentProperties:(NSDictionary<NSString *, id> *)parentProperties;
-
-/**
- * Process the updated properties and apply them to view. Shadow view classes
- * that add additional propagating properties should override this method.
- */
-- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
-
-/**
- * Can be called by a parent on a child in order to calculate all views whose frame needs
- * updating in that branch. Adds these frames to `viewsWithNewFrame`. Useful if layout
- * enters a view where flex doesn't apply (e.g. Text) and then you want to resume flex
- * layout on a subview.
- */
-- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-                   withFrame:(CGRect)frame
-                      hidden:(BOOL)hidden
-            absolutePosition:(CGPoint)absolutePosition;
-
-/**
  * Apply the CSS layout.
  * This method also calls `applyLayoutToChildren:` internally. The functionality
  * is split into two methods so subclasses can override `applyLayoutToChildren:`
@@ -231,6 +187,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)applyLayoutNode:(YGNodeRef)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
+
+- (void)applyLayoutWithFrame:(CGRect)frame
+             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
+            absolutePosition:(CGPoint)absolutePosition;
 
 /**
  * Enumerate the child nodes and tell them to apply layout.
@@ -252,19 +213,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Returns whether or not this node acts as a leaf node in the eyes of Yoga.
- * For example `RCTShadowText` has children which it does not want Yoga
+ * For example `RCTTextShadowView` has children which it does not want Yoga
  * to lay out so in the eyes of Yoga it is a leaf node.
  * Defaults to `NO`. Can be overridden in subclasses.
  * Don't confuse this with `canHaveSubviews`.
  */
 - (BOOL)isYogaLeafNode;
-
-- (void)dirtyPropagation NS_REQUIRES_SUPER;
-- (BOOL)isPropagationDirty;
-
-- (void)dirtyText NS_REQUIRES_SUPER;
-- (void)setTextComputed NS_REQUIRES_SUPER;
-- (BOOL)isTextDirty;
 
 /**
  * As described in RCTComponent protocol.

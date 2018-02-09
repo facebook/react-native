@@ -10,13 +10,13 @@
 
 const bundleWithOutput = require('./bundle').withOutput;
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const outputUnbundle = require('metro-bundler/src/shared/output/unbundle');
+const outputUnbundle = require('metro/src/shared/output/unbundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function unbundle(argv, config, args, packagerInstance) {
-  return bundleWithOutput(argv, config, args, outputUnbundle, packagerInstance);
+function unbundle(argv, config, args) {
+  return bundleWithOutput(argv, config, args, outputUnbundle);
 }
 
 module.exports = {

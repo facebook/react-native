@@ -29,7 +29,8 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStringCreateWithUTF8CStringExpectAscii)
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSPokeSamplingProfiler)
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
 
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSInspectorGetInstance)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSGlobalContextEnableDebugger)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSGlobalContextDisableDebugger)
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(configureJSCForIOS)
 
@@ -129,9 +130,12 @@ const JSCWrapper* systemJSCWrapper() {
         (decltype(&JSStartSamplingProfilingOnMainJSCThread))
         Unimplemented_JSStartSamplingProfilingOnMainJSCThread,
 
-      .JSInspectorGetInstance =
-        (decltype(&JSInspectorGetInstance))
-        Unimplemented_JSInspectorGetInstance,
+      .JSGlobalContextEnableDebugger =
+        (decltype(&JSGlobalContextEnableDebugger))
+        Unimplemented_JSGlobalContextEnableDebugger,
+      .JSGlobalContextDisableDebugger =
+        (decltype(&JSGlobalContextDisableDebugger))
+        Unimplemented_JSGlobalContextDisableDebugger,
 
       .configureJSCForIOS =
         (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,

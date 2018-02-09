@@ -105,7 +105,7 @@ class SwipeableListView extends React.Component<Props, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps: Props): void {
+  UNSAFE_componentWillReceiveProps(nextProps: Props): void {
     if (this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()) {
       this.setState({
         dataSource: nextProps.dataSource,

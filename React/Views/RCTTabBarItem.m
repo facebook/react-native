@@ -58,6 +58,11 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
   return _barItem;
 }
 
+- (void)setTestID:(NSString *)testID
+{
+  self.barItem.accessibilityIdentifier = testID;
+}
+
 - (void)setBadge:(id)badge
 {
   _badge = [badge copy];

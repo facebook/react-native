@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
   private ReactShadowNode[] mChildren = new ReactShadowNodeImpl[4];
 
   /**
-   * Retuns size of underlying moveTo/moveFrom arrays
+   * Returns size of underlying moveTo/moveFrom arrays
    */
   public int size() {
     return mSize;

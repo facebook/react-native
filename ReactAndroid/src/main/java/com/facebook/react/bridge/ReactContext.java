@@ -141,16 +141,20 @@ public class ReactContext extends ContextWrapper {
         case BEFORE_RESUME:
           break;
         case RESUMED:
-          runOnUiQueueThread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                listener.onHostResume();
-              } catch (RuntimeException e) {
-                handleException(e);
-              }
-            }
-          });
+          runOnUiQueueThread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  if (!mLifecycleEventListeners.contains(listener)) {
+                    return;
+                  }
+                  try {
+                    listener.onHostResume();
+                  } catch (RuntimeException e) {
+                    handleException(e);
+                  }
+                }
+              });
           break;
         default:
           throw new RuntimeException("Unhandled lifecycle state.");
@@ -300,13 +304,13 @@ public class ReactContext extends ContextWrapper {
    * {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} if one exists, rethrowing
    * otherwise.
    */
-  public void handleException(RuntimeException e) {
+  public void handleException(Exception e) {
     if (mCatalystInstance != null &&
         !mCatalystInstance.isDestroyed() &&
         mNativeModuleCallExceptionHandler != null) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
-      throw e;
+      throw new RuntimeException(e);
     }
   }
 

@@ -63,15 +63,27 @@
   }
 }
 
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   std::lock_guard<std::mutex> lock(_mutex);
 
   for (id<RCTUIManagerObserver> observer in _observers) {
-    if ([observer respondsToSelector:@selector(uiManagerWillFlushUIBlocks:)]) {
-      [observer uiManagerWillFlushUIBlocks:manager];
+    if ([observer respondsToSelector:@selector(uiManagerWillPerformMounting:)]) {
+      [observer uiManagerWillPerformMounting:manager];
     }
   }
 }
+
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager
+{
+  std::lock_guard<std::mutex> lock(_mutex);
+
+  for (id<RCTUIManagerObserver> observer in _observers) {
+    if ([observer respondsToSelector:@selector(uiManagerDidPerformMounting:)]) {
+      [observer uiManagerDidPerformMounting:manager];
+    }
+  }
+}
+
 
 @end

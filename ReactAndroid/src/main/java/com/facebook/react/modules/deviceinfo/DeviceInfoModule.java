@@ -39,6 +39,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
   public DeviceInfoModule(ReactApplicationContext reactContext) {
     this((Context) reactContext);
     mReactApplicationContext = reactContext;
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public DeviceInfoModule(Context context) {
@@ -57,7 +58,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
     HashMap<String, Object> constants = new HashMap<>();
     constants.put(
         "Dimensions",
-        getDimensionsConstants());
+        DisplayMetricsHolder.getDisplayMetricsMap(mFontScale));
     return constants;
   }
 
@@ -89,31 +90,6 @@ public class DeviceInfoModule extends BaseJavaModule implements
 
     mReactApplicationContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("didUpdateDimensions", getDimensionsConstants());
-  }
-
-  private WritableMap getDimensionsConstants() {
-    DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-    WritableMap windowDisplayMetricsMap = Arguments.createMap();
-    windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-    windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-    windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-    windowDisplayMetricsMap.putDouble("fontScale", mFontScale);
-    windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-    WritableMap screenDisplayMetricsMap = Arguments.createMap();
-    screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-    screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-    screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-    screenDisplayMetricsMap.putDouble("fontScale", mFontScale);
-    screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-    WritableMap dimensionsMap = Arguments.createMap();
-    dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-    dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-
-    return dimensionsMap;
+        .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsMap(mFontScale));
   }
 }
