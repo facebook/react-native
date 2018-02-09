@@ -582,18 +582,31 @@ workflows:
           requires:
             - checkout_code
 
+  # Only runs on PRs
+  analyze:
+    jobs:
+      # Checkout repo and run Yarn
+      - checkout_code:
+          filters: *filter-ignore-master-stable
+          
       # Run code checks
       - analyze_pr:            
           filters: *filter-ignore-master-stable
           requires:            
             - checkout_code
 
+  # Only runs on NN-stable branches
   deploy:
     jobs:
+      # Checkout repo and run Yarn
+      - checkout_code:
+          filters: *filter-only-stable
+          
       # If we are on a stable branch, wait for approval to deploy to npm
       - approve_publish_npm_package:
           filters: *filter-only-stable
           type: approval
       - publish_npm_package:
           requires:
+            - checkout_code
             - approve_publish_npm_package
