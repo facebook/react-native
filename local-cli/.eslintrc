@@ -4,7 +4,7 @@
     // compatible with node 4
     "comma-dangle": 0,
 
-    "extra-arrow-initializer": 0,
+    "lint/extra-arrow-initializer": 0,
     "no-alert": 0,
     "no-console-disallow": 0
   },
