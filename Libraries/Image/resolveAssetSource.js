@@ -89,12 +89,12 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   return resolver.defaultAsset();
 }
 
-let sourceCodeScriptURL: ?string = global.nativeExtensions && global.nativeExtensions.SourceCode && global.nativeExtensions.SourceCode.scriptURL;
-if (!sourceCodeScriptURL) {
+let sourceCode = global.nativeExtensions && global.nativeExtensions.SourceCode;
+if (!sourceCode) {
   const NativeModules = require('NativeModules');
-  sourceCodeScriptURL = NativeModules && NativeModules.SourceCode && NativeModules.SourceCode.scriptURL;
+  sourceCode = NativeModules && NativeModules.SourceCode;
 }
-_sourceCodeScriptURL = sourceCodeScriptURL;
+_sourceCodeScriptURL = sourceCode.scriptURL;
 
 module.exports = resolveAssetSource;
 module.exports.pickScale = AssetSourceResolver.pickScale;
