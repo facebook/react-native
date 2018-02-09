@@ -57,7 +57,7 @@ const HEADER_NAV_ICON = nativeImageSource({
 });
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButtonPress);
   }
 

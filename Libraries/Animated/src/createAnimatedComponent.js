@@ -42,7 +42,7 @@ function createAnimatedComponent(Component: any): any {
       this._component.setNativeProps(props);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this._attachProps(this.props);
     }
 
@@ -127,7 +127,7 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
       this._attachProps(newProps);
     }
 

@@ -354,7 +354,7 @@ var ListView = createReactClass({
     return this._scrollComponent.getInnerViewNode();
   },
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
       visibleLength: null,
@@ -375,7 +375,7 @@ var ListView = createReactClass({
     });
   },
 
-  componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
     if (
       this.props.dataSource !== nextProps.dataSource ||
       this.props.initialListSize !== nextProps.initialListSize

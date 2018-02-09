@@ -247,7 +247,7 @@ class WebView extends React.Component {
     startInLoadingState: true,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }

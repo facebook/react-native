@@ -13,6 +13,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 #import <React/RCTWebSocketModule.h>
 
 static NSString *const kBlobURIScheme = @"blob";
@@ -263,8 +264,8 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
     @"blobId": [self store:data],
     @"offset": @0,
     @"size": @(data.length),
-    @"name": [response suggestedFilename],
-    @"type": [response MIMEType],
+    @"name": RCTNullIfNil([response suggestedFilename]),
+    @"type": RCTNullIfNil([response MIMEType]),
   };
 }
 

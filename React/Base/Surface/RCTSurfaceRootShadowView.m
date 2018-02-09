@@ -43,7 +43,7 @@
   }
 }
 
-- (void)calculateLayoutWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximimSize
+- (void)calculateLayoutWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
   YGNodeRef yogaNode = self.yogaNode;
 
@@ -52,8 +52,8 @@
 
   YGNodeCalculateLayout(
     self.yogaNode,
-    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.width),
-    RCTYogaFloatFromCoreGraphicsFloat(maximimSize.height),
+    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width),
+    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height),
     _baseDirection
   );
 }

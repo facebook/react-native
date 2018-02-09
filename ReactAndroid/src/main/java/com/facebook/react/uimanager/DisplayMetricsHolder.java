@@ -21,6 +21,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.WritableNativeMap;
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -104,4 +105,26 @@ public class DisplayMetricsHolder {
   public static DisplayMetrics getScreenDisplayMetrics() {
     return sScreenDisplayMetrics;
   }
+
+  public static WritableNativeMap getDisplayMetricsMap(double fontScale) {
+    Assertions.assertNotNull(
+        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+        "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
+    final WritableNativeMap result = new WritableNativeMap();
+    result.putMap("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
+    result.putMap("screenPhysicalPixels", getPhysicalPixelsMap(sScreenDisplayMetrics, fontScale));
+
+    return result;
+  }
+
+  private static WritableNativeMap getPhysicalPixelsMap(DisplayMetrics displayMetrics, double fontScale) {
+    final WritableNativeMap result = new WritableNativeMap();
+    result.putInt("width", displayMetrics.widthPixels);
+    result.putInt("height", displayMetrics.heightPixels);
+    result.putDouble("scale", displayMetrics.density);
+    result.putDouble("fontScale", fontScale);
+    result.putDouble("densityDpi", displayMetrics.densityDpi);
+    return result;
+  }
+
 }

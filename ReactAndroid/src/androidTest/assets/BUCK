@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "rn_android_resource")
+load("//ReactNative:DEFS.bzl", "rn_android_resource")
 
 rn_android_resource(
     name = "assets",

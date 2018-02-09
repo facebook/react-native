@@ -78,7 +78,7 @@ if (!includesReleaseNotes) {
 
 // Tags PRs that have been submitted by a core contributor.
 // TODO: Switch to using an actual MAINTAINERS file.
-const taskforce = fs.readFileSync('../bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
+const taskforce = fs.readFileSync('./IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
 if (isSubmittedByTaskforce) {
   markdown('@facebook-github-bot label Core Team');

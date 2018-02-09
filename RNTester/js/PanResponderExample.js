@@ -36,7 +36,7 @@ var PanResponderExample = createReactClass({
   _circleStyles: {},
   circle: (null : ?{ setNativeProps(props: Object): void }),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,

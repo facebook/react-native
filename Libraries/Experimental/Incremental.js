@@ -129,7 +129,7 @@ class Incremental extends React.Component<Props, State> {
     return ctx.groupId + ':' + this._incrementId + '-' + this.props.name;
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const ctx = this.context.incrementalGroup;
     if (!ctx) {
       return;

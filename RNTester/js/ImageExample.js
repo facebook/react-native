@@ -43,7 +43,7 @@ var NetworkImageCallbackExample = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({mountTime: new Date()});
   },
 

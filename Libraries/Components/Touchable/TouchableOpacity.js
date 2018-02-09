@@ -158,7 +158,7 @@ var TouchableOpacity = createReactClass({
     ensurePositiveDelayProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
   },
 

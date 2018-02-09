@@ -31,7 +31,7 @@ type PressRetentionOffset = {
 export type TextProps = {|
   accessible?: boolean,
   allowFontScaling?: boolean,
-  children: Node,
+  children?: Node,
   ellipsizeMode?: 'clip' | 'head' | 'middle' | 'tail',
   nativeID?: string,
   numberOfLines?: number,
