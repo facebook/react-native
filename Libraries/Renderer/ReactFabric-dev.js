@@ -4718,7 +4718,7 @@ var enableMutatingReconciler = true;
 // Experimental noop mode (currently unused):
 var enableNoopReconciler = false;
 // Experimental persistent mode (Fabric):
-var enablePersistentReconciler = false;
+var enablePersistentReconciler = true;
 // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:
 var debugRenderPhaseSideEffects = false;
 
