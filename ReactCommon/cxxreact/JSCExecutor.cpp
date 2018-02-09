@@ -689,11 +689,14 @@ namespace facebook {
       return JSC_JSValueMakeUndefined(m_context);
     }
 
-    JSValueRef JSCExecutor::nativeRequire(
-                                          size_t argumentCount,
-                                          const JSValueRef arguments[]) {
-      uint32_t bundleId, moduleId;
-      std::tie(bundleId, moduleId) = parseNativeRequireParameters(m_context, arguments, argumentCount);
+    JSValueRef JSCExecutor::nativeRequire(size_t count, const JSValueRef arguments[]) {
+      if (count > 2 || count == 0) {
+        throw std::invalid_argument("Got wrong number of args");
+      }
+
+      uint32_t moduleId = folly::to<uint32_t>(Value(m_context, arguments[0]).getNumberOrThrow());
+      uint32_t bundleId = count == 2 ? folly::to<uint32_t>(Value(m_context, arguments[1]).getNumberOrThrow()) : 0;
+
       ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
       loadModule(bundleId, moduleId);
       ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
