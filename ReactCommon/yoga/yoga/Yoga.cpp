@@ -251,6 +251,16 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
   return node;
 }
 
+static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
+  const YGConfigRef config = new YGConfig(oldConfig);
+  YGAssert(config != nullptr, "Could not allocate memory for config");
+  if (config == nullptr) {
+    abort();
+  }
+  gConfigInstanceCount++;
+  return config;
+}
+
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
   YGNodeRef node = YGNodeClone(oldNode);
   YGVector vec = YGVector();
@@ -263,12 +273,12 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
   }
   node->setChildren(vec);
 
-  if (oldNode->getNextChild() != nullptr) {
-    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
+  if (oldNode->getConfig() != nullptr) {
+    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
   }
 
-  if (node->getConfig() != nullptr) {
-    node->setConfig(new YGConfig(*node->getConfig()));
+  if (oldNode->getNextChild() != nullptr) {
+    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
   }
 
   return node;
@@ -289,6 +299,17 @@ void YGNodeFree(const YGNodeRef node) {
   node->clearChildren();
   delete node;
   gNodeInstanceCount--;
+}
+
+static void YGConfigFreeRecursive(const YGNodeRef root) {
+  if (root->getConfig() != nullptr) {
+    gConfigInstanceCount--;
+    delete root->getConfig();
+  }
+  // Delete configs recursively for childrens
+  for (uint32_t i = 0; i < root->getChildrenCount(); ++i) {
+    YGConfigFreeRecursive(root->getChild(i));
+  }
 }
 
 void YGNodeFreeRecursive(const YGNodeRef root) {
@@ -3642,6 +3663,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
                 YGPrintOptionsStyle));
       }
     }
+    YGConfigFreeRecursive(originalNode);
     YGNodeFreeRecursive(originalNode);
   }
 }

@@ -68,17 +68,12 @@ struct YGCachedMeasurement {
     if (!std::isnan(computedWidth) || !std::isnan(measurement.computedWidth)) {
       isEqual = isEqual && computedWidth == measurement.computedWidth;
     }
-    if (!std::isnan(
-            computedHeight || !std::isnan(measurement.computedHeight))) {
+    if (!std::isnan(computedHeight) ||
+        !std::isnan(measurement.computedHeight)) {
       isEqual = isEqual && computedHeight == measurement.computedHeight;
     }
 
-    return availableWidth == measurement.availableWidth &&
-        availableHeight == measurement.availableHeight &&
-        widthMeasureMode == measurement.widthMeasureMode &&
-        heightMeasureMode == measurement.heightMeasureMode &&
-        computedWidth == measurement.computedWidth &&
-        computedHeight == measurement.computedHeight;
+    return isEqual;
   }
 };
 
