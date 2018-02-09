@@ -20,6 +20,7 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedTracking from './AnimatedTracking';
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 

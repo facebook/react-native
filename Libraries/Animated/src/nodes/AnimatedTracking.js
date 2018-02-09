@@ -27,6 +27,7 @@ class AnimatedTracking extends AnimatedNode {
   _callback: ?EndCallback;
   _animationConfig: Object;
   _animationClass: any;
+  _useNativeDriver: boolean;
 
   constructor(
     value: AnimatedValue,
