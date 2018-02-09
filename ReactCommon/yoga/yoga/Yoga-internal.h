@@ -215,6 +215,7 @@ struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
   bool useLegacyStretchBehaviour;
+  bool shouldDiffLayoutWithoutLegacyStretchBehaviour;
   float pointScaleFactor;
   YGLogger logger;
   YGNodeClonedFunc cloneNodeCallback;

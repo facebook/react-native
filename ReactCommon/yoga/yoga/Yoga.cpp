@@ -47,6 +47,7 @@ static YGConfig gYGConfigDefaults = {
         },
     .useWebDefaults = false,
     .useLegacyStretchBehaviour = false,
+    .shouldDiffLayoutWithoutLegacyStretchBehaviour = false,
     .pointScaleFactor = 1.0f,
 #ifdef ANDROID
     .logger = &YGAndroidLog,
@@ -3613,14 +3614,15 @@ void YGNodeCalculateLayout(const YGNodeRef node,
     }
   }
 
-  bool didUseLegacyFlag = node->didUseLegacyFlag();
-
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.
   // So logging this in YGLayout would help to find out the call sites depending
   // on this flag. This check would be removed once we are sure no one is
-  // dependent on this flag anymore.
-  if (didUseLegacyFlag) {
+  // dependent on this flag anymore. The flag
+  // `shouldDiffLayoutWithoutLegacyStretchBehaviour` in YGConfig will help to
+  // run experiments.
+  if (node->getConfig()->shouldDiffLayoutWithoutLegacyStretchBehaviour &&
+      node->didUseLegacyFlag()) {
     const YGNodeRef originalNode = YGNodeDeepClone(node);
     originalNode->resolveDimension();
     // Recursively mark nodes as dirty
