@@ -548,7 +548,7 @@ const ScrollResponderMixin = {
    *
    * The `keyboardWillShow` is called before input focus.
    */
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     const {keyboardShouldPersistTaps} = this.props;
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',

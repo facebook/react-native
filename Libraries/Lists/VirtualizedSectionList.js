@@ -361,7 +361,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     this.state = this._computeState(props);
   }
 
-  componentWillReceiveProps(nextProps: Props<SectionT>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
     this.setState(this._computeState(nextProps));
   }
 
@@ -446,7 +446,7 @@ class ItemWithSeparator extends React.Component<
     },
   };
 
-  componentWillReceiveProps(props: ItemWithSeparatorProps) {
+  UNSAFE_componentWillReceiveProps(props: ItemWithSeparatorProps) {
     this.setState(state => ({
       separatorProps: {
         ...this.state.separatorProps,

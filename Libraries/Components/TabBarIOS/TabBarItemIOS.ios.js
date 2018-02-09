@@ -102,13 +102,13 @@ class TabBarItemIOS extends React.Component {
     hasBeenSelected: false,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
   }
 
-  componentWillReceiveProps(nextProps: { selected?: boolean }) {
+  UNSAFE_componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }

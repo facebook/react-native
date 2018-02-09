@@ -82,7 +82,7 @@ xcodebuild \
   -sdk $SDK \
   -destination "$DESTINATION" \
   build test \
-  | xcpretty --report junit --output ~/reports/junit/objc-xcodebuild-results.xml
+  | xcpretty --report junit --output ~/react-native/reports/junit/objc-xcodebuild-results.xml
 
 else
 

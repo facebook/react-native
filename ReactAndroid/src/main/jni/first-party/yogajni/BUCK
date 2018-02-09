@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "IS_OSS_BUILD", "cxx_library", "FBJNI_TARGET")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "cxx_library", "FBJNI_TARGET")
 
 # This target is only used in open source
 if IS_OSS_BUILD:

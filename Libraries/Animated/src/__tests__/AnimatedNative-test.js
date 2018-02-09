@@ -29,7 +29,7 @@ const NativeAnimatedHelper = require('NativeAnimatedHelper');
 function createAndMountComponent(ComponentClass, props) {
   const component = new ComponentClass();
   component.props = props;
-  component.componentWillMount();
+  component.UNSAFE_componentWillMount();
   // Simulate that refs were set.
   component._component = {};
   component.componentDidMount();

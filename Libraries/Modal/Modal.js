@@ -151,7 +151,7 @@ class Modal extends React.Component<Object> {
     }
   }
 
-  componentWillReceiveProps(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps(nextProps: Object) {
     Modal._confirmProps(nextProps);
   }
 

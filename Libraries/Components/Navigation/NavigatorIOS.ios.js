@@ -515,7 +515,7 @@ var NavigatorIOS = createReactClass({
 
   navigator: (undefined: ?Object),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
     this.navigator = {

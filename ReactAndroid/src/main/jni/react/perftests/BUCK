@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "cxx_library", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "cxx_library", "react_native_xplat_target")
 
 cxx_library(
     name = "perftests",

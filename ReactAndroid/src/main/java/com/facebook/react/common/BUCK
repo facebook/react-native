@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS", "rn_android_library", "rn_android_build_config", "react_native_dep")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_build_config", "react_native_dep")
 
 SUB_PROJECTS = [
     "network/**/*",

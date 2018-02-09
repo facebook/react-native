@@ -352,7 +352,7 @@ class AutogrowingTextInputExample extends React.Component<$FlowFixMeProps, $Flow
     };
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState({
       multiline: props.multiline,
     });
