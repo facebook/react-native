@@ -24,13 +24,13 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v3-android-sdkmanager-packages-{{ arch }}-
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
