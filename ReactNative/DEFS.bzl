@@ -42,14 +42,6 @@ def react_native_target(path):
     return '//ReactAndroid/src/main/' + path
 
 
-def android_react_native_target(path):
-    return react_native_target(path)
-
-
-def apple_react_native_target(path):
-    return react_native_target(path)
-
-
 # Example: react_native_xplat_target('bridge:bridge')
 def react_native_xplat_target(path):
     return '//ReactCommon/' + path
