@@ -17,7 +17,8 @@
     "flowtype",
     "prettier",
     "react",
-    "jest"
+    "jest",
+    "custom"
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -262,5 +263,8 @@
     "jest/no-focused-tests": 1,
     "jest/no-identical-title": 1,
     "jest/valid-expect": 1,
+    
+  // Custom rules, the plugin is located in the eslint-plugin folder.
+    "custom/fbjs-import": 1
   }
 }
