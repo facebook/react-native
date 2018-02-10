@@ -290,78 +290,6 @@ var rethrowCaughtError = function() {
 };
 
 /**
- * Forked from fbjs/warning:
- * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
- *
- * Only change is we use console.warn instead of console.error,
- * and do nothing when 'console' is not supported.
- * This really simplifies the code.
- * ---
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var lowPriorityWarning = function() {};
-
-{
-  var printWarning = function(format) {
-    for (
-      var _len = arguments.length,
-        args = Array(_len > 1 ? _len - 1 : 0),
-        _key = 1;
-      _key < _len;
-      _key++
-    ) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message =
-      "Warning: " +
-      format.replace(/%s/g, function() {
-        return args[argIndex++];
-      });
-    if (typeof console !== "undefined") {
-      console.warn(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  lowPriorityWarning = function(condition, format) {
-    if (format === undefined) {
-      throw new Error(
-        "`warning(condition, format, ...args)` requires a warning " +
-          "message argument"
-      );
-    }
-    if (!condition) {
-      for (
-        var _len2 = arguments.length,
-          args = Array(_len2 > 2 ? _len2 - 2 : 0),
-          _key2 = 2;
-        _key2 < _len2;
-        _key2++
-      ) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-var lowPriorityWarning$1 = lowPriorityWarning;
-
-var shouldWarnOnInjection = false;
-
-/**
  * Injectable ordering of event plugins.
  */
 var eventPluginOrder = null;
@@ -546,21 +474,6 @@ function injectEventPluginOrder(injectedEventPluginOrder) {
  * @see {EventPluginHub.injection.injectEventPluginsByName}
  */
 function injectEventPluginsByName(injectedNamesToPlugins) {
-  {
-    if (shouldWarnOnInjection) {
-      var names = Object.keys(injectedNamesToPlugins).join(", ");
-      lowPriorityWarning$1(
-        false,
-        "Injecting custom event plugins (%s) is deprecated " +
-          "and will not work in React 17+. Please update your code " +
-          "to not depend on React internals. The stack trace for this " +
-          "warning should reveal the library that is using them. " +
-          "See https://github.com/facebook/react/issues/11689 for a discussion.",
-        names
-      );
-    }
-  }
-
   var isOrderingDirty = false;
   for (var pluginName in injectedNamesToPlugins) {
     if (!injectedNamesToPlugins.hasOwnProperty(pluginName)) {
@@ -3076,7 +2989,7 @@ var ReactGlobalSharedState = Object.freeze({
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.2.0";
+var ReactVersion = "16.3.0-alpha.0";
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -4709,27 +4622,16 @@ var ReactDebugCurrentFiber = {
   getCurrentFiberStackAddendum: getCurrentFiberStackAddendum
 };
 
-// Exports ReactDOM.createRoot
+var debugRenderPhaseSideEffects = false;
+var debugRenderPhaseSideEffectsForStrictMode = false;
 
 var enableUserTimingAPI = true;
-
-// Mutating mode (React DOM, React ART, React Native):
-var enableMutatingReconciler = true;
-// Experimental noop mode (currently unused):
-var enableNoopReconciler = false;
-// Experimental persistent mode (Fabric):
-var enablePersistentReconciler = true;
-// Helps identify side effects in begin-phase lifecycle hooks and setState reducers:
-var debugRenderPhaseSideEffects = false;
-
-// In some cases, StrictMode should also double-render lifecycles.
-// This can be confusing for tests though,
-// And it can be bad for performance in production.
-// This feature flag can be used to control the behavior:
-var debugRenderPhaseSideEffectsForStrictMode = true;
-
-// Warn about deprecated, async-unsafe lifecycles; relates to RFC #6:
 var warnAboutDeprecatedLifecycles = false;
+
+// React Fabric uses persistent reconciler.
+var enableMutatingReconciler = false;
+var enableNoopReconciler = false;
+var enablePersistentReconciler = true;
 
 // Only used in www builds.
 
@@ -5855,6 +5757,76 @@ function onCommitUnmount(fiber) {
   }
 }
 
+/**
+ * Forked from fbjs/warning:
+ * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
+ *
+ * Only change is we use console.warn instead of console.error,
+ * and do nothing when 'console' is not supported.
+ * This really simplifies the code.
+ * ---
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var lowPriorityWarning = function() {};
+
+{
+  var printWarning = function(format) {
+    for (
+      var _len = arguments.length,
+        args = Array(_len > 1 ? _len - 1 : 0),
+        _key = 1;
+      _key < _len;
+      _key++
+    ) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message =
+      "Warning: " +
+      format.replace(/%s/g, function() {
+        return args[argIndex++];
+      });
+    if (typeof console !== "undefined") {
+      console.warn(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  lowPriorityWarning = function(condition, format) {
+    if (format === undefined) {
+      throw new Error(
+        "`warning(condition, format, ...args)` requires a warning " +
+          "message argument"
+      );
+    }
+    if (!condition) {
+      for (
+        var _len2 = arguments.length,
+          args = Array(_len2 > 2 ? _len2 - 2 : 0),
+          _key2 = 2;
+        _key2 < _len2;
+        _key2++
+      ) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+var lowPriorityWarning$1 = lowPriorityWarning;
+
 var ReactStrictModeWarnings = {
   discardPendingWarnings: function() {},
   flushPendingDeprecationWarnings: function() {},
@@ -5962,7 +5934,7 @@ var ReactStrictModeWarnings = {
         .sort()
         .join(", ");
 
-      warning(
+      lowPriorityWarning$1(
         false,
         "componentWillMount is deprecated and will be removed in the next major version. " +
           "Use componentDidMount instead. As a temporary workaround, " +
@@ -5987,7 +5959,7 @@ var ReactStrictModeWarnings = {
         .sort()
         .join(", ");
 
-      warning(
+      lowPriorityWarning$1(
         false,
         "componentWillReceiveProps is deprecated and will be removed in the next major version. " +
           "Use static getDerivedStateFromProps instead." +
@@ -6011,7 +5983,7 @@ var ReactStrictModeWarnings = {
         .sort()
         .join(", ");
 
-      warning(
+      lowPriorityWarning$1(
         false,
         "componentWillUpdate is deprecated and will be removed in the next major version. " +
           "Use componentDidUpdate instead. As a temporary workaround, " +
@@ -7284,12 +7256,15 @@ var getCurrentFiberStackAddendum$1 =
   ReactDebugCurrentFiber.getCurrentFiberStackAddendum;
 
 var didWarnAboutMaps = void 0;
+var didWarnAboutStringRefInStrictMode = void 0;
 var ownerHasKeyUseWarning = void 0;
 var ownerHasFunctionTypeWarning = void 0;
 var warnForMissingKey = function(child) {};
 
 {
   didWarnAboutMaps = false;
+  didWarnAboutStringRefInStrictMode = {};
+
   /**
    * Warn if there's no key explicitly set on dynamic arrays of children or
    * object keys are not valid. This allows us to keep track of children between
@@ -7334,9 +7309,33 @@ var warnForMissingKey = function(child) {};
 
 var isArray$1 = Array.isArray;
 
-function coerceRef(current, element) {
+function coerceRef(returnFiber, current, element) {
   var mixedRef = element.ref;
-  if (mixedRef !== null && typeof mixedRef !== "function") {
+  if (
+    mixedRef !== null &&
+    typeof mixedRef !== "function" &&
+    typeof mixedRef !== "object"
+  ) {
+    {
+      if (returnFiber.mode & StrictMode) {
+        var componentName = getComponentName(returnFiber) || "Component";
+        if (!didWarnAboutStringRefInStrictMode[componentName]) {
+          warning(
+            false,
+            'A string ref, "%s", has been found within a strict mode tree. ' +
+              "String refs are a source of potential bugs and should be avoided. " +
+              "We recommend using createRef() instead." +
+              "\n%s" +
+              "\n\nLearn more about using refs safely here:" +
+              "\nhttps://fb.me/react-strict-mode-string-ref",
+            mixedRef,
+            getStackAddendumByWorkInProgressFiber(returnFiber)
+          );
+          didWarnAboutStringRefInStrictMode[componentName] = true;
+        }
+      }
+    }
+
     if (element._owner) {
       var owner = element._owner;
       var inst = void 0;
@@ -7557,7 +7556,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (current !== null && current.type === element.type) {
       // Move based on index
       var existing = useFiber(current, element.props, expirationTime);
-      existing.ref = coerceRef(current, element);
+      existing.ref = coerceRef(returnFiber, current, element);
       existing["return"] = returnFiber;
       {
         existing._debugSource = element._source;
@@ -7571,7 +7570,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         returnFiber.mode,
         expirationTime
       );
-      created.ref = coerceRef(current, element);
+      created.ref = coerceRef(returnFiber, current, element);
       created["return"] = returnFiber;
       return created;
     }
@@ -7641,7 +7640,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             returnFiber.mode,
             expirationTime
           );
-          _created.ref = coerceRef(null, newChild);
+          _created.ref = coerceRef(returnFiber, null, newChild);
           _created["return"] = returnFiber;
           return _created;
         }
@@ -8275,7 +8274,7 @@ function ChildReconciler(shouldTrackSideEffects) {
               : element.props,
             expirationTime
           );
-          existing.ref = coerceRef(child, element);
+          existing.ref = coerceRef(returnFiber, child, element);
           existing["return"] = returnFiber;
           {
             existing._debugSource = element._source;
@@ -8307,7 +8306,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         returnFiber.mode,
         expirationTime
       );
-      _created4.ref = coerceRef(currentFirstChild, element);
+      _created4.ref = coerceRef(returnFiber, currentFirstChild, element);
       _created4["return"] = returnFiber;
       return _created4;
     }
@@ -8514,6 +8513,8 @@ function cloneChildFibers(current, workInProgress) {
   newChild.sibling = null;
 }
 
+var changedBitsStack = [];
+var currentValueStack = [];
 var stack = [];
 var index$1 = -1;
 
@@ -8524,9 +8525,11 @@ var rendererSigil = void 0;
 }
 
 function pushProvider(providerFiber) {
-  index$1 += 1;
-  stack[index$1] = providerFiber;
   var context = providerFiber.type.context;
+  index$1 += 1;
+  changedBitsStack[index$1] = context.changedBits;
+  currentValueStack[index$1] = context.currentValue;
+  stack[index$1] = providerFiber;
   context.currentValue = providerFiber.pendingProps.value;
   context.changedBits = providerFiber.stateNode;
 
@@ -8548,17 +8551,15 @@ function popProvider(providerFiber) {
       "Unexpected pop."
     );
   }
+  var changedBits = changedBitsStack[index$1];
+  var currentValue = currentValueStack[index$1];
+  changedBitsStack[index$1] = null;
+  currentValueStack[index$1] = null;
   stack[index$1] = null;
   index$1 -= 1;
   var context = providerFiber.type.context;
-  if (index$1 < 0) {
-    context.currentValue = context.defaultValue;
-    context.changedBits = 0;
-  } else {
-    var previousProviderFiber = stack[index$1];
-    context.currentValue = previousProviderFiber.pendingProps.value;
-    context.changedBits = previousProviderFiber.stateNode;
-  }
+  context.currentValue = currentValue;
+  context.changedBits = changedBits;
 }
 
 function resetProviderStack() {
@@ -8567,6 +8568,8 @@ function resetProviderStack() {
     var context = providerFiber.type.context;
     context.currentValue = context.defaultValue;
     context.changedBits = 0;
+    changedBitsStack[i] = null;
+    currentValueStack[i] = null;
     stack[i] = null;
     {
       context._currentRenderer = null;
@@ -8689,7 +8692,10 @@ var ReactFiberBeginWork = function(
 
   function markRef(current, workInProgress) {
     var ref = workInProgress.ref;
-    if (ref !== null && (!current || current.ref !== ref)) {
+    if (
+      (current === null && ref !== null) ||
+      (current !== null && current.ref !== ref)
+    ) {
       // Schedule a Ref effect
       workInProgress.effectTag |= Ref;
     }
@@ -10159,12 +10165,16 @@ var ReactFiberCommitWork = function(config, captureError) {
   function safelyDetachRef(current) {
     var ref = current.ref;
     if (ref !== null) {
-      {
-        invokeGuardedCallback$3(null, ref, null, null);
-        if (hasCaughtError$1()) {
-          var refError = clearCaughtError$1();
-          captureError(current, refError);
+      if (typeof ref === "function") {
+        {
+          invokeGuardedCallback$3(null, ref, null, null);
+          if (hasCaughtError$1()) {
+            var refError = clearCaughtError$1();
+            captureError(current, refError);
+          }
         }
+      } else {
+        ref.value = null;
       }
     }
   }
@@ -10251,12 +10261,18 @@ var ReactFiberCommitWork = function(config, captureError) {
     var ref = finishedWork.ref;
     if (ref !== null) {
       var instance = finishedWork.stateNode;
+      var instanceToUse = void 0;
       switch (finishedWork.tag) {
         case HostComponent:
-          ref(getPublicInstance(instance));
+          instanceToUse = getPublicInstance(instance);
           break;
         default:
-          ref(instance);
+          instanceToUse = instance;
+      }
+      if (typeof ref === "function") {
+        ref(instanceToUse);
+      } else {
+        ref.value = instanceToUse;
       }
     }
   }
@@ -10264,7 +10280,11 @@ var ReactFiberCommitWork = function(config, captureError) {
   function commitDetachRef(current) {
     var currentRef = current.ref;
     if (currentRef !== null) {
-      currentRef(null);
+      if (typeof currentRef === "function") {
+        currentRef(null);
+      } else {
+        currentRef.value = null;
+      }
     }
   }
 
