@@ -11,7 +11,7 @@
  * @nolint
  */
 
-/* eslint-disable */
+/* eslint-disable no-bitwise, no-extend-native, radix, no-self-compare */
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 function findIndex(predicate, context) {

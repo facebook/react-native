@@ -9,8 +9,6 @@
  * @emails oncall+jsinfra
  */
 
-/* eslint-disable fb-www/object-create-only-one-param */
-
 'use strict';
 
 describe('Object (ES7)', () => {

@@ -52,6 +52,7 @@ module.exports = {
       filename: file,
       localPath: file,
       options: {
+        assetDataPlugins: [],
         dev: true,
         inlineRequires: true,
         minify: false,

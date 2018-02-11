@@ -45,7 +45,7 @@ function runAndroid(argv, config, args) {
     return buildAndRun(args);
   }
 
-  return isPackagerRunning().then(result => {
+  return isPackagerRunning(args.port).then(result => {
     if (result === 'running') {
       console.log(chalk.bold('JS server already running.'));
     } else if (result === 'unrecognized') {
@@ -53,7 +53,7 @@ function runAndroid(argv, config, args) {
     } else {
       // result == 'not_running'
       console.log(chalk.bold('Starting JS server...'));
-      startServerInNewWindow();
+      startServerInNewWindow(args.port);
     }
     return buildAndRun(args);
   });
@@ -262,7 +262,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     }
 }
 
-function startServerInNewWindow() {
+function startServerInNewWindow(port) {
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
@@ -270,6 +270,12 @@ function startServerInNewWindow() {
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
   const terminal = process.env.REACT_TERMINAL;
+
+  // setup the .packager.env file to ensure the packager starts on the right port
+  const packagerEnvFile = path.join(__dirname, '..', '..', 'scripts', '.packager.env');
+  const content = `export RCT_METRO_PORT=${port}`;
+  // ensure we overwrite file by passing the 'w' flag
+  fs.writeFileSync(packagerEnvFile, content, {encoding: 'utf8', flag: 'w'});
 
   if (process.platform === 'darwin') {
     if (terminal) {
@@ -333,7 +339,7 @@ module.exports = {
     description: 'Do not launch packager while building',
   }, {
     command: '--port [number]',
-    default: 8081,
+    default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
   }],
 };

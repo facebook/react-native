@@ -125,7 +125,7 @@ const SwipeableRow = createReactClass({
     };
   },
 
-  componentWillMount(): void {
+  UNSAFE_componentWillMount(): void {
     this._panResponder = PanResponder.create({
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._handlePanResponderGrant,
@@ -149,7 +149,7 @@ const SwipeableRow = createReactClass({
     }
   },
 
-  componentWillReceiveProps(nextProps: Object): void {
+  UNSAFE_componentWillReceiveProps(nextProps: Object): void {
     /**
      * We do not need an "animateOpen(noCallback)" because this animation is
      * handled internally by this component.
@@ -157,15 +157,6 @@ const SwipeableRow = createReactClass({
     if (this.props.isOpen && !nextProps.isOpen) {
       this._animateToClosedPosition();
     }
-  },
-
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
-    if (this.props.shouldBounceOnMount && !nextProps.shouldBounceOnMount) {
-      // No need to rerender if SwipeableListView is disabling the bounce flag
-      return false;
-    }
-
-    return true;
   },
 
   render(): React.Element<any> {

@@ -46,9 +46,8 @@
         self.keyLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
         self.keyLabel.lineBreakMode = UILineBreakModeWordWrap;
-#endif
         self.keyLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
-
+#endif
         self.valueLabel = [UILabel new];
         [self.contentView addSubview:self.valueLabel];
 
@@ -67,8 +66,8 @@
         self.valueLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
         self.valueLabel.lineBreakMode = UILineBreakModeWordWrap;
-#endif
         self.valueLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
+#endif
     }
     return self;
 }

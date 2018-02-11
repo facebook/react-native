@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTUITextView : UITextView <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithFrame:(CGRect)frame textContainer:(nullable NSTextContainer *)textContainer NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
@@ -30,6 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
+
+// The `clearButtonMode` property actually is not supported yet;
+// it's declared here only to conform to the interface.
+@property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+
+// The `caretHidden` property actually is not supported yet;
+// it's declared here only to conform to the interface.
+@property (nonatomic, assign) BOOL caretHidden;
 
 @end
 

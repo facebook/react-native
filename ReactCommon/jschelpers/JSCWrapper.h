@@ -13,10 +13,6 @@
 #include <string>
 #include <JavaScriptCore/JavaScript.h>
 
-#if WITH_FBJSCEXTENSIONS
-#include <jsc_stringref.h>
-#endif
-
 #if defined(JSCINTERNAL) || (!defined(__APPLE__))
 #define JSC_IMPORT extern "C"
 #else

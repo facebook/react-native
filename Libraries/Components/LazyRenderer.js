@@ -23,7 +23,7 @@ var LazyRenderer = createReactClass({
     render: PropTypes.func.isRequired,
   },
 
-  componentWillMount: function(): void {
+  UNSAFE_componentWillMount: function(): void {
     this.setState({
       _lazyRender : true,
     });

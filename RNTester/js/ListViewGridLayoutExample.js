@@ -55,7 +55,7 @@ var ListViewGridLayoutExample = createReactClass({
 
   _pressData: ({}: {[key: number]: boolean}),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this._pressData = {};
   },
 

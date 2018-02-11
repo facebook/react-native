@@ -11,14 +11,17 @@
 
 @protocol RCTBackedTextInputDelegate;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 
-@property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, strong, nullable) UIColor *textColor;
+@property (nonatomic, strong, nullable) UIFont *font;
+@property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, assign) NSTextAlignment textAlignment;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
-@property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
@@ -32,4 +35,11 @@
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
 
+// This protocol disallows direct access to `text` property because
+// unwise usage of it can break the `attributeText` behavior.
+// Use `attributedText.string` instead.
+@property (nonatomic, copy, nullable) NSString *text NS_UNAVAILABLE;
+
 @end
+
+NS_ASSUME_NONNULL_END

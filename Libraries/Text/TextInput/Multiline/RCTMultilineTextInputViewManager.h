@@ -7,8 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTViewManager.h>
+#import "RCTBaseTextInputViewManager.h"
 
-@interface RCTMultilineTextInputViewManager : RCTViewManager
+NS_ASSUME_NONNULL_BEGIN
+
+@interface RCTMultilineTextInputViewManager : RCTBaseTextInputViewManager
 
 @end
+
+NS_ASSUME_NONNULL_END

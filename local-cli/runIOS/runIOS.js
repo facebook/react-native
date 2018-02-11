@@ -15,8 +15,18 @@ const findXcodeProject = require('./findXcodeProject');
 const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
-  return `build/Build/Products/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+const getBuildPath = function (configuration = 'Debug', appName, isDevice) {
+  let device;
+
+  if (isDevice) {
+    device = 'iphoneos';
+  } else if (appName.toLowerCase().includes('tvos')) {
+    device = 'appletvsimulator';
+  } else {
+    device = 'iphonesimulator';
+  }
+
+  return `build/Build/Products/${configuration}-${device}/${appName}.app`;
 };
 const xcprettyAvailable = function() {
   try {
@@ -78,7 +88,7 @@ function runIOS(argv, config, args) {
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
   if (selectedDevice) {
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
+    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose, args.port);
   } else {
     if (devices && devices.length > 0) {
       console.log('Could not find device with the udid: "' + args.udid + '".');
@@ -115,7 +125,7 @@ function runOnSimulator(xcodeProject, args, scheme) {
     }
     resolve(selectedSimulator.udid);
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager, args.verbose))
+  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager, args.verbose, args.port))
   .then((appName) => {
     if (!appName) {
       appName = scheme;
@@ -135,8 +145,8 @@ function runOnSimulator(xcodeProject, args, scheme) {
   });
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager, verbose) {
-  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, launchPackager, verbose)
+function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager, verbose, port) {
+  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, launchPackager, verbose, port)
   .then((appName) => {
     if (!appName) {
       appName = scheme;
@@ -159,7 +169,7 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launch
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launchPackager = false, verbose) {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launchPackager = false, verbose, port) {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
@@ -174,7 +184,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
     if (!verbose) {
       xcpretty = xcprettyAvailable() && child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] });
     }
-    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
+    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager, port));
     let buildOutput = '';
     buildProcess.stdout.on('data', function(data) {
       buildOutput += data.toString();
@@ -232,13 +242,15 @@ function printFoundDevices(devices) {
   }
 }
 
-function getProcessOptions(launchPackager) {
+function getProcessOptions(launchPackager, port) {
   if (launchPackager) {
-    return {};
+    return {
+      env: { ...process.env, RCT_METRO_PORT: port }
+    };
   }
 
   return {
-    env: Object.assign({}, process.env, { RCT_NO_LAUNCH_PACKAGER: true }),
+    env: { ...process.env, RCT_NO_LAUNCH_PACKAGER: true },
   };
 }
 
@@ -259,6 +271,10 @@ module.exports = {
     desc: "Run on a connected device, e.g. Max's iPhone",
     cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
+  {
+    desc: 'Run on the AppleTV simulator',
+    cmd: 'react-native run-ios --simulator "Apple TV"  --scheme "helloworld-tvOS"',
+  }
   ],
   options: [{
     command: '--simulator [string]',
@@ -287,5 +303,9 @@ module.exports = {
   }, {
     command: '--verbose',
     description: 'Do not use xcpretty even if installed',
+  },{
+    command: '--port [number]',
+    default: process.env.RCT_METRO_PORT || 8081,
+    parse: (val: string) => Number(val),
   }],
 };

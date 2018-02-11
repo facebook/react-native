@@ -27,7 +27,7 @@ import type {Context} from 'Incremental';
  *
  * `<IncrementalPresenter>` can be used to group sets of `<Incremental>` renders
  * such that they are initially invisible and removed from layout until all
- * decendents have finished rendering, at which point they are drawn all at once
+ * descendants have finished rendering, at which point they are drawn all at once
  * so the UI doesn't jump around during the incremental rendering process.
  *
  * See Incremental.js for more info.

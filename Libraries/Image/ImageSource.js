@@ -8,6 +8,7 @@
  *
  * @providesModule ImageSource
  * @flow
+ * @format
  */
 'use strict';
 

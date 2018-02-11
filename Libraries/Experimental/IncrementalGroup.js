@@ -37,7 +37,7 @@ import type {Props, Context} from 'Incremental';
 class IncrementalGroup extends React.Component<Props & {disabled?: boolean}> {
   context: Context;
   _groupInc: string;
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._groupInc = `g${++_groupCounter}-`;
     DEBUG && infoLog(
       'create IncrementalGroup with id ' + this.getGroupId()

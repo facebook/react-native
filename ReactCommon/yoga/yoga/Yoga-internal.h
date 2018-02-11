@@ -28,7 +28,6 @@ YG_EXTERN_C_END
 
 extern const std::array<YGEdge, 4> trailing;
 extern const std::array<YGEdge, 4> leading;
-extern bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
@@ -45,7 +44,7 @@ bool YGValueArrayEqual(
   return areEqual;
 }
 
-typedef struct YGCachedMeasurement {
+struct YGCachedMeasurement {
   float availableWidth;
   float availableHeight;
   YGMeasureMode widthMeasureMode;
@@ -53,7 +52,30 @@ typedef struct YGCachedMeasurement {
 
   float computedWidth;
   float computedHeight;
-} YGCachedMeasurement;
+
+  bool operator==(YGCachedMeasurement measurement) const {
+    bool isEqual = widthMeasureMode == measurement.widthMeasureMode &&
+        heightMeasureMode == measurement.heightMeasureMode;
+
+    if (!std::isnan(availableWidth) ||
+        !std::isnan(measurement.availableWidth)) {
+      isEqual = isEqual && availableWidth == measurement.availableWidth;
+    }
+    if (!std::isnan(availableHeight) ||
+        !std::isnan(measurement.availableHeight)) {
+      isEqual = isEqual && availableHeight == measurement.availableHeight;
+    }
+    if (!std::isnan(computedWidth) || !std::isnan(measurement.computedWidth)) {
+      isEqual = isEqual && computedWidth == measurement.computedWidth;
+    }
+    if (!std::isnan(computedHeight) ||
+        !std::isnan(measurement.computedHeight)) {
+      isEqual = isEqual && computedHeight == measurement.computedHeight;
+    }
+
+    return isEqual;
+  }
+};
 
 // This value was chosen based on empiracle data. Even the most complicated
 // layouts should not require more than 16 entries to fit within the cache.
@@ -81,6 +103,44 @@ struct YGLayout {
   std::array<float, 2> measuredDimensions;
 
   YGCachedMeasurement cachedLayout;
+  bool didUseLegacyFlag;
+  bool doesLegacyStretchFlagAffectsLayout;
+
+  bool operator==(YGLayout layout) const {
+    bool isEqual = position == layout.position &&
+        dimensions == layout.dimensions && margin == layout.margin &&
+        border == layout.border && padding == layout.padding &&
+        direction == layout.direction && hadOverflow == layout.hadOverflow &&
+        lastParentDirection == layout.lastParentDirection &&
+        nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
+        cachedLayout == layout.cachedLayout;
+
+    for (uint32_t i = 0; i < YG_MAX_CACHED_RESULT_COUNT && isEqual; ++i) {
+      isEqual =
+          isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
+    }
+
+    if (!YGFloatIsUndefined(computedFlexBasis) ||
+        !YGFloatIsUndefined(layout.computedFlexBasis)) {
+      isEqual = isEqual && (computedFlexBasis == layout.computedFlexBasis);
+    }
+    if (!YGFloatIsUndefined(measuredDimensions[0]) ||
+        !YGFloatIsUndefined(layout.measuredDimensions[0])) {
+      isEqual =
+          isEqual && (measuredDimensions[0] == layout.measuredDimensions[0]);
+    }
+    if (!YGFloatIsUndefined(measuredDimensions[1]) ||
+        !YGFloatIsUndefined(layout.measuredDimensions[1])) {
+      isEqual =
+          isEqual && (measuredDimensions[1] == layout.measuredDimensions[1]);
+    }
+
+    return isEqual;
+  }
+
+  bool operator!=(YGLayout layout) const {
+    return !(*this == layout);
+  }
 };
 
 struct YGStyle {
@@ -151,15 +211,16 @@ struct YGStyle {
   }
 };
 
-typedef struct YGConfig {
+struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
   bool useLegacyStretchBehaviour;
+  bool shouldDiffLayoutWithoutLegacyStretchBehaviour;
   float pointScaleFactor;
   YGLogger logger;
   YGNodeClonedFunc cloneNodeCallback;
   void* context;
-} YGConfig;
+};
 
 #define YG_UNDEFINED_VALUES \
   { .value = YGUndefined, .unit = YGUnitUndefined }
@@ -273,6 +334,8 @@ static const YGLayout gYGNodeLayoutDefaults = {
             .computedWidth = -1,
             .computedHeight = -1,
         },
+    .didUseLegacyFlag = false,
+    .doesLegacyStretchFlagAffectsLayout = false,
 };
 
 extern bool YGFloatsEqual(const float a, const float b);

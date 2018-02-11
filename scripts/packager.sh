@@ -8,5 +8,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 THIS_DIR=$(dirname "$0")
+source "${THIS_DIR}/.packager.env"
 cd "$THIS_DIR/.."
 node "./local-cli/cli.js" start "$@"
