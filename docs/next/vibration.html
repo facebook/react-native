@@ -7,7 +7,7 @@
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/vibration.md" target="_blank">Edit</a><h1>Vibration</h1></header><article><div><span><p>The Vibration API is exposed at <code>Vibration.vibrate()</code>. The vibration is asynchronous so this method will return immediately.</p>
 <p>There will be no effect on devices that do not support Vibration, eg. the simulator.</p>
 <p><strong>Note for Android:</strong> add <code>&lt;uses-permission android:name=&quot;android.permission.VIBRATE&quot;/&gt;</code> to <code>AndroidManifest.xml</code></p>
-<p>Since the <strong>vibration duration in iOS is not configurable</strong>, so there are some differences with Android. In Android, if <code>pattern</code> is a number, it specifies the vibration duration in ms. If <code>pattern</code> is an array, those odd indices are the vibration duration, while the even ones are the separation time.</p>
+<p>Since the <strong>vibration duration in iOS is not configurable</strong>, so there are some differences with Android. In Android, if <code>pattern</code> is a number, it specified the vibration duration in ms. If <code>pattern</code> is an array, those odd indices is the vibration duration, while the even one are the separation time.</p>
 <p>In iOS, invoking <code>vibrate(duration)</code> will just ignore the duration and vibrate for a fixed time. While the <code>pattern</code> array is used to define the duration between each vibration. See below example for more.</p>
 <p>Repeatable vibration is also supported, the vibration will repeat with defined pattern until <code>cancel()</code> is called.</p>
 <p>Example:</p>
@@ -48,7 +48,7 @@ Vibration.cancel()
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>pattern</td><td>number or Array<number></td><td>Yes</td><td>Vibration pattern, accept a number or an array of numbers. Default to 400ms.</td></tr>
+<tr><td>pattern</td><td>number or Array<number></td><td>Yes</td><td>Vibration pattern, accept a number or an array of number. Default to 400ms.</td></tr>
 <tr><td>repeat</td><td>boolean</td><td>No</td><td>Repeat vibration pattern until cancel(), default to false.</td></tr>
 </tbody>
 </table>

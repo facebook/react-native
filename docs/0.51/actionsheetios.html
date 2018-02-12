@@ -27,9 +27,9 @@
 <p>The 'callback' function takes one parameter, the zero-based index of the selected item.</p>
 <p>Minimal example:</p>
 <pre><code class="hljs">ActionSheetIOS.showActionSheetWithOptions({
-  options: [<span class="hljs-string">'Cancel'</span>, <span class="hljs-string">'Remove'</span>],
-  destructiveButtonIndex: <span class="hljs-number">1</span>,
-  cancelButtonIndex: <span class="hljs-number">0</span>,
+  options: [<span class="hljs-string">'Remove'</span>, <span class="hljs-string">'Cancel'</span>],
+  destructiveButtonIndex: <span class="hljs-number">0</span>,
+  cancelButtonIndex: <span class="hljs-number">1</span>,
 },
 <span class="hljs-function">(<span class="hljs-params">buttonIndex</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (buttonIndex === <span class="hljs-number">1</span>) { <span class="hljs-comment">/* destructive action */</span> }
