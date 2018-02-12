@@ -3881,6 +3881,8 @@ var NativeMethodsMixin = {
       !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps,
     "Do not override existing functions."
   );
+  // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
+  // Once these lifecycles have been remove from the reconciler.
   NativeMethodsMixin_DEV.componentWillMount = function() {
     throwOnStylesProp(this, this.props);
   };
@@ -3893,6 +3895,12 @@ var NativeMethodsMixin = {
   NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(newProps) {
     throwOnStylesProp(this, newProps);
   };
+
+  // React may warn about cWM/cWRP/cWU methods being deprecated.
+  // Add a flag to suppress these warnings for this special case.
+  // TODO (bvaughn) Remove this flag once the above methods have been removed.
+  NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
+  NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
 }
 
 function _classCallCheck$1(instance, Constructor) {
@@ -6008,19 +6016,16 @@ var ReactStrictModeWarnings = {
     }
 
     // Don't warn about react-lifecycles-compat polyfilled components.
-    // Note that it is sufficient to check for the presence of a
-    // single lifecycle, componentWillMount, with the polyfill flag.
     if (
       typeof instance.componentWillMount === "function" &&
-      instance.componentWillMount.__suppressDeprecationWarning === true
+      instance.componentWillMount.__suppressDeprecationWarning !== true
     ) {
-      return;
-    }
-
-    if (typeof instance.componentWillMount === "function") {
       pendingComponentWillMountWarnings.push(fiber);
     }
-    if (typeof instance.componentWillReceiveProps === "function") {
+    if (
+      typeof instance.componentWillReceiveProps === "function" &&
+      instance.componentWillReceiveProps.__suppressDeprecationWarning !== true
+    ) {
       pendingComponentWillReceivePropsWarnings.push(fiber);
     }
     if (typeof instance.componentWillUpdate === "function") {
