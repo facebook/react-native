@@ -207,11 +207,11 @@ aliases:
 
   - &run-objc_ios-tests
     name: Objective-C iOS Test Suite
-    command: ./scripts/objc-test-ios.sh
+    command: ./scripts/objc-test-ios.sh test
 
   - &run-objc-tvos-tests
     name: Objective-C tvOS Test Suite
-    command: ./scripts/objc-test-tvos.sh
+    command: ./scripts/objc-test-tvos.sh test
 
   - &run-objc-ios-e2e-tests
     name: Objective-C iOS End-to-End Test Suite
