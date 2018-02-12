@@ -577,23 +577,9 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
-  BOOL isHorizontal = [self isHorizontal:_scrollView];
-  if (isHorizontal) {
-    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
-    if(offset.x > offsetX) {
-      offset = CGPointMake(fmax(offsetX, 0), 0);
-    } else if(offset.x < 0) {
-      offset = CGPointMake(0, 0);
-    }
-  } else {
-    CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
-    if(offset.y > offsetY) {
-      offset = CGPointMake(0, fmax(offsetY, 0));
-    } else if(offset.y < 0) {
-      offset = CGPointMake(0, 0);
-    }
-  }
-
+    CGFloat maxOffsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
+    CGFloat maxOffsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
+    offset = CGPointMake(fmax(0, fmin(maxOffsetX, offset.x)), fmax(0, fmin(maxOffsetY, offset.y)));
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
     [_scrollView setContentOffset:offset animated:animated];
