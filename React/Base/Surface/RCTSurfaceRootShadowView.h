@@ -29,10 +29,6 @@
  */
 @property (nonatomic, assign) YGDirection baseDirection;
 
-/**
- * Calculate all views whose frame needs updating after layout has been calculated.
- * Returns a set contains the shadowviews that need updating.
- */
-- (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames;
+- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews;
 
 @end

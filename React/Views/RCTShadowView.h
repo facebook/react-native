@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTLayout.h>
 #import <React/RCTRootView.h>
 #import <yoga/Yoga.h>
 
@@ -52,6 +53,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
+ * Computed layout of the view.
+ */
+@property (nonatomic, assign) RCTLayoutMetrics layoutMetrics;
+
+/**
  * In some cases we need a way to specify some environmental data to shadow view
  * to improve layout (or do something similar), so `localData` serves these needs.
  * For example, any stateful embedded native views may benefit from this.
@@ -69,12 +75,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * corresponding UIViews.
  */
 @property (nonatomic, assign, getter=isNewView) BOOL newView;
-
-/**
- * Computed layout direction of the view.
- */
-
-@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection layoutDirection;
 
 /**
  * Position and dimensions.
@@ -168,37 +168,38 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGOverflow overflow;
 
 /**
- * Computed position of the view.
- */
-@property (nonatomic, assign, readonly) CGRect frame;
-
-/**
  * Represents the natural size of the view, which is used when explicit size is not set or is ambiguous.
  * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
  */
 @property (nonatomic, assign) CGSize intrinsicContentSize;
 
-/**
- * Apply the CSS layout.
- * This method also calls `applyLayoutToChildren:` internally. The functionality
- * is split into two methods so subclasses can override `applyLayoutToChildren:`
- * while using default implementation of `applyLayoutNode:`.
- */
-- (void)applyLayoutNode:(YGNodeRef)node
-      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-       absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
-
-- (void)applyLayoutWithFrame:(CGRect)frame
-             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
-      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
-            absolutePosition:(CGPoint)absolutePosition;
+#pragma mark - Layout
 
 /**
- * Enumerate the child nodes and tell them to apply layout.
+ * Initiates layout starts from the view.
  */
-- (void)applyLayoutToChildren:(YGNodeRef)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition;
+- (void)layoutWithMinimumSize:(CGSize)minimumSize
+                  maximumSize:(CGSize)maximumSize
+              layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+                layoutContext:(RCTLayoutContext)layoutContext;
+
+/**
+ * Applies computed layout metrics to the view.
+ */
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext;
+
+/**
+ * Calculates (if needed) and applies layout to subviews.
+ */
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext;
+
+/**
+ * Measures shadow view without side-effects.
+ * Default implementation uses Yoga for measuring.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize;
 
 /**
  * Returns whether or not this view can have any subviews.

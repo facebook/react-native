@@ -47,6 +47,11 @@
   return YES;
 }
 
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
+{
+  // Do nothing.
+}
+
 - (void)setLocalData:(NSObject *)localData
 {
   NSAttributedString *attributedText = (NSAttributedString *)localData;
@@ -73,7 +78,7 @@
     return;
   }
 
-  CGSize maximumSize = self.frame.size;
+  CGSize maximumSize = self.layoutMetrics.frame.size;
 
   if (_maximumNumberOfLines == 1) {
     maximumSize.width = CGFLOAT_MAX;
