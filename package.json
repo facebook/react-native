@@ -219,8 +219,8 @@
     "jest": "22.2.1",
     "jest-junit": "3.5.0",
     "prettier": "1.9.1",
-    "react": "^16.3.0-alpha.0",
-    "react-test-renderer": "^16.3.0-alpha.0",
+    "react": "^16.3.0-alpha.1",
+    "react-test-renderer": "^16.3.0-alpha.1",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }
