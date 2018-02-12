@@ -13,7 +13,7 @@
 
 @implementation RCTTrackingAnimatedNode {
   NSNumber *_animationId;
-  NSNumber *_nodeTag;
+  NSNumber *_toValueNodeTag;
   NSNumber *_valueNodeTag;
   NSMutableDictionary *_animationConfig;
 }
@@ -23,7 +23,7 @@
 {
   if ((self = [super initWithTag:tag config:config])) {
     _animationId = config[@"animationId"];
-    _nodeTag = config[@"toValue"];
+    _toValueNodeTag = config[@"toValue"];
     _valueNodeTag = config[@"value"];
     _animationConfig = [NSMutableDictionary dictionaryWithDictionary:config[@"animationConfig"]];
   }
@@ -41,8 +41,8 @@
   [super performUpdate];
 
   // change animation config's "toValue" to reflect updated value of the parent node
-  RCTValueAnimatedNode *node = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_nodeTag];
-  [_animationConfig setValue:@(node.value) forKey:@"toValue"];
+  RCTValueAnimatedNode *node = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:_toValueNodeTag];
+  _animationConfig[@"toValue"] = @(node.value);
 
   [self.manager startAnimatingNode:_animationId
                            nodeTag:_valueNodeTag

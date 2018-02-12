@@ -16,22 +16,22 @@ import com.facebook.react.bridge.ReadableMap;
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final int mAnimationId;
-  private final int mParentNode;
-  private final int mAnimatingNode;
+  private final int mToValueNode;
+  private final int mValueNode;
   private final JavaOnlyMap mAnimationConfig;
 
   TrackingAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
     mAnimationId = config.getInt("animationId");
-    mParentNode = config.getInt("toValue");
-    mAnimatingNode = config.getInt("value");
+    mToValueNode = config.getInt("toValue");
+    mValueNode = config.getInt("value");
     mAnimationConfig = JavaOnlyMap.deepClone(config.getMap("animationConfig"));
   }
 
   @Override
   public void update() {
-    AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mParentNode);
-    mAnimationConfig.putDouble("toValue", ((ValueAnimatedNode) animatedNode).getValue());
-    mNativeAnimatedNodesManager.startAnimatingNode(mAnimationId, mAnimatingNode, mAnimationConfig, null);
+    AnimatedNode toValue = mNativeAnimatedNodesManager.getNodeById(mToValueNode);
+    mAnimationConfig.putDouble("toValue", ((ValueAnimatedNode) toValue).getValue());
+    mNativeAnimatedNodesManager.startAnimatingNode(mAnimationId, mValueNode, mAnimationConfig, null);
   }
 }
