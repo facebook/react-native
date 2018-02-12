@@ -74,13 +74,14 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
-      if (screenSize.height == 812) {
+      if (screenSize.height == 812 /* iPhone X */) {
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 60)];
         self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, self->_window.bounds.size.width, 30)];
       } else {
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 22)];
         self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
       }
+      [self->_window addSubview:self->_label];
 #if TARGET_OS_TV
       self->_window.windowLevel = UIWindowLevelNormal + 1;
 #else
@@ -91,8 +92,6 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 
       self->_label.font = [UIFont systemFontOfSize:12.0];
       self->_label.textAlignment = NSTextAlignmentCenter;
-
-      [self->_window addSubview:self->_label];
     }
 
     self->_label.text = message;
