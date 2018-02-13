@@ -29,13 +29,13 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev(object: Object) {
+function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
   if (__DEV__) {
     if (typeof object !== 'object' ||
         object === null ||
         Object.isFrozen(object) ||
         Object.isSealed(object)) {
-      return;
+      return object;
     }
 
     var keys = Object.keys(object);
@@ -58,6 +58,7 @@ function deepFreezeAndThrowOnMutationInDev(object: Object) {
       }
     }
   }
+  return object;
 }
 
 function throwOnImmutableMutation(key, value) {

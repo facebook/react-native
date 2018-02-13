@@ -13,6 +13,8 @@
 
 'use strict';
 
+const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+
 /**
  * A collection of Unicode sequences for various characters and emoji.
  *
@@ -20,7 +22,7 @@
  *  - Source code should be limitted to ASCII.
  *  - Less chance of typos.
  */
-const UTFSequence = {
+const UTFSequence = deepFreezeAndThrowOnMutationInDev({
   MIDDOT: '\u00B7', // normal middle dot: &middot;
   MIDDOT_SP: '\u00A0\u00B7\u00A0', // &nbsp;&middot;&nbsp;
   MIDDOT_KATAKANA: '\u30FB', // katakana middle dot
@@ -30,6 +32,6 @@ const UTFSequence = {
   NDASH_SP: '\u00A0\u2013\u00A0', // &nbsp;&ndash;&nbsp;
   NBSP: '\u00A0', // non-breaking space: &nbsp;
   PIZZA: '\uD83C\uDF55',
-};
+});
 
 module.exports = UTFSequence;
