@@ -30,11 +30,7 @@ const app = connect();
 
 app.use(function(req, res) {
   console.log('received request');
-  const cookieOptions = {
-    //httpOnly: true, // the cookie is not accessible by the user (javascript,...)
-    secure: false, // allow HTTP
-  };
-  res.cookie('wstest', 'OK', cookieOptions);
+  res.setHeader('Set-Cookie', ['wstest=OK; Path=/']);
   res.end('Cookie has been set!\n');
 });
 
