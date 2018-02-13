@@ -10,9 +10,8 @@
  */
 'use strict';
 
-const ClassComponentMock = class {
-  isReactComponent = true;
-};
+const ClassComponentMock = class {};
+ClassComponentMock.prototype.isReactComponent = true;
 
 jest
   .clearAllMocks()
