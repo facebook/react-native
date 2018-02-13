@@ -8,10 +8,10 @@ const groupFilesByType = require('../groupFilesByType');
  * For now, the only types of files that are handled are:
  * - Fonts (otf, ttf) - copied to targetPath/fonts under original name
  */
-module.exports = function copyAssetsAndroid(files, targetPath) {
+module.exports = function copyAssetsAndroid(files, project) {
   const assets = groupFilesByType(files);
 
   (assets.font || []).forEach(asset =>
-    fs.copySync(asset, path.join(targetPath, 'fonts', path.basename(asset)))
+    fs.copySync(asset, path.join(project.assetsPath, 'fonts', path.basename(asset)))
   );
 };
