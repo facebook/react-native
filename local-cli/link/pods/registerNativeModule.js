@@ -16,10 +16,10 @@ const findMarkedLinesInPodfile = require('./findMarkedLinesInPodfile');
 const addPodEntry = require('./addPodEntry');
 const savePodFile = require('./savePodFile');
 
-module.exports = function registerNativeModulePods(dependency, iOSProject) {
+module.exports = function registerNativeModulePods(name, dependencyConfig, iOSProject) {
   const podLines = readPodfile(iOSProject.podfile);
   const linesToAddEntry = getLinesToAddEntry(podLines, iOSProject);
-  addPodEntry(podLines, linesToAddEntry, dependency.config.ios.podspec, dependency.name);
+  addPodEntry(podLines, linesToAddEntry, dependencyConfig.podspec, name);
   savePodFile(iOSProject.podfile, podLines);
 };
 

@@ -57,3 +57,5 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
 };
 
 exports.dependencyConfig = exports.projectConfig;
+
+exports.linkConfig = require('../../link/ios');
