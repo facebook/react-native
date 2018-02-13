@@ -126,3 +126,5 @@ exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) 
 
   return { sourceDir, folder, manifest, packageImportPath, packageInstance };
 };
+
+exports.linkConfig = require('../../link/android');
