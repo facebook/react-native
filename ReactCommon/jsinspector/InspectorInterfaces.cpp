@@ -11,6 +11,7 @@
 
 #include <mutex>
 #include <unordered_map>
+#include <tuple>
 
 namespace facebook {
 namespace react {
@@ -27,7 +28,7 @@ namespace {
 
 class InspectorImpl : public IInspector {
  public:
-  int addPage(const std::string& title, ConnectFunc connectFunc) override;
+  int addPage(const std::string& title, const std::string& vm, ConnectFunc connectFunc) override;
   void removePage(int pageId) override;
 
   std::vector<InspectorPage> getPages() const override;
@@ -38,15 +39,15 @@ class InspectorImpl : public IInspector {
  private:
   mutable std::mutex mutex_;
   int nextPageId_{1};
-  std::unordered_map<int, std::string> titles_;
+  std::unordered_map<int, std::tuple<std::string, std::string>> titles_;
   std::unordered_map<int, ConnectFunc> connectFuncs_;
 };
 
-int InspectorImpl::addPage(const std::string& title, ConnectFunc connectFunc) {
+int InspectorImpl::addPage(const std::string& title, const std::string& vm, ConnectFunc connectFunc) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   int pageId = nextPageId_++;
-  titles_[pageId] = title;
+  titles_[pageId] = std::make_tuple(title, vm);
   connectFuncs_[pageId] = std::move(connectFunc);
 
   return pageId;
@@ -64,7 +65,7 @@ std::vector<InspectorPage> InspectorImpl::getPages() const {
 
   std::vector<InspectorPage> inspectorPages;
   for (auto& it : titles_) {
-    inspectorPages.push_back(InspectorPage{it.first, it.second});
+    inspectorPages.push_back(InspectorPage{it.first, std::get<0>(it.second), std::get<1>(it.second)});
   }
 
   return inspectorPages;

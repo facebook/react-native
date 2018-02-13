@@ -25,6 +25,7 @@ class IDestructible {
 struct InspectorPage {
   const int id;
   const std::string title;
+  const std::string vm;
 };
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
@@ -52,7 +53,7 @@ class IInspector : public IDestructible {
   virtual ~IInspector() = 0;
 
   /// addPage is called by the VM to add a page to the list of debuggable pages.
-  virtual int addPage(const std::string& title, ConnectFunc connectFunc) = 0;
+  virtual int addPage(const std::string& title, const std::string& vm, ConnectFunc connectFunc) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
   /// debuggable pages.

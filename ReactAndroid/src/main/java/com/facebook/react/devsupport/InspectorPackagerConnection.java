@@ -154,6 +154,7 @@ public class InspectorPackagerConnection {
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
       jsonPage.put("app", mPackageName);
+      jsonPage.put("vm", page.getVM());
       jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSucess);
       jsonPage.put("bundleUpdateTimestamp", bundleStatus.updateTimestamp);
       array.put(jsonPage);

@@ -155,6 +155,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       @"id": [@(page.id) stringValue],
       @"title": page.title,
       @"app": [[NSBundle mainBundle] bundleIdentifier],
+      @"vm": page.vm,
       @"isLastBundleDownloadSuccess": bundleStatus == nil
         ? [NSNull null]
         : @(bundleStatus.isLastBundleDownloadSuccess),

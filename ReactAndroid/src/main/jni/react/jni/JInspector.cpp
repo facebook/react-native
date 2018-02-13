@@ -28,9 +28,9 @@ private:
 
 }
 
-jni::local_ref<JPage::javaobject> JPage::create(int id, const std::string& title) {
-  static auto constructor = javaClassStatic()->getConstructor<JPage::javaobject(jint, jni::local_ref<jni::JString>)>();
-  return javaClassStatic()->newObject(constructor, id, jni::make_jstring(title));
+jni::local_ref<JPage::javaobject> JPage::create(int id, const std::string& title, const std::string& vm) {
+  static auto constructor = javaClassStatic()->getConstructor<JPage::javaobject(jint, jni::local_ref<jni::JString>, jni::local_ref<jni::JString>)>();
+  return javaClassStatic()->newObject(constructor, id, jni::make_jstring(title), jni::make_jstring(vm));
 }
 
 void JRemoteConnection::onMessage(const std::string& message) const {
@@ -70,7 +70,7 @@ jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
   std::vector<InspectorPage> pages = inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
-    (*array)[i] = JPage::create(pages[i].id, pages[i].title);
+    (*array)[i] = JPage::create(pages[i].id, pages[i].title, pages[i].vm);
   }
   return array;
 }
