@@ -12,13 +12,13 @@
  */
 'use strict';
 
-export type ResolvedAssetSource = {
-  __packager_asset: boolean,
-  width: ?number,
-  height: ?number,
-  uri: string,
-  scale: number,
-};
+export type ResolvedAssetSource = {|
+  +__packager_asset: boolean,
+  +width: ?number,
+  +height: ?number,
+  +uri: string,
+  +scale: number,
+|};
 
 import type {PackagerAsset} from 'AssetRegistry';
 
