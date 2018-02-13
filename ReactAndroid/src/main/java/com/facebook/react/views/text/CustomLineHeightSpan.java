@@ -58,9 +58,9 @@ public class CustomLineHeightSpan implements LineHeightSpan {
       // Round up for the negative values and down for the positive values  (arbritary choice)
       // So that bottom - top equals additional even if it's an odd number.
       fm.top -= Math.ceil(additional / 2.0f);
-      fm.ascent -= Math.ceil(additional / 2.0f);
-      fm.descent += Math.floor(additional / 2.0f);
       fm.bottom += Math.floor(additional / 2.0f);
+      fm.ascent = fm.top;
+      fm.descent = fm.bottom;
     }
   }
 }

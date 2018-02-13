@@ -23,8 +23,8 @@ public class CustomLineHeightSpanTest {
     customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
     // Since line height is even it should be equally added to top and bottom.
     assertThat(fm.top).isEqualTo(-11);
-    assertThat(fm.ascent).isEqualTo(-6);
-    assertThat(fm.descent).isEqualTo(6);
+    assertThat(fm.ascent).isEqualTo(-11);
+    assertThat(fm.descent).isEqualTo(11);
     assertThat(fm.bottom).isEqualTo(11);
     assertThat(fm.bottom - fm.top).isEqualTo(22);
   }
@@ -40,7 +40,7 @@ public class CustomLineHeightSpanTest {
     customLineHeightSpan.chooseHeight("Hi", 0, 2, 0, 0, fm);
     // Only test that the sum is correct so the implementation
     // is free to add the odd value either on top or bottom.
-    assertThat(fm.descent - fm.ascent).isEqualTo(13);
+    assertThat(fm.descent - fm.ascent).isEqualTo(23);
     assertThat(fm.bottom - fm.top).isEqualTo(23);
   }
 
