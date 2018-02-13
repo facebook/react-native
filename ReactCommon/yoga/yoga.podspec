@@ -33,6 +33,8 @@ Pod::Spec.new do |spec|
       '-fPIC'
   ]
 
+  spec.pod_target_xcconfig = { 'WARNING_CFLAGS' => "-Wno-shorten-64-to-32" }
+
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 
