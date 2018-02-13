@@ -24,12 +24,17 @@ import static org.fest.assertions.api.Assertions.assertThat;
 @RunWith(RobolectricTestRunner.class)
 public class MultipartStreamReaderTest {
 
-  class CallCountTrackingChunkCallback implements MultipartStreamReader.ChunkCallback {
+  class CallCountTrackingChunkCallback implements MultipartStreamReader.ChunkListener {
     private int mCount = 0;
 
     @Override
-    public void execute(Map<String, String> headers, Buffer body, boolean done) throws IOException {
+    public void onChunkComplete(Map<String, String> headers, Buffer body, boolean done) throws IOException {
       mCount++;
+    }
+
+    @Override
+    public void onChunkProgress(Map<String, String> headers, long loaded, long total) throws IOException {
+
     }
 
     public int getCallCount() {
@@ -41,12 +46,12 @@ public class MultipartStreamReaderTest {
   public void testSimpleCase() throws IOException {
     ByteString response = ByteString.encodeUtf8(
       "preable, should be ignored\r\n" +
-      "--sample_boundary\r\n" +
-      "Content-Type: application/json; charset=utf-8\r\n" +
-      "Content-Length: 2\r\n\r\n" +
-      "{}\r\n" +
-      "--sample_boundary--\r\n" +
-      "epilogue, should be ignored");
+        "--sample_boundary\r\n" +
+        "Content-Type: application/json; charset=utf-8\r\n" +
+        "Content-Length: 2\r\n\r\n" +
+        "{}\r\n" +
+        "--sample_boundary--\r\n" +
+        "epilogue, should be ignored");
 
     Buffer source = new Buffer();
     source.write(response);
@@ -55,8 +60,8 @@ public class MultipartStreamReaderTest {
 
     CallCountTrackingChunkCallback callback = new CallCountTrackingChunkCallback() {
       @Override
-      public void execute(Map<String, String> headers, Buffer body, boolean done) throws IOException {
-        super.execute(headers, body, done);
+      public void onChunkComplete(Map<String, String> headers, Buffer body, boolean done) throws IOException {
+        super.onChunkComplete(headers, body, done);
 
         assertThat(done).isTrue();
         assertThat(headers.get("Content-Type")).isEqualTo("application/json; charset=utf-8");
@@ -89,8 +94,8 @@ public class MultipartStreamReaderTest {
 
     CallCountTrackingChunkCallback callback = new CallCountTrackingChunkCallback() {
       @Override
-      public void execute(Map<String, String> headers, Buffer body, boolean done) throws IOException {
-        super.execute(headers, body, done);
+      public void onChunkComplete(Map<String, String> headers, Buffer body, boolean done) throws IOException {
+        super.onChunkComplete(headers, body, done);
 
         assertThat(done).isEqualTo(getCallCount() == 3);
         assertThat(body.readUtf8()).isEqualTo(String.valueOf(getCallCount()));
@@ -122,12 +127,12 @@ public class MultipartStreamReaderTest {
   public void testNoCloseDelimiter() throws IOException {
     ByteString response = ByteString.encodeUtf8(
       "preable, should be ignored\r\n" +
-      "--sample_boundary\r\n" +
-      "Content-Type: application/json; charset=utf-8\r\n" +
-      "Content-Length: 2\r\n\r\n" +
-      "{}\r\n" +
-      "--sample_boundary\r\n" +
-      "incomplete message...");
+        "--sample_boundary\r\n" +
+        "Content-Type: application/json; charset=utf-8\r\n" +
+        "Content-Length: 2\r\n\r\n" +
+        "{}\r\n" +
+        "--sample_boundary\r\n" +
+        "incomplete message...");
 
     Buffer source = new Buffer();
     source.write(response);
