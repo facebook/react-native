@@ -235,40 +235,24 @@
   return textStorage;
 }
 
-- (void)applyLayoutNode:(YGNodeRef)node
-      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-       absolutePosition:(CGPoint)absolutePosition
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
 {
-  if (YGNodeGetHasNewLayout(self.yogaNode)) {
-    // If the view got new layout, we have to redraw it because `contentFrame`
-    // and sizes of embedded views may change.
+  // If the view got new `contentFrame`, we have to redraw it because
+  // and sizes of embedded views may change.
+  if (!CGRectEqualToRect(self.layoutMetrics.contentFrame, layoutMetrics.contentFrame)) {
     _needsUpdateView = YES;
   }
 
-  [super applyLayoutNode:node
-       viewsWithNewFrame:viewsWithNewFrame
-        absolutePosition:absolutePosition];
-}
-
-- (void)applyLayoutWithFrame:(CGRect)frame
-             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
-      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
-            absolutePosition:(CGPoint)absolutePosition
-{
-  if (self.textAttributes.layoutDirection != layoutDirection) {
-    self.textAttributes.layoutDirection = layoutDirection;
+  if (self.textAttributes.layoutDirection != layoutMetrics.layoutDirection) {
+    self.textAttributes.layoutDirection = layoutMetrics.layoutDirection;
     [self invalidateCache];
   }
 
-  [super applyLayoutWithFrame:frame
-              layoutDirection:layoutDirection
-       viewsWithUpdatedLayout:viewsWithUpdatedLayout
-             absolutePosition:absolutePosition];
+  [super layoutWithMetrics:layoutMetrics layoutContext:layoutContext];
 }
 
-- (void)applyLayoutToChildren:(YGNodeRef)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
 {
   NSTextStorage *textStorage =
     [self textStorageAndLayoutManagerThatFitsSize:self.availableSize
@@ -280,9 +264,9 @@
                                                      actualGlyphRange:NULL];
 
   [textStorage enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
-                                        inRange:characterRange
-                                        options:0
-                                     usingBlock:
+                          inRange:characterRange
+                          options:0
+                       usingBlock:
     ^(RCTShadowView *shadowView, NSRange range, BOOL *stop) {
       if (!shadowView) {
         return;
@@ -306,18 +290,14 @@
         RCTRoundPixelValue(attachmentSize.height)
       }};
 
-      UIUserInterfaceLayoutDirection layoutDirection = self.textAttributes.layoutDirection;
+      RCTLayoutContext localLayoutContext = layoutContext;
+      localLayoutContext.absolutePosition.x += frame.origin.x;
+      localLayoutContext.absolutePosition.y += frame.origin.y;
 
-      YGNodeCalculateLayout(
-        shadowView.yogaNode,
-        frame.size.width,
-        frame.size.height,
-        layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ? YGDirectionLTR : YGDirectionRTL);
-
-      [shadowView applyLayoutWithFrame:frame
-                       layoutDirection:layoutDirection
-                viewsWithUpdatedLayout:viewsWithNewFrame
-                      absolutePosition:absolutePosition];
+      [shadowView layoutWithMinimumSize:frame.size
+                            maximumSize:frame.size
+                        layoutDirection:self.layoutMetrics.layoutDirection
+                          layoutContext:localLayoutContext];
     }
   ];
 }

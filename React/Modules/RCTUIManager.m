@@ -479,14 +479,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertUIManagerQueue();
 
-  // This is nuanced. In the JS thread, we create a new update buffer
-  // `frameTags`/`frames` that is created/mutated in the JS thread. We access
-  // these structures in the UI-thread block. `NSMutableArray` is not thread
-  // safe so we rely on the fact that we never mutate it after it's passed to
-  // the main thread.
-  NSSet<RCTShadowView *> *viewsWithNewFrames = [rootShadowView collectViewsWithUpdatedFrames];
+  NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+  [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
-  if (!viewsWithNewFrames.count) {
+  if (!affectedShadowViews.count) {
     // no frame change results in no UI update block
     return nil;
   }
@@ -499,24 +495,25 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   } RCTFrameData;
 
   // Construct arrays then hand off to main thread
-  NSUInteger count = viewsWithNewFrames.count;
+  NSUInteger count = affectedShadowViews.count;
   NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
   NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
   {
     NSUInteger index = 0;
     RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
-    for (RCTShadowView *shadowView in viewsWithNewFrames) {
+    for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
+      RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
       frameDataArray[index++] = (RCTFrameData){
-        shadowView.frame,
-        shadowView.layoutDirection,
+        layoutMetrics.frame,
+        layoutMetrics.layoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
       };
     }
   }
 
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
+  for (RCTShadowView *shadowView in affectedShadowViews) {
 
     // We have to do this after we build the parentsAreNew array.
     shadowView.newView = NO;
@@ -524,7 +521,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     NSNumber *reactTag = shadowView.reactTag;
 
     if (shadowView.onLayout) {
-      CGRect frame = shadowView.frame;
+      CGRect frame = shadowView.layoutMetrics.frame;
       shadowView.onLayout(@{
         @"layout": @{
           @"x": @(frame.origin.x),
@@ -539,7 +536,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         RCTIsReactRootView(reactTag) &&
         [shadowView isKindOfClass:[RCTRootShadowView class]]
     ) {
-      CGSize contentSize = shadowView.frame.size;
+      CGSize contentSize = shadowView.layoutMetrics.frame.size;
 
       RCTExecuteOnMainQueue(^{
         UIView *view = self->_viewRegistry[reactTag];

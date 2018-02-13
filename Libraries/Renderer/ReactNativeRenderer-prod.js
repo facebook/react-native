@@ -2494,9 +2494,13 @@ function ReactFiberClassComponent(
   };
 }
 var isArray$1 = Array.isArray;
-function coerceRef(current, element) {
-  var mixedRef = element.ref;
-  if (null !== mixedRef && "function" !== typeof mixedRef) {
+function coerceRef(returnFiber, current, element) {
+  returnFiber = element.ref;
+  if (
+    null !== returnFiber &&
+    "function" !== typeof returnFiber &&
+    "object" !== typeof returnFiber
+  ) {
     if (element._owner) {
       element = element._owner;
       var inst = void 0;
@@ -2509,9 +2513,9 @@ function coerceRef(current, element) {
       invariant(
         inst,
         "Missing owner for string ref %s. This error is likely caused by a bug in React. Please file an issue.",
-        mixedRef
+        returnFiber
       );
-      var stringRef = "" + mixedRef;
+      var stringRef = "" + returnFiber;
       if (
         null !== current &&
         null !== current.ref &&
@@ -2526,16 +2530,16 @@ function coerceRef(current, element) {
       return current;
     }
     invariant(
-      "string" === typeof mixedRef,
+      "string" === typeof returnFiber,
       "Expected ref to be a function or a string."
     );
     invariant(
       element._owner,
       "Element ref was specified as a string (%s) but no owner was set. This could happen for one of the following reasons:\n1. You may be adding a ref to a functional component\n2. You may be adding a ref to a component that was not created inside a component's render method\n3. You have multiple copies of React loaded\nSee https://fb.me/react-refs-must-have-owner for more information.",
-      mixedRef
+      returnFiber
     );
   }
-  return mixedRef;
+  return returnFiber;
 }
 function throwOnInvalidObjectType(returnFiber, newChild) {
   "textarea" !== returnFiber.type &&
@@ -2620,7 +2624,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (null !== current && current.type === element.type)
       return (
         (expirationTime = useFiber(current, element.props, expirationTime)),
-        (expirationTime.ref = coerceRef(current, element)),
+        (expirationTime.ref = coerceRef(returnFiber, current, element)),
         (expirationTime["return"] = returnFiber),
         expirationTime
       );
@@ -2629,7 +2633,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       returnFiber.mode,
       expirationTime
     );
-    expirationTime.ref = coerceRef(current, element);
+    expirationTime.ref = coerceRef(returnFiber, current, element);
     expirationTime["return"] = returnFiber;
     return expirationTime;
   }
@@ -2689,7 +2693,7 @@ function ChildReconciler(shouldTrackSideEffects) {
               returnFiber.mode,
               expirationTime
             )),
-            (expirationTime.ref = coerceRef(null, newChild)),
+            (expirationTime.ref = coerceRef(returnFiber, null, newChild)),
             (expirationTime["return"] = returnFiber),
             expirationTime
           );
@@ -3034,7 +3038,11 @@ function ChildReconciler(shouldTrackSideEffects) {
                       : newChild.props,
                     expirationTime
                   );
-                  currentFirstChild.ref = coerceRef(isObject, newChild);
+                  currentFirstChild.ref = coerceRef(
+                    returnFiber,
+                    isObject,
+                    newChild
+                  );
                   currentFirstChild["return"] = returnFiber;
                   returnFiber = currentFirstChild;
                   break a;
@@ -3059,7 +3067,11 @@ function ChildReconciler(shouldTrackSideEffects) {
                   returnFiber.mode,
                   expirationTime
                 )),
-                (expirationTime.ref = coerceRef(currentFirstChild, newChild)),
+                (expirationTime.ref = coerceRef(
+                  returnFiber,
+                  currentFirstChild,
+                  newChild
+                )),
                 (expirationTime["return"] = returnFiber),
                 (returnFiber = expirationTime));
           }
@@ -3155,27 +3167,29 @@ function ChildReconciler(shouldTrackSideEffects) {
 }
 var reconcileChildFibers = ChildReconciler(!0),
   mountChildFibers = ChildReconciler(!1),
+  changedBitsStack = [],
+  currentValueStack = [],
   stack = [],
   index$1 = -1;
 function pushProvider(providerFiber) {
-  index$1 += 1;
-  stack[index$1] = providerFiber;
   var context = providerFiber.type.context;
+  index$1 += 1;
+  changedBitsStack[index$1] = context.changedBits;
+  currentValueStack[index$1] = context.currentValue;
+  stack[index$1] = providerFiber;
   context.currentValue = providerFiber.pendingProps.value;
   context.changedBits = providerFiber.stateNode;
 }
 function popProvider(providerFiber) {
+  var changedBits = changedBitsStack[index$1],
+    currentValue = currentValueStack[index$1];
+  changedBitsStack[index$1] = null;
+  currentValueStack[index$1] = null;
   stack[index$1] = null;
   --index$1;
   providerFiber = providerFiber.type.context;
-  if (0 > index$1)
-    (providerFiber.currentValue = providerFiber.defaultValue),
-      (providerFiber.changedBits = 0);
-  else {
-    var previousProviderFiber = stack[index$1];
-    providerFiber.currentValue = previousProviderFiber.pendingProps.value;
-    providerFiber.changedBits = previousProviderFiber.stateNode;
-  }
+  providerFiber.currentValue = currentValue;
+  providerFiber.changedBits = changedBits;
 }
 function ReactFiberBeginWork(
   config,
@@ -3203,9 +3217,11 @@ function ReactFiberBeginWork(
   }
   function markRef(current, workInProgress) {
     var ref = workInProgress.ref;
-    null === ref ||
-      (current && current.ref === ref) ||
-      (workInProgress.effectTag |= 128);
+    if (
+      (null === current && null !== ref) ||
+      (null !== current && current.ref !== ref)
+    )
+      workInProgress.effectTag |= 128;
   }
   function finishClassComponent(
     current,
@@ -3994,11 +4010,13 @@ function ReactFiberCommitWork(config, captureError) {
   function safelyDetachRef(current) {
     var ref = current.ref;
     if (null !== ref)
-      try {
-        ref(null);
-      } catch (refError) {
-        captureError(current, refError);
-      }
+      if ("function" === typeof ref)
+        try {
+          ref(null);
+        } catch (refError) {
+          captureError(current, refError);
+        }
+      else ref.value = null;
   }
   function commitUnmount(current) {
     "function" === typeof onCommitUnmount && onCommitUnmount(current);
@@ -4326,16 +4344,22 @@ function ReactFiberCommitWork(config, captureError) {
         var instance = finishedWork.stateNode;
         switch (finishedWork.tag) {
           case 5:
-            ref(getPublicInstance(instance));
+            finishedWork = getPublicInstance(instance);
             break;
           default:
-            ref(instance);
+            finishedWork = instance;
         }
+        "function" === typeof ref
+          ? ref(finishedWork)
+          : (ref.value = finishedWork);
       }
     },
     commitDetachRef: function(current) {
       current = current.ref;
-      null !== current && current(null);
+      null !== current &&
+        ("function" === typeof current
+          ? current(null)
+          : (current.value = null));
     }
   };
 }
@@ -4658,6 +4682,8 @@ function ReactFiberScheduler(config) {
         var context = stack[i].type.context;
         context.currentValue = context.defaultValue;
         context.changedBits = 0;
+        changedBitsStack[i] = null;
+        currentValueStack[i] = null;
         stack[i] = null;
       }
       index$1 = -1;
@@ -5972,7 +5998,7 @@ NativeRenderer.injectIntoDevTools({
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 0,
-  version: "16.2.0",
+  version: "16.3.0-alpha.0",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = Object.freeze({ default: ReactNativeRenderer }),

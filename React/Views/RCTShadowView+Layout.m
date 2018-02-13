@@ -11,31 +11,7 @@
 
 #import <yoga/Yoga.h>
 
-/**
- * Yoga and CoreGraphics have different opinions about how "infinity" value
- * should be represented.
- * Yoga uses `NAN` which requires additional effort to compare all those values,
- * whereas GoreGraphics uses `GFLOAT_MAX` which can be easyly compared with
- * standard `==` operator.
- */
-
-float RCTYogaFloatFromCoreGraphicsFloat(CGFloat value)
-{
-  if (value == CGFLOAT_MAX || isnan(value) || isinf(value)) {
-    return YGUndefined;
-  }
-
-  return value;
-}
-
-CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value)
-{
-  if (value == YGUndefined || isnan(value) || isinf(value)) {
-    return CGFLOAT_MAX;
-  }
-
-  return value;
-}
+#import "RCTAssert.h"
 
 @implementation RCTShadowView (Layout)
 
@@ -78,46 +54,12 @@ CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value)
 
 - (CGSize)availableSize
 {
-  return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
+  return self.layoutMetrics.contentFrame.size;
 }
 
 - (CGRect)contentFrame
 {
-  CGRect bounds = (CGRect){CGPointZero, self.frame.size};
-  return UIEdgeInsetsInsetRect(bounds, self.compoundInsets);
-}
-
-#pragma mark - Measuring
-
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
-{
-  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
-  YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
-
-  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
-
-  YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
-  YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
-  YGNodeStyleSetMaxWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width));
-  YGNodeStyleSetMaxHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height));
-
-  YGNodeCalculateLayout(
-    constraintYogaNode,
-    YGUndefined,
-    YGUndefined,
-    self.layoutDirection
-  );
-
-  CGSize measuredSize = (CGSize){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
-  };
-
-  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
-  YGNodeFree(constraintYogaNode);
-  YGNodeFree(clonnedYogaNode);
-
-  return measuredSize;
+  return self.layoutMetrics.contentFrame;
 }
 
 #pragma mark - Dirty Propagation Control

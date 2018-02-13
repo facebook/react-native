@@ -12,6 +12,7 @@
 #import "RCTConvert.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
+#import "RCTShadowView+Layout.h"
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
@@ -153,82 +154,21 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeStyleSetBorder(node, YGEdgeAll, metaProps[META_PROP_ALL].value);
 }
 
-- (void)applyLayoutNode:(YGNodeRef)node
-      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-       absolutePosition:(CGPoint)absolutePosition
-{
-  if (!YGNodeGetHasNewLayout(node)) {
-    return;
-  }
-
-  RCTAssert(!YGNodeIsDirty(node), @"Attempt to get layout metrics from dirtied Yoga node.");
-
-  YGNodeSetHasNewLayout(node, false);
-
-  if (YGNodeStyleGetDisplay(node) == YGDisplayNone) {
-    // If the node is hidden (has `display: none;`), its (and its descendants)
-    // layout metrics are invalid and/or dirtied, so we have to stop here.
-    return;
-  }
-
-  CGRect frame = CGRectMake(YGNodeLayoutGetLeft(node), YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node));
-
-  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
-  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
-  UIUserInterfaceLayoutDirection layoutDirection = YGNodeLayoutGetDirection(_yogaNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
-
-  [self applyLayoutWithFrame:frame
-             layoutDirection:layoutDirection
-      viewsWithUpdatedLayout:viewsWithNewFrame
-            absolutePosition:absolutePosition];
-}
-
-- (void)applyLayoutWithFrame:(CGRect)frame
-             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
-      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
-            absolutePosition:(CGPoint)absolutePosition
-{
-  if (!CGRectEqualToRect(_frame, frame) || _layoutDirection != layoutDirection) {
-    _frame = frame;
-    _layoutDirection = layoutDirection;
-    [viewsWithUpdatedLayout addObject:self];
-  }
-
-  absolutePosition.x += frame.origin.x;
-  absolutePosition.y += frame.origin.y;
-
-  [self applyLayoutToChildren:_yogaNode
-            viewsWithNewFrame:viewsWithUpdatedLayout
-             absolutePosition:absolutePosition];
-}
-
-- (void)applyLayoutToChildren:(YGNodeRef)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition
-{
-  for (unsigned int i = 0; i < YGNodeGetChildCount(node); ++i) {
-    RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child applyLayoutNode:YGNodeGetChild(node, i)
-         viewsWithNewFrame:viewsWithNewFrame
-          absolutePosition:absolutePosition];
-  }
-}
-
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGPoint offset = CGPointZero;
   NSInteger depth = 30; // max depth to search
   RCTShadowView *shadowView = self;
   while (depth && shadowView && shadowView != ancestor) {
-    offset.x += shadowView.frame.origin.x;
-    offset.y += shadowView.frame.origin.y;
+    offset.x += shadowView.layoutMetrics.frame.origin.x;
+    offset.y += shadowView.layoutMetrics.frame.origin.y;
     shadowView = shadowView->_superview;
     depth--;
   }
   if (ancestor != shadowView) {
     return CGRectNull;
   }
-  return (CGRect){offset, self.frame.size};
+  return (CGRect){offset, self.layoutMetrics.frame.size};
 }
 
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
@@ -244,9 +184,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (instancetype)init
 {
-  if ((self = [super init])) {
-    _frame = CGRectMake(0, 0, YGUndefined, YGUndefined);
-
+  if (self = [super init]) {
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = YGValueUndefined;
       _marginMetaProps[ii] = YGValueUndefined;
@@ -316,12 +254,125 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return _superview;
 }
 
+#pragma mark - Layout
+
+- (void)layoutWithMinimumSize:(CGSize)minimumSize
+                  maximumSize:(CGSize)maximumSize
+              layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+                layoutContext:(RCTLayoutContext)layoutContext
+{
+  YGNodeRef yogaNode = _yogaNode;
+
+  CGSize oldMinimumSize = (CGSize){
+    RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+    RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)
+  };
+
+  if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
+    YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
+    YGNodeStyleSetMinHeight(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
+  }
+
+  YGNodeCalculateLayout(
+    yogaNode,
+    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width),
+    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height),
+    RCTYogaLayoutDirectionFromUIKitLayoutDirection(layoutDirection)
+  );
+
+  RCTAssert(!YGNodeIsDirty(yogaNode), @"Attempt to get layout metrics from dirtied Yoga node.");
+
+  if (!YGNodeGetHasNewLayout(yogaNode)) {
+    return;
+  }
+
+  RCTLayoutMetrics layoutMetrics = RCTLayoutMetricsFromYogaNode(yogaNode);
+
+  layoutContext.absolutePosition.x += layoutMetrics.frame.origin.x;
+  layoutContext.absolutePosition.y += layoutMetrics.frame.origin.y;
+
+  [self layoutWithMetrics:layoutMetrics
+            layoutContext:layoutContext];
+
+  [self layoutSubviewsWithContext:layoutContext];
+}
+
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
+{
+  if (!RCTLayoutMetricsEqualToLayoutMetrics(self.layoutMetrics, layoutMetrics)) {
+    self.layoutMetrics = layoutMetrics;
+    [layoutContext.affectedShadowViews addObject:self];
+  }
+}
+
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
+{
+  RCTLayoutMetrics layoutMetrics = self.layoutMetrics;
+
+  if (layoutMetrics.displayType == RCTDisplayTypeNone) {
+    return;
+  }
+
+  for (RCTShadowView *childShadowView in _reactSubviews) {
+    YGNodeRef childYogaNode = childShadowView.yogaNode;
+
+    RCTAssert(!YGNodeIsDirty(childYogaNode), @"Attempt to get layout metrics from dirtied Yoga node.");
+
+    if (!YGNodeGetHasNewLayout(childYogaNode)) {
+      continue;
+    }
+
+    RCTLayoutMetrics childLayoutMetrics = RCTLayoutMetricsFromYogaNode(childYogaNode);
+
+    layoutContext.absolutePosition.x += childLayoutMetrics.frame.origin.x;
+    layoutContext.absolutePosition.y += childLayoutMetrics.frame.origin.y;
+
+    [childShadowView layoutWithMetrics:childLayoutMetrics
+                         layoutContext:layoutContext];
+
+    // Recursive call.
+    [childShadowView layoutSubviewsWithContext:layoutContext];
+  }
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
+
+  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+
+  YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
+  YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
+  YGNodeStyleSetMaxWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width));
+  YGNodeStyleSetMaxHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height));
+
+  YGNodeCalculateLayout(
+    constraintYogaNode,
+    YGUndefined,
+    YGUndefined,
+    self.layoutMetrics.layoutDirection
+  );
+
+  CGSize measuredSize = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(constraintYogaNode)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
+  };
+
+  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeFree(constraintYogaNode);
+  YGNodeFree(clonnedYogaNode);
+
+  return measuredSize;
+}
+
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
   for (RCTShadowView *shadowView in _reactSubviews) {
-    if (CGRectContainsPoint(shadowView.frame, point)) {
+    if (CGRectContainsPoint(shadowView.layoutMetrics.frame, point)) {
       CGPoint relativePoint = point;
-      CGPoint origin = shadowView.frame.origin;
+      CGPoint origin = shadowView.layoutMetrics.frame.origin;
       relativePoint.x -= origin.x;
       relativePoint.y -= origin.y;
       return [shadowView reactTagAtPoint:relativePoint];
@@ -333,7 +384,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (NSString *)description
 {
   NSString *description = super.description;
-  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.frame)];
+  description = [[description substringToIndex:description.length - 1] stringByAppendingFormat:@"; viewName: %@; reactTag: %@; frame: %@>", self.viewName, self.reactTag, NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
 

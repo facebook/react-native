@@ -24,7 +24,7 @@ public class DevSettingsActivity extends PreferenceActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setTitle(R.string.catalyst_settings_title);
+    setTitle(getApplication().getResources().getString(R.string.catalyst_settings_title));
     addPreferencesFromResource(R.xml.preferences);
   }
 }

@@ -88,7 +88,7 @@
   [self.parentView insertReactSubview:mainView atIndex:1];
   [self.parentView insertReactSubview:footerView atIndex:2];
 
-  [self.parentView collectViewsWithUpdatedFrames];
+  [self.parentView layoutWithAffectedShadowViews:[NSHashTable weakObjectsHashTable]];
 
   XCTAssertTrue(CGRectEqualToRect([self.parentView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(0, 0, 440, 440)));
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([self.parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));
@@ -180,7 +180,7 @@
   RCTShadowView *view = [self _shadowViewWithConfig:configBlock];
   [self.parentView insertReactSubview:view atIndex:0];
   view.intrinsicContentSize = contentSize;
-  [self.parentView collectViewsWithUpdatedFrames];
+  [self.parentView layoutWithAffectedShadowViews:[NSHashTable weakObjectsHashTable]];
   CGRect actualRect = [view measureLayoutRelativeToAncestor:self.parentView];
   XCTAssertTrue(CGRectEqualToRect(expectedRect, actualRect),
                 @"Expected layout to be %@, got %@",
