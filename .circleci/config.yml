@@ -245,7 +245,7 @@ android_defaults: &android_defaults
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.2"
+    xcode: "9.2.0"
 
 version: 2
 jobs:
