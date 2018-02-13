@@ -567,7 +567,7 @@ jobs:
 workflows:
   version: 2
 
-  test:
+  tests:
     jobs:
 
       # Checkout repo and run Yarn
@@ -612,33 +612,6 @@ workflows:
           requires:
             - checkout_code
 
-  # These tests are flaky or are yet to be fixed. They are placed on their own 
-  # workflow to avoid marking benign PRs as broken.
-  # TODO: Only run on branches? Master? Avoid PRs?
-  disabled_tests:
-    jobs:
-      # Checkout repo and run Yarn
-      - checkout_code:
-          filters: *filter-ignore-gh-pages
-
-      # Test iOS & tvOS
-      - test_objc_ios:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-    
-      - test_objc_tvos:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-      
-      # CocoaPods
-      - test_podspec:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-
-
   # Only runs on PRs
   analyze:
     jobs:
@@ -667,3 +640,30 @@ workflows:
           requires:
             - checkout_code
             - approve_publish_npm_package
+
+  # These tests are flaky or are yet to be fixed. They are placed on their own 
+  # workflow to avoid marking benign PRs as broken.
+  # To run them, uncomment the entire block and open a PR (do not merge). 
+  # Once a test is fixed, move the test definition to the 'tests' workflow.
+  # disabled_tests:
+  #   jobs:
+  #     # Checkout repo and run Yarn (pre-req, should succeed)
+  #     - checkout_code:
+  #         filters: *filter-ignore-gh-pages
+
+  #     # The following were DISABLED because they have not run since 
+  #     # the migration from Travis, and they have broken since then,
+  #     # Test iOS & tvOS
+  #     - test_objc_ios:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code
+  #     - test_objc_tvos:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code
+  #     # CocoaPods
+  #     - test_podspec:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code
