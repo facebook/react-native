@@ -26,14 +26,6 @@ const chalk = require('chalk');
  * run Flow. */
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
-const registerDependencyAndroid = require('./android/registerNativeModule');
-const registerDependencyIOS = require('./ios/registerNativeModule');
-const registerDependencyPods = require('./pods/registerNativeModule');
-const isInstalledAndroid = require('./android/isInstalled');
-const isInstalledIOS = require('./ios/isInstalled');
-const isInstalledPods = require('./pods/isInstalled');
-const copyAssetsAndroid = require('./android/copyAssets');
-const copyAssetsIOS = require('./ios/copyAssets');
 const getProjectDependencies = require('./getProjectDependencies');
 const getDependencyConfig = require('./getDependencyConfig');
 const pollParams = require('./pollParams');
@@ -47,37 +39,8 @@ log.heading = 'rnpm-link';
 
 const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
-
-const linkDependencyAndroid = (androidProject, dependency) => {
-  if (!androidProject || !dependency.config.android) {
-    return null;
-  }
-
-  const isInstalled = isInstalledAndroid(androidProject, dependency.name);
-
-  if (isInstalled) {
-    log.info(chalk.grey(`Android module ${dependency.name} is already linked`));
-    return null;
-  }
-
-  return pollParams(dependency.config.params).then(params => {
-    log.info(`Linking ${dependency.name} android dependency`);
-
-    registerDependencyAndroid(
-      dependency.name,
-      dependency.config.android,
-      params,
-      androidProject
-    );
-
-    log.info(`Android module ${dependency.name} has been successfully linked`);
-  });
-};
-
-const linkDependencyPlatforms = (platforms, project, dependency) => {
-  const ignorePlatforms = ['android', 'ios'];
+const linkDependency = (platforms, project, dependency) => {
   Object.keys(platforms || {})
-    .filter(platform => ignorePlatforms.indexOf(platform) < 0)
     .forEach(platform => {
       if (!project[platform] || !dependency.config[platform]) {
         return null;
@@ -110,45 +73,12 @@ const linkDependencyPlatforms = (platforms, project, dependency) => {
     });
 };
 
-const linkDependencyIOS = (iOSProject, dependency) => {
-  if (!iOSProject || !dependency.config.ios) {
-    return;
-  }
-
-  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios) || isInstalledPods(iOSProject, dependency.config.ios);
-  if (isInstalled) {
-    log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
-    return;
-  }
-
-  log.info(`Linking ${dependency.name} ios dependency`);
-  if (iOSProject.podfile && dependency.config.ios.podspec) {
-    registerDependencyPods(dependency, iOSProject);
-  }
-  else {
-    registerDependencyIOS(dependency.config.ios, iOSProject);
-  }
-  log.info(`iOS module ${dependency.name} has been successfully linked`);
-};
-
 const linkAssets = (platforms, project, assets) => {
   if (isEmpty(assets)) {
     return;
   }
 
-  if (project.ios) {
-    log.info('Linking assets to ios project');
-    copyAssetsIOS(assets, project.ios);
-  }
-
-  if (project.android) {
-    log.info('Linking assets to android project');
-    copyAssetsAndroid(assets, project.android.assetsPath);
-  }
-
-  const ignorePlatforms = ['android', 'ios'];
   Object.keys(platforms || {})
-    .filter(platform => ignorePlatforms.indexOf(platform) < 0)
     .forEach(platform => {
       const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
       if (!linkConfig || !linkConfig.copyAssets) {
@@ -212,9 +142,7 @@ function link(args: Array<string>, config: RNConfig) {
 
   const tasks = flatten(dependencies.map(dependency => [
     () => promisify(dependency.config.commands.prelink || commandStub),
-    () => linkDependencyAndroid(project.android, dependency),
-    () => linkDependencyIOS(project.ios, dependency),
-    () => linkDependencyPlatforms(platforms, project, dependency),
+    () => linkDependency(platforms, project, dependency),
     () => promisify(dependency.config.commands.postlink || commandStub),
   ]));
 
