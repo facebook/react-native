@@ -33,9 +33,10 @@ log.heading = 'git-upgrade';
 /**
  * Promisify the callback-based shelljs function exec
  * @param logOutput If true, log the stdout of the command.
+ * @param logger Custom logger to modify the output, invoked with the data and the stream.
  * @returns {Promise}
  */
-function exec(command, logOutput) {
+function exec(command, logOutput, logger = null) {
   return new Promise((resolve, reject) => {
     let stderr, stdout = '';
     const child = shell.exec(command, {async: true, silent: true});
@@ -43,13 +44,21 @@ function exec(command, logOutput) {
     child.stdout.on('data', data => {
       stdout += data;
       if (logOutput) {
-        process.stdout.write(data);
+        if (logger) {
+          logger(data, process.stdout);
+        } else {
+          process.stdout.write(data);
+        }
       }
     });
 
     child.stderr.on('data', data => {
       stderr += data;
-      process.stderr.write(data);
+      if (logger) {
+        logger(data, process.stderr);
+      } else {
+        process.stderr.write(data);
+      }
     });
 
     child.on('exit', (code, signal) => {
@@ -359,7 +368,13 @@ async function run(requestedVersion, cliArgs) {
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${patchPath}`, true);
+      await exec(`git apply --3way ${patchPath}`, true, (data, stream) => {
+        if (data.indexOf('conflicts') >= 0 || data.startsWith('U ')) {
+          stream.write(`\x1b[31m${data}\x1b[0m`);
+        } else {
+          stream.write(data);
+        }
+      });
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +
