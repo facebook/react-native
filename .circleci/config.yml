@@ -245,7 +245,7 @@ android_defaults: &android_defaults
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.0"
+    xcode: "9.2"
 
 version: 2
 jobs:
@@ -322,7 +322,7 @@ jobs:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -339,7 +339,7 @@ jobs:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "Apple TV 1080p (10.0)" || true
+        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -356,7 +356,7 @@ jobs:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -370,9 +370,7 @@ jobs:
 
   # Checks podspec
   test_podspec:
-    <<: *defaults
-    macos:
-      xcode: "9.0"
+    <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -578,6 +576,12 @@ workflows:
 
       # End-to-end tests
       - test_objc_ios_e2e:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
+      # CocoaPods
+      - test_podspec:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
