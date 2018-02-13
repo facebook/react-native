@@ -614,28 +614,29 @@ workflows:
 
   # These tests are flaky or are yet to be fixed. They are placed on their own 
   # workflow to avoid marking benign PRs as broken.
+  # TODO: Only run on branches? Master? Avoid PRs?
   disabled_tests:
     jobs:
       # Checkout repo and run Yarn
       - checkout_code:
-        filters: *filter-ignore-gh-pages
+          filters: *filter-ignore-gh-pages
 
       # Test iOS & tvOS
       - test_objc_ios:
-        filters: *filter-ignore-gh-pages
-        requires:
-          - checkout_code
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
     
       - test_objc_tvos:
-        filters: *filter-ignore-gh-pages
-        requires:
-          - checkout_code
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
       
       # CocoaPods
       - test_podspec:
-        filters: *filter-ignore-gh-pages
-        requires:
-          - checkout_code
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
 
 
   # Only runs on PRs
