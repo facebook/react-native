@@ -135,7 +135,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     }),
     sectionHeaderData: {},
   });
-  componentWillReceiveProps(newProps: Props) {
+  UNSAFE_componentWillReceiveProps(newProps: Props) {
     this.setState(state => this._computeState(newProps, state));
   }
   render() {

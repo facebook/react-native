@@ -337,7 +337,7 @@ var NavigatorIOS = createReactClass({
       /**
        * Use this to specify additional props to pass to the rendered
        * component. `NavigatorIOS` will automatically pass in `route` and
-       * `navigator` props to the comoponent.
+       * `navigator` props to the component.
        */
       passProps: PropTypes.object,
 
@@ -515,7 +515,7 @@ var NavigatorIOS = createReactClass({
 
   navigator: (undefined: ?Object),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
     this.navigator = {

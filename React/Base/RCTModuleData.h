@@ -80,12 +80,6 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
 @property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
 
 /**
- * Returns the module config. Calls `gatherConstants` internally, so the same
- * usage caveats apply.
- */
-@property (nonatomic, copy, readonly) NSArray *config;
-
-/**
  * Whether the receiver has a valid `instance` which implements -batchDidComplete.
  */
 @property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;

@@ -133,7 +133,7 @@ const KeyboardAvoidingView = createReactClass({
     this.frame = event.nativeEvent.layout;
   },
 
-  componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
+  UNSAFE_componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
     if (nextState.bottom === this.state.bottom &&
         this.props.behavior === 'height' &&
         nextProps.behavior === 'height') {
@@ -143,7 +143,7 @@ const KeyboardAvoidingView = createReactClass({
     }
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (Platform.OS === 'ios') {
       this.subscriptions = [
         Keyboard.addListener('keyboardWillChangeFrame', this._onKeyboardChange),

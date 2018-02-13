@@ -9,8 +9,10 @@
 
 'use strict';
 
-var ReactFeatureFlags = {
+const ReactFeatureFlags = {
   debugRenderPhaseSideEffects: false,
+  debugRenderPhaseSideEffectsForStrictMode: false,
+  warnAboutDeprecatedLifecycles: true,
 };
 
 module.exports = ReactFeatureFlags;

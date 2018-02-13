@@ -18,9 +18,10 @@ namespace react {
 // pure destructors in C++ are odd. You would think they don't want an
 // implementation, but in fact the linker requires one. Define them to be
 // empty so that people don't count on them for any particular behaviour.
-IDestructible::~IDestructible() { }
-ILocalConnection::~ILocalConnection() { }
-IRemoteConnection::~IRemoteConnection() { }
+IDestructible::~IDestructible() {}
+ILocalConnection::~ILocalConnection() {}
+IRemoteConnection::~IRemoteConnection() {}
+IInspector::~IInspector() {}
 
 namespace {
 

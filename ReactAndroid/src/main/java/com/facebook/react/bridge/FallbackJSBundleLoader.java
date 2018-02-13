@@ -57,7 +57,7 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
       try {
         return getDelegateLoader().loadScript(instance);
       } catch (Exception e) {
-        if (!e.getMessage().startsWith(RECOVERABLE)) {
+        if (e.getMessage() == null || !e.getMessage().startsWith(RECOVERABLE)) {
           throw e;
         }
 

@@ -375,6 +375,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   recordInteraction() {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref.recordInteraction();
+    });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
     });
@@ -512,6 +515,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       state: null,
     });
 
+    if (this._hasInteracted) {
+      childList.ref.recordInteraction();
+    }
+
     return existingChildData && existingChildData.state;
   };
 
@@ -585,22 +592,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.state = initialState;
   }
 
-  componentDidMount() {
-    if (this.props.initialScrollIndex) {
-      this._initialScrollIndexTimeout = setTimeout(
-        () =>
-          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.63 was deployed. To see the error
-           * delete this comment and run Flow. */
-          this.scrollToIndex({
-            animated: false,
-            index: this.props.initialScrollIndex,
-          }),
-        0,
-      );
-    }
-  }
-
   componentWillUnmount() {
     if (this._isNestedWithSameOrientation()) {
       this.context.virtualizedList.unregisterAsNestedChild({
@@ -618,13 +609,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
-    clearTimeout(this._initialScrollIndexTimeout);
   }
 
-  componentWillReceiveProps(newProps: Props) {
+  UNSAFE_componentWillReceiveProps(newProps: Props) {
     const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
@@ -898,6 +885,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
+      invertStickyHeaders: this.props.inverted,
       stickyHeaderIndices,
     };
     if (inversionStyle) {
@@ -940,12 +928,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _frames = {};
   _footerLength = 0;
   _hasDataChangedSinceEndReached = true;
+  _hasInteracted = false;
   _hasMore = false;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _initialScrollIndexTimeout = 0;
+  _hasDoneInitialScroll = false;
   _nestedChildLists: Map<
     string,
     {ref: ?VirtualizedList, state: ?ChildListState},
@@ -1197,6 +1186,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    if (
+      width > 0 &&
+      height > 0 &&
+      this.props.initialScrollIndex != null &&
+      this.props.initialScrollIndex > 0 &&
+      !this._hasDoneInitialScroll
+    ) {
+      this.scrollToIndex({
+        animated: false,
+        index: this.props.initialScrollIndex,
+      });
+      this._hasDoneInitialScroll = true;
+    }
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
@@ -1333,9 +1335,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _onScrollBeginDrag = (e): void => {
+    this._nestedChildLists.forEach(childList => {
+      childList.ref && childList.ref._onScrollBeginDrag(e);
+    });
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.recordInteraction();
     });
+    this._hasInteracted = true;
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 

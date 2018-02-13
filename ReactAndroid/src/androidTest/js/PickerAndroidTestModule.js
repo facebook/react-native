@@ -28,7 +28,7 @@ class PickerAndroidTestApp extends React.Component {
     style: {},
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     appInstance = this;
   }
 

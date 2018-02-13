@@ -9,6 +9,7 @@
 
 package com.facebook.react.views.scroll;
 
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -39,13 +40,14 @@ import javax.annotation.Nullable;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
+@TargetApi(11)
 public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
-  private static Field sScrollerField;
+  private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
-  private final OverScroller mScroller;
+  private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private @Nullable Rect mClippingRect;
@@ -71,6 +73,15 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     mFpsListener = fpsListener;
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
 
+    mScroller = getOverScrollerFromParent();
+    setOnHierarchyChangeListener(this);
+    setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+  }
+
+  @Nullable
+  private OverScroller getOverScrollerFromParent() {
+    OverScroller scroller;
+
     if (!sTriedToGetScrollerField) {
       sTriedToGetScrollerField = true;
       try {
@@ -86,32 +97,31 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     if (sScrollerField != null) {
       try {
-        Object scroller = sScrollerField.get(this);
-        if (scroller instanceof OverScroller) {
-          mScroller = (OverScroller) scroller;
+        Object scrollerValue = sScrollerField.get(this);
+        if (scrollerValue instanceof OverScroller) {
+          scroller = (OverScroller) scrollerValue;
         } else {
           Log.w(
             ReactConstants.TAG,
             "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
               "This app will exhibit the bounce-back scrolling bug :(");
-          mScroller = null;
+          scroller = null;
         }
       } catch (IllegalAccessException e) {
         throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
       }
     } else {
-      mScroller = null;
+      scroller = null;
     }
 
-    setOnHierarchyChangeListener(this);
-    setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+    return scroller;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
     mSendMomentumEvents = sendMomentumEvents;
   }
 
-  public void setScrollPerfTag(String scrollPerfTag) {
+  public void setScrollPerfTag(@Nullable String scrollPerfTag) {
     mScrollPerfTag = scrollPerfTag;
   }
 

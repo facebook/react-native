@@ -43,7 +43,7 @@ var NetworkImageCallbackExample = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({mountTime: new Date()});
   },
 
@@ -572,18 +572,16 @@ exports.examples = [
                     />
                   </View>
                 : null }
-                { Platform.OS === 'android' ?
-                  <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>
-                      Center
-                    </Text>
-                    <Image
-                      style={styles.resizeMode}
-                      resizeMode={Image.resizeMode.center}
-                      source={image}
-                    />
-                  </View>
-                : null }
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Center
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.center}
+                    source={image}
+                  />
+                </View>
               </View>
             </View>
           );

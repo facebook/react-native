@@ -272,8 +272,6 @@ RCT_EXPORT_MODULE()
   }
 
   if (devSettings.isJSCSamplingProfilerAvailable) {
-    // Note: bridge.jsContext is not implemented in the old bridge, so this code is
-    // duplicated in RCTJSCExecutor
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
       [devSettings toggleJSCSamplingProfiler];
     }]];

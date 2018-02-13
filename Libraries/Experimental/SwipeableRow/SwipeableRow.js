@@ -125,7 +125,7 @@ const SwipeableRow = createReactClass({
     };
   },
 
-  componentWillMount(): void {
+  UNSAFE_componentWillMount(): void {
     this._panResponder = PanResponder.create({
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._handlePanResponderGrant,
@@ -149,7 +149,7 @@ const SwipeableRow = createReactClass({
     }
   },
 
-  componentWillReceiveProps(nextProps: Object): void {
+  UNSAFE_componentWillReceiveProps(nextProps: Object): void {
     /**
      * We do not need an "animateOpen(noCallback)" because this animation is
      * handled internally by this component.

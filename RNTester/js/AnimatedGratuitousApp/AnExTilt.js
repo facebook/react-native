@@ -77,7 +77,7 @@ class AnExTilt extends React.Component<Object, any> {
     }).start();
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._startBurnsZoom();
   }
 

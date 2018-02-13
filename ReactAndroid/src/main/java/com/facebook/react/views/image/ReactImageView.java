@@ -30,7 +30,6 @@ import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
-import com.facebook.drawee.drawable.RoundedColorDrawable;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -149,7 +148,6 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable ImageSource mImageSource;
   private @Nullable ImageSource mCachedImageSource;
   private @Nullable Drawable mLoadingImageDrawable;
-  private @Nullable RoundedColorDrawable mBackgroundImageDrawable;
   private int mBorderColor;
   private int mOverlayColor;
   private float mBorderWidth;
@@ -237,12 +235,6 @@ public class ReactImageView extends GenericDraweeView {
     } else {
       mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(pixelBlurRadius);
     }
-    mIsDirty = true;
-  }
-
-  @Override
-  public void setBackgroundColor(int backgroundColor) {
-    mBackgroundImageDrawable = new RoundedColorDrawable(backgroundColor);
     mIsDirty = true;
   }
 
@@ -385,17 +377,12 @@ public class ReactImageView extends GenericDraweeView {
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
 
-    cornerRadii(sComputedCornerRadii);
-    roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
-
-    if (mBackgroundImageDrawable != null) {
-      mBackgroundImageDrawable.setBorder(mBorderColor, mBorderWidth);
-      mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
-      hierarchy.setBackgroundImage(mBackgroundImageDrawable);
-    }
-
     if (usePostprocessorScaling) {
       roundingParams.setCornersRadius(0);
+    } else {
+      cornerRadii(sComputedCornerRadii);
+
+      roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
     }
 
     roundingParams.setBorder(mBorderColor, mBorderWidth);

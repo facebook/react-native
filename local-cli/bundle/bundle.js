@@ -15,21 +15,17 @@ const outputBundle = require('metro/src/shared/output/bundle');
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundleWithOutput(argv, config, args, output, packagerInstance) {
+function bundleWithOutput(argv, config, args, output) {
   if (!output) {
     output = outputBundle;
   }
-  return buildBundle(args, config, output, packagerInstance);
-}
-
-function bundle(argv, config, args, packagerInstance) {
-  return bundleWithOutput(argv, config, args, undefined, packagerInstance);
+  return buildBundle(args, config, output);
 }
 
 module.exports = {
   name: 'bundle',
   description: 'builds the javascript bundle for offline use',
-  func: bundle,
+  func: bundleWithOutput,
   options: bundleCommandLineArgs,
 
   // not used by the CLI itself

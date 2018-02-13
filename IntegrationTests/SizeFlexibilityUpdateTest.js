@@ -27,7 +27,7 @@ var SizeFlexibilityUpdateTest = createReactClass({
   displayName: 'SizeFlexibilityUpdateTest',
   mixins: [Subscribable.Mixin],
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this.addListenerOn(
       RCTNativeAppEventEmitter,
       'rootViewDidChangeIntrinsicSize',

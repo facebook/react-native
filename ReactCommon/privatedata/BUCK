@@ -1,4 +1,4 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "privatedata",

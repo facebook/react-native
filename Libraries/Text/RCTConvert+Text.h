@@ -9,9 +9,13 @@
 
 #import <React/RCTConvert.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RCTConvert (Text)
 
-+ (UITextAutocorrectionType)UITextAutocorrectionType:(id)json;
-+ (UITextSpellCheckingType)UITextSpellCheckingType:(id)json;
++ (UITextAutocorrectionType)UITextAutocorrectionType:(nullable id)json;
++ (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
 
 @end
+
+NS_ASSUME_NONNULL_END

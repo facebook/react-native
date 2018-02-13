@@ -8,6 +8,7 @@
  *
  * @providesModule ImageEditor
  * @flow
+ * @format
  */
 'use strict';
 
@@ -63,7 +64,7 @@ class ImageEditor {
     uri: string,
     cropData: ImageCropData,
     success: (uri: string) => void,
-    failure: (error: Object) => void
+    failure: (error: Object) => void,
   ) {
     RCTImageEditingManager.cropImage(uri, cropData, success, failure);
   }

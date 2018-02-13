@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_android_library", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "packagerconnection",
     srcs = glob(
         ["**/*.java"],

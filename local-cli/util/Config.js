@@ -93,6 +93,9 @@ const Config = {
     return configPath ? this.load(configPath, startDir) : {...Config.DEFAULT};
   },
 
+  getProjectPath,
+  getProjectRoots,
+
   load(configFile: string): ConfigT {
     return MetroConfig.load(configFile, Config.DEFAULT);
   },

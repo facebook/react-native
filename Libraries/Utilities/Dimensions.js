@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var DeviceInfo = require('DeviceInfo');
 var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
@@ -36,7 +35,7 @@ class Dimensions {
       // parse/stringify => Clone hack
       dims = JSON.parse(JSON.stringify(dims));
 
-      var windowPhysicalPixels = dims.windowPhysicalPixels;
+      const windowPhysicalPixels = dims.windowPhysicalPixels;
       dims.window = {
         width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
         height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
@@ -45,7 +44,7 @@ class Dimensions {
       };
       if (Platform.OS === 'android') {
         // Screen and window dimensions are different on android
-        var screenPhysicalPixels = dims.screenPhysicalPixels;
+        const screenPhysicalPixels = dims.screenPhysicalPixels;
         dims.screen = {
           width: screenPhysicalPixels.width / screenPhysicalPixels.scale,
           height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
@@ -128,9 +127,20 @@ class Dimensions {
   }
 }
 
-Dimensions.set(DeviceInfo.Dimensions);
-RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
-  Dimensions.set(update);
-});
+let dims: ?{[key: string]: any} = global.nativeExtensions && global.nativeExtensions.DeviceInfo && global.nativeExtensions.DeviceInfo.Dimensions;
+let nativeExtensionsEnabled = true;
+if (!dims) {
+  const DeviceInfo = require('DeviceInfo');
+  dims = DeviceInfo.Dimensions;
+  nativeExtensionsEnabled = false;
+}
+
+invariant(dims, 'Either DeviceInfo native extension or DeviceInfo Native Module must be registered');
+Dimensions.set(dims);
+if (!nativeExtensionsEnabled) {
+  RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
+    Dimensions.set(update);
+  });
+}
 
 module.exports = Dimensions;

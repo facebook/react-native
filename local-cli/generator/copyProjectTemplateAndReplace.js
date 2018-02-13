@@ -137,7 +137,7 @@ function upgradeFileContentChangedCallback(
   } else if (contentChanged === 'identical') {
     return 'keep';
   } else {
-    throw new Error(`Unkown file changed state: ${relativeDestPath}, ${contentChanged}`);
+    throw new Error(`Unknown file changed state: ${relativeDestPath}, ${contentChanged}`);
   }
 }
 

@@ -125,7 +125,7 @@ function computeWindowedRenderLimits(
     };
   }
 
-  // Find the indices that correspond to the items at the render boundaries we're targetting.
+  // Find the indices that correspond to the items at the render boundaries we're targeting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
     props.getItemCount(props.data),
