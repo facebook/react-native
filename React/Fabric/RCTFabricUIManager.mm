@@ -12,55 +12,63 @@
 // This file contains experimental placeholders, nothing is finalized.
 @implementation RCTFabricUIManager
 
-@synthesize bridge = _bridge;
-
-RCT_EXPORT_MODULE()
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, createNode:(int)reactTag
-                                                  viewName:(NSString *)viewName
-                                                   rootTag:(int)rootTag
-                                                     props:(NSDictionary *)props
-                                            instanceHandle:(int)instanceHandleID)
-{
-  return @0;
-}
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, cloneNode:(int)nodeID)
-{
-  return @0;
-}
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, cloneNodeWithNewChildren:(int)nodeID)
-{
-  return @0;
-}
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, cloneNodeWithNewProps:(int)nodeID newProps:(NSDictionary *)newProps)
-{
-  return @0;
-}
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, cloneNodeWithNewChildrenAndProps:(int)nodeID newProps:(NSDictionary *)newProps)
-{
-  return @0;
-}
-
-RCT_EXPORT_METHOD(appendChild:(int)parentNodeID child:(int)childNodeID)
-{
-
-}
-
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, createChildSet)
-{
-  return @0;
-}
-
-RCT_EXPORT_METHOD(appendChildToSet:(int)childSetID child:(int)childNodeID)
+- (void)dealloc
 {
 }
 
-RCT_EXPORT_METHOD(completeRoot:(int)rootTag childSet:(int)childSetID)
+- (void)invalidate
 {
+}
+
+- (RCTShadowView *)createNode:(nonnull NSNumber *)reactTag
+                      viewName:(NSString *)viewName
+                      rootTag:(nonnull NSNumber *)rootTag
+                        props:(NSDictionary *)props
+                instanceHandle:(void *)instanceHandle
+{
+  return nil;
+}
+
+- (RCTShadowView *)cloneNode:(RCTShadowView *)node
+{
+  return nil;
+}
+- (RCTShadowView *)cloneNodeWithNewChildren:(RCTShadowView *)node
+{
+  return nil;
+}
+
+- (RCTShadowView *)cloneNodeWithNewProps:(RCTShadowView *)node
+                                newProps:(NSDictionary *)props
+{
+  return nil;
+}
+- (RCTShadowView *)cloneNodeWithNewChildrenAndProps:(RCTShadowView *)node
+                                            newProps:(NSDictionary *)props
+{
+  return nil;
+}
+- (void)appendChild:(RCTShadowView *)parentNode
+          childNode:(RCTShadowView *)childNode
+{
+
+}
+
+- (NSMutableArray<RCTShadowView *> *)createChildSet:(nonnull NSNumber *)rootTag
+{
+  return [NSMutableArray array];
+}
+
+- (void)appendChildToSet:(NSMutableArray<RCTShadowView *> *)childSet
+               childNode:(RCTShadowView *)childNode
+{
+  [childSet addObject:childNode];
+}
+
+- (void)completeRoot:(nonnull NSNumber *)rootTag
+            childSet:(NSArray<RCTShadowView *> *)childSet
+{
+
 }
 
 @end

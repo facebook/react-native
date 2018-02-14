@@ -10,8 +10,35 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
-#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
+#import <React/RCTShadowView.h>
 
-@interface RCTFabricUIManager : NSObject<RCTBridgeModule>
+@class RCTShadowView;
+
+/**
+ * The RCTFabricUIManager is the module responsible for updating the view hierarchy.
+ */
+@interface RCTFabricUIManager : NSObject <RCTInvalidating>
+
+- (RCTShadowView *)createNode:(nonnull NSNumber *)reactTag
+                      viewName:(NSString *)viewName
+                      rootTag:(nonnull NSNumber *)rootTag
+                        props:(NSDictionary *)props
+                instanceHandle:(void *)instanceHandle;
+
+- (RCTShadowView *)cloneNode:(RCTShadowView *)node;
+- (RCTShadowView *)cloneNodeWithNewChildren:(RCTShadowView *)node;
+- (RCTShadowView *)cloneNodeWithNewProps:(RCTShadowView *)node
+                                newProps:(NSDictionary *)props;
+- (RCTShadowView *)cloneNodeWithNewChildrenAndProps:(RCTShadowView *)node
+                                            newProps:(NSDictionary *)props;
+- (void)appendChild:(RCTShadowView *)parentNode
+          childNode:(RCTShadowView *)childNode;
+
+- (NSMutableArray<RCTShadowView *> *)createChildSet:(nonnull NSNumber *)rootTag;
+- (void)appendChildToSet:(NSMutableArray<RCTShadowView *> *)childSet
+               childNode:(RCTShadowView *)childNode;
+- (void)completeRoot:(nonnull NSNumber *)rootTag
+            childSet:(NSArray<RCTShadowView *> *)childSet;
 
 @end
