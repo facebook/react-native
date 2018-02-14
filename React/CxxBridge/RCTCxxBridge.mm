@@ -515,6 +515,8 @@ struct RCTInstanceCallback : public InstanceCallback {
         std::make_unique<JSBigStdString>("true"));
     }
 #endif
+
+    [self installExtraJSBinding];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -607,6 +609,16 @@ struct RCTInstanceCallback : public InstanceCallback {
     [_moduleDataByID addObject:moduleData];
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+}
+
+- (void)installExtraJSBinding
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(installExtraJSBinding:)]) {
+      [cxxDelegate installExtraJSBinding:self.jsContextRef];
+    }
+  }
 }
 
 - (void)_initModules:(NSArray<id<RCTBridgeModule>> *)modules
