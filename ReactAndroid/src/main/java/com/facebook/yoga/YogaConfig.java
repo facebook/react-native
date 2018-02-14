@@ -23,6 +23,7 @@ public class YogaConfig {
 
   long mNativePointer;
   private YogaLogger mLogger;
+  private YogaNodeClonedFunction mNodeClonedFunction;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {
@@ -79,5 +80,18 @@ public class YogaConfig {
 
   public YogaLogger getLogger() {
     return mLogger;
+  }
+
+  private native void jni_YGConfigSetHasNodeClonedFunc(long nativePointer, boolean hasClonedFunc);
+
+  public void setOnNodeCloned(YogaNodeClonedFunction nodeClonedFunction) {
+    mNodeClonedFunction = nodeClonedFunction;
+    jni_YGConfigSetHasNodeClonedFunc(mNativePointer, nodeClonedFunction != null);
+  }
+
+  @DoNotStrip
+  public final void onNodeCloned(
+      YogaNode oldNode, YogaNode newNode, YogaNode parent, int childIndex) {
+    mNodeClonedFunction.onNodeCloned(oldNode, newNode, parent, childIndex);
   }
 }

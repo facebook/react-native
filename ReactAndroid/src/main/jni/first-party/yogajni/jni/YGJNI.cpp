@@ -19,6 +19,22 @@ struct JYogaNode : public JavaClass<JYogaNode> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNode;";
 };
 
+struct JYogaConfig : public JavaClass<JYogaConfig> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaConfig;";
+};
+
+struct YGConfigContext {
+  global_ref<jobject>* logger;
+  global_ref<jobject>* config;
+  YGConfigContext() : logger(nullptr), config(nullptr) {}
+  ~YGConfigContext() {
+    delete config;
+    config = nullptr;
+    delete logger;
+    logger = nullptr;
+  }
+};
+
 static inline weak_ref<JYogaNode> *YGNodeJobject(YGNodeRef node) {
   return reinterpret_cast<weak_ref<JYogaNode>*>(node->getContext());
 }
@@ -118,11 +134,39 @@ static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   }
 }
 
-static YGSize YGJNIMeasureFunc(YGNodeRef node,
-                               float width,
-                               YGMeasureMode widthMode,
-                               float height,
-                               YGMeasureMode heightMode) {
+static void YGJNIOnNodeClonedFunc(
+    YGNodeRef oldNode,
+    YGNodeRef newNode,
+    YGNodeRef parent,
+    int childIndex) {
+  auto config = oldNode->getConfig();
+  if (!config) {
+    return;
+  }
+  static auto onNodeClonedFunc = findClassStatic("com/facebook/yoga/YogaConfig")
+                                     ->getMethod<void(
+                                         local_ref<JYogaNode>,
+                                         local_ref<JYogaNode>,
+                                         local_ref<JYogaNode>,
+                                         jint)>("onNodeCloned");
+
+  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
+  auto javaConfig = context->config;
+
+  onNodeClonedFunc(
+      javaConfig->get(),
+      YGNodeJobject(oldNode)->lockLocal(),
+      YGNodeJobject(newNode)->lockLocal(),
+      YGNodeJobject(parent)->lockLocal(),
+      childIndex);
+}
+
+static YGSize YGJNIMeasureFunc(
+    YGNodeRef node,
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     static auto measureFunc = findClassStatic("com/facebook/yoga/YogaNode")
                                   ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
@@ -396,6 +440,10 @@ jlong jni_YGConfigNew(alias_ref<jobject>) {
 
 void jni_YGConfigFree(alias_ref<jobject>, jlong nativePointer) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
+  if (context) {
+    delete context;
+  }
   YGConfigFree(config);
 }
 
@@ -430,19 +478,48 @@ void jni_YGConfigSetUseLegacyStretchBehaviour(alias_ref<jobject>,
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
 }
 
-void jni_YGConfigSetLogger(alias_ref<jobject>, jlong nativePointer, alias_ref<jobject> logger) {
+void jni_YGConfigSetHasNodeClonedFunc(
+    alias_ref<jobject> thiz,
+    jlong nativePointer,
+    jboolean hasNodeClonedFunc) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
+  if (context && context->config) {
+    delete context->config;
+    context->config = nullptr;
+  }
 
-  auto context = YGConfigGetContext(config);
-  if (context) {
-    delete reinterpret_cast<global_ref<jobject> *>(context);
+  if (hasNodeClonedFunc) {
+    if (!context) {
+      context = new YGConfigContext();
+      YGConfigSetContext(config, context);
+    }
+    context->config = new global_ref<jobject>(make_global(thiz));
+    YGConfigSetNodeClonedFunc(config, YGJNIOnNodeClonedFunc);
+  } else {
+    YGConfigSetNodeClonedFunc(config, nullptr);
+  }
+}
+
+void jni_YGConfigSetLogger(
+    alias_ref<jobject>,
+    jlong nativePointer,
+    alias_ref<jobject> logger) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
+  if (context && context->logger) {
+    delete context->logger;
+    context->logger = nullptr;
   }
 
   if (logger) {
-    YGConfigSetContext(config, new global_ref<jobject>(make_global(logger)));
+    if (!context) {
+      context = new YGConfigContext();
+      YGConfigSetContext(config, context);
+    }
+    context->logger = new global_ref<jobject>(make_global(logger));
     YGConfigSetLogger(config, YGJNILogFunc);
   } else {
-    YGConfigSetContext(config, NULL);
     YGConfigSetLogger(config, NULL);
   }
 }
@@ -545,6 +622,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
                         YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
                         YGMakeNativeMethod(jni_YGConfigSetLogger),
+                        YGMakeNativeMethod(jni_YGConfigSetHasNodeClonedFunc),
                     });
   });
 }
