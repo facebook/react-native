@@ -68,7 +68,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice) {
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose, args.port);
     } else {
       if (devices && devices.length > 0) {
         console.log('Could not find device with the name: "' + args.device + '".');
