@@ -87,7 +87,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
-  private final ReactAndroidTVRootViewHelper mAndroidTVRootViewHelper = new ReactAndroidTVRootViewHelper(this);
+  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -227,7 +227,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidTVRootViewHelper.handleKeyEvent(ev, emitter);
+    mAndroidHWInputDeviceHelper.handleKeyEvent(ev, emitter);
     return super.dispatchKeyEvent(ev);
   }
 
@@ -243,7 +243,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidTVRootViewHelper.clearFocus(emitter);
+    mAndroidHWInputDeviceHelper.clearFocus(emitter);
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
 
@@ -259,7 +259,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidTVRootViewHelper.onFocusChanged(focused, emitter);
+    mAndroidHWInputDeviceHelper.onFocusChanged(focused, emitter);
     super.requestChildFocus(child, focused);
   }
 

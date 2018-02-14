@@ -24,7 +24,7 @@ import java.util.List;
  * Responsible for dispatching events specific for Android TV to support D-PAD navigation/selection.
  * This is similar to AppleTV implementation and uses the same emitter events.
  */
-public class ReactAndroidTVRootViewHelper {
+public class ReactAndroidHWInputDeviceHelper {
 
   /**
    * Android TV remote control sends a DPAD_CENTER event when clicking on a focused item.
@@ -43,7 +43,7 @@ public class ReactAndroidTVRootViewHelper {
 
   private ReactRootView mReactRootView;
 
-  public ReactAndroidTVRootViewHelper(ReactRootView reactRootView) {
+  public ReactAndroidHWInputDeviceHelper(ReactRootView reactRootView) {
     mReactRootView = reactRootView;
   }
 
