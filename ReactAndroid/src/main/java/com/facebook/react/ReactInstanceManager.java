@@ -545,6 +545,16 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
+    onHostResume(activity);
+  }
+
+  /**
+   * Use this method when the activity resumes.
+   */
+  @ThreadConfined(UI)
+  public void onHostResume(Activity activity) {
+    UiThreadUtil.assertOnUiThread();
+
     mCurrentActivity = activity;
 
     if (mUseDeveloperSupport) {
