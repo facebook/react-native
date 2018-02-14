@@ -54,9 +54,14 @@ public class ReactAndroidHWInputDeviceHelper {
   public void handleKeyEvent(KeyEvent ev, RCTDeviceEventEmitter emitter) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
-    View targetView = findFocusedView(mReactRootView);
-    if (targetView == null || eventKeyAction != KeyEvent.ACTION_UP) {
+    if (eventKeyAction != KeyEvent.ACTION_UP) {
       return;
+    }
+    if (PRESS_KEY_EVENTS.contains(eventKeyCode)) {
+      View targetView = findFocusedView(mReactRootView);
+      if (targetView != null) {
+        dispatchEvent("select", targetView.getId(), emitter);
+      }
     }
     if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode) {
       dispatchEvent("playPause", emitter);
@@ -64,8 +69,6 @@ public class ReactAndroidHWInputDeviceHelper {
       dispatchEvent("rewind", emitter);
     } else if (KeyEvent.KEYCODE_MEDIA_FAST_FORWARD == eventKeyCode) {
       dispatchEvent("fastForward", emitter);
-    } else if (PRESS_KEY_EVENTS.contains(eventKeyCode)) {
-      dispatchEvent("select", targetView.getId(), emitter);
     }
   }
 
