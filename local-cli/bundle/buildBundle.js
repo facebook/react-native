@@ -95,6 +95,7 @@ async function buildBundle(
     assetExts: defaultAssetExts.concat(assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
+    cacheVersion: config.cacheVersion,
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
