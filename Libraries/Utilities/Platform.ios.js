@@ -24,12 +24,15 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'pad' : false;
   },
+  /**
+   * Deprecated, use `isTV` instead.
+   */
   get isTVOS() {
-    const constants = NativeModules.PlatformConstants;
-    return constants ? constants.interfaceIdiom === 'tv' : false;
+    return Platform.isTV;
   },
   get isTV() {
-    return Platform.isTVOS;
+    const constants = NativeModules.PlatformConstants;
+    return constants ? constants.interfaceIdiom === 'tv' : false;
   },
   get isTesting(): boolean {
     const constants = NativeModules.PlatformConstants;

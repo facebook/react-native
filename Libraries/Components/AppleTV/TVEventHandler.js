@@ -11,7 +11,6 @@
  */
 'use strict';
 
-const React = require('React');
 const Platform = require('Platform');
 const TVNavigationEventEmitter = require('NativeModules').TVNavigationEventEmitter;
 const NativeEventEmitter = require('NativeEventEmitter');

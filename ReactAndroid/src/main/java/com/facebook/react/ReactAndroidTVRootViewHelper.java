@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -55,16 +55,17 @@ public class ReactAndroidTVRootViewHelper {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
     View targetView = findFocusedView(mReactRootView);
-    if (targetView != null) {
-      if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
-        dispatchEvent("playPause", emitter);
-      } else if (KeyEvent.KEYCODE_MEDIA_REWIND == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
-        dispatchEvent("rewind", emitter);
-      } else if (KeyEvent.KEYCODE_MEDIA_FAST_FORWARD == eventKeyCode && eventKeyAction == KeyEvent.ACTION_UP) {
-        dispatchEvent("fastForward", emitter);
-      } else if (PRESS_KEY_EVENTS.contains(eventKeyCode) && eventKeyAction == KeyEvent.ACTION_UP) {
-        dispatchEvent("select", targetView.getId(), emitter);
-      }
+    if (targetView == null || eventKeyAction != KeyEvent.ACTION_UP) {
+      return;
+    }
+    if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == eventKeyCode) {
+      dispatchEvent("playPause", emitter);
+    } else if (KeyEvent.KEYCODE_MEDIA_REWIND == eventKeyCode) {
+      dispatchEvent("rewind", emitter);
+    } else if (KeyEvent.KEYCODE_MEDIA_FAST_FORWARD == eventKeyCode) {
+      dispatchEvent("fastForward", emitter);
+    } else if (PRESS_KEY_EVENTS.contains(eventKeyCode)) {
+      dispatchEvent("select", targetView.getId(), emitter);
     }
   }
 
