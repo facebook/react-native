@@ -9,7 +9,7 @@
  * @providesModule ProgressBarTestModule
  */
 
-"use strict";
+'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');

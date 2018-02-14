@@ -14,7 +14,7 @@
 var React = require('React');
 var View = require('View');
 
-class BorderBox extends React.Component {
+class BorderBox extends React.Component<$FlowFixMeProps> {
   render() {
     var box = this.props.box;
     if (!box) {

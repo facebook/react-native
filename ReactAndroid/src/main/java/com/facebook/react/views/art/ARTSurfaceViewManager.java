@@ -9,9 +9,9 @@
 
 package com.facebook.react.views.art;
 
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -26,14 +26,14 @@ public class ARTSurfaceViewManager extends
 
   protected static final String REACT_CLASS = "ARTSurfaceView";
 
-  private static final CSSNodeAPI.MeasureFunction MEASURE_FUNCTION = new CSSNodeAPI.MeasureFunction() {
+  private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNode node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode) {
+        YogaMeasureMode heightMode) {
       throw new IllegalStateException("SurfaceView should have explicit width and height set");
     }
   };
@@ -63,5 +63,13 @@ public class ARTSurfaceViewManager extends
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
     root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
+  }
+
+  @Override
+  public void setBackgroundColor(ARTSurfaceView view, int backgroundColor) {
+    // As of Android N TextureView does not support calling setBackground on it.
+    // It will also throw an exception when target SDK is set to N or higher.
+
+    // Setting the background color for this view is handled in the shadow node.
   }
 }

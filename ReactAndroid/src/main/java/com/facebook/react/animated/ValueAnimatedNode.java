@@ -40,11 +40,16 @@ import javax.annotation.Nullable;
     mOffset = 0;
   }
 
+  public void extractOffset() {
+    mOffset += mValue;
+    mValue = 0;
+  }
+
   public void onValueUpdate() {
     if (mValueListener == null) {
       return;
     }
-    mValueListener.onValueUpdate(mValue);
+    mValueListener.onValueUpdate(getValue());
   }
 
   public void setValueListener(@Nullable AnimatedNodeValueListener listener) {

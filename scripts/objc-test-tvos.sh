@@ -1,17 +1,22 @@
 #!/bin/bash
-
 set -ex
 
+# Script used to run tvOS tests.
+# If not arguments are passed to the script, it will only compile
+# the RNTester.
+# If the script is called with a single argument "test", we'll
+# also run the RNTester integration test (needs JS and packager):
+# ./objc-test-tvos.sh test
+
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+ROOT=$(dirname "$SCRIPTS")
 
-cd $ROOT
+cd "$ROOT"
 
-XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer-tvOS"
-XCODE_SDK="appletvsimulator"
-if [ -z "$XCODE_DESTINATION" ]; then
-  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=9.2"
-fi
+SCHEME="RNTester-tvOS"
+SDK="appletvsimulator"
+DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.2"
 
-. ./scripts/objc-test.sh
+# If there's a "test" argument, pass it to the test script.
+. ./scripts/objc-test.sh $1
+

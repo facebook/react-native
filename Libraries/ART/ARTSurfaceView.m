@@ -9,10 +9,20 @@
 
 #import "ARTSurfaceView.h"
 
+#import <React/RCTLog.h>
+
 #import "ARTNode.h"
-#import "RCTLog.h"
 
 @implementation ARTSurfaceView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    self.opaque = NO;
+  }
+
+  return self;
+}
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
@@ -43,11 +53,6 @@
   for (ARTNode *node in self.subviews) {
     [node renderTo:context];
   }
-}
-
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  self.backgroundColor = inheritedBackgroundColor;
 }
 
 @end

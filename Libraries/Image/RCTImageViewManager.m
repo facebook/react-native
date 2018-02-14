@@ -11,14 +11,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+
 #import "RCTImageLoader.h"
-#import "RCTImageSource.h"
+#import "RCTImageShadowView.h"
 #import "RCTImageView.h"
 
 @implementation RCTImageViewManager
 
 RCT_EXPORT_MODULE()
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTImageShadowView new];
+}
 
 - (UIView *)view
 {

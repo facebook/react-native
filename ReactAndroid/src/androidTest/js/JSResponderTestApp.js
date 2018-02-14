@@ -22,7 +22,7 @@ class JSResponderTestApp extends React.Component {
     return Math.abs(gestureState.dx) > 30;
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.panGesture = PanResponder.create({
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
     });

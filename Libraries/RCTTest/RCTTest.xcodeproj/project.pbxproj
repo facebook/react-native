@@ -13,9 +13,12 @@
 		2D3B5F301D9B0F3D00451313 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
 		2D3B5F311D9B0F4200451313 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
 		2D3B5F321D9B0F4500451313 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
+		3D3030281DF82A6300D6DDAE /* RCTTestRunner.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
+		3D30302A1DF82A8300D6DDAE /* RCTTestRunner.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
+		3DED3AA21DE6FC3400336DD7 /* RCTTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		3DED3AA41DE6FC4C00336DD7 /* RCTTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		585135371AB3C56F00882537 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
 		585135381AB3C57000882537 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
-		585135391AB3C59A00882537 /* RCTTestRunner.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
 		58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
 		58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
 		58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
@@ -23,23 +26,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2D2A286C1D9B047700D4039D /* CopyFiles */ = {
+		3D3030271DF8299E00D6DDAE /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = include/RCTTest;
 			dstSubfolderSpec = 16;
 			files = (
+				3D3030281DF82A6300D6DDAE /* RCTTestRunner.h in Copy Headers */,
 			);
+			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		580C376D1AB104AF0015E709 /* CopyFiles */ = {
+		3D3030291DF82A6E00D6DDAE /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = include/RCTTest;
 			dstSubfolderSpec = 16;
 			files = (
-				585135391AB3C59A00882537 /* RCTTestRunner.h in CopyFiles */,
+				3D30302A1DF82A8300D6DDAE /* RCTTestRunner.h in Copy Headers */,
 			);
+			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -96,6 +102,7 @@
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			usesTabs = 0;
 		};
 		580C37701AB104AF0015E709 /* Products */ = {
 			isa = PBXGroup;
@@ -123,14 +130,34 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		3DED3AA11DE6FC2200336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3AA21DE6FC3400336DD7 /* RCTTestRunner.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3DED3AA31DE6FC4700336DD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3DED3AA41DE6FC4C00336DD7 /* RCTTestRunner.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		2D2A286D1D9B047700D4039D /* RCTTest-tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D2A28761D9B047700D4039D /* Build configuration list for PBXNativeTarget "RCTTest-tvOS" */;
 			buildPhases = (
+				3DED3AA31DE6FC4700336DD7 /* Headers */,
+				3D3030291DF82A6E00D6DDAE /* Copy Headers */,
 				2D2A286A1D9B047700D4039D /* Sources */,
 				2D2A286B1D9B047700D4039D /* Frameworks */,
-				2D2A286C1D9B047700D4039D /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -145,9 +172,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 580C37831AB104AF0015E709 /* Build configuration list for PBXNativeTarget "RCTTest" */;
 			buildPhases = (
+				3DED3AA11DE6FC2200336DD7 /* Headers */,
+				3D3030271DF8299E00D6DDAE /* Copy Headers */,
 				580C376B1AB104AF0015E709 /* Sources */,
 				580C376C1AB104AF0015E709 /* Frameworks */,
-				580C376D1AB104AF0015E709 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -236,8 +264,8 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -254,8 +282,8 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -274,6 +302,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -295,15 +324,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
@@ -325,6 +350,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -340,14 +366,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
@@ -360,19 +382,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-framework",
 					XCTest,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -380,18 +397,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-framework",
 					XCTest,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTTest;
 			};
 			name = Release;
 		};

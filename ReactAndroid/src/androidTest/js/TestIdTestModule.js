@@ -12,21 +12,16 @@
 'use strict';
 
 var Image = require('Image');
-var Picker = require('Picker');
-var ProgressBarAndroid = require('ProgressBarAndroid');
 var React = require('React');
-var ScrollView = require('ScrollView');
 var StyleSheet = require('StyleSheet');
 var Switch = require('Switch');
 var Text = require('Text');
 var TextInput = require('TextInput');
-var ToolbarAndroid = require('ToolbarAndroid');
 var TouchableBounce = require('TouchableBounce');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableOpacity = require('TouchableOpacity');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var WebView = require('WebView');
 
 /**
  * All the views implemented on Android, each with the testID property set.
@@ -49,45 +44,7 @@ class TestIdTestApp extends React.Component {
               'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7'}}
           style={styles.base} />
 
-        <ProgressBarAndroid
-          testID="ProgressBar"
-          styleAttr="Horizontal"
-          style={styles.base} />
-
-        <ScrollView
-          testID="ScrollView"
-          style={styles.base}>
-          <Text testID="ScrollView Item (same id used for all items)">Item 1</Text>
-          <Text testID="ScrollView Item (same id used for all items)">Item 2</Text>
-        </ScrollView>
-
-        <ScrollView
-          testID="Horizontal ScrollView"
-          horizontal={true}
-          style={styles.base}>
-          <Text testID="ScrollView Item (same id used for all items)">Item 1</Text>
-          <Text testID="ScrollView Item (same id used for all items)">Item 2</Text>
-        </ScrollView>
-
-        <Picker
-          testID="Dropdown Picker"
-          mode={Picker.MODE_DROPDOWN}
-          style={styles.base}>
-          <Picker.Item label="Dropdown picker" value="key0" />
-        </Picker>
-
-        <Picker
-          testID="Dialog Picker"
-          mode={Picker.MODE_DIALOG}
-          style={styles.base}>
-          <Picker.Item label="Dialog picker" value="key0" />
-        </Picker>
-
-        <Switch testID="Switch" value={true} />
-
         <Text testID="Text">text</Text>
-
-        <ToolbarAndroid testID="Toolbar" style={styles.base} subtitle="toolbar" />
 
         <TextInput testID="TextInput" value="Text input" />
 
@@ -110,17 +67,6 @@ class TestIdTestApp extends React.Component {
         </TouchableWithoutFeedback>
 
         <View testID="View" />
-
-        {/*
-          Webview gets tests crashing or stalling occasionally
-          e.g. https://circleci.com/gh/facebook/react-native/7054
-          TODO t11449130
-          <WebView
-          testID="WebView"
-          url={'http://newsroom.fb.com'}
-          renderError={() => <View /> }
-          style={styles.base}
-        />*/}
 
       </View>
     );

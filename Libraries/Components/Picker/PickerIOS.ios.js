@@ -14,29 +14,34 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
+var processColor = require('processColor');
 
+var createReactClass = require('create-react-class');
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
 
-var PickerIOS = React.createClass({
+var PickerIOS = createReactClass({
+  displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     itemStyle: itemStylePropType,
-    onValueChange: React.PropTypes.func,
-    selectedValue: React.PropTypes.any, // string or integer basically
+    onValueChange: PropTypes.func,
+    selectedValue: PropTypes.any, // string or integer basically
   },
 
   getInitialState: function() {
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   },
 
@@ -48,7 +53,11 @@ var PickerIOS = React.createClass({
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
-      items.push({value: child.props.value, label: child.props.label});
+      items.push({
+        value: child.props.value,
+        label: child.props.label,
+        textColor: processColor(child.props.color),
+      });
     });
     return {selectedIndex, items};
   },
@@ -62,6 +71,8 @@ var PickerIOS = React.createClass({
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );
@@ -91,8 +102,9 @@ var PickerIOS = React.createClass({
 
 PickerIOS.Item = class extends React.Component {
   static propTypes = {
-    value: React.PropTypes.any, // string or integer basically
-    label: React.PropTypes.string,
+    value: PropTypes.any, // string or integer basically
+    label: PropTypes.string,
+    color: PropTypes.string,
   };
 
   render() {

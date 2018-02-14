@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		148699CF1ABD045300480536 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
-		2DD0EFEF1DA8534500B0C975 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
+		3D0574931DE6009C00184BB4 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2DD0EFE41DA8533A00B0C975 /* CopyFiles */ = {
+		3D05745D1DE6004600184BB4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
@@ -34,13 +34,13 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRCTPushNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTPushNotification.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		148699CD1ABD045300480536 /* RCTPushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPushNotificationManager.h; sourceTree = "<group>"; };
+		148699CD1ABD045300480536 /* RCTPushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTPushNotificationManager.h; sourceTree = "<group>"; };
 		148699CE1ABD045300480536 /* RCTPushNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPushNotificationManager.m; sourceTree = "<group>"; };
-		2DD0EFE61DA8533A00B0C975 /* libRCTPushNotification-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTPushNotification-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D05745F1DE6004600184BB4 /* libRCTPushNotification-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTPushNotification-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2DD0EFE31DA8533A00B0C975 /* Frameworks */ = {
+		3D05745C1DE6004600184BB4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -71,22 +71,23 @@
 				148699CD1ABD045300480536 /* RCTPushNotificationManager.h */,
 				148699CE1ABD045300480536 /* RCTPushNotificationManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
-				2DD0EFE61DA8533A00B0C975 /* libRCTPushNotification-tvOS.a */,
+				3D05745F1DE6004600184BB4 /* libRCTPushNotification-tvOS.a */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
 			tabWidth = 2;
+			usesTabs = 0;
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2DD0EFE51DA8533A00B0C975 /* RCTPushNotification-tvOS */ = {
+		3D05745E1DE6004600184BB4 /* RCTPushNotification-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2DD0EFEE1DA8533A00B0C975 /* Build configuration list for PBXNativeTarget "RCTPushNotification-tvOS" */;
+			buildConfigurationList = 3D0574671DE6004600184BB4 /* Build configuration list for PBXNativeTarget "RCTPushNotification-tvOS" */;
 			buildPhases = (
-				2DD0EFE21DA8533A00B0C975 /* Sources */,
-				2DD0EFE31DA8533A00B0C975 /* Frameworks */,
-				2DD0EFE41DA8533A00B0C975 /* CopyFiles */,
+				3D05745B1DE6004600184BB4 /* Sources */,
+				3D05745C1DE6004600184BB4 /* Frameworks */,
+				3D05745D1DE6004600184BB4 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -94,7 +95,7 @@
 			);
 			name = "RCTPushNotification-tvOS";
 			productName = "RCTPushNotification-tvOS";
-			productReference = 2DD0EFE61DA8533A00B0C975 /* libRCTPushNotification-tvOS.a */;
+			productReference = 3D05745F1DE6004600184BB4 /* libRCTPushNotification-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		58B511DA1A9E6C8500147676 /* RCTPushNotification */ = {
@@ -123,8 +124,8 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
-					2DD0EFE51DA8533A00B0C975 = {
-						CreatedOnToolsVersion = 8.0;
+					3D05745E1DE6004600184BB4 = {
+						CreatedOnToolsVersion = 8.1;
 						ProvisioningStyle = Automatic;
 					};
 					58B511DA1A9E6C8500147676 = {
@@ -145,17 +146,17 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RCTPushNotification */,
-				2DD0EFE51DA8533A00B0C975 /* RCTPushNotification-tvOS */,
+				3D05745E1DE6004600184BB4 /* RCTPushNotification-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2DD0EFE21DA8533A00B0C975 /* Sources */ = {
+		3D05745B1DE6004600184BB4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD0EFEF1DA8534500B0C975 /* RCTPushNotificationManager.m in Sources */,
+				3D0574931DE6009C00184BB4 /* RCTPushNotificationManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,7 +171,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		2DD0EFEC1DA8533A00B0C975 /* Debug */ = {
+		3D0574651DE6004600184BB4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
@@ -184,20 +185,14 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
 		};
-		2DD0EFED1DA8533A00B0C975 /* Release */ = {
+		3D0574661DE6004600184BB4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
@@ -207,15 +202,9 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -234,6 +223,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -256,8 +246,9 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
-					"-Wextra",
+					"-Werror",
 					"-Wall",
 				);
 			};
@@ -277,6 +268,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -296,9 +288,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
-					"-Wextra",
+					"-Werror",
 					"-Wall",
 				);
 			};
@@ -309,16 +302,10 @@
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTPushNotification;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -326,28 +313,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTPushNotification;
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2DD0EFEE1DA8533A00B0C975 /* Build configuration list for PBXNativeTarget "RCTPushNotification-tvOS" */ = {
+		3D0574671DE6004600184BB4 /* Build configuration list for PBXNativeTarget "RCTPushNotification-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2DD0EFEC1DA8533A00B0C975 /* Debug */,
-				2DD0EFED1DA8533A00B0C975 /* Release */,
+				3D0574651DE6004600184BB4 /* Debug */,
+				3D0574661DE6004600184BB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTPushNotification" */ = {
 			isa = XCConfigurationList;

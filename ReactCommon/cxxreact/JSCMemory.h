@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <jschelpers/JavaScriptCore.h>
+
 namespace facebook {
 namespace react {
 
-void addNativeMemoryHooks(JSGlobalContextRef ctx);
+void addJSCMemoryHooks(JSGlobalContextRef ctx);
 
 } }

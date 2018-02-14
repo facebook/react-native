@@ -19,8 +19,8 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -30,9 +30,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
-
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**
@@ -74,31 +72,36 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-          @Override
-          public void run() {
-            if (animated) {
-              int curColor = activity.getWindow().getStatusBarColor();
-              ValueAnimator colorAnimation = ValueAnimator.ofObject(
-                new ArgbEvaluator(), curColor, color);
 
-              colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                  activity.getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
-                }
-              });
-              colorAnimation
-                .setDuration(300)
-                .setStartDelay(0);
-              colorAnimation.start();
-            } else {
-              activity.getWindow().setStatusBarColor(color);
+      UiThreadUtil.runOnUiThread(
+          new GuardedRunnable(getReactApplicationContext()) {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void runGuarded() {
+              activity
+                  .getWindow()
+                  .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+              if (animated) {
+                int curColor = activity.getWindow().getStatusBarColor();
+                ValueAnimator colorAnimation =
+                    ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
+
+                colorAnimation.addUpdateListener(
+                    new ValueAnimator.AnimatorUpdateListener() {
+                      @Override
+                      public void onAnimationUpdate(ValueAnimator animator) {
+                        activity
+                            .getWindow()
+                            .setStatusBarColor((Integer) animator.getAnimatedValue());
+                      }
+                    });
+                colorAnimation.setDuration(300).setStartDelay(0);
+                colorAnimation.start();
+              } else {
+                activity.getWindow().setStatusBarColor(color);
+              }
             }
-          }
-        });
+          });
     }
   }
 
@@ -112,10 +115,10 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       UiThreadUtil.runOnUiThread(
-        new Runnable() {
+        new GuardedRunnable(getReactApplicationContext()) {
           @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           @Override
-          public void run() {
+          public void runGuarded() {
             // If the status bar is translucent hook into the window insets calculations
             // and consume all the top insets so no padding will be added under the status bar.
             View decorView = activity.getWindow().getDecorView();

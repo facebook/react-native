@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 /*
  * Defined in RCTUtils.m
@@ -85,19 +85,13 @@ typedef void (^RCTFatalHandler)(NSError *error);
  * Convenience macro for asserting that we're running on main queue.
  */
 #define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), \
-  @"This function must be called on the main thread")
+  @"This function must be called on the main queue")
 
 /**
  * Convenience macro for asserting that we're running off the main queue.
  */
 #define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), \
-@"This function must not be called on the main thread")
-
-/**
- * Deprecated, do not use
- */
-#define RCTAssertMainThread() RCTAssertMainQueue()
-#define RCTAssertNotMainThread() RCTAssertNotMainQueue()
+@"This function must not be called on the main queue")
 
 /**
  * These methods get and set the current assert function called by the RCTAssert

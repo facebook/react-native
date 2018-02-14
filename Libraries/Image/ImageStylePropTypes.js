@@ -8,16 +8,16 @@
  *
  * @providesModule ImageStylePropTypes
  * @flow
+ * @format
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var ImageResizeMode = require('ImageResizeMode');
 var LayoutPropTypes = require('LayoutPropTypes');
-var ColorPropType = require('ColorPropType');
+var ReactPropTypes = require('prop-types');
 var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');
-
-var ReactPropTypes = require('React').PropTypes;
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,
@@ -52,7 +52,7 @@ var ImageStylePropTypes = {
    * http://frescolib.org/docs/rounded-corners-and-circles.html
    *
    * @platform android
-  */
+   */
   overlayColor: ReactPropTypes.string,
 
   // Android-Specific styles

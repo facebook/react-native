@@ -12,6 +12,7 @@ module.exports = {
   'babel-plugin-react-transform': require('babel-plugin-react-transform'),
   'babel-plugin-syntax-async-functions': require('babel-plugin-syntax-async-functions'),
   'babel-plugin-syntax-class-properties': require('babel-plugin-syntax-class-properties'),
+  'babel-plugin-syntax-dynamic-import': require('babel-plugin-syntax-dynamic-import'),
   'babel-plugin-syntax-trailing-function-commas': require('babel-plugin-syntax-trailing-function-commas'),
   'babel-plugin-transform-class-properties': require('babel-plugin-transform-class-properties'),
   'babel-plugin-transform-es2015-function-name': require('babel-plugin-transform-es2015-function-name'),

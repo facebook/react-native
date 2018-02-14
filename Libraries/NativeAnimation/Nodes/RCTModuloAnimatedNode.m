@@ -16,7 +16,7 @@
   [super performUpdate];
   NSNumber *inputNode = self.config[@"input"];
   NSNumber *modulus = self.config[@"modulus"];
-  RCTValueAnimatedNode *parent = (RCTValueAnimatedNode *)self.parentNodes[inputNode];
+  RCTValueAnimatedNode *parent = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:inputNode];
   self.value = fmodf(parent.value, modulus.floatValue);
 }
 

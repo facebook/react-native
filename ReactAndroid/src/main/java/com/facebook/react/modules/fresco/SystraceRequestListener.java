@@ -7,14 +7,14 @@ import java.util.Map;
 
 import android.util.Pair;
 
-import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.systrace.Systrace;
 
 /**
  * Logs requests to Systrace
  */
-public class SystraceRequestListener implements RequestListener {
+public class SystraceRequestListener extends BaseRequestListener {
 
   int mCurrentID = 0;
   Map<String, Pair<Integer,String>> mProducerID = new HashMap<>();

@@ -9,9 +9,10 @@
 
 package com.facebook.react.devsupport;
 
+import android.content.Context;
 import android.text.SpannedString;
 
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
  * Interface used by {@link DevSupportManagerImpl} to allow interception on any redboxes
@@ -54,8 +55,9 @@ public interface RedBoxHandler {
    * Report the information from the redbox and set up a callback listener.
    */
   void reportRedbox(
-    String title,
-    StackFrame[] stack,
-    String sourceUrl,
-    ReportCompletedListener reportCompletedListener);
+      Context context,
+      String title,
+      StackFrame[] stack,
+      String sourceUrl,
+      ReportCompletedListener reportCompletedListener);
 }

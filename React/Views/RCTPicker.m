@@ -70,6 +70,10 @@ numberOfRowsInComponent:(__unused NSInteger)component
   return [RCTConvert NSString:_items[row][@"label"]];
 }
 
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+  return _font.pointSize + 19;
+}
+
 - (UIView *)pickerView:(UIPickerView *)pickerView
             viewForRow:(NSInteger)row
           forComponent:(NSInteger)component
@@ -86,7 +90,9 @@ numberOfRowsInComponent:(__unused NSInteger)component
   }
 
   label.font = _font;
-  label.textColor = _color;
+
+  label.textColor = [RCTConvert UIColor:_items[row][@"textColor"]] ?: _color;
+
   label.textAlignment = _textAlign;
   label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
   return label;
@@ -96,7 +102,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
       didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
-  if (_onChange) {
+  if (_onChange && _items.count > (NSUInteger)row) {
     _onChange(@{
       @"newIndex": @(row),
       @"newValue": RCTNullIfNil(_items[row][@"value"]),

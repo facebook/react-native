@@ -9,8 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTDefines.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTDefines.h>
 
 typedef NS_ENUM(NSInteger, RCTTestStatus) {
   RCTTestStatusPending = 0,

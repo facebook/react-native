@@ -1,31 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * Facebook, Inc. ("Facebook") owns all right, title and interest, including
- * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the "Software").  Subject to your
- * compliance with these terms, you are hereby granted a non-exclusive,
- * worldwide, royalty-free copyright license to (1) use and copy the Software;
- * and (2) reproduce and distribute the Software as part of your own software
- * ("Your Software").  Facebook reserves all rights not expressly granted to
- * you in this license agreement.
- *
- * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED.
- * IN NO EVENT SHALL FACEBOOK OR ITS AFFILIATES, OFFICERS, DIRECTORS OR
- * EMPLOYEES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THE SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule WindowedListView
  * @flow
@@ -47,6 +26,8 @@ const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const nullthrows = require('fbjs/lib/nullthrows');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 const DEBUG = false;
 
@@ -94,11 +75,15 @@ type Props = {
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
    */
-  renderWindowBoundaryIndicator?: () => ?React.Element<any>,
+  renderWindowBoundaryIndicator?: (
+    showIndicator: boolean,
+  ) => ?React.Element<any>,
   /**
    * Always rendered at the bottom of all the rows.
    */
-  renderFooter?: () => ?React.Element<any>,
+  renderFooter?: (
+    showFooter: boolean,
+  ) => ?React.Element<any>,
   /**
    * Pipes through normal onScroll events from the underlying `ScrollView`.
    */
@@ -165,9 +150,7 @@ type State = {
   firstRow: number,
   lastRow: number,
 };
-class WindowedListView extends React.Component {
-  props: Props;
-  state: State;
+class WindowedListView extends React.Component<Props, State> {
   /**
    * Recomputing which rows to render is batched up and run asynchronously to avoid wastful updates,
    * e.g. from multiple layout updates in rapid succession.
@@ -186,12 +169,18 @@ class WindowedListView extends React.Component {
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<string> = new Set();
   _scrollRef: ?ScrollView;
+  _viewabilityHelper: ViewabilityHelper;
 
   static defaultProps = {
     initialNumToRender: 10,
     maxNumToRender: 30,
     numToRenderAhead: 10,
     viewablePercentThreshold: 50,
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     renderScrollComponent: (props) => <ScrollView {...props} />,
     disableIncrementalRendering: false,
     recomputeRowsBatchingPeriod: 10, // This should capture most events that happen within a frame
@@ -207,6 +196,9 @@ class WindowedListView extends React.Component {
       () => this._computeRowsToRender(this.props),
       this.props.recomputeRowsBatchingPeriod,
     );
+    this._viewabilityHelper = new ViewabilityHelper({
+      viewAreaCoveragePercentThreshold: this.props.viewablePercentThreshold,
+    });
     this.state = {
       firstRow: 0,
       lastRow: Math.min(this.props.data.length, this.props.initialNumToRender) - 1,
@@ -251,12 +243,16 @@ class WindowedListView extends React.Component {
     DEBUG && infoLog('  knope');
     return false;
   }
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this._computeRowsToRenderBatcher.schedule();
   }
   _onMomentumScrollEnd = (e: Object) => {
     this._onScroll(e);
   };
+  _getFrameMetrics = (index: number): ?{length: number, offset: number} => {
+    const frame = this._rowFrames[this.props.data[index].rowKey];
+    return frame && {length: frame.height, offset: frame.y};
+  }
   _onScroll = (e: Object) => {
     const newScrollY = e.nativeEvent.contentOffset.y;
     this._isScrolling = this._scrollOffsetY !== newScrollY;
@@ -268,12 +264,11 @@ class WindowedListView extends React.Component {
       this._computeRowsToRenderBatcher.schedule();
     }
     if (this.props.onViewableRowsChanged && Object.keys(this._rowFrames).length) {
-      const viewableRows = ViewabilityHelper.computeViewableRows(
-        this.props.viewablePercentThreshold,
-        this._rowFrames,
-        this.props.data,
+      const viewableRows = this._viewabilityHelper.computeViewableItems(
+        this.props.data.length,
         e.nativeEvent.contentOffset.y,
-        e.nativeEvent.layoutMeasurement.height
+        e.nativeEvent.layoutMeasurement.height,
+        this._getFrameMetrics,
       );
       if (deepDiffer(viewableRows, this._viewableRows)) {
         this._viewableRows = viewableRows;
@@ -397,7 +392,7 @@ class WindowedListView extends React.Component {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
@@ -431,7 +426,7 @@ class WindowedListView extends React.Component {
     this._firstVisible = newFirstVisible;
     this._lastVisible = newLastVisible;
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     const {firstRow} = this.state;
     const lastRow = clamp(0, this.state.lastRow, this.props.data.length - 1);
     const rowFrames = this._rowFrames;
@@ -621,16 +616,15 @@ type CellProps = {
    */
   onWillUnmount: (rowKey: string) => void,
 };
-class CellRenderer extends React.Component {
-  props: CellProps;
-  _containerRef: View;
+class CellRenderer extends React.Component<CellProps> {
+  _containerRef: NativeMethodsMixinType;
   _offscreenRenderDone = false;
   _timeout = 0;
   _lastLayout: ?Object = null;
   _perfUpdateID: number = 0;
   _asyncCookie: any;
   _includeInLayoutLatch: boolean = false;
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.asyncRowPerfEventName) {
       this._perfUpdateID = g_perf_update_id++;
       this._asyncCookie = Systrace.beginAsyncEvent(
@@ -693,11 +687,14 @@ class CellRenderer extends React.Component {
     }
   };
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timeout);
     this.props.onProgressChange({rowKey: this.props.rowKey, inProgress: false});
     this.props.onWillUnmount(this.props.rowKey);
   }
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.includeInLayout && !this.props.includeInLayout) {
       invariant(this._offscreenRenderDone, 'Should never try to add to layout before render done');
       this._includeInLayoutLatch = true; // Once we render in layout, make sure it sticks.
@@ -708,6 +705,9 @@ class CellRenderer extends React.Component {
     return newProps.rowData !== this.props.rowData;
   }
   _setRef = (ref) => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._containerRef = ref;
   };
   render() {

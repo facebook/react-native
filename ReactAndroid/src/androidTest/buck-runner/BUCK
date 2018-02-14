@@ -1,4 +1,4 @@
-include_defs('//ReactAndroid/DEFS')
+load("//ReactNative:DEFS.bzl", "rn_android_binary", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "KEYSTORE_TARGET")
 
 # We are running instrumentation tests in simple mode: app code and instrumentation are in the same APK
 # Currently you need to run these commands to execute tests:
@@ -7,17 +7,18 @@ include_defs('//ReactAndroid/DEFS')
 # gradle :ReactAndroid:packageReactNdkLibsForBuck
 # buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 # ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
-android_binary(
-  name = 'instrumentation-tests',
-  manifest = 'AndroidManifest.xml',
-  keystore = '//keystores:debug',
-  deps = [
-    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
-    react_native_dep('third-party/java/testing-support-lib:exposed-instrumentation-api'),
-    react_native_integration_tests_target('assets:assets'),
-    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
-    react_native_target('java/com/facebook/react/devsupport:devsupport'),
-    react_native_target('jni/prebuilt:android-jsc'),
-    react_native_target('jni/prebuilt:reactnative-libs'),
-  ],
+rn_android_binary(
+    name = "instrumentation-tests",
+    keystore = KEYSTORE_TARGET,
+    manifest = "AndroidManifest.xml",
+    deps = [
+        react_native_dep("android_res/com/facebook/catalyst/appcompat:appcompat"),
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+        react_native_dep("third-party/java/testing-support-lib:exposed-instrumentation-api"),
+        react_native_integration_tests_target("assets:assets"),
+        react_native_integration_tests_target("java/com/facebook/react/tests:tests"),
+        react_native_target("java/com/facebook/react/devsupport:devsupport"),
+        react_native_target("jni/prebuilt:android-jsc"),
+        react_native_target("jni/prebuilt:reactnative-libs"),
+    ],
 )

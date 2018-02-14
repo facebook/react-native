@@ -10,8 +10,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTDefines.h"
-#import "RCTResizeMode.h"
+#import <React/RCTDefines.h>
+#import <React/RCTResizeMode.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -76,7 +76,7 @@ RCT_EXTERN NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *
  * conversion, with 1.0 being maximum quality. It has no effect for images
  * using PNG compression.
  */
-RCT_EXTERN NSData *__nullable RCTGetImageData(CGImageRef image, float quality);
+RCT_EXTERN NSData *__nullable RCTGetImageData(UIImage *image, float quality);
 
 /**
  * This function transforms an image. `destSize` is the size of the final image,

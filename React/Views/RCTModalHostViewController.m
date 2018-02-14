@@ -28,8 +28,8 @@
   }
 
 #if !TARGET_OS_TV
-  _preferredStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
-  _preferredStatusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
+  _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
+  _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
 #endif
 
   return self;
@@ -59,7 +59,7 @@
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  UIInterfaceOrientationMask appSupportedOrientationsMask = [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[[UIApplication sharedApplication] keyWindow]];
+  UIInterfaceOrientationMask appSupportedOrientationsMask = [RCTSharedApplication() supportedInterfaceOrientationsForWindow:[RCTSharedApplication() keyWindow]];
   if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
     RCTLogError(@"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."
                 @"Add more interface orientations to your app's Info.plist to fix this."

@@ -9,23 +9,25 @@
 
 package com.facebook.react;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules
  * from several other packages.
  */
-public class CompositeReactPackage implements ReactPackage {
+public class CompositeReactPackage extends ReactInstancePackage
+    implements ViewManagerOnDemandReactPackage {
 
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();
 
@@ -39,9 +41,7 @@ public class CompositeReactPackage implements ReactPackage {
     mChildReactPackages.add(arg1);
     mChildReactPackages.add(arg2);
 
-    for (ReactPackage reactPackage: args) {
-      mChildReactPackages.add(reactPackage);
-    }
+    Collections.addAll(mChildReactPackages, args);
   }
 
   /**
@@ -49,27 +49,39 @@ public class CompositeReactPackage implements ReactPackage {
    */
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    // This is for backward compatibility.
     final Map<String, NativeModule> moduleMap = new HashMap<>();
     for (ReactPackage reactPackage: mChildReactPackages) {
       for (NativeModule nativeModule: reactPackage.createNativeModules(reactContext)) {
         moduleMap.put(nativeModule.getName(), nativeModule);
       }
     }
-    return new ArrayList(moduleMap.values());
+    return new ArrayList<>(moduleMap.values());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    final Set<Class<? extends JavaScriptModule>> moduleSet = new HashSet<>();
+  public List<NativeModule> createNativeModules(
+      ReactApplicationContext reactContext,
+      ReactInstanceManager reactInstanceManager) {
+    final Map<String, NativeModule> moduleMap = new HashMap<>();
     for (ReactPackage reactPackage: mChildReactPackages) {
-      for (Class<? extends JavaScriptModule> jsModule: reactPackage.createJSModules()) {
-        moduleSet.add(jsModule);
+      List<NativeModule> nativeModules;
+      if (reactPackage instanceof ReactInstancePackage) {
+        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
+        nativeModules = reactInstancePackage.createNativeModules(
+            reactContext,
+            reactInstanceManager);
+      } else {
+        nativeModules = reactPackage.createNativeModules(reactContext);
+      }
+      for (NativeModule nativeModule: nativeModules) {
+        moduleMap.put(nativeModule.getName(), nativeModule);
       }
     }
-    return new ArrayList(moduleSet);
+    return new ArrayList<>(moduleMap.values());
   }
 
   /**
@@ -83,6 +95,43 @@ public class CompositeReactPackage implements ReactPackage {
         viewManagerMap.put(viewManager.getName(), viewManager);
       }
     }
-    return new ArrayList(viewManagerMap.values());
+    return new ArrayList<>(viewManagerMap.values());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public List<String> getViewManagerNames(
+      ReactApplicationContext reactContext, boolean loadClasses) {
+    Set<String> uniqueNames = new HashSet<>();
+    for (ReactPackage reactPackage : mChildReactPackages) {
+      if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+        List<String> names =
+            ((ViewManagerOnDemandReactPackage) reactPackage)
+                .getViewManagerNames(reactContext, loadClasses);
+        if (names != null) {
+          uniqueNames.addAll(names);
+        }
+      }
+    }
+    return new ArrayList<>(uniqueNames);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public @Nullable ViewManager createViewManager(
+      ReactApplicationContext reactContext, String viewManagerName, boolean loadClasses) {
+    ListIterator<ReactPackage> iterator = mChildReactPackages.listIterator(mChildReactPackages.size());
+    while (iterator.hasPrevious()) {
+      ReactPackage reactPackage = iterator.previous();
+      if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+        ViewManager viewManager =
+            ((ViewManagerOnDemandReactPackage) reactPackage)
+                .createViewManager(reactContext, viewManagerName, loadClasses);
+        if (viewManager != null) {
+          return viewManager;
+        }
+      }
+    }
+    return null;
   }
 }

@@ -11,7 +11,7 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTFileRequestHandler
 {
@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 {
   return
   [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame
-  && !RCTIsLocalAssetURL(request.URL);
+  && !RCTIsBundleAssetURL(request.URL);
 }
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request

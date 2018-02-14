@@ -40,8 +40,7 @@ public abstract class AbstractScrollViewTestCase extends ReactAppInstrumentation
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     mScrollListenerModule = new ScrollListenerModule();
     return super.createReactInstanceSpecForTest()
-        .addNativeModule(mScrollListenerModule)
-        .addJSModule(ScrollViewTestModule.class);
+        .addNativeModule(mScrollListenerModule);
   }
 
   // See ScrollViewListenerModule.js

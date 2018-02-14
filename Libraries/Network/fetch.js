@@ -7,11 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule fetch
- * @nolint
  *
  */
+
+ /* globals Headers, Request, Response */
+
 'use strict';
 
-import 'whatwg-fetch';
+import whatwg from 'whatwg-fetch';
 
-module.exports = {fetch, Headers, Request, Response};
+if (whatwg && whatwg.fetch) {
+  module.exports = whatwg;
+} else {
+  module.exports = {fetch, Headers, Request, Response};
+}

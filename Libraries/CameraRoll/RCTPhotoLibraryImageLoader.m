@@ -11,8 +11,7 @@
 
 #import <Photos/Photos.h>
 
-#import "RCTImageUtils.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTPhotoLibraryImageLoader
 
@@ -45,7 +44,10 @@ RCT_EXPORT_MODULE()
   // form of an, NSURL which is what assets-library uses.
   NSString *assetID = @"";
   PHFetchResult *results;
-  if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+  if (!imageURL) {
+    completionHandler(RCTErrorWithMessage(@"Cannot load a photo library asset with no URL"), nil);
+    return ^{};
+  } else if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
     assetID = [imageURL absoluteString];
     results = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
   } else {

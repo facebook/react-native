@@ -8,7 +8,11 @@
  */
 
 #import <CoreGraphics/CoreGraphics.h>
-#import "RCTBridgeModule.h"
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+static CGFloat RCTSingleFrameInterval = 1.0 / 60.0;
 
 @class RCTValueAnimatedNode;
 
@@ -27,11 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
                   callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime;
 - (void)stopAnimation;
-- (void)stepAnimation;
-- (void)removeAnimation;
-- (void)cleanupAnimationUpdate;
-
-@end
 
 NS_ASSUME_NONNULL_END
+
+@end

@@ -61,7 +61,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     mHandler.post(runnable);
   }
 
-
   @DoNotStrip
   @Override
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
@@ -97,6 +96,18 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
+  }
+
+  /**
+   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
+   * {@link AssertionError}) if the assertion fails.
+   */
+  @DoNotStrip
+  @Override
+  public void assertIsOnThread(String message) {
+    SoftAssertions.assertCondition(
+      isOnThread(),
+      new StringBuilder().append(mAssertionErrorMessage).append(" ").append(message).toString());
   }
 
   /**
@@ -150,27 +161,16 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
 
     if (UiThreadUtil.isOnUiThread()) {
       Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-      MessageQueueThreadRegistry.register(mqt);
     } else {
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
               Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-              MessageQueueThreadRegistry.register(mqt);
             }
           });
     }
     return mqt;
-  }
-
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(
-        name,
-        MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
-        exceptionHandler);
   }
 
   /**
@@ -178,30 +178,25 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * running on it. Give it a name for easier debugging and optionally a suggested stack size.
    * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
-  public static MessageQueueThreadImpl startNewBackgroundThread(
+  private static MessageQueueThreadImpl startNewBackgroundThread(
       final String name,
       long stackSize,
       QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
-    final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());
-            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow());
-
             Looper.loop();
           }
         }, "mqt_" + name, stackSize);
     bgThread.start();
 
     Looper myLooper = looperFuture.getOrThrow();
-    MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
-    mqtFuture.set(mqt);
-
-    return mqt;
+    return new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
   }
 }

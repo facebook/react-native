@@ -15,9 +15,11 @@ var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
@@ -36,41 +38,39 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-var Switch = React.createClass({
+var Switch = createReactClass({
+  displayName: 'Switch',
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.
      */
-    value: React.PropTypes.bool,
+    value: PropTypes.bool,
     /**
      * If true the user won't be able to toggle the switch.
      * Default value is false.
      */
-    disabled: React.PropTypes.bool,
+    disabled: PropTypes.bool,
     /**
      * Invoked with the new value when the value changes.
      */
-    onValueChange: React.PropTypes.func,
+    onValueChange: PropTypes.func,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: React.PropTypes.string,
+    testID: PropTypes.string,
 
     /**
-     * Border color when the switch is turned off.
-     * @platform ios
+     * Border color on iOS and background color on Android when the switch is turned off.
      */
     tintColor: ColorPropType,
     /**
      * Background color when the switch is turned on.
-     * @platform ios
      */
     onTintColor: ColorPropType,
     /**
      * Color of the foreground switch grip.
-     * @platform ios
      */
     thumbTintColor: ColorPropType,
   },
@@ -92,6 +92,9 @@ var Switch = React.createClass({
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
     //Change the props after the native props are set in case the props change removes the component
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
@@ -104,12 +107,16 @@ var Switch = React.createClass({
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
       props.style = this.props.style;
+      props.trackTintColor = this.props.value ? this.props.onTintColor : this.props.tintColor;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
     }
     return (
       <RCTSwitch
         {...props}
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         ref={(ref) => { this._rctSwitch = ref; }}
         onChange={this._onChange}
       />
@@ -126,11 +133,18 @@ var styles = StyleSheet.create({
 
 if (Platform.OS === 'android') {
   var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
-    nativeOnly: { onChange: true, on: true, enabled: true }
+    nativeOnly: {
+      onChange: true,
+      on: true,
+      enabled: true,
+      trackTintColor: true,
+    }
   });
 } else {
   var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
-    nativeOnly: { onChange: true }
+    nativeOnly: {
+      onChange: true
+    }
   });
 }
 

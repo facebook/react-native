@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTAssert.h"
 #import "RCTFont.h"
 #import "RCTLog.h"
 
@@ -36,34 +37,50 @@
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
-  static NSDictionary *nameToWeight;
+  static NSArray *fontNames;
+  static NSArray *fontWeights;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    nameToWeight = @{
-       @"normal": @(UIFontWeightRegular),
-       @"bold": @(UIFontWeightBold),
-       @"ultralight": @(UIFontWeightUltraLight),
-       @"thin": @(UIFontWeightThin),
-       @"light": @(UIFontWeightLight),
-       @"regular": @(UIFontWeightRegular),
-       @"medium": @(UIFontWeightMedium),
-       @"semibold": @(UIFontWeightSemibold),
-       @"bold": @(UIFontWeightBold),
-       @"heavy": @(UIFontWeightHeavy),
-       @"black": @(UIFontWeightBlack),
-    };
+    // We use two arrays instead of one map because
+    // the order is important for suffix matching.
+    fontNames = @[
+      @"normal",
+      @"ultralight",
+      @"thin",
+      @"light",
+      @"regular",
+      @"medium",
+      @"semibold",
+      @"demibold",
+      @"extrabold",
+      @"bold",
+      @"heavy",
+      @"black"
+    ];
+    fontWeights = @[
+      @(UIFontWeightRegular),
+      @(UIFontWeightUltraLight),
+      @(UIFontWeightThin),
+      @(UIFontWeightLight),
+      @(UIFontWeightRegular),
+      @(UIFontWeightMedium),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightBold),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightBlack)
+    ];
   });
 
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
-  if (weight == 0.0) {
-    for (NSString *name in nameToWeight) {
-      if ([font.fontName.lowercaseString hasSuffix:name]) {
-        return [nameToWeight[name] doubleValue];
-      }
+  for (NSInteger i = 0; i < fontNames.count; i++) {
+    if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
+      return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
   }
-  return weight;
+
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
 }
 
 static BOOL isItalicFont(UIFont *font)
@@ -78,6 +95,49 @@ static BOOL isCondensedFont(UIFont *font)
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
   UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
   return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
+}
+
+static RCTFontHandler defaultFontHandler;
+
+void RCTSetDefaultFontHandler(RCTFontHandler handler) {
+  defaultFontHandler = handler;
+}
+
+// We pass a string description of the font weight to the defaultFontHandler because UIFontWeight
+// is not defined pre-iOS 8.2.
+// Furthermore, UIFontWeight's are lossy floats, so we must use an inexact compare to figure out
+// which one we actually have.
+static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight) {
+#if CGFLOAT_IS_DOUBLE
+  return fabs(firstWeight - secondWeight) < 0.01;
+#else
+  return fabsf(firstWeight - secondWeight) < 0.01;
+#endif
+}
+
+static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
+{
+  if (CompareFontWeights(fontWeight, UIFontWeightUltraLight)) {
+    return @"ultralight";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightThin)) {
+    return @"thin";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightLight)) {
+    return @"light";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightRegular)) {
+    return @"regular";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightMedium)) {
+    return @"medium";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightSemibold)) {
+    return @"semibold";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightBold)) {
+    return @"bold";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightHeavy)) {
+    return @"heavy";
+  } else if (CompareFontWeights(fontWeight, UIFontWeightBlack)) {
+    return @"black";
+  }
+  RCTAssert(NO, @"Unknown UIFontWeight passed in: %f", fontWeight);
+  return @"regular";
 }
 
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
@@ -96,8 +156,11 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
   }
 
   if (!font) {
-    // Only supported on iOS8.2 and above
-    if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+    if (defaultFontHandler) {
+      NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
+      font = defaultFontHandler(size, fontWeightDescription);
+    } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
+      // Only supported on iOS8.2 and above
       font = [UIFont systemFontOfSize:size weight:weight];
     } else {
       if (weight >= UIFontWeightBold) {
@@ -298,6 +361,15 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
         font = match;
         closestWeight = testWeight;
       }
+    }
+  }
+
+  // If we still don't have a match at least return the first font in the fontFamily
+  // This is to support built-in font Zapfino and other custom single font families like Impact
+  if (!font) {
+    NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+    if (names.count > 0) {
+      font = [UIFont fontWithName:names[0] size:fontSize];
     }
   }
 

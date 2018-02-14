@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -66,20 +65,6 @@ public class CompositeReactPackageTest {
     verify(packageNo1).createNativeModules(reactContext);
     verify(packageNo2).createNativeModules(reactContext);
     verify(packageNo3).createNativeModules(reactContext);
-  }
-
-  @Test
-  public void testThatCreateJSModulesIsCalledOnAllPackages() {
-    // Given
-    CompositeReactPackage composite = new CompositeReactPackage(packageNo1, packageNo2, packageNo3);
-
-    // When
-    composite.createJSModules();
-
-    // Then
-    verify(packageNo1).createJSModules();
-    verify(packageNo2).createJSModules();
-    verify(packageNo3).createJSModules();
   }
 
   @Test
@@ -173,45 +158,6 @@ public class CompositeReactPackageTest {
         Arrays.asList(new ViewManager[]{managerNo1, managerNo3, managerNo4})
     );
     Set<ViewManager> actual = new HashSet<>(compositeModules);
-
-    assertEquals(expected, actual);
-  }
-
-  // public access level is required by Mockito
-  public static class JavaScriptModuleNo1 implements JavaScriptModule {};
-  public static class JavaScriptModuleNo2 implements JavaScriptModule {};
-  public static class JavaScriptModuleNo3 implements JavaScriptModule {};
-
-  @Test
-  public void testThatCompositeReturnsASumOfJSModules() {
-    // Given
-    CompositeReactPackage composite = new CompositeReactPackage(packageNo1, packageNo2);
-
-    Class<? extends JavaScriptModule> moduleNo1 = mock(JavaScriptModuleNo1.class).getClass();
-    Class<? extends JavaScriptModule> moduleNo2 = mock(JavaScriptModuleNo2.class).getClass();
-    Class<? extends JavaScriptModule> moduleNo3 = mock(JavaScriptModuleNo3.class).getClass();
-
-    List<Class<? extends JavaScriptModule>> l1 = new ArrayList<>();
-    l1.add(moduleNo1);
-    when(packageNo1.createJSModules()).thenReturn(l1);
-
-    List<Class<? extends JavaScriptModule>> l2 = new ArrayList<>();
-    l2.add(moduleNo2);
-    l2.add(moduleNo3);
-    when(packageNo2.createJSModules()).thenReturn(l2);
-
-    // When
-    List<Class<? extends JavaScriptModule>> compositeModules = composite.createJSModules();
-
-    // Then
-
-    // wrapping lists into sets to be order-independent
-    List<Class<? extends JavaScriptModule>> l3 = new ArrayList<>();
-    l3.add(moduleNo1);
-    l3.add(moduleNo2);
-    l3.add(moduleNo3);
-    Set<Class<? extends JavaScriptModule>> expected = new HashSet<>(l3);
-    Set<Class<? extends JavaScriptModule>> actual = new HashSet<>(compositeModules);
 
     assertEquals(expected, actual);
   }

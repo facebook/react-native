@@ -6,11 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @emails oncall+react_native
  */
 
 'use strict';
 
-jest.unmock('TaskQueue');
+const Promise = require('promise');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
@@ -34,7 +35,7 @@ describe('TaskQueue', () => {
     });
   }
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     onMoreTasks = jest.fn();
     const TaskQueue = require('TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});

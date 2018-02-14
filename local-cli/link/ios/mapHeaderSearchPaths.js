@@ -1,4 +1,13 @@
 /**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+/**
  * Given Xcode project and path, iterate over all build configurations
  * and execute func with HEADER_SEARCH_PATHS from current section
  *
@@ -7,12 +16,14 @@
  * that target.
  *
  * To workaround that issue and make it more bullet-proof for different names,
- * we iterate over all configurations and look if React is already there. If it is,
- * we assume we want to modify that section either
+ * we iterate over all configurations and look for `lc++` linker flag to detect
+ * React Native target.
  *
  * Important: That function mutates `buildSettings` and it's not pure thus you should
  * not rely on its return value
  */
+const defaultHeaderPaths = ['"$(inherited)"'];
+
 module.exports = function headerSearchPathIter(project, func) {
   const config = project.pbxXCBuildConfigurationSection();
 
@@ -22,15 +33,18 @@ module.exports = function headerSearchPathIter(project, func) {
     .forEach(ref => {
       const buildSettings = config[ref].buildSettings;
       const shouldVisitBuildSettings = (
-          Array.isArray(buildSettings.HEADER_SEARCH_PATHS) ?
-            buildSettings.HEADER_SEARCH_PATHS :
+          Array.isArray(buildSettings.OTHER_LDFLAGS) ?
+            buildSettings.OTHER_LDFLAGS :
             []
         )
-        .filter(path => path.indexOf('react-native/React/**') >= 0)
-        .length > 0;
+        .indexOf('"-lc++"') >= 0;
 
       if (shouldVisitBuildSettings) {
-        buildSettings.HEADER_SEARCH_PATHS = func(buildSettings.HEADER_SEARCH_PATHS);
+        const searchPaths = buildSettings.HEADER_SEARCH_PATHS ?
+          [].concat(buildSettings.HEADER_SEARCH_PATHS) :
+          defaultHeaderPaths;
+
+        buildSettings.HEADER_SEARCH_PATHS = func(searchPaths);
       }
     });
 };

@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 const xcode = require('xcode');
 const path = require('path');
 const fs = require('fs');
@@ -6,6 +15,7 @@ const isEmpty = require('lodash').isEmpty;
 
 const getGroup = require('./getGroup');
 const getProducts = require('./getProducts');
+const getTargets = require('./getTargets');
 const getHeadersInFolder = require('./getHeadersInFolder');
 const getHeaderSearchPath = require('./getHeaderSearchPath');
 const removeProjectFromProject = require('./removeProjectFromProject');
@@ -32,8 +42,8 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
 
   removeProjectFromLibraries(libraries, file);
 
-  getProducts(dependencyProject).forEach(product => {
-    removeFromStaticLibraries(project, product, {
+  getTargets(dependencyProject).forEach(target => {
+    removeFromStaticLibraries(project, target.name, {
       target: project.getFirstTarget().uuid,
     });
   });

@@ -11,28 +11,41 @@
  */
 'use strict';
 
-var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
-var StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('PixelRatio');
+const ReactNativePropRegistry = require('ReactNativePropRegistry');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const StyleSheetValidation = require('StyleSheetValidation');
 
-var flatten = require('flattenStyle');
+const flatten = require('flattenStyle');
 
-export type Styles = {[key: string]: Object};
-export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
+import type {
+  StyleSheetStyle as _StyleSheetStyle,
+  Styles as _Styles,
+  StyleSheet as _StyleSheet,
+  StyleValue as _StyleValue,
+  StyleObj,
+} from 'StyleSheetTypes';
 
-var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+export type StyleProp = StyleObj;
+export type Styles = _Styles;
+export type StyleSheet<S> = _StyleSheet<S>;
+export type StyleValue = _StyleValue;
+export type StyleSheetStyle = _StyleSheetStyle;
+
+let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
 const absoluteFillObject = {
-  position: 'absolute',
+  position: ('absolute': 'absolute'),
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: typeof absoluteFillObject =
+  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -40,7 +53,7 @@ const absoluteFill = ReactNativePropRegistry.register(absoluteFillObject); // Th
  * Create a new StyleSheet:
  *
  * ```
- * var styles = StyleSheet.create({
+ * const styles = StyleSheet.create({
  *   container: {
  *     borderRadius: 4,
  *     borderWidth: 0.5,
@@ -122,6 +135,20 @@ module.exports = {
   absoluteFillObject,
 
   /**
+   * Combines two styles such that `style2` will override any styles in `style1`.
+   * If either style is falsy, the other one is returned without allocating an
+   * array, saving allocations and maintaining reference equality for
+   * PureComponent checks.
+   */
+  compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
+    if (style1 && style2) {
+      return [style1, style2];
+    } else {
+      return style1 || style2;
+    }
+  },
+
+  /**
    * Flattens an array of style objects, into one aggregated style object.
    * Alternatively, this method can be used to lookup IDs, returned by
    * StyleSheet.register.
@@ -134,7 +161,7 @@ module.exports = {
    *
    * Example:
    * ```
-   * var styles = StyleSheet.create({
+   * const styles = StyleSheet.create({
    *   listItem: {
    *     flex: 1,
    *     fontSize: 16,
@@ -163,14 +190,42 @@ module.exports = {
   flatten,
 
   /**
+   * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
+   * not be reliably announced. The whole thing might be deleted, who knows? Use
+   * at your own risk.
+   *
+   * Sets a function to use to pre-process a style property value. This is used
+   * internally to process color and transform values. You should not use this
+   * unless you really know what you are doing and have exhausted other options.
+   */
+  setStyleAttributePreprocessor(property: string, process: (nextProp: mixed) => mixed) {
+    let value;
+
+    if (typeof ReactNativeStyleAttributes[property] === 'string') {
+      value = {};
+    } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
+      value = ReactNativeStyleAttributes[property];
+    } else {
+      console.error(`${property} is not a valid style attribute`);
+      return;
+    }
+
+    if (__DEV__ && typeof value.process === 'function') {
+      console.warn(`Overwriting ${property} style attribute preprocessor`);
+    }
+
+    ReactNativeStyleAttributes[property] = { ...value, process };
+  },
+
+  /**
    * Creates a StyleSheet style reference from the given object.
    */
   create<S: Styles>(obj: S): StyleSheet<S> {
-    const result: StyleSheet<S> = {};
-    for (var key in obj) {
+    const result = {};
+    for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
-      result[key] = ReactNativePropRegistry.register(obj[key]);
+      result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);
     }
     return result;
-  }
+  },
 };

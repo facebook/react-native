@@ -1,16 +1,24 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
 const log = require('npmlog');
-const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
 const createGroupWithMessage = require('./createGroupWithMessage');
 const getPlist = require('./getPlist');
-const getPlistPath = require('./getPlistPath');
+const writePlist = require('./writePlist');
 
 /**
  * This function works in a similar manner to its Android version,
- * except it does not copy fonts but creates XCode Group references
+ * except it does not copy fonts but creates Xcode Group references
  */
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
@@ -19,25 +27,30 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
 
   createGroupWithMessage(project, 'Resources');
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.addResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  function addResourceFile(f) {
+    return (f || [])
+      .map(asset =>
+        project.addResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .filter(file => file)   // xcode returns false if file is already there
-    .map(file => file.basename);
+      .filter(file => file)   // xcode returns false if file is already there
+      .map(file => file.basename);
+  }
 
-  plist.UIAppFonts = (plist.UIAppFonts || []).concat(fonts);
+  addResourceFile(assets.image);
+
+  const fonts = addResourceFile(assets.font);
+
+  const existingFonts = (plist.UIAppFonts || []);
+  const allFonts = [...existingFonts, ...fonts];
+  plist.UIAppFonts = Array.from(new Set(allFonts)); // use Set to dedupe w/existing
 
   fs.writeFileSync(
     projectConfig.pbxprojPath,
     project.writeSync()
   );
 
-  fs.writeFileSync(
-    getPlistPath(project, projectConfig.sourceDir),
-    plistParser.build(plist)
-  );
+  writePlist(project, projectConfig.sourceDir, plist);
 };

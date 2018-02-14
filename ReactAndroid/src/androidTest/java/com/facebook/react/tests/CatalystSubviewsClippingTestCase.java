@@ -51,10 +51,8 @@ public class CatalystSubviewsClippingTestCase extends ReactAppInstrumentationTes
 
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    ReactInstanceSpecForTest instanceSpec = new ReactInstanceSpecForTest();
-    instanceSpec.addJSModule(SubviewsClippingTestModule.class);
-    instanceSpec.addViewManager(new ClippableViewManager(mEvents));
-    return instanceSpec;
+    return super.createReactInstanceSpecForTest()
+        .addViewManager(new ClippableViewManager(mEvents));
   }
 
   /**

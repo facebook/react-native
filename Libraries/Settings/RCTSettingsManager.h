@@ -9,10 +9,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface RCTSettingsManager : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults;
+- (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -7,11 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule SimpleSnapshotTest
  */
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 var {
@@ -20,7 +24,7 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-class SimpleSnapshotTest extends React.Component {
+class SimpleSnapshotTest extends React.Component<{}> {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');

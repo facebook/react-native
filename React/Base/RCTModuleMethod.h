@@ -9,8 +9,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTBridgeMethod.h"
-#import "RCTNullability.h"
+#import <React/RCTBridgeMethod.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTNullability.h>
 
 @class RCTBridge;
 
@@ -27,8 +28,7 @@
 @property (nonatomic, readonly) Class moduleClass;
 @property (nonatomic, readonly) SEL selector;
 
-- (instancetype)initWithMethodSignature:(NSString *)objCMethodName
-                          JSMethodName:(NSString *)JSMethodName
+- (instancetype)initWithExportedMethod:(const RCTMethodInfo *)exportMethod
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
 @end

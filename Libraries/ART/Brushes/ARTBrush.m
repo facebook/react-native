@@ -9,7 +9,7 @@
 
 #import "ARTBrush.h"
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @implementation ARTBrush
 

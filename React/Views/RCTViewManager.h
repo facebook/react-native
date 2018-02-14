@@ -9,12 +9,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTConvert.h"
-#import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "UIView+React.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/UIView+React.h>
 
 @class RCTBridge;
 @class RCTShadowView;
@@ -62,20 +62,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
 - (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
-
-/**
- * Called to notify manager that layout has finished, in case any calculated
- * properties need to be copied over from shadow view to view.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView;
-
-/**
- * Called after view hierarchy manipulation has finished, and all shadow props
- * have been set, but before layout has been performed. Useful for performing
- * custom layout logic or tasks that involve walking the view hierarchy.
- * To be deprecated, hopefully.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
 
 /**
  * This handles the simple case, where JS and native property names match.

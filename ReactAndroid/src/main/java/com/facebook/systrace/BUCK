@@ -1,11 +1,9 @@
-android_library(
-  name = 'systrace',
-  srcs = glob(['*.java']),
-  visibility = [
-    'PUBLIC',
-  ],
-)
+load("//ReactNative:DEFS.bzl", "rn_android_library")
 
-project_config(
-  src_target = ':systrace',
+rn_android_library(
+    name = "systrace",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
 )

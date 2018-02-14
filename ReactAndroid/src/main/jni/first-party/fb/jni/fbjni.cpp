@@ -21,25 +21,25 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
   static std::once_flag flag{};
   // TODO (t7832883): DTRT when we have exception pointers
   static auto error_msg = std::string{"Failed to initialize fbjni"};
-  static auto error_occured = false;
+  static auto error_occurred = false;
 
   std::call_once(flag, [vm] {
     try {
       Environment::initialize(vm);
     } catch (std::exception& ex) {
-      error_occured = true;
+      error_occurred = true;
       try {
         error_msg = std::string{"Failed to initialize fbjni: "} + ex.what();
       } catch (...) {
         // Ignore, we already have a fall back message
       }
     } catch (...) {
-      error_occured = true;
+      error_occurred = true;
     }
   });
 
   try {
-    if (error_occured) {
+    if (error_occurred) {
       throw std::runtime_error(error_msg);
     }
 
@@ -60,9 +60,9 @@ alias_ref<JClass> findClassStatic(const char* name) {
   if (!env) {
     throw std::runtime_error("Unable to retrieve JNIEnv*.");
   }
-  auto cls = env->FindClass(name);
+  local_ref<jclass> cls = adopt_local(env->FindClass(name));
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  auto leaking_ref = (jclass)env->NewGlobalRef(cls);
+  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
   return wrap_alias(leaking_ref);
 }
@@ -83,8 +83,7 @@ local_ref<JClass> findClassLocal(const char* name) {
 std::string JString::toStdString() const {
   const auto env = internal::getEnv();
   auto utf16String = JStringUtf16Extractor(env, self());
-  auto length = env->GetStringLength(self());
-  return detail::utf16toUTF8(utf16String, length);
+  return detail::utf16toUTF8(utf16String.chars(), utf16String.length());
 }
 
 local_ref<JString> make_jstring(const char* utf8) {

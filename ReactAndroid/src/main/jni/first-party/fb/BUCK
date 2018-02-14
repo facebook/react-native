@@ -1,0 +1,27 @@
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "cxx_library", "JNI_TARGET")
+
+# This target is only used in open source
+if IS_OSS_BUILD:
+    cxx_library(
+        name = 'jni',
+        soname = 'libfb.$(ext)',
+        srcs = glob(['*.cpp', 'jni/*.cpp', 'lyra/*.cpp']),
+        header_namespace = '',
+        compiler_flags = [
+            '-fno-omit-frame-pointer',
+            '-fexceptions',
+            '-Wall',
+            '-Werror',
+            '-std=c++11',
+            '-DDISABLE_CPUCAP',
+            '-DDISABLE_XPLAT',
+        ],
+        exported_headers = subdir_glob([
+            ('include', 'fb/**/*.h'),
+            ('include', 'jni/*.h'),
+        ]),
+        deps = [
+            JNI_TARGET,
+        ],
+        visibility = ['PUBLIC'],
+    )

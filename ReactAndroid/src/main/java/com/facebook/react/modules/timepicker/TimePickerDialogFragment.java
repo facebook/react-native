@@ -9,18 +9,21 @@
 
 package com.facebook.react.modules.timepicker;
 
-import javax.annotation.Nullable;
-
-import java.util.Calendar;
-
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+
+import java.util.Calendar;
+import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("ValidFragment")
 public class TimePickerDialogFragment extends DialogFragment {
@@ -44,6 +47,11 @@ public class TimePickerDialogFragment extends DialogFragment {
     int minute = now.get(Calendar.MINUTE);
     boolean is24hour = DateFormat.is24HourFormat(activityContext);
 
+    TimePickerMode mode = TimePickerMode.DEFAULT;
+    if (args != null && args.getString(TimePickerDialogModule.ARG_MODE, null) != null) {
+      mode = TimePickerMode.valueOf(args.getString(TimePickerDialogModule.ARG_MODE).toUpperCase(Locale.US));
+    }
+
     if (args != null) {
       hour = args.getInt(TimePickerDialogModule.ARG_HOUR, now.get(Calendar.HOUR_OF_DAY));
       minute = args.getInt(TimePickerDialogModule.ARG_MINUTE, now.get(Calendar.MINUTE));
@@ -52,12 +60,42 @@ public class TimePickerDialogFragment extends DialogFragment {
           DateFormat.is24HourFormat(activityContext));
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (mode == TimePickerMode.CLOCK) {
+        return new DismissableTimePickerDialog(
+          activityContext,
+          activityContext.getResources().getIdentifier(
+            "ClockTimePickerDialog",
+            "style",
+            activityContext.getPackageName()
+          ),
+          onTimeSetListener,
+          hour,
+          minute,
+          is24hour
+        );
+      } else if (mode == TimePickerMode.SPINNER) {
+        return new DismissableTimePickerDialog(
+          activityContext,
+          activityContext.getResources().getIdentifier(
+            "SpinnerTimePickerDialog",
+            "style",
+            activityContext.getPackageName()
+          ),
+          onTimeSetListener,
+          hour,
+          minute,
+          is24hour
+        );
+      }
+    }
     return new DismissableTimePickerDialog(
-        activityContext,
-        onTimeSetListener,
-        hour,
-        minute,
-        is24hour);
+            activityContext,
+            onTimeSetListener,
+            hour,
+            minute,
+            is24hour
+    );
   }
 
   @Override

@@ -1,5 +1,7 @@
-android_resource(
-  name = 'assets',
-  assets = '.',
-  visibility = ['PUBLIC'],
+load("//ReactNative:DEFS.bzl", "rn_android_resource")
+
+rn_android_resource(
+    name = "assets",
+    assets = ".",
+    visibility = ["PUBLIC"],
 )

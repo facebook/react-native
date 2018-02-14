@@ -12,7 +12,6 @@ package com.facebook.react.bridge;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 /**
  * Implementation of a write-only array stored in native memory. Use

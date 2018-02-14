@@ -13,7 +13,6 @@
 
 const ListView = require('ListView');
 const React = require('React');
-const RecyclerViewBackedScrollView = require('RecyclerViewBackedScrollView');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -51,7 +50,11 @@ type NetworkRequestInfo = {
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component {
+class NetworkOverlay extends React.Component<Object, {
+  dataSource: ListView.DataSource,
+  newDetailInfo: bool,
+  detailRowID: ?number,
+}> {
   _requests: Array<NetworkRequestInfo>;
   _listViewDataSource: ListView.DataSource;
   _listView: ?ListView;
@@ -68,18 +71,11 @@ class NetworkOverlay extends React.Component {
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
   ) => React.Element<any>;
-  _renderScrollComponent: (props: Object) => React.Element<any>;
   _closeButtonClicked: () => void;
   // Map of `socketId` -> `index in `_requests``.
   _socketIdMap: Object;
   // Map of `xhr._index` -> `index in `_requests``.
   _xhrIdMap: {[key: number]: number};
-
-  state: {
-    dataSource: ListView.DataSource,
-    newDetailInfo: bool,
-    detailRowID: ?number,
-  };
 
   constructor(props: Object) {
     super(props);
@@ -98,7 +94,6 @@ class NetworkOverlay extends React.Component {
     this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
     this._listViewOnLayout = this._listViewOnLayout.bind(this);
     this._renderRow = this._renderRow.bind(this);
-    this._renderScrollComponent = this._renderScrollComponent.bind(this);
     this._closeButtonClicked = this._closeButtonClicked.bind(this);
     this._socketIdMap = {};
     this._xhrIdMap = {};
@@ -367,12 +362,6 @@ class NetworkOverlay extends React.Component {
     this._listViewHeight = height;
   }
 
-  _renderScrollComponent(props: Object): React.Element<any> {
-    return (
-      <RecyclerViewBackedScrollView {...props} />
-    );
-  }
-
   /**
    * Popup a scrollView to dynamically show detailed information of
    * the request, when pressing a row in the network flow listView.
@@ -500,7 +489,6 @@ class NetworkOverlay extends React.Component {
           ref={this._captureRequestListView}
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
-          renderScrollComponent={this._renderScrollComponent}
           enableEmptySections={true}
           renderSeparator={this._renderSeperator}
           onLayout={this._listViewOnLayout}

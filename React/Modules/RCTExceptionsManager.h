@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
 
@@ -24,6 +24,8 @@
 @interface RCTExceptionsManager : NSObject <RCTBridgeModule>
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate;
+
+@property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 
 @property (nonatomic, assign) NSUInteger maxReloadAttempts;
 

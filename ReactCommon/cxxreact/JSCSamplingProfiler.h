@@ -2,15 +2,11 @@
 
 #pragma once
 
-#ifdef WITH_JSC_EXTRA_TRACING
-
-#include <JavaScriptCore/JSContextRef.h>
+#include <jschelpers/JavaScriptCore.h>
 
 namespace facebook {
 namespace react {
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx);
-}
-}
 
-#endif // WITH_JSC_EXTRA_TRACING
+} }

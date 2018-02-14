@@ -25,10 +25,10 @@ class FBEXPORT JByteBuffer : public JavaClass<JByteBuffer> {
 
   static local_ref<JByteBuffer> wrapBytes(uint8_t* data, size_t size);
 
-  bool isDirect();
+  bool isDirect() const;
 
-  uint8_t* getDirectBytes();
-  size_t getDirectSize();
+  uint8_t* getDirectBytes() const;
+  size_t getDirectSize() const;
 };
 
 }}

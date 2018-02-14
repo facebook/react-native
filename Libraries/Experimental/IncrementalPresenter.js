@@ -13,7 +13,10 @@
 
 const IncrementalGroup = require('IncrementalGroup');
 const React = require('React');
+const PropTypes = require('prop-types');
 const View = require('View');
+
+const ViewPropTypes = require('ViewPropTypes');
 
 import type {Context} from 'Incremental';
 
@@ -24,7 +27,7 @@ import type {Context} from 'Incremental';
  *
  * `<IncrementalPresenter>` can be used to group sets of `<Incremental>` renders
  * such that they are initially invisible and removed from layout until all
- * decendents have finished rendering, at which point they are drawn all at once
+ * descendants have finished rendering, at which point they are drawn all at once
  * so the UI doesn't jump around during the incremental rendering process.
  *
  * See Incremental.js for more info.
@@ -37,21 +40,20 @@ type Props = {
   style?: mixed,
   children?: any,
 }
-class IncrementalPresenter extends React.Component {
-  props: Props;
+class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 
   static propTypes = {
-    name: React.PropTypes.string,
-    disabled: React.PropTypes.bool,
-    onDone: React.PropTypes.func,
-    onLayout: React.PropTypes.func,
-    style: View.propTypes.style,
+    name: PropTypes.string,
+    disabled: PropTypes.bool,
+    onDone: PropTypes.func,
+    onLayout: PropTypes.func,
+    style: ViewPropTypes.style,
   };
   static contextTypes = {
-    incrementalGroup: React.PropTypes.object,
-    incrementalGroupEnabled: React.PropTypes.bool,
+    incrementalGroup: PropTypes.object,
+    incrementalGroupEnabled: PropTypes.bool,
   };
 
   constructor(props: Props, context: Context) {

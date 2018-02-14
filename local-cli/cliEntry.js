@@ -10,22 +10,25 @@
  */
 'use strict';
 
-const Config = require('./util/Config');
-const Promise = require('promise');
+const config = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 const childProcess = require('child_process');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const commander = require('commander');
 const commands = require('./commands');
-const defaultConfig = require('./default.config');
 const init = require('./init/init');
-const minimist = require('minimist');
 const path = require('path');
 const pkg = require('../package.json');
 
-import type {Command} from './commands';
-import type {ConfigT} from './util/Config';
+import type {CommandT} from './commands';
+import type {RNConfig} from './core';
 
 commander.version(pkg.version);
 
@@ -94,7 +97,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: Command, config: ConfigT) => {
+const addCommand = (command: CommandT, cfg: RNConfig) => {
   const options = command.options || [];
 
   const cmd = commander
@@ -109,7 +112,7 @@ const addCommand = (command: Command, config: ConfigT) => {
       Promise.resolve()
         .then(() => {
           assertRequiredOptions(options, passedOptions);
-          return command.func(argv, config, passedOptions);
+          return command.func(argv, cfg, passedOptions);
         })
         .catch(handleError);
     });
@@ -123,31 +126,13 @@ const addCommand = (command: Command, config: ConfigT) => {
       opt.command,
       opt.description,
       opt.parse || defaultOptParser,
-      typeof opt.default === 'function' ? opt.default(config) : opt.default,
+      typeof opt.default === 'function' ? opt.default(cfg) : opt.default,
     ));
 
   // Placeholder option for --config, which is parsed before any other option,
   // but needs to be here to avoid "unknown option" errors when specified
   cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
-
-function getCliConfig() {
-  // Use a lightweight option parser to look up the CLI configuration file,
-  // which we need to set up the parser for the other args and options
-  const cliArgs = minimist(process.argv.slice(2));
-
-  let cwd;
-  let configPath;
-  if (cliArgs.config != null) {
-    cwd = process.cwd();
-    configPath = cliArgs.config;
-  } else {
-    cwd = __dirname;
-    configPath = Config.findConfigPath(cwd);
-  }
-
-  return Config.get(cwd, defaultConfig, configPath);
-}
 
 function run() {
   const setupEnvScript = /^win/.test(process.platform)
@@ -156,7 +141,6 @@ function run() {
 
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  const config = getCliConfig();
   commands.forEach(cmd => addCommand(cmd, config));
 
   commander.parse(process.argv);

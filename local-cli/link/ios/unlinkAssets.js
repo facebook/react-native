@@ -1,11 +1,19 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
 const log = require('npmlog');
-const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
 const getPlist = require('./getPlist');
-const getPlistPath = require('./getPlistPath');
+const writePlist = require('./writePlist');
 const difference = require('lodash').difference;
 
 /**
@@ -20,25 +28,31 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
   if (!plist) {
     return log.error(
       'ERRPLIST',
-      `Could not locate Info.plist file. Check if your project has 'INFOPLIST_FILE' set properly`
+      'Could not locate Info.plist file. Check if your project has \'INFOPLIST_FILE\' set properly'
     );
   }
 
   if (!project.pbxGroupByName('Resources')) {
     return log.error(
       'ERRGROUP',
-      `Group 'Resources' does not exist in your XCode project. There is nothing to unlink.`
+      'Group \'Resources\' does not exist in your Xcode project. There is nothing to unlink.'
     );
   }
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.removeResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  const removeResourceFile = function (f) {
+    (f || [])
+      .map(asset =>
+        project.removeResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .map(file => file.basename);
+      .map(file => file.basename);
+  };
+
+  removeResourceFile(assets.image);
+
+  const fonts = removeResourceFile(assets.font);
 
   plist.UIAppFonts = difference(plist.UIAppFonts || [], fonts);
 
@@ -47,8 +61,5 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
     project.writeSync()
   );
 
-  fs.writeFileSync(
-    getPlistPath(project, projectConfig.sourceDir),
-    plistParser.build(plist)
-  );
+  writePlist(project, projectConfig.sourceDir, plist);
 };

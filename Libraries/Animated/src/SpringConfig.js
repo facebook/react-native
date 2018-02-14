@@ -13,15 +13,15 @@
 'use strict';
 
 type SpringConfigType = {
-  tension: number,
-  friction: number,
+  stiffness: number,
+  damping: number,
 };
 
-function tensionFromOrigamiValue(oValue) {
+function stiffnessFromOrigamiValue(oValue) {
   return (oValue - 30) * 3.62 + 194;
 }
 
-function frictionFromOrigamiValue(oValue) {
+function dampingFromOrigamiValue(oValue) {
   return (oValue - 8) * 3 + 25;
 }
 
@@ -30,8 +30,8 @@ function fromOrigamiTensionAndFriction(
   friction: number,
 ): SpringConfigType {
   return {
-    tension: tensionFromOrigamiValue(tension),
-    friction: frictionFromOrigamiValue(friction)
+    stiffness: stiffnessFromOrigamiValue(tension),
+    damping: dampingFromOrigamiValue(friction),
   };
 }
 
@@ -91,8 +91,8 @@ function fromBouncinessAndSpeed(
   );
 
   return {
-    tension: tensionFromOrigamiValue(bouncyTension),
-    friction: frictionFromOrigamiValue(bouncyFriction)
+    stiffness: stiffnessFromOrigamiValue(bouncyTension),
+    damping: dampingFromOrigamiValue(bouncyFriction),
   };
 }
 

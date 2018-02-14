@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTURLRequestDelegate.h"
-#import "RCTURLRequestHandler.h"
+#import <React/RCTURLRequestDelegate.h>
+#import <React/RCTURLRequestHandler.h>
 
 typedef void (^RCTURLRequestCompletionBlock)(NSURLResponse *response, NSData *data, NSError *error);
 typedef void (^RCTURLRequestCancellationBlock)(void);

@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTURLRequestHandler.h"
-#import "RCTResizeMode.h"
+#import <React/RCTBridge.h>
+#import <React/RCTResizeMode.h>
+#import <React/RCTURLRequestHandler.h>
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
@@ -35,6 +35,18 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
            responseDate:(NSString *)responseDate;
+
+@end
+
+/**
+ * If available, RCTImageRedirectProtocol is invoked before loading an asset.
+ * Implementation should return either a new URL or nil when redirection is
+ * not needed.
+ */
+
+@protocol RCTImageRedirectProtocol
+
+- (NSURL *)redirectAssetsURL:(NSURL *)URL;
 
 @end
 
@@ -70,6 +82,9 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * only a hint, and not an indicator of the total memory used by the app.
  */
 @property (nonatomic, assign) NSUInteger maxConcurrentDecodingBytes;
+
+- (instancetype)init;
+- (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
 
 /**
  * Loads the specified image at the highest available resolution.

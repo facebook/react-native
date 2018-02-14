@@ -24,7 +24,7 @@ function attachToServer(server, path) {
 
     try {
       dest.send(message);
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
       // Sometimes this call throws 'not opened'
     }

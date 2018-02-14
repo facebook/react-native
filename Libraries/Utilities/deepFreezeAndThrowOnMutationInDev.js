@@ -29,16 +29,19 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev(object: Object) {
+function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
   if (__DEV__) {
     if (typeof object !== 'object' ||
         object === null ||
         Object.isFrozen(object) ||
         Object.isSealed(object)) {
-      return;
+      return object;
     }
 
-    for (var key in object) {
+    var keys = Object.keys(object);
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
       if (object.hasOwnProperty(key)) {
         object.__defineGetter__(key, identity.bind(null, object[key]));
         object.__defineSetter__(key, throwOnImmutableMutation.bind(null, key));
@@ -48,12 +51,14 @@ function deepFreezeAndThrowOnMutationInDev(object: Object) {
     Object.freeze(object);
     Object.seal(object);
 
-    for (var key in object) {
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
       if (object.hasOwnProperty(key)) {
         deepFreezeAndThrowOnMutationInDev(object[key]);
       }
     }
   }
+  return object;
 }
 
 function throwOnImmutableMutation(key, value) {

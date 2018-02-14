@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
 import com.facebook.react.R;
+import com.facebook.react.common.DebugServerException;
 
 /**
  * Activity that display developers settings. Should be added to the debug manifest of the app. Can
@@ -23,7 +24,7 @@ public class DevSettingsActivity extends PreferenceActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setTitle(R.string.catalyst_settings_title);
+    setTitle(getApplication().getResources().getString(R.string.catalyst_settings_title));
     addPreferencesFromResource(R.xml.preferences);
   }
 }

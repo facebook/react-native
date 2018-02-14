@@ -11,6 +11,6 @@
 
 @interface RCTTransformAnimatedNode : RCTAnimatedNode
 
-- (NSDictionary<NSString *, NSObject *> *)updatedPropsDictionary;
+- (NSDictionary<NSString *, NSObject *> *)propsDictionary;
 
 @end

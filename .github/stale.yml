@@ -1,0 +1,20 @@
+# Number of days of inactivity before an issue becomes stale
+daysUntilStale: 60
+# Number of days of inactivity before a stale issue is closed
+daysUntilClose: 7
+# Issues with these labels will never be considered stale
+exemptLabels:
+  - Good first issue
+  - For Discussion
+  - Core Team 
+# Label to use when marking an issue as stale
+staleLabel: Stale 
+# Comment to post when marking an issue as stale. Set to `false` to disable
+markComment: >
+  This issue has been automatically marked as stale because it has not had
+  recent activity. It will be closed if no further activity occurs.
+  Maybe the issue has been fixed in a recent release, or perhaps it is not affecting a lot of people.
+  If you think this issue should definitely remain open, please let us know why.
+  Thank you for your contributions.
+# Comment to post when closing a stale issue. Set to `false` to disable
+closeComment: false

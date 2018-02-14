@@ -9,12 +9,13 @@
 
 #import "RCTImageUtils.h"
 
-#import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/UTCoreTypes.h>
 #import <tgmath.h>
 
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/UTCoreTypes.h>
+
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
 static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
 {
@@ -32,6 +33,22 @@ static CGSize RCTCeilSize(CGSize size, CGFloat scale)
     RCTCeilValue(size.width, scale),
     RCTCeilValue(size.height, scale)
   };
+}
+
+static CGImagePropertyOrientation CGImagePropertyOrientationFromUIImageOrientation(UIImageOrientation imageOrientation)
+{
+  // see https://stackoverflow.com/a/6699649/496389
+  switch (imageOrientation) {
+    case UIImageOrientationUp: return kCGImagePropertyOrientationUp;
+    case UIImageOrientationDown: return kCGImagePropertyOrientationDown;
+    case UIImageOrientationLeft: return kCGImagePropertyOrientationLeft;
+    case UIImageOrientationRight: return kCGImagePropertyOrientationRight;
+    case UIImageOrientationUpMirrored: return kCGImagePropertyOrientationUpMirrored;
+    case UIImageOrientationDownMirrored: return kCGImagePropertyOrientationDownMirrored;
+    case UIImageOrientationLeftMirrored: return kCGImagePropertyOrientationLeftMirrored;
+    case UIImageOrientationRightMirrored: return kCGImagePropertyOrientationRightMirrored;
+    default: return kCGImagePropertyOrientationUp;
+  }
 }
 
 CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
@@ -313,20 +330,23 @@ NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
   return (__bridge_transfer id)imageProperties;
 }
 
-NSData *__nullable RCTGetImageData(CGImageRef image, float quality)
+NSData *__nullable RCTGetImageData(UIImage *image, float quality)
 {
-  NSDictionary *properties;
+  NSMutableDictionary *properties = [[NSMutableDictionary alloc] initWithDictionary:@{
+    (id)kCGImagePropertyOrientation : @(CGImagePropertyOrientationFromUIImageOrientation(image.imageOrientation))
+  }];
   CGImageDestinationRef destination;
   CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
-  if (RCTImageHasAlpha(image)) {
+  CGImageRef cgImage = image.CGImage;
+  if (RCTImageHasAlpha(cgImage)) {
     // get png data
     destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
   } else {
     // get jpeg data
     destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
-    properties = @{(NSString *)kCGImageDestinationLossyCompressionQuality: @(quality)};
+    [properties setValue:@(quality) forKey:(id)kCGImageDestinationLossyCompressionQuality];
   }
-  CGImageDestinationAddImage(destination, image, (__bridge CFDictionaryRef)properties);
+  CGImageDestinationAddImage(destination, cgImage, (__bridge CFDictionaryRef)properties);
   if (!CGImageDestinationFinalize(destination))
   {
     CFRelease(imageData);

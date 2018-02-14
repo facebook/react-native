@@ -2,18 +2,11 @@
 
 #pragma once
 
-#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
-
-#include <inttypes.h>
-
-#include <JavaScriptCore/JSContextRef.h>
+#include <jschelpers/JavaScriptCore.h>
 
 namespace facebook {
 namespace react {
 
-uint64_t tracingTagFromJSValue(JSContextRef ctx, JSValueRef value, JSValueRef* exception);
 void addNativeTracingHooks(JSGlobalContextRef ctx);
 
 } }
-
-#endif

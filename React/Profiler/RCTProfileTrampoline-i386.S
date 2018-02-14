@@ -30,7 +30,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    */
   subl $0x8, %esp // stack padding (16-byte alignment for function calls)
   pushl $0xc // allocate 12-bytes
-  calll SYMBOL_NAME(malloc)
+  calll SYMBOL_NAME(RCTProfileMalloc)
   addl $0xc, %esp // restore stack (8-byte padding + 4-byte argument)
 
   /**
@@ -85,7 +85,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * the stack has already been padded and the first and only argument, the
    * memory address, is already in the bottom of the stack.
    */
-  calll SYMBOL_NAME(free)
+  calll SYMBOL_NAME(RCTProfileFree)
   addl $0x8, %esp
 
   /**

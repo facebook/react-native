@@ -6,22 +6,26 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Sets up global variables typical in most JavaScript environments.
- *
- * 1. Global timers (via `setTimeout` etc).
- * 2. Global console object.
- * 3. Hooks for printing stack traces with source maps.
- *
- * Leaves enough room in the environment for implementing your own:
- * 1. Require system.
- * 2. Bridged modules.
- *
  * @providesModule InitializeCore
  * @flow
  */
 
-/* eslint strict: 0 */
 /* globals window: true */
+
+/**
+ * Sets up global variables typical in most JavaScript environments.
+ *
+ *   1. Global timers (via `setTimeout` etc).
+ *   2. Global console object.
+ *   3. Hooks for printing stack traces with source maps.
+ *
+ * Leaves enough room in the environment for implementing your own:
+ *
+ *   1. Require system.
+ *   2. Bridged modules.
+ *
+ */
+'use strict';
 
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
@@ -33,27 +37,35 @@ if (global.window === undefined) {
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
+// Set up collections
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  polyfillGlobal('Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  polyfillGlobal('Set', () => require('Set'));
+}
+
 /**
  * Sets an object's property. If a property with the same name exists, this will
- * replace it but maintain its descriptor configuration. By default, the property
- * will replaced with a lazy getter.
+ * replace it but maintain its descriptor configuration. The property will be
+ * replaced with a lazy getter.
  *
- * The original property value will be preserved as `original[PropertyName]` so
- * that, if necessary, it can be restored. For example, if you want to route
+ * In DEV mode the original property value will be preserved as `original[PropertyName]`
+ * so that, if necessary, it can be restored. For example, if you want to route
  * network requests through DevTools (to trace them):
  *
  *   global.XMLHttpRequest = global.originalXMLHttpRequest;
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-function defineProperty<T>(
+function defineLazyProperty<T>(
   object: Object,
   name: string,
   getValue: () => T,
-  eager?: boolean
 ): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  if (descriptor) {
+  if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
       ...descriptor,
@@ -67,20 +79,15 @@ function defineProperty<T>(
     return;
   }
 
-  if (eager === true) {
-    Object.defineProperty(object, name, {
-      configurable: true,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-      value: getValue(),
-    });
-  } else {
-    defineLazyObjectProperty(object, name, {
-      get: getValue,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-    });
-  }
+  defineLazyObjectProperty(object, name, {
+    get: getValue,
+    enumerable: enumerable !== false,
+    writable: writable !== false,
+  });
+}
+
+function polyfillGlobal<T>(name: string, getValue: () => T): void {
+  defineLazyProperty(global, name, getValue);
 }
 
 // Set up process
@@ -90,37 +97,56 @@ if (!global.process.env.NODE_ENV) {
   global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
 }
 
-// Set up profile
-const Systrace = require('Systrace');
-Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+// Setup the Systrace profiling hooks if necessary
+if (global.__RCTProfileIsProfiling) {
+  const Systrace = require('Systrace');
+  Systrace.installReactHook(true);
+  Systrace.setEnabled(true);
+}
 
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 
-// RCTLog needs to register with BatchedBridge
-require('RCTLog');
-
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  const handleError = (e, isFatal) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
-      /* eslint-disable no-console-disallow */
       console.log('Failed to print error: ', ee.message);
-      /* eslint-enable no-console-disallow */
       throw e;
     }
-  }
+  };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
 
+// Check for compatibility between the JS and native code
+const ReactNativeVersionCheck = require('ReactNativeVersionCheck');
+ReactNativeVersionCheck.checkVersions();
+
+// Set up Promise
+// The native Promise implementation throws the following error:
+// ERROR: Event loop not supported.
+polyfillGlobal('Promise', () => require('Promise'));
+
+// Set up regenerator.
+polyfillGlobal('regeneratorRuntime', () => {
+  // The require just sets up the global, so make sure when we first
+  // invoke it the global does not exist
+  delete global.regeneratorRuntime;
+  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
+   * error found when Flow v0.54 was deployed. To see the error delete this
+   * comment and run Flow. */
+  require('regenerator-runtime/runtime');
+  return global.regeneratorRuntime;
+});
+
 // Set up timers
 const defineLazyTimer = name => {
-  defineProperty(global, name, () => require('JSTimers')[name]);
+  polyfillGlobal(name, () => require('JSTimers')[name]);
 };
 defineLazyTimer('setTimeout');
 defineLazyTimer('setInterval');
@@ -133,6 +159,22 @@ defineLazyTimer('cancelAnimationFrame');
 defineLazyTimer('requestIdleCallback');
 defineLazyTimer('cancelIdleCallback');
 
+// Set up XHR
+// The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
+// let you fetch anything from the internet
+polyfillGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
+polyfillGlobal('FormData', () => require('FormData'));
+
+polyfillGlobal('fetch', () => require('fetch').fetch);
+polyfillGlobal('Headers', () => require('fetch').Headers);
+polyfillGlobal('Request', () => require('fetch').Request);
+polyfillGlobal('Response', () => require('fetch').Response);
+polyfillGlobal('WebSocket', () => require('WebSocket'));
+polyfillGlobal('Blob', () => require('Blob'));
+polyfillGlobal('File', () => require('File'));
+polyfillGlobal('FileReader', () => require('FileReader'));
+polyfillGlobal('URL', () => require('URL'));
+
 // Set up alert
 if (!global.alert) {
   global.alert = function(text) {
@@ -142,67 +184,69 @@ if (!global.alert) {
   };
 }
 
-// Set up Promise
-// The native Promise implementation throws the following error:
-// ERROR: Event loop not supported.
-defineProperty(global, 'Promise', () => require('Promise'));
-
-// Set up regenerator.
-defineProperty(global, 'regeneratorRuntime', () => {
-  // The require just sets up the global, so make sure when we first
-  // invoke it the global does not exist
-  delete global.regeneratorRuntime;
-  require('regenerator-runtime/runtime');
-  return global.regeneratorRuntime;
-});
-
-// Set up XHR
-// The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
-// let you fetch anything from the internet
-defineProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
-defineProperty(global, 'FormData', () => require('FormData'));
-
-defineProperty(global, 'fetch', () => require('fetch').fetch);
-defineProperty(global, 'Headers', () => require('fetch').Headers);
-defineProperty(global, 'Request', () => require('fetch').Request);
-defineProperty(global, 'Response', () => require('fetch').Response);
-defineProperty(global, 'WebSocket', () => require('WebSocket'));
-
 // Set up Geolocation
 let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
 }
-navigator.product = 'ReactNative';
-defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
-// Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
-// not exist if it were lazily defined).
-defineProperty(global, 'Map', () => require('Map'), true);
-defineProperty(global, 'Set', () => require('Set'), true);
-
-// Set up devtools
-if (__DEV__) {
-  // not when debugging in chrome
-  // TODO(t12832058) This check is broken
-  if (!window.document) {
-    const setupDevtools = require('setupDevtools');
-    setupDevtools();
-  }
-
-  require('RCTDebugComponentOwnership');
-  require('react-transform-hmr');
-}
-
-// Set up inspector
-if (__DEV__) {
-  const JSInspector = require('JSInspector');
-  JSInspector.registerAgent(require('NetworkAgent'));
-}
+// see https://github.com/facebook/react-native/issues/10881
+defineLazyProperty(navigator, 'product', () => 'ReactNative');
+defineLazyProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDeviceEventEmitter');
-require('RCTNativeAppEventEmitter');
-require('PerformanceLogger');
+const BatchedBridge = require('BatchedBridge');
+BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
+BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
+BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
+BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
+BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
+BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
+BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
+BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JSDevSupportModule'));
+
+global.fetchSegment = function(
+  segmentId: number,
+  callback: (?Error) => void,
+) {
+  const {SegmentFetcher} = require('NativeModules');
+  if (!SegmentFetcher) {
+    throw new Error('SegmentFetcher is missing. Please ensure that it is ' +
+      'included as a NativeModule.');
+  }
+
+  SegmentFetcher.fetchSegment(segmentId, (errorObject: ?{message: string, code: string}) => {
+    if (errorObject) {
+      const error = new Error(errorObject.message);
+      (error: any).code = errorObject.code;
+      callback(error);
+    }
+
+    callback(null);
+  });
+};
+
+// Set up devtools
+if (__DEV__) {
+  if (!global.__RCTProfileIsProfiling) {
+    BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+
+    // not when debugging in chrome
+    // TODO(t12832058) This check is broken
+    if (!window.document) {
+      require('setupDevtools');
+    }
+
+    // Set up inspector
+    const JSInspector = require('JSInspector');
+    /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
+     * error found when Flow v0.56 was deployed. To see the error delete this
+     * comment and run Flow. */
+    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error found when Flow v0.56 was deployed. To see the error
+     * delete this comment and run Flow. */
+    JSInspector.registerAgent(require('NetworkAgent'));
+  }
+}

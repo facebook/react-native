@@ -8,7 +8,8 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RCTResizeMode.h"
+
+#import <React/RCTResizeMode.h>
 
 @class RCTBridge;
 @class RCTImageSource;

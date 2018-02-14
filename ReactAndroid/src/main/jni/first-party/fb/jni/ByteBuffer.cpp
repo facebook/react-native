@@ -39,7 +39,7 @@ local_ref<JByteBuffer> JByteBuffer::wrapBytes(uint8_t* data, size_t size) {
   return res;
 }
 
-uint8_t* JByteBuffer::getDirectBytes() {
+uint8_t* JByteBuffer::getDirectBytes() const {
   if (!self()) {
     throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
@@ -54,7 +54,7 @@ uint8_t* JByteBuffer::getDirectBytes() {
   return static_cast<uint8_t*>(bytes);
 }
 
-size_t JByteBuffer::getDirectSize() {
+size_t JByteBuffer::getDirectSize() const {
   if (!self()) {
     throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
@@ -69,7 +69,7 @@ size_t JByteBuffer::getDirectSize() {
   return static_cast<size_t>(size);
 }
 
-bool JByteBuffer::isDirect() {
+bool JByteBuffer::isDirect() const {
   static auto meth = javaClassStatic()->getMethod<jboolean()>("isDirect");
   return meth(self());
 }

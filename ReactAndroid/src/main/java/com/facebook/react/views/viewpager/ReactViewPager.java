@@ -9,19 +9,17 @@
 
 package com.facebook.react.views.viewpager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper view for {@link ViewPager}. It's forwarding calls to {@link ViewGroup#addView} to add
@@ -42,7 +40,7 @@ public class ReactViewPager extends ViewPager {
       // We need to do that since {@link ViewPager} relies on layout passes to position those views
       // in a right way (also thanks to {@link ReactViewPagerManager#needsCustomLayoutForChildren}
       // returning {@code true}). Currently we only call {@link View#measure} and
-      // {@link View#layout} after CSSLayout step.
+      // {@link View#layout} after yoga step.
 
       // TODO(7323049): Remove this workaround once we figure out a way to re-layout some views on
       // request
@@ -118,7 +116,7 @@ public class ReactViewPager extends ViewPager {
     }
   }
 
-  private class PageChangeListener implements OnPageChangeListener {
+  private class PageChangeListener implements ViewPager.OnPageChangeListener {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

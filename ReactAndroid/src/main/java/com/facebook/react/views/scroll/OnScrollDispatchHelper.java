@@ -22,6 +22,9 @@ public class OnScrollDispatchHelper {
 
   private int mPrevX = Integer.MIN_VALUE;
   private int mPrevY = Integer.MIN_VALUE;
+  private float mXFlingVelocity = 0;
+  private float mYFlingVelocity = 0;
+
   private long mLastScrollEventTimeMs = -(MIN_EVENT_SEPARATION_MS + 1);
 
   /**
@@ -35,10 +38,23 @@ public class OnScrollDispatchHelper {
             mPrevX != x ||
             mPrevY != y;
 
+    if (eventTime - mLastScrollEventTimeMs != 0) {
+      mXFlingVelocity = (float) (x - mPrevX) / (eventTime - mLastScrollEventTimeMs);
+      mYFlingVelocity = (float) (y - mPrevY) / (eventTime - mLastScrollEventTimeMs);
+    }
+
     mLastScrollEventTimeMs = eventTime;
     mPrevX = x;
     mPrevY = y;
 
     return shouldDispatch;
+  }
+
+  public float getXFlingVelocity() {
+    return this.mXFlingVelocity;
+  }
+
+  public float getYFlingVelocity() {
+    return this.mYFlingVelocity;
   }
 }

@@ -12,7 +12,7 @@ import android.view.animation.Transformation;
  */
 /* package */ class OpacityAnimation extends Animation {
 
-  static class OpacityAnimationListener implements AnimationListener {
+  static class OpacityAnimationListener implements Animation.AnimationListener {
 
     private final View mView;
     private boolean mLayerTypeChanged = false;

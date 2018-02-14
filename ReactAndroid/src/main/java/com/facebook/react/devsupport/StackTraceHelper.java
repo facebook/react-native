@@ -9,37 +9,49 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
  */
 public class StackTraceHelper {
 
+  public static final java.lang.String COLUMN_KEY = "column";
+  public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
+
+  private static final Pattern STACK_FRAME_PATTERN = Pattern.compile(
+      "^(?:(.*?)@)?(.*?)\\:([0-9]+)\\:([0-9]+)$");
+
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
    */
-  public static class StackFrame {
+  public static class StackFrameImpl implements StackFrame {
     private final String mFile;
     private final String mMethod;
     private final int mLine;
     private final int mColumn;
     private final String mFileName;
 
-    private StackFrame(String file, String method, int line, int column) {
+    private StackFrameImpl(String file, String method, int line, int column) {
       mFile = file;
       mMethod = method;
       mLine = line;
       mColumn = column;
-      mFileName = new File(file).getName();
+      mFileName = file != null ? new File(file).getName() : "";
     }
 
-    private StackFrame(String file, String fileName, String method, int line, int column) {
+    private StackFrameImpl(String file, String fileName, String method, int line, int column) {
       mFile = file;
       mFileName = fileName;
       mMethod = method;
@@ -87,6 +99,18 @@ public class StackTraceHelper {
     public String getFileName() {
       return mFileName;
     }
+
+    /**
+     * Convert the stack frame to a JSON representation.
+     */
+    public JSONObject toJSON() {
+      return new JSONObject(
+          MapBuilder.of(
+              "file", getFile(),
+              "methodName", getMethod(),
+              "lineNumber", getLine(),
+              "column", getColumn()));
+    }
   }
 
   /**
@@ -97,15 +121,72 @@ public class StackTraceHelper {
     int size = stack != null ? stack.size() : 0;
     StackFrame[] result = new StackFrame[size];
     for (int i = 0; i < size; i++) {
-      ReadableMap frame = stack.getMap(i);
-      String methodName = frame.getString("methodName");
-      String fileName = frame.getString("file");
-      int lineNumber = frame.getInt("lineNumber");
-      int columnNumber = -1;
-      if (frame.hasKey("column") && !frame.isNull("column")) {
-        columnNumber = frame.getInt("column");
+      ReadableType type = stack.getType(i);
+      if (type == ReadableType.Map) {
+        ReadableMap frame = stack.getMap(i);
+        String methodName = frame.getString("methodName");
+        String fileName = frame.getString("file");
+        int lineNumber = -1;
+        if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+          lineNumber = frame.getInt(LINE_NUMBER_KEY);
+        }
+        int columnNumber = -1;
+        if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+          columnNumber = frame.getInt(COLUMN_KEY);
+        }
+        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
+      } else if (type == ReadableType.String) {
+        result[i] = new StackFrameImpl(null, stack.getString(i), -1, -1);
       }
-      result[i] = new StackFrame(fileName, methodName, lineNumber, columnNumber);
+    }
+    return result;
+  }
+
+  /**
+   * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of
+   * {@link StackFrame}s.
+   */
+  public static StackFrame[] convertJsStackTrace(JSONArray stack) {
+    int size = stack != null ? stack.length() : 0;
+    StackFrame[] result = new StackFrame[size];
+    try {
+      for (int i = 0; i < size; i++) {
+        JSONObject frame = stack.getJSONObject(i);
+        String methodName = frame.getString("methodName");
+        String fileName = frame.getString("file");
+        int lineNumber = -1;
+        if (frame.has(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+          lineNumber = frame.getInt(LINE_NUMBER_KEY);
+        }
+        int columnNumber = -1;
+        if (frame.has(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+          columnNumber = frame.getInt(COLUMN_KEY);
+        }
+        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
+      }
+    } catch (JSONException exception) {
+      throw new RuntimeException(exception);
+    }
+    return result;
+  }
+
+  /**
+   * Convert a JavaScript stack trace to an array of {@link StackFrame}s.
+   */
+  public static StackFrame[] convertJsStackTrace(String stack) {
+    String[] stackTrace = stack.split("\n");
+    StackFrame[] result = new StackFrame[stackTrace.length];
+    for (int i = 0; i < stackTrace.length; ++i) {
+      Matcher matcher = STACK_FRAME_PATTERN.matcher(stackTrace[i]);
+      if (matcher.find()) {
+        result[i] = new StackFrameImpl(
+          matcher.group(2),
+          matcher.group(1) == null ? "(unknown)" : matcher.group(1),
+          Integer.parseInt(matcher.group(3)),
+          Integer.parseInt(matcher.group(4)));
+      } else {
+        result[i] = new StackFrameImpl(null, stackTrace[i], -1, -1);
+      }
     }
     return result;
   }
@@ -117,7 +198,7 @@ public class StackTraceHelper {
     StackTraceElement[] stackTrace = exception.getStackTrace();
     StackFrame[] result = new StackFrame[stackTrace.length];
     for (int i = 0; i < stackTrace.length; i++) {
-      result[i] = new StackFrame(
+      result[i] = new StackFrameImpl(
           stackTrace[i].getClassName(),
           stackTrace[i].getFileName(),
           stackTrace[i].getMethodName(),
@@ -131,12 +212,17 @@ public class StackTraceHelper {
    * Format a {@link StackFrame} to a String (method name is not included).
    */
   public static String formatFrameSource(StackFrame frame) {
-    String lineInfo = "";
-    final int column = frame.getColumn();
-    // If the column is 0, don't show it in red box.
-    final String columnString = column <= 0 ? "" : ":" + column;
-    lineInfo += frame.getFileName() + ":" + frame.getLine() + columnString;
-    return lineInfo;
+    StringBuilder lineInfo = new StringBuilder();
+    lineInfo.append(frame.getFileName());
+    final int line = frame.getLine();
+    if (line > 0) {
+      lineInfo.append(":").append(line);
+      final int column = frame.getColumn();
+      if (column > 0) {
+        lineInfo.append(":").append(column);
+      }
+    }
+    return lineInfo.toString();
   }
 
   /**

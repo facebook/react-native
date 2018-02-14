@@ -30,6 +30,12 @@ public class ViewManagerPropertyUpdater {
       new HashMap<>();
   private static final Map<Class<?>, ShadowNodeSetter<?>> SHADOW_NODE_SETTER_MAP = new HashMap<>();
 
+  public static void clear() {
+    ViewManagersPropertyCache.clear();
+    VIEW_MANAGER_SETTER_MAP.clear();
+    SHADOW_NODE_SETTER_MAP.clear();
+  }
+
   public static <T extends ViewManager, V extends View> void updateProps(
       T manager,
       V v,

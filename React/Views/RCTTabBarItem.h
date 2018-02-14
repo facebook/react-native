@@ -9,7 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTComponent.h"
+#import <React/RCTComponent.h>
+#import <React/RCTConvert.h>
+
+@interface RCTConvert (UITabBarSystemItem)
+
++ (UITabBarSystemItem)UITabBarSystemItem:(id)json;
+
+@end
 
 @interface RCTTabBarItem : UIView
 
@@ -21,5 +28,10 @@
 @property (nonatomic, assign, getter=isSelected) BOOL selected;
 @property (nonatomic, readonly) UITabBarItem *barItem;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
+@property (nonatomic, strong) NSString *testID;
+
+#if TARGET_OS_TV
+@property (nonatomic, assign) BOOL wasSelectedInJS;
+#endif
 
 @end

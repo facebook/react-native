@@ -12,8 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTUtils.h"
-
-@implementation RCTPlatform
+#import "RCTVersion.h"
 
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {
@@ -30,7 +29,14 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
-RCT_EXPORT_MODULE(IOSConstants)
+@implementation RCTPlatform
+
+RCT_EXPORT_MODULE(PlatformConstants)
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
@@ -38,7 +44,10 @@ RCT_EXPORT_MODULE(IOSConstants)
   return @{
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),
     @"osVersion": [device systemVersion],
+    @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
+    @"isTesting": @(RCTRunningInTestEnvironment()),
+    @"reactNativeVersion": RCT_REACT_NATIVE_VERSION,
   };
 }
 

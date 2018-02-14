@@ -53,7 +53,7 @@ var TextInputState = {
   },
 
   /**
-   * @param {number} textFieldID id of the text field to focus
+   * @param {number} textFieldID id of the text field to unfocus
    * Unfocuses the specified text field
    * noop if it wasn't focused
    */

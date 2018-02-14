@@ -9,28 +9,29 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Field;
-
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
-
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.views.view.ReactViewBackgroundManager;
+import java.lang.reflect.Field;
+import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -39,13 +40,15 @@ import com.facebook.infer.annotation.Assertions;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
+@TargetApi(11)
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
-  private static Field sScrollerField;
+  private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
-  private final OverScroller mScroller;
+  private final @Nullable OverScroller mScroller;
+  private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -58,6 +61,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private View mContentView;
+  private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -66,6 +71,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
+    mReactBackgroundManager = new ReactViewBackgroundManager(this);
+
+    mScroller = getOverScrollerFromParent();
+    setOnHierarchyChangeListener(this);
+    setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+  }
+
+  @Nullable
+  private OverScroller getOverScrollerFromParent() {
+    OverScroller scroller;
 
     if (!sTriedToGetScrollerField) {
       sTriedToGetScrollerField = true;
@@ -82,34 +97,40 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     if (sScrollerField != null) {
       try {
-        Object scroller = sScrollerField.get(this);
-        if (scroller instanceof OverScroller) {
-          mScroller = (OverScroller) scroller;
+        Object scrollerValue = sScrollerField.get(this);
+        if (scrollerValue instanceof OverScroller) {
+          scroller = (OverScroller) scrollerValue;
         } else {
           Log.w(
             ReactConstants.TAG,
             "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
               "This app will exhibit the bounce-back scrolling bug :(");
-          mScroller = null;
+          scroller = null;
         }
       } catch (IllegalAccessException e) {
         throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
       }
     } else {
-      mScroller = null;
+      scroller = null;
     }
+
+    return scroller;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
     mSendMomentumEvents = sendMomentumEvents;
   }
 
-  public void setScrollPerfTag(String scrollPerfTag) {
+  public void setScrollPerfTag(@Nullable String scrollPerfTag) {
     mScrollPerfTag = scrollPerfTag;
   }
 
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
+  }
+
+  public void flashScrollIndicators() {
+    awakenScrollBars();
   }
 
   @Override
@@ -156,7 +177,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         mDoneFlinging = false;
       }
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ReactScrollViewHelper.emitScrollEvent(
+        this,
+        mOnScrollDispatchHelper.getXFlingVelocity(),
+        mOnScrollDispatchHelper.getYFlingVelocity());
     }
   }
 
@@ -183,12 +207,17 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       return false;
     }
 
+    mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      ReactScrollViewHelper.emitScrollEndDragEvent(
+        this,
+        mVelocityHelper.getXVelocity(),
+        mVelocityHelper.getYVelocity());
       mDragging = false;
       disableFpsListener();
     }
+
     return super.onTouchEvent(ev);
   }
 
@@ -251,7 +280,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         0,
         scrollWindowHeight / 2);
 
-      postInvalidateOnAnimation();
+      ViewCompat.postInvalidateOnAnimation(this);
 
       // END FB SCROLLVIEW CHANGE
     } else {
@@ -261,7 +290,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
       enableFpsListener();
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, 0, velocityY);
       Runnable r = new Runnable() {
         @Override
         public void run() {
@@ -271,11 +300,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
             ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
           } else {
             mDoneFlinging = true;
-            ReactScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            ViewCompat.postOnAnimationDelayed(
+                ReactScrollView.this,
+                this,
+                ReactScrollViewHelper.MOMENTUM_DELAY);
           }
         }
       };
-      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+      ViewCompat.postOnAnimationDelayed(this, r, ReactScrollViewHelper.MOMENTUM_DELAY);
     }
   }
 
@@ -297,6 +329,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private boolean isScrollPerfLoggingEnabled() {
     return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
+  }
+
+  private int getMaxScrollY() {
+    int contentHeight = mContentView.getHeight();
+    int viewportHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+    return Math.max(0, contentHeight - viewportHeight);
   }
 
   @Override
@@ -327,9 +365,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
-        int scrollRange = Math.max(
-          0,
-          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
+        int scrollRange = getMaxScrollY();
         if (scrollY >= scrollRange) {
           mScroller.abortAnimation();
           scrollY = scrollRange;
@@ -341,4 +377,60 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
   }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
+  }
+
+  /**
+   * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
+   * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
+   * position is larger than the ScrollView's max scroll position after the content shrinks.
+   */
+  @Override
+  public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    if (mContentView == null) {
+      return;
+    }
+
+    int currentScrollY = getScrollY();
+    int maxScrollY = getMaxScrollY();
+    if (currentScrollY > maxScrollY) {
+      scrollTo(getScrollX(), maxScrollY);
+    }
+  }
+
+  @Override
+  public void setBackgroundColor(int color) {
+    mReactBackgroundManager.setBackgroundColor(color);
+  }
+
+  public void setBorderWidth(int position, float width) {
+    mReactBackgroundManager.setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    mReactBackgroundManager.setBorderRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    mReactBackgroundManager.setBorderRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    mReactBackgroundManager.setBorderStyle(style);
+  }
+
 }

@@ -9,16 +9,22 @@
 
 #import "RCTViewManager.h"
 
-#import "RCTBridge.h"
 #import "RCTBorderStyle.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTConvert+Transform.h"
+
+#if TARGET_OS_TV
+#import "RCTTVView.h"
+#endif
 
 @implementation RCTConvert(UIAccessibilityTraits)
 
@@ -57,7 +63,11 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
+#if TARGET_OS_TV
+  return [RCTTVView new];
+#else
   return [RCTView new];
+#endif
 }
 
 - (RCTShadowView *)shadowView
@@ -86,33 +96,40 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
-{
-  return nil;
-}
-
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
-{
-  return nil;
-}
-
 #pragma mark - View properties
 
-RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
+#if TARGET_OS_TV
+// Apple TV properties
+RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
+#endif
+
+RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
+
+// Acessibility related properties
+RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
+RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifier, NSString)
+
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
-RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
-RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
 {
   if (json) {
-    view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
+    view.clipsToBounds = [RCTConvert YGOverflow:json] != YGOverflowVisible;
   } else {
     view.clipsToBounds = defaultView.clipsToBounds;
   }
@@ -122,19 +139,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
-// TODO: t11041683 Remove this duplicate property name.
-RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
-{
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
-  view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
-}
+
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
 }
+
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
@@ -208,8 +220,6 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
     }
   }
 }
-RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
@@ -229,6 +239,8 @@ RCT_VIEW_BORDER_PROPERTY(Top)
 RCT_VIEW_BORDER_PROPERTY(Right)
 RCT_VIEW_BORDER_PROPERTY(Bottom)
 RCT_VIEW_BORDER_PROPERTY(Left)
+RCT_VIEW_BORDER_PROPERTY(Start)
+RCT_VIEW_BORDER_PROPERTY(End)
 
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                           \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)        \
@@ -240,65 +252,79 @@ RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)        \
 
 RCT_VIEW_BORDER_RADIUS_PROPERTY(TopLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopEnd)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomEnd)
 
+RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
 
-RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
+RCT_EXPORT_SHADOW_PROPERTY(top, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(right, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(start, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(end, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(bottom, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(left, YGValue)
 
-RCT_EXPORT_SHADOW_PROPERTY(top, float)
-RCT_EXPORT_SHADOW_PROPERTY(right, float)
-RCT_EXPORT_SHADOW_PROPERTY(bottom, float)
-RCT_EXPORT_SHADOW_PROPERTY(left, float);
+RCT_EXPORT_SHADOW_PROPERTY(width, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(height, YGValue)
 
-RCT_EXPORT_SHADOW_PROPERTY(width, float)
-RCT_EXPORT_SHADOW_PROPERTY(height, float)
-
-RCT_EXPORT_SHADOW_PROPERTY(minWidth, float)
-RCT_EXPORT_SHADOW_PROPERTY(maxWidth, float)
-RCT_EXPORT_SHADOW_PROPERTY(minHeight, float)
-RCT_EXPORT_SHADOW_PROPERTY(maxHeight, float)
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, YGValue)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderStartWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderEndWidth, float)
 RCT_EXPORT_SHADOW_PROPERTY(borderWidth, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(marginTop, float)
-RCT_EXPORT_SHADOW_PROPERTY(marginRight, float)
-RCT_EXPORT_SHADOW_PROPERTY(marginBottom, float)
-RCT_EXPORT_SHADOW_PROPERTY(marginLeft, float)
-RCT_EXPORT_SHADOW_PROPERTY(marginVertical, float)
-RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, float)
-RCT_EXPORT_SHADOW_PROPERTY(margin, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginTop, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginRight, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginBottom, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginLeft, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginStart, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginEnd, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginVertical, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(margin, YGValue)
 
-RCT_EXPORT_SHADOW_PROPERTY(paddingTop, float)
-RCT_EXPORT_SHADOW_PROPERTY(paddingRight, float)
-RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, float)
-RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, float)
-RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, float)
-RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, float)
-RCT_EXPORT_SHADOW_PROPERTY(padding, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingTop, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingRight, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingStart, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingEnd, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(padding, YGValue)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexGrow, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexShrink, float)
-RCT_EXPORT_SHADOW_PROPERTY(flexBasis, float)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
-RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(flexBasis, YGValue)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, YGFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, YGWrap)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, YGJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignContent, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
+RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
+RCT_EXPORT_SHADOW_PROPERTY(display, YGDisplay)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
-RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end

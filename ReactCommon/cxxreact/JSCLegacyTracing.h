@@ -2,14 +2,11 @@
 
 #pragma once
 
-#if defined(WITH_JSC_EXTRA_TRACING)
+#include <jschelpers/JavaScriptCore.h>
 
-#include <JavaScriptCore/JSContextRef.h>
 namespace facebook {
 namespace react {
 
 void addNativeTracingLegacyHooks(JSGlobalContextRef ctx);
 
 } }
-
-#endif

@@ -47,7 +47,7 @@ NSInteger kNeverProgressed = -10000;
 
 @interface UINavigationController ()
 
-// need to declare this since `UINavigationController` doesnt publicly declare the fact that it implements
+// need to declare this since `UINavigationController` doesn't publicly declare the fact that it implements
 // UINavigationBarDelegate :(
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item;
 
@@ -466,7 +466,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
+  // Do nothing, as subviews are managed by `uiManagerDidPerformMounting`
 }
 
 - (void)layoutSubviews
@@ -510,7 +510,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return superview ?: self.reactNavSuperviewLink;
 }
 
-- (void)reactBridgeDidFinishTransaction
+- (void)uiManagerDidPerformMounting
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here
@@ -590,7 +590,10 @@ BOOL jsGettingtooSlow =
     return;
   }
 
-  _previousViews = [self.reactSubviews copy];
+  // Only make a copy of the subviews whose validity we expect to be able to check (in the loop, above),
+  // otherwise we would unnecessarily retain a reference to view(s) no longer on the React navigation stack:
+  NSUInteger expectedCount = MIN(currentReactCount, self.reactSubviews.count);
+  _previousViews = [[self.reactSubviews subarrayWithRange: NSMakeRange(0, expectedCount)] copy];
   _previousRequestedTopOfStack = _requestedTopOfStack;
 }
 

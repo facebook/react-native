@@ -11,16 +11,19 @@
 'use strict';
 
 var React = require('React');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 
-var LazyRenderer = React.createClass({
+var LazyRenderer = createReactClass({
+  displayName: 'LazyRenderer',
   mixin: [TimerMixin],
 
   propTypes: {
-    render: React.PropTypes.func.isRequired,
+    render: PropTypes.func.isRequired,
   },
 
-  componentWillMount: function(): void {
+  UNSAFE_componentWillMount: function(): void {
     this.setState({
       _lazyRender : true,
     });

@@ -1,0 +1,34 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+#import "RCTScrollContentShadowView.h"
+
+#import <yoga/Yoga.h>
+
+#import "RCTUtils.h"
+
+@implementation RCTScrollContentShadowView
+
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
+{
+  if (layoutMetrics.layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+    // Motivation:
+    // Yoga place `contentView` on the right side of `scrollView` when RTL layout is enfoced.
+    // That breaks everything; it is completely pointless to (re)position `contentView`
+    // because it is `contentView`'s job. So, we work around it here.
+
+    layoutContext.absolutePosition.x += layoutMetrics.frame.size.width;
+    layoutMetrics.frame.origin.x = 0;
+  }
+
+  [super layoutWithMetrics:layoutMetrics layoutContext:layoutContext];
+}
+
+@end

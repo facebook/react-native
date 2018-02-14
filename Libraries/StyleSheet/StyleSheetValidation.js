@@ -12,15 +12,19 @@
 'use strict';
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
-var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var invariant = require('fbjs/lib/invariant');
 
+// Hardcoded because this is a legit case but we don't want to load it from
+// a private API. We might likely want to unify style sheet creation with how it
+// is done in the DOM so this might move into React. I know what I'm doing so
+// plz don't fire me.
+const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
 class StyleSheetValidation {
-  static validateStyleProp(prop, style, caller) {
+  static validateStyleProp(prop: string, style: Object, caller: string) {
     if (!__DEV__) {
       return;
     }
@@ -34,16 +38,16 @@ class StyleSheetValidation {
       style,
       prop,
       caller,
-      ReactPropTypeLocations.prop,
+      'prop',
       null,
-      ReactPropTypesSecret
+      ReactPropTypesSecret,
     );
     if (error) {
       styleError(error.message, style, caller);
     }
   }
 
-  static validateStyle(name, styles) {
+  static validateStyle(name: string, styles: Object) {
     if (!__DEV__) {
       return;
     }

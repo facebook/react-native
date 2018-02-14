@@ -1,25 +1,29 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
-
 #include "JSCTracing.h"
 
+#if defined(WITH_FBSYSTRACE) && (defined(WITH_JSC_EXTRA_TRACING) || DEBUG)
+#define USE_JSCTRACING 1
+#else
+#define USE_JSCTRACING 0
+#endif
+
+#if USE_JSCTRACING
+
 #include <algorithm>
-#include <JavaScriptCore/JavaScript.h>
 #include <fbsystrace.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 using std::min;
+using namespace facebook::react;
 
-static int64_t int64FromJSValue(
-    JSContextRef ctx,
-    JSValueRef value,
-    JSValueRef* exception) {
-  (void)exception;
-  int64_t num = (int64_t) JSValueToNumber(ctx, value, NULL);
-  return num;
+static int64_t int64FromJSValue(JSContextRef ctx, JSValueRef value, JSValueRef* exception) {
+  return static_cast<int64_t>(JSC_JSValueToNumber(ctx, value, exception));
 }
 
 static size_t copyTruncatedAsciiChars(
@@ -28,19 +32,19 @@ static size_t copyTruncatedAsciiChars(
     JSContextRef ctx,
     JSValueRef value,
     size_t maxLen) {
-  JSStringRef jsString = JSValueToStringCopy(ctx, value, NULL);
-  size_t stringLen = JSStringGetLength(jsString);
+  JSStringRef jsString = JSC_JSValueToStringCopy(ctx, value, NULL);
+  size_t stringLen = JSC_JSStringGetLength(ctx, jsString);
   // Unlike the Java version, we truncate from the end of the string,
   // rather than the beginning.
   size_t toWrite = min(stringLen, min(bufLen, maxLen));
 
   const char *startBuf = buf;
-  const JSChar* chars = JSStringGetCharactersPtr(jsString);
+  const JSChar* chars = JSC_JSStringGetCharactersPtr(ctx, jsString);
   while (toWrite-- > 0) {
     *(buf++) = (char)*(chars++);
   }
 
-  JSStringRelease(jsString);
+  JSC_JSStringRelease(ctx, jsString);
 
   // Return the number of bytes written
   return buf - startBuf;
@@ -85,16 +89,16 @@ static JSValueRef nativeTraceBeginSection(
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 2)) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "nativeTraceBeginSection: requires at least 2 arguments");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
-  uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+  uint64_t tag = int64FromJSValue(ctx, arguments[0], exception);
   if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   char buf[FBSYSTRACE_MAX_MESSAGE_LENGTH];
@@ -113,7 +117,7 @@ static JSValueRef nativeTraceBeginSection(
 flush:
   fbsystrace_trace_raw(buf, min(pos, sizeof(buf)-1));
 
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 static JSValueRef nativeTraceEndSection(
@@ -125,16 +129,16 @@ static JSValueRef nativeTraceEndSection(
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "nativeTraceEndSection: requires at least 1 argument");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
-  uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+  uint64_t tag = int64FromJSValue(ctx, arguments[0], exception);
   if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   if (FBSYSTRACE_LIKELY(argumentCount == 1)) {
@@ -155,30 +159,28 @@ flush:
     fbsystrace_trace_raw(buf, min(pos, sizeof(buf)-1));
   }
 
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 static JSValueRef beginOrEndAsync(
     bool isEnd,
     bool isFlow,
     JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 3)) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "beginOrEndAsync: requires at least 3 arguments");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
-  uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+  uint64_t tag = int64FromJSValue(ctx, arguments[0], exception);
   if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   char buf[FBSYSTRACE_MAX_MESSAGE_LENGTH];
@@ -219,48 +221,7 @@ static JSValueRef beginOrEndAsync(
 flush:
   fbsystrace_trace_raw(buf, min(pos, sizeof(buf)-1));
 
-  return JSValueMakeUndefined(ctx);
-}
-
-static JSValueRef stageAsync(
-    bool isFlow,
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef* exception) {
-  if (FBSYSTRACE_UNLIKELY(argumentCount < 4)) {
-    if (exception) {
-      *exception = facebook::react::makeJSCException(
-        ctx,
-        "stageAsync: requires at least 4 arguments");
-    }
-    return JSValueMakeUndefined(ctx);
-  }
-
-  uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
-  if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
-  }
-
-  char buf[FBSYSTRACE_MAX_MESSAGE_LENGTH];
-  size_t pos = 0;
-
-  buf[pos++] = (isFlow ? 't' : 'T');
-  pos += snprintf(buf + pos, sizeof(buf) - pos, "|%d", getpid());
-  // Skip the overflow check here because the int will be small.
-
-  // Arguments are section name, cookie, and stage name.
-  // All added together, they still cannot cause an overflow.
-  for (int i = 1; i < 4; i++) {
-    buf[pos++] = '|';
-    pos += copyTruncatedAsciiChars(buf + pos, sizeof(buf) - pos, ctx, arguments[i], FBSYSTRACE_MAX_SECTION_NAME_LENGTH);
-  }
-
-  fbsystrace_trace_raw(buf, min(pos, sizeof(buf)-1));
-
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 static JSValueRef nativeTraceBeginAsyncSection(
@@ -270,15 +231,8 @@ static JSValueRef nativeTraceBeginAsyncSection(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return beginOrEndAsync(
-      false /* isEnd */,
-      false /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
+  return beginOrEndAsync(false /* isEnd */, false /* isFlow */,
+    ctx, argumentCount, arguments, exception);
 }
 
 static JSValueRef nativeTraceEndAsyncSection(
@@ -288,32 +242,8 @@ static JSValueRef nativeTraceEndAsyncSection(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return beginOrEndAsync(
-      true /* isEnd */,
-      false /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
-}
-
-static JSValueRef nativeTraceAsyncSectionStage(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef* exception) {
-  return stageAsync(
-      false /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
+  return beginOrEndAsync(true /* isEnd */, false /* isFlow */,
+      ctx, argumentCount, arguments, exception);
 }
 
 static JSValueRef nativeTraceBeginAsyncFlow(
@@ -323,15 +253,8 @@ static JSValueRef nativeTraceBeginAsyncFlow(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return beginOrEndAsync(
-      false /* isEnd */,
-      true /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
+  return beginOrEndAsync(false /* isEnd */, true /* isFlow */,
+      ctx, argumentCount, arguments, exception);
 }
 
 static JSValueRef nativeTraceEndAsyncFlow(
@@ -341,32 +264,8 @@ static JSValueRef nativeTraceEndAsyncFlow(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return beginOrEndAsync(
-      true /* isEnd */,
-      true /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
-}
-
-static JSValueRef nativeTraceAsyncFlowStage(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef* exception) {
-  return stageAsync(
-      true /* isFlow */,
-      ctx,
-      function,
-      thisObject,
-      argumentCount,
-      arguments,
-      exception);
+  return beginOrEndAsync(true /* isEnd */, true /* isFlow */,
+      ctx, argumentCount, arguments, exception);
 }
 
 static JSValueRef nativeTraceCounter(
@@ -378,16 +277,16 @@ static JSValueRef nativeTraceCounter(
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 3)) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "nativeTraceCounter: requires at least 3 arguments");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
-  uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+  uint64_t tag = int64FromJSValue(ctx, arguments[0], exception);
   if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   char buf[FBSYSTRACE_MAX_MESSAGE_LENGTH];
@@ -398,36 +297,24 @@ static JSValueRef nativeTraceCounter(
 
   fbsystrace_counter(tag, buf, value);
 
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
+
+#endif
 
 namespace facebook {
 namespace react {
 
-uint64_t tracingTagFromJSValue(
-    JSContextRef ctx,
-    JSValueRef value,
-    JSValueRef* exception) {
-  // XXX validate that this is a lossless conversion.
-  // XXX should we just have separate functions for bridge, infra, and apps,
-  // then drop this argument to save time?
-  (void)exception;
-  uint64_t tag = (uint64_t) JSValueToNumber(ctx, value, NULL);
-  return tag;
-}
-
 void addNativeTracingHooks(JSGlobalContextRef ctx) {
+#if USE_JSCTRACING
   installGlobalFunction(ctx, "nativeTraceBeginSection", nativeTraceBeginSection);
   installGlobalFunction(ctx, "nativeTraceEndSection", nativeTraceEndSection);
   installGlobalFunction(ctx, "nativeTraceBeginAsyncSection", nativeTraceBeginAsyncSection);
   installGlobalFunction(ctx, "nativeTraceEndAsyncSection", nativeTraceEndAsyncSection);
-  installGlobalFunction(ctx, "nativeTraceAsyncSectionStage", nativeTraceAsyncSectionStage);
   installGlobalFunction(ctx, "nativeTraceBeginAsyncFlow", nativeTraceBeginAsyncFlow);
   installGlobalFunction(ctx, "nativeTraceEndAsyncFlow", nativeTraceEndAsyncFlow);
-  installGlobalFunction(ctx, "nativeTraceAsyncFlowStage", nativeTraceAsyncFlowStage);
   installGlobalFunction(ctx, "nativeTraceCounter", nativeTraceCounter);
+#endif
 }
 
 } }
-
-#endif

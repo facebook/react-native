@@ -7,21 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule processColor
+ * @flow
  */
 'use strict';
 
-var Platform = require('Platform');
+const Platform = require('Platform');
 
-var normalizeColor = require('normalizeColor');
+const normalizeColor = require('normalizeColor');
 
 /* eslint no-bitwise: 0 */
-function processColor(color) {
+function processColor(color?: string | number): ?number {
   if (color === undefined || color === null) {
     return color;
   }
 
-  var int32Color = normalizeColor(color);
-  if (int32Color === null) {
+  let int32Color = normalizeColor(color);
+  if (int32Color === null || int32Color === undefined) {
     return undefined;
   }
 

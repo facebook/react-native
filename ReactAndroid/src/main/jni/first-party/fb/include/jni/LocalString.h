@@ -47,7 +47,7 @@ std::string utf16toUTF8(const uint16_t* utf16Bytes, size_t len) noexcept;
 
 class FBEXPORT LocalString {
 public:
-  // Assumes UTF8 encoding and make a required convertion to modified UTF-8 when the string
+  // Assumes UTF8 encoding and make a required conversion to modified UTF-8 when the string
   // contains unicode supplementary characters.
   explicit LocalString(const std::string& str);
   explicit LocalString(const char* str);
@@ -65,8 +65,10 @@ public:
   JStringUtf16Extractor(JNIEnv* env, jstring javaString)
   : env_(env)
   , javaString_(javaString)
+  , length_(0)
   , utf16String_(nullptr) {
     if (env_ && javaString_) {
+      length_ = env_->GetStringLength(javaString_);
       utf16String_ = env_->GetStringCritical(javaString_, nullptr);
     }
   }
@@ -77,13 +79,18 @@ public:
     }
   }
 
-  operator const jchar* () const {
+  const jsize length() const {
+    return length_;
+  }
+
+  const jchar* chars() const {
     return utf16String_;
   }
 
 private:
   JNIEnv* env_;
   jstring javaString_;
+  jsize length_;
   const jchar* utf16String_;
 };
 

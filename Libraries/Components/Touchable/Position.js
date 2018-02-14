@@ -11,7 +11,7 @@
 
 'use strict';
 
-var PooledClass = require('react/lib/PooledClass');
+var PooledClass = require('PooledClass');
 
 var twoArgumentPooler = PooledClass.twoArgumentPooler;
 

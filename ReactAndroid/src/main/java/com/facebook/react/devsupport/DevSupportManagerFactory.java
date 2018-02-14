@@ -9,11 +9,14 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
+import android.content.Context;
+
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 import java.lang.reflect.Constructor;
 
-import android.content.Context;
+import javax.annotation.Nullable;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
@@ -28,24 +31,29 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate) {
+      boolean enableOnCreate,
+      int minNumShakes) {
 
     return create(
       applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManagerHelper,
       packagerPathForJSBundleName,
       enableOnCreate,
-      null);
+      null,
+      null,
+      minNumShakes);
   }
 
   public static DevSupportManager create(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManagerDevHelper reactInstanceManagerHelper,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
-    @Nullable RedBoxHandler redBoxHandler) {
+    @Nullable RedBoxHandler redBoxHandler,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
+    int minNumShakes) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -63,16 +71,20 @@ public class DevSupportManagerFactory {
       Constructor constructor =
         devSupportManagerClass.getConstructor(
           Context.class,
-          ReactInstanceDevCommandsHandler.class,
+          ReactInstanceManagerDevHelper.class,
           String.class,
           boolean.class,
-          RedBoxHandler.class);
+          RedBoxHandler.class,
+          DevBundleDownloadListener.class,
+          int.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
-        reactInstanceCommandsHandler,
+        reactInstanceManagerHelper,
         packagerPathForJSBundleName,
         true,
-        redBoxHandler);
+        redBoxHandler,
+        devBundleDownloadListener,
+        minNumShakes);
     } catch (Exception e) {
       throw new RuntimeException(
         "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +
@@ -80,5 +92,4 @@ public class DevSupportManagerFactory {
         e);
     }
   }
-
 }

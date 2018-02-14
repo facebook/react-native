@@ -14,7 +14,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTNavItem.h"
 #import "RCTUtils.h"
-#import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
 #import "RCTAutoInsetsProtocol.h"
 
@@ -25,10 +24,10 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayoutLength;
   CGFloat _previousBottomLayoutLength;
-}
 
-@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
-@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
+  id<UILayoutSupport> _currentTopLayoutGuide;
+  id<UILayoutSupport> _currentBottomLayoutGuide;
+}
 
 - (instancetype)initWithContentView:(UIView *)contentView
 {
@@ -115,6 +114,9 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
     bar.barTintColor = _navItem.barTintColor;
     bar.tintColor = _navItem.tintColor;
     bar.translucent = _navItem.translucent;
+#if !TARGET_OS_TV
+    bar.barStyle = _navItem.barStyle;
+#endif
     bar.titleTextAttributes = _navItem.titleTextColor ? @{
       NSForegroundColorAttributeName: _navItem.titleTextColor
     } : nil;

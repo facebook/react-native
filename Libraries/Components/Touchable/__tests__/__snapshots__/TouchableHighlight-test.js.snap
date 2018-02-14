@@ -1,10 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
   accessibilityComponentType={undefined}
   accessibilityLabel={undefined}
   accessibilityTraits={undefined}
   accessible={true}
+  hasTVPreferredFocus={undefined}
   hitSlop={undefined}
+  isTVSelectable={true}
+  nativeID={undefined}
   onLayout={undefined}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
@@ -12,19 +17,16 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
-  style={
-    Array [
-      Object {
-        "backgroundColor": "transparent",
-      },
-      Object {},
-    ]
-  }
-  testID={undefined}>
+  style={Object {}}
+  testID={undefined}
+  tvParallaxProperties={undefined}
+>
   <Text
     accessible={true}
     allowFontScaling={true}
-    ellipsizeMode="tail">
+    ellipsizeMode="tail"
+    style={null}
+  >
     Touchable
   </Text>
 </View>

@@ -65,7 +65,7 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
 
     MessageQueueThreadSpec uiThreadSpec = MessageQueueThreadSpec.mainThreadSpec();
     MessageQueueThreadImpl uiThread =
-      MessageQueueThreadImpl.create( uiThreadSpec, exceptionHandler);
+      MessageQueueThreadImpl.create(uiThreadSpec, exceptionHandler);
     specsToThreads.put(uiThreadSpec, uiThread);
 
     MessageQueueThreadImpl jsThread = specsToThreads.get(spec.getJSQueueThreadSpec());
@@ -80,6 +80,9 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
           MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
     }
 
-    return new ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
+    return new ReactQueueConfigurationImpl(
+      uiThread,
+      nativeModulesThread,
+      jsThread);
   }
 }

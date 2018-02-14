@@ -9,7 +9,7 @@
  * @providesModule TextInputTestModule
  */
 
-"use strict";
+'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
@@ -17,6 +17,8 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var TextInput = require('TextInput');
 var View = require('View');
+
+var Recording = require('NativeModules').Recording;
 
 var app;
 
@@ -81,6 +83,10 @@ class TextInputTestApp extends React.Component {
     app = this;
   }
 
+  handleOnSubmitEditing = (record) => {
+    Recording.record(record);
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -88,7 +94,7 @@ class TextInputTestApp extends React.Component {
           style={styles.textInputHeight}
           autoCorrect={true}
           autoFocus={true}
-          keyboardType='numeric'
+          keyboardType="numeric"
           multiline={true}
           secureTextEntry={true}
           defaultValue="This is text"
@@ -96,13 +102,13 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           style={styles.textInput}
-          autoCapitalize='sentences'
+          autoCapitalize="sentences"
           autoCorrect={false}
           autoFocus={false}
-          keyboardType='default'
+          keyboardType="default"
           multiline={false}
           secureTextEntry={false}
-          placeholder='1234'
+          placeholder="1234"
           testID="textInput2"
         />
         <TextInput
@@ -127,6 +133,12 @@ class TextInputTestApp extends React.Component {
           style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue="Text"
           testID="textInput6"
+        />
+        <TextInput
+          ref="onSubmitTextInput"
+          onSubmitEditing={this.handleOnSubmitEditing.bind(this, 'onSubmit')}
+          defaultValue=""
+          testID="onSubmitTextInput"
         />
         <TokenizedTextExample />
       </View>

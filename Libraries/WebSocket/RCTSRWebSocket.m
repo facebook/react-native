@@ -22,9 +22,8 @@
 #import <Security/SecRandom.h>
 
 #import <CommonCrypto/CommonDigest.h>
-
-#import "RCTAssert.h"
-#import "RCTLog.h"
+#import <React/RCTAssert.h>
+#import <React/RCTLog.h>
 
 typedef NS_ENUM(NSInteger, RCTSROpCode)  {
   RCTSROpCodeTextFrame = 0x1,
@@ -162,40 +161,12 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
 
 @interface RCTSRWebSocket ()  <NSStreamDelegate>
 
-- (void)_writeData:(NSData *)data;
-- (void)_closeWithProtocolError:(NSString *)message;
-- (void)_failWithError:(NSError *)error;
-
-- (void)_disconnect;
-
-- (void)_readFrameNew;
-- (void)_readFrameContinue;
-
-- (void)_pumpScanner;
-
-- (void)_pumpWriting;
-
-- (void)_addConsumerWithScanner:(stream_scanner)consumer callback:(data_callback)callback;
-- (void)_addConsumerWithDataLength:(size_t)dataLength callback:(data_callback)callback readToCurrentFrame:(BOOL)readToCurrentFrame unmaskBytes:(BOOL)unmaskBytes;
-- (void)_addConsumerWithScanner:(stream_scanner)consumer callback:(data_callback)callback dataLength:(size_t)dataLength;
-- (void)_readUntilBytes:(const void *)bytes length:(size_t)length callback:(data_callback)dataHandler;
-- (void)_readUntilHeaderCompleteWithCallback:(data_callback)dataHandler;
-
-- (void)_sendFrameWithOpcode:(RCTSROpCode)opcode data:(id)data;
-
-- (BOOL)_checkHandshake:(CFHTTPMessageRef)httpMessage;
-- (void)_RCTSR_commonInit;
-
-- (void)_initializeStreams;
-- (void)_connect;
-
 @property (nonatomic, assign) RCTSRReadyState readyState;
 
 @property (nonatomic, strong) NSOperationQueue *delegateOperationQueue;
 @property (nonatomic, strong) dispatch_queue_t delegateDispatchQueue;
 
 @end
-
 
 @implementation RCTSRWebSocket
 {
@@ -254,13 +225,6 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
 
   NSArray<NSString *> *_requestedProtocols;
   RCTSRIOConsumerPool *_consumerPool;
-}
-
-static __strong NSData *CRLFCRLF;
-
-+ (void)initialize;
-{
-  CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols
@@ -435,7 +399,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  if(![self _checkHandshake:_receivedHTTPHeaders]) {
+  if (![self _checkHandshake:_receivedHTTPHeaders]) {
     [self _failWithError:[NSError errorWithDomain:RCTSRWebSocketErrorDomain code:2133 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Invalid Sec-WebSocket-Accept response"]}]];
     return;
   }

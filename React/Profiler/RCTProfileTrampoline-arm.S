@@ -35,12 +35,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * profile
    */
   mov r0, #0xc
-  movw	ip, :lower16:(L_malloc-(LPC1_0+4))
-  movt	ip, :upper16:(L_malloc-(LPC1_0+4))
-LPC1_0:
-  add ip, pc
-  ldr ip, [ip]
-  blx ip
+  bl SYMBOL_NAME(RCTProfileMalloc)
   /**
    * r4 is the callee saved register we'll use to refer to the allocated memory,
    * store its initial value, so we can restore it later
@@ -92,24 +87,12 @@ LPC1_0:
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  movw	ip, :lower16:(L_free-(LPC1_1+4))
-  movt	ip, :upper16:(L_free-(LPC1_1+4))
-LPC1_1:
-  add ip, pc
-  ldr ip, [ip]
-  blx ip
+  bl SYMBOL_NAME(RCTProfileFree)
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
   bx lr // jump to the calleer
 
   trap
-
-  .data
-  .p2align 2
-L_malloc:
-  .long SYMBOL_NAME(malloc)
-L_free:
-  .long SYMBOL_NAME(free)
 
 #endif

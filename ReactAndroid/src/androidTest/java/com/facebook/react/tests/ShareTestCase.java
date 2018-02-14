@@ -73,8 +73,7 @@ public class ShareTestCase extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule)
-        .addJSModule(ShareTestModule.class);
+        .addNativeModule(mRecordingModule);
   }
 
   @Override

@@ -12,7 +12,6 @@ import java.util.List;
 
 import android.view.View;
 
-import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -35,11 +34,6 @@ public class InstanceSpecForTestPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(
       ReactApplicationContext catalystApplicationContext) {
     return mSpecForTest.getExtraNativeModulesForTest();
-  }
-
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return mSpecForTest.getExtraJSModulesForTest();
   }
 
   @Override

@@ -1,18 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#ifdef WITH_JSC_EXTRA_TRACING
-
 #include "JSCSamplingProfiler.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <jschelpers/JSCHelpers.h>
-#include <jschelpers/Value.h>
 
-namespace facebook {
-namespace react {
-namespace {
 static JSValueRef pokeSamplingProfiler(
     JSContextRef ctx,
     JSObjectRef function,
@@ -20,16 +11,18 @@ static JSValueRef pokeSamplingProfiler(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return JSPokeSamplingProfiler(ctx);
-}
+  return JSC_JSPokeSamplingProfiler(ctx);
 }
 
+namespace facebook {
+namespace react {
+
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
-  JSStartSamplingProfilingOnMainJSCThread(ctx);
+  JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
+
+  // Allow the profiler to be poked from JS as well
+  // (see SamplingProfiler.js for an example of how it could be used with the JSCSamplingProfiler module).
   installGlobalFunction(ctx, "pokeSamplingProfiler", pokeSamplingProfiler);
 }
 
-}
-}
-
-#endif // WITH_JSC_EXTRA_TRACING
+} }

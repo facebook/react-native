@@ -5,10 +5,12 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ * @providesModule SizeFlexibilityUpdateTest
  */
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 var Subscribable = require('Subscribable');
@@ -21,10 +23,11 @@ var reactViewHeight = 222;
 
 var finalState = false;
 
-var SizeFlexibilityUpdateTest = React.createClass({
+var SizeFlexibilityUpdateTest = createReactClass({
+  displayName: 'SizeFlexibilityUpdateTest',
   mixins: [Subscribable.Mixin],
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this.addListenerOn(
       RCTNativeAppEventEmitter,
       'rootViewDidChangeIntrinsicSize',

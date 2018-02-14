@@ -8,13 +8,23 @@
  *
  * @providesModule ShadowPropTypesIOS
  * @flow
+ * @format
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var ReactPropTypes = require('React').PropTypes;
+const ColorPropType = require('ColorPropType');
+const ReactPropTypes = require('prop-types');
 
-var ShadowPropTypesIOS = {
+/**
+ * These props can be used to dynamically generate shadows on views, images, text, etc.
+ *
+ * Because they are dynamically generated, they may cause performance regressions. Static
+ * shadow image asset may be a better way to go for optimal performance.
+ *
+ * These properties are iOS only - for similar functionality on Android, use the [`elevation`
+ * property](docs/viewstyleproptypes.html#elevation).
+ */
+const ShadowPropTypesIOS = {
   /**
    * Sets the drop shadow color
    * @platform ios
@@ -24,9 +34,10 @@ var ShadowPropTypesIOS = {
    * Sets the drop shadow offset
    * @platform ios
    */
-  shadowOffset: ReactPropTypes.shape(
-    {width: ReactPropTypes.number, height: ReactPropTypes.number}
-  ),
+  shadowOffset: ReactPropTypes.shape({
+    width: ReactPropTypes.number,
+    height: ReactPropTypes.number,
+  }),
   /**
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios

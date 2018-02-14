@@ -12,36 +12,32 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var InspectorUtils = require('InspectorUtils');
+var ElementBox = require('ElementBox');
+var PropTypes = require('prop-types');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
-var ElementBox = require('ElementBox');
-
-var PropTypes = React.PropTypes;
 
 type EventLike = {
   nativeEvent: Object,
 };
 
-class InspectorOverlay extends React.Component {
-  props: {
-    inspected?: {
-      frame?: Object,
-      style?: any,
-    },
-    inspectedViewTag?: number,
-    onTouchInstance: Function,
-  };
-
+class InspectorOverlay extends React.Component<{
+  inspected?: {
+    frame?: Object,
+    style?: any,
+  },
+  inspectedViewTag?: number,
+  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => void,
+}> {
   static propTypes = {
     inspected: PropTypes.shape({
       frame: PropTypes.object,
       style: PropTypes.any,
     }),
     inspectedViewTag: PropTypes.number,
-    onTouchInstance: PropTypes.func.isRequired,
+    onTouchViewTag: PropTypes.func.isRequired,
   };
 
   findViewForTouchEvent = (e: EventLike) => {
@@ -50,11 +46,7 @@ class InspectorOverlay extends React.Component {
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        var instance = InspectorUtils.findInstanceByNativeTag(nativeViewTag);
-        if (!instance) {
-          return;
-        }
-        this.props.onTouchInstance(instance, {left, top, width, height}, locationY);
+        this.props.onTouchViewTag(nativeViewTag, {left, top, width, height}, locationY);
       }
     );
   };

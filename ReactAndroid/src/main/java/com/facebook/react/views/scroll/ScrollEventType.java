@@ -17,8 +17,7 @@ public enum ScrollEventType {
   END_DRAG("topScrollEndDrag"),
   SCROLL("topScroll"),
   MOMENTUM_BEGIN("topMomentumScrollBegin"),
-  MOMENTUM_END("topMomentumScrollEnd"),
-  ANIMATION_END("topScrollAnimationEnd");
+  MOMENTUM_END("topMomentumScrollEnd");
 
   private final String mJSEventName;
 

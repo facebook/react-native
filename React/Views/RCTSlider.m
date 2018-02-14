@@ -9,8 +9,6 @@
 
 #import "RCTSlider.h"
 
-#import <tgmath.h>
-
 @implementation RCTSlider
 {
   float _unclippedValue;

@@ -11,8 +11,8 @@ if [ -z "$1" ]
 fi
 
 xctool \
-  -project Examples/UIExplorer/UIExplorer.xcodeproj \
-  -scheme UIExplorer \
+  -project RNTester/RNTester.xcodeproj \
+  -scheme RNTester \
   -sdk iphonesimulator${1} \
   -destination "platform=iOS Simulator,OS=${1},name=iPhone 5" \
   build test

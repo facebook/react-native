@@ -9,7 +9,7 @@
  * @providesModule ViewRenderingTestModule
  */
 
-"use strict";
+'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
@@ -21,7 +21,7 @@ var renderApplication = require('renderApplication');
 var styles = StyleSheet.create({
   view: {
     opacity: 0.75,
-    backgroundColor: "rgb(255, 0, 0)",
+    backgroundColor: 'rgb(255, 0, 0)',
   },
 });
 
@@ -44,7 +44,7 @@ class MarginSampleApp extends React.Component {
     updateMargins = this.setState.bind(this, {margin: 15});
     return (
       <View style={{margin: this.state.margin, marginLeft: 20}} collapsable={false}/>
-    )
+    );
   }
 }
 

@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge.queue;
 
+
 /**
  * Specifies which {@link MessageQueueThread}s must be used to run the various contexts of
  * execution within catalyst (Main UI thread, native modules, and JS). Some of these queues *may* be
@@ -22,4 +23,5 @@ public interface ReactQueueConfiguration {
   MessageQueueThread getUIQueueThread();
   MessageQueueThread getNativeModulesQueueThread();
   MessageQueueThread getJSQueueThread();
+  void destroy();
 }

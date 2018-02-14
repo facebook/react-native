@@ -13,6 +13,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var View = require('View');
 var ScrollView = require('ScrollView');
 var Text = require('Text');
@@ -64,7 +65,8 @@ var onItemPress = function(itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
-var ScrollViewTestApp = React.createClass({
+var ScrollViewTestApp = createReactClass({
+  displayName: 'ScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,
@@ -90,7 +92,8 @@ var ScrollViewTestApp = React.createClass({
   },
 });
 
-var HorizontalScrollViewTestApp = React.createClass({
+var HorizontalScrollViewTestApp = createReactClass({
+  displayName: 'HorizontalScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,

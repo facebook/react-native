@@ -8,7 +8,7 @@
 namespace facebook {
 namespace react {
 namespace unicode {
-std::string utf16toUTF8(const uint16_t* utf16, size_t length) noexcept;
+__attribute__((visibility("default"))) std::string utf16toUTF8(const uint16_t* utf16, size_t length) noexcept;
 }
 }
 }

@@ -8,9 +8,7 @@
  */
 'use strict';
 
-const exec = require('child_process').exec;
 const fs = require('fs');
-const path = require('path');
 
 module.exports = function(req, res, next) {
   if (req.url !== '/systrace') {
@@ -20,33 +18,12 @@ module.exports = function(req, res, next) {
 
   console.log('Dumping profile information...');
   var dumpName = '/tmp/dump_' + Date.now() + '.json';
-  var prefix = process.env.TRACE_VIEWER_PATH || '';
-  var cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
   fs.writeFileSync(dumpName, req.rawBody);
-  exec(cmd, function(error) {
-    if (error) {
-      if (error.code === 127) {
-        var response = '\n** Failed executing `' + cmd + '` **\n\n' +
-          'Google trace-viewer is required to visualize the data, ' +
-          'You can install it with `brew install trace2html`\n\n' +
-          'NOTE: Your profile data was kept at:\n' + dumpName;
-        console.log(response);
-        res.end(response);
-      } else {
-        console.error(error);
-        res.end('Unknown error: ' + error.message);
-      }
-      return;
-    } else {
-      exec('rm ' + dumpName);
-      exec('open ' + dumpName.replace(/json$/, 'html'), function(err) {
-        if (err) {
-          console.error(err);
-          res.end(err.message);
-        } else {
-          res.end();
-        }
-      });
-    }
-  });
+  var response =
+    'Your profile was saved at:\n' + dumpName + '\n\n' +
+    'On Google Chrome navigate to chrome://tracing and then click on "load" ' +
+    'to load and visualise your profile.\n\n' +
+    'This message is also printed to your console by the packager so you can copy it :)';
+  console.log(response);
+  res.end(response);
 };

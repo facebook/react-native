@@ -9,21 +9,12 @@
 
 package com.facebook.react.modules.camera;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -31,17 +22,17 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Video;
 import android.text.TextUtils;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.GuardedAsyncTask;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -50,14 +41,24 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 // TODO #6015104: rename to something less iOSish
 /**
  * {@link NativeModule} that allows JS to interact with the photos on the device (i.e.
  * {@link MediaStore.Images}).
  */
-@ReactModule(name = "RKCameraRollManager")
+@ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -100,7 +101,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKCameraRollManager";
+    return NAME;
   }
 
   /**
@@ -113,25 +114,21 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void saveToCameraRoll(String uri, String type, Promise promise) {
-    MediaType parsedType = type.equals("video") ? MediaType.VIDEO : MediaType.PHOTO;
-    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), parsedType, promise)
+    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  private enum MediaType { PHOTO, VIDEO };
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
-    private final MediaType mType;
 
-    public SaveToCameraRoll(ReactContext context, Uri uri, MediaType type, Promise promise) {
+    public SaveToCameraRoll(ReactContext context, Uri uri, Promise promise) {
       super(context);
       mContext = context;
       mUri = uri;
       mPromise = promise;
-      mType = type;
     }
 
     @Override
@@ -139,9 +136,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       File source = new File(mUri.getPath());
       FileChannel input = null, output = null;
       try {
-        File exportDir = (mType == MediaType.PHOTO)
-          ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-          : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
           mPromise.reject(ERROR_UNABLE_TO_LOAD, "External media storage directory not available");
@@ -217,6 +212,10 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    *            mimeType (optional): restrict returned images to a specific mimetype (e.g.
    *            image/jpeg)
    *          </li>
+   *          <li>
+   *            assetType (optional): chooses between either photos or videos from the camera roll.
+   *            Valid values are "Photos" or "Videos". Defaults to photos.
+   *          </li>
    *        </ul>
    * @param promise the Promise to be resolved when the photos are loaded; for a format of the
    *        parameters passed to this callback, see {@code getPhotosReturnChecker} in CameraRoll.js
@@ -226,6 +225,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int first = params.getInt("first");
     String after = params.hasKey("after") ? params.getString("after") : null;
     String groupName = params.hasKey("groupName") ? params.getString("groupName") : null;
+    String assetType = params.hasKey("assetType") ? params.getString("assetType") : null;
     ReadableArray mimeTypes = params.hasKey("mimeTypes")
         ? params.getArray("mimeTypes")
         : null;
@@ -239,6 +239,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           after,
           groupName,
           mimeTypes,
+          assetType,
           promise)
           .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -250,6 +251,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     private final @Nullable String mGroupName;
     private final @Nullable ReadableArray mMimeTypes;
     private final Promise mPromise;
+    private final @Nullable String mAssetType;
 
     private GetPhotosTask(
         ReactContext context,
@@ -257,6 +259,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         @Nullable String after,
         @Nullable String groupName,
         @Nullable ReadableArray mimeTypes,
+        @Nullable String assetType,
         Promise promise) {
       super(context);
       mContext = context;
@@ -265,6 +268,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       mGroupName = groupName;
       mMimeTypes = mimeTypes;
       mPromise = promise;
+      mAssetType = assetType;
     }
 
     @Override
@@ -293,8 +297,12 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       // setting a limit at all), but it works because this specific ContentProvider is backed by
       // an SQLite DB and forwards parameters to it without doing any parsing / validation.
       try {
+        Uri assetURI =
+            mAssetType != null && mAssetType.equals("Videos") ? Video.Media.EXTERNAL_CONTENT_URI :
+                Images.Media.EXTERNAL_CONTENT_URI;
+
         Cursor photos = resolver.query(
-            Images.Media.EXTERNAL_CONTENT_URI,
+            assetURI,
             PROJECTION,
             selection.toString(),
             selectionArgs.toArray(new String[selectionArgs.size()]),
@@ -304,7 +312,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get photos");
         } else {
           try {
-            putEdges(resolver, photos, response, mFirst);
+            putEdges(resolver, photos, response, mFirst, mAssetType);
             putPageInfo(photos, response, mFirst);
           } finally {
             photos.close();
@@ -336,7 +344,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       ContentResolver resolver,
       Cursor photos,
       WritableMap response,
-      int limit) {
+      int limit,
+      @Nullable String assetType) {
     WritableArray edges = new WritableNativeArray();
     photos.moveToFirst();
     int idIndex = photos.getColumnIndex(Images.Media._ID);
@@ -352,7 +361,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       WritableMap edge = new WritableNativeMap();
       WritableMap node = new WritableNativeMap();
       boolean imageInfoSuccess =
-          putImageInfo(resolver, photos, node, idIndex, widthIndex, heightIndex);
+          putImageInfo(resolver, photos, node, idIndex, widthIndex, heightIndex, assetType);
       if (imageInfoSuccess) {
         putBasicNodeInfo(photos, node, mimeTypeIndex, groupNameIndex, dateTakenIndex);
         putLocationInfo(photos, node, longitudeIndex, latitudeIndex);
@@ -386,11 +395,15 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       WritableMap node,
       int idIndex,
       int widthIndex,
-      int heightIndex) {
+      int heightIndex,
+      @Nullable String assetType) {
     WritableMap image = new WritableNativeMap();
-    Uri photoUri = Uri.withAppendedPath(
-        Images.Media.EXTERNAL_CONTENT_URI,
-        photos.getString(idIndex));
+    Uri photoUri;
+    if (assetType != null && assetType.equals("Videos")) {
+      photoUri = Uri.withAppendedPath(Video.Media.EXTERNAL_CONTENT_URI, photos.getString(idIndex));
+    } else {
+      photoUri = Uri.withAppendedPath(Images.Media.EXTERNAL_CONTENT_URI, photos.getString(idIndex));
+    }
     image.putString("uri", photoUri.toString());
     float width = -1;
     float height = -1;
@@ -398,6 +411,46 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       width = photos.getInt(widthIndex);
       height = photos.getInt(heightIndex);
     }
+
+    if (assetType != null
+        && assetType.equals("Videos")
+        && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+      try {
+        AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+
+        try {
+          if (width <= 0 || height <= 0) {
+            width =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+          }
+          int timeInMillisec =
+              Integer.parseInt(
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+          int playableDuration = timeInMillisec / 1000;
+          image.putInt("playableDuration", playableDuration);
+        } catch (NumberFormatException e) {
+          FLog.e(
+              ReactConstants.TAG,
+              "Number format exception occurred while trying to fetch video metadata for "
+                  + photoUri.toString(),
+              e);
+          return false;
+        } finally {
+          retriever.release();
+          photoDescriptor.close();
+        }
+      } catch (IOException e) {
+        FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
+        return false;
+      }
+    }
+
     if (width <= 0 || height <= 0) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
@@ -406,10 +459,9 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         // dimensions instead.
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFileDescriptor(photoDescriptor.getFileDescriptor(), null, options);
-        photoDescriptor.close();
-
         width = options.outWidth;
         height = options.outHeight;
+        photoDescriptor.close();
       } catch (IOException e) {
         FLog.e(ReactConstants.TAG, "Could not get width/height for " + photoUri.toString(), e);
         return false;

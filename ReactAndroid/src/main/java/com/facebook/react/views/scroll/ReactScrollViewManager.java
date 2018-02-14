@@ -9,19 +9,22 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
+import android.annotation.TargetApi;
 import android.graphics.Color;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -29,12 +32,17 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@TargetApi(11)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
   protected static final String REACT_CLASS = "RCTScrollView";
+
+  private static final int[] SPACING_TYPES = {
+      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+  };
 
   private @Nullable FpsListener mFpsListener = null;
 
@@ -92,7 +100,7 @@ public class ReactScrollViewManager
    * @param scrollPerfTag
    */
   @ReactProp(name = "scrollPerfTag")
-  public void setScrollPerfTag(ReactScrollView view, String scrollPerfTag) {
+  public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
   }
 
@@ -105,6 +113,14 @@ public class ReactScrollViewManager
   @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBottomFillColor(ReactScrollView view, int color) {
     view.setEndFillColor(color);
+  }
+
+  /**
+   * Controls overScroll behaviour
+   */
+  @ReactProp(name = "overScrollMode")
+  public void setOverScrollMode(ReactScrollView view, String value) {
+    view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
   @Override
@@ -121,27 +137,91 @@ public class ReactScrollViewManager
   }
 
   @Override
+  public void flashScrollIndicators(ReactScrollView scrollView) {
+    scrollView.flashScrollIndicators();
+  }
+
+  @Override
   public void scrollTo(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+      ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.smoothScrollTo(data.mDestX, data.mDestY);
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = YogaConstants.UNDEFINED)
+  public void setBorderRadius(ReactScrollView view, int index, float borderRadius) {
+    if (!YogaConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
+  }
+
+  @ReactProp(name = "borderStyle")
+  public void setBorderStyle(ReactScrollView view, @Nullable String borderStyle) {
+    view.setBorderStyle(borderStyle);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_WIDTH,
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_TOP_WIDTH,
+      ViewProps.BORDER_BOTTOM_WIDTH,
+  }, defaultFloat = YogaConstants.UNDEFINED)
+  public void setBorderWidth(ReactScrollView view, int index, float width) {
+    if (!YogaConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(SPACING_TYPES[index], width);
+  }
+
+  @ReactPropGroup(names = {
+      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
+  }, customType = "Color")
+  public void setBorderColor(ReactScrollView view, int index, Integer color) {
+    float rgbComponent =
+        color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  }
 
   @Override
-  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+  public void scrollToEnd(
+      ReactScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // ScrollView always has one child - the scrollable area
+    int bottom =
+      scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(scrollView.getScrollX(), bottom);
+    } else {
+      scrollView.scrollTo(scrollView.getScrollX(), bottom);
+    }
+  }
+
+  @Override
+  public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
   }
 
-  public static Map createExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.builder()
+  public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
         .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
         .put(ScrollEventType.BEGIN_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollBeginDrag"))
         .put(ScrollEventType.END_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollEndDrag"))
-        .put(ScrollEventType.ANIMATION_END.getJSEventName(), MapBuilder.of("registrationName", "onScrollAnimationEnd"))
         .put(ScrollEventType.MOMENTUM_BEGIN.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
         .put(ScrollEventType.MOMENTUM_END.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();

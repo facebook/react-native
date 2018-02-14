@@ -24,6 +24,8 @@ const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
+export type ContentAvailable = 1 | null | void;
+
 export type FetchResult = {
   NewData: string,
   NoData: string,
@@ -58,74 +60,23 @@ export type PushNotificationEventName = $Enum<{
 }>;
 
 /**
+ *
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
- * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
- * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
- *
- * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
- *
- * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
- * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
- * - Add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
- *
- * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
- *
- * At the top of your `AppDelegate.m`:
- *
- *   `#import "RCTPushNotificationManager.h"`
- *
- * And then in your AppDelegate implementation add the following:
- *
- *   ```
- *    // Required to register for notifications
- *    - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
- *    {
- *     [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
- *    }
- *    // Required for the register event.
- *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
- *    {
- *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
- *    }
- *    // Required for the notification event. You must call the completion handler after handling the remote notification.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
- *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
- *    {
- *       [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
- *    }
- *    // Optionally implement this method over the previous to receive remote notifications. However
- *    // implement the application:didReceiveRemoteNotification:fetchCompletionHandler: method instead of this one whenever possible.
- *    // If your delegate implements both methods, the app object calls the `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
- *    // Either this method or `application:didReceiveRemoteNotification:fetchCompletionHandler:` is required in order to receive remote notifications.
- *    //
- *    // Required for the registrationError event.
- *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
- *    {
- *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
- *    }
- *    // Required for the notification event.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
- *    }
- *    // Required for the localNotification event.
- *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
- *    }
- *   ```
+ * See https://facebook.github.io/react-native/docs/pushnotificationios.html
  */
 class PushNotificationIOS {
   _data: Object;
   _alert: string | Object;
   _sound: string;
+  _category: string;
+  _contentAvailable: ContentAvailable;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
-  _remoteNotificationCompleteCalllbackCalled: boolean;
+  _remoteNotificationCompleteCallbackCalled: boolean;
+  _threadID: string;
 
   static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
@@ -136,14 +87,7 @@ class PushNotificationIOS {
   /**
    * Schedules the localNotification for immediate presentation.
    *
-   * details is an object containing:
-   *
-   * - `alertBody` : The message displayed in the notification alert.
-   * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
-   * - `soundName` : The sound played when the notification is fired (optional).
-   * - `category`  : The category of this notification, required for actionable notifications (optional).
-   * - `userInfo`  : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#presentlocalnotification
    */
   static presentLocalNotification(details: Object) {
     RCTPushNotificationManager.presentLocalNotification(details);
@@ -152,37 +96,61 @@ class PushNotificationIOS {
   /**
    * Schedules the localNotification for future presentation.
    *
-   * details is an object containing:
-   *
-   * - `fireDate` : The date and time when the system should deliver the notification.
-   * - `alertBody` : The message displayed in the notification alert.
-   * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
-   * - `soundName` : The sound played when the notification is fired (optional).
-   * - `category`  : The category of this notification, required for actionable notifications (optional).
-   * - `userInfo` : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
-   * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#schedulelocalnotification
    */
   static scheduleLocalNotification(details: Object) {
     RCTPushNotificationManager.scheduleLocalNotification(details);
   }
 
   /**
-   * Cancels all scheduled localNotifications
+   * Cancels all scheduled localNotifications.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#cancelalllocalnotifications
    */
   static cancelAllLocalNotifications() {
     RCTPushNotificationManager.cancelAllLocalNotifications();
   }
 
   /**
-   * Sets the badge number for the app icon on the home screen
+   * Remove all delivered notifications from Notification Center.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removealldeliverednotifications
+   */
+  static removeAllDeliveredNotifications(): void {
+    RCTPushNotificationManager.removeAllDeliveredNotifications();
+  }
+
+  /**
+   * Provides you with a list of the app’s notifications that are still displayed in Notification Center.
+   *
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getdeliverednotifications
+   */
+  static getDeliveredNotifications(callback: (notifications: Array<Object>) => void): void {
+    RCTPushNotificationManager.getDeliveredNotifications(callback);
+  }
+
+  /**
+   * Removes the specified notifications from Notification Center
+   *
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removedeliverednotifications
+   */
+  static removeDeliveredNotifications(identifiers: Array<string>): void {
+    RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
+  }
+
+  /**
+   * Sets the badge number for the app icon on the home screen.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#setapplicationiconbadgenumber
    */
   static setApplicationIconBadgeNumber(number: number) {
     RCTPushNotificationManager.setApplicationIconBadgeNumber(number);
   }
 
   /**
-   * Gets the current badge number for the app icon on the home screen
+   * Gets the current badge number for the app icon on the home screen.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getapplicationiconbadgenumber
    */
   static getApplicationIconBadgeNumber(callback: Function) {
     RCTPushNotificationManager.getApplicationIconBadgeNumber(callback);
@@ -191,9 +159,7 @@ class PushNotificationIOS {
   /**
    * Cancel local notifications.
    *
-   * Optionally restricts the set of canceled notifications to those
-   * notifications whose `userInfo` fields match the corresponding fields
-   * in the `userInfo` argument.
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#cancellocalnotification
    */
   static cancelLocalNotifications(userInfo: Object) {
     RCTPushNotificationManager.cancelLocalNotifications(userInfo);
@@ -201,27 +167,18 @@ class PushNotificationIOS {
 
   /**
    * Gets the local notifications that are currently scheduled.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getscheduledlocalnotifications
    */
   static getScheduledLocalNotifications(callback: Function) {
     RCTPushNotificationManager.getScheduledLocalNotifications(callback);
   }
 
   /**
-   * Attaches a listener to remote or local notification events while the app is running
-   * in the foreground or the background.
+   * Attaches a listener to remote or local notification events while the app
+   * is running in the foreground or the background.
    *
-   * Valid events are:
-   *
-   * - `notification` : Fired when a remote notification is received. The
-   *   handler will be invoked with an instance of `PushNotificationIOS`.
-   * - `localNotification` : Fired when a local notification is received. The
-   *   handler will be invoked with an instance of `PushNotificationIOS`.
-   * - `register`: Fired when the user registers for remote notifications. The
-   *   handler will be invoked with a hex string representing the deviceToken.
-   * - `registrationError`: Fired when the user fails to register for remote
-   *   notifications. Typically occurs when APNS is having issues, or the device
-   *   is a simulator. The handler will be invoked with
-   *   {message: string, code: number, details: any}.
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#addeventlistener
    */
   static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
@@ -258,24 +215,26 @@ class PushNotificationIOS {
         }
       );
     }
-    _notifHandlers.set(handler, listener);
+    _notifHandlers.set(type, listener);
   }
 
   /**
    * Removes the event listener. Do this in `componentWillUnmount` to prevent
-   * memory leaks
+   * memory leaks.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removeeventlistener
    */
   static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
-    var listener = _notifHandlers.get(handler);
+    var listener = _notifHandlers.get(type);
     if (!listener) {
       return;
     }
     listener.remove();
-    _notifHandlers.delete(handler);
+    _notifHandlers.delete(type);
   }
 
   /**
@@ -283,18 +242,8 @@ class PushNotificationIOS {
    * dialog box. By default, it will request all notification permissions, but
    * a subset of these can be requested by passing a map of requested
    * permissions.
-   * The following permissions are supported:
-   *
-   *   - `alert`
-   *   - `badge`
-   *   - `sound`
-   *
-   * If a map is provided to the method, only the permissions with truthy values
-   * will be requested.
-
-   * This method returns a promise that will resolve when the user accepts,
-   * rejects, or if the permissions were previously rejected. The promise
-   * resolves to the current state of the permission.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#requestpermissions
    */
   static requestPermissions(permissions?: {
     alert?: boolean,
@@ -325,10 +274,7 @@ class PushNotificationIOS {
   /**
    * Unregister for all remote notifications received via Apple Push Notification service.
    *
-   * You should call this method in rare circumstances only, such as when a new version of
-   * the app removes support for all types of remote notifications. Users can temporarily
-   * prevent apps from receiving remote notifications through the Notifications section of
-   * the Settings app. Apps unregistered through this method can always re-register.
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#abandonpermissions
    */
   static abandonPermissions() {
     RCTPushNotificationManager.abandonPermissions();
@@ -336,11 +282,9 @@ class PushNotificationIOS {
 
   /**
    * See what push permissions are currently enabled. `callback` will be
-   * invoked with a `permissions` object:
-   *
-   *  - `alert` :boolean
-   *  - `badge` :boolean
-   *  - `sound` :boolean
+   * invoked with a `permissions` object.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#checkpermissions
    */
   static checkPermissions(callback: Function) {
     invariant(
@@ -353,6 +297,8 @@ class PushNotificationIOS {
   /**
    * This method returns a promise that resolves to either the notification
    * object if the app was launched by a push notification, or `null` otherwise.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getinitialnotification
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
     return RCTPushNotificationManager.getInitialNotification().then(notification => {
@@ -364,10 +310,11 @@ class PushNotificationIOS {
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
    * `getInitialNotification` is sufficient
+   * 
    */
   constructor(nativeNotif: Object) {
     this._data = {};
-    this._remoteNotificationCompleteCalllbackCalled = false;
+    this._remoteNotificationCompleteCallbackCalled = false;
     this._isRemote = nativeNotif.remote;
     if (this._isRemote) {
       this._notificationId = nativeNotif.notificationId;
@@ -382,6 +329,9 @@ class PushNotificationIOS {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
+          this._category = notifVal.category;
+          this._contentAvailable = notifVal['content-available'];
+          this._threadID = notifVal['thread-id'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -392,27 +342,21 @@ class PushNotificationIOS {
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
       this._data = nativeNotif.userInfo;
+      this._category = nativeNotif.category;
     }
   }
 
   /**
    * This method is available for remote notifications that have been received via:
    * `application:didReceiveRemoteNotification:fetchCompletionHandler:`
-   * https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveRemoteNotification:fetchCompletionHandler:
-   *
-   * Call this to execute when the remote notification handling is complete. When
-   * calling this block, pass in the fetch result value that best describes
-   * the results of your operation. You *must* call this handler and should do so
-   * as soon as possible. For a list of possible values, see `PushNotificationIOS.FetchResult`.
-   *
-   * If you do not call this method your background remote notifications could
-   * be throttled, to read more about it see the above documentation link.
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#finish
    */
-  finish(fetchResult: FetchResult) {
-    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
+  finish(fetchResult: string) {
+    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
       return;
     }
-    this._remoteNotificationCompleteCalllbackCalled = true;
+    this._remoteNotificationCompleteCallbackCalled = true;
 
     RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
   }
@@ -427,20 +371,44 @@ class PushNotificationIOS {
 
   /**
    * Gets the sound string from the `aps` object
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getsound
    */
   getSound(): ?string {
     return this._sound;
   }
 
   /**
+   * Gets the category string from the `aps` object
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getcategory
+   */
+  getCategory(): ?string {
+    return this._category;
+  }
+
+  /**
    * Gets the notification's main message from the `aps` object
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getalert
    */
   getAlert(): ?string | ?Object {
     return this._alert;
   }
 
   /**
+   * Gets the content-available number from the `aps` object
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getcontentavailable
+   */
+  getContentAvailable(): ContentAvailable {
+    return this._contentAvailable;
+  }
+
+  /**
    * Gets the badge count number from the `aps` object
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getbadgecount
    */
   getBadgeCount(): ?number {
     return this._badgeCount;
@@ -448,9 +416,20 @@ class PushNotificationIOS {
 
   /**
    * Gets the data object on the notif
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getdata
    */
   getData(): ?Object {
     return this._data;
+  }
+
+  /**
+   * Gets the thread ID on the notif
+   * 
+   * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getthreadid
+   */
+  getThreadID(): ?string {
+    return this._threadID;
   }
 }
 

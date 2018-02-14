@@ -6,45 +6,57 @@
 #include <memory>
 #include <string>
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <cxxreact/JSExecutor.h>
+#include <cxxreact/MessageQueueThread.h>
+#include <jschelpers/JavaScriptCore.h>
 
-#include "Executor.h"
-#include "MessageQueueThread.h"
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
 namespace ReactMarker {
-using LogMarker = std::function<void(const std::string&)>;
-extern LogMarker logMarker;
+
+enum ReactMarkerId {
+  NATIVE_REQUIRE_START,
+  NATIVE_REQUIRE_STOP,
+  RUN_JS_BUNDLE_START,
+  RUN_JS_BUNDLE_STOP,
+  CREATE_REACT_CONTEXT_STOP,
+  JS_BUNDLE_STRING_CONVERT_START,
+  JS_BUNDLE_STRING_CONVERT_STOP,
+  NATIVE_MODULE_SETUP_START,
+  NATIVE_MODULE_SETUP_STOP,
 };
 
-namespace WebWorkerUtil {
-using WebWorkerQueueFactory = std::function<std::unique_ptr<MessageQueueThread>(int id, MessageQueueThread* ownerMessageQueue)>;
-extern WebWorkerQueueFactory createWebWorkerThread;
+#ifdef __APPLE__
+using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+#else
+typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
+#endif
+extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
-using LoadScriptFromAssets = std::function<std::unique_ptr<const JSBigString>(const std::string& assetName)>;
-extern LoadScriptFromAssets loadScriptFromAssets;
+extern void logMarker(const ReactMarkerId markerId);
 
-using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;
-extern LoadScriptFromNetworkSync loadScriptFromNetworkSync;
-};
+}
 
-namespace PerfLogging {
-using InstallNativeHooks = std::function<void(JSGlobalContextRef)>;
-extern InstallNativeHooks installNativeHooks;
-};
+namespace JSCNativeHooks {
 
-namespace JSNativeHooks {
-  using Hook = JSValueRef (*) (
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
-      size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  extern Hook loggingHook;
-  extern Hook nowHook;
+using Hook = JSValueRef(*)(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef *exception);
+extern RN_EXPORT Hook loggingHook;
+extern RN_EXPORT Hook nowHook;
+
+typedef void(*ConfigurationHook)(JSGlobalContextRef);
+extern RN_EXPORT ConfigurationHook installPerfHooks;
+
 }
 
 } }

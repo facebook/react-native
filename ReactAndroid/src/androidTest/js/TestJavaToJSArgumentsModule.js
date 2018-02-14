@@ -34,47 +34,47 @@ function assertStrictStringEquals(a, b) {
 
 var TestJavaToJSArgumentsModule = {
   receiveBasicTypes: function(str, dbl, bool, null_arg) {
-    assertEquals("foo", str);
+    assertEquals('foo', str);
     assertEquals(3.14, dbl);
     assertEquals(true, bool);
     assertEquals(null, null_arg);
   },
   receiveArrayWithBasicTypes: function(arr) {
     assertEquals(4, arr.length);
-    assertEquals("red panda", arr[0]);
+    assertEquals('red panda', arr[0]);
     assertEquals(1.19, arr[1]);
     assertEquals(true, arr[2]);
     assertEquals(null, arr[3]);
   },
   receiveNestedArray: function(arr) {
     assertEquals(2, arr.length);
-    assertEquals("level1", arr[0]);
+    assertEquals('level1', arr[0]);
     var arr2 = arr[1];
-    assertEquals("level2", arr2[0]);
+    assertEquals('level2', arr2[0]);
     var arr3 = arr2[1];
-    assertEquals("level3", arr3[0]);
+    assertEquals('level3', arr3[0]);
   },
   receiveArrayWithMaps: function(arr) {
     assertEquals(2, arr.length);
     var m1 = arr[0];
     var m2 = arr[1];
-    assertEquals("m1v1", m1["m1k1"]);
-    assertEquals("m1v2", m1["m1k2"]);
-    assertEquals("m2v1", m2["m2k1"]);
+    assertEquals('m1v1', m1.m1k1);
+    assertEquals('m1v2', m1.m1k2);
+    assertEquals('m2v1', m2.m2k1);
   },
   receiveMapWithBasicTypes: function(map) {
-    assertEquals("stringValue", map["stringKey"]);
-    assertEquals(3.14, map["doubleKey"]);
-    assertEquals(true, map["booleanKey"]);
-    assertEquals(null, map["nullKey"]);
+    assertEquals('stringValue', map.stringKey);
+    assertEquals(3.14, map.doubleKey);
+    assertEquals(true, map.booleanKey);
+    assertEquals(null, map.nullKey);
   },
   receiveNestedMap: function(map) {
-    var nestedMap = map["nestedMap"];
-    assertEquals("foxes", nestedMap["animals"]);
+    var nestedMap = map.nestedMap;
+    assertEquals('foxes', nestedMap.animals);
   },
   receiveMapWithArrays: function(map) {
-    var a1 = map["array1"];
-    var a2 = map["array2"];
+    var a1 = map.array1;
+    var a2 = map.array2;
     assertEquals(3, a1.length);
     assertEquals(2, a2.length);
     assertEquals(3, a1[0]);

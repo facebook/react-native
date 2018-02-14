@@ -7,53 +7,36 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
+
+#import "RCTI18nUtil.h"
+#import "RCTShadowView+Layout.h"
 
 @implementation RCTRootShadowView
 
-/**
- * Init the RCTRootShadowView with RTL status.
- * Returns a RTL CSS layout if isRTL is true (Default is LTR CSS layout).
- */
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
-    if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      CSSNodeStyleSetDirection(self.cssNode, CSSDirectionRTL);
-    }
+  if (self = [super init]) {
+    _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
+    _availableSize = CGSizeMake(INFINITY, INFINITY);
   }
+
   return self;
 }
 
-- (void)applySizeConstraints
+- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews
 {
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
-      break;
-  }
-}
+  NSHashTable<NSString *> *other = [NSHashTable new];
 
-- (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
-{
-  [self applySizeConstraints];
+  RCTLayoutContext layoutContext = {};
+  layoutContext.absolutePosition = CGPointZero;
+  layoutContext.affectedShadowViews = affectedShadowViews;
+  layoutContext.other = other;
 
-  CSSNodeCalculateLayout(self.cssNode, CSSUndefined, CSSUndefined, CSSDirectionInherit);
-
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-  return viewsWithNewFrame;
+  [self layoutWithMinimumSize:CGSizeZero
+                  maximumSize:_availableSize
+              layoutDirection:RCTUIKitLayoutDirectionFromYogaLayoutDirection(_baseDirection)
+                layoutContext:layoutContext];
 }
 
 @end

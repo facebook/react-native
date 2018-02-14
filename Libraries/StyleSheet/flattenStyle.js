@@ -11,12 +11,15 @@
  */
 'use strict';
 
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var invariant = require('fbjs/lib/invariant');
+var ReactNativePropRegistry;
 
 import type { StyleObj } from 'StyleSheetTypes';
 
 function getStyle(style) {
+  if (ReactNativePropRegistry === undefined) {
+    ReactNativePropRegistry = require('ReactNativePropRegistry');
+  }
   if (typeof style === 'number') {
     return ReactNativePropRegistry.getByID(style);
   }
@@ -30,6 +33,9 @@ function flattenStyle(style: ?StyleObj): ?Object {
   invariant(style !== true, 'style may be false but not true');
 
   if (!Array.isArray(style)) {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     return getStyle(style);
   }
 

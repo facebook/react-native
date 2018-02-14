@@ -22,29 +22,29 @@ var assertEquals = require('Asserts').assertEquals;
 
 var styles = StyleSheet.create({
   A: {
-    "width": 500,
-    "height": 500,
+    'width': 500,
+    'height': 500,
   },
   B: {
-    backgroundColor: "rgb(255, 0, 0)",
-    "left": 50,
-    "top": 80,
-    "width": 200,
-    "height": 300,
+    backgroundColor: 'rgb(255, 0, 0)',
+    'left': 50,
+    'top': 80,
+    'width': 200,
+    'height': 300,
   },
   C: {
-    backgroundColor: "rgb(0, 255, 0)",
-    "left": 100,
-    "top": 70,
-    "width": 50,
-    "height": 150,
+    backgroundColor: 'rgb(0, 255, 0)',
+    'left': 100,
+    'top': 70,
+    'width': 50,
+    'height': 150,
   },
   D: {
-    backgroundColor: "rgb(0, 0, 255)",
-    "left": 400,
-    "top": 100,
-    "width": 50,
-    "height": 200,
+    backgroundColor: 'rgb(0, 0, 255)',
+    'left': 400,
+    'top': 100,
+    'width': 50,
+    'height': 200,
   },
 });
 
