@@ -454,6 +454,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(jsBoundExtraModuleForClass:)]) {
+      return [cxxDelegate jsBoundExtraModuleForClass:moduleClass];
+    }
+  }
+
+  return nil;
+}
+
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {

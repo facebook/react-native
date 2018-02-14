@@ -251,6 +251,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass
+{
+  return [self.batchedBridge jsBoundExtraModuleForClass:moduleClass];
+}
+
 - (void)reload
 {
   #if RCT_ENABLE_INSPECTOR

@@ -72,3 +72,12 @@
 }
 
 @end
+
+@implementation RCTBridge (RCTFabricUIManager)
+
+- (RCTFabricUIManager *)fabricUIManager
+{
+  return [self jsBoundExtraModuleForClass:[RCTFabricUIManager class]];
+}
+
+@end

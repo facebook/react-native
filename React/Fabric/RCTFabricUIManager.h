@@ -42,3 +42,9 @@
             childSet:(NSArray<RCTShadowView *> *)childSet;
 
 @end
+
+@interface RCTBridge (RCTFabricUIManager)
+
+@property (nonatomic, readonly) RCTFabricUIManager *fabricUIManager;
+
+@end

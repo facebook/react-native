@@ -40,4 +40,9 @@ class JSExecutorFactory;
  */
 - (void)installExtraJSBinding:(JSGlobalContextRef)jsContextRef;
 
+/**
+ * Experimental: Get the instance of the extra module/class which gets bound via `installExtraJSBinding:`
+ */
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass;
+
 @end
