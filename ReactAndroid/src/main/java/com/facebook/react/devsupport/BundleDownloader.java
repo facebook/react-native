@@ -146,13 +146,13 @@ public class BundleDownloader {
         if (match.find()) {
           String boundary = match.group(1);
           MultipartStreamReader bodyReader = new MultipartStreamReader(response.body().source(), boundary);
-          boolean completed = bodyReader.readAllParts(new MultipartStreamReader.ChunkCallback() {
+          boolean completed = bodyReader.readAllParts(new MultipartStreamReader.ChunkListener() {
             @Override
-            public void execute(Map<String, String> headers, Buffer body, boolean finished) throws IOException {
+            public void onChunkComplete(Map<String, String> headers, Buffer body, boolean isLastChunk) throws IOException {
               // This will get executed for every chunk of the multipart response. The last chunk
-              // (finished = true) will be the JS bundle, the other ones will be progress events
+              // (isLastChunk = true) will be the JS bundle, the other ones will be progress events
               // encoded as JSON.
-              if (finished) {
+              if (isLastChunk) {
                 // The http status code for each separate chunk is in the X-Http-Status header.
                 int status = response.code();
                 if (headers.containsKey("X-Http-Status")) {
@@ -182,6 +182,15 @@ public class BundleDownloader {
                 } catch (JSONException e) {
                   FLog.e(ReactConstants.TAG, "Error parsing progress JSON. " + e.toString());
                 }
+              }
+            }
+            @Override
+            public void onChunkProgress(Map<String, String> headers, long loaded, long total) throws IOException {
+              if ("application/javascript".equals(headers.get("Content-Type"))) {
+                callback.onProgress(
+                  "Downloading JavaScript bundle",
+                  (int) (loaded / 1024),
+                  (int) (total / 1024));
               }
             }
           });
