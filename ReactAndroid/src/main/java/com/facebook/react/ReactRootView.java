@@ -87,7 +87,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
-  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
+  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper();
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
