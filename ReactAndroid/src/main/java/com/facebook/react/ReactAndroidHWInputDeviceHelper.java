@@ -92,6 +92,6 @@ public class ReactAndroidHWInputDeviceHelper {
     if (targetViewId != View.NO_ID) {
       event.putInt("tag", targetViewId);
     }
-    emitter.emit("onTVNavEvent", event);
+    emitter.emit("onHWKeyEvent", event);
   }
 }

@@ -27,7 +27,7 @@ TVEventHandler.prototype.enable = function(component: ?any, callback: Function) 
 
   this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
   this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
-    'onTVNavEvent',
+    'onHWKeyEvent',
     (data) => {
       if (callback) {
         callback(component, data);

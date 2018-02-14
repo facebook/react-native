@@ -152,9 +152,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance() &&
-      getReactNativeHost().getUseDeveloperSupport() &&
-      keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+    if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getUseDeveloperSupport()
+        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
       getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
       return true;
     }
