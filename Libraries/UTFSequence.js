@@ -23,6 +23,8 @@ const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationI
  *  - Less chance of typos.
  */
 const UTFSequence = deepFreezeAndThrowOnMutationInDev({
+  BULLET: '\u2022', // bullet: &#8226;
+  BULLET_SP: '\u00A0\u2022\u00A0', // &nbsp;&#8226;&nbsp;
   MIDDOT: '\u00B7', // normal middle dot: &middot;
   MIDDOT_SP: '\u00A0\u00B7\u00A0', // &nbsp;&middot;&nbsp;
   MIDDOT_KATAKANA: '\u30FB', // katakana middle dot
