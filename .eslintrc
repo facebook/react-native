@@ -169,10 +169,10 @@
 
   // ESLint Comments Plugin
   // The following rules are made available via `eslint-plugin-eslint-comments`
-    'eslint-comments/no-aggregating-enable': 1, // disallows eslint-enable comments for multiple eslint-disable comments
-    'eslint-comments/no-unlimited-disable': 1, // disallows eslint-disable comments without rule names
-    'eslint-comments/no-unused-disable': 1, // disallow disables that don't cover any errors
-    'eslint-comments/no-unused-enable': 1, // // disallow enables that don't enable anything or enable rules that weren't disabled
+    "eslint-comments/no-aggregating-enable": 1, // disallows eslint-enable comments for multiple eslint-disable comments
+    "eslint-comments/no-unlimited-disable": 1, // disallows eslint-disable comments without rule names
+    "eslint-comments/no-unused-disable": 1, // disallow disables that don't cover any errors
+    "eslint-comments/no-unused-enable": 1, // // disallow enables that don't enable anything or enable rules that weren't disabled
 
   // Flow Plugin
   // The following rules are made available via `eslint-plugin-flowtype`
@@ -201,7 +201,7 @@
     "new-parens": 1,                 // disallow the omission of parentheses when invoking a constructor with no arguments
     "no-nested-ternary": 0,          // disallow nested ternary expressions (off by default)
     "no-array-constructor": 1,       // disallow use of the Array constructor
-    'no-empty-character-class': 1,   // disallow the use of empty character classes in regular expressions
+    "no-empty-character-class": 1,   // disallow the use of empty character classes in regular expressions
     "no-lonely-if": 0,               // disallow if as the only statement in an else block (off by default)
     "no-new-object": 1,              // disallow use of the Object constructor
     "no-spaced-func": 1,             // disallow space between function identifier and application
@@ -258,5 +258,37 @@
     "jest/no-focused-tests": 1,
     "jest/no-identical-title": 1,
     "jest/valid-expect": 1,
-  }
+  },
+
+  "overrides": [
+    {
+      "files": [
+        "Libraries/**/*.js",
+        "RNTester/**/*.js",
+        "jest/**/*.js",
+      ],
+      "rules": {
+        // These folders currently run through babel and don't need to be
+        // compatible with node 4
+        "comma-dangle": 0,
+      },
+    },
+    {
+      "files": [
+        "local-cli/**/*.js",
+      ],
+      "rules": {
+        // This folder currently runs through babel and doesn't need to be
+        // compatible with node 4
+        "comma-dangle": 0,
+
+        "lint/extra-arrow-initializer": 0,
+        "no-alert": 0,
+        "no-console-disallow": 0,
+      },
+      "env": {
+        "node": true,
+      },
+    },
+  ],
 }
