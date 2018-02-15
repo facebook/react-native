@@ -1,7 +1,9 @@
 package com.facebook.react.fabric;
 
+import com.facebook.react.bridge.JavaScriptContextHolder;
+
 public interface FabricBinding {
 
-  void installFabric(Object jsContext, FabricUIManagerModule fabricModule);
+  void installFabric(JavaScriptContextHolder jsContext, FabricUIManagerModule fabricModule);
 
 }
