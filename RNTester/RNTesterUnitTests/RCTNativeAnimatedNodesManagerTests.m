@@ -980,18 +980,18 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
 
   __block int callCount = 0;
-  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
     callCount++;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
 
-  for (NSNumber *frame in frames) {
+  for (NSUInteger i = 0; i < frames.count; i++) {
     [_nodesManager stepAnimations:_displayLink];
   }
   [_nodesManager stepAnimations:_displayLink];
   XCTAssertEqual(callCount, 4);
 
   // the animation has completed, we expect no updates to be done
-  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
     XCTFail("Expected not to be called");
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];
@@ -999,7 +999,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
   // restore rejected method, we will use it later on
   callCount = 0;
-  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
     callCount++;
   }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
 
@@ -1007,7 +1007,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_nodesManager setAnimatedNodeValue:@1 value:@200];
   [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
 
-  for (NSNumber *frame in frames) {
+  for (NSUInteger i = 0; i < frames.count; i++) {
     [_nodesManager stepAnimations:_displayLink];
   }
   [_nodesManager stepAnimations:_displayLink];
