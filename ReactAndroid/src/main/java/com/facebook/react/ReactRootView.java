@@ -572,6 +572,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
   }
+  
+  /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.getCurrentReactContext()
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
+    }
+  }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
@@ -700,14 +708,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           .getCurrentReactContext()
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
-    }
-  }
-
-  void sendEvent(String eventName, @Nullable WritableMap params) {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.getCurrentReactContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
     }
   }
 }
