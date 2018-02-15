@@ -250,6 +250,16 @@ jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
   return reinterpret_cast<jlong>(node);
 }
 
+jlong jni_YGNodeClone(
+    alias_ref<jobject> thiz,
+    jlong nativePointer,
+    alias_ref<jobject> clonedJavaObject) {
+  const YGNodeRef clonedYogaNode = YGNodeClone(_jlong2YGNodeRef(nativePointer));
+  clonedYogaNode->setContext(
+      new weak_ref<jobject>(make_weak(clonedJavaObject)));
+  return reinterpret_cast<jlong>(clonedYogaNode);
+}
+
 void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   delete YGNodeJobject(node);
@@ -612,6 +622,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeNativeMethod(jni_YGNodePrint),
+            YGMakeNativeMethod(jni_YGNodeClone),
         });
     registerNatives("com/facebook/yoga/YogaConfig",
                     {
