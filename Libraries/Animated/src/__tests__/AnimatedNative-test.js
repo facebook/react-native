@@ -10,11 +10,14 @@
  */
 'use strict';
 
+const ClassComponentMock = class {};
+ClassComponentMock.prototype.isReactComponent = true;
+
 jest
   .clearAllMocks()
-  .setMock('Text', {})
-  .setMock('View', {})
-  .setMock('Image', {})
+  .setMock('Text', ClassComponentMock)
+  .setMock('View', ClassComponentMock)
+  .setMock('Image', ClassComponentMock)
   .setMock('React', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},

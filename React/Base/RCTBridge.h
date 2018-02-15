@@ -169,6 +169,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
 
 /**
+ * Retrieve an extra module that gets bound to the JS context, if any.
+ */
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass;
+
+/**
  * All registered bridge module classes.
  */
 @property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;

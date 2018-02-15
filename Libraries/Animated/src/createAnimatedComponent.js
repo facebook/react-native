@@ -17,7 +17,16 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const invariant = require('fbjs/lib/invariant');
+
 function createAnimatedComponent(Component: any): any {
+  invariant(
+    typeof Component === 'string' ||
+      (Component.prototype && Component.prototype.isReactComponent),
+    '`createAnimatedComponent` does not support stateless functional components; ' +
+      'use a class component instead.',
+  );
+
   class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _invokeAnimatedPropsCallbackOnMount: boolean = false;

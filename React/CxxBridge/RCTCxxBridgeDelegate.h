@@ -10,6 +10,7 @@
 #include <memory>
 
 #import <React/RCTBridgeDelegate.h>
+#import <jschelpers/JavaScriptCore.h>
 
 namespace facebook {
 namespace react {
@@ -31,5 +32,17 @@ class JSExecutorFactory;
  * will be used.
  */
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
+
+@optional
+
+/**
+ * Experimental: Perform installation of extra JS binding on the given JS context, as appropriate.
+ */
+- (void)installExtraJSBinding:(JSGlobalContextRef)jsContextRef;
+
+/**
+ * Experimental: Get the instance of the extra module/class which gets bound via `installExtraJSBinding:`
+ */
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass;
 
 @end
