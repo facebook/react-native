@@ -87,7 +87,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
-  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper();
+  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -225,9 +225,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidHWInputDeviceHelper.handleKeyEvent(ev, emitter);
+    mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
     return super.dispatchKeyEvent(ev);
   }
 
@@ -241,9 +239,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidHWInputDeviceHelper.clearFocus(emitter);
+    mAndroidHWInputDeviceHelper.clearFocus();
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
 
@@ -257,9 +253,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       super.requestChildFocus(child, focused);
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    mAndroidHWInputDeviceHelper.onFocusChanged(focused, emitter);
+    mAndroidHWInputDeviceHelper.onFocusChanged(focused);
     super.requestChildFocus(child, focused);
   }
 
@@ -707,13 +701,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
     }
+  }
 
-    private void sendEvent(String eventName, @Nullable WritableMap params) {
-      if (mReactInstanceManager != null) {
-        mReactInstanceManager.getCurrentReactContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(eventName, params);
-      }
+  void sendEvent(String eventName, @Nullable WritableMap params) {
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.getCurrentReactContext()
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
     }
   }
 }

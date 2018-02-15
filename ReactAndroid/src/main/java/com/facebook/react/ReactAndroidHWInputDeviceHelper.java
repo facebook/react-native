@@ -15,7 +15,6 @@ import android.view.View;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 import java.util.Map;
 
@@ -50,48 +49,54 @@ public class ReactAndroidHWInputDeviceHelper {
    */
   private int mLastFocusedViewId = View.NO_ID;
 
+  private final ReactRootView mReactRootView;
+
+  ReactAndroidHWInputDeviceHelper(ReactRootView mReactRootView) {
+    this.mReactRootView = mReactRootView;
+  }
+
   /**
    * Called from {@link ReactRootView}.
    * This is the main place the key events are handled.
    */
-  public void handleKeyEvent(KeyEvent ev, RCTDeviceEventEmitter emitter) {
+  public void handleKeyEvent(KeyEvent ev) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
     if (eventKeyAction == KeyEvent.ACTION_UP && KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
-      dispatchEvent(KEY_EVENTS_ACTIONS.get(eventKeyCode), mLastFocusedViewId, emitter);
+      dispatchEvent(KEY_EVENTS_ACTIONS.get(eventKeyCode), mLastFocusedViewId);
     }
   }
 
   /**
    * Called from {@link ReactRootView} when focused view changes.
    */
-  public void onFocusChanged(View newFocusedView, RCTDeviceEventEmitter emitter) {
+  public void onFocusChanged(View newFocusedView) {
     if (mLastFocusedViewId == newFocusedView.getId()) {
       return;
     }
     if (mLastFocusedViewId != View.NO_ID) {
-      dispatchEvent("blur", mLastFocusedViewId, emitter);
+      dispatchEvent("blur", mLastFocusedViewId);
     }
     mLastFocusedViewId = newFocusedView.getId();
-    dispatchEvent("focus", newFocusedView.getId(), emitter);
+    dispatchEvent("focus", newFocusedView.getId());
   }
 
   /**
    * Called from {@link ReactRootView} when the whole view hierarchy looses focus.
    */
-  public void clearFocus(RCTDeviceEventEmitter emitter) {
+  public void clearFocus() {
     if (mLastFocusedViewId != View.NO_ID) {
-      dispatchEvent("blur", mLastFocusedViewId, emitter);
+      dispatchEvent("blur", mLastFocusedViewId);
     }
     mLastFocusedViewId = View.NO_ID;
   }
 
-  private void dispatchEvent(String eventType, int targetViewId, RCTDeviceEventEmitter emitter) {
+  private void dispatchEvent(String eventType, int targetViewId) {
     WritableMap event = new WritableNativeMap();
     event.putString("eventType", eventType);
     if (targetViewId != View.NO_ID) {
       event.putInt("tag", targetViewId);
     }
-    emitter.emit("onHWKeyEvent", event);
+    mReactRootView.sendEvent("onHWKeyEvent", event);
   }
 }
