@@ -128,7 +128,9 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+    if (getReactNativeHost().hasInstance()
+      && getReactNativeHost().getUseDeveloperSupport()
+      && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
       event.startTracking();
       return true;
     }
