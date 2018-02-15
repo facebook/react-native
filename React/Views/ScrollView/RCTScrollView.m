@@ -402,6 +402,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _automaticallyAdjustContentInsets = YES;
     _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
+    _scrollIndicatorInsets = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
 
@@ -561,6 +562,10 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
                     withScrollView:_scrollView
                       updateOffset:NO];
 
+  if (!UIEdgeInsetsEqualToEdgeInsets(scrollIndicatorInsets, _scrollIndicatorInsets)) {
+     _scrollView.scrollIndicatorInsets = scrollIndicatorInsets;
+  }
+  
   _scrollView.contentOffset = contentOffset;
 }
 
