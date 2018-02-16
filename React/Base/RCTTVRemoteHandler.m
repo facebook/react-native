@@ -160,22 +160,22 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
 
 - (void)swipedUp:(UIGestureRecognizer *)r
 {
-  [self sendAppleTVEvent:RCTTVRemoteEventUp toView:r.view];
+  [self sendAppleTVEvent:RCTTVRemoteEventSwipeUp toView:r.view];
 }
 
 - (void)swipedDown:(UIGestureRecognizer *)r
 {
-  [self sendAppleTVEvent:RCTTVRemoteEventDown toView:r.view];
+  [self sendAppleTVEvent:RCTTVRemoteEventSwipeDown toView:r.view];
 }
 
 - (void)swipedLeft:(UIGestureRecognizer *)r
 {
-  [self sendAppleTVEvent:RCTTVRemoteEventLeft toView:r.view];
+  [self sendAppleTVEvent:RCTTVRemoteEventSwipeLeft toView:r.view];
 }
 
 - (void)swipedRight:(UIGestureRecognizer *)r
 {
-  [self sendAppleTVEvent:RCTTVRemoteEventRight toView:r.view];
+  [self sendAppleTVEvent:RCTTVRemoteEventSwipeRight toView:r.view];
 }
 
 #pragma mark -
