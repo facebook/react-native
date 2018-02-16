@@ -91,4 +91,32 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
   [self.bridge.uiManager setNeedsLayout];
 }
 
+#pragma mark - Custom Box none
+
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTTextView)
+{
+  if ([view respondsToSelector:@selector(setPointerEvents:)]) {
+    view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
+    return;
+  }
+
+  if (!json) {
+    view.userInteractionEnabled = defaultView.userInteractionEnabled;
+    return;
+  }
+  RCTPointerEvents pointerEvents = [RCTConvert RCTPointerEvents:json];
+  view.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
+  if (pointerEvents == RCTPointerEventsBoxNone) {
+    view.accessibilityViewIsModal = NO;
+  }
+  switch (pointerEvents) {
+    case RCTPointerEventsUnspecified:
+    case RCTPointerEventsBoxNone:
+    case RCTPointerEventsNone:
+      break;
+    default:
+      RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
+  }
+}
+
 @end

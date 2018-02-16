@@ -288,6 +288,60 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
   }
 }
 
+class TextBoxNoneExample extends React.Component<*, *> {
+  render() {
+    const styles = {
+      container: {
+        height: 500,
+        backgroundColor: '#F5FCFF',
+      },
+      underView: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: 200,
+        height: 200,
+        padding: 40,
+        backgroundColor:'rgba(255, 200, 200, 0.5)',
+        zIndex: -1,
+      },
+      topTextOverlay: {
+        position: 'absolute',
+        top: 50,
+        left: 100,
+        width: 200,
+        height: 100,
+        backgroundColor:'rgba(200, 255, 200, 0.5)',
+        zIndex: 1,
+      },
+    };
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.underView}>
+            <Text
+              style={{backgroundColor:'rgba(0,0,0,0.1)'}}
+              onPress={()=>{alert('underView clicked')}}
+            >
+              Clickable text in under view
+            </Text>
+        </View>
+        <Text
+          style={styles.topTextOverlay}
+          pointerEvents="box-none"
+        >
+            <Text
+              style={{backgroundColor:'rgba(0,0,0,0.1)'}}
+              onPress={()=>{alert('topView clicked')}}
+            >
+              only clicking {"\u2610"} or {"\u2611"} will trigger event, other event will pass to underView
+            </Text>
+        </Text>
+      </View>
+    );
+  }
+}
+
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
@@ -850,4 +904,10 @@ exports.examples = [
       return <TextBaseLineLayoutExample />;
     },
   },
+  {
+    title: 'Text Custom BoxNone support',
+    render: function() {
+      return <TextBoxNoneExample />;
+    },
+  }
 ];
