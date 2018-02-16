@@ -90,6 +90,8 @@ import java.util.Map;
         .put("topScroll", MapBuilder.of(rn, "onScroll"))
         .put("topMomentumScrollBegin", MapBuilder.of(rn, "onMomentumScrollBegin"))
         .put("topMomentumScrollEnd", MapBuilder.of(rn, "onMomentumScrollEnd"))
+        // Scroll event for WebViews.
+        .put("onScrollChanged", MapBuilder.of(rn, "onScrollChanged"))
         .build();
   }
 
