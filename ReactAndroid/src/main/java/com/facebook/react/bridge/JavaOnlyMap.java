@@ -31,6 +31,36 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
     return new JavaOnlyMap(keysAndValues);
   }
 
+  public static JavaOnlyMap deepClone(ReadableMap map) {
+    JavaOnlyMap res = new JavaOnlyMap();
+    ReadableMapKeySetIterator iter = map.keySetIterator();
+    while (iter.hasNextKey()) {
+      String propKey = iter.nextKey();
+      ReadableType type = map.getType(propKey);
+      switch (type) {
+        case Null:
+          res.putNull(propKey);
+          break;
+        case Boolean:
+          res.putBoolean(propKey, map.getBoolean(propKey));
+          break;
+        case Number:
+          res.putDouble(propKey, map.getDouble(propKey));
+          break;
+        case String:
+          res.putString(propKey, map.getString(propKey));
+          break;
+        case Map:
+          res.putMap(propKey, deepClone(map.getMap(propKey)));
+          break;
+        case Array:
+          res.putArray(propKey, JavaOnlyArray.deepClone(map.getArray(propKey)));
+          break;
+      }
+    }
+    return res;
+  }
+
   /**
    * @param keysAndValues keys and values, interleaved
    */
@@ -65,12 +95,12 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public double getDouble(String name) {
-    return (Double) mBackingMap.get(name);
+    return ((Number) mBackingMap.get(name)).doubleValue();
   }
 
   @Override
   public int getInt(String name) {
-    return (Integer) mBackingMap.get(name);
+    return ((Number) mBackingMap.get(name)).intValue();
   }
 
   @Override
