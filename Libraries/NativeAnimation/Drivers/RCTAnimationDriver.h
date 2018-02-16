@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startAnimation;
 - (void)stepAnimationWithTime:(NSTimeInterval)currentTime;
 - (void)stopAnimation;
+- (void)resetAnimationConfig:(NSDictionary *)config;
 
 NS_ASSUME_NONNULL_END
 

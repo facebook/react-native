@@ -255,6 +255,67 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+class TrackingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  state = {
+    native: new Animated.Value(0),
+    toNative: new Animated.Value(0),
+    js: new Animated.Value(0),
+    toJS: new Animated.Value(0),
+  };
+
+  componentDidMount() {
+    // we configure spring to take a bit of time to settle so that the user
+    // have time to click many times and see "toValue" getting updated and
+    const longSettlingSpring = {
+      tension: 20,
+      friction: 0.5,
+    };
+    Animated.spring(this.state.native, {
+      ...longSettlingSpring,
+      toValue: this.state.toNative,
+      useNativeDriver: true,
+    }).start();
+    Animated.spring(this.state.js, {
+      ...longSettlingSpring,
+      toValue: this.state.toJS,
+      useNativeDriver: false,
+    }).start();
+  }
+
+  onPress = () => {
+    // select next value to be tracked by random
+    const nextValue = Math.random() * 200;
+    this.state.toNative.setValue(nextValue);
+    this.state.toJS.setValue(nextValue);
+  };
+
+  renderBlock = (anim, dest) => [
+    <Animated.View key="line" style={[styles.line, { transform: [{ translateX: dest }]}]}/>,
+    <Animated.View key="block" style={[styles.block, { transform: [{ translateX: anim }]}]}/>,
+  ]
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this.onPress}>
+        <View>
+          <View>
+            <Text>Native:</Text>
+          </View>
+          <View style={styles.row}>
+            {this.renderBlock(this.state.native, this.state.toNative)}
+          </View>
+          <View>
+            <Text>JavaScript:</Text>
+          </View>
+          <View style={styles.row}>
+            {this.renderBlock(this.state.js, this.state.toJS)}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -264,6 +325,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     backgroundColor: 'blue',
+  },
+  line: {
+    position: 'absolute',
+    left: 35,
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: 'red',
   },
 });
 
@@ -538,6 +607,12 @@ exports.examples = [
     title: 'Animated events',
     render: function() {
       return <EventExample />;
+    },
+  },
+  {
+    title: 'Animated Tracking - tap me many times',
+    render: function() {
+      return <TrackingExample />;
     },
   },
   {

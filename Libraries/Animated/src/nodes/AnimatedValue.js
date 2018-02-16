@@ -20,6 +20,7 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedTracking from './AnimatedTracking';
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
@@ -76,7 +77,7 @@ class AnimatedValue extends AnimatedWithChildren {
   _startingValue: number;
   _offset: number;
   _animation: ?Animation;
-  _tracking: ?AnimatedNode;
+  _tracking: ?AnimatedTracking;
   _listeners: {[key: string]: ValueListenerCallback};
   __nativeAnimatedValueListener: ?any;
 
@@ -311,7 +312,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Typically only used internally.
    */
-  track(tracking: AnimatedNode): void {
+  track(tracking: AnimatedTracking): void {
     this.stopTracking();
     this._tracking = tracking;
   }

@@ -9,12 +9,15 @@
 
 #import <Foundation/Foundation.h>
 
+@class RCTNativeAnimatedNodesManager;
+
 @interface RCTAnimatedNode : NSObject
 
 - (instancetype)initWithTag:(NSNumber *)tag
                      config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSNumber *nodeTag;
+@property (nonatomic, weak) RCTNativeAnimatedNodesManager *manager;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *config;
 
 @property (nonatomic, copy, readonly) NSMapTable<NSNumber *, RCTAnimatedNode *> *childNodes;
