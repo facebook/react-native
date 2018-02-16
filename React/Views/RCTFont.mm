@@ -103,6 +103,10 @@ void RCTSetDefaultFontHandler(RCTFontHandler handler) {
   defaultFontHandler = handler;
 }
 
+BOOL RCTHasFontHandlerSet() {
+  return defaultFontHandler != nil;
+}
+
 // We pass a string description of the font weight to the defaultFontHandler because UIFontWeight
 // is not defined pre-iOS 8.2.
 // Furthermore, UIFontWeight's are lossy floats, so we must use an inexact compare to figure out
