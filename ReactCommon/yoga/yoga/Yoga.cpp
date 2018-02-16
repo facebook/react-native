@@ -1102,10 +1102,11 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
 
     if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
-        childHeight = (childWidth - marginRow) / child->getStyle().aspectRatio;
+        childHeight = marginColumn +
+            (childWidth - marginRow) / child->getStyle().aspectRatio;
         childHeightMeasureMode = YGMeasureModeExactly;
       } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
-        childWidth =
+        childWidth = marginRow +
             (childHeight - marginColumn) * child->getStyle().aspectRatio;
         childWidthMeasureMode = YGMeasureModeExactly;
       }

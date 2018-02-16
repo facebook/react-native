@@ -352,10 +352,15 @@ public class ReactInstanceManager {
 
     Assertions.assertNotNull(catalystInstance, "CatalystInstance null after hasStartedCreatingInitialContext true.");
 
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = getReactApplicationContext();
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, packages, true);
     catalystInstance.extendNativeModules(nativeModuleRegistry);
+  }
+
+  @VisibleForTesting
+  public @Nullable ReactApplicationContext getReactApplicationContext() {
+    return new ReactApplicationContext(mApplicationContext);
   }
 
   /**
@@ -1088,7 +1093,7 @@ public class ReactInstanceManager {
       JSBundleLoader jsBundleLoader) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = getReactApplicationContext();
 
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
