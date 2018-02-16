@@ -1,6 +1,6 @@
 # inspired by https://github.com/Originate/guide/blob/master/android/guide/Continuous%20Integration.md
 
-# SDK Built Tools revision, per http://facebook.github.io/react-native/docs/getting-started.html
+# SDK Build Tools revision, per http://facebook.github.io/react-native/docs/getting-started.html
 ANDROID_SDK_BUILD_TOOLS_REVISION=27.0.3
 # API Level we build with
 ANDROID_SDK_BUILD_API_LEVEL="27"
