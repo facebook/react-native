@@ -33,10 +33,10 @@ NSString *const RCTTVRemoteEventSelect = @"select";
 NSString *const RCTTVRemoteEventLongPlayPause = @"longPlayPause";
 NSString *const RCTTVRemoteEventLongSelect = @"longSelect";
 
-NSString *const RCTTVRemoteEventLeft = @"left";
-NSString *const RCTTVRemoteEventRight = @"right";
-NSString *const RCTTVRemoteEventUp = @"up";
-NSString *const RCTTVRemoteEventDown = @"down";
+NSString *const RCTTVRemoteEventTapLeft = @"tapLeft";
+NSString *const RCTTVRemoteEventTapRight = @"tapRight";
+NSString *const RCTTVRemoteEventTapTop = @"tapTop";
+NSString *const RCTTVRemoteEventTapBottom = @"tapBottom";
 
 NSString *const RCTTVRemoteEventSwipeLeft = @"swipeLeft";
 NSString *const RCTTVRemoteEventSwipeRight = @"swipeRight";
@@ -70,25 +70,30 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
                                     pressType:UIPressTypeSelect
                                          name:RCTTVRemoteEventSelect];
 
-    // Up
-    [self addTapGestureRecognizerWithSelector:@selector(swipedUp:)
+    // Recognizers for taps on the sides of the trackpad.
+      
+    // Top
+    [self addTapGestureRecognizerWithSelector:@selector(tappedTop:)
                                     pressType:UIPressTypeUpArrow
-                                         name:RCTTVRemoteEventUp];
+                                         name:RCTTVRemoteEventTapTop];
 
-    // Down
-    [self addTapGestureRecognizerWithSelector:@selector(swipedDown:)
+    // Bottom
+    [self addTapGestureRecognizerWithSelector:@selector(tappedBottom:)
                                     pressType:UIPressTypeDownArrow
-                                         name:RCTTVRemoteEventDown];
+                                         name:RCTTVRemoteEventTapBottom];
+                                   
 
-    // Left
-    [self addTapGestureRecognizerWithSelector:@selector(swipedLeft:)
+    // Left Side
+    [self addTapGestureRecognizerWithSelector:@selector(tappedLeft:)
                                     pressType:UIPressTypeLeftArrow
-                                         name:RCTTVRemoteEventLeft];
+                                         name:RCTTVRemoteEventTapLeft];
 
-    // Right
-    [self addTapGestureRecognizerWithSelector:@selector(swipedRight:)
+
+    // Right Side
+    [self addTapGestureRecognizerWithSelector:@selector(tappedRight:)
                                     pressType:UIPressTypeRightArrow
-                                         name:RCTTVRemoteEventRight];
+                                         name:RCTTVRemoteEventTapRight];
+
 
     // Recognizers for long button presses
     // We don't intercept long menu press -- that's used by the system to go to the home screen
@@ -156,6 +161,26 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
 - (void)longSelectPressed:(UIGestureRecognizer *)r
 {
   [self sendAppleTVEvent:RCTTVRemoteEventLongSelect toView:r.view];
+}
+
+- (void)tappedTop:(UIGestureRecognizer *)r
+{
+    [self sendAppleTVEvent:RCTTVRemoteEventTapTop toView:r.view];
+}
+
+- (void)tappedBottom:(UIGestureRecognizer *)r
+{
+    [self sendAppleTVEvent:RCTTVRemoteEventTapBottom toView:r.view];
+}
+
+- (void)tappedLeft:(UIGestureRecognizer *)r
+{
+    [self sendAppleTVEvent:RCTTVRemoteEventTapLeft toView:r.view];
+}
+
+- (void)tappedRight:(UIGestureRecognizer *)r
+{
+    [self sendAppleTVEvent:RCTTVRemoteEventTapRight toView:r.view];
 }
 
 - (void)swipedUp:(UIGestureRecognizer *)r
