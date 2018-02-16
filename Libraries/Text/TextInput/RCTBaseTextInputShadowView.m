@@ -37,6 +37,7 @@
     _needsUpdateView = YES;
 
     YGNodeSetMeasureFunc(self.yogaNode, RCTBaseTextInputShadowViewMeasure);
+    YGNodeSetBaselineFunc(self.yogaNode, RCTTextInputShadowViewBaseline);
   }
 
   return self;
@@ -167,7 +168,7 @@
 
 #pragma mark -
 
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (NSAttributedString *)measurableAttributedText
 {
   // Only for the very first render when we don't have `_localAttributedText`,
   // we use value directly from the property and/or nested content.
@@ -186,6 +187,13 @@
     }
     attributedText = [[NSAttributedString alloc] initWithString:text attributes:self.textAttributes.effectiveTextAttributes];
   }
+
+  return attributedText;
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  NSAttributedString *attributedText = [self measurableAttributedText];
 
   if (!_textStorage) {
     _textContainer = [NSTextContainer new];
@@ -207,6 +215,26 @@
     MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width), maximumSize.width)),
     MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height), maximumSize.height))
   };
+}
+
+- (CGFloat)lastBaselineForSize:(CGSize)size
+{
+  NSAttributedString *attributedText = [self measurableAttributedText];
+
+  __block CGFloat maximumDescender = 0.0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (maximumDescender > font.descender) {
+        maximumDescender = font.descender;
+      }
+    }
+  ];
+
+  return size.height + maximumDescender;
 }
 
 static YGSize RCTBaseTextInputShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
@@ -251,6 +279,20 @@ static YGSize RCTBaseTextInputShadowViewMeasure(YGNodeRef node, float width, YGM
     RCTYogaFloatFromCoreGraphicsFloat(measuredSize.width),
     RCTYogaFloatFromCoreGraphicsFloat(measuredSize.height)
   };
+}
+
+static float RCTTextInputShadowViewBaseline(YGNodeRef node, const float width, const float height)
+{
+  RCTBaseTextInputShadowView *shadowTextView = (__bridge RCTBaseTextInputShadowView *)YGNodeGetContext(node);
+
+  CGSize size = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(width),
+    RCTCoreGraphicsFloatFromYogaFloat(height)
+  };
+
+  CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
+
+  return RCTYogaFloatFromCoreGraphicsFloat(lastBaseline);
 }
 
 @end
