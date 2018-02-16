@@ -8,12 +8,14 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <React/RCTPointerEvents.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTTextView : UIView
 
 @property (nonatomic, assign) BOOL selectable;
+@property (nonatomic, assign) RCTPointerEvents pointerEvents;
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame

@@ -24,6 +24,7 @@
   NSArray<UIView *> *_Nullable _descendantViews;
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
+  RCTPointerEvents _pointerEvents;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -240,7 +241,7 @@
   if (_selectable && action == @selector(copy:)) {
     return YES;
   }
-  
+
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
 
@@ -265,5 +266,46 @@
   pasteboard.items = @[item];
 #endif
 }
+
+#pragma mark - Custom Box none
+
+- (void)setPointerEvents:(RCTPointerEvents)pointerEvents
+{
+  _pointerEvents = pointerEvents;
+}
+
+- (RCTPointerEvents)pointerEvents
+{
+  return _pointerEvents;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if(_pointerEvents == RCTPointerEventsBoxNone) {
+    CGFloat fraction;
+    NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
+    NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+    NSUInteger characterIndex = [layoutManager characterIndexForPoint:point
+                                                      inTextContainer:textContainer
+                             fractionOfDistanceBetweenInsertionPoints:&fraction];
+
+    NSArray *checkboxWords = [NSArray arrayWithObjects:@"\u2610", @"\u2611", nil];
+    // If the point is not before (fraction == 0.0) the first character and not
+    // after (fraction == 1.0) the last character, then the attribute is valid.
+    if (_textStorage.length > 0 && (fraction > 0 || characterIndex > 0) && (fraction < 1 || characterIndex < _textStorage.length - 1)) {
+      NSRange range = NSMakeRange(characterIndex, 1);
+      NSString *value = [_textStorage.mutableString substringWithRange:range];
+      NSInteger anIndex=[checkboxWords indexOfObject:value];
+      if(NSNotFound != anIndex) {
+        return [super hitTest:point withEvent:event];
+      } else {
+        return nil;
+      }
+    }
+    return nil;
+  }
+  return [super hitTest:point withEvent:event];
+}
+
 
 @end
