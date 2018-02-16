@@ -46,7 +46,9 @@ RCT_EXPORT_MODULE()
 
 - (void)handleTVNavigationEventNotification:(NSNotification *)notif
 {
-  [self sendEventWithName:TVNavigationEventName body:notif.object];
+  if (self.bridge) {
+    [self sendEventWithName:TVNavigationEventName body:notif.object];
+  }
 }
 
 @end
