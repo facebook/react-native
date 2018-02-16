@@ -15,7 +15,7 @@ const Platform = require('Platform');
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {Image, Text, View, LayoutAnimation, Button} = ReactNative;
+var {Image, Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,
@@ -223,6 +223,70 @@ var AdjustingFontSize = createReactClass({
     );
   },
 });
+
+class TextBaseLineLayoutExample extends React.Component<*, *> {
+  render() {
+    var texts = [];
+    for (var i = 9; i >= 0; i--) {
+      texts.push(<Text key={i} style={{fontSize: 8 + i * 5, backgroundColor: '#eee'}}>{i}</Text>);
+    }
+
+    const marker = <View style={{width: 20, height: 20, backgroundColor: 'gray'}} />;
+    const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
+
+    return (
+      <View>
+        <Text style={subtitleStyle}>{'Nested <Text/>s:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text>
+            {texts}
+          </Text>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'Array of <Text/>s in <View>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          {texts}
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text selectable={true}>
+            Some text.
+            <View style={{flexDirection: 'row', alignItems: 'baseline', backgroundColor: '#eee'}}>
+              {marker}
+              <Text>Text inside View.</Text>
+              {marker}
+            </View>
+          </Text>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput style={{margin: 0, padding: 0}}>
+            {texts}
+          </TextInput>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput multiline={true} style={{margin: 0, padding: 0}}>
+            {texts}
+          </TextInput>
+          {marker}
+        </View>
+      </View>
+    );
+  }
+}
 
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
@@ -778,6 +842,12 @@ exports.examples = [
     title: 'Text Align with RTL',
     render: function() {
       return <TextAlignRTLExample />;
+    },
+  },
+  {
+    title: 'Text `alignItems: \'baseline\'` style',
+    render: function() {
+      return <TextBaseLineLayoutExample />;
     },
   },
 ];
