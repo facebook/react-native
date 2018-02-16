@@ -16,6 +16,7 @@
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
 #import "RCTBaseTextInputShadowView.h"
@@ -109,12 +110,15 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 {
   CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
 
-  for (RCTBaseTextInputShadowView *shadowView in _shadowViews) {
-    shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
-    [shadowView dirtyLayout];
-  }
+  NSHashTable<RCTBaseTextInputShadowView *> *shadowViews = _shadowViews;
+  RCTExecuteOnUIManagerQueue(^{
+    for (RCTBaseTextInputShadowView *shadowView in shadowViews) {
+      shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
+      [shadowView dirtyLayout];
+    }
 
-  [self.bridge.uiManager setNeedsLayout];
+    [self.bridge.uiManager setNeedsLayout];
+  });
 }
 
 @end

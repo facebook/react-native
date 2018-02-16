@@ -13,6 +13,7 @@
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
 #import "RCTTextShadowView.h"
@@ -83,12 +84,15 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 {
   CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
 
-  for (RCTTextShadowView *shadowView in _shadowViews) {
-    shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
-    [shadowView dirtyLayout];
-  }
+  NSHashTable<RCTTextShadowView *> *shadowViews = _shadowViews;
+  RCTExecuteOnUIManagerQueue(^{
+    for (RCTTextShadowView *shadowView in shadowViews) {
+      shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
+      [shadowView dirtyLayout];
+    }
 
-  [self.bridge.uiManager setNeedsLayout];
+    [self.bridge.uiManager setNeedsLayout];
+  });
 }
 
 @end
