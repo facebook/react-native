@@ -3,36 +3,35 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ReactShadowNode;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
- * <p>Native module to allow JS to create and update native Views using Fabric API.</p>
- *
+ * This class is responsible to create, clone and update {@link ReactShadowNode} using the
+ * Fabric API.
  */
-@ReactModule(name = FabricUIManagerModule.NAME)
-public class FabricUIManagerModule extends ReactContextBaseJavaModule {
+public class FabricUIManagerModule {
 
-  static final String NAME = "FabricUIManager";
+  private final ReactApplicationContext mReactApplicationContext;
 
   public FabricUIManagerModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+    mReactApplicationContext = reactContext;
   }
 
   /**
    * Creates a new {@link ReactShadowNode}
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int createNode(int reactTag,
+  @Nullable
+  public ReactShadowNode createNode(int reactTag,
       String viewName,
       int rootTag,
       ReadableMap props,
       int instanceHandle) {
     //TODO T25560658
-    return -1;
+    return null;
   }
 
   /**
@@ -40,10 +39,10 @@ public class FabricUIManagerModule extends ReactContextBaseJavaModule {
    * ReactShadowNode will contain a copy of all the internal data of the original node, including
    * its children set (note that the children nodes will not be cloned).
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int cloneNode(int node) {
+  @Nullable
+  public ReactShadowNode cloneNode(ReactShadowNode node) {
     //TODO T25560658
-    return -1;
+    return null;
   }
 
   /**
@@ -51,10 +50,10 @@ public class FabricUIManagerModule extends ReactContextBaseJavaModule {
    * ReactShadowNode will contain a copy of all the internal data of the original node, but
    * its children set will be empty.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int cloneNodeWithNewChildren(int node) {
+  @Nullable
+  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
     //TODO T25560658
-    return -1;
+    return null;
   }
 
   /**
@@ -62,10 +61,10 @@ public class FabricUIManagerModule extends ReactContextBaseJavaModule {
    * ReactShadowNode will contain a copy of all the internal data of the original node, but its
    * props will be overridden with the {@link ReadableMap} received by parameter.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int cloneNodeWithNewProps(int node, ReadableMap newProps) {
+  @Nullable
+  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableMap newProps) {
     //TODO T25560658
-    return -1;
+    return null;
   }
 
   /**
@@ -74,41 +73,40 @@ public class FabricUIManagerModule extends ReactContextBaseJavaModule {
    * props will be overridden with the {@link ReadableMap} received by parameter and its children
    * set will be empty.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int cloneNodeWithNewChildrenAndProps(
-      int node,
+  @Nullable
+  public ReactShadowNode cloneNodeWithNewChildrenAndProps(
+      ReactShadowNode node,
       ReadableMap newProps) {
     //TODO T25560658
-    return -1;
+    return null;
   }
 
   /**
    * Appends the child {@link ReactShadowNode} to the children set of the parent
    * {@link ReactShadowNode}.
    */
-  @ReactMethod
-  public void appendChild(int parent, int child) {
+  @Nullable
+  public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     //TODO T25560658
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public int createChildSet() {
-    //TODO T25560658
-    return -1;
+  /**
+   * @return an empty {@link List<ReactShadowNode>} that will be used to append the
+   * {@link ReactShadowNode} elements of the root. Typically this List will contain one element.
+   */
+  public List<ReactShadowNode> createChildSet() {
+    return new ArrayList<>(1);
   }
 
-  @ReactMethod
-  public void appendChildToSet(int childSet, int child) {
+  /**
+   * Adds the {@link ReactShadowNode} to the {@link List<ReactShadowNode>} received by parameter.
+   */
+  public void appendChildToSet(List<ReactShadowNode> childList, ReactShadowNode child) {
+    childList.add(child);
+  }
+
+  public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
     //TODO T25560658
   }
 
-  @ReactMethod
-  public void completeRoot(int rootTag, int childSet) {
-    //TODO T25560658
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
 }
