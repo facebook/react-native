@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   s.requires_arc            = true
   s.platforms               = { :ios => "8.0", :tvos => "9.2" }
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
-  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
+  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs"
   s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|

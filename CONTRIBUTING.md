@@ -208,5 +208,5 @@ However, there are still some styles that the linter cannot pick up.
 
 ## License
 
-By contributing to React Native, you agree that your contributions will be licensed under its BSD license.
+By contributing to React Native, you agree that your contributions will be licensed under its MIT license.
 <!-- generated_contributing_end -->

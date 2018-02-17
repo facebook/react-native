@@ -2,7 +2,7 @@
   "name": "react-native",
   "version": "1000.0.0",
   "description": "A framework for building native apps using React",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
@@ -112,7 +112,6 @@
     "LICENSE",
     "local-cli",
     "packager",
-    "PATENTS",
     "react.gradle",
     "React.podspec",
     "React",
