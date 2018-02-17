@@ -113,8 +113,10 @@ type GetPhotosReturn = Promise<{
  * Shape of the return value of the `getPhotos` function.
  */
 const getPhotosReturnChecker = createStrictShapeTypeChecker({
-  // $FlowFixMe(>=0.41.0)
   edges: PropTypes.arrayOf(
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
     createStrictShapeTypeChecker({
       node: createStrictShapeTypeChecker({
         type: PropTypes.string.isRequired,

@@ -30,16 +30,10 @@ describe('fs mock', () => {
     it('stores content correctly', () => {
       fs.writeFileSync('/test', 'foobar', 'utf8');
       const content = fs.readFileSync('/test', 'utf8');
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
       expect(content).toEqual('foobar');
     });
 
     it('fails on missing path', () => {
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
       expect(() =>
         fs.writeFileSync('/dir/test', 'foobar', 'utf8'),
       ).toThrowError('ENOENT: no such file or directory');
@@ -57,9 +51,6 @@ describe('fs mock', () => {
       fs.mkdirSync('/dir', 0o777);
       fs.writeFileSync('/dir/test', 'foobar', 'utf8');
       const content = fs.readFileSync('/dir/test', 'utf8');
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
       expect(content).toEqual('foobar');
     });
 
@@ -68,9 +59,6 @@ describe('fs mock', () => {
       fs.writeFileSync('/dir/test', 'foobar', 'utf8');
       fs.mkdirSync('/dir', 0o777);
       const content = fs.readFileSync('/dir/test', 'utf8');
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
       expect(content).toEqual('foobar');
     });
   });

@@ -25,9 +25,6 @@ const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddlewar
 const defaultAssetExts = Metro.defaults.assetExts;
 const defaultSourceExts = Metro.defaults.sourceExts;
 const defaultPlatforms = Metro.defaults.platforms;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const defaultProvidesModuleNodeModules =
   Metro.defaults.providesModuleNodeModules;
 const errorhandler = require('errorhandler');
@@ -46,17 +43,11 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TransformCaching = require('metro/src/lib/TransformCaching');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {ConfigT} from 'metro';
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 import type {Reporter} from 'metro/src/lib/reporting';
 
 export type Args = {|
