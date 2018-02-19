@@ -314,6 +314,113 @@ class TrackingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> 
   }
 }
 
+class InterpolatedExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  _value = 0
+  _animationInterval: ?IntervalID;
+  constructor(props) {
+    super(props);
+    this.state = {
+      native: new Animated.Value(0),
+      nativeStart: new Animated.Value(0),
+      nativeEnd: new Animated.Value(200),
+      js: new Animated.Value(0),
+      jsStart: new Animated.Value(0),
+      jsEnd: new Animated.Value(200),
+    };
+    this.state.jsInterpolated = this.state.js.interpolate({
+      inputRange: [0, 1],
+      outputRange: [this.state.jsStart, this.state.jsEnd],
+    });
+    this.state.nativeInterpolated = this.state.native.interpolate({
+      inputRange: [0, 1],
+      outputRange: [this.state.nativeStart, this.state.nativeEnd],
+    });
+  }
+
+  animate = () => {
+    this._value = this._value === 0 ? 1 : 0;
+    Animated.spring(
+      this.state.native,
+      {
+        toValue: this._value,
+        useNativeDriver: true,
+      },
+    ).start();
+    Animated.spring(
+      this.state.js,
+      {
+        toValue: this._value,
+      },
+    ).start();
+  }
+
+  changeBounds = (startAnim, startValue, endAnim, endValue, native) => {
+    Animated.parallel([
+      Animated.spring(
+        startAnim,
+        {
+          toValue: startValue,
+          useNativeDriver: native,
+        },
+      ),
+      Animated.spring(
+        endAnim,
+        {
+          toValue: endValue,
+          useNativeDriver: native,
+        },
+      ),
+    ]).start();
+  }
+
+  componentDidMount() {
+    this._animationInterval = setInterval(
+      this.animate,
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    if (this._animationInterval) {
+      clearInterval(this._animationInterval);
+    }
+  }
+
+  onPress = () => {
+    const start = Math.random() * 100;
+    const end = 100 + Math.random() * 100;
+    this.changeBounds(this.state.jsStart, start, this.state.jsEnd, end, false);
+    this.changeBounds(this.state.nativeStart, start, this.state.nativeEnd, end, true);
+  };
+
+  renderBlock = (animation, start, end) => [
+    <Animated.View key="line-start" style={[styles.line, { transform: [{ translateX: start }]}]}/>,
+    <Animated.View key="line-end" style={[styles.line, { transform: [{ translateX: end }]}]}/>,
+    <Animated.View key="block" style={[styles.block, { transform: [{ translateX: animation }]}]}/>,
+  ]
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this.onPress}>
+        <View>
+          <View>
+            <Text>Native:</Text>
+          </View>
+          <View style={[styles.row]}>
+            {this.renderBlock(this.state.nativeInterpolated, this.state.nativeStart, this.state.nativeEnd)}
+          </View>
+          <View>
+            <Text>JavaScript:</Text>
+          </View>
+          <View style={[styles.row]}>
+            {this.renderBlock(this.state.jsInterpolated, this.state.jsStart, this.state.jsEnd)}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -653,6 +760,12 @@ exports.examples = [
     title: 'Animated Tracking - tap me many times',
     render: function() {
       return <TrackingExample />;
+    },
+  },
+  {
+    title: 'Interpolated with animated outputRange',
+    render: function() {
+      return <InterpolatedExample />;
     },
   },
   {

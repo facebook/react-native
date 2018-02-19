@@ -475,8 +475,9 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.createAnimatedNode)
         .toBeCalledWith(expect.any(Number), {
           type: 'interpolation',
+          parent: expect.any(Number),
           inputRange: [10, 20],
-          outputRange: [0, 1],
+          outputRange: [expect.any(Number), expect.any(Number)],
           extrapolateLeft: 'extend',
           extrapolateRight: 'extend',
         });

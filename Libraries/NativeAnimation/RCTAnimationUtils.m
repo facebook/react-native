@@ -9,7 +9,7 @@
 
 #import <React/RCTLog.h>
 
-static NSUInteger _RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range)
+NSUInteger RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range)
 {
   NSUInteger index;
   NSUInteger rangeCount = range.count;
@@ -69,7 +69,7 @@ CGFloat RCTInterpolateValueInRange(CGFloat value,
                                    NSString *extrapolateLeft,
                                    NSString *extrapolateRight)
 {
-  NSUInteger rangeIndex = _RCTFindIndexOfNearestValue(value, inputRange);
+  NSUInteger rangeIndex = RCTFindIndexOfNearestValue(value, inputRange);
   CGFloat inputMin = inputRange[rangeIndex].doubleValue;
   CGFloat inputMax = inputRange[rangeIndex + 1].doubleValue;
   CGFloat outputMin = outputRange[rangeIndex].doubleValue;

@@ -90,7 +90,7 @@ import javax.annotation.Nullable;
     } else if ("props".equals(type)) {
       node = new PropsAnimatedNode(config, this, mUIImplementation);
     } else if ("interpolation".equals(type)) {
-      node = new InterpolationAnimatedNode(config);
+      node = new InterpolationAnimatedNode(config, this);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
     } else if ("subtraction".equals(type)) {

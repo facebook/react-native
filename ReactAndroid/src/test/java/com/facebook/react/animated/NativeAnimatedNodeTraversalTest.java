@@ -871,19 +871,32 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testInterpolationNode() {
+    int parentNodeTag = 1;
     mNativeAnimatedNodesManager.createAnimatedNode(
-      1,
+      parentNodeTag,
       JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));
+
+    int outputStartTag = 11;
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            outputStartTag,
+            JavaOnlyMap.of("type", "value", "value", 0d, "offset", 0d));
+
+    int outputEndTag = 12;
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            outputEndTag,
+            JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
       JavaOnlyMap.of(
+        "parent",
+        parentNodeTag,
         "type",
         "interpolation",
         "inputRange",
         JavaOnlyArray.of(10d, 20d),
         "outputRange",
-        JavaOnlyArray.of(0d, 1d),
+        JavaOnlyArray.of(outputStartTag, outputEndTag),
         "extrapolateLeft",
         "extend",
         "extrapolateRight",

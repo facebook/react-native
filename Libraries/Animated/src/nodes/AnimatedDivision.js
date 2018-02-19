@@ -10,12 +10,9 @@
  */
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedValue = require('./AnimatedValue');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
-
-import type {InterpolationConfigType} from './AnimatedInterpolation';
 
 class AnimatedDivision extends AnimatedWithChildren {
   _a: AnimatedNode;
@@ -40,10 +37,6 @@ class AnimatedDivision extends AnimatedWithChildren {
       console.error('Detected division by zero in AnimatedDivision');
     }
     return a / b;
-  }
-
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, config);
   }
 
   __attach(): void {

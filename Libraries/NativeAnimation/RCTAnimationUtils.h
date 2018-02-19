@@ -14,6 +14,8 @@ static NSString *const EXTRAPOLATE_TYPE_IDENTITY = @"identity";
 static NSString *const EXTRAPOLATE_TYPE_CLAMP = @"clamp";
 static NSString *const EXTRAPOLATE_TYPE_EXTEND = @"extend";
 
+RCT_EXTERN NSUInteger RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range);
+
 RCT_EXTERN CGFloat RCTInterpolateValueInRange(CGFloat value,
                                               NSArray<NSNumber *> *inputRange,
                                               NSArray<NSNumber *> *outputRange,

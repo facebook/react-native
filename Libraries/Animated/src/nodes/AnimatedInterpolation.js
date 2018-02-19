@@ -12,6 +12,7 @@
 'use strict';
 
 const AnimatedNode = require('./AnimatedNode');
+const AnimatedValue = require('./AnimatedValue');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
@@ -26,7 +27,7 @@ export type InterpolationConfigType = {
    * detected during the deployment of v0.38.0. To see the error, remove this
    * comment and run flow
    */
-  outputRange: Array<number> | Array<string>,
+  outputRange: Array<number> | Array<string> | Array<AnimatedNode>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
@@ -46,7 +47,7 @@ function createInterpolation(
     return createInterpolationFromStringOutputRange(config);
   }
 
-  const outputRange: Array<number> = (config.outputRange: any);
+  const outputRange: Array<number> | Array<AnimatedNode> = config.outputRange;
   checkInfiniteRange('outputRange', outputRange);
 
   const inputRange = config.inputRange;
@@ -85,12 +86,20 @@ function createInterpolation(
     );
 
     const range = findRange(input, inputRange);
+    const outputStart: number | AnimatedNode = outputRange[range];
+    const outputEnd: number | AnimatedNode = outputRange[range + 1];
+    const outputStartValue =
+      outputStart instanceof AnimatedNode
+        ? outputStart.__getValue()
+        : outputStart;
+    const outputEndValue =
+      outputEnd instanceof AnimatedNode ? outputEnd.__getValue() : outputEnd;
     return interpolate(
       input,
       inputRange[range],
       inputRange[range + 1],
-      outputRange[range],
-      outputRange[range + 1],
+      outputStartValue,
+      outputEndValue,
       easing,
       extrapolateLeft,
       extrapolateRight,
@@ -291,7 +300,7 @@ function checkValidInputRange(arr: Array<number>) {
   }
 }
 
-function checkInfiniteRange(name: string, arr: Array<number>) {
+function checkInfiniteRange(name: string, arr: Array<any>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
@@ -311,17 +320,24 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
   _parent: AnimatedNode;
   _config: InterpolationConfigType;
+  _transformedOutputRange: Array<AnimatedNode>;
   _interpolation: (input: number) => number | string;
 
   constructor(parent: AnimatedNode, config: InterpolationConfigType) {
     super();
     this._parent = parent;
     this._config = config;
+    this._transformedOutputRange = this.__transformOutputRangeToAnimatedValues(
+      config.outputRange,
+    );
     this._interpolation = createInterpolation(config);
   }
 
-  __makeNative() {
+  __makeNative(): void {
     this._parent.__makeNative();
+    this._transformedOutputRange.forEach(function(value) {
+      value.__makeNative();
+    });
     super.__makeNative();
   }
 
@@ -334,37 +350,54 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return this._interpolation(parentValue);
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, config);
-  }
-
   __attach(): void {
-    this._parent.__addChild(this);
+    const that = this;
+    this._parent.__addChild(that);
+    this._transformedOutputRange.forEach(function(value) {
+      value.__addChild(that);
+    });
   }
 
   __detach(): void {
-    this._parent.__removeChild(this);
+    const that = this;
+    this._parent.__removeChild(that);
+    this._transformedOutputRange.forEach(function(value) {
+      value.__removeChild(that);
+    });
     super.__detach();
   }
 
-  __transformDataType(range: Array<any>) {
-    // Change the string array type to number array
-    // So we can reuse the same logic in iOS and Android platform
-    /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.70 was deployed. To see the error delete this
-     * comment and run Flow. */
+  __transformOutputRangeToAnimatedValues(
+    range: Array<number | string | AnimatedNode>,
+  ): Array<AnimatedNode> {
     return range.map(function(value) {
-      if (typeof value !== 'string') {
+      if (typeof value === 'string' && /deg$/.test(value)) {
+        const degrees = parseFloat(value) || 0;
+        // Radians.
+        const radians = degrees * Math.PI / 180.0;
+        return new AnimatedValue(radians);
+      }
+      if (typeof value === 'string') {
+        // Assume radians.
+        const radians = parseFloat(value) || 0;
+        return new AnimatedValue(radians);
+      }
+      if (typeof value === 'number') {
+        // Just a plain number value.
+        return new AnimatedValue(value);
+      }
+      if (value instanceof AnimatedNode) {
         return value;
       }
-      if (/deg$/.test(value)) {
-        const degrees = parseFloat(value) || 0;
-        const radians = degrees * Math.PI / 180.0;
-        return radians;
-      } else {
-        // Assume radians
-        return parseFloat(value) || 0;
-      }
+      throw new Error('Incompatible type passed to outputRange.');
+    });
+  }
+
+  __outputRangeToTags(range: Array<AnimatedNode>): Array<number> {
+    return range.map(function(value) {
+      const tag = value.__getNativeTag();
+      invariant(tag, 'There must be a native tag for this value.');
+      return tag;
     });
   }
 
@@ -374,14 +407,14 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     }
 
     return {
+      type: 'interpolation',
+      parent: this._parent.__getNativeTag(),
       inputRange: this._config.inputRange,
-      // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
-      outputRange: this.__transformDataType(this._config.outputRange),
+      outputRange: this.__outputRangeToTags(this._transformedOutputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',
       extrapolateRight:
         this._config.extrapolateRight || this._config.extrapolate || 'extend',
-      type: 'interpolation',
     };
   }
 }

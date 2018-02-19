@@ -10,11 +10,8 @@
  */
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
 const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
-
-import type {InterpolationConfigType} from './AnimatedInterpolation';
 
 class AnimatedDiffClamp extends AnimatedWithChildren {
   _a: AnimatedNode;
@@ -35,10 +32,6 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   __makeNative() {
     this._a.__makeNative();
     super.__makeNative();
-  }
-
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, config);
   }
 
   __getValue(): number {

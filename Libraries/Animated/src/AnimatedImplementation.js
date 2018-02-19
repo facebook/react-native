@@ -39,6 +39,34 @@ import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
+import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
+
+const interpolateMethod = function(
+  config: InterpolationConfigType,
+): AnimatedInterpolation {
+  console.warn(
+    'The animation.interpolate(config) method will be removed from animated nodes in favour of Animated.interpolate(animation, config).',
+  );
+  return new AnimatedInterpolation(this, config);
+};
+
+// To avoid some code duplication and a circular dependency we
+// are adding the interpolate method directly onto these prototypes.
+// This should eventually be removed.
+//$FlowFixMe
+AnimatedAddition.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedDiffClamp.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedDivision.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedInterpolation.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedModulo.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedMultiplication.prototype.interpolate = interpolateMethod;
+//$FlowFixMe
+AnimatedValue.prototype.interpolate = interpolateMethod;
 
 export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
@@ -231,6 +259,13 @@ const timing = function(
       },
     }
   );
+};
+
+const interpolate = function(
+  value: AnimatedValue,
+  config: InterpolationConfigType,
+): AnimatedInterpolation {
+  return new AnimatedInterpolation(value, config);
 };
 
 const decay = function(
@@ -545,6 +580,12 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/animated.html#node
    */
   Node: AnimatedNode,
+
+  /**
+   * Interpolates the value before updating the property, e.g. mapping 0-1 to
+   * 0-10.
+   */
+  interpolate,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
