@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ViewPropTypes
  * @flow
@@ -55,6 +53,7 @@ export type ViewProps = {
   importantForAccessibility?: 'auto'| 'yes'| 'no'| 'no-hide-descendants',
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   accessibilityViewIsModal?: bool,
+  accessibilityElementsHidden?: bool,
   onAccessibilityAction?: Function,
   onAccessibilityTap?: Function,
   onMagicTap?: Function,
@@ -173,6 +172,16 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityviewismodal
    */
   accessibilityViewIsModal: PropTypes.bool,
+  
+  /**
+   * A value indicating whether the accessibility elements contained within
+   * this accessibility element are hidden.
+   *
+   * @platform ios
+   * 
+   * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
+   */
+  accessibilityElementsHidden: PropTypes.bool,
 
   /**
    * When `accessible` is true, the system will try to invoke this function

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.flat;
@@ -21,7 +19,7 @@ import com.facebook.react.views.image.ImageResizeMode;
 
 /**
  * RCTImageView is a top-level node for Image. It can display either a remote image
- * (source must start wtih http:// or https://) or a local resource (a BitmapDrawable).
+ * (source must start with http:// or https://) or a local resource (a BitmapDrawable).
  */
 /* package */ class RCTImageView<T extends AbstractDrawCommand & DrawImage> extends FlatShadowNode {
 

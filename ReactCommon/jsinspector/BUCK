@@ -1,4 +1,4 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "InspectorInterfaces.h",
@@ -9,12 +9,21 @@ rn_xplat_cxx_library(
     srcs = glob(
         ["*.cpp"],
     ),
-    headers = glob(
-        ["*.h"],
+    headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
         excludes = EXPORTED_HEADERS,
+        prefix = "jsinspector",
     ),
-    header_namespace = "jsinspector",
-    exported_headers = EXPORTED_HEADERS,
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", header)
+            for header in EXPORTED_HEADERS
+        ],
+        prefix = "jsinspector",
+    ),
     compiler_flags = [
         "-Wall",
         "-fexceptions",

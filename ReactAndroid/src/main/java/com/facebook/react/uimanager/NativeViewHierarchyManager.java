@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -724,11 +722,13 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
+  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success,
+                                         Callback error) {
     UiThreadUtil.assertOnUiThread();
     View anchor = mTagsToViews.get(reactTag);
     if (anchor == null) {
-      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
+      error.invoke("Can't display popup. Could not find view with tag " + reactTag);
+      return;
     }
     PopupMenu popupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
 

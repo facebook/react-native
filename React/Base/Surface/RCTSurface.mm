@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSurface.h"
@@ -15,6 +13,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTShadowView+Layout.h"
 #import "RCTSurfaceDelegate.h"
 #import "RCTSurfaceRootShadowView.h"
 #import "RCTSurfaceRootShadowViewDelegate.h"
@@ -67,7 +66,7 @@
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(INFINITY, INFINITY);
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillLoadJavaScriptNotification:)
@@ -305,8 +304,6 @@
                         method:@"unmountApplicationComponentAtRootTag"
                           args:@[self->_rootViewTag]
                     completion:NULL];
-
-  [self _setStage:RCTSurfaceStageSurfaceDidStop];
 }
 
 - (void)_registerRootView
@@ -436,6 +433,16 @@
 
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
 {
+  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialRendering)) {
+    // This case *temporary* does not supported.
+    stage = RCTSurfaceStageSurfaceDidInitialLayout;
+  }
+
+  if (RCTIsUIManagerQueue()) {
+    RCTLogInfo(@"Synchronous waiting is not supported on UIManager queue.");
+    return NO;
+  }
+
   dispatch_semaphore_t semaphore;
   switch (stage) {
     case RCTSurfaceStageSurfaceDidInitialLayout:
@@ -448,24 +455,14 @@
       RCTAssert(NO, @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering` and `RCTSurfaceStageSurfaceDidInitialLayout` stages is supported.");
   }
 
-  if (RCTIsMainQueue()) {
-    RCTLogInfo(@"Synchronous waiting is not supported on the main queue.");
-    return NO;
-  }
-
-  if (RCTIsUIManagerQueue()) {
-    RCTLogInfo(@"Synchronous waiting is not supported on UIManager queue.");
-    return NO;
-  }
-
-  BOOL timeoutOccured = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
-  if (!timeoutOccured) {
+  BOOL timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
+  if (!timeoutOccurred) {
     // Balancing the semaphore.
-    // Note: `dispatch_semaphore_wait` reverts the decrement in case when timeout occured.
+    // Note: `dispatch_semaphore_wait` reverts the decrement in case when timeout occurred.
     dispatch_semaphore_signal(semaphore);
   }
 
-  return !timeoutOccured;
+  return !timeoutOccurred;
 }
 
 #pragma mark - RCTSurfaceRootShadowViewDelegate

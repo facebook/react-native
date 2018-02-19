@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -12,10 +10,6 @@
 #include <functional>
 #include <string>
 #include <JavaScriptCore/JavaScript.h>
-
-#if WITH_FBJSCEXTENSIONS
-#include <jsc_stringref.h>
-#endif
 
 #if defined(JSCINTERNAL) || (!defined(__APPLE__))
 #define JSC_IMPORT extern "C"

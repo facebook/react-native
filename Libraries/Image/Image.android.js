@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Image
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,23 +17,19 @@ var NativeModules = require('NativeModules');
 var React = require('React');
 var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
 var ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var createReactClass = require('create-react-class');
-var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var {
-  ImageLoader,
-} = NativeModules;
+const {ViewContextTypes} = require('ViewContext');
+
+var {ImageLoader} = NativeModules;
 
 let _requestId = 1;
 function generateRequestId() {
@@ -42,57 +37,19 @@ function generateRequestId() {
 }
 
 /**
- * <Image> - A react component for displaying different types of images,
+ * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
- * images from local disk, such as the camera roll.  Example usage:
+ * images from local disk, such as the camera roll.
  *
- *   renderImages: function() {
- *     return (
- *       <View>
- *         <Image
- *           style={styles.icon}
- *           source={require('./myIcon.png')}
- *         />
- *         <Image
- *           style={styles.logo}
- *           source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
- *         />
- *       </View>
- *     );
- *   },
- *
- * More example code in ImageExample.js
+ * See https://facebook.github.io/react-native/docs/image.html
  */
-
-var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
-  src: true,
-  loadingIndicatorSrc: true,
-  resizeMethod: true,
-  resizeMode: true,
-  progressiveRenderingEnabled: true,
-  fadeDuration: true,
-  shouldNotifyLoadEvents: true,
-});
-
-var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
-var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
-
 var Image = createReactClass({
   displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
-   /**
-     * `uri` is a string representing the resource identifier for the image, which
-     * could be an http address, a local file path, or a static image
-     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
-     *
-     * `headers` is an object representing the HTTP headers to send along with the request
-     * for a remote image.
-     *
-     * This prop can also contain several remote `uri`, specified together with
-     * their width and height. The native side will then choose the best `uri` to display
-     * based on the measured size of the image container.
+    /**
+     * See https://facebook.github.io/react-native/docs/image.html#source
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
@@ -108,16 +65,17 @@ var Image = createReactClass({
           width: PropTypes.number,
           height: PropTypes.number,
           headers: PropTypes.objectOf(PropTypes.string),
-        }))
+        }),
+      ),
     ]),
     /**
-    * blurRadius: the blur radius of the blur filter added to the image
-    */
+     * blurRadius: the blur radius of the blur filter added to the image
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#blurradius
+     */
     blurRadius: PropTypes.number,
     /**
-     * similarly to `source`, this property represents the resource used to render
-     * the loading indicator for the image, displayed until image is ready to be
-     * displayed, typically after when it got downloaded from network.
+     * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
      */
     loadingIndicatorSource: PropTypes.oneOfType([
       PropTypes.shape({
@@ -152,40 +110,14 @@ var Image = createReactClass({
      * The mechanism that should be used to resize the image when the image's dimensions
      * differ from the image view's dimensions. Defaults to `auto`.
      *
-     * - `auto`: Use heuristics to pick between `resize` and `scale`.
-     *
-     * - `resize`: A software operation which changes the encoded image in memory before it
-     * gets decoded. This should be used instead of `scale` when the image is much larger
-     * than the view.
-     *
-     * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
-     * faster (usually hardware accelerated) and produces higher quality images. This
-     * should be used if the image is smaller than the view. It should also be used if the
-     * image is slightly bigger than the view.
-     *
-     * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
-     *
-     * @platform android
+     * See https://facebook.github.io/react-native/docs/image.html#resizemethod
      */
     resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
     /**
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
      *
-     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal
-     * to or larger than the corresponding dimension of the view (minus padding).
-     *
-     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
-     * so that both dimensions (width and height) of the image will be equal to
-     * or less than the corresponding dimension of the view (minus padding).
-     *
-     * 'stretch': Scale width and height independently, This may change the
-     * aspect ratio of the src.
-     *
-     * 'center': Scale the image down so that it is completely visible,
-     * if bigger than the area of the view.
-     * The image will not be scaled up.
+     * See https://facebook.github.io/react-native/docs/image.html#resizemode
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
@@ -202,14 +134,19 @@ var Image = createReactClass({
         .then(function(sizes) {
           success(sizes.width, sizes.height);
         })
-        .catch(failure || function() {
-          console.warn('Failed to get size for image: ' + url);
-        });
+        .catch(
+          failure ||
+            function() {
+              console.warn('Failed to get size for image: ' + url);
+            },
+        );
     },
 
     /**
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#prefetch
      */
     prefetch(url: string, callback: ?Function) {
       const requestId = generateRequestId();
@@ -218,7 +155,9 @@ var Image = createReactClass({
     },
 
     /**
-     * Abort prefetch request
+     * Abort prefetch request.
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
      */
     abortPrefetch(requestId: number) {
       ImageLoader.abortRequest(requestId);
@@ -227,18 +166,18 @@ var Image = createReactClass({
     /**
      * Perform cache interrogation.
      *
-     * @param urls the list of image URLs to check the cache for.
-     * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
-     *         not in the mapping, it means it's not in the cache.
+     * See https://facebook.github.io/react-native/docs/image.html#querycache
      */
-    async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+    async queryCache(
+      urls: Array<string>,
+    ): Promise<Map<string, 'memory' | 'disk'>> {
       return await ImageLoader.queryCache(urls);
     },
 
     /**
-     * Resolves an asset reference into an object which has the properties `uri`, `width`,
-     * and `height`. The input may either be a number (opaque type returned by
-     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     * Resolves an asset reference into an object.
+     *
+     * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
      */
     resolveAssetSource: resolveAssetSource,
   },
@@ -254,13 +193,13 @@ var Image = createReactClass({
     validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
-  contextTypes: {
-    isInAParentText: PropTypes.bool
-  },
+  contextTypes: ViewContextTypes,
 
   render: function() {
     const source = resolveAssetSource(this.props.source);
-    const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const loadingIndicatorSource = resolveAssetSource(
+      this.props.loadingIndicatorSource,
+    );
 
     // As opposed to the ios version, here we render `null` when there is no source, source.uri
     // or source array.
@@ -270,11 +209,15 @@ var Image = createReactClass({
     }
 
     if (this.props.src) {
-      console.warn('The <Image> component requires a `source` property rather than `src`.');
+      console.warn(
+        'The <Image> component requires a `source` property rather than `src`.',
+      );
     }
 
     if (this.props.children) {
-      throw new Error('The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.');
+      throw new Error(
+        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+      );
     }
 
     if (source && (source.uri || Array.isArray(source))) {
@@ -292,20 +235,27 @@ var Image = createReactClass({
       const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+        shouldNotifyLoadEvents: !!(
+          onLoadStart ||
+          onLoad ||
+          onLoadEnd ||
+          onError
+        ),
         src: sources,
         headers: source.headers,
-        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+        loadingIndicatorSrc: loadingIndicatorSource
+          ? loadingIndicatorSource.uri
+          : null,
       });
 
       if (this.context.isInAParentText) {
-        return <RCTTextInlineImage {...nativeProps}/>;
+        return <RCTTextInlineImage {...nativeProps} />;
       } else {
-        return <RKImage {...nativeProps}/>;
+        return <RKImage {...nativeProps} />;
       }
     }
     return null;
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -323,6 +273,10 @@ var cfg = {
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent(
+  'RCTTextInlineImage',
+  Image,
+  cfg,
+);
 
 module.exports = Image;

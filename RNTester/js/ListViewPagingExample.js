@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ListViewPagingExample
  * @flow
@@ -46,7 +44,7 @@ var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
 class Thumb extends React.Component<{}, $FlowFixMeState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
   }

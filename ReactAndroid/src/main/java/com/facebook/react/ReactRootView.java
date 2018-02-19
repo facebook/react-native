@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -12,6 +10,7 @@ package com.facebook.react;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +39,7 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
@@ -57,9 +57,9 @@ import javax.annotation.Nullable;
  * ViewGroup#onInterceptTouchEvent} method in order to be notified about the events for all of its
  * children and it's also overriding {@link ViewGroup#requestDisallowInterceptTouchEvent} to make
  * sure that {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
- * intercepting it. In case when no child view is interested in handling some particular touch event
+ * intercepting it. In case when no child view is interested in handling some particular touch event,
  * this view's {@link View#onTouchEvent} will still return true in order to be notified about all
- * subsequent touch events related to that gesture (in case when JS code want to handle that
+ * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
 public class ReactRootView extends SizeMonitoringFrameLayout
@@ -199,6 +199,17 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  @Override
+  protected void dispatchDraw(Canvas canvas) {
+    try {
+      super.dispatchDraw(canvas);
+    } catch (StackOverflowError e) {
+      // Adding special exception management for StackOverflowError for logging purposes.
+      // This will be removed in the future.
+      handleException(e);
+    }
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -494,6 +505,22 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
   public void setRootViewTag(int rootViewTag) {
     mRootViewTag = rootViewTag;
+  }
+
+  @Override
+  public void handleException(Throwable t) {
+    if (mReactInstanceManager == null
+      || mReactInstanceManager.getCurrentReactContext() == null) {
+        throw new RuntimeException(t);
+    }
+
+    // Adding special exception management for StackOverflowError for logging purposes.
+    // This will be removed in the future.
+    Exception e = (t instanceof StackOverflowError) ?
+      new IllegalViewOperationException("StackOverflowException", this, t) :
+      t instanceof Exception ? (Exception) t : new RuntimeException(t);
+
+    mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
   @Nullable

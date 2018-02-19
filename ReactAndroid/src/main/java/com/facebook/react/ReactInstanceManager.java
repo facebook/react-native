@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -45,13 +43,13 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.react.bridge.BridgeListener;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -124,6 +122,7 @@ public class ReactInstanceManager {
      */
     void onReactContextInitialized(ReactContext context);
   }
+
   private final List<ReactRootView> mAttachedRootViews = Collections.synchronizedList(
     new ArrayList<ReactRootView>());
 
@@ -156,6 +155,7 @@ public class ReactInstanceManager {
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mDelayViewManagerClassLoadsEnabled;
+  private final @Nullable BridgeListener mBridgeListener;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -185,25 +185,26 @@ public class ReactInstanceManager {
   }
 
   /* package */ ReactInstanceManager(
-      Context applicationContext,
-      @Nullable Activity currentActivity,
-      @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
-      JavaScriptExecutorFactory javaScriptExecutorFactory,
-      @Nullable JSBundleLoader bundleLoader,
-      @Nullable String jsMainModulePath,
-      List<ReactPackage> packages,
-      boolean useDeveloperSupport,
-      @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-      LifecycleState initialLifecycleState,
-      UIImplementationProvider uiImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      @Nullable RedBoxHandler redBoxHandler,
-      boolean lazyNativeModulesEnabled,
-      boolean lazyViewManagersEnabled,
-      boolean delayViewManagerClassLoadsEnabled,
-      @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      int minNumShakes,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    Context applicationContext,
+    @Nullable Activity currentActivity,
+    @Nullable DefaultHardwareBackBtnHandler defaultHardwareBackBtnHandler,
+    JavaScriptExecutorFactory javaScriptExecutorFactory,
+    @Nullable JSBundleLoader bundleLoader,
+    @Nullable String jsMainModulePath,
+    List<ReactPackage> packages,
+    boolean useDeveloperSupport,
+    @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
+    LifecycleState initialLifecycleState,
+    UIImplementationProvider uiImplementationProvider,
+    NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+    @Nullable RedBoxHandler redBoxHandler,
+    boolean lazyNativeModulesEnabled,
+    boolean lazyViewManagersEnabled,
+    boolean delayViewManagerClassLoadsEnabled,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
+    int minNumShakes,
+    int minTimeLeftInFrameForNonBatchedOperationMs,
+    @Nullable BridgeListener bridgeListener) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -252,6 +253,7 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
+    mBridgeListener = bridgeListener;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -348,10 +350,15 @@ public class ReactInstanceManager {
 
     Assertions.assertNotNull(catalystInstance, "CatalystInstance null after hasStartedCreatingInitialContext true.");
 
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = getReactApplicationContext();
 
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, packages, true);
     catalystInstance.extendNativeModules(nativeModuleRegistry);
+  }
+
+  @VisibleForTesting
+  public @Nullable ReactApplicationContext getReactApplicationContext() {
+    return new ReactApplicationContext(mApplicationContext);
   }
 
   /**
@@ -545,6 +552,16 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
+    onHostResume(activity);
+  }
+
+  /**
+   * Use this method when the activity resumes.
+   */
+  @ThreadConfined(UI)
+  public void onHostResume(Activity activity) {
+    UiThreadUtil.assertOnUiThread();
+
     mCurrentActivity = activity;
 
     if (mUseDeveloperSupport) {
@@ -1074,7 +1091,7 @@ public class ReactInstanceManager {
       JSBundleLoader jsBundleLoader) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final ReactApplicationContext reactContext = getReactApplicationContext();
 
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
@@ -1090,7 +1107,8 @@ public class ReactInstanceManager {
       .setJSExecutor(jsExecutor)
       .setRegistry(nativeModuleRegistry)
       .setJSBundleLoader(jsBundleLoader)
-      .setNativeModuleCallExceptionHandler(exceptionHandler);
+      .setNativeModuleCallExceptionHandler(exceptionHandler)
+      .setBridgeListener(mBridgeListener);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

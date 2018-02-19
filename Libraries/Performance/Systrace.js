@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Systrace
  * @flow
@@ -240,7 +238,10 @@ const Systrace = {
    * therefore async variant of profiling is used
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
-    relayProfiler.attachProfileHandler('*', (name) => {
+    relayProfiler.attachProfileHandler('*', (name, state?) => {
+      if (state != null && state.queryName !== undefined) {
+        name += '_' + state.queryName
+      }
       const cookie = Systrace.beginAsyncEvent(name);
       return () => {
         Systrace.endAsyncEvent(name, cookie);

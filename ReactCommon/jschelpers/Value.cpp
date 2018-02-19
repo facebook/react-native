@@ -191,6 +191,15 @@ Value Value::makeError(JSContextRef ctx, const char *error, const char *stack)
   }
 }
 
+void Value::throwTypeException(const std::string &expectedType) const {
+  std::string wat("TypeError: Expected ");
+  wat += expectedType;
+  wat += ", instead got '";
+  wat += toString().str();
+  wat += "'";
+  throw JSException(wat.c_str());
+}
+
 Object::operator Value() const {
   return Value(m_context, m_obj);
 }

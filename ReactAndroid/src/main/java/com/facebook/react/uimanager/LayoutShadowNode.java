@@ -486,6 +486,10 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         setJustifyContent(YogaJustify.SPACE_AROUND);
         break;
       }
+      case "space-evenly": {
+        setJustifyContent(YogaJustify.SPACE_EVENLY);
+        break;
+      }
       default: {
         throw new JSApplicationIllegalArgumentException(
             "invalid value for justifyContent: " + justifyContent);

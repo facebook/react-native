@@ -39,7 +39,7 @@ def configureReactNativePom(def pom) {
 
         licenses {
             license {
-                name 'BSD License'
+                name 'MIT License'
                 url 'https://github.com/facebook/react-native/blob/master/LICENSE'
                 distribution 'repo'
             }
