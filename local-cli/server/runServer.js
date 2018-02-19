@@ -43,11 +43,14 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
+/* $FlowFixMe(site=react_native_oss) */
 const TransformCaching = require('metro/src/lib/TransformCaching');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
+/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro';
+/* $FlowFixMe(site=react_native_oss) */
 import type {Reporter} from 'metro/src/lib/reporting';
 
 export type Args = {|
