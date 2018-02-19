@@ -50,8 +50,6 @@ type NormalProps = {
 type DefaultProps = {
   keyExtractor: (item: Item, index: number) => string,
 };
-/* $FlowFixMe - the renderItem passed in from SectionList is optional there but
- * required here */
 type Props = NormalProps & DefaultProps;
 
 /**

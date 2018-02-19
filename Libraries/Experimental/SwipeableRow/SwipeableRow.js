@@ -22,9 +22,6 @@ const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
 const createReactClass = require('create-react-class');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const IS_RTL = I18nManager.isRTL;

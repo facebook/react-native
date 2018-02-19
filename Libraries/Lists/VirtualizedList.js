@@ -52,7 +52,9 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {
-  renderItem: renderItemType,
+  // TODO: Conflicts with the optional `renderItem` in
+  // `VirtualizedSectionList`'s props.
+  renderItem: $FlowFixMe<renderItemType>,
   /**
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.

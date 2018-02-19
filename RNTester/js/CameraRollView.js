@@ -72,7 +72,6 @@ var propTypes = {
 
 var CameraRollView = createReactClass({
   displayName: 'CameraRollView',
-  // $FlowFixMe(>=0.41.0)
   propTypes: propTypes,
 
   getDefaultProps: function(): Object {
