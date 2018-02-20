@@ -383,7 +383,7 @@ YGNode::YGNode()
       baseline_(nullptr),
       dirtied_(nullptr),
       style_(YGStyle()),
-      layout_(gYGNodeLayoutDefaults),
+      layout_(YGLayout()),
       lineIndex_(0),
       parent_(nullptr),
       children_(YGVector()),

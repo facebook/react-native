@@ -41,23 +41,6 @@ bool YGValueArrayEqual(
   return areEqual;
 }
 
-const YGValue kYGValueUndefined = {YGUndefined, YGUnitUndefined};
-const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
-const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
-    {kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined}};
-const std::array<YGValue, 2> kYGDefaultDimensionValuesAutoUnit = {
-    {kYGValueAuto, kYGValueAuto}};
-const std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
-    {kYGValueUndefined, kYGValueUndefined}};
-
 struct YGCachedMeasurement {
   float availableWidth;
   float availableHeight;
@@ -95,68 +78,6 @@ struct YGCachedMeasurement {
 // layouts should not require more than 16 entries to fit within the cache.
 #define YG_MAX_CACHED_RESULT_COUNT 16
 
-struct YGLayout {
-  std::array<float, 4> position;
-  std::array<float, 2> dimensions;
-  std::array<float, 6> margin;
-  std::array<float, 6> border;
-  std::array<float, 6> padding;
-  YGDirection direction;
-
-  uint32_t computedFlexBasisGeneration;
-  float computedFlexBasis;
-  bool hadOverflow;
-
-  // Instead of recomputing the entire layout every single time, we
-  // cache some information to break early when nothing changed
-  uint32_t generationCount;
-  YGDirection lastParentDirection;
-
-  uint32_t nextCachedMeasurementsIndex;
-  YGCachedMeasurement cachedMeasurements[YG_MAX_CACHED_RESULT_COUNT];
-  std::array<float, 2> measuredDimensions;
-
-  YGCachedMeasurement cachedLayout;
-  bool didUseLegacyFlag;
-  bool doesLegacyStretchFlagAffectsLayout;
-
-  bool operator==(YGLayout layout) const {
-    bool isEqual = position == layout.position &&
-        dimensions == layout.dimensions && margin == layout.margin &&
-        border == layout.border && padding == layout.padding &&
-        direction == layout.direction && hadOverflow == layout.hadOverflow &&
-        lastParentDirection == layout.lastParentDirection &&
-        nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
-        cachedLayout == layout.cachedLayout;
-
-    for (uint32_t i = 0; i < YG_MAX_CACHED_RESULT_COUNT && isEqual; ++i) {
-      isEqual =
-          isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
-    }
-
-    if (!YGFloatIsUndefined(computedFlexBasis) ||
-        !YGFloatIsUndefined(layout.computedFlexBasis)) {
-      isEqual = isEqual && (computedFlexBasis == layout.computedFlexBasis);
-    }
-    if (!YGFloatIsUndefined(measuredDimensions[0]) ||
-        !YGFloatIsUndefined(layout.measuredDimensions[0])) {
-      isEqual =
-          isEqual && (measuredDimensions[0] == layout.measuredDimensions[0]);
-    }
-    if (!YGFloatIsUndefined(measuredDimensions[1]) ||
-        !YGFloatIsUndefined(layout.measuredDimensions[1])) {
-      isEqual =
-          isEqual && (measuredDimensions[1] == layout.measuredDimensions[1]);
-    }
-
-    return isEqual;
-  }
-
-  bool operator!=(YGLayout layout) const {
-    return !(*this == layout);
-  }
-};
-
 struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
@@ -171,34 +92,6 @@ struct YGConfig {
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
-
-static const YGLayout gYGNodeLayoutDefaults = {
-    .position = {},
-    .dimensions = {{YGUndefined, YGUndefined}},
-    .margin = {},
-    .border = {},
-    .padding = {},
-    .direction = YGDirectionInherit,
-    .computedFlexBasisGeneration = 0,
-    .computedFlexBasis = YGUndefined,
-    .hadOverflow = false,
-    .generationCount = 0,
-    .lastParentDirection = (YGDirection)-1,
-    .nextCachedMeasurementsIndex = 0,
-    .cachedMeasurements = {},
-    .measuredDimensions = {{YGUndefined, YGUndefined}},
-    .cachedLayout =
-        {
-            .availableWidth = 0,
-            .availableHeight = 0,
-            .widthMeasureMode = (YGMeasureMode)-1,
-            .heightMeasureMode = (YGMeasureMode)-1,
-            .computedWidth = -1,
-            .computedHeight = -1,
-        },
-    .didUseLegacyFlag = false,
-    .doesLegacyStretchFlagAffectsLayout = false,
-};
 
 extern bool YGFloatsEqual(const float a, const float b);
 extern bool YGValueEqual(const YGValue a, const YGValue b);

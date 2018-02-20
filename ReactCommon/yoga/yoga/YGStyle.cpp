@@ -8,6 +8,27 @@
  */
 #include "YGStyle.h"
 
+const YGValue kYGValueUndefined = {YGUndefined, YGUnitUndefined};
+
+const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
+
+const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
+    {kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined}};
+
+const std::array<YGValue, 2> kYGDefaultDimensionValuesAutoUnit = {
+    {kYGValueAuto, kYGValueAuto}};
+
+const std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
+    {kYGValueUndefined, kYGValueUndefined}};
+
 YGStyle::YGStyle()
     : direction(YGDirectionInherit),
       flexDirection(YGFlexDirectionColumn),
