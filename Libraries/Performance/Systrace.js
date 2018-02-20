@@ -190,11 +190,7 @@ const Systrace = {
     relayProfiler.attachProfileHandler('*', (name, state?) => {
       let nameTmp = name;
       if (state != null && state.queryName !== undefined) {
-<<<<<<< HEAD
         nameTmp += '_' + state.queryName
-=======
-        name += '_' + state.queryName;
->>>>>>> master
       }
       const cookie = Systrace.beginAsyncEvent(nameTmp);
       return () => {
