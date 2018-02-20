@@ -382,7 +382,7 @@ YGNode::YGNode()
       measure_(nullptr),
       baseline_(nullptr),
       dirtied_(nullptr),
-      style_(gYGNodeStyleDefaults),
+      style_(YGStyle()),
       layout_(gYGNodeLayoutDefaults),
       lineIndex_(0),
       parent_(nullptr),

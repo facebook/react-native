@@ -10,7 +10,6 @@
 #include <array>
 #include <cmath>
 #include <vector>
-
 #include "Yoga.h"
 
 using YGVector = std::vector<YGNodeRef>;
@@ -41,6 +40,23 @@ bool YGValueArrayEqual(
   }
   return areEqual;
 }
+
+const YGValue kYGValueUndefined = {YGUndefined, YGUnitUndefined};
+const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
+const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
+    {kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined}};
+const std::array<YGValue, 2> kYGDefaultDimensionValuesAutoUnit = {
+    {kYGValueAuto, kYGValueAuto}};
+const std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
+    {kYGValueUndefined, kYGValueUndefined}};
 
 struct YGCachedMeasurement {
   float availableWidth;
@@ -141,74 +157,6 @@ struct YGLayout {
   }
 };
 
-struct YGStyle {
-  YGDirection direction;
-  YGFlexDirection flexDirection;
-  YGJustify justifyContent;
-  YGAlign alignContent;
-  YGAlign alignItems;
-  YGAlign alignSelf;
-  YGPositionType positionType;
-  YGWrap flexWrap;
-  YGOverflow overflow;
-  YGDisplay display;
-  float flex;
-  float flexGrow;
-  float flexShrink;
-  YGValue flexBasis;
-  std::array<YGValue, YGEdgeCount> margin;
-  std::array<YGValue, YGEdgeCount> position;
-  std::array<YGValue, YGEdgeCount> padding;
-  std::array<YGValue, YGEdgeCount> border;
-  std::array<YGValue, 2> dimensions;
-  std::array<YGValue, 2> minDimensions;
-  std::array<YGValue, 2> maxDimensions;
-
-  // Yoga specific properties, not compatible with flexbox specification
-  float aspectRatio;
-  bool operator==(YGStyle style) {
-    bool areNonFloatValuesEqual = direction == style.direction &&
-        flexDirection == style.flexDirection &&
-        justifyContent == style.justifyContent &&
-        alignContent == style.alignContent && alignItems == style.alignItems &&
-        alignSelf == style.alignSelf && positionType == style.positionType &&
-        flexWrap == style.flexWrap && overflow == style.overflow &&
-        display == style.display && YGValueEqual(flexBasis, style.flexBasis) &&
-        YGValueArrayEqual(margin, style.margin) &&
-        YGValueArrayEqual(position, style.position) &&
-        YGValueArrayEqual(padding, style.padding) &&
-        YGValueArrayEqual(border, style.border) &&
-        YGValueArrayEqual(dimensions, style.dimensions) &&
-        YGValueArrayEqual(minDimensions, style.minDimensions) &&
-        YGValueArrayEqual(maxDimensions, style.maxDimensions);
-
-    if (!(std::isnan(flex) && std::isnan(style.flex))) {
-      areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
-    }
-
-    if (!(std::isnan(flexGrow) && std::isnan(style.flexGrow))) {
-      areNonFloatValuesEqual =
-          areNonFloatValuesEqual && flexGrow == style.flexGrow;
-    }
-
-    if (!(std::isnan(flexShrink) && std::isnan(style.flexShrink))) {
-      areNonFloatValuesEqual =
-          areNonFloatValuesEqual && flexShrink == style.flexShrink;
-    }
-
-    if (!(std::isnan(aspectRatio) && std::isnan(style.aspectRatio))) {
-      areNonFloatValuesEqual =
-          areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
-    }
-
-    return areNonFloatValuesEqual;
-  }
-
-  bool operator!=(YGStyle style) {
-    return !(*this == style);
-  }
-};
-
 struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
@@ -220,93 +168,9 @@ struct YGConfig {
   void* context;
 };
 
-#define YG_UNDEFINED_VALUES \
-  { .value = YGUndefined, .unit = YGUnitUndefined }
-
-#define YG_AUTO_VALUES \
-  { .value = YGUndefined, .unit = YGUnitAuto }
-
-#define YG_DEFAULT_EDGE_VALUES_UNIT                                            \
-  {                                                                            \
-    [YGEdgeLeft] = YG_UNDEFINED_VALUES, [YGEdgeTop] = YG_UNDEFINED_VALUES,     \
-    [YGEdgeRight] = YG_UNDEFINED_VALUES, [YGEdgeBottom] = YG_UNDEFINED_VALUES, \
-    [YGEdgeStart] = YG_UNDEFINED_VALUES, [YGEdgeEnd] = YG_UNDEFINED_VALUES,    \
-    [YGEdgeHorizontal] = YG_UNDEFINED_VALUES,                                  \
-    [YGEdgeVertical] = YG_UNDEFINED_VALUES, [YGEdgeAll] = YG_UNDEFINED_VALUES, \
-  }
-
-#define YG_DEFAULT_DIMENSION_VALUES \
-  { [YGDimensionWidth] = YGUndefined, [YGDimensionHeight] = YGUndefined, }
-
-#define YG_DEFAULT_DIMENSION_VALUES_UNIT       \
-  {                                            \
-    [YGDimensionWidth] = YG_UNDEFINED_VALUES,  \
-    [YGDimensionHeight] = YG_UNDEFINED_VALUES, \
-  }
-
-#define YG_DEFAULT_DIMENSION_VALUES_AUTO_UNIT \
-  { [YGDimensionWidth] = YG_AUTO_VALUES, [YGDimensionHeight] = YG_AUTO_VALUES, }
-
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
-
-static const YGStyle gYGNodeStyleDefaults = {
-    .direction = YGDirectionInherit,
-    .flexDirection = YGFlexDirectionColumn,
-    .justifyContent = YGJustifyFlexStart,
-    .alignContent = YGAlignFlexStart,
-    .alignItems = YGAlignStretch,
-    .alignSelf = YGAlignAuto,
-    .positionType = YGPositionTypeRelative,
-    .flexWrap = YGWrapNoWrap,
-    .overflow = YGOverflowVisible,
-    .display = YGDisplayFlex,
-    .flex = YGUndefined,
-    .flexGrow = YGUndefined,
-    .flexShrink = YGUndefined,
-    .flexBasis = YG_AUTO_VALUES,
-    .margin = {{YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES}},
-    .position = {{YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES,
-                  YG_UNDEFINED_VALUES}},
-    .padding = {{YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES,
-                 YG_UNDEFINED_VALUES}},
-    .border = {{YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES,
-                YG_UNDEFINED_VALUES}},
-    .dimensions = {{YG_AUTO_VALUES, YG_AUTO_VALUES}},
-    .minDimensions = {{YG_UNDEFINED_VALUES, YG_UNDEFINED_VALUES}},
-    .maxDimensions = {{YG_UNDEFINED_VALUES, YG_UNDEFINED_VALUES}},
-    .aspectRatio = YGUndefined,
-};
 
 static const YGLayout gYGNodeLayoutDefaults = {
     .position = {},
