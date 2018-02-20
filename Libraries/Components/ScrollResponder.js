@@ -414,15 +414,21 @@ const ScrollResponderMixin = {
     y?: number,
     animated?: boolean
   ) {
+    let params = {};
     if (typeof x === 'number') {
       console.warn('`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.');
-    } else {
-      ({x, y, animated} = x || {});
+      params.x = x || 0;
+      params.y = y || 0;
+      params.animated = animated !== false;
+    } else if(typeof x === 'object') {
+      params.x = x.x || 0;
+      params.y = x.y || 0;
+      params.animated = x.animated !== false;
     }
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
-      [x || 0, y || 0, animated !== false],
+      [params.x, params.y, params.animated],
     );
   },
 
@@ -465,13 +471,14 @@ const ScrollResponderMixin = {
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
     invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
+    let isAnimated = animated;
     if ('animated' in rect) {
-      animated = rect.animated;
+      isAnimated = rect.animated;
       delete rect.animated;
-    } else if (typeof animated !== 'undefined') {
+    } else if (typeof isAnimated !== 'undefined') {
       console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
-    ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+    ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, isAnimated !== false);
   },
 
   /**

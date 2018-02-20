@@ -22,14 +22,14 @@ class AnimatedStyle extends AnimatedWithChildren {
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || {};
-    if (style.transform) {
-      style = {
-        ...style,
-        transform: new AnimatedTransform(style.transform),
+    let styleTmp = flattenStyle(style) || {};
+    if (styleTmp.transform) {
+      styleTmp = {
+        ...styleTmp,
+        transform: new AnimatedTransform(styleTmp.transform),
       };
     }
-    this._style = style;
+    this._style = styleTmp;
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)

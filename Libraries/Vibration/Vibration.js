@@ -15,7 +15,7 @@ var Platform = require('Platform');
 
 /**
  * Vibration API
- * 
+ *
  * See https://facebook.github.io/react-native/docs/vibration.html
  */
 
@@ -27,15 +27,16 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
     return;
   }
   _vibrating = true;
-  if (pattern[0] === 0) {
+  var vibrationPattern = pattern;
+  if (vibrationPattern[0] === 0) {
     RCTVibration.vibrate();
-    pattern = pattern.slice(1);
+    vibrationPattern = vibrationPattern.slice(1);
   }
-  if (pattern.length === 0) {
+  if (vibrationPattern.length === 0) {
     _vibrating = false;
     return;
   }
-  setTimeout(() => vibrateScheduler(++_id, pattern, repeat, 1), pattern[0]);
+  setTimeout(() => vibrateScheduler(++_id, vibrationPattern, repeat, 1), vibrationPattern[0]);
 }
 
 function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex: number) {
@@ -43,21 +44,22 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
     return;
   }
   RCTVibration.vibrate();
-  if (nextIndex >= pattern.length) {
+  var indexNext = nextIndex;
+  if (indexNext >= pattern.length) {
     if (repeat) {
-      nextIndex = 0;
+      indexNext = 0;
     } else {
       _vibrating = false;
       return;
     }
   }
-  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex + 1), pattern[nextIndex]);
+  setTimeout(() => vibrateScheduler(id, pattern, repeat, indexNext + 1), pattern[indexNext]);
 }
 
 var Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/vibration.html#vibrate
    */
   vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
@@ -84,7 +86,7 @@ var Vibration = {
   },
   /**
    * Stop vibration
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/vibration.html#cancel
    */
   cancel: function() {

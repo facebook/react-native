@@ -290,7 +290,7 @@ const SwipeableRow = createReactClass({
      * Ensure the speed is at least the set speed threshold to prevent a slow
      * swiping animation
      */
-    speed = (
+    let speedVal = (
       speed > HORIZONTAL_FULL_SWIPE_SPEED_THRESHOLD ?
       speed :
       HORIZONTAL_FULL_SWIPE_SPEED_THRESHOLD
@@ -299,7 +299,7 @@ const SwipeableRow = createReactClass({
      * Calculate the duration the row should take to swipe the remaining distance
      * at the same speed the user swiped (or the speed threshold)
      */
-    const duration = Math.abs((this.props.maxSwipeDistance - Math.abs(distMoved)) / speed);
+    const duration = Math.abs((this.props.maxSwipeDistance - Math.abs(distMoved)) / speedVal);
     const maxSwipeDistance = IS_RTL ? -this.props.maxSwipeDistance : this.props.maxSwipeDistance;
     this._animateTo(-maxSwipeDistance, duration);
   },

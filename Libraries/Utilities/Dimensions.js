@@ -29,12 +29,13 @@ class Dimensions {
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
-    if (dims && dims.windowPhysicalPixels) {
+    let tempDims = dims;
+    if (tempDims && tempDims.windowPhysicalPixels) {
       // parse/stringify => Clone hack
-      dims = JSON.parse(JSON.stringify(dims));
+      tempDims = JSON.parse(JSON.stringify(tempDims));
 
-      const windowPhysicalPixels = dims.windowPhysicalPixels;
-      dims.window = {
+      const windowPhysicalPixels = tempDims.windowPhysicalPixels;
+      tempDims.window = {
         width: windowPhysicalPixels.width / windowPhysicalPixels.scale,
         height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
         scale: windowPhysicalPixels.scale,
@@ -42,8 +43,8 @@ class Dimensions {
       };
       if (Platform.OS === 'android') {
         // Screen and window dimensions are different on android
-        const screenPhysicalPixels = dims.screenPhysicalPixels;
-        dims.screen = {
+        const screenPhysicalPixels = tempDims.screenPhysicalPixels;
+        tempDims.screen = {
           width: screenPhysicalPixels.width / screenPhysicalPixels.scale,
           height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
           scale: screenPhysicalPixels.scale,
@@ -51,15 +52,15 @@ class Dimensions {
         };
 
         // delete so no callers rely on this existing
-        delete dims.screenPhysicalPixels;
+        delete tempDims.screenPhysicalPixels;
       } else {
-        dims.screen = dims.window;
+        tempDims.screen = tempDims.window;
       }
       // delete so no callers rely on this existing
-      delete dims.windowPhysicalPixels;
+      delete tempDims.windowPhysicalPixels;
     }
 
-    Object.assign(dimensions, dims);
+    Object.assign(dimensions, tempDims);
     if (dimensionsInitialized) {
       // Don't fire 'change' the first time the dimensions are set.
       eventEmitter.emit('change', {

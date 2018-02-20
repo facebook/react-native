@@ -106,8 +106,8 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
           multiline={false}
           maxLength={limit}
           onChangeText={(text) => {
-            text = text.replace(/ /g, '_');
-            this.setState({text});
+            let textReplace = text.replace(/ /g, '_');
+            this.setState({textReplace});
           }}
           style={styles.default}
           value={this.state.text}

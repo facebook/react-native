@@ -34,19 +34,20 @@ function getDevServerURL(): ?string {
 }
 
 function _coerceLocalScriptURL(scriptURL: ?string): ?string {
+  let scriptURLTmp = scriptURL;
   if (scriptURL) {
     if (scriptURL.startsWith('assets://')) {
       // android: running from within assets, no offline path to use
       return null;
     }
-    scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
-    if (!scriptURL.includes('://')) {
+    scriptURLTmp = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    if (!scriptURLTmp.includes('://')) {
       // Add file protocol in case we have an absolute file path and not a URL.
       // This shouldn't really be necessary. scriptURL should be a URL.
-      scriptURL = 'file://' + scriptURL;
+      scriptURLTmp = 'file://' + scriptURLTmp;
     }
   }
-  return scriptURL;
+  return scriptURLTmp;
 }
 
 function getScriptURL(): ?string {

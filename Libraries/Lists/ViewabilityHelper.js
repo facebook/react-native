@@ -235,12 +235,12 @@ class ViewabilityHelper {
     createViewToken,
   ) {
     // Filter out indices that have gone out of view since this call was scheduled.
-    viewableIndicesToCheck = viewableIndicesToCheck.filter(ii =>
+    let toCheck = viewableIndicesToCheck.filter(ii =>
       this._viewableIndices.includes(ii),
     );
     const prevItems = this._viewableItems;
     const nextItems = new Map(
-      viewableIndicesToCheck.map(ii => {
+      toCheck.map(ii => {
         const viewable = createViewToken(ii, true);
         return [viewable.key, viewable];
       }),

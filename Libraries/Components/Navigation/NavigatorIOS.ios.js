@@ -732,11 +732,12 @@ var NavigatorIOS = createReactClass({
    */
   replaceAtIndex: function(route: Route, index: number) {
     invariant(!!route, 'Must supply route to replace');
-    if (index < 0) {
-      index += this.state.routeStack.length;
+    let idx = index;
+    if (idx < 0) {
+      idx += this.state.routeStack.length;
     }
 
-    if (this.state.routeStack.length <= index) {
+    if (this.state.routeStack.length <= idx) {
       return;
     }
 

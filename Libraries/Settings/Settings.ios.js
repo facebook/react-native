@@ -29,17 +29,18 @@ var Settings = {
   },
 
   watchKeys(keys: string | Array<string>, callback: Function): number {
-    if (typeof keys === 'string') {
-      keys = [keys];
+    let keysTmp = keys;
+    if (typeof keysTmp === 'string') {
+      keysTmp = [keysTmp];
     }
 
     invariant(
-      Array.isArray(keys),
+      Array.isArray(keysTmp),
       'keys should be a string or array of strings'
     );
 
     var sid = subscriptions.length;
-    subscriptions.push({keys: keys, callback: callback});
+    subscriptions.push({keys: keysTmp, callback: callback});
     return sid;
   },
 

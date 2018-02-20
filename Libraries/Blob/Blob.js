@@ -83,19 +83,21 @@ class Blob {
   slice(start?: number, end?: number): Blob {
     const BlobManager = require('BlobManager');
     let {offset, size} = this.data;
+    let startVal = start;
+    let endVal = end;
 
-    if (typeof start === 'number') {
-      if (start > size) {
-        start = size;
+    if (typeof startVal === 'number') {
+      if (startVal > size) {
+        startVal = size;
       }
-      offset += start;
-      size -= start;
+      offset += startVal;
+      size -= startVal;
 
-      if (typeof end === 'number') {
-        if (end < 0) {
-          end = this.size + end;
+      if (typeof endVal === 'number') {
+        if (endVal < 0) {
+          endVal = this.size + endVal;
         }
-        size = end - start;
+        size = endVal - startVal;
       }
     }
     return BlobManager.createFromOptions({

@@ -30,13 +30,13 @@ const HMRClient = {
 
     const wsHostPort = port !== null && port !== '' ? `${host}:${port}` : host;
 
-    bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
+    const bundleEntryParam = bundleEntry.replace(/\.(bundle|delta)/, '.js');
 
     // Build the websocket url
     const wsUrl =
       `ws://${wsHostPort}/hot?` +
       `platform=${platform}&` +
-      `bundleEntry=${bundleEntry}`;
+      `bundleEntry=${bundleEntryParam}`;
 
     const hmrClient = new MetroHMRClient(wsUrl);
 

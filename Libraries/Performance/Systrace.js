@@ -185,9 +185,9 @@ const Systrace = {
   **/
   beginEvent(profileName?: any, args?: any) {
     if (_enabled) {
-      profileName = typeof profileName === 'function' ?
+      let name = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName, args);
+      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, name, args);
     }
   },
 
@@ -206,18 +206,18 @@ const Systrace = {
     const cookie = _asyncCookie;
     if (_enabled) {
       _asyncCookie++;
-      profileName = typeof profileName === 'function' ?
+      let name = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, name, cookie);
     }
     return cookie;
   },
 
   endAsyncEvent(profileName?: any, cookie?: any) {
     if (_enabled) {
-      profileName = typeof profileName === 'function' ?
+      let name = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, name, cookie);
     }
   },
 
@@ -226,10 +226,10 @@ const Systrace = {
   **/
   counterEvent(profileName?: any, value?: any) {
     if (_enabled) {
-      profileName = typeof profileName === 'function' ?
+      let name = typeof profileName === 'function' ?
         profileName() : profileName;
       global.nativeTraceCounter &&
-        global.nativeTraceCounter(TRACE_TAG_REACT_APPS, profileName, value);
+        global.nativeTraceCounter(TRACE_TAG_REACT_APPS, name, value);
     }
   },
 
@@ -239,12 +239,13 @@ const Systrace = {
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
     relayProfiler.attachProfileHandler('*', (name, state?) => {
+      let nameTmp = name;
       if (state != null && state.queryName !== undefined) {
-        name += '_' + state.queryName
+        nameTmp += '_' + state.queryName
       }
-      const cookie = Systrace.beginAsyncEvent(name);
+      const cookie = Systrace.beginAsyncEvent(nameTmp);
       return () => {
-        Systrace.endAsyncEvent(name, cookie);
+        Systrace.endAsyncEvent(nameTmp, cookie);
       };
     });
 

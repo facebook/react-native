@@ -19,19 +19,19 @@ var ImagePickerIOS = {
     return RCTImagePicker.canUseCamera(callback);
   },
   openCameraDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
-    config = {
+    let configTmp = {
       videoMode: false,
       ...config,
     };
-    return RCTImagePicker.openCameraDialog(config, successCallback, cancelCallback);
+    return RCTImagePicker.openCameraDialog(configTmp, successCallback, cancelCallback);
   },
   openSelectDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
-    config = {
+    let configTmp = {
       showImages: true,
       showVideos: false,
       ...config,
     };
-    return RCTImagePicker.openSelectDialog(config, successCallback, cancelCallback);
+    return RCTImagePicker.openSelectDialog(configTmp, successCallback, cancelCallback);
   },
 };
 
