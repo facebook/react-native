@@ -130,14 +130,14 @@
 <p>Install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the directory with your <code>package.json</code> file and run:</p>
 <pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react-native
 </span></code></pre>
-<p>This will print something like:</p>
+<p>This will print a message similar to the following (scroll up in the yarn output to see it):</p>
 <blockquote>
 <p>warning &quot;react-native@0.52.2&quot; has unmet peer dependency &quot;react@16.2.0&quot;.</p>
 </blockquote>
-<p>This is OK, it means we also need to install react:</p>
-<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react@16.2.0    <span class="hljs-comment"># Make sure you use the same react version as printed by yarn when installing react-native!</span>
+<p>This is OK, it means we also need to install React:</p>
+<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react@version_printed_above
 </span></code></pre>
-<p>This will create a new <code>/node_modules</code> folder. This folder stores all the JavaScript dependencies required to build your project.</p>
+<p>Yarn has created a new <code>/node_modules</code> folder. This folder stores all the JavaScript dependencies required to build your project.</p>
 <p>Add <code>node_modules/</code> to your <code>.gitignore</code> file.</p>
 <p><block class="objc swift" /></p>
 <h3><a class="anchor" aria-hidden="true" name="3-install-cocoapods"></a><a href="#3-install-cocoapods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Install CocoaPods</h3>
