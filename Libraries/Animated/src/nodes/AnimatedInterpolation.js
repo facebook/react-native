@@ -333,10 +333,6 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return this._interpolation(parentValue);
   }
 
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
-    return new AnimatedInterpolation(this, config);
-  }
-
   __attach(): void {
     this._parent.__addChild(this);
   }
