@@ -26,14 +26,7 @@ YGLayout::YGLayout()
       nextCachedMeasurementsIndex(0),
       cachedMeasurements(),
       measuredDimensions(kYGDefaultDimensionValues),
-      cachedLayout({
-          .availableWidth = 0,
-          .availableHeight = 0,
-          .widthMeasureMode = (YGMeasureMode)-1,
-          .heightMeasureMode = (YGMeasureMode)-1,
-          .computedWidth = -1,
-          .computedHeight = -1,
-      }),
+      cachedLayout(YGCachedMeasurement()),
       didUseLegacyFlag(false),
       doesLegacyStretchFlagAffectsLayout(false) {}
 

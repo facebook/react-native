@@ -50,6 +50,14 @@ struct YGCachedMeasurement {
   float computedWidth;
   float computedHeight;
 
+  YGCachedMeasurement()
+      : availableWidth(0),
+        availableHeight(0),
+        widthMeasureMode((YGMeasureMode)-1),
+        heightMeasureMode((YGMeasureMode)-1),
+        computedWidth(-1),
+        computedHeight(-1) {}
+
   bool operator==(YGCachedMeasurement measurement) const {
     bool isEqual = widthMeasureMode == measurement.widthMeasureMode &&
         heightMeasureMode == measurement.heightMeasureMode;
