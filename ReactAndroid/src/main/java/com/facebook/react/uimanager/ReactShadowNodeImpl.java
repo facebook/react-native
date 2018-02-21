@@ -57,9 +57,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   private static final YogaConfig sYogaConfig;
   static {
-    sYogaConfig = new YogaConfig();
-    sYogaConfig.setPointScaleFactor(0f);
-    sYogaConfig.setUseLegacyStretchBehaviour(true);
+    sYogaConfig = ReactYogaConfigProvider.get();
   }
 
   private int mReactTag;
