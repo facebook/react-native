@@ -170,7 +170,7 @@ import javax.inject.Provider;
       } else {
         return new UIManagerModule(
             reactContext,
-            mReactInstanceManager.createAllViewManagers(reactContext),
+            mReactInstanceManager.getOrCreateViewManagers(reactContext),
             mUIImplementationProvider,
             mMinTimeLeftInFrameForNonBatchedOperationMs);
       }

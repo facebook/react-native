@@ -277,6 +277,7 @@ public class UIImplementation {
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
     cssNode.setRootNode(rootNode);
+    if (rootNode != null) cssNode.setRootTag(rootNode.getReactTag());
     cssNode.setThemedContext(rootNode.getThemedContext());
 
     mShadowNodeRegistry.addNode(cssNode);

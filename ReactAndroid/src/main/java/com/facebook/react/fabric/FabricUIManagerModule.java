@@ -4,7 +4,15 @@ package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.MeasureSpecProvider;
+import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.UIModule;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -13,12 +21,16 @@ import javax.annotation.Nullable;
  * This class is responsible to create, clone and update {@link ReactShadowNode} using the
  * Fabric API.
  */
-public class FabricUIManagerModule {
+@SuppressWarnings("unused") // used from JNI
+public class FabricUIManagerModule implements UIModule {
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final ViewManagerRegistry mViewManagerRegistry;
 
-  public FabricUIManagerModule(ReactApplicationContext reactContext) {
+  public FabricUIManagerModule(ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactContext;
+    mViewManagerRegistry = viewManagerRegistry;
   }
 
   /**
@@ -28,10 +40,24 @@ public class FabricUIManagerModule {
   public ReactShadowNode createNode(int reactTag,
       String viewName,
       int rootTag,
-      ReadableMap props,
-      int instanceHandle) {
-    //TODO T25560658
-    return null;
+      ReadableMap props) {
+
+    ViewManager viewManager = mViewManagerRegistry.get(viewName);
+    ReactShadowNode shadowNode = viewManager.createShadowNodeInstance(mReactApplicationContext);
+    shadowNode.setRootTag(rootTag);
+    shadowNode.setReactTag(reactTag);
+    ReactStylesDiffMap styles = updateProps(props, shadowNode);
+
+    return shadowNode;
+  }
+
+  private ReactStylesDiffMap updateProps(ReadableMap props, ReactShadowNode shadowNode) {
+    ReactStylesDiffMap styles = null;
+    if (props != null) {
+      styles = new ReactStylesDiffMap(props);
+      shadowNode.updateProperties(styles);
+    }
+    return styles;
   }
 
   /**
@@ -41,8 +67,7 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
-    //TODO T25560658
-    return null;
+    return node.mutableCopy();
   }
 
   /**
@@ -52,8 +77,9 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
-    //TODO T25560658
-    return null;
+    ReactShadowNode clone = cloneNode(node);
+    clone.removeAllChildren();
+    return clone;
   }
 
   /**
@@ -63,8 +89,9 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableMap newProps) {
-    //TODO T25560658
-    return null;
+    ReactShadowNode clone = cloneNode(node);
+    updateProps(newProps, clone);
+    return clone;
   }
 
   /**
@@ -77,8 +104,9 @@ public class FabricUIManagerModule {
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node,
       ReadableMap newProps) {
-    //TODO T25560658
-    return null;
+    ReactShadowNode clone = cloneNodeWithNewChildren(node);
+    updateProps(newProps, clone);
+    return clone;
   }
 
   /**
@@ -87,7 +115,7 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
-    //TODO T25560658
+    parent.addChildAt(child, parent.getChildCount());
   }
 
   /**
@@ -106,7 +134,15 @@ public class FabricUIManagerModule {
   }
 
   public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    //TODO T25560658
+    // TODO Diffing old Tree with new Tree?
+    // Do we need to hold references to old and new tree?
+  }
+
+  @Override
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+    final T rootView) {
+    // TODO: complete with actual implementation
+    return ReactRootViewTagGenerator.getNextRootViewTag();
   }
 
 }
