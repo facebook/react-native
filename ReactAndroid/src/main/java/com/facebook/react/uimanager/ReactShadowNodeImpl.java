@@ -6,6 +6,8 @@
  */
 package com.facebook.react.uimanager;
 
+import static java.lang.System.arraycopy;
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
@@ -53,9 +55,17 @@ import javax.annotation.Nullable;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
+  private static final YogaConfig sYogaConfig;
+  static {
+    sYogaConfig = new YogaConfig();
+    sYogaConfig.setPointScaleFactor(0f);
+    sYogaConfig.setUseLegacyStretchBehaviour(true);
+  }
+
   private int mReactTag;
   private @Nullable String mViewClassName;
   private @Nullable ReactShadowNodeImpl mRootNode;
+  private int mRootTag;
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
   private boolean mNodeUpdated = true;
@@ -75,24 +85,48 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private final YogaNode mYogaNode;
-  private static YogaConfig sYogaConfig;
 
   public ReactShadowNodeImpl() {
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
-      if (sYogaConfig == null) {
-        sYogaConfig = new YogaConfig();
-        sYogaConfig.setPointScaleFactor(0f);
-        sYogaConfig.setUseLegacyStretchBehaviour(true);
-      }
-      if (node == null) {
-        node = new YogaNode(sYogaConfig);
-      }
-      mYogaNode = node;
+      mYogaNode = node == null ? new YogaNode(sYogaConfig) : node;
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
       mYogaNode = null;
     }
+  }
+
+  public ReactShadowNodeImpl(ReactShadowNodeImpl original) {
+    try {
+      mReactTag = original.mReactTag;
+      mRootTag = original.mRootTag;
+      mViewClassName = original.mViewClassName;
+      mRootNode = original.mRootNode;
+      mThemedContext = original.mThemedContext;
+      mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
+      mNodeUpdated = original.mNodeUpdated;
+      mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
+      mParent = original.mParent;
+      mIsLayoutOnly = original.mIsLayoutOnly;
+      mTotalNativeChildren = original.mTotalNativeChildren;
+      mNativeParent = original.mNativeParent;
+      mNativeChildren = original.mNativeChildren == null ? null : new ArrayList<>(original.mNativeChildren);
+      mNativeParent = original.mNativeParent;
+      mScreenX = original.mScreenX;
+      mScreenY = original.mScreenY;
+      mScreenWidth = original.mScreenWidth;
+      mScreenHeight = original.mScreenHeight;
+      arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
+      arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
+      mYogaNode = original.mYogaNode.clone();
+    } catch (CloneNotSupportedException e) {
+      // it should never happen
+      throw new IllegalArgumentException();
+    }
+  }
+
+  public ReactShadowNodeImpl mutableCopy() {
+    return new ReactShadowNodeImpl(this);
   }
 
   /**
@@ -379,6 +413,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public void setRootTag(int rootTag) {
+    mRootTag = rootTag;
+  }
+
+  @Override
   public final void setViewClassName(String viewClassName) {
     mViewClassName = viewClassName;
   }
@@ -449,6 +488,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     ReactShadowNodeImpl removed = mNativeChildren.remove(i);
     removed.mNativeParent = null;
     return removed;
+  }
+
+  @Override
+  public final void removeAllChildren() {
+    removeAllNativeChildren();
+    mChildren.clear();
   }
 
   @Override

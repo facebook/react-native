@@ -67,6 +67,11 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   boolean isYogaLeafNode();
 
+  /**
+   * @return a mutable copy of the {@link ReactShadowNode}
+   */
+  T mutableCopy();
+
   String getViewClass();
 
   boolean hasUpdates();
@@ -127,7 +132,10 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   T getRootNode();
 
+  @Deprecated() //Replaced by setRootTag method.
   void setRootNode(T rootNode);
+
+  void setRootTag(int rootTag);
 
   void setViewClassName(String viewClassName);
 
@@ -158,6 +166,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void addNativeChildAt(T child, int nativeIndex);
 
   T removeNativeChildAt(int i);
+
+  void removeAllChildren();
 
   void removeAllNativeChildren();
 
