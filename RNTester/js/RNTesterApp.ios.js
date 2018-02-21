@@ -144,9 +144,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#96969A',
     backgroundColor: '#F5F5F6',
   },
-  header: { 
-    height: 40, 
-    flexDirection: 'row' 
+  header: {
+    height: 40,
+    flexDirection: 'row'
   },
   headerLeft: {
   },

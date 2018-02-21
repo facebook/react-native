@@ -22,6 +22,6 @@ module.exports = function getTargets(project) {
       target: nativeTargetSection[key],
         name: nativeTargetSection[key].productReference_comment,
       isTVOS: (buildConfiguration.buildSettings.SDKROOT && (buildConfiguration.buildSettings.SDKROOT.indexOf('appletv') !== -1)) || false
-    }
+    };
   });
 };

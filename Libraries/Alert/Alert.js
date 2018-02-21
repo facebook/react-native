@@ -28,14 +28,14 @@ type Options = {
 
 /**
  * Launches an alert dialog with the specified title and message.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/alert.html
  */
 class Alert {
 
   /**
    * Launches an alert dialog with the specified title and message.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/alert.html#alert
    */
   static alert(
