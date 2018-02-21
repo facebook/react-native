@@ -923,21 +923,36 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __weak RCTUIManager *weakManager = self;
-  RCTExecuteOnMainQueue(^{
-    RCTUIManager *uiManager = weakManager;
-    if (!uiManager) {
+  __block UIView *preliminaryCreatedView = nil;
+
+  void (^createViewBlock)(void) = ^{
+    // Do nothing on the second run.
+    if (preliminaryCreatedView) {
       return;
     }
-    UIView *view = [componentData createViewWithTag:reactTag];
-    if (view) {
-      uiManager->_viewRegistry[reactTag] = view;
-    }
-  });
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    [componentData setProps:props forView:view];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+
+    if (preliminaryCreatedView) {
+      self->_viewRegistry[reactTag] = preliminaryCreatedView;
+    }
+  };
+
+  // We cannot guarantee that asynchronously scheduled block will be executed
+  // *before* a block is added to the regular mounting process (simply because
+  // mounting process can be managed externally while the main queue is
+  // locked).
+  // So, we positively dispatch it asynchronously and double check inside
+  // the regular mounting block.
+
+  RCTExecuteOnMainQueue(createViewBlock);
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    createViewBlock();
+
+    if (preliminaryCreatedView) {
+      [componentData setProps:props forView:preliminaryCreatedView];
+    }
   }];
 
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
