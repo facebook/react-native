@@ -321,7 +321,9 @@
 
   RCTUIManager *uiManager = batchedBridge.uiManager;
 
-  RCTExecuteOnUIManagerQueue(^{
+  // If we are on the main queue now, we have to proceed synchronously.
+  // Otherwise, we cannot perform synchronous waiting for some stages later.
+  (RCTIsMainQueue() ? RCTUnsafeExecuteOnUIManagerQueueSync : RCTExecuteOnUIManagerQueue)(^{
     [uiManager registerRootViewTag:self->_rootViewTag];
 
     RCTSurfaceRootShadowView *rootShadowView =
