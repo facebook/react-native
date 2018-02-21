@@ -1,43 +1,44 @@
 # [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
 
-Learn once, write anywhere: Build mobile apps with React.
+Aprenda uma vez, escreva em qualquer lugar: Construa aplicações móveis com React.
 
-- **Build native mobile apps using JavaScript and React:** React Native lets you build mobile apps using only JavaScript. It uses the same design as [React](https://facebook.github.io/react), letting you compose a rich mobile UI from declarative components.
-- **A React Native app is a real mobile app:** With React Native, you don't build a "mobile web app", an "HTML5 app", or a "hybrid app". You build a real mobile app that's indistinguishable from an app built using Objective-C, Java, or Swift. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
-- **Don't waste time recompiling:** React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
-- **Use native code when you need to:** React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
+- **Construa aplicações móveis usando JavaScript e React:** React Native premite que você construa aplicações móveis utilizando apenas JavaScript. Ele utiliza o mesmo design do [React](https://facebook.github.io/react), permitindo que você construa uma interface de usuário rica a partir de componentes.
+- **Um aplicativo React Native é um aplicativo móvel real:** Com React Native, você não constrói uma "web app móvel", um "aplicativo HTML5"ou um "app híbrido". Você constrói um app móvel real que é indistinguível de um app móvel feito com Objective-C, Java, ou Swift. React Native usa os mesmos blocos fundamentais de construção de interface de usuário que os aplicativos convencionais para iOS e Android usam. Você só une esses blocos usando JavaScript e React.
+- **Não parca tempo recompilando:** React Native permite que você construa aplicações muito mais rápido. Ao invés de recompilar, você pode recarregar sua aplicação instantaneamente. Com o hot reloading, você pode executar até mesmo códigos novos enquanto mantém o estado da sua aplicação. Experimente - é uma experiência mágica..
+- **Use código nativo quando precisar:** React Native combina muito bem com componentes escritos em Objective-C, Java, ou Swift. É fácil mudar para código nativo se você precisar otimizar alguns aspectos da sua aplicação. É fácil também construir parte da sua aplicação em React Native, e outra parte usando código nativo diretamente - é assim que o aplicativo do Facebook funciona.
 
-The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
+O foco do React Native está na eficiência do desenvolvedor, em todas as plataformas que ele precisa. - aprenda uma vez, escreva em qualquer lugar. Facebook utiliza React Native em múltiplos aplicativos em produção e continuará investindo no React Native.
 
-See the official [React Native website](https://facebook.github.io/react-native/) for an introduction to React Native.
+Veja o site oficial [React Native website](https://facebook.github.io/react-native/) para uma introdução ao React Native.
 
-Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
+Sistemas Operacionais suportados são >= Android 4.1 (API 16) e >= iOS 8.0.
 
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
+- [Começando](#getting-started)
+- [Documentação](#documentation)
 - [Upgrading](#upgrading)
 - [Contributing](#contributing)
 - [License](#license)
 
 ---
 
-## Getting Started
+## Começando
 
-Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+Siga o [Guia de Introdução](https://facebook.github.io/react-native/docs/getting-started.html). A forma recomendada de instalar o React Native depende do seu projeto. Aqui você pode encontrar guias curtos para os cenários mais comuns:
 
-- [Trying out React Native](https://snack.expo.io/BJ-uC-nrb)
-- [Creating a New Application](https://facebook.github.io/react-native/docs/getting-started.html)
-- [Adding React Native to an Existing Application](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html)
+- [Experimentando React Native](https://snack.expo.io/BJ-uC-nrb)
+- [Criando uma Nova Aplicação](https://facebook.github.io/react-native/docs/getting-started.html)
+- [Adicionando o React Native a uma Aplicação Existente](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html)
 
 ---
 
-## Documentation
+## Documentação
 
-[The website’s documentation](https://facebook.github.io/react-native/docs/getting-started.html) is divided into multiple sections.
-- There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
-- The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Button`](https://facebook.github.io/react-native/docs/button.html).
-- The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
-- Finally, React Native provides a small number of **Polyfills** that offer web-like APIs.
+[A Documentação do website](https://facebook.github.io/react-native/docs/getting-started.html) é dividida em múltiplas seções.
+
+- Há **Guias** para discussão de tópicos como [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrando com aplicações existentes](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [o sistema de resposta de gestos](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
+- A seção de **Componentes** cobre os componentes React como [`View`](https://facebook.github.io/react-native/docs/view.html) e [`Button`](https://facebook.github.io/react-native/docs/button.html).
+- A seção de **APIs** cobre bibliotecas como [Animated](https://facebook.github.io/react-native/docs/animated.html) e [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) os quais não são componentes React próprios.
+- Finalmente, React Native oferece um pequeno número de **Polyfills** que oferecem APIs no estilo web.
 
 Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries/Components` directory for components like `ScrollView` and `TextInput`, for example. The RNTester example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
 
