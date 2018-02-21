@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
-import okhttp3.TlsVersion;
 
 /**
  * Helper class that provides the same OkHttpClient instance that will be used for all networking
@@ -47,7 +46,7 @@ public class OkHttpClientProvider {
     }
     return sClient;
   }
-  
+
   // okhttp3 OkHttpClient is immutable
   // This allows app to init an OkHttpClient with custom settings.
   public static void replaceOkHttpClient(OkHttpClient client) {
@@ -91,12 +90,8 @@ public class OkHttpClientProvider {
 
         client.sslSocketFactory(new TLSSocketFactory(trustManager), trustManager);
 
-        ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_0, TlsVersion.TLS_1_1, TlsVersion.TLS_1_2)
-                .build();
-
         List<ConnectionSpec> specs = new ArrayList<>();
-        specs.add(cs);
+        specs.add(ConnectionSpec.MODERN_TLS);
         specs.add(ConnectionSpec.COMPATIBLE_TLS);
         specs.add(ConnectionSpec.CLEARTEXT);
 
