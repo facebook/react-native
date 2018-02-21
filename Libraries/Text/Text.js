@@ -13,7 +13,6 @@
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
