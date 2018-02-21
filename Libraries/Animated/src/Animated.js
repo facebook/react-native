@@ -6,30 +6,25 @@
  *
  * @providesModule Animated
  * @flow
+ * @format
  */
+
 'use strict';
 
-
-var AnimatedImplementation = require('AnimatedImplementation');
-var Image = require('Image');
-var Text = require('Text');
-var View = require('View');
-
-let AnimatedScrollView;
+const AnimatedImplementation = require('AnimatedImplementation');
+const Image = require('Image');
+const ScrollView = require('ScrollView');
+const Text = require('Text');
+const View = require('View');
 
 const Animated = {
   View: AnimatedImplementation.createAnimatedComponent(View),
   Text: AnimatedImplementation.createAnimatedComponent(Text),
   Image: AnimatedImplementation.createAnimatedComponent(Image),
-  get ScrollView() {
-    // Make this lazy to avoid circular reference.
-    if (!AnimatedScrollView) {
-      AnimatedScrollView = AnimatedImplementation.createAnimatedComponent(require('ScrollView'));
-    }
-    return AnimatedScrollView;
-  },
+  ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),
 };
 
 Object.assign((Animated: Object), AnimatedImplementation);
 
-module.exports = ((Animated: any): (typeof AnimatedImplementation) & typeof Animated);
+module.exports = ((Animated: any): typeof AnimatedImplementation &
+  typeof Animated);

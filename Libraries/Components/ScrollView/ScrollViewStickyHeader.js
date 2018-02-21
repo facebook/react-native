@@ -10,17 +10,20 @@
  */
 'use strict';
 
-const Animated = require('Animated');
+const AnimatedImplementation = require('AnimatedImplementation');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const View = require('View');
 
 import type {LayoutEvent} from 'CoreEventTypes';
+
+const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
 type Props = {
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
-  scrollAnimatedValue: Animated.Value,
+  scrollAnimatedValue: AnimatedImplementation.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
   inverted: ?boolean,
@@ -136,7 +139,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     const child = React.Children.only(this.props.children);
 
     return (
-      <Animated.View
+      <AnimatedView
         collapsable={false}
         onLayout={this._onLayout}
         style={[child.props.style, styles.header, {transform: [{translateY}]}]}>
@@ -144,7 +147,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
           style: styles.fill, // We transfer the child style to the wrapper.
           onLayout: undefined, // we call this manually through our this._onLayout
         })}
-      </Animated.View>
+      </AnimatedView>
     );
   }
 }
