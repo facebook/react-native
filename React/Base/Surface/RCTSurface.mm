@@ -9,6 +9,7 @@
 #import "RCTSurfaceView+Internal.h"
 
 #import <mutex>
+#import <stdatomic.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -21,9 +22,10 @@
 #import "RCTSurfaceView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 
-@interface RCTSurface () <RCTSurfaceRootShadowViewDelegate>
+@interface RCTSurface () <RCTSurfaceRootShadowViewDelegate, RCTUIManagerObserver>
 @end
 
 @implementation RCTSurface {
@@ -40,6 +42,7 @@
   CGSize _minimumSize;
   CGSize _maximumSize;
   CGSize _intrinsicSize;
+  RCTUIManagerMountingBlock _mountingBlock;
 
   // The Main thread only
   RCTSurfaceView *_Nullable _view;
@@ -48,6 +51,10 @@
   // Semaphores
   dispatch_semaphore_t _rootShadowViewDidStartRenderingSemaphore;
   dispatch_semaphore_t _rootShadowViewDidStartLayingOutSemaphore;
+  dispatch_semaphore_t _uiManagerDidPerformMountingSemaphore;
+
+  // Atomics
+  atomic_bool _waitingForMountingStageOnMainQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -62,8 +69,10 @@
     _moduleName = moduleName;
     _properties = [initialProperties copy];
     _rootViewTag = RCTAllocateRootViewTag();
+
     _rootShadowViewDidStartRenderingSemaphore = dispatch_semaphore_create(0);
     _rootShadowViewDidStartLayingOutSemaphore = dispatch_semaphore_create(0);
+    _uiManagerDidPerformMountingSemaphore = dispatch_semaphore_create(0);
 
     _minimumSize = CGSizeZero;
     _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
@@ -83,6 +92,8 @@
     if (!bridge.loading) {
       _stage = _stage | RCTSurfaceStageBridgeDidLoad;
     }
+
+    [_bridge.uiManager.observerCoordinator addObserver:self];
 
     [self _registerRootView];
     [self _run];
@@ -435,14 +446,18 @@
 
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
 {
-  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialRendering)) {
-    // This case *temporary* does not supported.
-    stage = RCTSurfaceStageSurfaceDidInitialLayout;
-  }
-
   if (RCTIsUIManagerQueue()) {
     RCTLogInfo(@"Synchronous waiting is not supported on UIManager queue.");
     return NO;
+  }
+
+  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+    // All main-threaded execution (especially mounting process) has to be
+    // intercepted, captured and performed synchnously at the end of this method
+    // right after the semaphore signals.
+
+    // Atomic variant of `_waitingForMountingStageOnMainQueue = YES;`
+    atomic_fetch_or(&_waitingForMountingStageOnMainQueue, 1);
   }
 
   dispatch_semaphore_t semaphore;
@@ -453,15 +468,37 @@
     case RCTSurfaceStageSurfaceDidInitialRendering:
       semaphore = _rootShadowViewDidStartRenderingSemaphore;
       break;
+    case RCTSurfaceStageSurfaceDidInitialMounting:
+      semaphore = _uiManagerDidPerformMountingSemaphore;
+      break;
     default:
-      RCTAssert(NO, @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering` and `RCTSurfaceStageSurfaceDidInitialLayout` stages is supported.");
+      RCTAssert(NO, @"Only waiting for `RCTSurfaceStageSurfaceDidInitialRendering`, `RCTSurfaceStageSurfaceDidInitialLayout` and `RCTSurfaceStageSurfaceDidInitialMounting` stages are supported.");
   }
 
   BOOL timeoutOccurred = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
+
+  // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
+  atomic_fetch_and(&_waitingForMountingStageOnMainQueue, 0);
+
   if (!timeoutOccurred) {
     // Balancing the semaphore.
     // Note: `dispatch_semaphore_wait` reverts the decrement in case when timeout occurred.
     dispatch_semaphore_signal(semaphore);
+  }
+
+  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+    // Time to apply captured mounting block.
+    RCTUIManagerMountingBlock mountingBlock;
+    {
+      std::lock_guard<std::mutex> lock(_mutex);
+      mountingBlock = _mountingBlock;
+      _mountingBlock = nil;
+    }
+
+    if (mountingBlock) {
+      mountingBlock();
+      [self _mountRootViewIfNeeded];
+    }
   }
 
   return !timeoutOccurred;
@@ -491,6 +528,37 @@
     // Rendering is happening, let's mount `rootView` into `view` if we already didn't do this.
     [self _mountRootViewIfNeeded];
   });
+}
+
+#pragma mark - RCTUIManagerObserver
+
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+{
+  if (atomic_load(&_waitingForMountingStageOnMainQueue) && (self.stage & RCTSurfaceStageSurfaceDidInitialLayout)) {
+    // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
+    atomic_fetch_and(&_waitingForMountingStageOnMainQueue, 0);
+
+    {
+      std::lock_guard<std::mutex> lock(_mutex);
+      _mountingBlock = block;
+    }
+    return YES;
+  }
+
+  return NO;
+}
+
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager
+{
+  if (self.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
+    [self _setStage:RCTSurfaceStageSurfaceDidInitialMounting];
+    dispatch_semaphore_signal(_uiManagerDidPerformMountingSemaphore);
+
+    // No need to listen to UIManager anymore.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+      [self->_bridge.uiManager.observerCoordinator removeObserver:self];
+    });
+  }
 }
 
 @end
