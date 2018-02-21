@@ -43,15 +43,8 @@ function renderFabricSurface<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    class AppContainerAsyncWrapper extends React.unstable_AsyncComponent {
-      render() {
-        return this.props.children;
-      }
-    }
-
-    renderable = (
-      <AppContainerAsyncWrapper>{renderable}</AppContainerAsyncWrapper>
-    );
+    const AsyncMode = React.unstable_AsyncMode;
+    renderable = <AsyncMode>{renderable}</AsyncMode>;
   }
 
   ReactFabric.render(renderable, rootTag);
