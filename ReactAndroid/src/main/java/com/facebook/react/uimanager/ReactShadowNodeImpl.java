@@ -491,7 +491,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public final void removeAllChildren() {
     removeAllNativeChildren();
-    mChildren.clear();
+    if (mChildren != null) {
+      mChildren.clear();
+    }
   }
 
   @Override
