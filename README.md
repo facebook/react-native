@@ -15,9 +15,9 @@ Sistemas Operacionais suportados são >= Android 4.1 (API 16) e >= iOS 8.0.
 
 - [Começando](#getting-started)
 - [Documentação](#documentation)
-- [Upgrading](#upgrading)
-- [Contributing](#contributing)
-- [License](#license)
+- [Atualizando](#upgrading)
+- [Contribuindo](#contributing)
+- [Licença](#license)
 
 ---
 
@@ -40,41 +40,41 @@ Siga o [Guia de Introdução](https://facebook.github.io/react-native/docs/getti
 - A seção de **APIs** cobre bibliotecas como [Animated](https://facebook.github.io/react-native/docs/animated.html) e [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) os quais não são componentes React próprios.
 - Finalmente, React Native oferece um pequeno número de **Polyfills** que oferecem APIs no estilo web.
 
-Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries/Components` directory for components like `ScrollView` and `TextInput`, for example. The RNTester example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
+Uma outra excelente forma de aprender mais sobre componentes e APIs incluídas no React Native é ler o seu código-fonte. Veja no diretório `Libraries/Components` para componentes como `ScrollView` e `TextInput`, por exemplo. O exemplo do RNTester também está aqui para demonstrar algumas formas de usar estes componentes. Por meio do código-fonte você pode obter um entendimento preciso do comportamento de cada componente e da API.
 
-The React Native documentation only discusses the components, APIs and topics specific to React Native (React on iOS and Android). For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation](https://facebook.github.io/react/).
-
----
-
-## Upgrading
-
-React Native is under active development. See the guide on [upgrading React Native](https://facebook.github.io/react-native/docs/upgrading.html) to keep your project up-to-date.
+A documentação do React Native discute apenas os componentes, APIs e tópicos específicos do React Native. (React no iOS e Android). Para documentação mais a fundo sobre a API do React que é compartilhada entre o React Native e React DOM, siga para a [Documentação do React](https://facebook.github.io/react/).
 
 ---
 
-## Contributing
+## Atualizando
+
+React Native está em desenvolvimento contínuo. Veja o guia em [atualizando o React Native](https://facebook.github.io/react-native/docs/upgrading.html) para manter seu projeto atualizado.
+
+---
+
+## Contribuindo
 
 Read below to learn how you can take part in improving React Native.
 
-### [Code of Conduct](https://code.facebook.com/codeofconduct)
+### [Código de Conduta](https://code.facebook.com/codeofconduct)
 
-Facebook has adopted a Code of Conduct that we expect project participants to adhere to. Please read [the full text](https://code.facebook.com/codeofconduct) so that you can understand what actions will and will not be tolerated.
+O Facebook adaptou um Código de Conduta que esperamos que os participantes adiram. Por favor leia [o texto completo](https://code.facebook.com/codeofconduct) para que você entenda quais ações serão toleradas e quais não serão.
 
-### Contributing Guide
+### Guia de Contribuição
 
-Read our [contributing guide](https://facebook.github.io/react-native/docs/contributing.html) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to React Native.
+Leia nosso guia [guia de contribuição](https://facebook.github.io/react-native/docs/contributing.html) para aprender sobre nosso processo de desenvolvimento, como propor reparos de bugs e melhorias, e como construir e testar suas mudanças para no React Native.
 
-### Beginner Friendly Bugs
+### Bugs Amigáveis para Iniciantes
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20first%20issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+Nós temos uma lista de [problemas amigáveis para iniciantes](https://github.com/facebook/react-native/labels/Good%20first%20issue) para que você entre em contato com a base de código do React Native e se familiarize com o processo de contribuição. Este é um excelente lugar para começar.
 
 ---
 
-## License
+## Licença
 
-React Native is [MIT licensed](./LICENSE).
+A licença do React Native é [MIT licensed](./LICENSE).
 
-React Native documentation is [Creative Commons licensed](./LICENSE-docs).
+A documentação do React Native é licenciado por [Creative Commons](./LICENSE-docs).
 
 ---
 
