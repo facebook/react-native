@@ -16,12 +16,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 
 /**
@@ -31,10 +28,12 @@ import okhttp3.OkHttpClient;
 public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
-  private static @Nullable OkHttpClient sClient;
+  private static @Nullable
+  OkHttpClient sClient;
 
   // User-provided OkHttpClient factory
-  private static @Nullable OkHttpClientFactory sFactory;
+  private static @Nullable
+  OkHttpClientFactory sFactory;
 
   public static void setOkHttpClientFactory(OkHttpClientFactory factory) {
     sFactory = factory;
@@ -89,13 +88,6 @@ public class OkHttpClientProvider {
         X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
 
         client.sslSocketFactory(new TLSSocketFactory(trustManager), trustManager);
-
-        List<ConnectionSpec> specs = new ArrayList<>();
-        specs.add(ConnectionSpec.MODERN_TLS);
-        specs.add(ConnectionSpec.COMPATIBLE_TLS);
-        specs.add(ConnectionSpec.CLEARTEXT);
-
-        client.connectionSpecs(specs);
       } catch (Exception exc) {
         FLog.e("OkHttpClientProvider", "Error while enabling TLS 1.2", exc);
       }
