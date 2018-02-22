@@ -28,9 +28,7 @@ if (!Array.from) {
 
     var C = this;
     var items = Object(arrayLike);
-    var symbolIterator = typeof Symbol === 'function'
-      ? Symbol.iterator
-      : '@@iterator';
+    var symbolIterator = '@@iterator';
     var mapping = typeof mapFn === 'function';
     var usingIterator = typeof items[symbolIterator] === 'function';
     var key = 0;

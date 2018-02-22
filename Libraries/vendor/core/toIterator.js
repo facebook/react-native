@@ -22,9 +22,7 @@ var KIND_KEY = 'key';
 var KIND_VALUE = 'value';
 var KIND_KEY_VAL = 'key+value';
 /*global Symbol: true*/
-var ITERATOR_SYMBOL = (typeof Symbol === 'function')
-    ? Symbol.iterator
-    : '@@iterator';
+var ITERATOR_SYMBOL = '@@iterator';
 
 var toIterator = (function() {
   if (!(Array.prototype[ITERATOR_SYMBOL] &&
