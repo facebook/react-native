@@ -52,7 +52,10 @@ class FrameBasedAnimationDriver extends AnimationDriver {
   public void runAnimationStep(long frameTimeNanos) {
     if (mStartFrameTimeNanos < 0) {
       mStartFrameTimeNanos = frameTimeNanos;
-      mFromValue = mAnimatedValue.mValue;
+      if (mCurrentLoop == 1) {
+        // initiate start value when animation runs for the first time
+        mFromValue = mAnimatedValue.mValue;
+      }
     }
     long timeFromStartMillis = (frameTimeNanos - mStartFrameTimeNanos) / 1000000;
     int frameIndex = (int) Math.round(timeFromStartMillis / FRAME_TIME_MILLIS);
@@ -66,7 +69,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     if (frameIndex >= mFrames.length - 1) {
       nextValue = mToValue;
       if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
-        mStartFrameTimeNanos = frameTimeNanos + ((long) FRAME_TIME_MILLIS) * 1000000L;
+        mStartFrameTimeNanos = -1;
         mCurrentLoop++;
       } else { // animation has completed, no more frames left
         mHasFinished = true;
