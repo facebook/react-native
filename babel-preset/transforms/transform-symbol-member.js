@@ -32,6 +32,10 @@ module.exports = function symbolMember(babel) {
         }
 
         let node = path.node;
+        if (!isIteratorProperty(node)) {
+          path.replaceWith('@@iterator');
+          return;
+        }
 
         path.replaceWith(
           t.conditionalExpression(
@@ -64,4 +68,8 @@ function isAppropriateMember(path) {
     node.object.type === 'Identifier' &&
     node.object.name === 'Symbol' &&
     node.property.type === 'Identifier';
+}
+
+function isIteratorProperty(node) {
+  return node.property.name === 'iterator';
 }
