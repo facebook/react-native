@@ -32,16 +32,17 @@ const respondWithBinary = process.argv.indexOf('--binary') !== -1;
 const server = new WebSocket.Server({port: 5555});
 server.on('connection', (ws) => {
   ws.on('message', (message) => {
-    console.log('Received message:', message);
+    let messageBuffer = message;
+    console.log('Received message:', messageBuffer);
     console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
-      message = new Buffer(message);
+      messageBuffer = new Buffer(messageBuffer);
     }
-    if (message === 'getImage') {
-      message = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));
+    if (messageBuffer === 'getImage') {
+      messageBuffer = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));
     }
-    console.log('Replying with:', message);
-    ws.send(message);
+    console.log('Replying with:', messageBuffer);
+    ws.send(messageBuffer);
   });
 
   console.log('Incoming connection!');

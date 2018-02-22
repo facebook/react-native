@@ -56,6 +56,7 @@ function requireNativeComponent(
       // as lazy view managers discovery is Android-specific.
       if (UIManager.ViewManagerNames) {
         // Lazy view managers enabled.
+        // $FlowFixMe because parameter mutation here seems intentional
         viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
       } else {
         viewConfig.bubblingEventTypes = merge(

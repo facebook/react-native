@@ -51,5 +51,7 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
+experimental.const_params=true
+
 [version]
 ^0.66.0

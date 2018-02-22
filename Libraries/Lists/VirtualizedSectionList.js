@@ -309,15 +309,16 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     index: number,
     info?: ?Object,
   ): ?React.ComponentType<*> {
-    info = info || this._subExtractor(index);
-    if (!info) {
+    let infoTmp = info;
+    infoTmp = infoTmp || this._subExtractor(index);
+    if (!infoTmp) {
       return null;
     }
     const ItemSeparatorComponent =
-      info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
+      infoTmp.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
-    const isLastItemInSection = info.index === info.section.data.length - 1;
+    const isLastItemInSection = infoTmp.index === infoTmp.section.data.length - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
       return SectionSeparatorComponent;
     }

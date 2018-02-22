@@ -56,10 +56,11 @@ function expectEqual(lhs, rhs, testname : string) {
 }
 
 function expectAsyncNoError(place, err) {
-  if (err instanceof Error) {
-    err = err.message;
+  let error = err;
+  if (error instanceof Error) {
+    error = error.message;
   }
-  expectTrue(err === null, 'Unexpected error in ' + place + ': ' + JSON.stringify(err));
+  expectTrue(error === null, 'Unexpected error in ' + place + ': ' + JSON.stringify(err));
 }
 
 function testSetAndGet() {

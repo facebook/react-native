@@ -193,10 +193,10 @@ class StatusBar extends React.Component<{
    *    changing the status bar hidden property.
    */
   static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
-    animation = animation || 'none';
+    let isAnimation = animation || 'none';
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setHidden(hidden, animation);
+      StatusBarManager.setHidden(hidden, isAnimation);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setHidden(hidden);
     }
@@ -208,10 +208,10 @@ class StatusBar extends React.Component<{
    * @param animated Animate the style change.
    */
   static setBarStyle(style: StatusBarStyle, animated?: boolean) {
-    animated = animated || false;
+    let isAnimated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setStyle(style, animated);
+      StatusBarManager.setStyle(style, isAnimated);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setStyle(style);
     }
@@ -242,9 +242,9 @@ class StatusBar extends React.Component<{
       console.warn('`setBackgroundColor` is only available on Android');
       return;
     }
-    animated = animated || false;
+    let isAnimated = animated || false;
     StatusBar._defaultProps.backgroundColor.value = color;
-    StatusBarManager.setColor(processColor(color), animated);
+    StatusBarManager.setColor(processColor(color), isAnimated);
   }
 
   /**

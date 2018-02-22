@@ -656,8 +656,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     let prevCellKey;
-    last = Math.min(end, last);
-    for (let ii = first; ii <= last; ii++) {
+    let lastIndex = Math.min(end, last);
+    for (let ii = first; ii <= lastIndex; ii++) {
       const item = getItem(data, ii);
       const key = keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);

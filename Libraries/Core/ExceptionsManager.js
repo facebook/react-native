@@ -56,15 +56,16 @@ function handleException(e: Error, isFatal: boolean) {
   // Unfortunately there is no way to figure out the stacktrace in this
   // case, so if you ended up here trying to trace an error, look for
   // `throw '<error message>'` somewhere in your codebase.
-  if (!e.message) {
-    e = new Error(e);
+  let error = e;
+  if (!error.message) {
+    error = new Error(error);
   }
   if (console._errorOriginal) {
-    console._errorOriginal(e.message);
+    console._errorOriginal(error.message);
   } else {
-    console.error(e.message);
+    console.error(error.message);
   }
-  reportException(e, isFatal);
+  reportException(error, isFatal);
 }
 
 function reactConsoleErrorHandler() {

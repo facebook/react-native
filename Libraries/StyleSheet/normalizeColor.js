@@ -96,20 +96,21 @@ function normalizeColor(color: string | number): ?number {
 }
 
 function hue2rgb(p: number, q: number, t: number): number {
-  if (t < 0) {
-    t += 1;
+  let tt = t;
+  if (tt < 0) {
+    tt += 1;
   }
-  if (t > 1) {
-    t -= 1;
+  if (tt > 1) {
+    tt -= 1;
   }
-  if (t < 1 / 6) {
-    return p + (q - p) * 6 * t;
+  if (tt < 1 / 6) {
+    return p + (q - p) * 6 * tt;
   }
-  if (t < 1 / 2) {
+  if (tt < 1 / 2) {
     return q;
   }
-  if (t < 2 / 3) {
-    return p + (q - p) * (2 / 3 - t) * 6;
+  if (tt < 2 / 3) {
+    return p + (q - p) * (2 / 3 - tt) * 6;
   }
   return p;
 }

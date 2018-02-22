@@ -567,15 +567,21 @@ const ScrollView = createReactClass({
     x?: number,
     animated?: boolean
   ) {
+    let params = {};
+    // animation is enabled by default
     if (typeof y === 'number') {
       console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, ' +
         'animated: true})` instead.');
-    } else {
-      ({x, y, animated} = y || {});
+      params.x = x || 0;
+      params.y = y || 0;
+      params.animated = animated !== false;
     }
-    this.getScrollResponder().scrollResponderScrollTo(
-      {x: x || 0, y: y || 0, animated: animated !== false}
-    );
+    else if(typeof y === 'object') {
+      params.x = y.x || 0;
+      params.y = y.y || 0;
+      params.animated = y.animated !== false;
+    }
+    this.getScrollResponder().scrollResponderScrollTo(params);
   },
 
   /**

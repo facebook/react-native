@@ -17,11 +17,11 @@ type Point = {
 var dummyPoint = {x: undefined, y: undefined};
 
 var pointsDiffer = function(one: ?Point, two: ?Point): bool {
-  one = one || dummyPoint;
-  two = two || dummyPoint;
-  return one !== two && (
-    one.x !== two.x ||
-    one.y !== two.y
+  var ptOne = one || dummyPoint;
+  var ptTwo = two || dummyPoint;
+  return ptOne !== ptTwo && (
+    ptOne.x !== ptTwo.x ||
+    ptOne.y !== ptTwo.y
   );
 };
 

@@ -25,13 +25,14 @@ class AnimatedProps extends AnimatedNode {
 
   constructor(props: Object, callback: () => void) {
     super();
-    if (props.style) {
-      props = {
-        ...props,
-        style: new AnimatedStyle(props.style),
+    let propsTmp = props;
+    if (propsTmp.style) {
+      propsTmp = {
+        ...propsTmp,
+        style: new AnimatedStyle(propsTmp.style),
       };
     }
-    this._props = props;
+    this._props = propsTmp;
     this._callback = callback;
     this.__attach();
   }

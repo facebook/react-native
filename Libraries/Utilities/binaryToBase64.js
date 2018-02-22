@@ -15,16 +15,17 @@
 const base64 = require('base64-js');
 
 function binaryToBase64(data: ArrayBuffer | $ArrayBufferView) {
-  if (data instanceof ArrayBuffer) {
-    data = new Uint8Array(data);
+  let dataBuffer = data;
+  if (dataBuffer instanceof ArrayBuffer) {
+    dataBuffer = new Uint8Array(dataBuffer);
   }
-  if (data instanceof Uint8Array) {
-    return base64.fromByteArray(data);
+  if (dataBuffer instanceof Uint8Array) {
+    return base64.fromByteArray(dataBuffer);
   }
-  if (!ArrayBuffer.isView(data)) {
+  if (!ArrayBuffer.isView(dataBuffer)) {
     throw new Error('data must be ArrayBuffer or typed array');
   }
-  const {buffer, byteOffset, byteLength} = data;
+  const {buffer, byteOffset, byteLength} = dataBuffer;
   return base64.fromByteArray(new Uint8Array(buffer, byteOffset, byteLength));
 }
 

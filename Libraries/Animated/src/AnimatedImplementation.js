@@ -127,7 +127,7 @@ const spring = function(
     configuration: SpringAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    let mergedCallbacks = _combineCallbacks(callback, configuration);
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
@@ -138,11 +138,11 @@ const spring = function(
           configuration.toValue,
           SpringAnimation,
           singleConfig,
-          callback,
+          mergedCallbacks,
         ),
       );
     } else {
-      singleValue.animate(new SpringAnimation(singleConfig), callback);
+      singleValue.animate(new SpringAnimation(singleConfig), mergedCallbacks);
     }
   };
   return (
@@ -180,7 +180,7 @@ const timing = function(
     configuration: TimingAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    let callbacks = _combineCallbacks(callback, configuration);
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
@@ -191,11 +191,11 @@ const timing = function(
           configuration.toValue,
           TimingAnimation,
           singleConfig,
-          callback,
+          callbacks,
         ),
       );
     } else {
-      singleValue.animate(new TimingAnimation(singleConfig), callback);
+      singleValue.animate(new TimingAnimation(singleConfig), callbacks);
     }
   };
 
@@ -234,11 +234,11 @@ const decay = function(
     configuration: DecayAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    let mergedCallbacks = _combineCallbacks(callback, configuration);
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
-    singleValue.animate(new DecayAnimation(singleConfig), callback);
+    singleValue.animate(new DecayAnimation(singleConfig), mergedCallbacks);
   };
 
   return (

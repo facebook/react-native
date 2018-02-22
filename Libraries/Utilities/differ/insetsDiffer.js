@@ -27,13 +27,13 @@ var insetsDiffer = function(
   one: ?Inset,
   two: ?Inset
 ): bool {
-  one = one || dummyInsets;
-  two = two || dummyInsets;
-  return one !== two && (
-    one.top !== two.top ||
-    one.left !== two.left ||
-    one.right !== two.right ||
-    one.bottom !== two.bottom
+  var insetOne = one || dummyInsets;
+  var insetTwo = two || dummyInsets;
+  return insetOne !== insetTwo && (
+    insetOne.top !== insetTwo.top ||
+    insetOne.left !== insetTwo.left ||
+    insetOne.right !== insetTwo.right ||
+    insetOne.bottom !== insetTwo.bottom
   );
 };
 

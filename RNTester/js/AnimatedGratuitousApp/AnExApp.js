@@ -254,15 +254,16 @@ function moveToClosest({activeKey, keys, restLayouts}, position) {
   var minDist = Infinity;
   var newKeys = [];
   keys.forEach((key, idx) => {
-    var dist = distance(position, restLayouts[idx]);
+    var currentIdx = idx;
+    var dist = distance(position, restLayouts[currentIdx]);
     if (key === activeKey) {
-      idx = activeIdx;
+      currentIdx = activeIdx;
     } else {
       newKeys.push(key);
     }
     if (dist < minDist) {
       minDist = dist;
-      closestIdx = idx;
+      closestIdx = currentIdx;
     }
   });
   if (closestIdx === activeIdx) {

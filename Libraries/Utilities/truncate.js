@@ -27,17 +27,18 @@ const truncate = function(
   maxChars: number,
   options: truncateOptions
 ): ?string {
-  options = Object.assign({}, defaultOptions, options);
-  if (str && str.length &&
-      str.length - options.minDelta + options.elipsis.length >= maxChars) {
-    str = str.slice(0, maxChars - options.elipsis.length + 1);
-    if (options.breakOnWords) {
-      var ii = Math.max(str.lastIndexOf(' '), str.lastIndexOf('\n'));
-      str = str.slice(0, ii);
+  let opts =  Object.assign({}, defaultOptions, options);
+  let strArg = str;
+  if (strArg && strArg.length &&
+      strArg.length - opts.minDelta + opts.elipsis.length >= maxChars) {
+    strArg = strArg.slice(0, maxChars - opts.elipsis.length + 1);
+    if (opts.breakOnWords) {
+      var ii = Math.max(strArg.lastIndexOf(' '), strArg.lastIndexOf('\n'));
+      strArg = strArg.slice(0, ii);
     }
-    str = str.trim() + options.elipsis;
+    strArg = strArg.trim() + opts.elipsis;
   }
-  return str;
+  return strArg;
 };
 
 module.exports = truncate;

@@ -97,8 +97,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   constructor(url: string, protocols: ?string | ?Array<string>, options: ?{headers?: {origin?: string}}) {
     super();
-    if (typeof protocols === 'string') {
-      protocols = [protocols];
+    let protocolList = protocols;
+    if (typeof protocolList === 'string') {
+      protocolList = [protocolList];
     }
 
     const {headers = {}, ...unrecognized} = options || {};
@@ -122,8 +123,8 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         + 'Did you mean to put these under `headers`?');
     }
 
-    if (!Array.isArray(protocols)) {
-      protocols = null;
+    if (!Array.isArray(protocolList)) {
+      protocolList = null;
     }
 
     if (!WebSocket.isAvailable) {
@@ -134,7 +135,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(url, protocols, { headers }, this._socketId);
+    WebSocketModule.connect(url, protocolList, { headers }, this._socketId);
   }
 
   get binaryType(): ?BinaryType {

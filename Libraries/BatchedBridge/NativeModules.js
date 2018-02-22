@@ -101,8 +101,8 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
       const onSuccess = hasSuccessCallback ? lastArg : null;
       const onFail = hasErrorCallback ? secondLastArg : null;
       const callbackCount = hasSuccessCallback + hasErrorCallback;
-      args = args.slice(0, args.length - callbackCount);
-      BatchedBridge.enqueueNativeCall(moduleID, methodID, args, onFail, onSuccess);
+      let argsArray = args.slice(0, args.length - callbackCount);
+      BatchedBridge.enqueueNativeCall(moduleID, methodID, argsArray, onFail, onSuccess);
     };
   }
   fn.type = type;

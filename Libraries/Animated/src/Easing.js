@@ -175,10 +175,11 @@ class Easing {
    * - http://tiny.cc/back_default (s = 1.70158, default)
    */
   static back(s: number): (t: number) => number {
-    if (s === undefined) {
-      s = 1.70158;
+    let ss = s;
+    if (ss === undefined) {
+      ss = 1.70158;
     }
-    return (t) => t * t * ((s + 1) * t - s);
+    return (t) => t * t * ((ss + 1) * t - ss);
   }
 
   /**
@@ -187,22 +188,23 @@ class Easing {
    * http://easings.net/#easeInBounce
    */
   static bounce(t: number): number {
-    if (t < 1 / 2.75) {
-      return 7.5625 * t * t;
+    let tt = t;
+    if (tt < 1 / 2.75) {
+      return 7.5625 * tt * tt;
     }
 
-    if (t < 2 / 2.75) {
-      t -= 1.5 / 2.75;
-      return 7.5625 * t * t + 0.75;
+    if (tt < 2 / 2.75) {
+      tt -= 1.5 / 2.75;
+      return 7.5625 * tt * tt + 0.75;
     }
 
-    if (t < 2.5 / 2.75) {
-      t -= 2.25 / 2.75;
-      return 7.5625 * t * t + 0.9375;
+    if (tt < 2.5 / 2.75) {
+      tt -= 2.25 / 2.75;
+      return 7.5625 * tt * tt + 0.9375;
     }
 
-    t -= 2.625 / 2.75;
-    return 7.5625 * t * t + 0.984375;
+    tt -= 2.625 / 2.75;
+    return 7.5625 * tt * tt + 0.984375;
   }
 
   /**
