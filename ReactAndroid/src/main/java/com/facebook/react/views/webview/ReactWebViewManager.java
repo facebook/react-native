@@ -22,6 +22,7 @@ import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -259,6 +260,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public void onHostDestroy() {
       cleanupCallbacksAndDestroy();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        requestDisallowInterceptTouchEvent(true);
+        return super.onTouchEvent(event);
     }
 
     @Override
