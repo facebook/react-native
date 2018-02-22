@@ -29,7 +29,7 @@ import type EmitterSubscription from 'EmitterSubscription';
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/modal.html
  */
 
@@ -49,48 +49,48 @@ class Modal extends React.Component<Object> {
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     /**
      * The `presentationStyle` prop controls how the modal appears.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
      */
     presentationStyle: PropTypes.oneOf(['fullScreen', 'pageSheet', 'formSheet', 'overFullScreen']),
     /**
      * The `transparent` prop determines whether your modal will fill the
-     * entire view. 
-     * 
+     * entire view.
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#transparent
      */
     transparent: PropTypes.bool,
     /**
      * The `hardwareAccelerated` prop controls whether to force hardware
      * acceleration for the underlying window.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
      */
     hardwareAccelerated: PropTypes.bool,
     /**
      * The `visible` prop determines whether your modal is visible.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#visible
      */
     visible: PropTypes.bool,
     /**
      * The `onRequestClose` callback is called when the user taps the hardware
      * back button on Android or the menu button on Apple TV.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
      */
     onRequestClose: (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func,
     /**
      * The `onShow` prop allows passing a function that will be called once the
      * modal has been shown.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#onshow
      */
     onShow: PropTypes.func,
     /**
      * The `onDismiss` prop allows passing a function that will be called once
      * the modal has been dismissed.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
      */
     onDismiss: PropTypes.func,
@@ -100,13 +100,13 @@ class Modal extends React.Component<Object> {
     ),
     /**
      * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
      */
     supportedOrientations: PropTypes.arrayOf(PropTypes.oneOf(['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'])),
     /**
      * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
-     * 
+     *
      * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
      */
     onOrientationChange: PropTypes.func,

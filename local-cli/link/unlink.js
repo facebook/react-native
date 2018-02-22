@@ -114,7 +114,7 @@ function unlink(args, config) {
           if (!linkConfig || !linkConfig.unlinkAssets) {
             return;
           }
-    
+
           log.info(`Unlinking assets from ${platform} project`);
           linkConfig.unlinkAssets(assets, project[platform]);
         });
