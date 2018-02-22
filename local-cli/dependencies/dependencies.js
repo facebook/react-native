@@ -86,6 +86,7 @@ function dependencies(argv, config, args, packagerInstance) {
 
 module.exports = {
   name: 'dependencies',
+  description: 'lists dependencies',
   func: dependencies,
   options: [
     {
