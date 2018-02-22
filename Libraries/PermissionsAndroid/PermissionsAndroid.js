@@ -19,7 +19,7 @@ type Rationale = {
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/permissionsandroid.html
  */
 
@@ -81,7 +81,7 @@ class PermissionsAndroid {
   /**
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
    */
   check(permission: string) : Promise<boolean> {
@@ -135,7 +135,7 @@ class PermissionsAndroid {
    * Prompts the user to enable multiple permissions in the same dialog and
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#requestmultiple
    */
   requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {

@@ -101,7 +101,7 @@ class AlertIOS {
 
   /**
    * Create and display a prompt to enter some text.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/alertios.html#prompt
    */
   static prompt(

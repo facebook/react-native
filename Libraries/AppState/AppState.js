@@ -45,8 +45,8 @@ class AppState extends NativeEventEmitter {
     let eventUpdated = false;
 
     // TODO: this is a terrible solution - in order to ensure `currentState`
-    // prop is up to date, we have to register an observer that updates it 
-    // whenever the state changes, even if nobody cares. We should just 
+    // prop is up to date, we have to register an observer that updates it
+    // whenever the state changes, even if nobody cares. We should just
     // deprecate the `currentState` property and get rid of this.
     this.addListener(
       'appStateDidChange',
@@ -70,14 +70,14 @@ class AppState extends NativeEventEmitter {
   }
 
   // TODO: now that AppState is a subclass of NativeEventEmitter, we could
-  // deprecate `addEventListener` and `removeEventListener` and just use 
-  // addListener` and `listener.remove()` directly. That will be a breaking 
+  // deprecate `addEventListener` and `removeEventListener` and just use
+  // addListener` and `listener.remove()` directly. That will be a breaking
   // change though, as both the method and event names are different
   // (addListener events are currently required to be globally unique).
    /**
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appstate.html#addeventlistener
    */
   addEventListener(
@@ -105,7 +105,7 @@ class AppState extends NativeEventEmitter {
 
   /**
    * Remove a handler by passing the `change` event type and the handler.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appstate.html#removeeventlistener
    */
   removeEventListener(
