@@ -14,7 +14,6 @@ const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const BlobManager = require('BlobManager');
 const NativeModules = require('NativeModules');
-const Platform = require('Platform');
 const WebSocketEvent = require('WebSocketEvent');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -203,7 +202,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   }
 
   _close(code?: number, reason?: string): void {
-    if (Platform.OS === 'android') {
+    if (WebSocketModule.close.length === 3) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       const closeReason = typeof reason === 'string' ? reason : '';
