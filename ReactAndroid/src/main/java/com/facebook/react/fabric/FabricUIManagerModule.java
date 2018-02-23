@@ -4,12 +4,14 @@ package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.MeasureSpecProvider;
-import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -24,6 +26,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // used from JNI
 public class FabricUIManagerModule implements UIModule {
 
+  private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
 
@@ -43,19 +46,23 @@ public class FabricUIManagerModule implements UIModule {
       ReadableMap props) {
 
     ViewManager viewManager = mViewManagerRegistry.get(viewName);
-    ReactShadowNode shadowNode = viewManager.createShadowNodeInstance(mReactApplicationContext);
-    shadowNode.setRootTag(rootTag);
-    shadowNode.setReactTag(reactTag);
-    ReactStylesDiffMap styles = updateProps(props, shadowNode);
+    ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
+    node.setRootNode(getRootNode(rootTag));
+    node.setReactTag(reactTag);
+    ReactStylesDiffMap styles = updateProps(props, node);
 
-    return shadowNode;
+    return node;
   }
 
-  private ReactStylesDiffMap updateProps(ReadableMap props, ReactShadowNode shadowNode) {
+  private ReactShadowNode getRootNode(int rootTag) {
+    return mRootShadowNodeRegistry.getNode(rootTag);
+  }
+
+  private ReactStylesDiffMap updateProps(ReadableMap props, ReactShadowNode node) {
     ReactStylesDiffMap styles = null;
     if (props != null) {
       styles = new ReactStylesDiffMap(props);
-      shadowNode.updateProperties(styles);
+      node.updateProperties(styles);
     }
     return styles;
   }
@@ -134,15 +141,34 @@ public class FabricUIManagerModule implements UIModule {
   }
 
   public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    // TODO Diffing old Tree with new Tree?
+    // TODO Diffing old Tree with new Tree
     // Do we need to hold references to old and new tree?
   }
 
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
     final T rootView) {
-    // TODO: complete with actual implementation
-    return ReactRootViewTagGenerator.getNextRootViewTag();
+    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ThemedReactContext themedRootContext = new ThemedReactContext(
+        mReactApplicationContext,
+        rootView.getContext());
+
+    mRootShadowNodeRegistry.addNode(createRootShadowNode(rootTag, themedRootContext));
+    return rootTag;
+  }
+
+  public void removeRootView(int rootTag) {
+    mRootShadowNodeRegistry.removeNode(rootTag);
+  }
+
+  private ReactShadowNode createRootShadowNode(int rootTag, ThemedReactContext themedReactContext) {
+    ReactShadowNode rootNode = new ReactShadowNodeImpl();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    // TODO: setLayoutDirection for the rootNode
+    rootNode.setViewClassName("Root");
+    rootNode.setReactTag(rootTag);
+    rootNode.setThemedContext(themedReactContext);
+    return rootNode;
   }
 
 }

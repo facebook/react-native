@@ -132,10 +132,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   T getRootNode();
 
-  @Deprecated() //Replaced by setRootTag method.
   void setRootNode(T rootNode);
-
-  void setRootTag(int rootTag);
 
   void setViewClassName(String viewClassName);
 

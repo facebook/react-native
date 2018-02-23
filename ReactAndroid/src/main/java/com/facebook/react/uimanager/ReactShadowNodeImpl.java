@@ -411,11 +411,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public void setRootTag(int rootTag) {
-    mRootTag = rootTag;
-  }
-
-  @Override
   public final void setViewClassName(String viewClassName) {
     mViewClassName = viewClassName;
   }
