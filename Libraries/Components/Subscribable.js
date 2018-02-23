@@ -28,7 +28,9 @@ Subscribable.Mixin = {
   },
 
   componentWillUnmount: function() {
-    this._subscribableSubscriptions.forEach(
+    // This null check is a fix for a broken version of uglify-es. Should be deleted eventually
+    // https://github.com/facebook/react-native/issues/17348
+    this._subscribableSubscriptions && this._subscribableSubscriptions.forEach(
       (subscription) => subscription.remove()
     );
     this._subscribableSubscriptions = null;
