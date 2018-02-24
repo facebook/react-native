@@ -123,6 +123,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
   }
 
+  @Override
   public ReactShadowNodeImpl mutableCopy() {
     return new ReactShadowNodeImpl(this);
   }
