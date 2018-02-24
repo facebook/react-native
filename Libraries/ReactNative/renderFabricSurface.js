@@ -30,7 +30,10 @@ function renderFabricSurface<Props: Object>(
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
-    <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+    <AppContainer
+      fabric={true}
+      rootTag={rootTag}
+      WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
     </AppContainer>
   );

@@ -2760,7 +2760,8 @@ var ReactNativeGlobalResponderHandler = {
 /**
  * Register the event emitter with the native bridge
  */
-RCTEventEmitter.register(ReactNativeEventEmitter);
+// TODO: This event emitter is interfering with the existing ReactNative renderer.
+// RCTEventEmitter.register(ReactNativeEventEmitter);
 
 /**
  * Inject module for resolving DOM hierarchy and plugin ordering.
