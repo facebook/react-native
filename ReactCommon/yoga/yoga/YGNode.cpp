@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include "YGNode.h"
@@ -384,8 +382,8 @@ YGNode::YGNode()
       measure_(nullptr),
       baseline_(nullptr),
       dirtied_(nullptr),
-      style_(gYGNodeStyleDefaults),
-      layout_(gYGNodeLayoutDefaults),
+      style_(YGStyle()),
+      layout_(YGLayout()),
       lineIndex_(0),
       parent_(nullptr),
       children_(YGVector()),

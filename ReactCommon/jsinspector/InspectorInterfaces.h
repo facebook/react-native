@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -25,6 +23,7 @@ class IDestructible {
 struct InspectorPage {
   const int id;
   const std::string title;
+  const std::string vm;
 };
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
@@ -52,7 +51,7 @@ class IInspector : public IDestructible {
   virtual ~IInspector() = 0;
 
   /// addPage is called by the VM to add a page to the list of debuggable pages.
-  virtual int addPage(const std::string& title, ConnectFunc connectFunc) = 0;
+  virtual int addPage(const std::string& title, const std::string& vm, ConnectFunc connectFunc) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
   /// debuggable pages.

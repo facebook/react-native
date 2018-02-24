@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule createAnimatedComponent
  * @flow
@@ -17,7 +15,16 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const invariant = require('fbjs/lib/invariant');
+
 function createAnimatedComponent(Component: any): any {
+  invariant(
+    typeof Component === 'string' ||
+      (Component.prototype && Component.prototype.isReactComponent),
+    '`createAnimatedComponent` does not support stateless functional components; ' +
+      'use a class component instead.',
+  );
+
   class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _invokeAnimatedPropsCallbackOnMount: boolean = false;

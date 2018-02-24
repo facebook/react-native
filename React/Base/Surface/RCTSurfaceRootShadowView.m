@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSurfaceRootShadowView.h"
@@ -43,37 +41,26 @@
   }
 }
 
-- (void)calculateLayoutWithMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews
 {
-  YGNodeRef yogaNode = self.yogaNode;
+  NSHashTable<NSString *> *other = [NSHashTable new];
 
-  YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
-  YGNodeStyleSetMinHeight(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
+  RCTLayoutContext layoutContext = {};
+  layoutContext.absolutePosition = CGPointZero;
+  layoutContext.affectedShadowViews = affectedShadowViews;
+  layoutContext.other = other;
 
-  YGNodeCalculateLayout(
-    self.yogaNode,
-    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.width),
-    RCTYogaFloatFromCoreGraphicsFloat(maximumSize.height),
-    _baseDirection
-  );
-}
+  [self layoutWithMinimumSize:_minimumSize
+                  maximumSize:_maximumSize
+              layoutDirection:RCTUIKitLayoutDirectionFromYogaLayoutDirection(_baseDirection)
+                layoutContext:layoutContext];
 
-- (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
-{
-  [self calculateLayoutWithMinimumSize:_minimumSize
-                           maximumSize:_maximumSize];
-
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:self.yogaNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-
-  self.intrinsicSize = self.frame.size;
+  self.intrinsicSize = self.layoutMetrics.frame.size;
 
   if (_isRendered && !_isLaidOut) {
     [_delegate rootShadowViewDidStartLayingOut:self];
     _isLaidOut = YES;
   }
-
-  return viewsWithNewFrame;
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize

@@ -42,14 +42,6 @@ def react_native_target(path):
     return '//ReactAndroid/src/main/' + path
 
 
-def android_react_native_target(path):
-    return react_native_target(path)
-
-
-def apple_react_native_target(path):
-    return react_native_target(path)
-
-
 # Example: react_native_xplat_target('bridge:bridge')
 def react_native_xplat_target(path):
     return '//ReactCommon/' + path
@@ -158,7 +150,7 @@ def rn_robolectric_test(name, srcs, vm_args=None, *args, **kwargs):
     # RN tests use  Powermock, which means they get their own ClassLoaders.
     # Because the yoga native library (or any native library) can only be loaded into one
     # ClassLoader at a time, we need to run each in its own process, hence fork_mode = 'per_test'.
-    robolectric_test(
+    native.robolectric_test(
         name=name,
         use_cxx_libraries=True,
         cxx_library_whitelist=[

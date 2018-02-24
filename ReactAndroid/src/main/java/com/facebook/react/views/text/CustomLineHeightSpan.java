@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
@@ -55,10 +53,12 @@ public class CustomLineHeightSpan implements LineHeightSpan {
       // Show proportionally additional ascent / top & descent / bottom
       final int additional = mHeight - (-fm.top + fm.bottom);
 
-      fm.top -= additional / 2;
-      fm.ascent -= additional / 2;
-      fm.descent += additional / 2;
-      fm.bottom += additional / 2;
+      // Round up for the negative values and down for the positive values  (arbritary choice)
+      // So that bottom - top equals additional even if it's an odd number.
+      fm.top -= Math.ceil(additional / 2.0f);
+      fm.bottom += Math.floor(additional / 2.0f);
+      fm.ascent = fm.top;
+      fm.descent = fm.bottom;
     }
   }
 }

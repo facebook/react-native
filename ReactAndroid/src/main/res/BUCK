@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_resource", "react_native_target", "android_react_native_target", "apple_react_native_target")
+load("//ReactNative:DEFS.bzl", "rn_android_resource", "react_native_target")
 
 rn_android_resource(
     name = "devsupport",
@@ -6,8 +6,6 @@ rn_android_resource(
     res = "devsupport",
     visibility = [
         react_native_target("java/com/facebook/react/devsupport/..."),
-        android_react_native_target("java/com/facebook/react/devsupport/..."),
-        apple_react_native_target("java/com/facebook/react/devsupport/..."),
     ],
 )
 

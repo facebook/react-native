@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule CameraRoll
  * @flow
@@ -115,8 +113,10 @@ type GetPhotosReturn = Promise<{
  * Shape of the return value of the `getPhotos` function.
  */
 const getPhotosReturnChecker = createStrictShapeTypeChecker({
-  // $FlowFixMe(>=0.41.0)
   edges: PropTypes.arrayOf(
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
     createStrictShapeTypeChecker({
       node: createStrictShapeTypeChecker({
         type: PropTypes.string.isRequired,

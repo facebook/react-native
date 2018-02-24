@@ -24,13 +24,13 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v3-android-sdkmanager-packages-{{ arch }}-
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v3-android-sdkmanager-packages-{{ arch }}-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
@@ -42,11 +42,11 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v2-buck-{{ arch }}-v2017.11.16.01
+      - v2-buck-{{ arch }}-v2018.02.16.01
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v2-buck-{{ arch }}-v2017.11.16.01
+    key: v2-buck-{{ arch }}-v2018.02.16.01
 
   - &restore-cache-watchman
     keys:
@@ -101,7 +101,7 @@ aliases:
   - &install-buck
     |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2017.11.16.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -205,13 +205,21 @@ aliases:
     command: | 
       mkdir -p ~/react-native/reports/junit/
 
-  - &run-objc_ios-tests
-    name: Objective-C iOS Test Suite
+  - &build-objc-ios-test-app
+    name: Build Objective-C iOS Test App
     command: ./scripts/objc-test-ios.sh
+  
+  - &run-objc-ios-tests
+    name: Objective-C iOS Test Suite
+    command: ./scripts/objc-test-ios.sh test
+
+  - &build-objc-tvos-test-app
+    name: Build Objective-C tvOS Test App
+    command: ./scripts/objc-test-tvos.sh
 
   - &run-objc-tvos-tests
     name: Objective-C tvOS Test Suite
-    command: ./scripts/objc-test-tvos.sh
+    command: ./scripts/objc-test-tvos.sh test
 
   - &run-objc-ios-e2e-tests
     name: Objective-C iOS End-to-End Test Suite
@@ -245,7 +253,7 @@ android_defaults: &android_defaults
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.0"
+    xcode: "9.2.0"
 
 version: 2
 jobs:
@@ -317,29 +325,53 @@ jobs:
       - store_artifacts:
           path: ~/react-native/reports/junit
 
+  # Builds iOS test app
+  build_objc_ios_test_app:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *build-objc-ios-test-app
+
   # Runs unit tests on iOS devices
   test_objc_ios:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
 
-      - run: *run-objc_ios-tests
+      - run: *run-objc-ios-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
       - store_artifacts:
           path: ~/react-native/reports/junit
 
+  # Builds tvOS test app
+  build_objc_tvos_test_app:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *build-objc-tvos-test-app
+
   # Runs unit tests on tvOS devices
   test_objc_tvos:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "Apple TV 1080p (10.0)" || true
+        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -356,7 +388,7 @@ jobs:
     <<: *macos_defaults
     dependencies:
       pre:
-        - xcrun instruments -w "iPhone 5s (10.3.1)" || true
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -370,9 +402,7 @@ jobs:
 
   # Checks podspec
   test_podspec:
-    <<: *defaults
-    macos:
-      xcode: "9.0"
+    <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -383,9 +413,9 @@ jobs:
   publish_npm_package:
     <<: *android_defaults
     steps:
-      - attach_workspace:
-          at: ~/react-native
-
+      # Checkout code so that we can work with `git` in publish.js
+      - checkout
+      
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
@@ -537,7 +567,7 @@ jobs:
 workflows:
   version: 2
 
-  test:
+  tests:
     jobs:
 
       # Checkout repo and run Yarn
@@ -566,12 +596,12 @@ workflows:
           requires:
             - checkout_code
 
-      # Test iOS & tvOS
-      - test_objc_ios:
+      # Build iOS & tvOS test apps
+      - build_objc_ios_test_app:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-      - test_objc_tvos:
+      - build_objc_tvos_test_app:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -597,16 +627,39 @@ workflows:
 
   # Only runs on NN-stable branches
   deploy:
-    jobs:
-      # Checkout repo and run Yarn
-      - checkout_code:
-          filters: *filter-only-stable
-          
+    jobs:          
       # If we are on a stable branch, wait for approval to deploy to npm
       - approve_publish_npm_package:
           filters: *filter-only-stable
           type: approval
+
       - publish_npm_package:
           requires:
-            - checkout_code
             - approve_publish_npm_package
+
+  # These tests are flaky or are yet to be fixed. They are placed on their own 
+  # workflow to avoid marking benign PRs as broken.
+  # To run them, uncomment the entire block and open a PR (do not merge). 
+  # Once a test is fixed, move the test definition to the 'tests' workflow.
+  # disabled_tests:
+  #   jobs:
+  #     # Checkout repo and run Yarn (pre-req, should succeed)
+  #     - checkout_code:
+  #         filters: *filter-ignore-gh-pages
+
+  #     # The following were DISABLED because they have not run since 
+  #     # the migration from Travis, and they have broken since then,
+  #     # Test iOS & tvOS
+  #     - test_objc_ios:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code
+  #     - test_objc_tvos:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code
+  #     # CocoaPods
+  #     - test_podspec:
+  #         filters: *filter-ignore-gh-pages
+  #         requires:
+  #           - checkout_code

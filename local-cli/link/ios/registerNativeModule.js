@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 const xcode = require('xcode');
@@ -48,8 +46,8 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
   getTargets(dependencyProject).forEach(product => {
     var i;
     if (!product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(!targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (!targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
             target: targets[i].uuid
           });
@@ -58,8 +56,8 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
     }
 
     if (product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
             target: targets[i].uuid
           });

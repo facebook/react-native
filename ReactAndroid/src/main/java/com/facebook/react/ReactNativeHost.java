@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -16,6 +14,7 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.BridgeListener;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -76,6 +75,7 @@ public abstract class ReactNativeHost {
       .setRedBoxHandler(getRedBoxHandler())
       .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
       .setUIImplementationProvider(getUIImplementationProvider())
+      .setBridgeListener(getBridgeListener())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -120,6 +120,10 @@ public abstract class ReactNativeHost {
    */
   protected UIImplementationProvider getUIImplementationProvider() {
     return new UIImplementationProvider();
+  }
+
+  protected @Nullable BridgeListener getBridgeListener() {
+    return null;
   }
 
   /**

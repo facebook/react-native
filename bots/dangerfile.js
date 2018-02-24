@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -18,7 +16,6 @@ import { danger, fail, markdown, message, warn } from 'danger';
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
   fail(':grey_question: This pull request needs a description.');
-  markdown('@facebook-github-bot label Needs more information');
 }
 
 // Warns if the PR title contains [WIP]
@@ -44,7 +41,6 @@ if (!includesTestPlan) {
   const title = ':clipboard: Test Plan';
   const idea = 'This PR appears to be missing a Test Plan.';
   warn(`${title} - <i>${idea}</i>`);
-  markdown('@facebook-github-bot label Needs more information');
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
@@ -57,32 +53,30 @@ if (!includesReleaseNotes) {
   const title = ':clipboard: Release Notes';
   const idea = 'This PR appears to be missing Release Notes.';
   warn(`${title} - <i>${idea}</i>`);
-  markdown('@facebook-github-bot label Needs more information');
 } else if (!correctlyFormattedReleaseNotes) {
   const title = ':clipboard: Release Notes';
   const idea = 'This PR may have incorrectly formatted Release Notes.';
   warn(`${title} - <i>${idea}</i>`);
-  markdown('@facebook-github-bot label Needs more information');
 } else if (releaseNotesCaptureGroups) {
   const category = releaseNotesCaptureGroups[1].toLowerCase();
 
   // Use Release Notes to Tag PRs appropriately
-  if (category === 'ios' ){
-    markdown('@facebook-github-bot label iOS');
-  }
+  // if (category === 'ios' ){
+  //   markdown('@facebook-github-bot label iOS');
+  // }
 
-  if (category === 'android' ){
-    markdown('@facebook-github-bot label Android');
-  }
+  // if (category === 'android' ){
+  //   markdown('@facebook-github-bot label Android');
+  // }
 }
 
 // Tags PRs that have been submitted by a core contributor.
 // TODO: Switch to using an actual MAINTAINERS file.
 const taskforce = fs.readFileSync('./IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
-if (isSubmittedByTaskforce) {
-  markdown('@facebook-github-bot label Core Team');
-}
+// if (isSubmittedByTaskforce) {
+//   markdown('@facebook-github-bot label Core Team');
+// }
 
 // Tags big PRs
 var bigPRThreshold = 600;
@@ -91,21 +85,21 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.github.pr.additions + danger.github.pr.deletions} lines.`;
   warn(`${title} - <i>${idea}</i>`);
 
-  markdown('@facebook-github-bot large-pr');  
+  // markdown('@facebook-github-bot large-pr');
 }
 if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
   const title = ':exclamation: Big PR';
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.git.modified_files + danger.git.added_files + danger.git.deleted_files} files.`;
   warn(`${title} - <i>${idea}</i>`);
 
-  markdown('@facebook-github-bot large-pr');  
+  // markdown('@facebook-github-bot large-pr');
 }
 
 // Warns if the bots whitelist file is updated.
 const issueCommandsFileModified = includes(danger.git.modified_files, 'bots/IssueCommands.txt');
 if (issueCommandsFileModified) {
   const title = ':exclamation: Bots';
-  const idea = 'This PR appears to modify the list of people that may issue ' + 
+  const idea = 'This PR appears to modify the list of people that may issue ' +
   'commands to the GitHub bot.';
   warn(`${title} - <i>${idea}</i>`);
 }
@@ -113,7 +107,7 @@ if (issueCommandsFileModified) {
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `master` or `-stable`.
 const isMergeRefMaster = danger.github.pr.base.ref === 'master';
-const isMergeRefStable = danger.github.pr.base.ref.indexOf(`-stable`) !== -1;
+const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
 if (!isMergeRefMaster && isMergeRefStable) {
   const title = ':grey_question: Base Branch';
   const idea = 'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';

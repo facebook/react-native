@@ -2,11 +2,9 @@
 
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include <atomic>
@@ -454,6 +452,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(jsBoundExtraModuleForClass:)]) {
+      return [cxxDelegate jsBoundExtraModuleForClass:moduleClass];
+    }
+  }
+
+  return nil;
+}
+
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
@@ -515,6 +525,8 @@ struct RCTInstanceCallback : public InstanceCallback {
         std::make_unique<JSBigStdString>("true"));
     }
 #endif
+
+    [self installExtraJSBinding];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -607,6 +619,16 @@ struct RCTInstanceCallback : public InstanceCallback {
     [_moduleDataByID addObject:moduleData];
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+}
+
+- (void)installExtraJSBinding
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(installExtraJSBinding:)]) {
+      [cxxDelegate installExtraJSBinding:self.jsContextRef];
+    }
+  }
 }
 
 - (void)_initModules:(NSArray<id<RCTBridgeModule>> *)modules

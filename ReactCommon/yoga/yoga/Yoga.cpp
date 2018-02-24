@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include "Yoga.h"
@@ -47,6 +45,7 @@ static YGConfig gYGConfigDefaults = {
         },
     .useWebDefaults = false,
     .useLegacyStretchBehaviour = false,
+    .shouldDiffLayoutWithoutLegacyStretchBehaviour = false,
     .pointScaleFactor = 1.0f,
 #ifdef ANDROID
     .logger = &YGAndroidLog,
@@ -251,6 +250,16 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
   return node;
 }
 
+static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
+  const YGConfigRef config = new YGConfig(oldConfig);
+  YGAssert(config != nullptr, "Could not allocate memory for config");
+  if (config == nullptr) {
+    abort();
+  }
+  gConfigInstanceCount++;
+  return config;
+}
+
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
   YGNodeRef node = YGNodeClone(oldNode);
   YGVector vec = YGVector();
@@ -263,12 +272,12 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
   }
   node->setChildren(vec);
 
-  if (oldNode->getNextChild() != nullptr) {
-    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
+  if (oldNode->getConfig() != nullptr) {
+    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
   }
 
-  if (node->getConfig() != nullptr) {
-    node->setConfig(new YGConfig(*node->getConfig()));
+  if (oldNode->getNextChild() != nullptr) {
+    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
   }
 
   return node;
@@ -289,6 +298,17 @@ void YGNodeFree(const YGNodeRef node) {
   node->clearChildren();
   delete node;
   gNodeInstanceCount--;
+}
+
+static void YGConfigFreeRecursive(const YGNodeRef root) {
+  if (root->getConfig() != nullptr) {
+    gConfigInstanceCount--;
+    delete root->getConfig();
+  }
+  // Delete configs recursively for childrens
+  for (uint32_t i = 0; i < root->getChildrenCount(); ++i) {
+    YGConfigFreeRecursive(root->getChild(i));
+  }
 }
 
 void YGNodeFreeRecursive(const YGNodeRef root) {
@@ -1080,10 +1100,11 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
 
     if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
-        childHeight = (childWidth - marginRow) / child->getStyle().aspectRatio;
+        childHeight = marginColumn +
+            (childWidth - marginRow) / child->getStyle().aspectRatio;
         childHeightMeasureMode = YGMeasureModeExactly;
       } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
-        childWidth =
+        childWidth = marginRow +
             (childHeight - marginColumn) * child->getStyle().aspectRatio;
         childWidthMeasureMode = YGMeasureModeExactly;
       }
@@ -3592,14 +3613,15 @@ void YGNodeCalculateLayout(const YGNodeRef node,
     }
   }
 
-  bool didUseLegacyFlag = node->didUseLegacyFlag();
-
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.
   // So logging this in YGLayout would help to find out the call sites depending
   // on this flag. This check would be removed once we are sure no one is
-  // dependent on this flag anymore.
-  if (didUseLegacyFlag) {
+  // dependent on this flag anymore. The flag
+  // `shouldDiffLayoutWithoutLegacyStretchBehaviour` in YGConfig will help to
+  // run experiments.
+  if (node->getConfig()->shouldDiffLayoutWithoutLegacyStretchBehaviour &&
+      node->didUseLegacyFlag()) {
     const YGNodeRef originalNode = YGNodeDeepClone(node);
     originalNode->resolveDimension();
     // Recursively mark nodes as dirty
@@ -3642,6 +3664,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
                 YGPrintOptionsStyle));
       }
     }
+    YGConfigFreeRecursive(originalNode);
     YGNodeFreeRecursive(originalNode);
   }
 }

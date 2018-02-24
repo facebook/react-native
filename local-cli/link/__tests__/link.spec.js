@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+javascript_foundation
  */
@@ -81,8 +79,10 @@ describe('link', () => {
   it('should register native module when android/ios projects are present', (done) => {
     const registerNativeModule = sinon.stub();
     const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};
+    const androidLinkConfig = require('../android');
+    const iosLinkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getPlatformConfig: () => ({ios: { linkConfig: iosLinkConfig }, android: { linkConfig: androidLinkConfig }}),
       getProjectConfig: () => ({android: {}, ios: {}, assets: []}),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
@@ -223,8 +223,9 @@ describe('link', () => {
       sinon.stub().returns(false)
     );
 
+    const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: {}}),
+      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig }}),
       getProjectConfig: () => ({ ios: {}, assets: [] }),
       getDependencyConfig: sinon.stub().returns({
         ios: {}, assets: [], commands: { prelink, postlink },
@@ -251,8 +252,9 @@ describe('link', () => {
       copyAssets
     );
 
+    const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: {} }),
+      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig } }),
       getProjectConfig: () => ({ ios: {}, assets: projectAssets }),
       getDependencyConfig: sinon.stub().returns(dependencyConfig),
     };
