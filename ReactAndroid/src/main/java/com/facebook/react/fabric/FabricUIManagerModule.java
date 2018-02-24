@@ -3,7 +3,7 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
@@ -18,7 +18,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-
 /**
  * This class is responsible to create, clone and update {@link ReactShadowNode} using the
  * Fabric API.
@@ -43,7 +42,7 @@ public class FabricUIManagerModule implements UIModule {
   public ReactShadowNode createNode(int reactTag,
       String viewName,
       int rootTag,
-      ReadableMap props) {
+      ReadableNativeMap props) {
 
     ViewManager viewManager = mViewManagerRegistry.get(viewName);
     ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
@@ -58,7 +57,7 @@ public class FabricUIManagerModule implements UIModule {
     return mRootShadowNodeRegistry.getNode(rootTag);
   }
 
-  private ReactStylesDiffMap updateProps(ReadableMap props, ReactShadowNode node) {
+  private ReactStylesDiffMap updateProps(ReadableNativeMap props, ReactShadowNode node) {
     ReactStylesDiffMap styles = null;
     if (props != null) {
       styles = new ReactStylesDiffMap(props);
@@ -95,7 +94,7 @@ public class FabricUIManagerModule implements UIModule {
    * props will be overridden with the {@link ReadableMap} received by parameter.
    */
   @Nullable
-  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableMap newProps) {
+  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableNativeMap newProps) {
     ReactShadowNode clone = cloneNode(node);
     updateProps(newProps, clone);
     return clone;
@@ -110,7 +109,7 @@ public class FabricUIManagerModule implements UIModule {
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node,
-      ReadableMap newProps) {
+      ReadableNativeMap newProps) {
     ReactShadowNode clone = cloneNodeWithNewChildren(node);
     updateProps(newProps, clone);
     return clone;
@@ -129,7 +128,7 @@ public class FabricUIManagerModule implements UIModule {
    * @return an empty {@link List<ReactShadowNode>} that will be used to append the
    * {@link ReactShadowNode} elements of the root. Typically this List will contain one element.
    */
-  public List<ReactShadowNode> createChildSet() {
+  public List<ReactShadowNode> createChildSet(int rootTag) {
     return new ArrayList<>(1);
   }
 
