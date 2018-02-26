@@ -168,6 +168,7 @@ function getPackagerServer(args, config, reporter) {
     assetExts: defaultAssetExts.concat(args.assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
+    cacheStores: config.cacheStores,
     cacheVersion: '3',
     enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
