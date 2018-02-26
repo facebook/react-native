@@ -29,7 +29,7 @@ function library(argv, config, args) {
   const source = path.resolve('node_modules', 'react-native', 'Libraries', 'Sample');
 
   if (!fs.existsSync(libraries)) {
-    fs.mkdir(libraries);
+    fs.mkdirSync(libraries);
   }
 
   if (fs.existsSync(libraryDest)) {
