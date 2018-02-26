@@ -379,7 +379,7 @@ jobs:
       - run: *build-objc-ios-cocoapods-install
 
   # Builds iOS test app - cocoapods flavour
-  build_objc_ios_test_app:
+  build_objc_ios_test_app_cocoapods:
     <<: *macos_defaults
     dependencies:
       pre:
@@ -391,7 +391,7 @@ jobs:
       - run: *build-objc-ios-cocoapods-test-app
 
   # Runs unit tests on iOS devices - cocoapods flavour
-  test_objc_ios:
+  test_objc_ios_cocoapods:
     <<: *macos_defaults
     dependencies:
       pre:
