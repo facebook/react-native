@@ -535,15 +535,23 @@ jobs:
       - run:
           name: Install Additional Dependencies
           command: |
+            # if [ -n "$CIRCLE_PR_NUMBER" ]; then
             yarn add github@0.2.4
             cd bots
             yarn install --non-interactive --cache-folder ~/.cache/yarn
+            # else
+            # echo "Skipping dependency installation."            
+            # fi
       - save-cache: *save-cache-analysis
 
       - run:
           name: Analyze Pull Request
           command: |
+            # if [ -n "$CIRCLE_PR_NUMBER" ]; then
             cd bots && DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN yarn danger
+            # else
+            #   echo "Skipping pull request analysis."            
+            # fi
           when: always
       - run:
           name: Analyze Code
