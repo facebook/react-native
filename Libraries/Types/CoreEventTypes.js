@@ -43,7 +43,20 @@ export type LayoutEvent = SyntheticEvent<
   |}>,
 >;
 
-export type PressEvent = SyntheticEvent<Object>;
+export type PressEvent = SyntheticEvent<
+  $ReadOnly<{|
+    changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
+    force: number,
+    identifier: number,
+    locationX: number,
+    locationY: number,
+    pageX: number,
+    pageY: number,
+    target: ?number,
+    timestamp: number,
+    touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
+  |}>,
+>;
 
 export type ScrollEvent = SyntheticEvent<
   $ReadOnly<{|
