@@ -629,8 +629,7 @@ public class DevServerHelper {
         .url(resourceURL)
         .build();
 
-    try {
-      Response response = mClient.newCall(request).execute();
+    try (Response response = mClient.newCall(request).execute()) {
       if (!response.isSuccessful()) {
         return null;
       }

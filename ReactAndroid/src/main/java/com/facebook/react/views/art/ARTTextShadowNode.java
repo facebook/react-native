@@ -40,6 +40,19 @@ public class ARTTextShadowNode extends ARTShapeShadowNode {
   private @Nullable ReadableMap mFrame;
   private int mTextAlignment = TEXT_ALIGNMENT_LEFT;
 
+  public ARTTextShadowNode() { }
+
+  public ARTTextShadowNode(ARTTextShadowNode node) {
+    super(node);
+    mTextAlignment = node.mTextAlignment;
+    mFrame = node.mFrame; // copy reference as mFrame is already immutable
+  }
+
+  @Override
+  public ARTShapeShadowNode mutableCopy() {
+    return new ARTTextShadowNode(this);
+  }
+
   @ReactProp(name = "frame")
   public void setFrame(@Nullable ReadableMap frame) {
     mFrame = frame;

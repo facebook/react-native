@@ -15,6 +15,11 @@ var Text = require('Text');
 var View = require('View');
 
 class DummyTouchableNativeFeedback extends React.Component {
+  static SelectableBackground = () => ({});
+  static SelectableBackgroundBorderless = () => ({});
+  static Ripple = () => ({});
+  static canUseNativeForeground = () => false;
+
   render() {
     return (
       <View style={[styles.container, this.props.style]}>

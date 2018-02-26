@@ -1140,7 +1140,8 @@ var ReactNativeEventEmitter = Object.freeze({
     }
   }
 });
-RCTEventEmitter.register(ReactNativeEventEmitter);
+// TODO: This event emitter is interfering with the existing ReactNative renderer.
+// RCTEventEmitter.register(ReactNativeEventEmitter);
 injection.injectEventPluginOrder([
   "ResponderEventPlugin",
   "ReactNativeBridgeEventPlugin"

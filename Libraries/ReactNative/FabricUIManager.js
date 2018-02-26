@@ -10,53 +10,29 @@
  */
 'use strict';
 
-// TODO: fix the types
-type Node = number;
-type NodeSet = number;
+// TODO: type these properly.
+type Node = {};
+type NodeSet = Array<Node>;
 type NodeProps = {};
+type InstanceHandle = {};
 type Spec = {|
   +createNode: (
     reactTag: number,
     viewName: string,
     rootTag: number,
     props: NodeProps,
-    instanceHandle: number,
+    instanceHandle: InstanceHandle,
   ) => Node,
   +cloneNode: (node: Node) => Node,
   +cloneNodeWithNewChildren: (node: Node) => Node,
   +cloneNodeWithNewProps: (node: Node, newProps: NodeProps) => Node,
   +cloneNodeWithNewChildrenAndProps: (node: Node, newProps: NodeProps) => Node,
+  +createChildSet: (rootTag: number) => NodeSet,
   +appendChild: (parentNode: Node, child: Node) => Node,
   +appendChildToSet: (childSet: NodeSet, child: Node) => void,
   +completeRoot: (rootTag: number, childSet: NodeSet) => void,
 |};
 
-const NativeFabricUIManager: Spec = require('NativeModules').FabricUIManager;
-
-const FabricUIManager: Spec = {
-  createNode(
-    reactTag: number,
-    viewName: string,
-    rootTag: number,
-    props: NodeProps,
-    instanceHandle: number,
-  ): number {
-    return NativeFabricUIManager.createNode(
-      reactTag,
-      viewName,
-      rootTag,
-      props,
-      0, // TODO: instanceHandle is cannot be JSON serialized.
-    );
-  },
-  cloneNode: NativeFabricUIManager.cloneNode,
-  cloneNodeWithNewChildren: NativeFabricUIManager.cloneNodeWithNewChildren,
-  cloneNodeWithNewProps: NativeFabricUIManager.cloneNodeWithNewProps,
-  cloneNodeWithNewChildrenAndProps:
-    NativeFabricUIManager.cloneNodeWithNewChildrenAndProps,
-  appendChild: NativeFabricUIManager.appendChild,
-  appendChildToSet: NativeFabricUIManager.appendChildToSet,
-  completeRoot: NativeFabricUIManager.completeRoot,
-};
+const FabricUIManager: ?Spec = global.nativeFabricUIManager;
 
 module.exports = FabricUIManager;

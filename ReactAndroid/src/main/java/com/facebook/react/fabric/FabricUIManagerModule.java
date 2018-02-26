@@ -3,22 +3,36 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.MeasureSpecProvider;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIModule;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-
 /**
  * This class is responsible to create, clone and update {@link ReactShadowNode} using the
  * Fabric API.
  */
-public class FabricUIManagerModule {
+@SuppressWarnings("unused") // used from JNI
+public class FabricUIManagerModule implements UIModule {
 
+  private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
+  private final ViewManagerRegistry mViewManagerRegistry;
 
-  public FabricUIManagerModule(ReactApplicationContext reactContext) {
+  public FabricUIManagerModule(ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactContext;
+    mViewManagerRegistry = viewManagerRegistry;
   }
 
   /**
@@ -28,10 +42,28 @@ public class FabricUIManagerModule {
   public ReactShadowNode createNode(int reactTag,
       String viewName,
       int rootTag,
-      ReadableMap props,
-      int instanceHandle) {
-    //TODO T25560658
-    return null;
+      ReadableNativeMap props) {
+
+    ViewManager viewManager = mViewManagerRegistry.get(viewName);
+    ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
+    node.setRootNode(getRootNode(rootTag));
+    node.setReactTag(reactTag);
+    ReactStylesDiffMap styles = updateProps(props, node);
+
+    return node;
+  }
+
+  private ReactShadowNode getRootNode(int rootTag) {
+    return mRootShadowNodeRegistry.getNode(rootTag);
+  }
+
+  private ReactStylesDiffMap updateProps(ReadableNativeMap props, ReactShadowNode node) {
+    ReactStylesDiffMap styles = null;
+    if (props != null) {
+      styles = new ReactStylesDiffMap(props);
+      node.updateProperties(styles);
+    }
+    return styles;
   }
 
   /**
@@ -41,8 +73,7 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
-    //TODO T25560658
-    return null;
+    return node.mutableCopy();
   }
 
   /**
@@ -52,8 +83,9 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
-    //TODO T25560658
-    return null;
+    ReactShadowNode clone = cloneNode(node);
+    clone.removeAllChildren();
+    return clone;
   }
 
   /**
@@ -62,9 +94,10 @@ public class FabricUIManagerModule {
    * props will be overridden with the {@link ReadableMap} received by parameter.
    */
   @Nullable
-  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableMap newProps) {
-    //TODO T25560658
-    return null;
+  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableNativeMap newProps) {
+    ReactShadowNode clone = cloneNode(node);
+    updateProps(newProps, clone);
+    return clone;
   }
 
   /**
@@ -76,9 +109,10 @@ public class FabricUIManagerModule {
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node,
-      ReadableMap newProps) {
-    //TODO T25560658
-    return null;
+      ReadableNativeMap newProps) {
+    ReactShadowNode clone = cloneNodeWithNewChildren(node);
+    updateProps(newProps, clone);
+    return clone;
   }
 
   /**
@@ -87,14 +121,14 @@ public class FabricUIManagerModule {
    */
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
-    //TODO T25560658
+    parent.addChildAt(child, parent.getChildCount());
   }
 
   /**
    * @return an empty {@link List<ReactShadowNode>} that will be used to append the
    * {@link ReactShadowNode} elements of the root. Typically this List will contain one element.
    */
-  public List<ReactShadowNode> createChildSet() {
+  public List<ReactShadowNode> createChildSet(int rootTag) {
     return new ArrayList<>(1);
   }
 
@@ -106,7 +140,34 @@ public class FabricUIManagerModule {
   }
 
   public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    //TODO T25560658
+    // TODO Diffing old Tree with new Tree
+    // Do we need to hold references to old and new tree?
+  }
+
+  @Override
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+    final T rootView) {
+    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ThemedReactContext themedRootContext = new ThemedReactContext(
+        mReactApplicationContext,
+        rootView.getContext());
+
+    mRootShadowNodeRegistry.addNode(createRootShadowNode(rootTag, themedRootContext));
+    return rootTag;
+  }
+
+  public void removeRootView(int rootTag) {
+    mRootShadowNodeRegistry.removeNode(rootTag);
+  }
+
+  private ReactShadowNode createRootShadowNode(int rootTag, ThemedReactContext themedReactContext) {
+    ReactShadowNode rootNode = new ReactShadowNodeImpl();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    // TODO: setLayoutDirection for the rootNode
+    rootNode.setViewClassName("Root");
+    rootNode.setReactTag(rootTag);
+    rootNode.setThemedContext(themedReactContext);
+    return rootNode;
   }
 
 }

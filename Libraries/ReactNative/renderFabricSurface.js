@@ -30,7 +30,10 @@ function renderFabricSurface<Props: Object>(
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
-    <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+    <AppContainer
+      fabric={true}
+      rootTag={rootTag}
+      WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
     </AppContainer>
   );
@@ -43,15 +46,8 @@ function renderFabricSurface<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    class AppContainerAsyncWrapper extends React.unstable_AsyncComponent {
-      render() {
-        return this.props.children;
-      }
-    }
-
-    renderable = (
-      <AppContainerAsyncWrapper>{renderable}</AppContainerAsyncWrapper>
-    );
+    const AsyncMode = React.unstable_AsyncMode;
+    renderable = <AsyncMode>{renderable}</AsyncMode>;
   }
 
   ReactFabric.render(renderable, rootTag);

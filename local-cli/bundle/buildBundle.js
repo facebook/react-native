@@ -10,12 +10,16 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
+/* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 const {Terminal} = require('metro-core');
+/* $FlowFixMe(site=react_native_oss) */
 const TerminalReporter = require('metro/src/lib/TerminalReporter');
+/* $FlowFixMe(site=react_native_oss) */
 const TransformCaching = require('metro/src/lib/TransformCaching');
 
 const {defaults} = require('metro');
+/* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
@@ -96,7 +100,7 @@ async function buildBundle(
     providesModuleNodeModules: providesModuleNodeModules,
     resetCache: args.resetCache,
     reporter: new TerminalReporter(terminal),
-    sourceExts: defaultSourceExts.concat(sourceExts),
+    sourceExts: sourceExts.concat(defaultSourceExts),
     transformCache: TransformCaching.useTempDir(),
     transformModulePath: transformModulePath,
     watch: false,

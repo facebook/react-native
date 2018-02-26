@@ -72,7 +72,7 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
+    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, UIModule {
 
   /**
    * Enables lazy discovery of a specific {@link ViewManager} by its name.
@@ -287,6 +287,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    *
    * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
+  @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
     Systrace.beginSection(

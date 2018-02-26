@@ -99,7 +99,7 @@ if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_file
 const issueCommandsFileModified = includes(danger.git.modified_files, 'bots/IssueCommands.txt');
 if (issueCommandsFileModified) {
   const title = ':exclamation: Bots';
-  const idea = 'This PR appears to modify the list of people that may issue ' + 
+  const idea = 'This PR appears to modify the list of people that may issue ' +
   'commands to the GitHub bot.';
   warn(`${title} - <i>${idea}</i>`);
 }
@@ -107,7 +107,7 @@ if (issueCommandsFileModified) {
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
 // Fails if the PR is opened against anything other than `master` or `-stable`.
 const isMergeRefMaster = danger.github.pr.base.ref === 'master';
-const isMergeRefStable = danger.github.pr.base.ref.indexOf(`-stable`) !== -1;
+const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
 if (!isMergeRefMaster && isMergeRefStable) {
   const title = ':grey_question: Base Branch';
   const idea = 'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';

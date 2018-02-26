@@ -825,7 +825,9 @@ public class DevSupportManagerImpl implements
 
     UiThreadUtil.assertOnUiThread();
 
-    ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
+    ReactMarker.logMarker(
+        ReactMarkerConstants.RELOAD,
+        mDevSettings.getPackagerConnectionSettings().getDebugServerHost());
 
     // dismiss redbox if exists
     hideRedboxDialog();
