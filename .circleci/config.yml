@@ -548,7 +548,7 @@ jobs:
           name: Analyze Pull Request
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots && DANGER_GITHUB_API_TOKEN="e622517d9f1136ea8900""07c6373666312cdfaa69" yarn danger
+              cd bots && DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN yarn danger
             else
               echo "Skipping pull request analysis."            
             fi
