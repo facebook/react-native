@@ -65,3 +65,4 @@ node_modules
 
 /coverage
 /third-party
+/RNTester/Pods
