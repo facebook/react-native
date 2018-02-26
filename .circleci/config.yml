@@ -229,6 +229,18 @@ aliases:
     name: Objective-C tvOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
+  - &build-objc-ios-cocoapods-install
+    name: Test Cocoapods
+    command: ./scripts/objc-test-ios-cocoapods-install.sh
+
+  - &build-objc-ios-cocoapods-test-app
+    name: Build Objective-C iOS Test App
+    command: ./scripts/objc-test-ios-cocoapods.sh
+
+  - &run-objc-ios-cocoapods-tests
+    name: Objective-C iOS Test Suite
+    command: ./scripts/objc-test-ios-cocoapods.sh test
+
 defaults: &defaults
   working_directory: ~/react-native
 
@@ -348,6 +360,24 @@ jobs:
           at: ~/react-native
 
       - run: *run-objc-ios-tests
+
+      - store_test_results:
+          path: ~/react-native/reports/junit
+      - store_artifacts:
+          path: ~/react-native/reports/junit
+
+  # Runs unit tests on iOS devices - cocoapods flavour
+  test_objc_ios_cocoapods:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+      - run: *build-objc-ios-cocoapods-install
+      - run: *build-objc-ios-cocoapods-test-app
+      - run: *run-objc-ios-cocoapods-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -611,6 +641,13 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
+      # Test Cocoapods Integration
+      - test_objc_ios_cocoapods:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
 
   # Only runs on PRs
   analyze:

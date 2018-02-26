@@ -41,4 +41,7 @@ Pod::Spec.new do |spec|
   source_files = 'yoga/**/*.{cpp,h}'
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
+
+  # Only expose the needed headers
+  spec.public_header_files = 'yoga/Yoga.h', 'yoga/YGEnums.h', 'yoga/YGMacros.h'
 end

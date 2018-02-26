@@ -12,6 +12,12 @@ set -ex
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 
+XCODE_PROJECT_PATH="RNTester/RNTester.xcodeproj"
+
+if [ "$2" = "workspace" ]; then
+  XCODE_PROJECT_PATH="RNTester/RNTester.xcodeproj"
+fi
+
 cd $ROOT
 
 # Create cleanup handler
@@ -77,7 +83,7 @@ rm temp.bundle
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
 xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
+  -project $XCODE_PROJECT_PATH \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
@@ -91,7 +97,7 @@ else
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
 xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
+  -project $XCODE_PROJECT_PATH \
   -scheme $SCHEME \
   -sdk $SDK \
   build

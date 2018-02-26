@@ -1,0 +1,51 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+use_frameworks!
+inhibit_all_warnings!
+
+platform :ios, '9.0'
+
+project 'RNTester.xcodeproj'
+
+def shared_pods
+    pod 'yoga', :path => '../ReactCommon/yoga'
+
+    # Third party deps podspec link
+    pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
+    pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
+    pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
+
+    pod 'React', :path => '../', :subspecs => [
+    'Core',
+    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket', # needed for debugging
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'CxxBridge',
+    'RCTPushNotification'
+    ]
+end
+
+target 'RNTester' do
+    shared_pods
+end
+
+target 'RNTesterUnitTests' do
+    shared_pods
+end
+
+target 'RNTester-tvOS' do
+    shared_pods
+end
+
+target 'RNTester-tvOSUnitTests' do
+    shared_pods
+end
+
+target 'RNTester-tvOSIntegrationTests' do
+    shared_pods
+end
