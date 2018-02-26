@@ -366,6 +366,47 @@ jobs:
       - store_artifacts:
           path: ~/react-native/reports/junit
 
+   # Installs Cocoapods
+  install_cocoapods_objc_ios_test_app:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *build-objc-ios-cocoapods-install
+
+  # Builds iOS test app - cocoapods flavour
+  build_objc_ios_test_app:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *build-objc-ios-cocoapods-test-app
+
+  # Runs unit tests on iOS devices - cocoapods flavour
+  test_objc_ios:
+    <<: *macos_defaults
+    dependencies:
+      pre:
+        - xcrun instruments -w "iPhone 5s (11.1)" || true
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *run-objc-ios-cocoapods-tests
+
+      - store_test_results:
+          path: ~/react-native/reports/junit
+      - store_artifacts:
+          path: ~/react-native/reports/junit
+
   # Builds tvOS test app
   build_objc_tvos_test_app:
     <<: *macos_defaults
