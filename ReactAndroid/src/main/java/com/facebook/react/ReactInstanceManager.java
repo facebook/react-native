@@ -760,6 +760,12 @@ public class ReactInstanceManager {
         }
       }
       return mViewManagers;
+    } catch (NullPointerException e) {
+      Log.e(ReactConstants.TAG,
+        "ReactPackage#createViewManagers maybe return null. " +
+          "If your package has no ViewManagers, " +
+          "your createViewManagers should return Collections.emptyList() or any empty list.", e);
+      throw e;
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_VIEW_MANAGERS_END);

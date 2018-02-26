@@ -5,6 +5,8 @@
 
 package com.facebook.react;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +89,12 @@ public class NativeModuleRegistryBuilder {
                 mReactApplicationContext, mReactInstanceManager);
       } else {
         nativeModules = reactPackage.createNativeModules(mReactApplicationContext);
+      }
+      if (nativeModules == null) {
+        Log.e(ReactConstants.TAG,
+          "ReactPackage#createNativeModules returns null. " +
+            "If your package has no NativeModules, " +
+            "your createNativeModules should return Collections.emptyList() or any empty list.");
       }
       for (NativeModule nativeModule : nativeModules) {
         addNativeModule(nativeModule);
