@@ -11,7 +11,7 @@ set -ex
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
-cd "$ROOT"
+cd "$ROOT/RNTester"
 
 SCHEME="RNTester"
 SDK="iphonesimulator"
