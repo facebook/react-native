@@ -229,15 +229,15 @@ aliases:
     name: Objective-C tvOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
-  - &build-objc-ios-cocaopods-install
+  - &build-objc-ios-cocoapods-install
     name: Test Cocoapods
     command: ./scripts/objc-test-ios-cocoapods-install.sh
 
-  - &build-objc-ios-cocaopods-test-app
+  - &build-objc-ios-cocoapods-test-app
     name: Build Objective-C iOS Test App
     command: ./scripts/objc-test-ios-cocoapods.sh
 
-  - &run-objc-ios-cocaopods-tests
+  - &run-objc-ios-cocoapods-tests
     name: Objective-C iOS Test Suite
     command: ./scripts/objc-test-ios-cocoapods.sh test
 
