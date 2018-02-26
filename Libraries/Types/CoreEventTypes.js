@@ -11,55 +11,60 @@
 
 'use strict';
 
-export type Layout = {|
-  +x: number,
-  +y: number,
-  +width: number,
-  +height: number,
-|};
-export type LayoutEvent = SyntheticEvent<{|
-  +layout: Layout,
+export type SyntheticEvent<T> = $ReadOnly<{|
+  bubbles: ?boolean,
+  cancelable: ?boolean,
+  currentTarget: number,
+  defaultPrevented: ?boolean,
+  dispatchConfig: $ReadOnly<{|
+    registrationName: string,
+  |}>,
+  eventPhase: ?number,
+  isDefaultPrevented: () => boolean,
+  isPropagationStopped: () => boolean,
+  isTrusted: ?boolean,
+  nativeEvent: T,
+  persist: () => void,
+  target: ?number,
+  timeStamp: number,
+  type: ?string,
 |}>;
 
-export type SyntheticEvent<T> = {|
-  +bubbles: ?boolean,
-  +cancelable: ?boolean,
-  +currentTarget: number,
-  +defaultPrevented: ?boolean,
-  +dispatchConfig: {|
-    +registrationName: string,
-  |},
-  +eventPhase: ?number,
-  +isDefaultPrevented: () => boolean,
-  +isPropagationStopped: () => boolean,
-  +isTrusted: ?boolean,
-  +nativeEvent: T,
-  +persist: () => void,
-  +target: ?number,
-  +timeStamp: number,
-  +type: ?string,
-|};
+export type Layout = $ReadOnly<{|
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+|}>;
+
+export type LayoutEvent = SyntheticEvent<
+  $ReadOnly<{|
+    layout: Layout,
+  |}>,
+>;
 
 export type PressEvent = SyntheticEvent<Object>;
 
-export type ScrollEvent = SyntheticEvent<{|
-  +contentInset: {|
-    +bottom: number,
-    +left: number,
-    +right: number,
-    +top: number,
-  |},
-  +contentOffset: {|
-    +y: number,
-    +x: number,
-  |},
-  +contentSize: {|
-    +height: number,
-    +width: number,
-  |},
-  +layoutMeasurement: {|
-    +height: number,
-    +width: number,
-  |},
-  +zoomScale: number,
-|}>;
+export type ScrollEvent = SyntheticEvent<
+  $ReadOnly<{|
+    contentInset: $ReadOnly<{|
+      bottom: number,
+      left: number,
+      right: number,
+      top: number,
+    |}>,
+    contentOffset: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
+    contentSize: $ReadOnly<{|
+      height: number,
+      width: number,
+    |}>,
+    layoutMeasurement: $ReadOnly<{|
+      height: number,
+      width: number,
+    |}>,
+    zoomScale: number,
+  |}>,
+>;
