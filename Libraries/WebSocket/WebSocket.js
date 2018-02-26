@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule WebSocket
  * @flow
@@ -14,8 +12,8 @@
 const Blob = require('Blob');
 const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('NativeEventEmitter');
+const BlobManager = require('BlobManager');
 const NativeModules = require('NativeModules');
-const Platform = require('Platform');
 const WebSocketEvent = require('WebSocketEvent');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -147,17 +145,18 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
     }
     if (this._binaryType === 'blob' || binaryType === 'blob') {
-      const BlobModule = NativeModules.BlobModule;
-      invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      if (BlobModule) {
-        if (binaryType === 'blob') {
-          BlobModule.enableBlobSupport(this._socketId);
-        } else {
-          BlobModule.disableBlobSupport(this._socketId);
-        }
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      if (binaryType === 'blob') {
+        BlobManager.addWebSocketHandler(this._socketId);
+      } else {
+        BlobManager.removeWebSocketHandler(this._socketId);
       }
     }
     this._binaryType = binaryType;
+  }
+
+  get binaryType(): ?BinaryType {
+    return this._binaryType;
   }
 
   close(code?: number, reason?: string): void {
@@ -176,9 +175,8 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     }
 
     if (data instanceof Blob) {
-      const BlobModule = NativeModules.BlobModule;
-      invariant(BlobModule, 'Native module BlobModule is required for blob support');
-      BlobModule.sendBlob(data, this._socketId);
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      BlobManager.sendOverSocket(data, this._socketId);
       return;
     }
 
@@ -204,13 +202,17 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   }
 
   _close(code?: number, reason?: string): void {
-    if (Platform.OS === 'android') {
+    if (WebSocketModule.close.length === 3) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       const closeReason = typeof reason === 'string' ? reason : '';
       WebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
       WebSocketModule.close(this._socketId);
+    }
+
+    if (BlobManager.isAvailable && this._binaryType === 'blob') {
+      BlobManager.removeWebSocketHandler(this._socketId);
     }
   }
 
@@ -231,7 +233,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
             data = base64.toByteArray(ev.data).buffer;
             break;
           case 'blob':
-            data = Blob.create(ev.data);
+            data = BlobManager.createFromOptions(ev.data);
             break;
         }
         this.dispatchEvent(new WebSocketEvent('message', { data }));

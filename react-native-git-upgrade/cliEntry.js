@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -33,9 +31,10 @@ log.heading = 'git-upgrade';
 /**
  * Promisify the callback-based shelljs function exec
  * @param logOutput If true, log the stdout of the command.
+ * @param logger Custom logger to modify the output, invoked with the data and the stream.
  * @returns {Promise}
  */
-function exec(command, logOutput) {
+function exec(command, logOutput, logger = null) {
   return new Promise((resolve, reject) => {
     let stderr, stdout = '';
     const child = shell.exec(command, {async: true, silent: true});
@@ -43,13 +42,21 @@ function exec(command, logOutput) {
     child.stdout.on('data', data => {
       stdout += data;
       if (logOutput) {
-        process.stdout.write(data);
+        if (logger) {
+          logger(data, process.stdout);
+        } else {
+          process.stdout.write(data);
+        }
       }
     });
 
     child.stderr.on('data', data => {
       stderr += data;
-      process.stderr.write(data);
+      if (logger) {
+        logger(data, process.stderr);
+      } else {
+        process.stderr.write(data);
+      }
     });
 
     child.on('exit', (code, signal) => {
@@ -145,6 +152,28 @@ function configureGitEnv(tmpDir) {
    */
   process.env.GIT_DIR = path.resolve(tmpDir, '.gitrn');
   process.env.GIT_WORK_TREE = '.';
+}
+
+function copyCurrentGitIgnoreFile(tmpDir) {
+  /*
+   * The user may have added new files or directories in the .gitignore file.
+   * We need to keep those files ignored during the process, otherwise they
+   * will be deleted.
+   * See https://github.com/facebook/react-native/issues/12237
+   */
+  try {
+    const gitignorePath = path.resolve(process.cwd(), '.gitignore');
+    const repoExcludePath = path.resolve(tmpDir, process.env.GIT_DIR, 'info/exclude');
+    const content = fs.readFileSync(gitignorePath, 'utf8');
+    fs.appendFileSync(repoExcludePath, content);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      log.info('No .gitignore file found, this step is a no-op');
+      return;
+    }
+
+    throw err;
+  }
 }
 
 function generateTemplates(generatorDir, appName, verbose) {
@@ -277,8 +306,11 @@ async function run(requestedVersion, cliArgs) {
     log.info('Configure Git environment');
     configureGitEnv(tmpDir);
 
-    log.info('Init Git repository');
+    log.info('Init temporary Git repository');
     await exec('git init', verbose);
+
+    log.info('Save current .gitignore file');
+    copyCurrentGitIgnoreFile(tmpDir);
 
     log.info('Add all files to commit');
     await exec('git add .', verbose);
@@ -334,7 +366,13 @@ async function run(requestedVersion, cliArgs) {
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${patchPath}`, true);
+      await exec(`git apply --3way ${patchPath}`, true, (data, stream) => {
+        if (data.indexOf('conflicts') >= 0 || data.startsWith('U ')) {
+          stream.write(`\x1b[31m${data}\x1b[0m`);
+        } else {
+          stream.write(data);
+        }
+      });
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +

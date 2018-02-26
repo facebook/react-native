@@ -1,10 +1,8 @@
 /**
 * Copyright (c) 2015-present, Facebook, Inc.
-* All rights reserved.
 *
-* This source code is licensed under the BSD-style license found in the
-* LICENSE file in the root directory of this source tree. An additional grant
-* of patent rights can be found in the PATENTS file in the same directory.
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
 */
 'use strict';
 
@@ -15,8 +13,18 @@ const findXcodeProject = require('./findXcodeProject');
 const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
-  return `build/Build/Products/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+const getBuildPath = function (configuration = 'Debug', appName, isDevice) {
+  let device;
+
+  if (isDevice) {
+    device = 'iphoneos';
+  } else if (appName.toLowerCase().includes('tvos')) {
+    device = 'appletvsimulator';
+  } else {
+    device = 'iphonesimulator';
+  }
+
+  return `Build/Products/${configuration}-${device}/${appName}.app`;
 };
 const xcprettyAvailable = function() {
   try {
@@ -58,7 +66,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice) {
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose);
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose, args.port);
     } else {
       if (devices && devices.length > 0) {
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -261,6 +269,10 @@ module.exports = {
     desc: "Run on a connected device, e.g. Max's iPhone",
     cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
+  {
+    desc: 'Run on the AppleTV simulator',
+    cmd: 'react-native run-ios --simulator "Apple TV"  --scheme "helloworld-tvOS"',
+  }
   ],
   options: [{
     command: '--simulator [string]',

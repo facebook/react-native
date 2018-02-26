@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule StyleSheetTypes
  * @flow
@@ -24,33 +22,41 @@ export type LayoutStyle<+Dimension = DimensionValue> = {
   +display?: 'none' | 'flex',
   +width?: Dimension,
   +height?: Dimension,
-  +top?: Dimension,
   +bottom?: Dimension,
+  +end?: Dimension,
   +left?: Dimension,
   +right?: Dimension,
+  +start?: Dimension,
+  +top?: Dimension,
   +minWidth?: Dimension,
   +maxWidth?: Dimension,
   +minHeight?: Dimension,
   +maxHeight?: Dimension,
   +margin?: Dimension,
-  +marginVertical?: Dimension,
-  +marginHorizontal?: Dimension,
-  +marginTop?: Dimension,
   +marginBottom?: Dimension,
+  +marginEnd?: Dimension,
+  +marginHorizontal?: Dimension,
   +marginLeft?: Dimension,
   +marginRight?: Dimension,
+  +marginStart?: Dimension,
+  +marginTop?: Dimension,
+  +marginVertical?: Dimension,
   +padding?: Dimension,
-  +paddingVertical?: Dimension,
-  +paddingHorizontal?: Dimension,
-  +paddingTop?: Dimension,
   +paddingBottom?: Dimension,
+  +paddingEnd?: Dimension,
+  +paddingHorizontal?: Dimension,
   +paddingLeft?: Dimension,
   +paddingRight?: Dimension,
+  +paddingStart?: Dimension,
+  +paddingTop?: Dimension,
+  +paddingVertical?: Dimension,
   +borderWidth?: number,
-  +borderTopWidth?: number,
   +borderBottomWidth?: number,
+  +borderEndWidth?: number,
   +borderLeftWidth?: number,
   +borderRightWidth?: number,
+  +borderStartWidth?: number,
+  +borderTopWidth?: number,
   +position?: 'absolute' | 'relative',
   +flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
   +flexWrap?: 'wrap' | 'nowrap',
@@ -59,7 +65,8 @@ export type LayoutStyle<+Dimension = DimensionValue> = {
     | 'flex-end'
     | 'center'
     | 'space-between'
-    | 'space-around',
+    | 'space-around'
+    | 'space-evenly',
   +alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline',
   +alignSelf?:
     | 'auto'
@@ -124,21 +131,29 @@ export type ViewStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
   +backfaceVisibility?: 'visible' | 'hidden',
   +backgroundColor?: Color,
   +borderColor?: Color,
-  +borderTopColor?: Color,
-  +borderRightColor?: Color,
   +borderBottomColor?: Color,
+  +borderEndColor?: Color,
   +borderLeftColor?: Color,
+  +borderRightColor?: Color,
+  +borderStartColor?: Color,
+  +borderTopColor?: Color,
   +borderRadius?: number,
-  +borderTopLeftRadius?: number,
-  +borderTopRightRadius?: number,
+  +borderBottomEndRadius?: number,
   +borderBottomLeftRadius?: number,
   +borderBottomRightRadius?: number,
+  +borderBottomStartRadius?: number,
+  +borderTopEndRadius?: number,
+  +borderTopLeftRadius?: number,
+  +borderTopRightRadius?: number,
+  +borderTopStartRadius?: number,
   +borderStyle?: 'solid' | 'dotted' | 'dashed',
   +borderWidth?: number,
-  +borderTopWidth?: number,
-  +borderRightWidth?: number,
   +borderBottomWidth?: number,
+  +borderEndWidth?: number,
   +borderLeftWidth?: number,
+  +borderRightWidth?: number,
+  +borderStartWidth?: number,
+  +borderTopWidth?: number,
   +opacity?: number | AnimatedNode,
   +elevation?: number,
 };

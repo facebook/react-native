@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep")
 
-android_library(
+rn_android_library(
     name = "holder",
     srcs = glob(["*.java"]),
     exported_deps = [

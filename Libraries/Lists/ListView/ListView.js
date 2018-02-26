@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ListView
  * @flow
@@ -354,7 +352,7 @@ var ListView = createReactClass({
     return this._scrollComponent.getInnerViewNode();
   },
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
       visibleLength: null,
@@ -375,7 +373,7 @@ var ListView = createReactClass({
     });
   },
 
-  componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
     if (
       this.props.dataSource !== nextProps.dataSource ||
       this.props.initialListSize !== nextProps.initialListSize

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ScrollViewExample
@@ -81,11 +79,11 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        addtionalStyles: typeof StyleSheet,
+        additionalStyles: typeof StyleSheet,
       ) {
         let _scrollView: ScrollView;
         return (
-          <View style={addtionalStyles}>
+          <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
             <ScrollView
               ref={scrollView => {
@@ -131,7 +129,7 @@ if (Platform.OS === 'ios') {
   exports.examples.push({
     title: '<ScrollView> smooth bi-directional content loading\n',
     description:
-      'The `maintainPositionAtOrBeyondIndex` prop allows insertions to either end of the content ' +
+      'The `maintainVisibleContentPosition` prop allows insertions to either end of the content ' +
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function() {
       let itemCount = 6;
@@ -146,7 +144,10 @@ if (Platform.OS === 'ios') {
             <View>
               <ScrollView
                 automaticallyAdjustContentInsets={false}
-                maintainPositionAtOrBeyondIndex={1}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 1,
+                  autoscrollToTopThreshold: 10,
+                }}
                 style={styles.scrollView}>
                 <ActivityIndicator style={{height: 40}} />
                 {this.state.items.map(item =>
@@ -156,9 +157,12 @@ if (Platform.OS === 'ios') {
               <ScrollView
                 horizontal={true}
                 automaticallyAdjustContentInsets={false}
-                maintainPositionAtOrBeyondIndex={1}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 1,
+                  autoscrollToTopThreshold: 10,
+                }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                <ActivityIndicator style={{height: 40}} />
+                <ActivityIndicator style={{width: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}
