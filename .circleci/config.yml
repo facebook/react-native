@@ -366,30 +366,6 @@ jobs:
       - store_artifacts:
           path: ~/react-native/reports/junit
 
-   # Installs Cocoapods
-  install_cocoapods_objc_ios_test_app:
-    <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-ios-cocoapods-install
-
-  # Builds iOS test app - cocoapods flavour
-  build_objc_ios_test_app_cocoapods:
-    <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-ios-cocoapods-test-app
-
   # Runs unit tests on iOS devices - cocoapods flavour
   test_objc_ios_cocoapods:
     <<: *macos_defaults
@@ -399,7 +375,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native
-
+      - run: *build-objc-ios-cocoapods-install
+      - run: *build-objc-ios-cocoapods-test-app
       - run: *run-objc-ios-cocoapods-tests
 
       - store_test_results:
@@ -664,6 +641,13 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
+      # Test Cocoapods Integration
+      - test_objc_ios_cocoapods:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
 
   # Only runs on PRs
   analyze:
