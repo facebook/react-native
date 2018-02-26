@@ -196,6 +196,15 @@
   return _textStorage.string;
 }
 
+- (NSString *)accessibilityHint
+{
+  NSString *superAccessibilityHint = [super accessibilityHint];
+  if (superAccessibilityHint) {
+    return superAccessibilityHint;
+  }
+  return @"";
+}
+
 #pragma mark - Context Menu
 
 - (void)enableContextMenu
@@ -238,7 +247,7 @@
   if (_selectable && action == @selector(copy:)) {
     return YES;
   }
-  
+
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
 

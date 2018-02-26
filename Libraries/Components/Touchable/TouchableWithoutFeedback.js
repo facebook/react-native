@@ -75,6 +75,7 @@ const TouchableWithoutFeedback = ((createReactClass({
   propTypes: {
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
+    accessibilityHint: PropTypes.string,
     accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
@@ -238,6 +239,7 @@ const TouchableWithoutFeedback = ((createReactClass({
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,

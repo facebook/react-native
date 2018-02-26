@@ -22,6 +22,7 @@ ReactNativeViewAttributes.UIView = {
   accessibilityComponentType: true,
   accessibilityLiveRegion: true,
   accessibilityTraits: true,
+  accessibilityHint: true,
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
