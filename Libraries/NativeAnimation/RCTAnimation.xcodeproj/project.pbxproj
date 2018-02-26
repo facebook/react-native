@@ -34,7 +34,7 @@
 		192F698F1E823F4A008692C7 /* RCTPropsAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
 		192F69901E823F4A008692C7 /* RCTStyleAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
 		192F69911E823F4A008692C7 /* RCTTransformAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
-		192F69921E823F4A008692C7 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
+		192F69921E823F4A008692C7 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		192F69941E823F78008692C7 /* RCTAnimationUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
 		192F69951E823F78008692C7 /* RCTNativeAnimatedModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
 		192F69961E823F78008692C7 /* RCTNativeAnimatedNodesManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
@@ -77,7 +77,7 @@
 		1980B7291E80D1C4004DC789 /* RCTPropsAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
 		1980B72B1E80D1C4004DC789 /* RCTStyleAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
 		1980B72D1E80D1C4004DC789 /* RCTTransformAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
-		1980B72F1E80D1C4004DC789 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
+		1980B72F1E80D1C4004DC789 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1980B7321E80D259004DC789 /* RCTAnimationUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
 		1980B7351E80DD6F004DC789 /* RCTNativeAnimatedModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
 		1980B7361E80DD6F004DC789 /* RCTNativeAnimatedNodesManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
@@ -157,7 +157,7 @@
 		1980B7311E80D21C004DC789 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/RCTAnimation;
+			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
 				194804EF1E975DB500623005 /* RCTDecayAnimation.h in CopyFiles */,
@@ -204,7 +204,7 @@
 		13E501E31D07A6C9005F35D8 /* RCTStyleAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTStyleAnimatedNode.m; sourceTree = "<group>"; };
 		13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTTransformAnimatedNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTransformAnimatedNode.m; sourceTree = "<group>"; };
-		13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTValueAnimatedNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTValueAnimatedNode.h; sourceTree = "<group>"; };
 		13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTValueAnimatedNode.m; sourceTree = "<group>"; };
 		193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDiffClampAnimatedNode.m; sourceTree = "<group>"; };
