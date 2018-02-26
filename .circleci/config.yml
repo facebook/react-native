@@ -535,13 +535,13 @@ jobs:
       - run:
           name: Install Additional Dependencies
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+#            if [ -n "$CIRCLE_PR_NUMBER" ]; then
               yarn add github@0.2.4
               cd bots
               yarn install --non-interactive --cache-folder ~/.cache/yarn
-            else
-              echo "Skipping dependency installation."            
-            fi
+#            else
+#              echo "Skipping dependency installation."            
+#            fi
       - save-cache: *save-cache-analysis
 
       - run:
