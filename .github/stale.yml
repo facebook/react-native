@@ -1,7 +1,7 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 60
+daysUntilStale: 180
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 7
+daysUntilClose: 60
 # Issues with these labels will never be considered stale
 exemptLabels:
   - Good first issue
