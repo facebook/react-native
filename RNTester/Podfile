@@ -25,7 +25,8 @@ def shared_pods
     'RCTLinkingIOS',
     'RCTActionSheet',
     'RCTAnimation',
-    'CxxBridge'
+    'CxxBridge',
+    'RCTPushNotification'
     ]
 end
 
