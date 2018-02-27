@@ -113,24 +113,30 @@ function runOnSimulator(xcodeProject, args, scheme) {
       throw new Error(`Could not find ${args.simulator} simulator`);
     }
 
-    const simulatorFullName = formattedDeviceName(selectedSimulator);
-    console.log(`Launching ${simulatorFullName}...`);
-    try {
-      child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
-    } catch (e) {
-      // instruments always fail with 255 because it expects more arguments,
-      // but we want it to only launch the simulator
+    if (!selectedSimulator.booted) {
+      const simulatorFullName = formattedDeviceName(selectedSimulator);
+      console.log(`Booting ${simulatorFullName}...`);
+      try {
+        child_process.execFileSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+      } catch (e) {
+        throw new Error(
+`Could not boot ${args.simulator} simulator. Is there already a simulator running?
+Running multiple simulators is only supported from Xcode 9 and up.
+Try closing the simulator or run the command again without specifying a simulator.`
+        );
+      }
     }
-    resolve(selectedSimulator.udid);
+
+    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
+      .then((appName) => resolve(selectedSimulator.udid, appName));
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager, args.verbose, args.port))
-  .then((appName) => {
+  .then((udid, appName) => {
     if (!appName) {
       appName = scheme;
     }
     let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
-    child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+    child_process.spawnSync('xcrun', ['simctl', 'install', udid, appPath], {stdio: 'inherit'});
 
     const bundleID = child_process.execFileSync(
       '/usr/libexec/PlistBuddy',
@@ -139,7 +145,7 @@ function runOnSimulator(xcodeProject, args, scheme) {
     ).trim();
 
     console.log(`Launching ${bundleID}`);
-    child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+    child_process.spawnSync('xcrun', ['simctl', 'launch', udid, bundleID], {stdio: 'inherit'});
   });
 }
 
