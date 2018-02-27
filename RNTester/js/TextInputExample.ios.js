@@ -9,6 +9,8 @@
  */
 'use strict';
 
+const Button = require('Button');
+const InputAccessoryView = require('InputAccessoryView');
 var React = require('react');
 var ReactNative = require('react-native');
 var {
@@ -86,6 +88,35 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
         </Text>
+      </View>
+    );
+  }
+}
+
+class TextInputAccessoryViewExample extends React.Component<{}, *> {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Placeholder Text'};
+  }
+
+  render() {
+    const inputAccessoryViewID = 'inputAccessoryView1';
+    return (
+      <View>
+        <TextInput
+          style={styles.default}
+          inputAccessoryViewID={inputAccessoryViewID}
+          onChangeText={text => this.setState({text})}
+          value={this.state.text}
+        />
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={{backgroundColor: 'white'}}>
+            <Button
+              onPress={() => this.setState({text: 'Placeholder Text'})}
+              title="Reset Text"
+            />
+          </View>
+        </InputAccessoryView>
       </View>
     );
   }
@@ -483,6 +514,12 @@ exports.examples = [
     title: 'Live Re-Write (no spaces allowed)',
     render: function() {
       return <RewriteExampleInvalidCharacters />;
+    }
+  },
+  {
+    title: 'Keyboard Accessory View',
+    render: function() {
+      return <TextInputAccessoryViewExample />;
     }
   },
   {
