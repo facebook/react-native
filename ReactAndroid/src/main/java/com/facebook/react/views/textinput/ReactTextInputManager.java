@@ -306,6 +306,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  // Sets the letter spacing as an absolute point size.
+  // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
+  // correct display of spacing in placeholder (hint) text.
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0)
+  public void setLetterSpacing(ReactEditText view, float letterSpacing) {
+    view.setLetterSpacingPt(letterSpacing);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);

@@ -341,6 +341,36 @@ class TextExample extends React.Component<{}> {
             Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Letter Spacing">
+          <View>
+            <Text style={{letterSpacing: 0}}>
+              letterSpacing = 0
+            </Text>
+            <Text style={{letterSpacing: 2, marginTop: 5}}>
+              letterSpacing = 2
+            </Text>
+            <Text style={{letterSpacing: 9, marginTop: 5}}>
+              letterSpacing = 9
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 12, letterSpacing: 2, backgroundColor: 'fuchsia', marginTop: 5}}>
+                With size and background color
+              </Text>
+            </View>
+            <Text style={{letterSpacing: -1, marginTop: 5}}>
+              letterSpacing = -1
+            </Text>
+            <Text style={{letterSpacing: 3, backgroundColor: '#dddddd', marginTop: 5}}>
+              [letterSpacing = 3]
+              <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
+                [Nested letterSpacing = 0]
+              </Text>
+              <Text style={{letterSpacing: 6, backgroundColor: '#eeeeee'}}>
+                [Nested letterSpacing = 6]
+              </Text>
+            </Text>
+          </View>
+        </RNTesterBlock>
         <RNTesterBlock title="Empty Text">
           <Text />
         </RNTesterBlock>

@@ -568,6 +568,31 @@ exports.examples = [
     }
   },
   {
+    title: 'letterSpacing',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 0}]}
+            placeholder="letterSpacing = 0"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 2}]}
+            placeholder="letterSpacing = 2"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 9}]}
+            placeholder="letterSpacing = 9"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: -1}]}
+            placeholder="letterSpacing = -1"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Passwords',
     render: function() {
       return (
