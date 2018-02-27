@@ -1,5 +1,3 @@
 # rnpm
 /local-cli/rnpm
 /local-cli/server/middleware/heapCapture/bundle.js
-__fixture__/
-__tests__/
