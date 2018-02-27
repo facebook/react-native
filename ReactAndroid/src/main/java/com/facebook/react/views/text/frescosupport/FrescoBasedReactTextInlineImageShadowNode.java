@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text.frescosupport;
 
+import com.facebook.react.uimanager.LayoutShadowNode;
 import javax.annotation.Nullable;
 
 import java.util.Locale;
@@ -46,6 +47,21 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
+  }
+
+  private FrescoBasedReactTextInlineImageShadowNode(FrescoBasedReactTextInlineImageShadowNode node) {
+    super(node);
+    mHeaders = node.mHeaders; // mHeaders is immutable
+    mWidth = node.mWidth;
+    mHeight = node.mHeight;
+    mDraweeControllerBuilder = node.mDraweeControllerBuilder;
+    mCallerContext = node.mCallerContext;
+    mUri = node.mUri;
+  }
+
+  @Override
+  public FrescoBasedReactTextInlineImageShadowNode mutableCopy() {
+    return new FrescoBasedReactTextInlineImageShadowNode(this);
   }
 
   @ReactProp(name = "src")

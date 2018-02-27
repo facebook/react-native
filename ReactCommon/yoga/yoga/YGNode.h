@@ -7,7 +7,8 @@
 
 #pragma once
 #include <stdio.h>
-
+#include "YGLayout.h"
+#include "YGStyle.h"
 #include "Yoga-internal.h"
 
 struct YGNode {

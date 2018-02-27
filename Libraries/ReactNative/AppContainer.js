@@ -27,6 +27,7 @@ type Props = {|
    * suppresses an error when upgrading Flow's support for React. To see the
    * error delete this comment and run Flow. */
   children?: React.Children,
+  fabric?: boolean,
   rootTag: number,
   WrapperComponent?: ?React.ComponentType<*>,
 |};
@@ -90,7 +91,8 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let yellowBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
+      if (!global.__RCTProfileIsProfiling && !this.props.fabric) {
+        // TODO: Fabric doesn't support YellowBox.
         const YellowBox = require('YellowBox');
         yellowBox = <YellowBox />;
       }

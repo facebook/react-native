@@ -15,7 +15,7 @@ var Platform = require('Platform');
 
 /**
  * Vibration API
- * 
+ *
  * See https://facebook.github.io/react-native/docs/vibration.html
  */
 
@@ -57,7 +57,7 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
 var Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/vibration.html#vibrate
    */
   vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
@@ -84,7 +84,7 @@ var Vibration = {
   },
   /**
    * Stop vibration
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/vibration.html#cancel
    */
   cancel: function() {

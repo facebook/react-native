@@ -46,8 +46,8 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
   getTargets(dependencyProject).forEach(product => {
     var i;
     if (!product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(!targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (!targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
             target: targets[i].uuid
           });
@@ -56,8 +56,8 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
     }
 
     if (product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
             target: targets[i].uuid
           });

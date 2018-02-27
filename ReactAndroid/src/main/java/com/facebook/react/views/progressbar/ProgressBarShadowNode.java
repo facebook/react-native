@@ -33,12 +33,28 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
 
   private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;
 
-  private final SparseIntArray mHeight = new SparseIntArray();
-  private final SparseIntArray mWidth = new SparseIntArray();
-  private final Set<Integer> mMeasured = new HashSet<>();
+  private final SparseIntArray mHeight;
+  private final SparseIntArray mWidth;
+  private final Set<Integer> mMeasured;
 
   public ProgressBarShadowNode() {
+    mHeight = new SparseIntArray();
+    mWidth = new SparseIntArray();
+    mMeasured = new HashSet<>();
     setMeasureFunction(this);
+  }
+
+  public ProgressBarShadowNode(ProgressBarShadowNode node) {
+    super(node);
+    mWidth = node.mWidth.clone();
+    mHeight = node.mHeight.clone();
+    mMeasured = new HashSet<>(node.mMeasured);
+    setMeasureFunction(this);
+  }
+
+  @Override
+  public ProgressBarShadowNode mutableCopy() {
+    return new ProgressBarShadowNode(this);
   }
 
   public @Nullable String getStyle() {

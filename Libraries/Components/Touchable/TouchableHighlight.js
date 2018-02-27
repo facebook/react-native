@@ -176,6 +176,10 @@ const TouchableHighlight = createReactClass({
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
+    /**
+     * Handy for snapshot tests.
+     */
+    testOnly_pressed: PropTypes.bool,
   },
 
   mixins: [NativeMethodsMixin, Touchable.Mixin],
@@ -184,11 +188,23 @@ const TouchableHighlight = createReactClass({
 
   getInitialState: function() {
     this._isMounted = false;
-    return {
-      ...this.touchableGetInitialState(),
-      extraChildStyle: null,
-      extraUnderlayStyle: null,
-    };
+    if (this.props.testOnly_pressed) {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: {
+          opacity: this.props.activeOpacity,
+        },
+        extraUnderlayStyle: {
+          backgroundColor: this.props.underlayColor,
+        },
+      };
+    } else {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: null,
+        extraUnderlayStyle: null,
+      };
+    }
   },
 
   componentDidMount: function() {
@@ -280,6 +296,9 @@ const TouchableHighlight = createReactClass({
   _hideUnderlay: function() {
     clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
+    if (this.props.testOnly_pressed) {
+      return;
+    }
     if (this._hasPressHandler()) {
       this.setState({
         extraChildStyle: null,

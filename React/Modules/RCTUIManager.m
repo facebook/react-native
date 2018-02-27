@@ -923,21 +923,36 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __weak RCTUIManager *weakManager = self;
-  RCTExecuteOnMainQueue(^{
-    RCTUIManager *uiManager = weakManager;
-    if (!uiManager) {
+  __block UIView *preliminaryCreatedView = nil;
+
+  void (^createViewBlock)(void) = ^{
+    // Do nothing on the second run.
+    if (preliminaryCreatedView) {
       return;
     }
-    UIView *view = [componentData createViewWithTag:reactTag];
-    if (view) {
-      uiManager->_viewRegistry[reactTag] = view;
-    }
-  });
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    [componentData setProps:props forView:view];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+
+    if (preliminaryCreatedView) {
+      self->_viewRegistry[reactTag] = preliminaryCreatedView;
+    }
+  };
+
+  // We cannot guarantee that asynchronously scheduled block will be executed
+  // *before* a block is added to the regular mounting process (simply because
+  // mounting process can be managed externally while the main queue is
+  // locked).
+  // So, we positively dispatch it asynchronously and double check inside
+  // the regular mounting block.
+
+  RCTExecuteOnMainQueue(createViewBlock);
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    createViewBlock();
+
+    if (preliminaryCreatedView) {
+      [componentData setProps:props forView:preliminaryCreatedView];
+    }
   }];
 
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
@@ -1066,6 +1081,26 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     return;
   }
 
+  __weak typeof(self) weakSelf = self;
+
+   void (^mountingBlock)(void) = ^{
+    typeof(self) strongSelf = weakSelf;
+
+    @try {
+      for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
+        block(strongSelf, strongSelf->_viewRegistry);
+      }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
+    }
+  };
+
+  if ([self.observerCoordinator uiManager:self performMountingWithBlock:mountingBlock]) {
+    completion();
+    return;
+  }
+
   // Execute the previously queued UI blocks
   RCTProfileBeginFlowEvent();
   RCTExecuteOnMainQueue(^{
@@ -1073,14 +1108,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
       @"count": [@(previousPendingUIBlocks.count) stringValue],
     }));
-    @try {
-      for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
-        block(self, self->_viewRegistry);
-      }
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
-    }
+
+    mountingBlock();
+
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
     RCTExecuteOnUIManagerQueue(completion);

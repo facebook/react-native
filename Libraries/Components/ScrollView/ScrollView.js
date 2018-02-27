@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const Animated = require('Animated');
+const AnimatedImplementation = require('AnimatedImplementation');
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
@@ -497,7 +497,7 @@ const ScrollView = createReactClass({
 
   mixins: [ScrollResponder.Mixin],
 
-  _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
+  _scrollAnimatedValue: (new AnimatedImplementation.Value(0): AnimatedImplementation.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
   _headerLayoutYs: (new Map(): Map<string, number>),
@@ -509,7 +509,7 @@ const ScrollView = createReactClass({
   },
 
   UNSAFE_componentWillMount: function() {
-    this._scrollAnimatedValue = new Animated.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
+    this._scrollAnimatedValue = new AnimatedImplementation.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
     this._scrollAnimatedValue.setOffset(this.props.contentInset ? this.props.contentInset.top : 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
@@ -623,7 +623,7 @@ const ScrollView = createReactClass({
       this._scrollAnimatedValueAttachment.detach();
     }
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
-      this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
         this._scrollViewRef,
         'onScroll',
         [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]

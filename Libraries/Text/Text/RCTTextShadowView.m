@@ -355,9 +355,12 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
     MIN(RCTCeilPixelValue(size.height), maximumSize.height)
   };
 
+  // Adding epsilon value illuminates problems with converting values from
+  // `double` to `float`, and then rounding them to pixel grid in Yoga.
+  CGFloat epsilon = 0.001;
   return (YGSize){
-    RCTYogaFloatFromCoreGraphicsFloat(size.width),
-    RCTYogaFloatFromCoreGraphicsFloat(size.height)
+    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
   };
 }
 

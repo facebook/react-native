@@ -20,9 +20,9 @@ const RCTAsyncStorage = NativeModules.AsyncRocksDBStorage ||
 
 /**
  * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value
- * storage system that is global to the app.  It should be used instead of 
+ * storage system that is global to the app.  It should be used instead of
  * LocalStorage.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/asyncstorage.html
  */
 var AsyncStorage = {
@@ -32,7 +32,7 @@ var AsyncStorage = {
 
   /**
    * Fetches an item for a `key` and invokes a callback upon completion.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#getitem
    */
   getItem: function(
@@ -56,7 +56,7 @@ var AsyncStorage = {
 
   /**
    * Sets the value for a `key` and invokes a callback upon completion.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#setitem
    */
   setItem: function(
@@ -79,7 +79,7 @@ var AsyncStorage = {
 
   /**
    * Removes an item for a `key` and invokes a callback upon completion.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#removeitem
    */
   removeItem: function(
@@ -129,7 +129,7 @@ var AsyncStorage = {
    * Erases *all* `AsyncStorage` for all clients, libraries, etc. You probably
    * don't want to call this; use `removeItem` or `multiRemove` to clear only
    * your app's keys.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#clear
    */
   clear: function(callback?: ?(error: ?Error) => void): Promise {
@@ -173,9 +173,9 @@ var AsyncStorage = {
    * indicate which key caused the error.
    */
 
-  /** 
+  /**
    * Flushes any pending requests using a single batch call to get the data.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#flushgetrequests
    * */
   flushGetRequests: function(): void {
@@ -209,7 +209,7 @@ var AsyncStorage = {
    * This allows you to batch the fetching of items given an array of `key`
    * inputs. Your callback will be invoked with an array of corresponding
    * key-value pairs found.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#multiget
    */
   multiGet: function(
@@ -273,7 +273,7 @@ var AsyncStorage = {
 
   /**
    * Call this to batch the deletion of all keys in the `keys` array.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#multiremove
    */
   multiRemove: function(
@@ -296,9 +296,9 @@ var AsyncStorage = {
   /**
    * Batch operation to merge in existing and new values for a given set of
    * keys. This assumes that the values are stringified JSON.
-   * 
+   *
    * **NOTE**: This is not supported by all native implementations.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#multimerge
    */
   multiMerge: function(

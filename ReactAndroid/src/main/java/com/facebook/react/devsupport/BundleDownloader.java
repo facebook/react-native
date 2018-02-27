@@ -110,99 +110,136 @@ public class BundleDownloader {
             // .addHeader("Accept", "multipart/mixed")
             .build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
-    mDownloadBundleFromURLCall.enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        // ignore callback if call was cancelled
-        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
-          mDownloadBundleFromURLCall = null;
-          return;
-        }
-        mDownloadBundleFromURLCall = null;
-
-        callback.onFailure(DebugServerException.makeGeneric(
-            "Could not connect to development server.",
-            "URL: " + call.request().url().toString(),
-            e));
-      }
-
-      @Override
-      public void onResponse(Call call, final Response response) throws IOException {
-        // ignore callback if call was cancelled
-        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
-          mDownloadBundleFromURLCall = null;
-          return;
-        }
-        mDownloadBundleFromURLCall = null;
-
-        final String url = response.request().url().toString();
-
-        // Make sure the result is a multipart response and parse the boundary.
-        String contentType = response.header("content-type");
-        Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
-        Matcher match = regex.matcher(contentType);
-        if (match.find()) {
-          String boundary = match.group(1);
-          MultipartStreamReader bodyReader = new MultipartStreamReader(response.body().source(), boundary);
-          boolean completed = bodyReader.readAllParts(new MultipartStreamReader.ChunkListener() {
-            @Override
-            public void onChunkComplete(Map<String, String> headers, Buffer body, boolean isLastChunk) throws IOException {
-              // This will get executed for every chunk of the multipart response. The last chunk
-              // (isLastChunk = true) will be the JS bundle, the other ones will be progress events
-              // encoded as JSON.
-              if (isLastChunk) {
-                // The http status code for each separate chunk is in the X-Http-Status header.
-                int status = response.code();
-                if (headers.containsKey("X-Http-Status")) {
-                  status = Integer.parseInt(headers.get("X-Http-Status"));
-                }
-                processBundleResult(url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
-              } else {
-                if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
-                  return;
-                }
-
-                try {
-                  JSONObject progress = new JSONObject(body.readUtf8());
-                  String status = null;
-                  if (progress.has("status")) {
-                    status = progress.getString("status");
-                  }
-                  Integer done = null;
-                  if (progress.has("done")) {
-                    done = progress.getInt("done");
-                  }
-                  Integer total = null;
-                  if (progress.has("total")) {
-                    total = progress.getInt("total");
-                  }
-                  callback.onProgress(status, done, total);
-                } catch (JSONException e) {
-                  FLog.e(ReactConstants.TAG, "Error parsing progress JSON. " + e.toString());
-                }
-              }
+    mDownloadBundleFromURLCall.enqueue(
+        new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            // ignore callback if call was cancelled
+            if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+              mDownloadBundleFromURLCall = null;
+              return;
             }
-            @Override
-            public void onChunkProgress(Map<String, String> headers, long loaded, long total) throws IOException {
-              if ("application/javascript".equals(headers.get("Content-Type"))) {
-                callback.onProgress(
-                  "Downloading JavaScript bundle",
-                  (int) (loaded / 1024),
-                  (int) (total / 1024));
-              }
-            }
-          });
-          if (!completed) {
-            callback.onFailure(new DebugServerException(
-                "Error while reading multipart response.\n\nResponse code: " + response.code() + "\n\n" +
-                "URL: " + call.request().url().toString() + "\n\n"));
+            mDownloadBundleFromURLCall = null;
+
+            callback.onFailure(
+                DebugServerException.makeGeneric(
+                    "Could not connect to development server.",
+                    "URL: " + call.request().url().toString(),
+                    e));
           }
-        } else {
-          // In case the server doesn't support multipart/mixed responses, fallback to normal download.
-          processBundleResult(url, response.code(), response.headers(), Okio.buffer(response.body().source()), outputFile, bundleInfo, callback);
-        }
-      }
-    });
+
+          @Override
+          public void onResponse(Call call, final Response response) throws IOException {
+            // ignore callback if call was cancelled
+            if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+              mDownloadBundleFromURLCall = null;
+              return;
+            }
+            mDownloadBundleFromURLCall = null;
+
+            final String url = response.request().url().toString();
+
+            // Make sure the result is a multipart response and parse the boundary.
+            String contentType = response.header("content-type");
+            Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
+            Matcher match = regex.matcher(contentType);
+            try (Response r = response) {
+              if (match.find()) {
+                processMultipartResponse(
+                  url, r, match.group(1), outputFile, bundleInfo, callback);
+              } else {
+                // In case the server doesn't support multipart/mixed responses, fallback to normal
+                // download.
+                processBundleResult(
+                  url,
+                  r.code(),
+                  r.headers(),
+                  Okio.buffer(r.body().source()),
+                  outputFile,
+                  bundleInfo,
+                  callback);
+              }
+            }
+          }
+        });
+  }
+
+  private void processMultipartResponse(
+      final String url,
+      final Response response,
+      String boundary,
+      final File outputFile,
+      @Nullable final BundleInfo bundleInfo,
+      final DevBundleDownloadListener callback)
+      throws IOException {
+
+    MultipartStreamReader bodyReader =
+        new MultipartStreamReader(response.body().source(), boundary);
+    boolean completed =
+        bodyReader.readAllParts(
+            new MultipartStreamReader.ChunkListener() {
+              @Override
+              public void onChunkComplete(
+                  Map<String, String> headers, Buffer body, boolean isLastChunk)
+                  throws IOException {
+                // This will get executed for every chunk of the multipart response. The last chunk
+                // (isLastChunk = true) will be the JS bundle, the other ones will be progress
+                // events
+                // encoded as JSON.
+                if (isLastChunk) {
+                  // The http status code for each separate chunk is in the X-Http-Status header.
+                  int status = response.code();
+                  if (headers.containsKey("X-Http-Status")) {
+                    status = Integer.parseInt(headers.get("X-Http-Status"));
+                  }
+                  processBundleResult(
+                      url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
+                } else {
+                  if (!headers.containsKey("Content-Type")
+                      || !headers.get("Content-Type").equals("application/json")) {
+                    return;
+                  }
+
+                  try {
+                    JSONObject progress = new JSONObject(body.readUtf8());
+                    String status = null;
+                    if (progress.has("status")) {
+                      status = progress.getString("status");
+                    }
+                    Integer done = null;
+                    if (progress.has("done")) {
+                      done = progress.getInt("done");
+                    }
+                    Integer total = null;
+                    if (progress.has("total")) {
+                      total = progress.getInt("total");
+                    }
+                    callback.onProgress(status, done, total);
+                  } catch (JSONException e) {
+                    FLog.e(ReactConstants.TAG, "Error parsing progress JSON. " + e.toString());
+                  }
+                }
+              }
+
+              @Override
+              public void onChunkProgress(Map<String, String> headers, long loaded, long total)
+                  throws IOException {
+                if ("application/javascript".equals(headers.get("Content-Type"))) {
+                  callback.onProgress(
+                      "Downloading JavaScript bundle", (int) (loaded / 1024), (int) (total / 1024));
+                }
+              }
+            });
+    if (!completed) {
+      callback.onFailure(
+          new DebugServerException(
+              "Error while reading multipart response.\n\nResponse code: "
+                  + response.code()
+                  + "\n\n"
+                  + "URL: "
+                  + url.toString()
+                  + "\n\n"));
+    }
   }
 
   private void processBundleResult(

@@ -13,6 +13,7 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const invariant = require('fbjs/lib/invariant');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -46,7 +47,17 @@ const DatePickerIOS = createReactClass({
     /**
      * The currently selected date.
      */
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.instanceOf(Date),
+
+    /**
+     * Provides an initial value that will change when the user starts selecting
+     * a date. It is useful for simple use-cases where you do not want to deal
+     * with listening to events and updating the date prop to keep the
+     * controlled state in sync. The controlled state has known bugs which
+     * causes it to go out of sync with native. The initialDate prop is intended
+     * to allow you to have native be source of truth.
+     */
+    initialDate: PropTypes.instanceOf(Date),
 
     /**
      * Date change handler.
@@ -102,6 +113,17 @@ const DatePickerIOS = createReactClass({
     };
   },
 
+  componentDidUpdate: function() {
+    if (this.props.date) {
+      const propsTimeStamp = this.props.date.getTime();
+      if (this._picker) {
+        this._picker.setNativeProps({
+          date: propsTimeStamp,
+        });
+      }
+    }
+  },
+
   _onChange: function(event: Event) {
     const nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
@@ -109,27 +131,20 @@ const DatePickerIOS = createReactClass({
     );
     // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
-
-    // We expect the onChange* handlers to be in charge of updating our `date`
-    // prop. That way they can also disallow/undo/mutate the selection of
-    // certain values. In other words, the embedder of this component should
-    // be the source of truth, not the native component.
-    const propsTimeStamp = this.props.date.getTime();
-    if (this._picker && nativeTimeStamp !== propsTimeStamp) {
-      this._picker.setNativeProps({
-        date: propsTimeStamp,
-      });
-    }
   },
 
   render: function() {
     const props = this.props;
+    invariant(
+      props.date || props.initialDate,
+      'A selected date or initial date should be specified.',
+    );
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
           ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
+          date={props.date ? props.date.getTime() : props.initialDate ? props.initialDate.getTime() : undefined}
           locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined

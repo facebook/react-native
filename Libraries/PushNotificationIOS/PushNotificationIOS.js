@@ -102,7 +102,7 @@ class PushNotificationIOS {
 
   /**
    * Cancels all scheduled localNotifications.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#cancelalllocalnotifications
    */
   static cancelAllLocalNotifications() {
@@ -111,7 +111,7 @@ class PushNotificationIOS {
 
   /**
    * Remove all delivered notifications from Notification Center.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removealldeliverednotifications
    */
   static removeAllDeliveredNotifications(): void {
@@ -138,7 +138,7 @@ class PushNotificationIOS {
 
   /**
    * Sets the badge number for the app icon on the home screen.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#setapplicationiconbadgenumber
    */
   static setApplicationIconBadgeNumber(number: number) {
@@ -147,7 +147,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the current badge number for the app icon on the home screen.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getapplicationiconbadgenumber
    */
   static getApplicationIconBadgeNumber(callback: Function) {
@@ -165,7 +165,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the local notifications that are currently scheduled.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getscheduledlocalnotifications
    */
   static getScheduledLocalNotifications(callback: Function) {
@@ -219,7 +219,7 @@ class PushNotificationIOS {
   /**
    * Removes the event listener. Do this in `componentWillUnmount` to prevent
    * memory leaks.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removeeventlistener
    */
   static removeEventListener(type: PushNotificationEventName, handler: Function) {
@@ -240,7 +240,7 @@ class PushNotificationIOS {
    * dialog box. By default, it will request all notification permissions, but
    * a subset of these can be requested by passing a map of requested
    * permissions.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#requestpermissions
    */
   static requestPermissions(permissions?: {
@@ -281,7 +281,7 @@ class PushNotificationIOS {
   /**
    * See what push permissions are currently enabled. `callback` will be
    * invoked with a `permissions` object.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#checkpermissions
    */
   static checkPermissions(callback: Function) {
@@ -295,7 +295,7 @@ class PushNotificationIOS {
   /**
    * This method returns a promise that resolves to either the notification
    * object if the app was launched by a push notification, or `null` otherwise.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getinitialnotification
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
@@ -308,7 +308,7 @@ class PushNotificationIOS {
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
    * `getInitialNotification` is sufficient
-   * 
+   *
    */
   constructor(nativeNotif: Object) {
     this._data = {};
@@ -347,7 +347,7 @@ class PushNotificationIOS {
   /**
    * This method is available for remote notifications that have been received via:
    * `application:didReceiveRemoteNotification:fetchCompletionHandler:`
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#finish
    */
   finish(fetchResult: string) {
@@ -369,7 +369,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the sound string from the `aps` object
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getsound
    */
   getSound(): ?string {
@@ -378,7 +378,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the category string from the `aps` object
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getcategory
    */
   getCategory(): ?string {
@@ -387,7 +387,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the notification's main message from the `aps` object
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getalert
    */
   getAlert(): ?string | ?Object {
@@ -396,7 +396,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the content-available number from the `aps` object
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getcontentavailable
    */
   getContentAvailable(): ContentAvailable {
@@ -405,7 +405,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the badge count number from the `aps` object
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getbadgecount
    */
   getBadgeCount(): ?number {
@@ -414,7 +414,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the data object on the notif
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getdata
    */
   getData(): ?Object {
@@ -423,7 +423,7 @@ class PushNotificationIOS {
 
   /**
    * Gets the thread ID on the notif
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getthreadid
    */
   getThreadID(): ?string {

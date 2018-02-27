@@ -156,6 +156,7 @@ public class ReactInstanceManager {
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mDelayViewManagerClassLoadsEnabled;
   private final @Nullable BridgeListener mBridgeListener;
+  private List<ViewManager> mViewManagers;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -774,18 +775,23 @@ public class ReactInstanceManager {
   /**
    * Uses configured {@link ReactPackage} instances to create all view managers.
    */
-  public List<ViewManager> createAllViewManagers(
+  public List<ViewManager> getOrCreateViewManagers(
       ReactApplicationContext catalystApplicationContext) {
     ReactMarker.logMarker(CREATE_VIEW_MANAGERS_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
     try {
-      synchronized (mPackages) {
-        List<ViewManager> allViewManagers = new ArrayList<>();
-        for (ReactPackage reactPackage : mPackages) {
-          allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+      if (mViewManagers == null) {
+        synchronized (mPackages) {
+          if (mViewManagers == null) {
+            mViewManagers = new ArrayList<>();
+            for (ReactPackage reactPackage : mPackages) {
+              mViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+            }
+            return mViewManagers;
+          }
         }
-        return allViewManagers;
       }
+      return mViewManagers;
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_VIEW_MANAGERS_END);

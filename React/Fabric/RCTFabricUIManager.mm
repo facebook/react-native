@@ -60,6 +60,11 @@
 - (void)appendChildToSet:(NSMutableArray<RCTShadowView *> *)childSet
                childNode:(RCTShadowView *)childNode
 {
+  if (!childNode) {
+    // TODO: until this class is fully implemented, we may get nil from JS.
+    return;
+  }
+
   [childSet addObject:childNode];
 }
 

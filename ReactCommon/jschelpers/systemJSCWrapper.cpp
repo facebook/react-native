@@ -119,6 +119,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSValueToObject = JSValueToObject,
       .JSValueToStringCopy = JSValueToStringCopy,
       .JSValueUnprotect = JSValueUnprotect,
+      .JSValueIsNull = JSValueIsNull,
 
       .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
       .JSPokeSamplingProfiler =
