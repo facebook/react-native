@@ -189,7 +189,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'TouchableExample',
     module: require('./TouchableExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TransparentHitTestExample',
