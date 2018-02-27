@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
+@property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
