@@ -264,7 +264,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    Request.Builder requestBuilder = new Request.Builder().url(url);
+    Request.Builder requestBuilder;
+    try {
+      requestBuilder = new Request.Builder().url(url);
+    } catch (Exception e) {
+      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), null);
+      return;
+    }
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);

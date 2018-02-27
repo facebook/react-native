@@ -594,6 +594,13 @@ const TextInput = createReactClass({
      * If `true`, contextMenuHidden is hidden. The default value is `false`.
      */
     contextMenuHidden: PropTypes.bool,
+    /**
+     * An optional identifier which links a custom InputAccessoryView to
+     * this text input. The InputAccessoryView is rendered above the
+     * keyboard when this text input is focused.
+     * @platform ios
+     */
+    inputAccessoryViewID: PropTypes.string,
   },
   getDefaultProps(): Object {
     return {

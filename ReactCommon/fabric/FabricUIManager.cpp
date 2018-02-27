@@ -38,9 +38,7 @@ ShadowNodeSetRef FabricUIManager::createChildSet(int rootTag) {
 void FabricUIManager::appendChildToSet(const ShadowNodeSetRef &childSet, const ShadowNodeRef &childNode) {
 }
 
-void FabricUIManager::completeRoot(int rootTag) {
+void FabricUIManager::completeRoot(int rootTag, const ShadowNodeSetRef &childSet) {
 }
 
 }}
-
-

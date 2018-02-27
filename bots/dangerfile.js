@@ -45,7 +45,7 @@ if (!includesTestPlan) {
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
 const releaseNotesRegex = /\[(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\]\s*?\[(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
-const includesReleaseNotes = danger.github.pr.body.toLowerCase().includes('release notes');
+const includesReleaseNotes = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('release notes');
 const correctlyFormattedReleaseNotes = releaseNotesRegex.test(danger.github.pr.body);
 const releaseNotesCaptureGroups = releaseNotesRegex.exec(danger.github.pr.body);
 
@@ -86,22 +86,12 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   warn(`${title} - <i>${idea}</i>`);
 
   // markdown('@facebook-github-bot large-pr');
-}
-if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
+} else if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
   const title = ':exclamation: Big PR';
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.git.modified_files + danger.git.added_files + danger.git.deleted_files} files.`;
   warn(`${title} - <i>${idea}</i>`);
 
   // markdown('@facebook-github-bot large-pr');
-}
-
-// Warns if the bots whitelist file is updated.
-const issueCommandsFileModified = includes(danger.git.modified_files, 'bots/IssueCommands.txt');
-if (issueCommandsFileModified) {
-  const title = ':exclamation: Bots';
-  const idea = 'This PR appears to modify the list of people that may issue ' +
-  'commands to the GitHub bot.';
-  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.

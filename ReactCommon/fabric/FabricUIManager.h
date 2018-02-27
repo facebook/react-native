@@ -27,7 +27,7 @@ public:
   void appendChild(const ShadowNodeRef &parentNode, const ShadowNodeRef &childNode);
   ShadowNodeSetRef createChildSet(int rootTag);
   void appendChildToSet(const ShadowNodeSetRef &childSet, const ShadowNodeRef &childNode);
-  void completeRoot(int rootTag);
+  void completeRoot(int rootTag, const ShadowNodeSetRef &childSet);
 };
 
 }}

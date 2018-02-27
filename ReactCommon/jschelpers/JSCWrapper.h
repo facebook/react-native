@@ -139,6 +139,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToObject);
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
+  JSC_WRAPPER_METHOD(JSValueIsNull);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);
