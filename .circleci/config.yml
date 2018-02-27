@@ -190,7 +190,7 @@ aliases:
       if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then	
         echo "JavaScript bundle missing, cannot run instrumentation tests. Verify build-js-bundle step completed successfully."; exit 1;
       fi
-      source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+      source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
   
   - &collect-android-test-results
     name: Collect Test Results
