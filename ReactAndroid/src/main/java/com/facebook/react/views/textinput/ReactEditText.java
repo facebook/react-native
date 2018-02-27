@@ -172,14 +172,16 @@ public class ReactEditText extends EditText {
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
-    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
-        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
+    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+    if (inputConnection != null) {
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+    }
 
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return inputConnectionWrapper;
+    return inputConnection;
   }
 
   @Override
