@@ -86,8 +86,7 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   warn(`${title} - <i>${idea}</i>`);
 
   // markdown('@facebook-github-bot large-pr');
-}
-if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
+} else if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
   const title = ':exclamation: Big PR';
   const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.git.modified_files + danger.git.added_files + danger.git.deleted_files} files.`;
   warn(`${title} - <i>${idea}</i>`);
