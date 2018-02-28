@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 import static java.lang.System.arraycopy;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -126,6 +127,14 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopy() {
     return new ReactShadowNodeImpl(this);
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+    ReactShadowNodeImpl copy = mutableCopy();
+    copy.mNativeChildren = null;
+    copy.mChildren = null;
+    return copy;
   }
 
   /**
@@ -482,14 +491,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     ReactShadowNodeImpl removed = mNativeChildren.remove(i);
     removed.mNativeParent = null;
     return removed;
-  }
-
-  @Override
-  public final void removeAllChildren() {
-    removeAllNativeChildren();
-    if (mChildren != null) {
-      mChildren.clear();
-    }
   }
 
   @Override
