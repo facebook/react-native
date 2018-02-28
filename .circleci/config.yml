@@ -263,6 +263,7 @@ macos_defaults: &macos_defaults
 version: 2
 jobs:
 
+  # Set up a Node environment for downstream jobs
   checkout_code:
     <<: *js_defaults
     steps:
@@ -572,7 +573,8 @@ workflows:
 
   tests:
     jobs:
-      # Checkout repo
+
+      # Checkout repo and run Yarn
       - checkout_code:
           filters: *filter-ignore-gh-pages
 
@@ -626,9 +628,14 @@ workflows:
       # Checkout repo and run Yarn
       - checkout_code:
           filters: *filter-ignore-master-stable
+<<<<<<< HEAD
          
+=======
+          
+>>>>>>> merge checkout/yarn
       # Run code checks
       - analyze_pr:            
+          filters: *filter-ignore-master-stable
           requires:            
             - checkout_code
 
