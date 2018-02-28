@@ -55,6 +55,7 @@ exports.examples = [
             style={styles.wrapper}
             activeOpacity={1}
             animationVelocity={0}
+            tvParallaxProperties={{pressMagnification: 1.3, pressDuration: 0.6}}
             underlayColor="rgb(210, 230, 255)"
             onPress={() => console.log('custom THW text - highlight')}>
             <View style={styles.wrapperCustom}>

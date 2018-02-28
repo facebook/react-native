@@ -72,6 +72,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   T mutableCopy();
 
+  T mutableCopyWithNewChildren();
+
   String getViewClass();
 
   boolean hasUpdates();
@@ -163,8 +165,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void addNativeChildAt(T child, int nativeIndex);
 
   T removeNativeChildAt(int i);
-
-  void removeAllChildren();
 
   void removeAllNativeChildren();
 

@@ -55,6 +55,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
       name: 'iPhone 6',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -145,6 +146,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB',
       name: 'iPhone 5',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -216,6 +218,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB',
       name: 'iPhone 5',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -261,11 +264,12 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
       name: 'iPhone 6s',
+      booted: true,
       version: 'iOS 9.2'
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined', () => {
+  it('should return the defined simulator in list even if another device is booted', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -304,8 +308,9 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6'
     )).toEqual({
-      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
-      name: 'iPhone 6s',
+      udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
+      name: 'iPhone 6',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -377,11 +382,12 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '3A409DC5-5188-42A6-8598-3AA6F34607A5',
       name: 'iPhone 7',
+      booted: true,
       version: 'iOS 10.0'
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined (multi ios versions)', () => {
+  it('should return the defined simulator in list even if another device is booted (multi ios versions)', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -446,9 +452,10 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6s'
     )).toEqual({
-      udid: '3A409DC5-5188-42A6-8598-3AA6F34607A5',
-      name: 'iPhone 7',
-      version: 'iOS 10.0'
+      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
+      name: 'iPhone 6s',
+      booted: false,
+      version: 'iOS 9.2'
     });
   });
 
@@ -481,6 +488,7 @@ describe('findMatchingSimulator', () => {
   )).toEqual({
     udid: '816C30EA-38EA-41AC-BFDA-96FB632D522E',
     name: 'Apple TV',
+    booted: true,
     version: 'tvOS 11.2'
   });
   });

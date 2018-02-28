@@ -2,6 +2,7 @@
 
 package com.facebook.react.fabric;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -48,7 +49,7 @@ public class FabricUIManagerModule implements UIModule {
     ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
     node.setRootNode(getRootNode(rootTag));
     node.setReactTag(reactTag);
-    ReactStylesDiffMap styles = updateProps(props, node);
+    ReactStylesDiffMap styles = updateProps(node, props);
 
     return node;
   }
@@ -57,7 +58,7 @@ public class FabricUIManagerModule implements UIModule {
     return mRootShadowNodeRegistry.getNode(rootTag);
   }
 
-  private ReactStylesDiffMap updateProps(ReadableNativeMap props, ReactShadowNode node) {
+  private ReactStylesDiffMap updateProps(ReactShadowNode node, @Nullable ReadableNativeMap props) {
     ReactStylesDiffMap styles = null;
     if (props != null) {
       styles = new ReactStylesDiffMap(props);
@@ -73,7 +74,9 @@ public class FabricUIManagerModule implements UIModule {
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
-    return node.mutableCopy();
+    ReactShadowNode clone = node.mutableCopy();
+    assertReactShadowNodeCopy(node, clone);
+    return clone;
   }
 
   /**
@@ -83,8 +86,8 @@ public class FabricUIManagerModule implements UIModule {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
-    ReactShadowNode clone = cloneNode(node);
-    clone.removeAllChildren();
+    ReactShadowNode clone = node.mutableCopyWithNewChildren();
+    assertReactShadowNodeCopy(node, clone);
     return clone;
   }
 
@@ -94,9 +97,12 @@ public class FabricUIManagerModule implements UIModule {
    * props will be overridden with the {@link ReadableMap} received by parameter.
    */
   @Nullable
-  public ReactShadowNode cloneNodeWithNewProps(ReactShadowNode node, ReadableNativeMap newProps) {
-    ReactShadowNode clone = cloneNode(node);
-    updateProps(newProps, clone);
+  public ReactShadowNode cloneNodeWithNewProps(
+      ReactShadowNode node,
+      @Nullable ReadableNativeMap newProps) {
+    ReactShadowNode clone = node.mutableCopy();
+    updateProps(clone, newProps);
+    assertReactShadowNodeCopy(node, clone);
     return clone;
   }
 
@@ -110,9 +116,16 @@ public class FabricUIManagerModule implements UIModule {
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node,
       ReadableNativeMap newProps) {
-    ReactShadowNode clone = cloneNodeWithNewChildren(node);
-    updateProps(newProps, clone);
+    ReactShadowNode clone = node.mutableCopyWithNewChildren();
+    updateProps(clone, newProps);
+    assertReactShadowNodeCopy(node, clone);
     return clone;
+  }
+
+  private void assertReactShadowNodeCopy(ReactShadowNode source, ReactShadowNode target) {
+    Assertions.assertCondition(source.getClass().equals(target.getClass()),
+      "Found " + target.getClass() + " class when expecting: " +   source.getClass() +
+        ". Check that " + source.getClass() + " implements the mutableCopy() method correctly.");
   }
 
   /**
