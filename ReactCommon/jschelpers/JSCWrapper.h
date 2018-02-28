@@ -52,9 +52,9 @@ JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
 #endif
 
 #if defined(__APPLE__)
-#import <objc/objc.h>
-#import <JavaScriptCore/JSStringRefCF.h>
-#import <string>
+#include <objc/objc.h>
+#include <JavaScriptCore/JSStringRefCF.h>
+#include <string>
 
 /**
  * JSNoBytecodeFileFormatVersion
