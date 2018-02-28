@@ -211,27 +211,27 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
 
   - &build-objc-ios-test-app
-    name: Build Objective-C iOS Test App
+    name: Build iOS Test App
     command: ./scripts/objc-test-ios.sh
   
   - &run-objc-ios-tests
-    name: Objective-C iOS Test Suite
+    name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
 
   - &build-objc-tvos-test-app
-    name: Build Objective-C tvOS Test App
+    name: Build tvOS Test App
     command: ./scripts/objc-test-tvos.sh
 
   - &run-objc-tvos-tests
-    name: Objective-C tvOS Test Suite
+    name: tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh test
 
   - &run-objc-ios-e2e-tests
-    name: Objective-C iOS End-to-End Test Suite
+    name: iOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: Objective-C tvOS End-to-End Test Suite
+    name: tvOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
 defaults: &defaults
@@ -263,7 +263,6 @@ macos_defaults: &macos_defaults
 version: 2
 jobs:
 
-  # Set up a Node environment for downstream jobs
   checkout_code:
     <<: *js_defaults
     steps:
@@ -332,7 +331,7 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Builds iOS test app
-  build_objc_ios_test_app:
+  build_ios_test_app:
     <<: *macos_defaults
     dependencies:
       pre:
@@ -344,14 +343,13 @@ jobs:
       - run: *build-objc-ios-test-app
 
   # Runs unit tests on iOS devices
-  test_objc_ios:
+  test_ios:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
+
+      - run: xcrun instruments -w "iPhone 5s (11.1)" || true
 
       - run: *run-objc-ios-tests
 
@@ -361,11 +359,8 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Builds tvOS test app
-  build_objc_tvos_test_app:
+  build_tvos_test_app:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -373,14 +368,13 @@ jobs:
       - run: *build-objc-tvos-test-app
 
   # Runs unit tests on tvOS devices
-  test_objc_tvos:
+  test_tvos:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
+
+      - run: xcrun instruments -w "Apple TV 1080p (11.1)" || true
 
       - run: brew install watchman
       - run: *run-objc-tvos-tests
@@ -391,7 +385,7 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Runs end to end tests
-  test_objc_ios_e2e:
+  test_ios_e2e:
     <<: *macos_defaults
     dependencies:
       pre:
@@ -578,8 +572,7 @@ workflows:
 
   tests:
     jobs:
-
-      # Checkout repo and run Yarn
+      # Checkout repo
       - checkout_code:
           filters: *filter-ignore-gh-pages
 
@@ -606,23 +599,23 @@ workflows:
             - checkout_code
 
       # Build iOS & tvOS test apps
-      - build_objc_ios_test_app:
+      - build_ios_test_app:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-      - build_objc_tvos_test_app:
+      - build_tvos_test_app:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
 
       # Test tvOS
-      - test_objc_tvos:
+      - test_tvos:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
 
       # End-to-end tests
-      - test_objc_ios_e2e:
+      - test_ios_e2e:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -633,10 +626,9 @@ workflows:
       # Checkout repo and run Yarn
       - checkout_code:
           filters: *filter-ignore-master-stable
-          
+         
       # Run code checks
       - analyze_pr:            
-          filters: *filter-ignore-master-stable
           requires:            
             - checkout_code
 
@@ -665,7 +657,7 @@ workflows:
   #     # The following were DISABLED because they have not run since 
   #     # the migration from Travis, and they have broken since then,
   #     # Test iOS & tvOS
-  #     - test_objc_ios:
+  #     - test_ios:
   #         filters: *filter-ignore-gh-pages
   #         requires:
   #           - checkout_code
