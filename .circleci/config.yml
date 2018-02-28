@@ -382,6 +382,7 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
+      - run: brew install watchman
       - run: *run-objc-tvos-tests
 
       - store_test_results:
