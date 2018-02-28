@@ -7,6 +7,7 @@
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/picker.md" target="_blank">Edit</a><h1>Picker</h1></header><article><div><span><p>Renders the native picker component on iOS and Android. Example:</p>
 <pre><code class="hljs">&lt;Picker
   selectedValue={this.state.language}
+  style={{ height: 50, width: 100 }}
   onValueChange={(itemValue, itemIndex) =&gt; this.setState({language: itemValue})}&gt;
   &lt;Picker.Item label=&quot;Java&quot; value=&quot;java&quot; /&gt;
   &lt;Picker.Item label=&quot;JavaScript&quot; value=&quot;js&quot; /&gt;
