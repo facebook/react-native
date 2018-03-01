@@ -52,6 +52,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric
 {
   RCTAssertMainQueue();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
@@ -65,6 +66,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   if (self = [super initWithFrame:CGRectZero]) {
     self.backgroundColor = [UIColor whiteColor];
 
+    _fabric = fabric;
     _bridge = bridge;
     _moduleName = moduleName;
     _appProperties = [initialProperties copy];
@@ -106,16 +108,32 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   return self;
 }
 
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+{
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
+}
+
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
+                           fabric:(BOOL)fabric
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
                                             moduleProvider:nil
                                              launchOptions:launchOptions];
 
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:fabric];
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
+                    launchOptions:(NSDictionary *)launchOptions
+{
+  return [self initWithBundleURL:bundleURL moduleName:moduleName initialProperties:initialProperties launchOptions:launchOptions fabric:NO];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -271,7 +289,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
                                                   reactTag:self.reactTag
-                                            sizeFlexiblity:_sizeFlexibility];
+                                            sizeFlexiblity:_sizeFlexibility
+                                                    fabric:self.fabric];
   [self runApplication:bridge];
 
   _contentView.passThroughTouches = _passThroughTouches;

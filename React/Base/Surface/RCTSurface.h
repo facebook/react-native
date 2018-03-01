@@ -42,9 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
 
+@property (nonatomic, assign, readonly) BOOL fabric;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties;
 
 #pragma mark - Dealing with UIView representation, the Main thread only access
 

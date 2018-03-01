@@ -57,13 +57,16 @@
   atomic_bool _waitingForMountingStageOnMainQueue;
 }
 
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric
 {
   RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
 
   if (self = [super init]) {
+    _fabric = fabric;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     _moduleName = moduleName;
@@ -100,6 +103,13 @@
   }
 
   return self;
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+{
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
 }
 
 - (void)dealloc

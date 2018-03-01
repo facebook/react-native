@@ -21,8 +21,10 @@
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
                sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
+                       fabric:(BOOL)fabric
 {
   if ((self = [super initWithFrame:frame])) {
+    _fabric = fabric;
     _bridge = bridge;
     self.reactTag = reactTag;
     _sizeFlexibility = sizeFlexibility;
@@ -31,6 +33,14 @@
     [_bridge.uiManager registerRootView:self];
   }
   return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                     reactTag:(NSNumber *)reactTag
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  return [self initWithFrame:frame bridge:bridge reactTag:reactTag sizeFlexiblity:sizeFlexibility fabric:NO];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
@@ -98,10 +108,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry"
-                    method:@"unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]
-                completion:NULL];
+
+    if (_fabric) {
+      [_bridge enqueueJSCall:@"ReactFabric"
+                      method:@"unmountComponentAtNodeAndRemoveContainer"
+                        args:@[self.reactTag]
+                  completion:NULL];
+    } else {
+      [_bridge enqueueJSCall:@"AppRegistry"
+                      method:@"unmountApplicationComponentAtRootTag"
+                        args:@[self.reactTag]
+                  completion:NULL];
+    }
   }
 }
 
