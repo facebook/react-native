@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -32,7 +30,7 @@ RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
  * This notification fires when the bridge failed to load the JS bundle. The
- * `error` key can be used to determine the error that occured.
+ * `error` key can be used to determine the error that occurred.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
@@ -139,6 +137,13 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
                             error:(NSError **)error;
 
 /**
+ * This method registers the file path of an additional JS segment by its ID.
+ *
+ * @experimental
+ */
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path;
+
+/**
  * Retrieve a bridge module instance by name or class. Note that modules are
  * lazily instantiated, so calling these methods for the first time with a given
  * module name/class may cause the class to be sychronously instantiated,
@@ -162,15 +167,9 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
 
 /**
- * Call when your delegate's `whitelistedModulesForBridge:` value has changed.
- * In response to this, the bridge will immediately instantiate any (whitelisted)
- * native modules that require main thread initialization. Modules that do not require
- * main thread initialization will still be created lazily.
- *
- * This method must be called on the main thread, as any pending native modules
- * will be initialized immediately.
+ * Retrieve an extra module that gets bound to the JS context, if any.
  */
-- (void)whitelistedModulesDidChange;
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass;
 
 /**
  * All registered bridge module classes.
@@ -224,7 +223,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)requestReload __deprecated_msg("Call reload instead");
 
 /**
- * Says whether bridge has started recieving calls from javascript.
+ * Says whether bridge has started receiving calls from javascript.
  */
 - (BOOL)isBatchActive;
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animation;
@@ -37,7 +35,7 @@ public interface AnimationPropertyUpdater {
 
   /**
    * This method will be called at the end of animation. It should be used to set the final values
-   * for animated properties in order to avoid floating point inacurracy calculated in
+   * for animated properties in order to avoid floating point inaccuracy calculated in
    * {@link #onUpdate} by passing value close to 1.0 or in a case some frames got dropped.
    *
    * @param view view to update property

@@ -1,10 +1,8 @@
-'use strict';
-
 import React, { Component } from 'react';
 import {
   ActivityIndicator,
   Image,
-  ListView,
+  FlatList,
   Platform,
   StyleSheet,
   View,
@@ -16,47 +14,41 @@ export default class ChatListScreen extends Component {
 
   static navigationOptions = {
     title: 'Chats',
-    header: {
-      visible: Platform.OS === 'ios',
-    },
-    tabBar: {
-      icon: ({ tintColor }) => (
-        <Image
-          // Using react-native-vector-icons works here too
-          source={require('./chat-icon.png')}
-          style={[styles.icon, {tintColor: tintColor}]}
-        />
-      ),
-    },
+    header: Platform.OS === 'ios' ? undefined : null,
+    tabBarIcon: ({ tintColor }) => (
+      <Image
+        // Using react-native-vector-icons works here too
+        source={require('./chat-icon.png')}
+        style={[styles.icon, {tintColor: tintColor}]}
+      />
+    ),
   }
 
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       isLoading: true,
-      dataSource: ds,
     };
   }
 
   async componentDidMount() {
     const chatList = await Backend.fetchChatList();
     this.setState((prevState) => ({
-      dataSource: prevState.dataSource.cloneWithRows(chatList),
+      chatList,
       isLoading: false,
     }));
   }
 
-  // Binding the function so it can be passed to ListView below
-  // and 'this' works properly inside renderRow
-  renderRow = (name) => {
+  // Binding the function so it can be passed to FlatList below
+  // and 'this' works properly inside renderItem
+  renderItem = ({ item }) => {
     return (
       <ListItem
-        label={name}
+        label={item}
         onPress={() => {
           // Start fetching in parallel with animating
           this.props.navigation.navigate('Chat', {
-            name: name,
+            name: item,
           });
         }}
       />
@@ -72,9 +64,10 @@ export default class ChatListScreen extends Component {
       );
     }
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this.renderRow}
+      <FlatList
+        data={this.state.chatList}
+        renderItem={this.renderItem}
+        keyExtractor={(item, index) => index}
         style={styles.listView}
       />
     );

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  * @flow
@@ -47,9 +45,14 @@ function attachWebsocketServer<TClient: Object>({
   });
 
   wss.on('connection', async ws => {
+    let connected = true;
     const url = ws.upgradeReq.url;
 
-    const sendFn = ws.send.bind(ws);
+    const sendFn = (...args) => {
+      if (connected) {
+        ws.send(...args);
+      }
+    };
 
     const client = await websocketServer.onClientConnect(url, sendFn);
 
@@ -60,6 +63,7 @@ function attachWebsocketServer<TClient: Object>({
     ws.on('close', () => {
       websocketServer.onClientDisconnect &&
         websocketServer.onClientDisconnect(client);
+      connected = false;
     });
 
     ws.on('message', message => {

@@ -1,26 +1,28 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTShadowView+Layout.h"
 
 #import <yoga/Yoga.h>
 
+#import "RCTAssert.h"
+
 @implementation RCTShadowView (Layout)
+
+#pragma mark - Computed Layout-Inferred Metrics
 
 - (UIEdgeInsets)paddingAsInsets
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeTop),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetPadding(yogaNode, YGEdgeRight)
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))
   };
 }
 
@@ -28,10 +30,10 @@
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeTop),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetBorder(yogaNode, YGEdgeRight)
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
+    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))
   };
 }
 
@@ -50,7 +52,24 @@
 
 - (CGSize)availableSize
 {
-  return UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size}, self.compoundInsets).size;
+  return self.layoutMetrics.contentFrame.size;
+}
+
+- (CGRect)contentFrame
+{
+  return self.layoutMetrics.contentFrame;
+}
+
+#pragma mark - Dirty Propagation Control
+
+- (void)dirtyLayout
+{
+  // The default implementaion does nothing.
+}
+
+- (void)clearLayout
+{
+  // The default implementaion does nothing.
 }
 
 @end

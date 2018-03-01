@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTWrapperViewController.h"
@@ -14,7 +12,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTNavItem.h"
 #import "RCTUtils.h"
-#import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
 #import "RCTAutoInsetsProtocol.h"
 
@@ -25,10 +22,10 @@
   RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayoutLength;
   CGFloat _previousBottomLayoutLength;
-}
 
-@synthesize currentTopLayoutGuide = _currentTopLayoutGuide;
-@synthesize currentBottomLayoutGuide = _currentBottomLayoutGuide;
+  id<UILayoutSupport> _currentTopLayoutGuide;
+  id<UILayoutSupport> _currentBottomLayoutGuide;
+}
 
 - (instancetype)initWithContentView:(UIView *)contentView
 {

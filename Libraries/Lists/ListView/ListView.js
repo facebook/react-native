@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ListView
  * @flow
@@ -98,9 +96,6 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
- * suppresses an error when upgrading Flow's support for React. To see the
- * error delete this comment and run Flow. */
 var ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
@@ -357,7 +352,7 @@ var ListView = createReactClass({
     return this._scrollComponent.getInnerViewNode();
   },
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
       visibleLength: null,
@@ -378,7 +373,7 @@ var ListView = createReactClass({
     });
   },
 
-  componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
     if (
       this.props.dataSource !== nextProps.dataSource ||
       this.props.initialListSize !== nextProps.initialListSize
@@ -502,11 +497,7 @@ var ListView = createReactClass({
             adjacentRowHighlighted,
           );
           if (separator) {
-            bodyComponents.push(
-              <View key={'s_' + comboID}>
-                {separator}
-              </View>,
-            );
+            bodyComponents.push(<View key={'s_' + comboID}>{separator}</View>);
             totalIndex++;
           }
         }
@@ -526,14 +517,8 @@ var ListView = createReactClass({
     if (props.removeClippedSubviews === undefined) {
       props.removeClippedSubviews = true;
     }
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
     Object.assign(props, {
       onScroll: this._onScroll,
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error when upgrading Flow's support for React.
-       * To see the error delete this comment and run Flow. */
       stickyHeaderIndices: this.props.stickyHeaderIndices.concat(
         stickySectionHeaderIndices,
       ),

@@ -11,7 +11,7 @@
  * Set and get cached image data asynchronously. It is safe to call these from any
  * thread. The callbacks will be called on an unspecified thread.
  */
-- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block;
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)(void))block;
 - (void)storeImageData:(NSData *)imageData withBlock:(void (^)(NSString *imageTag))block;
 - (void)getImageDataForTag:(NSString *)imageTag withBlock:(void (^)(NSData *imageData))block;
 

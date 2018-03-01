@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -20,7 +18,6 @@
  * --package - com.facebook.react.tests
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
-/*eslint-disable no-undef */
 
 const argv = require('yargs').argv;
 const async = require('async');
@@ -45,7 +42,7 @@ const test_opts = {
 
     OFFSET: argv.offset,
     COUNT: argv.count
-}
+};
 
 let max_test_class_length = Number.NEGATIVE_INFINITY;
 
@@ -85,14 +82,14 @@ if (test_opts.COUNT != null && test_opts.OFFSET != null) {
 }
 
 return async.mapSeries(testClasses, (clazz, callback) => {
-    if(clazz.length > max_test_class_length) {
+    if (clazz.length > max_test_class_length) {
         max_test_class_length = clazz.length;
     }
 
     return async.retry(test_opts.RETRIES, (retryCb) => {
         const test_process = child_process.spawn('./ContainerShip/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
             stdio: 'inherit'
-        })
+        });
 
         const timeout = setTimeout(() => {
             test_process.kill();
@@ -106,7 +103,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
         test_process.on('exit', (code) => {
             clearTimeout(timeout);
 
-            if(code !== 0) {
+            if (code !== 0) {
                 return retryCb(new Error(`Process exited with code: ${code}`));
             }
 
@@ -138,16 +135,16 @@ function print_test_suite_results(results) {
     function pad_output(num_chars) {
         let i = 0;
 
-        while(i < num_chars) {
+        while (i < num_chars) {
             process.stdout.write(' ');
             i++;
         }
     }
     results.forEach((test) => {
-        if(test.status === 'success') {
+        if (test.status === 'success') {
             color = colors.GREEN;
             passing_suites++;
-        } else if(test.status === 'failure') {
+        } else if (test.status === 'failure') {
             color = colors.RED;
             failing_suites++;
         }

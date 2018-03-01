@@ -1,19 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.image;
-
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,10 +22,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.Toast;
-
 import com.facebook.common.util.UriUtil;
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
@@ -54,15 +43,21 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.yoga.YogaConstants;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -163,6 +158,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
+  private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
@@ -178,11 +174,13 @@ public class ReactImageView extends GenericDraweeView {
   public ReactImageView(
       Context context,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable GlobalImageLoadListener globalImageLoadListener,
       @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
+    mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
     mSources = new LinkedList<>();
   }
@@ -229,11 +227,11 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBlurRadius(float blurRadius) {
-    if (blurRadius == 0) {
+    int pixelBlurRadius = (int) PixelUtil.toPixelFromDIP(blurRadius);
+    if (pixelBlurRadius == 0) {
       mIterativeBoxBlurPostProcessor = null;
     } else {
-      mIterativeBoxBlurPostProcessor =
-        new IterativeBoxBlurPostProcessor((int) PixelUtil.toPixelFromDIP(blurRadius));
+      mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(pixelBlurRadius);
     }
     mIsDirty = true;
   }
@@ -415,6 +413,10 @@ public class ReactImageView extends GenericDraweeView {
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
 
     ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+
+    if (mGlobalImageLoadListener != null) {
+      mGlobalImageLoadListener.onLoadAttempt(mImageSource.getUri());
+    }
 
     // This builder is reused
     mDraweeControllerBuilder.reset();

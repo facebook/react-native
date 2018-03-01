@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule react-native-implementation
  * @flow
@@ -37,6 +35,7 @@ const ReactNative = {
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
+  get SafeAreaView() { return require('SafeAreaView'); },
   get ScrollView() { return require('ScrollView'); },
   get SectionList() { return require('SectionList'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
@@ -45,6 +44,7 @@ const ReactNative = {
   get Switch() { return require('Switch'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
+  get SwipeableFlatList() { return require('SwipeableFlatList'); },
   get SwipeableListView() { return require('SwipeableListView'); },
   get TabBarIOS() { return require('TabBarIOS'); },
   get Text() { return require('Text'); },
@@ -101,6 +101,7 @@ const ReactNative = {
   get unstable_batchedUpdates() { return require('ReactNative').unstable_batchedUpdates; },
   get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },
+  get YellowBox() { return require('YellowBox'); },
 
   // Plugins
   get DeviceEventEmitter() { return require('RCTDeviceEventEmitter'); },

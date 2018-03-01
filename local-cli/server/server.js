@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  */
@@ -15,7 +13,7 @@ const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro';
 import type {Args as RunServerArgs} from './runServer';
 
 /**
@@ -27,14 +25,14 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
 
   const startedCallback = logReporter => {
     logReporter.update({
-      type: 'initialize_packager_started',
+      type: 'initialize_started',
       port: args.port,
       projectRoots: args.projectRoots,
     });
 
     process.on('uncaughtException', error => {
       logReporter.update({
-        type: 'initialize_packager_failed',
+        type: 'initialize_failed',
         port: args.port,
         error,
       });
@@ -45,7 +43,7 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
 
   const readyCallback = logReporter => {
     logReporter.update({
-      type: 'initialize_packager_done',
+      type: 'initialize_done',
     });
   };
   const runServerArgs: RunServerArgs = args;
@@ -60,7 +58,7 @@ module.exports = {
   description: 'starts the webserver',
   options: [{
     command: '--port [number]',
-    default: 8081,
+    default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
   }, {
     command: '--host [string]',

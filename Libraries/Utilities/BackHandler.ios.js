@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
@@ -61,9 +59,9 @@ if (Platform.isTVOS) {
 
   _tvEventHandler.enable(this, function(cmp, evt) {
     if (evt && evt.eventType === 'menu') {
-      var backPressSubscriptions = new Set(_backPressSubscriptions);
       var invokeDefault = true;
-      var subscriptions = [...backPressSubscriptions].reverse();
+      var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+
       for (var i = 0; i < subscriptions.length; ++i) {
         if (subscriptions[i]()) {
           invokeDefault = false;

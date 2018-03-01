@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Systrace
  * @flow
@@ -27,14 +25,13 @@ type RelayProfiler = {
 
 /* eslint no-bitwise: 0 */
 const TRACE_TAG_REACT_APPS = 1 << 17;
-const TRACE_TAG_JSC_CALLS = 1 << 27;
+const TRACE_TAG_JS_VM_CALLS = 1 << 27;
 
 let _enabled = false;
 let _asyncCookie = 0;
 const _markStack = [];
 let _markStackIndex = -1;
 let _canInstallReactHook = false;
-let _useFiber = false;
 
 // Implements a subset of User Timing API necessary for React measurements.
 // https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
@@ -100,54 +97,13 @@ const userTimingPolyfill = __DEV__ ? {
   },
 } : null;
 
-// A hook to get React Stack markers in Systrace.
-const reactDebugToolHook = __DEV__ ? {
-  onBeforeMountComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
-    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
-  },
-  onMountComponent(debugID) {
-    Systrace.endEvent();
-  },
-  onBeforeUpdateComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
-    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
-  },
-  onUpdateComponent(debugID) {
-    Systrace.endEvent();
-  },
-  onBeforeUnmountComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
-    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
-  },
-  onUnmountComponent(debugID) {
-    Systrace.endEvent();
-  },
-  onBeginLifeCycleTimer(debugID, timerType) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
-    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
-    Systrace.beginEvent(`${displayName}.${timerType}()`);
-  },
-  onEndLifeCycleTimer(debugID, timerType) {
-    Systrace.endEvent();
-  },
-} : null;
-
 const Systrace = {
-  installReactHook(useFiber: boolean) {
+  installReactHook() {
     if (_enabled) {
       if (__DEV__) {
-        if (useFiber) {
-          global.performance = userTimingPolyfill;
-        } else {
-          require('ReactDebugTool').addHook(reactDebugToolHook);
-        }
+        global.performance = userTimingPolyfill;
       }
     }
-    _useFiber = useFiber;
     _canInstallReactHook = true;
   },
 
@@ -155,20 +111,13 @@ const Systrace = {
     if (_enabled !== enabled) {
       if (__DEV__) {
         if (enabled) {
-          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+          global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JS_VM_CALLS);
         } else {
-          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+          global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JS_VM_CALLS);
         }
         if (_canInstallReactHook) {
-          if (_useFiber) {
-            global.performance = enabled ? userTimingPolyfill : undefined;
-          } else {
-            const ReactDebugTool = require('ReactDebugTool');
-            if (enabled) {
-              ReactDebugTool.addHook(reactDebugToolHook);
-            } else {
-              ReactDebugTool.removeHook(reactDebugToolHook);
-            }
+          if (enabled && global.performance === undefined) {
+            global.performance = userTimingPolyfill;
           }
         }
       }
@@ -208,7 +157,7 @@ const Systrace = {
       _asyncCookie++;
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
     return cookie;
   },
@@ -217,7 +166,7 @@ const Systrace = {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie);
     }
   },
 
@@ -238,7 +187,10 @@ const Systrace = {
    * therefore async variant of profiling is used
   **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
-    relayProfiler.attachProfileHandler('*', (name) => {
+    relayProfiler.attachProfileHandler('*', (name, state?) => {
+      if (state != null && state.queryName !== undefined) {
+        name += '_' + state.queryName;
+      }
       const cookie = Systrace.beginAsyncEvent(name);
       return () => {
         Systrace.endAsyncEvent(name, cookie);

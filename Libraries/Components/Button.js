@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Button
  * @flow
@@ -38,6 +36,9 @@ const invariant = require('fbjs/lib/invariant');
  * Example usage:
  *
  * ```
+ * import { Button } from 'react-native';
+ * ...
+ *
  * <Button
  *   onPress={onPressLearnMore}
  *   title="Learn More"
@@ -55,6 +56,7 @@ class Button extends React.Component<{
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
+  hasTVPreferredFocus?: ?boolean,
 }> {
   static propTypes = {
     /**
@@ -81,6 +83,12 @@ class Button extends React.Component<{
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     *
+     * @platform ios
+     */
+    hasTVPreferredFocus: PropTypes.bool,
   };
 
   render() {
@@ -89,6 +97,7 @@ class Button extends React.Component<{
       color,
       onPress,
       title,
+      hasTVPreferredFocus,
       disabled,
       testID,
     } = this.props;
@@ -118,6 +127,7 @@ class Button extends React.Component<{
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={accessibilityTraits}
+        hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>

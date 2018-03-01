@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTJSStackFrame.h"
@@ -18,7 +16,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
     NSError *regexError;
-    _regex = [NSRegularExpression regularExpressionWithPattern:@"^([^@]+)@(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
+    _regex = [NSRegularExpression regularExpressionWithPattern:@"^(?:([^@]+)@)?(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
     if (regexError) {
       RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
     }
@@ -56,7 +54,9 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     return nil;
   }
 
-  NSString *methodName = [line substringWithRange:[match rangeAtIndex:1]];
+  // methodName may not be present for e.g. anonymous functions
+  const NSRange methodNameRange = [match rangeAtIndex:1];
+  NSString *methodName = methodNameRange.location == NSNotFound ? nil : [line substringWithRange:methodNameRange];
   NSString *file = [line substringWithRange:[match rangeAtIndex:2]];
   NSString *lineNumber = [line substringWithRange:[match rangeAtIndex:3]];
   NSString *column = [line substringWithRange:[match rangeAtIndex:4]];
@@ -69,7 +69,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
 {
-  return [[self alloc] initWithMethodName:dict[@"methodName"]
+  return [[self alloc] initWithMethodName:RCTNilIfNull(dict[@"methodName"])
                                      file:dict[@"file"]
                                lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
                                    column:[RCTNilIfNull(dict[@"column"]) integerValue]];

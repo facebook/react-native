@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.slider;
@@ -50,7 +48,24 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     private boolean mMeasured;
 
     private ReactSliderShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSliderShadowNode(ReactSliderShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+      initMeasureFunction();
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactSliderShadowNode mutableCopy() {
+      return new ReactSliderShadowNode(this);
     }
 
     @Override
@@ -160,22 +175,22 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "minimumTrackTintColor", customType = "Color")
   public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
+    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
     if (color == null) {
-      background.clearColorFilter();
+      progress.clearColorFilter();
     } else {
-      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 
   @ReactProp(name = "maximumTrackTintColor", customType = "Color")
   public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
+    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
     if (color == null) {
-      progress.clearColorFilter();
+      background.clearColorFilter();
     } else {
-      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RelativeImageStub
  * @flow
@@ -12,7 +10,7 @@
 'use strict';
 
 // This is a stub for flow to make it understand require('./icon.png')
-// See metro-bundler/src/Bundler/index.js
+// See metro/src/Bundler/index.js
 
 var AssetRegistry = require('AssetRegistry');
 

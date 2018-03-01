@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTFrameAnimation.h"
@@ -31,6 +29,7 @@
   NSArray<NSNumber *> *_frames;
   CGFloat _toValue;
   CGFloat _fromValue;
+  CGFloat _lastPosition;
   NSTimeInterval _animationStartTime;
   NSTimeInterval _animationCurrentTime;
   RCTResponseSenderBlock _callback;
@@ -44,21 +43,28 @@
                   callBack:(nullable RCTResponseSenderBlock)callback;
 {
   if ((self = [super init])) {
-    NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
-    NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
-    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
-
     _animationId = animationId;
-    _toValue = toValue.floatValue;
-    _fromValue = valueNode.value;
+    _lastPosition = _fromValue = valueNode.value;
     _valueNode = valueNode;
-    _frames = [frames copy];
     _callback = [callback copy];
-    _animationHasFinished = iterations.integerValue == 0;
-    _iterations = iterations.integerValue;
-    _currentLoop = 1;
+    [self resetAnimationConfig:config];
   }
   return self;
+}
+
+- (void)resetAnimationConfig:(NSDictionary *)config
+{
+  NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
+  NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
+  NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+
+  _fromValue = _lastPosition;
+  _toValue = toValue.floatValue;
+  _frames = [frames copy];
+  _animationStartTime = _animationCurrentTime = -1;
+  _animationHasFinished = iterations.integerValue == 0;
+  _iterations = iterations.integerValue;
+  _currentLoop = 1;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -115,7 +121,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  // Do a linear remap of the two frames to safegaurd against variable framerates
+  // Do a linear remap of the two frames to safeguard against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
   NSTimeInterval fromInterval = startIndex * RCTSingleFrameInterval;
@@ -144,6 +150,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             EXTRAPOLATE_TYPE_EXTEND,
                                             EXTRAPOLATE_TYPE_EXTEND);
 
+  _lastPosition = outputValue;
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
 }

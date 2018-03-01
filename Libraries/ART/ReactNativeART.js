@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ReactNativeART
  */
@@ -101,25 +99,29 @@ var TextAttributes = merge(RenderableAttributes, {
 
 // Native Components
 
-var NativeSurfaceView = createReactNativeComponentClass({
-  validAttributes: SurfaceViewAttributes,
-  uiViewClassName: 'ARTSurfaceView',
-});
+var NativeSurfaceView = createReactNativeComponentClass('ARTSurfaceView',
+  () => ({
+    validAttributes: SurfaceViewAttributes,
+    uiViewClassName: 'ARTSurfaceView',
+  }));
 
-var NativeGroup = createReactNativeComponentClass({
-  validAttributes: GroupAttributes,
-  uiViewClassName: 'ARTGroup',
-});
+var NativeGroup = createReactNativeComponentClass('ARTGroup',
+  () => ({
+    validAttributes: GroupAttributes,
+    uiViewClassName: 'ARTGroup',
+  }));
 
-var NativeShape = createReactNativeComponentClass({
-  validAttributes: ShapeAttributes,
-  uiViewClassName: 'ARTShape',
-});
+var NativeShape = createReactNativeComponentClass('ARTShape',
+  () => ({
+    validAttributes: ShapeAttributes,
+    uiViewClassName: 'ARTShape',
+  }));
 
-var NativeText = createReactNativeComponentClass({
-  validAttributes: TextAttributes,
-  uiViewClassName: 'ARTText',
-});
+var NativeText = createReactNativeComponentClass('ARTText',
+  () => ({
+    validAttributes: TextAttributes,
+    uiViewClassName: 'ARTText',
+  }));
 
 // Utilities
 

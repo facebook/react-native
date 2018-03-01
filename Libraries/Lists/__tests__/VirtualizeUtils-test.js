@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  *
  * @format
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -80,13 +79,26 @@ describe('elementsThatOverlapOffsets', function() {
       elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]),
     ).toEqual([1]);
   });
-  it('handles edge case', function() {
+  it('errors on non-increasing offsets', function() {
+    const offsets = [150, 50];
+    const frames = [
+      {offset: 0, length: 50},
+      {offset: 50, length: 150},
+      {offset: 250, length: 100},
+    ];
+    expect(() => {
+      elementsThatOverlapOffsets(offsets, frames.length, ii => frames[ii]);
+    }).toThrowErrorMatchingSnapshot();
+  });
+  it('handles off-by-one edge case', function() {
     const offsets = [100, 199, 200];
     const frames = [
       {offset: 0, length: 100},
       {offset: 100, length: 100},
       {offset: 200, length: 100},
     ];
-    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1, 1, 2]);
-  });
+    expect(
+      elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])
+    ).toEqual([1, 1, 2]);
+  });  
 });

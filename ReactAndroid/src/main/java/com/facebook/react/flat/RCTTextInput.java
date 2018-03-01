@@ -1,15 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
+import static com.facebook.react.views.text.ReactRawTextShadowNode.PROP_TEXT;
+import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -17,11 +16,6 @@ import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -32,9 +26,11 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.view.MeasureUtil;
-
-import static com.facebook.react.views.text.ReactTextShadowNode.PROP_TEXT;
-import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+import javax.annotation.Nullable;
 
 public class RCTTextInput extends RCTVirtualText implements AndroidView, YogaMeasureFunction {
 

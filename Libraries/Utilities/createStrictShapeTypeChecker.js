@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule createStrictShapeTypeChecker
  * @flow
@@ -47,8 +45,8 @@ function createStrictShapeTypeChecker(
         invariant(
           false,
           `Invalid props.${propName} key \`${key}\` supplied to \`${componentName}\`.` +
-            `\nBad object: ` + JSON.stringify(props[propName], null, '  ') +
-            `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+            '\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
         );
       }
       var error = checker(propValue, key, componentName, location, ...rest);
@@ -56,7 +54,7 @@ function createStrictShapeTypeChecker(
         invariant(
           false,
           error.message +
-            `\nBad object: ` + JSON.stringify(props[propName], null, '  ')
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ')
         );
       }
     }

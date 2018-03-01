@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -16,6 +14,10 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.BridgeListener;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -38,7 +40,9 @@ public abstract class ReactNativeHost {
    */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);
     }
     return mReactInstanceManager;
   }
@@ -63,12 +67,15 @@ public abstract class ReactNativeHost {
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
       .setJSMainModulePath(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
+      .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
       .setUIImplementationProvider(getUIImplementationProvider())
+      .setBridgeListener(getBridgeListener())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -81,13 +88,23 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    return builder.build();
+    ReactInstanceManager reactInstanceManager = builder.build();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return reactInstanceManager;
   }
 
   /**
    * Get the {@link RedBoxHandler} to send RedBox-related callbacks to.
    */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  /**
+   * Get the {@link JavaScriptExecutorFactory}.  Override this to use a custom
+   * Executor.
+   */
+  protected @Nullable JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
     return null;
   }
 
@@ -103,6 +120,10 @@ public abstract class ReactNativeHost {
    */
   protected UIImplementationProvider getUIImplementationProvider() {
     return new UIImplementationProvider();
+  }
+
+  protected @Nullable BridgeListener getBridgeListener() {
+    return null;
   }
 
   /**

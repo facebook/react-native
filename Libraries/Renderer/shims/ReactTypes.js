@@ -1,24 +1,22 @@
 /**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ReactTypes
  * @flow
+ * @providesModule ReactTypes
  */
-
-'use strict';
 
 export type ReactNode =
   | React$Element<any>
-  | ReactCoroutine
-  | ReactYield
+  | ReactCall<any>
+  | ReactReturn<any>
   | ReactPortal
   | ReactText
-  | ReactFragment;
+  | ReactFragment
+  | ReactProvider<any>
+  | ReactConsumer<any>;
 
 export type ReactFragment = ReactEmpty | Iterable<React$Node>;
 
@@ -28,18 +26,67 @@ export type ReactText = string | number;
 
 export type ReactEmpty = null | void | boolean;
 
-export type ReactCoroutine = {
+export type ReactCall<V> = {
   $$typeof: Symbol | number,
+  type: Symbol | number,
   key: null | string,
-  children: any,
-  // This should be a more specific CoroutineHandler
-  handler: (props: any, yields: Array<mixed>) => ReactNodeList,
-  props: any,
+  ref: null,
+  props: {
+    props: any,
+    // This should be a more specific CallHandler
+    handler: (props: any, returns: Array<V>) => ReactNodeList,
+    children?: ReactNodeList,
+  },
 };
 
-export type ReactYield = {
+export type ReactReturn<V> = {
   $$typeof: Symbol | number,
-  value: mixed,
+  type: Symbol | number,
+  key: null,
+  ref: null,
+  props: {
+    value: V,
+  },
+};
+
+export type ReactProvider<T> = {
+  $$typeof: Symbol | number,
+  type: ReactProviderType<T>,
+  key: null | string,
+  ref: null,
+  props: {
+    value: T,
+    children?: ReactNodeList,
+  },
+};
+
+export type ReactProviderType<T> = {
+  $$typeof: Symbol | number,
+  context: ReactContext<T>,
+};
+
+export type ReactConsumer<T> = {
+  $$typeof: Symbol | number,
+  type: ReactContext<T>,
+  key: null | string,
+  ref: null,
+  props: {
+    children: (value: T) => ReactNodeList,
+    bits?: number,
+  },
+};
+
+export type ReactContext<T> = {
+  $$typeof: Symbol | number,
+  Consumer: ReactContext<T>,
+  Provider: ReactProviderType<T>,
+  calculateChangedBits: ((a: T, b: T) => number) | null,
+  defaultValue: T,
+  currentValue: T,
+  changedBits: number,
+
+  // DEV only
+  _currentRenderer?: Object | null,
 };
 
 export type ReactPortal = {
@@ -50,3 +97,7 @@ export type ReactPortal = {
   // TODO: figure out the API for cross-renderer implementation.
   implementation: any,
 };
+
+export type RefObject = {|
+  value: any,
+|};

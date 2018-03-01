@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
@@ -18,15 +25,21 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
 
   createGroupWithMessage(project, 'Resources');
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.addResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  function addResourceFile(f) {
+    return (f || [])
+      .map(asset =>
+        project.addResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .filter(file => file)   // xcode returns false if file is already there
-    .map(file => file.basename);
+      .filter(file => file)   // xcode returns false if file is already there
+      .map(file => file.basename);
+  }
+
+  addResourceFile(assets.image);
+
+  const fonts = addResourceFile(assets.font);
 
   const existingFonts = (plist.UIAppFonts || []);
   const allFonts = [...existingFonts, ...fonts];

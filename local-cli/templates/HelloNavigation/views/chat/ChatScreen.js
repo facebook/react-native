@@ -1,10 +1,8 @@
-'use strict';
-
 import React, { Component } from 'react';
 import {
   ActivityIndicator,
   Button,
-  ListView,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -15,16 +13,13 @@ import Backend from '../../lib/Backend';
 
 export default class ChatScreen extends Component {
 
-  static navigationOptions = {
-    title: (navigation) => `Chat with ${navigation.state.params.name}`,
-  }
-
+  static navigationOptions = ({ navigation }) => ({
+    title: `Chat with ${navigation.state.params.name}`,
+  });
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       messages: [],
-      dataSource: ds,
       myMessage: '',
       isLoading: true,
     };
@@ -47,7 +42,6 @@ export default class ChatScreen extends Component {
     }
     this.setState((prevState) => ({
       messages: chat.messages,
-      dataSource: prevState.dataSource.cloneWithRows(chat.messages),
       isLoading: false,
     }));
   }
@@ -82,9 +76,8 @@ export default class ChatScreen extends Component {
       ];
       return {
         messages: messages,
-        dataSource: prevState.dataSource.cloneWithRows(messages),
         myMessage: '',
-      }
+      };
     });
     this.textInput.clear();
   }
@@ -93,10 +86,10 @@ export default class ChatScreen extends Component {
     this.setState({myMessage: event.nativeEvent.text});
   }
 
-  renderRow = (message) => (
+  renderItem = ({ item }) => (
     <View style={styles.bubble}>
-      <Text style={styles.name}>{message.name}</Text>
-      <Text>{message.text}</Text>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text>{item.text}</Text>
     </View>
   )
 
@@ -110,12 +103,13 @@ export default class ChatScreen extends Component {
     }
     return (
       <View style={styles.container}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
-          style={styles.listView}
-          onLayout={this.scrollToBottom}
-        />
+        <FlatList
+           data={this.state.messages}
+           renderItem={this.renderItem}
+           keyExtractor={(item, index) => index}
+           style={styles.listView}
+         />
+
         <View style={styles.composer}>
           <TextInput
             ref={(textInput) => { this.textInput = textInput; }}

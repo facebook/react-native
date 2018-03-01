@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TabBarIOS
  * @flow
@@ -20,19 +18,22 @@ const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-class TabBarIOS extends React.Component<{
-  style?: $FlowFixMe,
-  unselectedTintColor?: $FlowFixMe,
-  tintColor?: $FlowFixMe,
-  unselectedItemTintColor?: $FlowFixMe,
-  barTintColor?: $FlowFixMe,
+import type {StyleObj} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+class TabBarIOS extends React.Component<ViewProps & {
+  style?: StyleObj,
+  unselectedTintColor?: string,
+  tintColor?: string,
+  unselectedItemTintColor?: string,
+  barTintColor?: string,
   barStyle?: 'default' | 'black',
   translucent?: boolean,
   itemPositioning?: 'fill' | 'center' | 'auto',
+  children: React.Node,
 }> {
   static Item = TabBarItemIOS;
 
-  // $FlowFixMe(>=0.41.0)
   static propTypes = {
     ...ViewPropTypes,
     style: ViewPropTypes.style,
@@ -85,9 +86,7 @@ class TabBarIOS extends React.Component<{
         barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
-        {
-          // $FlowFixMe found when converting React.createClass to ES6
-          this.props.children}
+        {this.props.children}
       </RCTTabBar>
     );
   }

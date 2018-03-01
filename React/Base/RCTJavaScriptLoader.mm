@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTJavaScriptLoader.h"
@@ -157,7 +155,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   case facebook::react::ScriptTag::RAMBundle:
     break;
 
-  case facebook::react::ScriptTag::String:
+  case facebook::react::ScriptTag::String: {
+#if RCT_ENABLE_INSPECTOR
+    NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
+                                            options:NSDataReadingMappedIfSafe
+                                              error:error];
+    if (sourceLength && source != nil) {
+      *sourceLength = source.length;
+    }
+    return source;
+#else
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
@@ -165,7 +172,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             @"Cannot load text/javascript files synchronously"}];
     }
     return nil;
-
+#endif
+  }
   case facebook::react::ScriptTag::BCBundle:
     if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
       if (error) {
@@ -274,16 +282,17 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
 
     // Validate that the packager actually returned javascript.
     NSString *contentType = headers[@"Content-Type"];
-    if (![contentType isEqualToString:@"application/javascript"] &&
-        ![contentType isEqualToString:@"text/javascript"]) {
-      NSString *description = [NSString stringWithFormat:@"Expected Content-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", contentType];
+    NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
+    if (![mimeType isEqualToString:@"application/javascript"] &&
+        ![mimeType isEqualToString:@"text/javascript"]) {
+      NSString *description = [NSString stringWithFormat:@"Expected MIME-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", mimeType];
       error = [NSError errorWithDomain:@"JSServer"
                                   code:NSURLErrorCannotParseResponse
                               userInfo:@{
                                          NSLocalizedDescriptionKey: description,
                                          @"headers": headers,
                                          @"data": data
-                                         }];
+                                       }];
       onComplete(error, nil);
       return;
     }

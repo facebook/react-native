@@ -1,17 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animated;
 
 import android.util.SparseArray;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -59,7 +56,7 @@ import javax.annotation.Nullable;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
-  private final Map<String, Map<String, String>> mCustomEventTypes;
+  private final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
@@ -68,8 +65,7 @@ import javax.annotation.Nullable;
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
     uiManager.getEventDispatcher().addListener(this);
-    Object customEventTypes = Assertions.assertNotNull(uiManager.getConstants()).get("customDirectEventTypes");
-    mCustomEventTypes = (Map<String, Map<String, String>>) customEventTypes;
+    mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
   }
 
   /*package*/ @Nullable AnimatedNode getNodeById(int id) {
@@ -92,7 +88,7 @@ import javax.annotation.Nullable;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this);
+      node = new PropsAnimatedNode(config, this, mUIImplementation);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
@@ -107,6 +103,8 @@ import javax.annotation.Nullable;
       node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
       node = new TransformAnimatedNode(config, this);
+    } else if ("tracking".equals(type)) {
+      node = new TrackingAnimatedNode(config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }
@@ -191,6 +189,15 @@ import javax.annotation.Nullable;
       throw new JSApplicationIllegalArgumentException("Animated node should be of type " +
         ValueAnimatedNode.class.getName());
     }
+
+    final AnimationDriver existingDriver = mActiveAnimations.get(animationId);
+    if (existingDriver != null) {
+      // animation with the given ID is already running, we need to update its configuration instead
+      // of spawning a new one
+      existingDriver.resetConfig(animationConfig);
+      return;
+    }
+
     String type = animationConfig.getString("type");
     final AnimationDriver animation;
     if ("frames".equals(type)) {
@@ -216,10 +223,12 @@ import javax.annotation.Nullable;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animatedNode.equals(animation.mAnimatedValue)) {
-        // Invoke animation end callback with {finished: false}
-        WritableMap endCallbackResponse = Arguments.createMap();
-        endCallbackResponse.putBoolean("finished", false);
-        animation.mEndCallback.invoke(endCallbackResponse);
+        if (animation.mEndCallback != null) {
+          // Invoke animation end callback with {finished: false}
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", false);
+          animation.mEndCallback.invoke(endCallbackResponse);
+        }
         mActiveAnimations.removeAt(i);
         i--;
       }
@@ -234,10 +243,12 @@ import javax.annotation.Nullable;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animation.mId == animationId) {
-        // Invoke animation end callback with {finished: false}
-        WritableMap endCallbackResponse = Arguments.createMap();
-        endCallbackResponse.putBoolean("finished", false);
-        animation.mEndCallback.invoke(endCallbackResponse);
+        if (animation.mEndCallback != null) {
+          // Invoke animation end callback with {finished: false}
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", false);
+          animation.mEndCallback.invoke(endCallbackResponse);
+        }
         mActiveAnimations.removeAt(i);
         return;
       }
@@ -289,11 +300,7 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != -1) {
-      throw new JSApplicationIllegalArgumentException("Animated node " + animatedNodeTag + " is " +
-        "already attached to a view");
-    }
-    propsAnimatedNode.mConnectedViewTag = viewTag;
+    propsAnimatedNode.connectToView(viewTag);
     mUpdatedNodes.put(animatedNodeTag, node);
   }
 
@@ -308,11 +315,24 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    if (propsAnimatedNode.mConnectedViewTag != viewTag) {
-      throw new JSApplicationIllegalArgumentException("Attempting to disconnect view that has " +
-        "not been connected with the given animated node");
+    propsAnimatedNode.disconnectFromView(viewTag);
+  }
+
+  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
+    AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
+    // Restoring default values needs to happen before UIManager operations so it is
+    // possible the node hasn't been created yet if it is being connected and
+    // disconnected in the same batch. In that case we don't need to restore
+    // default values since it will never actually update the view.
+    if (node == null) {
+      return;
     }
-    propsAnimatedNode.mConnectedViewTag = -1;
+    if (!(node instanceof PropsAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
+        "of type " + PropsAnimatedNode.class.getName());
+    }
+    PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
+    propsAnimatedNode.restoreDefaultValues();
   }
 
   public void addAnimatedEventToView(int viewTag, String eventName, ReadableMap eventMapping) {
@@ -363,20 +383,25 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void onEventDispatch(Event event) {
-    // Only support events dispatched from the UI thread.
-    if (!UiThreadUtil.isOnUiThread()) {
-      return;
+  public void onEventDispatch(final Event event) {
+    // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
+    // UI thread.
+    if (UiThreadUtil.isOnUiThread()) {
+      handleEvent(event);
+    } else {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          handleEvent(event);
+        }
+      });
     }
+  }
 
+  private void handleEvent(Event event) {
     if (!mEventDrivers.isEmpty()) {
       // If the event has a different name in native convert it to it's JS name.
-      String eventName = event.getEventName();
-      Map<String, String> customEventType = mCustomEventTypes.get(eventName);
-      if (customEventType != null) {
-        eventName = customEventType.get("registrationName");
-      }
-
+      String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {
@@ -433,9 +458,11 @@ import javax.annotation.Nullable;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
-          WritableMap endCallbackResponse = Arguments.createMap();
-          endCallbackResponse.putBoolean("finished", true);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          if (animation.mEndCallback != null) {
+            WritableMap endCallbackResponse = Arguments.createMap();
+            endCallbackResponse.putBoolean("finished", true);
+            animation.mEndCallback.invoke(endCallbackResponse);
+          }
           mActiveAnimations.removeAt(i);
         }
       }
@@ -513,7 +540,7 @@ import javax.annotation.Nullable;
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
         try {
-          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+          ((PropsAnimatedNode) nextNode).updateView();
         } catch (IllegalViewOperationException e) {
             // An exception is thrown if the view hasn't been created yet. This can happen because views are
             // created in batches. If this particular view didn't make it into a batch yet, the view won't

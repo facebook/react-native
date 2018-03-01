@@ -1,16 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Inspector
  * @flow
  */
-
-/* eslint-disable dot-notation, no-dimensions-get-window */
 
 'use strict';
 
@@ -94,13 +90,16 @@ class Inspector extends React.Component<{
     hook.off('react-devtools', this.attachToDevtools);
   }
 
-  componentWillReceiveProps(newProps: Object) {
+  UNSAFE_componentWillReceiveProps(newProps: Object) {
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
   attachToDevtools = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       clearTimeout(_hideWait);
 
       if (typeof node !== 'number') {
@@ -207,7 +206,7 @@ class Inspector extends React.Component<{
     });
   }
 
-  setTouchTargetting(val: bool) {
+  setTouchTargeting(val: bool) {
     Touchable.TOUCH_TARGET_DEBUG = val;
     this.props.onRequestRerenderApp((inspectedViewTag) => {
       this.setState({inspectedViewTag});
@@ -246,8 +245,8 @@ class Inspector extends React.Component<{
             hierarchy={this.state.hierarchy}
             selection={this.state.selection}
             setSelection={this.setSelection.bind(this)}
-            touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
-            setTouchTargetting={this.setTouchTargetting.bind(this)}
+            touchTargeting={Touchable.TOUCH_TARGET_DEBUG}
+            setTouchTargeting={this.setTouchTargeting.bind(this)}
             networking={this.state.networking}
             setNetworking={this.setNetworking.bind(this)}
           />

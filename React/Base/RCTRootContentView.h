@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -26,9 +24,17 @@
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
+@property (nonatomic, assign) BOOL fabric;
+
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
+                       fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                     reactTag:(NSNumber *)reactTag
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility;
 
 @end

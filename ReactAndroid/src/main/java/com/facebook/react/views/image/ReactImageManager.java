@@ -1,22 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.image;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
-
-import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -30,6 +22,9 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
@@ -42,12 +37,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   }
 
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
 
   public ReactImageManager(
+      AbstractDraweeControllerBuilder draweeControllerBuilder, Object callerContext) {
+    this(draweeControllerBuilder, null, callerContext);
+  }
+
+  public ReactImageManager(
       AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable GlobalImageLoadListener globalImageLoadListener,
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
+    mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
   }
 
@@ -71,9 +74,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
     return new ReactImageView(
-        context,
-        getDraweeControllerBuilder(),
-        getCallerContext());
+        context, getDraweeControllerBuilder(), mGlobalImageLoadListener, getCallerContext());
   }
 
   // In JS this is Image.props.source

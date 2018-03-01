@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ModalExample
@@ -16,6 +14,7 @@ var ReactNative = require('react-native');
 var {
   Modal,
   Picker,
+  Platform,
   StyleSheet,
   Switch,
   Text,
@@ -91,6 +90,15 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
     this.setState({transparent: !this.state.transparent});
   };
 
+  renderSwitch() {
+    if (Platform.isTVOS) {
+      return null;
+    }
+    return (
+      <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+    );
+  }
+
   render() {
     var modalBackgroundStyle = {
       backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
@@ -140,9 +148,21 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
 
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>
-          <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+          {this.renderSwitch()}
         </View>
-
+        {this.renderPickers()}
+        <Button onPress={this._setModalVisible.bind(this, true)}>
+          Present
+        </Button>
+      </View>
+    );
+  }
+  renderPickers() {
+    if (Platform.isTVOS) {
+      return null;
+    }
+    return (
+      <View>
         <View>
           <Text style={styles.rowTitle}>Presentation style</Text>
           <Picker
@@ -173,14 +193,11 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
             <Item label="Default supportedOrientations" value={5} />
           </Picker>
         </View>
-
-        <Button onPress={this._setModalVisible.bind(this, true)}>
-          Present
-        </Button>
       </View>
     );
   }
 }
+
 
 exports.examples = [
   {

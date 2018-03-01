@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule AsyncStorageTest
@@ -155,7 +153,7 @@ function testOptimizedMultiGet() {
   let keys = batch.map(([key, value]) => key);
   AsyncStorage.multiSet(batch, (err1) => {
     // yes, twice on purpose
-    ;[1, 2].forEach((i) => {
+    [1, 2].forEach((i) => {
       expectAsyncNoError(`${i} testOptimizedMultiGet/multiSet`, err1);
       AsyncStorage.multiGet(keys, (err2, result) => {
         expectAsyncNoError(`${i} testOptimizedMultiGet/multiGet`, err2);

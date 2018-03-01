@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -17,7 +15,7 @@
  * --android - 'react-native init' and check Android app doesn't redbox
  * --js - 'react-native init' and only check the packager returns a bundle
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
- * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
+ * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 /*eslint-disable no-undef */
 require('shelljs/global');
@@ -44,15 +42,14 @@ let exitCode;
 try {
   // install CLI
   cd('react-native-cli');
-  exec('npm pack');
+  exec('yarn pack');
   const CLI_PACKAGE = path.join(ROOT, 'react-native-cli', 'react-native-cli-*.tgz');
   cd('..');
 
-  // can skip cli install for non sudo mode
   if (!argv['skip-cli-install']) {
-    if (exec(`npm install -g ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally, please run in su mode');
-      echo('Or with --skip-cli-install to skip this step');
+    if (exec(`sudo yarn global add ${CLI_PACKAGE}`).code) {
+      echo('Could not install react-native-cli globally.');
+      echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -66,7 +63,7 @@ try {
     }
   }
 
-  if (exec('npm pack').code) {
+  if (exec('yarn pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
@@ -77,7 +74,7 @@ try {
   if (tryExecNTimes(
     () => {
       exec('sleep 10s');
-      return exec(`react-native init EndToEndTest --version ${PACKAGE} --npm`).code;
+      return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
     },
     numberOfRetries,
     () => rm('-rf', 'EndToEndTest'))) {
@@ -93,7 +90,7 @@ try {
     echo('Running an Android e2e test');
     echo('Installing e2e framework');
     if (tryExecNTimes(
-      () => exec('npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1', { silent: true }).code,
+      () => exec('yarn add --dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1', { silent: true }).code,
       numberOfRetries)) {
         echo('Failed to install appium');
         echo('Most common reason is npm registry connectivity, try again');
@@ -126,7 +123,7 @@ try {
 
     echo(`Starting packager server, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    const packagerProcess = spawn('npm', ['start', '--', '--max-workers 1'], {
+    const packagerProcess = spawn('yarn', ['start', '--max-workers 1'], {
       env: process.env
     });
     SERVER_PID = packagerProcess.pid;
@@ -159,7 +156,7 @@ try {
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    const packagerProcess = spawn('npm', ['start', '--', '--nonPersistent'],
+    const packagerProcess = spawn('yarn', ['start', '--nonPersistent'],
       {
         stdio: 'inherit',
         env: packagerEnv
@@ -176,7 +173,7 @@ try {
         if (argv.tvos) {
           return exec('xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         } else {
-          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+          return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
         }
       },
       numberOfRetries)) {
@@ -205,7 +202,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('npm test').code) {
+    if (exec('yarn test').code) {
       echo('Jest test failure');
       exitCode = 1;
       throw Error(exitCode);
