@@ -166,7 +166,7 @@ aliases:
     name: Test coverage
     command: |
       yarn test --coverage --maxWorkers=2
-      ./node_modules/.bin/coveralls
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
 
   - &build-android-app
     name: Build Android App
@@ -350,6 +350,9 @@ jobs:
           at: ~/react-native
     
       - run: *test-coverage
+
+      - store_artifacts:
+          path: ~/react-native/coverage/
 
   # Builds iOS test app
   build_objc_ios_test_app:
