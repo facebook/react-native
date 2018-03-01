@@ -152,6 +152,11 @@ aliases:
     command: yarn flow check
     when: always
 
+  - &run-license-checks
+    name: Check license
+    command: ./scripts/circleci/check_license.sh
+    when: always
+    
   - &build-android-app
     name: Build Android App
     command: |
@@ -275,7 +280,7 @@ jobs:
 
   # Runs JavaScript lint and flow checks.
   # Currently will fail a PR if lint/flow raises issues.
-  js_checks:
+  analyze:
     <<: *js_defaults
     steps:
       - attach_workspace:
@@ -283,6 +288,7 @@ jobs:
 
       - run: *run-lint-checks
       - run: *run-flow-checks
+      - run: *run-license-checks
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -576,8 +582,8 @@ workflows:
       - checkout_code:
           filters: *filter-ignore-gh-pages
 
-      # Run lint and flow checks
-      - js_checks:
+      # Run lint, flow, and other checks
+      - analyze:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
