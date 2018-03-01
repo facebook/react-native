@@ -17,7 +17,11 @@ import javax.annotation.Nullable;
 public class YogaNode implements Cloneable {
 
   static {
-    SoLoader.loadLibrary("yoga");
+    if (YogaConstants.shouldUseFastMath) {
+      SoLoader.loadLibrary("yogafastmath");
+    } else {
+      SoLoader.loadLibrary("yoga");
+    }
   }
 
   /**
