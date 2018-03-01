@@ -58,19 +58,23 @@ public class FabricUIManagerModule implements UIManager {
     String viewName,
     int rootTag,
     ReadableNativeMap props) {
+    try {
+      ViewManager viewManager = mViewManagerRegistry.get(viewName);
+      ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
+      ReactShadowNode rootNode = getRootNode(rootTag);
+      node.setRootNode(rootNode);
+      node.setReactTag(reactTag);
+      node.setThemedContext(rootNode.getThemedContext());
 
-    ViewManager viewManager = mViewManagerRegistry.get(viewName);
-    ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
-    ReactShadowNode rootNode = getRootNode(rootTag);
-    node.setRootNode(rootNode);
-    node.setReactTag(reactTag);
-    node.setThemedContext(rootNode.getThemedContext());
+      ReactStylesDiffMap styles = updateProps(node, props);
 
-    ReactStylesDiffMap styles = updateProps(node, props);
-
-    mUIViewOperationQueue
-      .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
-    return node;
+      mUIViewOperationQueue
+        .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+      return node;
+    } catch (Exception e) {
+      handleException(rootTag, e);
+      return null;
+    }
   }
 
   private ReactShadowNode getRootNode(int rootTag) {
@@ -93,9 +97,14 @@ public class FabricUIManagerModule implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
-    ReactShadowNode clone = node.mutableCopy();
-    assertReactShadowNodeCopy(node, clone);
-    return clone;
+    try {
+      ReactShadowNode clone = node.mutableCopy();
+      assertReactShadowNodeCopy(node, clone);
+      return clone;
+    } catch (Exception e) {
+      handleException(node.getThemedContext(), e);
+      return null;
+    }
   }
 
   /**
@@ -105,9 +114,14 @@ public class FabricUIManagerModule implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
-    ReactShadowNode clone = node.mutableCopyWithNewChildren();
-    assertReactShadowNodeCopy(node, clone);
-    return clone;
+    try {
+      ReactShadowNode clone = node.mutableCopyWithNewChildren();
+      assertReactShadowNodeCopy(node, clone);
+      return clone;
+    } catch (Exception e) {
+      handleException(node.getThemedContext(), e);
+      return null;
+    }
   }
 
   /**
@@ -119,10 +133,15 @@ public class FabricUIManagerModule implements UIManager {
   public ReactShadowNode cloneNodeWithNewProps(
       ReactShadowNode node,
       @Nullable ReadableNativeMap newProps) {
-    ReactShadowNode clone = node.mutableCopy();
-    updateProps(clone, newProps);
-    assertReactShadowNodeCopy(node, clone);
-    return clone;
+    try {
+      ReactShadowNode clone = node.mutableCopy();
+      updateProps(clone, newProps);
+      assertReactShadowNodeCopy(node, clone);
+      return clone;
+    } catch (Exception e) {
+      handleException(node.getThemedContext(), e);
+      return null;
+    }
   }
 
   /**
@@ -135,10 +154,16 @@ public class FabricUIManagerModule implements UIManager {
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node,
       ReadableNativeMap newProps) {
-    ReactShadowNode clone = node.mutableCopyWithNewChildren();
-    updateProps(clone, newProps);
-    assertReactShadowNodeCopy(node, clone);
-    return clone;
+    try {
+      ReactShadowNode clone = node.mutableCopyWithNewChildren();
+      updateProps(clone, newProps);
+      assertReactShadowNodeCopy(node, clone);
+      return clone;
+    } catch (Exception e) {
+      handleException(node.getThemedContext(), e);
+      getRootNode(1).getThemedContext().handleException(e);
+      return null;
+    }
   }
 
   private void assertReactShadowNodeCopy(ReactShadowNode source, ReactShadowNode target) {
@@ -153,8 +178,12 @@ public class FabricUIManagerModule implements UIManager {
    */
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
-    parent.addChildAt(child, parent.getChildCount());
-    setChildren(parent.getReactTag(), child.getReactTag());
+    try {
+      parent.addChildAt(child, parent.getChildCount());
+      setChildren(parent.getReactTag(), child.getReactTag());
+    } catch (Exception e) {
+      handleException(parent.getThemedContext(), e);
+    }
   }
 
   /**
@@ -173,17 +202,22 @@ public class FabricUIManagerModule implements UIManager {
   }
 
   public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    if (!childList.isEmpty()) {
-      ReactShadowNode rootNode = getRootNode(rootTag);
-      for (int i = 0; i < childList.size(); i++) {
-        ReactShadowNode child = childList.get(i);
-        rootNode.addChildAt(child, i);
-        setChildren(rootTag, child.getReactTag());
-      }
+    try {
+      if (!childList.isEmpty()) {
+        ReactShadowNode rootNode = getRootNode(rootTag);
+        for (int i = 0; i < childList.size(); i++) {
+          ReactShadowNode child = childList.get(i);
+          rootNode.addChildAt(child, i);
+          setChildren(rootTag, child.getReactTag());
+        }
 
-      calculateRootLayout(rootNode);
-      applyUpdatesRecursive(rootNode, 0, 0);
-      mUIViewOperationQueue.dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
+        calculateRootLayout(rootNode);
+        applyUpdatesRecursive(rootNode, 0, 0);
+        mUIViewOperationQueue
+          .dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
+      }
+    } catch (Exception e) {
+      handleException(rootTag, e);
     }
   }
 
@@ -297,4 +331,16 @@ public class FabricUIManagerModule implements UIManager {
     }
   }
 
+  private void handleException(ThemedReactContext context, Exception e) {
+    try {
+      context.handleException(e);
+    } catch (Exception ex) {
+      Log.e(TAG, "Exception while executing a Fabric method", e);
+      throw new RuntimeException(ex.getMessage(), e);
+    }
+  }
+
+  private void handleException(int rootTag, Exception e) {
+    handleException(getRootNode(rootTag).getThemedContext(), e);
+  }
 }
