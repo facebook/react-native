@@ -156,7 +156,13 @@ aliases:
     name: Check license
     command: ./scripts/circleci/check_license.sh
     when: always
-    
+
+  - &test-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      ./node_modules/.bin/coveralls
+
   - &build-android-app
     name: Build Android App
     command: |
@@ -330,6 +336,15 @@ jobs:
           path: ~/react-native/reports/junit
       - store_artifacts:
           path: ~/react-native/reports/junit
+
+  # Test Coverage
+  test_coverage:
+    <<: *js_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+    
+      - run: *test-coverage
 
   # Builds iOS test app
   build_objc_ios_test_app:
@@ -631,6 +646,19 @@ workflows:
       - analyze_pr:            
           filters: *filter-ignore-master-stable
           requires:            
+            - checkout_code
+
+  # Only run on master
+  coverage:
+    jobs:
+      - checkout_code:
+          filters:
+            branches:
+              only:
+                - master
+      
+      - test_coverage:
+          requires:
             - checkout_code
 
   # Only runs on NN-stable branches
