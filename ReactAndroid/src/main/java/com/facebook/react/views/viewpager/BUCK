@@ -1,11 +1,12 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "viewpager",
     srcs = glob(["**/*.java"]),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],

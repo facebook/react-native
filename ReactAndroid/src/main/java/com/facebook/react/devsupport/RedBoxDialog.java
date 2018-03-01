@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
@@ -99,10 +97,11 @@ import org.json.JSONObject;
       String sourceUrl = mDevSupportManager.getSourceUrl();
 
       mRedBoxHandler.reportRedbox(
-        title,
-        stack,
-        sourceUrl,
-        Assertions.assertNotNull(mReportCompletedListener));
+          view.getContext(),
+          title,
+          stack,
+          sourceUrl,
+          Assertions.assertNotNull(mReportCompletedListener));
     }
   };
 
@@ -322,7 +321,7 @@ import org.json.JSONObject;
   /**
    * Show the report button, hide the report textview and the loading indicator.
    */
-  public void resetReporting(boolean enabled) {
+  public void resetReporting() {
     if (mRedBoxHandler == null || !mRedBoxHandler.isReportEnabled()) {
       return;
     }
@@ -330,8 +329,7 @@ import org.json.JSONObject;
     Assertions.assertNotNull(mReportTextView).setVisibility(View.GONE);
     Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.GONE);
     Assertions.assertNotNull(mLineSeparator).setVisibility(View.GONE);
-    Assertions.assertNotNull(mReportButton).setVisibility(
-      enabled ? View.VISIBLE : View.GONE);
+    Assertions.assertNotNull(mReportButton).setVisibility(View.VISIBLE);
     Assertions.assertNotNull(mReportButton).setEnabled(true);
   }
 

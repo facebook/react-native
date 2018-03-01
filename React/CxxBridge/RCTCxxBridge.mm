@@ -2,11 +2,9 @@
 
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include <atomic>
@@ -51,9 +49,6 @@
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
 #import "RCTDevLoadingView.h"
 #endif
-
-@interface RCTCxxBridge : RCTBridge
-@end
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -178,7 +173,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
-@synthesize embeddedBundleURL = _embeddedBundleURL;
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
@@ -192,7 +186,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (JSGlobalContextRef)jsContextRef
 {
-  return (JSGlobalContextRef)(self->_reactInstance ? self->_reactInstance->getJavaScriptContext() : nullptr);
+  return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
+}
+
+- (BOOL)isInspectable
+{
+  return _reactInstance ? _reactInstance->isInspectable() : NO;
 }
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
@@ -205,9 +204,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
-    if ([bridge.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
-      _embeddedBundleURL = [bridge.delegate embeddedBundleURLForBridge:bridge];
-    }
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
@@ -341,6 +337,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
+         , nullptr
       ));
     }
   } else {
@@ -455,6 +452,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(jsBoundExtraModuleForClass:)]) {
+      return [cxxDelegate jsBoundExtraModuleForClass:moduleClass];
+    }
+  }
+
+  return nil;
+}
+
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
@@ -516,14 +525,11 @@ struct RCTInstanceCallback : public InstanceCallback {
         std::make_unique<JSBigStdString>("true"));
     }
 #endif
+
+    [self installExtraJSBinding];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (NSArray *)configForModuleName:(NSString *)moduleName
-{
-  return _moduleDataByName[moduleName].config;
 }
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
@@ -534,13 +540,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClasses.count];
   for (Class moduleClass in moduleClasses) {
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
-
-    // Don't initialize the old executor in the new bridge.
-    // TODO mhorowitz #10487027: after D3175632 lands, we won't need
-    // this, because it won't be eagerly initialized.
-    if ([moduleName isEqualToString:@"RCTJSCExecutor"]) {
-      continue;
-    }
 
     // Check for module name collisions
     RCTModuleData *moduleData = _moduleDataByName[moduleName];
@@ -622,6 +621,16 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
+- (void)installExtraJSBinding
+{
+  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+    if ([cxxDelegate respondsToSelector:@selector(installExtraJSBinding:)]) {
+      [cxxDelegate installExtraJSBinding:self.jsContextRef];
+    }
+  }
+}
+
 - (void)_initModules:(NSArray<id<RCTBridgeModule>> *)modules
    withDispatchGroup:(dispatch_group_t)dispatchGroup
     lazilyDiscovered:(BOOL)lazilyDiscovered
@@ -684,7 +693,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)_prepareModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
 {
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge prepareModulesWithDispatch]", nil);
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCxxBridge _prepareModulesWithDispatchGroup]", nil);
 
   BOOL initializeImmediately = NO;
   if (dispatchGroup == NULL) {
@@ -739,6 +748,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   // This will get called from whatever thread was actually executing JS.
   dispatch_block_t completion = ^{
+    // Log start up metrics early before processing any other js calls
+    [self logStartupFinish];
     // Flush pending calls immediately so we preserve ordering
     [self _flushPendingCalls];
 
@@ -1013,16 +1024,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)_flushPendingCalls
+- (void)logStartupFinish
 {
   // Log metrics about native requires during the bridge startup.
-  uint64_t nativeRequiresCount = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequiresCount];
+  uint64_t nativeRequiresCount = [_performanceLogger valueForTag:RCTPLRAMNativeRequiresCount];
   [_performanceLogger setValue:nativeRequiresCount forTag:RCTPLRAMStartupNativeRequiresCount];
-  uint64_t nativeRequires = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequires];
+  uint64_t nativeRequires = [_performanceLogger valueForTag:RCTPLRAMNativeRequires];
   [_performanceLogger setValue:nativeRequires forTag:RCTPLRAMStartupNativeRequires];
 
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
+}
 
+- (void)_flushPendingCalls
+{
   RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": [@(_pendingCalls.count) stringValue] });
   // Phase B: _flushPendingCalls happens.  Each block in _pendingCalls is
   // executed, adding work to the queue, and _pendingCount is decremented.

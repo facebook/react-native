@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AccessibilityInfo
  * @flow
@@ -30,8 +28,8 @@ var _subscriptions = new Map();
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
  * that is currently active. The `AccessibilityInfo` API is designed for this
- * purpose. You can use it to query the current state of the screen reader as 
- * well as to register to be notified when the state of the screen reader 
+ * purpose. You can use it to query the current state of the screen reader as
+ * well as to register to be notified when the state of the screen reader
  * changes.
  *
  * See http://facebook.github.io/react-native/docs/accessibilityinfo.html
@@ -39,11 +37,11 @@ var _subscriptions = new Map();
 var AccessibilityInfo = {
 
   /**
-   * Query whether a screen reader is currently enabled. 
-   * 
-   * Returns a promise which resolves to a boolean. 
+   * Query whether a screen reader is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
    * The result is `true` when a screen reader is enabledand `false` otherwise.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#fetch
    */
   fetch: function(): Promise {
@@ -67,7 +65,7 @@ var AccessibilityInfo = {
    *     - `announcement`: The string announced by the screen reader.
    *     - `success`: A boolean indicating whether the announcement was
    *       successfully made.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#addeventlistener
    */
   addEventListener: function (
@@ -96,9 +94,9 @@ var AccessibilityInfo = {
 
   /**
    * Set accessibility focus to a react component.
-   * 
+   *
    * @platform ios
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(
@@ -111,7 +109,7 @@ var AccessibilityInfo = {
    * Post a string to be announced by the screen reader.
    *
    * @platform ios
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(
@@ -122,7 +120,7 @@ var AccessibilityInfo = {
 
   /**
    * Remove an event handler.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#removeeventlistener
    */
   removeEventListener: function(

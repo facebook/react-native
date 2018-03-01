@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTObjcExecutor.h"
@@ -19,6 +17,7 @@
 #import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
+#import <cxxreact/RAMBundleRegistry.h>
 #import <folly/json.h>
 
 namespace facebook {
@@ -45,7 +44,10 @@ public:
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {
-        m_errorBlock(error);
+        // Do not use "m_errorBlock" here as the bridge might be in the middle
+        // of invalidation as a result of error handling and "this" can be
+        // already deallocated.
+        errorBlock(error);
         return;
       }
 

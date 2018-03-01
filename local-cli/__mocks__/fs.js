@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  */
@@ -66,29 +64,7 @@ fs.readdir.mockImplementation((filepath, callback) => {
   return callback(null, Object.keys(node));
 });
 
-fs.readFile.mockImplementation(function(filepath, encoding, callback) {
-  filepath = path.normalize(filepath);
-  callback = asyncCallback(callback);
-  if (arguments.length === 2) {
-    callback = encoding;
-    encoding = null;
-  }
-
-  let node;
-  try {
-    node = getToNode(filepath);
-    if (isDirNode(node)) {
-      callback(new Error('Error readFile a dir: ' + filepath));
-    }
-    if (node == null) {
-      return callback(Error('No such file: ' + filepath));
-    } else {
-      return callback(null, node);
-    }
-  } catch (e) {
-    return callback(e);
-  }
-});
+fs.readFile.mockImplementation(asyncify(fs.readFileSync));
 
 fs.readFileSync.mockImplementation(function(filepath, encoding) {
   filepath = path.normalize(filepath);
@@ -156,7 +132,9 @@ fs.mkdirSync.mockImplementation((dirPath, mode) => {
   if (!isDirNode(node)) {
     throw fsError('ENOTDIR', 'not a directory: ' + parentPath);
   }
-  node[path.basename(dirPath)] = {};
+  if (node[path.basename(dirPath)] == null) {
+    node[path.basename(dirPath)] = {};
+  }
 });
 
 function fsError(code, message) {
@@ -367,9 +345,6 @@ fs.createWriteStream.mockImplementation(filePath => {
   const writeStream = new stream.Writable({
     write(chunk, encoding, callback) {
       this.__chunks.push(chunk);
-      callback();
-    },
-    final(callback) {
       node[path.basename(filePath)] = this.__chunks.join('');
       callback();
     },

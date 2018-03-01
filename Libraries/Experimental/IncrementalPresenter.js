@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule IncrementalPresenter
  * @flow
@@ -27,7 +25,7 @@ import type {Context} from 'Incremental';
  *
  * `<IncrementalPresenter>` can be used to group sets of `<Incremental>` renders
  * such that they are initially invisible and removed from layout until all
- * decendents have finished rendering, at which point they are drawn all at once
+ * descendants have finished rendering, at which point they are drawn all at once
  * so the UI doesn't jump around during the incremental rendering process.
  *
  * See Incremental.js for more info.

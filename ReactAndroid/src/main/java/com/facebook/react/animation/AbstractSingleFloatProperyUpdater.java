@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animation;
@@ -13,7 +11,7 @@ import android.view.View;
 
 /**
  * Base class for {@link AnimationPropertyUpdater} subclasses that updates a single float property
- * value. It helps to handle convertion from animation progress to the actual value as well as the
+ * value. It helps to handle conversion from animation progress to the actual value as well as the
  * quite common case when no starting value is provided.
  */
 public abstract class AbstractSingleFloatProperyUpdater implements AnimationPropertyUpdater {

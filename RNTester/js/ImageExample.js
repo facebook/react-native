@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ImageExample
@@ -30,6 +28,9 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
+/* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.63 was deployed. To see the error delete this comment and
+ * run Flow. */
 var NetworkImageCallbackExample = createReactClass({
   displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
@@ -40,7 +41,7 @@ var NetworkImageCallbackExample = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({mountTime: new Date()});
   },
 
@@ -98,9 +99,6 @@ var NetworkImageCallbackExample = createReactClass({
   },
 
   _loadEventFired(event) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this.setState((state) => {
       return state.events = [...state.events, event];
     });
@@ -195,9 +193,9 @@ var MultipleSourcesExample = createReactClass({
           <Image
             style={{flex: 1}}
             source={[
-              {uri: 'https://facebook.github.io/react/img/logo_small.png', width: 38, height: 38},
-              {uri: 'https://facebook.github.io/react/img/logo_small_2x.png', width: 76, height: 76},
-              {uri: 'https://facebook.github.io/react/logo-og.png', width: 400, height: 400}
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 38, height: 38},
+              {uri: 'https://facebook.github.io/react-native/img/favicon.png', width: 76, height: 76},
+              {uri: 'https://facebook.github.io/react-native/img/opengraph.png', width: 400, height: 400}
             ]}
           />
         </View>
@@ -237,7 +235,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
+          source={fullImage}
           style={styles.base}
         />
       );
@@ -572,18 +570,16 @@ exports.examples = [
                     />
                   </View>
                 : null }
-                { Platform.OS === 'android' ?
-                  <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>
-                      Center
-                    </Text>
-                    <Image
-                      style={styles.resizeMode}
-                      resizeMode={Image.resizeMode.center}
-                      source={image}
-                    />
-                  </View>
-                : null }
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Center
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.center}
+                    source={image}
+                  />
+                </View>
               </View>
             </View>
           );
@@ -727,8 +723,8 @@ exports.examples = [
   },
 ];
 
-var fullImage = {uri: 'https://facebook.github.io/react/logo-og.png'};
-var smallImage = {uri: 'https://facebook.github.io/react/img/logo_small_2x.png'};
+var fullImage = {uri: 'https://facebook.github.io/react-native/img/opengraph.png'};
+var smallImage = {uri: 'https://facebook.github.io/react-native/img/favicon.png'};
 
 var styles = StyleSheet.create({
   base: {

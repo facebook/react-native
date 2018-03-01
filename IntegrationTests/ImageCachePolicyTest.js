@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ImageCachePolicyTest
@@ -65,7 +63,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Text>Hello</Text>
       <Image
         source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'only-if-cached'
             }}
         onLoad={() => this.testComplete('only-if-cached', false)}
@@ -74,7 +72,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
       />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'default'
             }}
           onLoad={() => this.testComplete('default', true)}
@@ -83,7 +81,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'reload'
             }}
           onLoad={() => this.testComplete('reload', true)}
@@ -92,7 +90,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react/img/logo_small_2x.png?cacheBust=notinCache' + Date.now(),
+              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
               cache: 'force-cache'
             }}
           onLoad={() => this.testComplete('force-cache', true)}

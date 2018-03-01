@@ -31,7 +31,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 
   /**
    * Create an animation object for the current animation type, based on the view and final screen
-   * coordinates. If the application-supplied configuraiton does not specify an animation definition
+   * coordinates. If the application-supplied configuration does not specify an animation definition
    * for this types, or if the animation definition is invalid, returns null.
    */
   abstract @Nullable Animation createAnimationImpl(View view, int x, int y, int width, int height);

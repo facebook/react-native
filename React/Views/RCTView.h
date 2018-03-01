@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -23,8 +21,14 @@
 /**
  * Accessibility event handlers
  */
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
+
+/**
+ * Accessibility properties
+ */
+@property (nonatomic, copy) NSArray <NSString *> *accessibilityActions;
 
 /**
  * Used to control how touch events are processed.
@@ -43,7 +47,7 @@
 /**
  * Layout direction of the view.
  * This is inherited from UIView+React, but we override it here
- * to improve perfomance and make subclassing/overriding possible/easier.
+ * to improve performance and make subclassing/overriding possible/easier.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 

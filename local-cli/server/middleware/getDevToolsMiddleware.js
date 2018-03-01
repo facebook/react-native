@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  */
@@ -14,8 +12,8 @@ const launchChrome = require('../util/launchChrome');
 
 const {exec} = require('child_process');
 
-function launchChromeDevTools(port, args = '') {
-  var debuggerURL = 'http://localhost:' + port + '/debugger-ui' + args;
+function launchChromeDevTools(host, args = '') {
+  var debuggerURL = 'http://' + host + '/debugger-ui' + args;
   console.log('Launching Dev Tools...');
   launchChrome(debuggerURL);
 }
@@ -25,7 +23,7 @@ function escapePath(pathname) {
   return '"' + pathname + '"';
 }
 
-function launchDevTools({port, projectRoots}, isChromeConnected) {
+function launchDevTools({host, projectRoots}, isChromeConnected) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
@@ -39,12 +37,13 @@ function launchDevTools({port, projectRoots}, isChromeConnected) {
     });
   } else if (!isChromeConnected()) {
     // Dev tools are not yet open; we need to open a session
-    launchChromeDevTools(port);
+    launchChromeDevTools(host);
   }
 }
 
 module.exports = function(options, isChromeConnected) {
   return function(req, res, next) {
+    var host = req.headers.host;
     if (req.url === '/launch-safari-devtools') {
       // TODO: remove `console.log` and dev tools binary
       console.log(
@@ -62,7 +61,7 @@ module.exports = function(options, isChromeConnected) {
       launchDevTools(options, isChromeConnected);
       res.end('OK');
     } else if (req.url === '/launch-js-devtools') {
-      launchDevTools(options, isChromeConnected);
+      launchDevTools({...options, host}, isChromeConnected);
       res.end('OK');
     } else {
       next();

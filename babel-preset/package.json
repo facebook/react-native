@@ -9,7 +9,7 @@
     "preset",
     "react-native"
   ],
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/facebook/react-native/issues"
   },

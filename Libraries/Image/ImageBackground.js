@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ImageBackground
  * @flow
@@ -33,7 +31,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react/logo-og.png'}}
+ *         source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>

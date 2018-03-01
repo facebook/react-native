@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
@@ -14,6 +12,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 
@@ -122,6 +121,11 @@ public class DevInternalSettings implements
   @SuppressLint("SharedPreferencesUse")
   public void setBundleDeltasEnabled(boolean enabled) {
     mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, enabled).apply();
+  }
+
+  @Override
+  public boolean isNuclideJSDebugEnabled() {
+    return ReactBuildConfig.IS_INTERNAL_BUILD && ReactBuildConfig.DEBUG;
   }
 
   @Override
