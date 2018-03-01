@@ -25,8 +25,10 @@ function dependencies(argv, config, args, packagerInstance) {
       typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
       undefined;
 
+
   const packageOpts = {
     assetRegistryPath: ASSET_REGISTRY_PATH,
+    cacheStores: [],
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
     dynamicDepsInPackages: config.dynamicDepsInPackages,
