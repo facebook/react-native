@@ -651,12 +651,7 @@ workflows:
   # Only run on master
   coverage:
     jobs:
-      - checkout_code:
-          filters:
-            branches:
-              only:
-                - master
-      
+      - checkout_code      
       - test_coverage:
           requires:
             - checkout_code
