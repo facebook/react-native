@@ -2,6 +2,12 @@
 
 package com.facebook.react.fabric;
 
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+
+import android.util.Log;
+import android.view.View;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -235,8 +241,7 @@ public class FabricUIManagerModule implements UIManager {
 
     int widthMeasureSpec = rootView.getWidthMeasureSpec();
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
-    rootShadowNode.setStyleWidthAuto();
-    rootShadowNode.setStyleHeightAuto();
+    updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
 
     mRootShadowNodeRegistry.addNode(rootShadowNode);
     mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
@@ -255,6 +260,41 @@ public class FabricUIManagerModule implements UIManager {
     rootNode.setReactTag(rootTag);
     rootNode.setThemedContext(themedReactContext);
     return rootNode;
+  }
+
+  /**
+   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
+   * parameters.
+   */
+  public void updateRootView(
+    ReactShadowNode rootCSSNode, int widthMeasureSpec, int heightMeasureSpec) {
+    int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+    int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
+    switch (widthMode) {
+      case EXACTLY:
+        rootCSSNode.setStyleWidth(widthSize);
+        break;
+      case AT_MOST:
+        rootCSSNode.setStyleMaxWidth(widthSize);
+        break;
+      case UNSPECIFIED:
+        rootCSSNode.setStyleWidthAuto();
+        break;
+    }
+
+    int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+    int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
+    switch (heightMode) {
+      case EXACTLY:
+        rootCSSNode.setStyleHeight(heightSize);
+        break;
+      case AT_MOST:
+        rootCSSNode.setStyleMaxHeight(heightSize);
+        break;
+      case UNSPECIFIED:
+        rootCSSNode.setStyleHeightAuto();
+        break;
+    }
   }
 
 }

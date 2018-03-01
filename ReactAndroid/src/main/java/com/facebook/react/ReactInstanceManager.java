@@ -71,6 +71,7 @@ import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.appregistry.AppRegistry;
+import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -1033,8 +1034,14 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.detachViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
-    catalystInstance.getJSModule(AppRegistry.class)
+    if (rootView.isFabric()) {
+      catalystInstance.getJSModule(ReactFabric.class)
+        .unmountComponentAtNodeAndRemoveContainer(rootView.getId());
+    } else {
+      catalystInstance.getJSModule(AppRegistry.class)
         .unmountApplicationComponentAtRootTag(rootView.getId());
+    }
+
   }
 
   private void tearDownReactContext(ReactContext reactContext) {

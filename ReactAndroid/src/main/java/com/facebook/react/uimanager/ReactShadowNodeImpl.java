@@ -222,7 +222,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
         "Tried to add child that already has a parent! Remove it from its parent first.");
     }
     if (mChildren == null) {
-      mChildren = new ArrayList<ReactShadowNodeImpl>(4);
+      mChildren = new ArrayList<>(4);
     }
     mChildren.add(i, child);
     child.mParent = this;
