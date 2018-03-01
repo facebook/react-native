@@ -63,6 +63,11 @@ aliases:
         - /.*-stable/
         - master
 
+  - &filter-only-master
+    branches:
+      only:
+        - master
+
   - &filter-only-stable
     branches:
       only:
@@ -156,7 +161,13 @@ aliases:
     name: Check license
     command: ./scripts/circleci/check_license.sh
     when: always
-    
+
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+
   - &build-android-app
     name: Build Android App
     command: |
@@ -196,7 +207,7 @@ aliases:
         echo "JavaScript bundle missing, cannot run instrumentation tests. Verify build-js-bundle step completed successfully."; exit 1;
       fi
       source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-  
+
   - &collect-android-test-results
     name: Collect Test Results
     command: |
@@ -529,6 +540,18 @@ jobs:
             fi
           when: always
 
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+    
+      - run: *js-coverage
+
+      - store_artifacts:
+          path: ~/react-native/coverage/
+
 # Workflows enables us to run multiple jobs in parallel
 workflows:
   version: 2
@@ -577,7 +600,7 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-
+            
   # Only runs on PRs
   analyze:
     jobs:
@@ -589,6 +612,16 @@ workflows:
       - analyze_pr:            
           filters: *filter-ignore-master-stable
           requires:            
+            - checkout_code
+
+  # Only run on master
+  coverage:
+    jobs:
+      - checkout_code:
+          filters: *filter-only-master
+      - js_coverage:
+          filters: *filter-only-master
+          requires:
             - checkout_code
 
   # Only runs on NN-stable branches
