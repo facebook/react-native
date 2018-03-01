@@ -337,13 +337,15 @@ struct JYogaValue : public JavaClass<JYogaValue> {
   }
 };
 
-#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                                       \
-  javatype jni_YGNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer) {             \
-    return (javatype) YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer));               \
-  }                                                                                        \
-                                                                                           \
-  void jni_YGNodeStyleSet##name(alias_ref<jobject>, jlong nativePointer, javatype value) { \
-    YGNodeStyleSet##name(_jlong2YGNodeRef(nativePointer), static_cast<type>(value));       \
+#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                           \
+  javatype jni_YGNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer) { \
+    return (javatype)YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer));    \
+  }                                                                            \
+                                                                               \
+  void jni_YGNodeStyleSet##name(                                               \
+      alias_ref<jobject>, jlong nativePointer, javatype value) {               \
+    YGNodeStyleSet##name(                                                      \
+        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));            \
   }
 
 #define YG_NODE_JNI_STYLE_UNIT_PROP(name)                                                         \

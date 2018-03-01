@@ -70,21 +70,23 @@ bool YGStyle::operator==(const YGStyle& style) {
       YGValueArrayEqual(minDimensions, style.minDimensions) &&
       YGValueArrayEqual(maxDimensions, style.maxDimensions);
 
-  if (!(std::isnan(flex) && std::isnan(style.flex))) {
+  if (!(YGFloatIsUndefined(flex) && YGFloatIsUndefined(style.flex))) {
     areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
   }
 
-  if (!(std::isnan(flexGrow) && std::isnan(style.flexGrow))) {
+  if (!(YGFloatIsUndefined(flexGrow) && YGFloatIsUndefined(style.flexGrow))) {
     areNonFloatValuesEqual =
         areNonFloatValuesEqual && flexGrow == style.flexGrow;
   }
 
-  if (!(std::isnan(flexShrink) && std::isnan(style.flexShrink))) {
+  if (!(YGFloatIsUndefined(flexShrink) &&
+        YGFloatIsUndefined(style.flexShrink))) {
     areNonFloatValuesEqual =
         areNonFloatValuesEqual && flexShrink == style.flexShrink;
   }
 
-  if (!(std::isnan(aspectRatio) && std::isnan(style.aspectRatio))) {
+  if (!(YGFloatIsUndefined(aspectRatio) &&
+        YGFloatIsUndefined(style.aspectRatio))) {
     areNonFloatValuesEqual =
         areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
   }

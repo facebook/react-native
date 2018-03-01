@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 #include "YGLayout.h"
+#include "Utils.h"
 
 const std::array<float, 2> kYGDefaultDimensionValues = {
     {YGUndefined, YGUndefined}};
@@ -31,9 +32,11 @@ YGLayout::YGLayout()
       doesLegacyStretchFlagAffectsLayout(false) {}
 
 bool YGLayout::operator==(YGLayout layout) const {
-  bool isEqual = position == layout.position &&
-      dimensions == layout.dimensions && margin == layout.margin &&
-      border == layout.border && padding == layout.padding &&
+  bool isEqual = YGFloatArrayEqual(position, layout.position) &&
+      YGFloatArrayEqual(dimensions, layout.dimensions) &&
+      YGFloatArrayEqual(margin, layout.margin) &&
+      YGFloatArrayEqual(border, layout.border) &&
+      YGFloatArrayEqual(padding, layout.padding) &&
       direction == layout.direction && hadOverflow == layout.hadOverflow &&
       lastParentDirection == layout.lastParentDirection &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&

@@ -652,11 +652,11 @@ public class YogaNode implements Cloneable {
     }
 
     return mMeasureFunction.measure(
-          this,
-          width,
-          YogaMeasureMode.fromInt(widthMode),
-          height,
-          YogaMeasureMode.fromInt(heightMode));
+        this,
+        width,
+        YogaMeasureMode.fromInt(widthMode),
+        height,
+        YogaMeasureMode.fromInt(heightMode));
   }
 
   private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);

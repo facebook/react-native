@@ -624,26 +624,28 @@ bool YGNode::isNodeFlexible() {
 float YGNode::getLeadingBorder(const YGFlexDirection axis) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.border[YGEdgeStart].unit != YGUnitUndefined &&
+      !YGFloatIsUndefined(style_.border[YGEdgeStart].value) &&
       style_.border[YGEdgeStart].value >= 0.0f) {
     return style_.border[YGEdgeStart].value;
   }
 
-  return fmaxf(
-      YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value,
-      0.0f);
+  float computedEdgeValue =
+      YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value;
+  return YGFloatMax(computedEdgeValue, 0.0f);
 }
 
 float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) {
   if (YGFlexDirectionIsRow(flexDirection) &&
       style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
+      !YGFloatIsUndefined(style_.border[YGEdgeEnd].value) &&
       style_.border[YGEdgeEnd].value >= 0.0f) {
     return style_.border[YGEdgeEnd].value;
   }
 
-  return fmaxf(
+  float computedEdgeValue =
       YGComputedEdgeValue(style_.border, trailing[flexDirection], &YGValueZero)
-          ->value,
-      0.0f);
+          ->value;
+  return YGFloatMax(computedEdgeValue, 0.0f);
 }
 
 float YGNode::getLeadingPadding(
@@ -651,14 +653,16 @@ float YGNode::getLeadingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-      YGResolveValue(style_.padding[YGEdgeStart], widthSize) >= 0.0f) {
+      !YGFloatIsUndefined(
+          YGResolveValue(style_.padding[YGEdgeStart], widthSize)) &&
+      YGResolveValue(style_.padding[YGEdgeStart], widthSize) > 0.0f) {
     return YGResolveValue(style_.padding[YGEdgeStart], widthSize);
   }
-  return fmaxf(
-      YGResolveValue(
-          *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
-          widthSize),
-      0.0f);
+
+  float resolvedValue = YGResolveValue(
+      *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
+      widthSize);
+  return YGFloatMax(resolvedValue, 0.0f);
 }
 
 float YGNode::getTrailingPadding(
@@ -666,14 +670,17 @@ float YGNode::getTrailingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
+      !YGFloatIsUndefined(
+          YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) &&
       YGResolveValue(style_.padding[YGEdgeEnd], widthSize) >= 0.0f) {
     return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
   }
-  return fmaxf(
-      YGResolveValue(
-          *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
-          widthSize),
-      0.0f);
+
+  float resolvedValue = YGResolveValue(
+      *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
+      widthSize);
+
+  return YGFloatMax(resolvedValue, 0.0f);
 }
 
 float YGNode::getLeadingPaddingAndBorder(
