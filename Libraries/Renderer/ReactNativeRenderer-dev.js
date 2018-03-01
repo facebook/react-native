@@ -19,12 +19,12 @@ require("InitializeCore");
 var invariant = require("fbjs/lib/invariant");
 var warning = require("fbjs/lib/warning");
 var emptyFunction = require("fbjs/lib/emptyFunction");
-var RCTEventEmitter = require("RCTEventEmitter");
 var UIManager = require("UIManager");
-var React = require("react");
+var RCTEventEmitter = require("RCTEventEmitter");
 var TextInputState = require("TextInputState");
 var deepDiffer = require("deepDiffer");
 var flattenStyle = require("flattenStyle");
+var React = require("react");
 var emptyObject = require("fbjs/lib/emptyObject");
 var checkPropTypes = require("prop-types/checkPropTypes");
 var shallowEqual = require("fbjs/lib/shallowEqual");
@@ -2323,6 +2323,10 @@ var ReactNativeBridgeEventPlugin = {
     nativeEvent,
     nativeEventTarget
   ) {
+    if (targetInst == null) {
+      // Probably a node belonging to another renderer's tree.
+      return null;
+    }
     var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
     var directDispatchConfig = customDirectEventTypes[topLevelType];
     invariant(
@@ -2432,6 +2436,49 @@ var ReactNativeComponentTree = Object.freeze({
   getNodeFromInstance: getTagFromInstance,
   getFiberCurrentPropsFromNode: getFiberCurrentPropsFromNode$1,
   updateFiberProps: updateFiberProps
+});
+
+var ReactNativeEventPluginOrder = [
+  "ResponderEventPlugin",
+  "ReactNativeBridgeEventPlugin"
+];
+
+// Module provided by RN:
+var ReactNativeGlobalResponderHandler = {
+  onChange: function(from, to, blockNativeResponder) {
+    if (to !== null) {
+      var tag = to.stateNode._nativeTag;
+      UIManager.setJSResponder(tag, blockNativeResponder);
+    } else {
+      UIManager.clearJSResponder();
+    }
+  }
+};
+
+/**
+ * Make sure essential globals are available and are patched correctly. Please don't remove this
+ * line. Bundles created by react-packager `require` it before executing any application code. This
+ * ensures it exists in the dependency graph and can be `require`d.
+ * TODO: require this in packager, not in React #10932517
+ */
+// Module provided by RN:
+/**
+ * Inject module for resolving DOM hierarchy and plugin ordering.
+ */
+injection.injectEventPluginOrder(ReactNativeEventPluginOrder);
+injection$1.injectComponentTree(ReactNativeComponentTree);
+
+ResponderEventPlugin.injection.injectGlobalResponderHandler(
+  ReactNativeGlobalResponderHandler
+);
+
+/**
+ * Some important event plugins included by default (without having to require
+ * them).
+ */
+injection.injectEventPluginsByName({
+  ResponderEventPlugin: ResponderEventPlugin,
+  ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
 // Use to restore controlled state after a change event has fired.
@@ -2732,54 +2779,11 @@ var ReactNativeEventEmitter = Object.freeze({
   receiveTouches: receiveTouches
 });
 
-var ReactNativeEventPluginOrder = [
-  "ResponderEventPlugin",
-  "ReactNativeBridgeEventPlugin"
-];
-
-// Module provided by RN:
-var ReactNativeGlobalResponderHandler = {
-  onChange: function(from, to, blockNativeResponder) {
-    if (to !== null) {
-      var tag = to.stateNode._nativeTag;
-      UIManager.setJSResponder(tag, blockNativeResponder);
-    } else {
-      UIManager.clearJSResponder();
-    }
-  }
-};
-
-/**
- * Make sure essential globals are available and are patched correctly. Please don't remove this
- * line. Bundles created by react-packager `require` it before executing any application code. This
- * ensures it exists in the dependency graph and can be `require`d.
- * TODO: require this in packager, not in React #10932517
- */
-// Module provided by RN:
 // Module provided by RN:
 /**
  * Register the event emitter with the native bridge
  */
 RCTEventEmitter.register(ReactNativeEventEmitter);
-
-/**
- * Inject module for resolving DOM hierarchy and plugin ordering.
- */
-injection.injectEventPluginOrder(ReactNativeEventPluginOrder);
-injection$1.injectComponentTree(ReactNativeComponentTree);
-
-ResponderEventPlugin.injection.injectGlobalResponderHandler(
-  ReactNativeGlobalResponderHandler
-);
-
-/**
- * Some important event plugins included by default (without having to require
- * them).
- */
-injection.injectEventPluginsByName({
-  ResponderEventPlugin: ResponderEventPlugin,
-  ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
-});
 
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
@@ -2977,19 +2981,9 @@ var TouchHistoryMath = {
   noCentroid: -1
 };
 
-var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-
-var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
-var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
-
-var ReactGlobalSharedState = Object.freeze({
-  ReactCurrentOwner: ReactCurrentOwner,
-  ReactDebugCurrentFrame: ReactDebugCurrentFrame
-});
-
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.3.0-alpha.0";
+var ReactVersion = "16.3.0-alpha.1";
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -3580,6 +3574,11 @@ function set(key, value) {
   key._reactInternalFiber = value;
 }
 
+var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+
+var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
+var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
+
 function getComponentName(fiber) {
   var type = fiber.type;
 
@@ -4098,19 +4097,26 @@ var ReactNativeComponent = (function(_React$Component) {
   return ReactNativeComponent;
 })(React.Component);
 
-// Don't change these two values:
-var NoEffect = 0;
-var PerformedWork = 1;
+// Don't change these two values. They're used by React Dev Tools.
+var NoEffect = /*              */ 0;
+var PerformedWork = /*         */ 1;
 
 // You can change the rest (and add more).
-var Placement = 2;
-var Update = 4;
-var PlacementAndUpdate = 6;
-var Deletion = 8;
-var ContentReset = 16;
-var Callback = 32;
-var Err = 64;
-var Ref = 128;
+var Placement = /*             */ 2;
+var Update = /*                */ 4;
+var PlacementAndUpdate = /*    */ 6;
+var Deletion = /*              */ 8;
+var ContentReset = /*          */ 16;
+var Callback = /*              */ 32;
+var DidCapture = /*            */ 64;
+var Ref = /*                   */ 128;
+var ErrLog = /*                */ 256;
+
+// Union of all host effects
+var HostEffectMask = /*        */ 511;
+
+var Incomplete = /*            */ 512;
+var ShouldCapture = /*         */ 1024;
 
 var MOUNTING = 1;
 var MOUNTED = 2;
@@ -4542,10 +4548,13 @@ var ReactDebugCurrentFiber = {
 // Re-export dynamic flags from the fbsource version.
 var _require = require("ReactFeatureFlags");
 
+var enableGetDerivedStateFromCatch = _require.enableGetDerivedStateFromCatch;
 var debugRenderPhaseSideEffects = _require.debugRenderPhaseSideEffects;
 var debugRenderPhaseSideEffectsForStrictMode =
   _require.debugRenderPhaseSideEffectsForStrictMode;
 var warnAboutDeprecatedLifecycles = _require.warnAboutDeprecatedLifecycles;
+var replayFailedUnitOfWorkWithInvokeGuardedCallback =
+  _require.replayFailedUnitOfWorkWithInvokeGuardedCallback;
 
 var enableUserTimingAPI = true;
 var enableMutatingReconciler = true;
@@ -4682,6 +4691,8 @@ var shouldIgnoreFiber = function(fiber) {
     case CallComponent:
     case ReturnComponent:
     case Fragment:
+    case ContextProvider:
+    case ContextConsumer:
       return true;
     default:
       return false;
@@ -5591,12 +5602,12 @@ function createFiberRoot(containerInfo, isAsync, hydrate) {
     current: uninitializedFiber,
     containerInfo: containerInfo,
     pendingChildren: null,
-    remainingExpirationTime: NoWork,
-    isReadyForCommit: false,
+    pendingCommitExpirationTime: NoWork,
     finishedWork: null,
     context: null,
     pendingContext: null,
     hydrate: hydrate,
+    remainingExpirationTime: NoWork,
     firstBatch: null,
     nextScheduledRoot: null
   };
@@ -6038,7 +6049,8 @@ function createUpdateQueue(baseState) {
     last: null,
     callbackList: null,
     hasForceUpdate: false,
-    isInitialized: false
+    isInitialized: false,
+    capturedValues: null
   };
   {
     queue.isProcessing = false;
@@ -6063,7 +6075,10 @@ function insertUpdateIntoQueue(queue, update) {
   }
 }
 
-function insertUpdateIntoFiber(fiber, update) {
+var q1 = void 0;
+var q2 = void 0;
+function ensureUpdateQueues(fiber) {
+  q1 = q2 = null;
   // We'll have at least one and at most two distinct update queues.
   var alternateFiber = fiber.alternate;
   var queue1 = fiber.updateQueue;
@@ -6085,6 +6100,16 @@ function insertUpdateIntoFiber(fiber, update) {
     queue2 = null;
   }
   queue2 = queue2 !== queue1 ? queue2 : null;
+
+  // Use module variables instead of returning a tuple
+  q1 = queue1;
+  q2 = queue2;
+}
+
+function insertUpdateIntoFiber(fiber, update) {
+  ensureUpdateQueues(fiber);
+  var queue1 = q1;
+  var queue2 = q2;
 
   // Warn if an update is scheduled from inside an updater function.
   {
@@ -6125,14 +6150,17 @@ function insertUpdateIntoFiber(fiber, update) {
 }
 
 function getUpdateExpirationTime(fiber) {
-  if (fiber.tag !== ClassComponent && fiber.tag !== HostRoot) {
-    return NoWork;
+  switch (fiber.tag) {
+    case HostRoot:
+    case ClassComponent:
+      var updateQueue = fiber.updateQueue;
+      if (updateQueue === null) {
+        return NoWork;
+      }
+      return updateQueue.expirationTime;
+    default:
+      return NoWork;
   }
-  var updateQueue = fiber.updateQueue;
-  if (updateQueue === null) {
-    return NoWork;
-  }
-  return updateQueue.expirationTime;
 }
 
 function getStateFromUpdate(update, instance, prevState, props) {
@@ -6161,6 +6189,7 @@ function processUpdateQueue(
       first: currentQueue.first,
       last: currentQueue.last,
       isInitialized: currentQueue.isInitialized,
+      capturedValues: currentQueue.capturedValues,
       // These fields are no longer valid because they were already committed.
       // Reset them.
       callbackList: null,
@@ -6262,12 +6291,24 @@ function processUpdateQueue(
       }
       _callbackList.push(update);
     }
+    if (update.capturedValue !== null) {
+      var _capturedValues = queue.capturedValues;
+      if (_capturedValues === null) {
+        queue.capturedValues = [update.capturedValue];
+      } else {
+        _capturedValues.push(update.capturedValue);
+      }
+    }
     update = update.next;
   }
 
   if (queue.callbackList !== null) {
     workInProgress.effectTag |= Callback;
-  } else if (queue.first === null && !queue.hasForceUpdate) {
+  } else if (
+    queue.first === null &&
+    !queue.hasForceUpdate &&
+    queue.capturedValues === null
+  ) {
     // The queue is empty. We can reset it.
     workInProgress.updateQueue = null;
   }
@@ -6363,6 +6404,18 @@ var warnOnInvalidCallback = void 0;
   });
   Object.freeze(fakeInternalInstance);
 }
+function callGetDerivedStateFromCatch(ctor, capturedValues) {
+  var resultState = {};
+  for (var i = 0; i < capturedValues.length; i++) {
+    var capturedValue = capturedValues[i];
+    var error = capturedValue.value;
+    var partialState = ctor.getDerivedStateFromCatch.call(null, error);
+    if (partialState !== null && partialState !== undefined) {
+      Object.assign(resultState, partialState);
+    }
+  }
+  return resultState;
+}
 
 var ReactFiberClassComponent = function(
   scheduleWork,
@@ -6386,7 +6439,7 @@ var ReactFiberClassComponent = function(
         callback: callback,
         isReplace: false,
         isForced: false,
-        nextCallback: null,
+        capturedValue: null,
         next: null
       };
       insertUpdateIntoFiber(fiber, update);
@@ -6405,7 +6458,7 @@ var ReactFiberClassComponent = function(
         callback: callback,
         isReplace: true,
         isForced: false,
-        nextCallback: null,
+        capturedValue: null,
         next: null
       };
       insertUpdateIntoFiber(fiber, update);
@@ -6424,7 +6477,7 @@ var ReactFiberClassComponent = function(
         callback: callback,
         isReplace: false,
         isForced: true,
-        nextCallback: null,
+        capturedValue: null,
         next: null
       };
       insertUpdateIntoFiber(fiber, update);
@@ -6450,7 +6503,7 @@ var ReactFiberClassComponent = function(
     }
 
     var instance = workInProgress.stateNode;
-    var type = workInProgress.type;
+    var ctor = workInProgress.type;
     if (typeof instance.shouldComponentUpdate === "function") {
       startPhaseTimer(workInProgress, "shouldComponentUpdate");
       var shouldUpdate = instance.shouldComponentUpdate(
@@ -6472,7 +6525,7 @@ var ReactFiberClassComponent = function(
       return shouldUpdate;
     }
 
-    if (type.prototype && type.prototype.isPureReactComponent) {
+    if (ctor.prototype && ctor.prototype.isPureReactComponent) {
       return (
         !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
       );
@@ -6628,7 +6681,7 @@ var ReactFiberClassComponent = function(
     }
     if (typeof instance.getChildContext === "function") {
       warning(
-        typeof workInProgress.type.childContextTypes === "object",
+        typeof type.childContextTypes === "object",
         "%s.getChildContext(): childContextTypes must be defined in order to " +
           "use getChildContext().",
         getComponentName(workInProgress)
@@ -6849,6 +6902,7 @@ var ReactFiberClassComponent = function(
 
   // Invokes the mount life-cycles on a previously never rendered instance.
   function mountClassInstance(workInProgress, renderExpirationTime) {
+    var ctor = workInProgress.type;
     var current = workInProgress.alternate;
 
     {
@@ -6885,7 +6939,7 @@ var ReactFiberClassComponent = function(
     if (
       (typeof instance.UNSAFE_componentWillMount === "function" ||
         typeof instance.componentWillMount === "function") &&
-      typeof workInProgress.type.getDerivedStateFromProps !== "function"
+      typeof ctor.getDerivedStateFromProps !== "function"
     ) {
       callComponentWillMount(workInProgress, instance);
       // If we had additional state updates during this life-cycle, let's
@@ -6907,113 +6961,8 @@ var ReactFiberClassComponent = function(
     }
   }
 
-  // Called on a preexisting class instance. Returns false if a resumed render
-  // could be reused.
-  // function resumeMountClassInstance(
-  //   workInProgress: Fiber,
-  //   priorityLevel: PriorityLevel,
-  // ): boolean {
-  //   const instance = workInProgress.stateNode;
-  //   resetInputPointers(workInProgress, instance);
-
-  //   let newState = workInProgress.memoizedState;
-  //   let newProps = workInProgress.pendingProps;
-  //   if (!newProps) {
-  //     // If there isn't any new props, then we'll reuse the memoized props.
-  //     // This could be from already completed work.
-  //     newProps = workInProgress.memoizedProps;
-  //     invariant(
-  //       newProps != null,
-  //       'There should always be pending or memoized props. This error is ' +
-  //         'likely caused by a bug in React. Please file an issue.',
-  //     );
-  //   }
-  //   const newUnmaskedContext = getUnmaskedContext(workInProgress);
-  //   const newContext = getMaskedContext(workInProgress, newUnmaskedContext);
-
-  //   const oldContext = instance.context;
-  //   const oldProps = workInProgress.memoizedProps;
-
-  //   if (
-  //     typeof instance.componentWillReceiveProps === 'function' &&
-  //     (oldProps !== newProps || oldContext !== newContext)
-  //   ) {
-  //     callComponentWillReceiveProps(
-  //       workInProgress,
-  //       instance,
-  //       newProps,
-  //       newContext,
-  //     );
-  //   }
-
-  //   // Process the update queue before calling shouldComponentUpdate
-  //   const updateQueue = workInProgress.updateQueue;
-  //   if (updateQueue !== null) {
-  //     newState = processUpdateQueue(
-  //       workInProgress,
-  //       updateQueue,
-  //       instance,
-  //       newState,
-  //       newProps,
-  //       priorityLevel,
-  //     );
-  //   }
-
-  //   // TODO: Should we deal with a setState that happened after the last
-  //   // componentWillMount and before this componentWillMount? Probably
-  //   // unsupported anyway.
-
-  //   if (
-  //     !checkShouldComponentUpdate(
-  //       workInProgress,
-  //       workInProgress.memoizedProps,
-  //       newProps,
-  //       workInProgress.memoizedState,
-  //       newState,
-  //       newContext,
-  //     )
-  //   ) {
-  //     // Update the existing instance's state, props, and context pointers even
-  //     // though we're bailing out.
-  //     instance.props = newProps;
-  //     instance.state = newState;
-  //     instance.context = newContext;
-  //     return false;
-  //   }
-
-  //   // Update the input pointers now so that they are correct when we call
-  //   // componentWillMount
-  //   instance.props = newProps;
-  //   instance.state = newState;
-  //   instance.context = newContext;
-
-  //   if (typeof instance.componentWillMount === 'function') {
-  //     callComponentWillMount(workInProgress, instance);
-  //     // componentWillMount may have called setState. Process the update queue.
-  //     const newUpdateQueue = workInProgress.updateQueue;
-  //     if (newUpdateQueue !== null) {
-  //       newState = processUpdateQueue(
-  //         workInProgress,
-  //         newUpdateQueue,
-  //         instance,
-  //         newState,
-  //         newProps,
-  //         priorityLevel,
-  //       );
-  //     }
-  //   }
-
-  //   if (typeof instance.componentDidMount === 'function') {
-  //     workInProgress.effectTag |= Update;
-  //   }
-
-  //   instance.state = newState;
-
-  //   return true;
-  // }
-
-  // Invokes the update life-cycles and returns false if it shouldn't rerender.
-  function updateClassInstance(current, workInProgress, renderExpirationTime) {
+  function resumeMountClassInstance(workInProgress, renderExpirationTime) {
+    var ctor = workInProgress.type;
     var instance = workInProgress.stateNode;
     resetInputPointers(workInProgress, instance);
 
@@ -7032,7 +6981,7 @@ var ReactFiberClassComponent = function(
     if (
       (typeof instance.UNSAFE_componentWillReceiveProps === "function" ||
         typeof instance.componentWillReceiveProps === "function") &&
-      typeof workInProgress.type.getDerivedStateFromProps !== "function"
+      typeof ctor.getDerivedStateFromProps !== "function"
     ) {
       if (oldProps !== newProps || oldContext !== newContext) {
         callComponentWillReceiveProps(
@@ -7044,9 +6993,9 @@ var ReactFiberClassComponent = function(
       }
     }
 
-    var partialState = void 0;
+    var derivedStateFromProps = void 0;
     if (oldProps !== newProps) {
-      partialState = callGetDerivedStateFromProps(
+      derivedStateFromProps = callGetDerivedStateFromProps(
         workInProgress,
         instance,
         newProps
@@ -7057,6 +7006,172 @@ var ReactFiberClassComponent = function(
     var oldState = workInProgress.memoizedState;
     // TODO: Previous state can be null.
     var newState = void 0;
+    var derivedStateFromCatch = void 0;
+    if (workInProgress.updateQueue !== null) {
+      newState = processUpdateQueue(
+        null,
+        workInProgress,
+        workInProgress.updateQueue,
+        instance,
+        newProps,
+        renderExpirationTime
+      );
+
+      var updateQueue = workInProgress.updateQueue;
+      if (
+        updateQueue !== null &&
+        updateQueue.capturedValues !== null &&
+        enableGetDerivedStateFromCatch &&
+        typeof ctor.getDerivedStateFromCatch === "function"
+      ) {
+        var capturedValues = updateQueue.capturedValues;
+        // Don't remove these from the update queue yet. We need them in
+        // finishClassComponent. Do the reset there.
+        // TODO: This is awkward. Refactor class components.
+        // updateQueue.capturedValues = null;
+        derivedStateFromCatch = callGetDerivedStateFromCatch(
+          ctor,
+          capturedValues
+        );
+      }
+    } else {
+      newState = oldState;
+    }
+
+    if (derivedStateFromProps !== null && derivedStateFromProps !== undefined) {
+      // Render-phase updates (like this) should not be added to the update queue,
+      // So that multiple render passes do not enqueue multiple updates.
+      // Instead, just synchronously merge the returned state into the instance.
+      newState =
+        newState === null || newState === undefined
+          ? derivedStateFromProps
+          : Object.assign({}, newState, derivedStateFromProps);
+    }
+    if (derivedStateFromCatch !== null && derivedStateFromCatch !== undefined) {
+      // Render-phase updates (like this) should not be added to the update queue,
+      // So that multiple render passes do not enqueue multiple updates.
+      // Instead, just synchronously merge the returned state into the instance.
+      newState =
+        newState === null || newState === undefined
+          ? derivedStateFromCatch
+          : Object.assign({}, newState, derivedStateFromCatch);
+    }
+
+    if (
+      oldProps === newProps &&
+      oldState === newState &&
+      !hasContextChanged() &&
+      !(
+        workInProgress.updateQueue !== null &&
+        workInProgress.updateQueue.hasForceUpdate
+      )
+    ) {
+      // If an update was already in progress, we should schedule an Update
+      // effect even though we're bailing out, so that cWU/cDU are called.
+      if (typeof instance.componentDidMount === "function") {
+        workInProgress.effectTag |= Update;
+      }
+      return false;
+    }
+
+    var shouldUpdate = checkShouldComponentUpdate(
+      workInProgress,
+      oldProps,
+      newProps,
+      oldState,
+      newState,
+      newContext
+    );
+
+    if (shouldUpdate) {
+      // In order to support react-lifecycles-compat polyfilled components,
+      // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+      if (
+        (typeof instance.UNSAFE_componentWillUpdate === "function" ||
+          typeof instance.componentWillUpdate === "function") &&
+        typeof ctor.getDerivedStateFromProps !== "function"
+      ) {
+        startPhaseTimer(workInProgress, "componentWillUpdate");
+        if (typeof instance.componentWillUpdate === "function") {
+          instance.componentWillUpdate(newProps, newState, newContext);
+        }
+        if (typeof instance.UNSAFE_componentWillUpdate === "function") {
+          instance.UNSAFE_componentWillUpdate(newProps, newState, newContext);
+        }
+        stopPhaseTimer();
+      }
+      if (typeof instance.componentDidUpdate === "function") {
+        workInProgress.effectTag |= Update;
+      }
+    } else {
+      // If an update was already in progress, we should schedule an Update
+      // effect even though we're bailing out, so that cWU/cDU are called.
+      if (typeof instance.componentDidMount === "function") {
+        workInProgress.effectTag |= Update;
+      }
+
+      // If shouldComponentUpdate returned false, we should still update the
+      // memoized props/state to indicate that this work can be reused.
+      memoizeProps(workInProgress, newProps);
+      memoizeState(workInProgress, newState);
+    }
+
+    // Update the existing instance's state, props, and context pointers even
+    // if shouldComponentUpdate returns false.
+    instance.props = newProps;
+    instance.state = newState;
+    instance.context = newContext;
+
+    return shouldUpdate;
+  }
+
+  // Invokes the update life-cycles and returns false if it shouldn't rerender.
+  function updateClassInstance(current, workInProgress, renderExpirationTime) {
+    var ctor = workInProgress.type;
+    var instance = workInProgress.stateNode;
+    resetInputPointers(workInProgress, instance);
+
+    var oldProps = workInProgress.memoizedProps;
+    var newProps = workInProgress.pendingProps;
+    var oldContext = instance.context;
+    var newUnmaskedContext = getUnmaskedContext(workInProgress);
+    var newContext = getMaskedContext(workInProgress, newUnmaskedContext);
+
+    // Note: During these life-cycles, instance.props/instance.state are what
+    // ever the previously attempted to render - not the "current". However,
+    // during componentDidUpdate we pass the "current" props.
+
+    // In order to support react-lifecycles-compat polyfilled components,
+    // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+    if (
+      (typeof instance.UNSAFE_componentWillReceiveProps === "function" ||
+        typeof instance.componentWillReceiveProps === "function") &&
+      typeof ctor.getDerivedStateFromProps !== "function"
+    ) {
+      if (oldProps !== newProps || oldContext !== newContext) {
+        callComponentWillReceiveProps(
+          workInProgress,
+          instance,
+          newProps,
+          newContext
+        );
+      }
+    }
+
+    var derivedStateFromProps = void 0;
+    if (oldProps !== newProps) {
+      derivedStateFromProps = callGetDerivedStateFromProps(
+        workInProgress,
+        instance,
+        newProps
+      );
+    }
+
+    // Compute the next state using the memoized state and the update queue.
+    var oldState = workInProgress.memoizedState;
+    // TODO: Previous state can be null.
+    var newState = void 0;
+    var derivedStateFromCatch = void 0;
     if (workInProgress.updateQueue !== null) {
       newState = processUpdateQueue(
         current,
@@ -7066,18 +7181,45 @@ var ReactFiberClassComponent = function(
         newProps,
         renderExpirationTime
       );
+
+      var updateQueue = workInProgress.updateQueue;
+      if (
+        updateQueue !== null &&
+        updateQueue.capturedValues !== null &&
+        enableGetDerivedStateFromCatch &&
+        typeof ctor.getDerivedStateFromCatch === "function"
+      ) {
+        var capturedValues = updateQueue.capturedValues;
+        // Don't remove these from the update queue yet. We need them in
+        // finishClassComponent. Do the reset there.
+        // TODO: This is awkward. Refactor class components.
+        // updateQueue.capturedValues = null;
+        derivedStateFromCatch = callGetDerivedStateFromCatch(
+          ctor,
+          capturedValues
+        );
+      }
     } else {
       newState = oldState;
     }
 
-    if (partialState !== null && partialState !== undefined) {
+    if (derivedStateFromProps !== null && derivedStateFromProps !== undefined) {
       // Render-phase updates (like this) should not be added to the update queue,
       // So that multiple render passes do not enqueue multiple updates.
       // Instead, just synchronously merge the returned state into the instance.
       newState =
         newState === null || newState === undefined
-          ? partialState
-          : Object.assign({}, newState, partialState);
+          ? derivedStateFromProps
+          : Object.assign({}, newState, derivedStateFromProps);
+    }
+    if (derivedStateFromCatch !== null && derivedStateFromCatch !== undefined) {
+      // Render-phase updates (like this) should not be added to the update queue,
+      // So that multiple render passes do not enqueue multiple updates.
+      // Instead, just synchronously merge the returned state into the instance.
+      newState =
+        newState === null || newState === undefined
+          ? derivedStateFromCatch
+          : Object.assign({}, newState, derivedStateFromCatch);
     }
 
     if (
@@ -7117,7 +7259,7 @@ var ReactFiberClassComponent = function(
       if (
         (typeof instance.UNSAFE_componentWillUpdate === "function" ||
           typeof instance.componentWillUpdate === "function") &&
-        typeof workInProgress.type.getDerivedStateFromProps !== "function"
+        typeof ctor.getDerivedStateFromProps !== "function"
       ) {
         startPhaseTimer(workInProgress, "componentWillUpdate");
         if (typeof instance.componentWillUpdate === "function") {
@@ -7163,7 +7305,7 @@ var ReactFiberClassComponent = function(
     callGetDerivedStateFromProps: callGetDerivedStateFromProps,
     constructClassInstance: constructClassInstance,
     mountClassInstance: mountClassInstance,
-    // resumeMountClassInstance,
+    resumeMountClassInstance: resumeMountClassInstance,
     updateClassInstance: updateClassInstance
   };
 };
@@ -8531,6 +8673,7 @@ var ReactFiberBeginWork = function(
       _ReactFiberClassCompo.callGetDerivedStateFromProps,
     constructClassInstance = _ReactFiberClassCompo.constructClassInstance,
     mountClassInstance = _ReactFiberClassCompo.mountClassInstance,
+    resumeMountClassInstance = _ReactFiberClassCompo.resumeMountClassInstance,
     updateClassInstance = _ReactFiberClassCompo.updateClassInstance;
 
   // TODO: Remove this and use reconcileChildrenAtExpirationTime directly.
@@ -8655,19 +8798,20 @@ var ReactFiberBeginWork = function(
     // During mounting we don't know the child context yet as the instance doesn't exist.
     // We will invalidate the child context in finishClassComponent() right after rendering.
     var hasContext = pushContextProvider(workInProgress);
-
     var shouldUpdate = void 0;
     if (current === null) {
-      if (!workInProgress.stateNode) {
+      if (workInProgress.stateNode === null) {
         // In the initial pass we might need to construct the instance.
         constructClassInstance(workInProgress, workInProgress.pendingProps);
         mountClassInstance(workInProgress, renderExpirationTime);
 
         shouldUpdate = true;
       } else {
-        invariant(false, "Resuming work not yet implemented.");
         // In a resume, we'll already have an instance we can reuse.
-        // shouldUpdate = resumeMountClassInstance(workInProgress, renderExpirationTime);
+        shouldUpdate = resumeMountClassInstance(
+          workInProgress,
+          renderExpirationTime
+        );
       }
     } else {
       shouldUpdate = updateClassInstance(
@@ -8676,11 +8820,23 @@ var ReactFiberBeginWork = function(
         renderExpirationTime
       );
     }
+
+    // We processed the update queue inside updateClassInstance. It may have
+    // included some errors that were dispatched during the commit phase.
+    // TODO: Refactor class components so this is less awkward.
+    var didCaptureError = false;
+    var updateQueue = workInProgress.updateQueue;
+    if (updateQueue !== null && updateQueue.capturedValues !== null) {
+      shouldUpdate = true;
+      didCaptureError = true;
+    }
     return finishClassComponent(
       current,
       workInProgress,
       shouldUpdate,
-      hasContext
+      hasContext,
+      didCaptureError,
+      renderExpirationTime
     );
   }
 
@@ -8688,12 +8844,14 @@ var ReactFiberBeginWork = function(
     current,
     workInProgress,
     shouldUpdate,
-    hasContext
+    hasContext,
+    didCaptureError,
+    renderExpirationTime
   ) {
     // Refs should update even if shouldComponentUpdate returns false
     markRef(current, workInProgress);
 
-    if (!shouldUpdate) {
+    if (!shouldUpdate && !didCaptureError) {
       // Context providers should defer to sCU for rendering
       if (hasContext) {
         invalidateContextProvider(workInProgress, false);
@@ -8702,26 +8860,60 @@ var ReactFiberBeginWork = function(
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
 
+    var ctor = workInProgress.type;
     var instance = workInProgress.stateNode;
 
     // Rerender
     ReactCurrentOwner.current = workInProgress;
     var nextChildren = void 0;
-    {
-      ReactDebugCurrentFiber.setCurrentPhase("render");
-      nextChildren = instance.render();
-      if (
-        debugRenderPhaseSideEffects ||
-        (debugRenderPhaseSideEffectsForStrictMode &&
-          workInProgress.mode & StrictMode)
-      ) {
-        instance.render();
+    if (
+      didCaptureError &&
+      (!enableGetDerivedStateFromCatch ||
+        typeof ctor.getDerivedStateFromCatch !== "function")
+    ) {
+      // If we captured an error, but getDerivedStateFrom catch is not defined,
+      // unmount all the children. componentDidCatch will schedule an update to
+      // re-render a fallback. This is temporary until we migrate everyone to
+      // the new API.
+      // TODO: Warn in a future release.
+      nextChildren = null;
+    } else {
+      {
+        ReactDebugCurrentFiber.setCurrentPhase("render");
+        nextChildren = instance.render();
+        if (
+          debugRenderPhaseSideEffects ||
+          (debugRenderPhaseSideEffectsForStrictMode &&
+            workInProgress.mode & StrictMode)
+        ) {
+          instance.render();
+        }
+        ReactDebugCurrentFiber.setCurrentPhase(null);
       }
-      ReactDebugCurrentFiber.setCurrentPhase(null);
     }
+
     // React DevTools reads this flag.
     workInProgress.effectTag |= PerformedWork;
-    reconcileChildren(current, workInProgress, nextChildren);
+    if (didCaptureError) {
+      // If we're recovering from an error, reconcile twice: first to delete
+      // all the existing children.
+      reconcileChildrenAtExpirationTime(
+        current,
+        workInProgress,
+        null,
+        renderExpirationTime
+      );
+      workInProgress.child = null;
+      // Now we can continue reconciling like normal. This has the effect of
+      // remounting all children regardless of whether their their
+      // identity matches.
+    }
+    reconcileChildrenAtExpirationTime(
+      current,
+      workInProgress,
+      nextChildren,
+      renderExpirationTime
+    );
     // Memoize props and state using the values we just used to render.
     // TODO: Restructure so we never read values from the instance.
     memoizeState(workInProgress, instance.state);
@@ -8763,13 +8955,21 @@ var ReactFiberBeginWork = function(
         null,
         renderExpirationTime
       );
-      if (prevState === state) {
+      memoizeState(workInProgress, state);
+      updateQueue = workInProgress.updateQueue;
+
+      var element = void 0;
+      if (updateQueue !== null && updateQueue.capturedValues !== null) {
+        // There's an uncaught error. Unmount the whole root.
+        element = null;
+      } else if (prevState === state) {
         // If the state is the same as before, that's a bailout because we had
         // no work that expires at this time.
         resetHydrationState();
         return bailoutOnAlreadyFinishedWork(current, workInProgress);
+      } else {
+        element = state.element;
       }
-      var element = state.element;
       var root = workInProgress.stateNode;
       if (
         (current === null || current.child === null) &&
@@ -8826,7 +9026,18 @@ var ReactFiberBeginWork = function(
       // Normally we can bail out on props equality but if context has changed
       // we don't do the bailout and we have to reuse existing props instead.
     } else if (memoizedProps === nextProps) {
-      return bailoutOnAlreadyFinishedWork(current, workInProgress);
+      var isHidden =
+        workInProgress.mode & AsyncMode &&
+        shouldDeprioritizeSubtree(type, nextProps);
+      if (isHidden) {
+        // Before bailing out, make sure we've deprioritized a hidden component.
+        workInProgress.expirationTime = Never;
+      }
+      if (!isHidden || renderExpirationTime !== Never) {
+        return bailoutOnAlreadyFinishedWork(current, workInProgress);
+      }
+      // If we're rendering a hidden node at hidden priority, don't bailout. The
+      // parent is complete, but the children may not be.
     }
 
     var nextChildren = nextProps.children;
@@ -8855,6 +9066,7 @@ var ReactFiberBeginWork = function(
       // Down-prioritize the children.
       workInProgress.expirationTime = Never;
       // Bailout and come back to this fiber later.
+      workInProgress.memoizedProps = nextProps;
       return null;
     }
 
@@ -8948,7 +9160,14 @@ var ReactFiberBeginWork = function(
       var hasContext = pushContextProvider(workInProgress);
       adoptClassInstance(workInProgress, value);
       mountClassInstance(workInProgress, renderExpirationTime);
-      return finishClassComponent(current, workInProgress, true, hasContext);
+      return finishClassComponent(
+        current,
+        workInProgress,
+        true,
+        hasContext,
+        false,
+        renderExpirationTime
+      );
     } else {
       // Proceed under the assumption that this is a functional component
       workInProgress.tag = FunctionalComponent;
@@ -9276,6 +9495,16 @@ var ReactFiberBeginWork = function(
     workInProgress.stateNode = observedBits;
 
     var render = newProps.children;
+
+    if (typeof render !== "function") {
+      invariant(
+        false,
+        "A context consumer was rendered with multiple children, or a child that isn't a function. " +
+          "A context consumer expects a single child that is a function. " +
+          "If you did pass a function, make sure there is no trailing or leading whitespace around it."
+      );
+    }
+
     var newChildren = render(newValue);
     reconcileChildren(current, workInProgress, newChildren);
     return workInProgress.child;
@@ -9437,70 +9666,8 @@ var ReactFiberBeginWork = function(
     }
   }
 
-  function beginFailedWork(current, workInProgress, renderExpirationTime) {
-    // Push context providers here to avoid a push/pop context mismatch.
-    switch (workInProgress.tag) {
-      case ClassComponent:
-        pushContextProvider(workInProgress);
-        break;
-      case HostRoot:
-        pushHostRootContext(workInProgress);
-        break;
-      default:
-        invariant(
-          false,
-          "Invalid type of work. This error is likely caused by a bug in React. " +
-            "Please file an issue."
-        );
-    }
-
-    // Add an error effect so we can handle the error during the commit phase
-    workInProgress.effectTag |= Err;
-
-    // This is a weird case where we do "resume" work — work that failed on
-    // our first attempt. Because we no longer have a notion of "progressed
-    // deletions," reset the child to the current child to make sure we delete
-    // it again. TODO: Find a better way to handle this, perhaps during a more
-    // general overhaul of error handling.
-    if (current === null) {
-      workInProgress.child = null;
-    } else if (workInProgress.child !== current.child) {
-      workInProgress.child = current.child;
-    }
-
-    if (
-      workInProgress.expirationTime === NoWork ||
-      workInProgress.expirationTime > renderExpirationTime
-    ) {
-      return bailoutOnLowPriority(current, workInProgress);
-    }
-
-    // If we don't bail out, we're going be recomputing our children so we need
-    // to drop our effect list.
-    workInProgress.firstEffect = null;
-    workInProgress.lastEffect = null;
-
-    // Unmount the current children as if the component rendered null
-    var nextChildren = null;
-    reconcileChildrenAtExpirationTime(
-      current,
-      workInProgress,
-      nextChildren,
-      renderExpirationTime
-    );
-
-    if (workInProgress.tag === ClassComponent) {
-      var instance = workInProgress.stateNode;
-      workInProgress.memoizedProps = instance.props;
-      workInProgress.memoizedState = instance.state;
-    }
-
-    return workInProgress.child;
-  }
-
   return {
-    beginWork: beginWork,
-    beginFailedWork: beginFailedWork
+    beginWork: beginWork
   };
 };
 
@@ -9718,14 +9885,12 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
         } else {
           var container = portalOrRoot.containerInfo;
           var newChildSet = createContainerChildSet(container);
-          if (finalizeContainerChildren(container, newChildSet)) {
-            markUpdate(workInProgress);
-          }
-          portalOrRoot.pendingChildren = newChildSet;
           // If children might have changed, we have to add them all to the set.
           appendAllChildrenToContainer(newChildSet, workInProgress);
+          portalOrRoot.pendingChildren = newChildSet;
           // Schedule an update on the container to swap out the container.
           markUpdate(workInProgress);
+          finalizeContainerChildren(container, newChildSet);
         }
       };
       updateHostComponent = function(
@@ -9834,6 +9999,20 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
       case ClassComponent: {
         // We are leaving this subtree, so pop context if any.
         popContextProvider(workInProgress);
+
+        // If this component caught an error, schedule an error log effect.
+        var instance = workInProgress.stateNode;
+        var updateQueue = workInProgress.updateQueue;
+        if (updateQueue !== null && updateQueue.capturedValues !== null) {
+          workInProgress.effectTag &= ~DidCapture;
+          if (typeof instance.componentDidCatch === "function") {
+            workInProgress.effectTag |= ErrLog;
+          } else {
+            // Normally we clear this in the commit phase, but since we did not
+            // schedule an effect, we need to reset it here.
+            updateQueue.capturedValues = null;
+          }
+        }
         return null;
       }
       case HostRoot: {
@@ -9844,7 +10023,6 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
           fiberRoot.context = fiberRoot.pendingContext;
           fiberRoot.pendingContext = null;
         }
-
         if (current === null || current.child === null) {
           // If we hydrated, pop so that we can delete any remaining children
           // that weren't hydrated.
@@ -9854,6 +10032,11 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
           workInProgress.effectTag &= ~Placement;
         }
         updateHostContainer(workInProgress);
+
+        var _updateQueue = workInProgress.updateQueue;
+        if (_updateQueue !== null && _updateQueue.capturedValues !== null) {
+          workInProgress.effectTag |= ErrLog;
+        }
         return null;
       }
       case HostComponent: {
@@ -9868,10 +10051,13 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
           // have newProps so we'll have to reuse them.
           // TODO: Split the update API as separate for the props vs. children.
           // Even better would be if children weren't special cased at all tho.
-          var instance = workInProgress.stateNode;
+          var _instance = workInProgress.stateNode;
           var currentHostContext = getHostContext();
+          // TODO: Experiencing an error where oldProps is null. Suggests a host
+          // component is hitting the resume path. Figure out why. Possibly
+          // related to `hidden`.
           var updatePayload = prepareUpdate(
-            instance,
+            _instance,
             type,
             oldProps,
             newProps,
@@ -9925,7 +10111,7 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
               markUpdate(workInProgress);
             }
           } else {
-            var _instance = createInstance(
+            var _instance2 = createInstance(
               type,
               newProps,
               rootContainerInstance,
@@ -9933,14 +10119,14 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
               workInProgress
             );
 
-            appendAllChildren(_instance, workInProgress);
+            appendAllChildren(_instance2, workInProgress);
 
             // Certain renderers require commit-time effects for initial mount.
             // (eg DOM renderer supports auto-focus for certain elements).
             // Make sure such renderers get scheduled for later work.
             if (
               finalizeInitialChildren(
-                _instance,
+                _instance2,
                 type,
                 newProps,
                 rootContainerInstance,
@@ -9949,7 +10135,7 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
             ) {
               markUpdate(workInProgress);
             }
-            workInProgress.stateNode = _instance;
+            workInProgress.stateNode = _instance2;
           }
 
           if (workInProgress.ref !== null) {
@@ -10044,11 +10230,267 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
   };
 };
 
+function createCapturedValue(value, source) {
+  // If the value is an error, call this function immediately after it is thrown
+  // so the stack is accurate.
+  return {
+    value: value,
+    source: source,
+    stack: getStackAddendumByWorkInProgressFiber(source)
+  };
+}
+
+var ReactFiberUnwindWork = function(
+  hostContext,
+  scheduleWork,
+  isAlreadyFailedLegacyErrorBoundary
+) {
+  var popHostContainer = hostContext.popHostContainer,
+    popHostContext = hostContext.popHostContext;
+
+  function throwException(returnFiber, sourceFiber, rawValue) {
+    // The source fiber did not complete.
+    sourceFiber.effectTag |= Incomplete;
+    // Its effect list is no longer valid.
+    sourceFiber.firstEffect = sourceFiber.lastEffect = null;
+
+    var value = createCapturedValue(rawValue, sourceFiber);
+
+    var workInProgress = returnFiber;
+    do {
+      switch (workInProgress.tag) {
+        case HostRoot: {
+          // Uncaught error
+          var errorInfo = value;
+          ensureUpdateQueues(workInProgress);
+          var updateQueue = workInProgress.updateQueue;
+          updateQueue.capturedValues = [errorInfo];
+          workInProgress.effectTag |= ShouldCapture;
+          return;
+        }
+        case ClassComponent:
+          // Capture and retry
+          var ctor = workInProgress.type;
+          var _instance = workInProgress.stateNode;
+          if (
+            (workInProgress.effectTag & DidCapture) === NoEffect &&
+            ((typeof ctor.getDerivedStateFromCatch === "function" &&
+              enableGetDerivedStateFromCatch) ||
+              (_instance !== null &&
+                typeof _instance.componentDidCatch === "function" &&
+                !isAlreadyFailedLegacyErrorBoundary(_instance)))
+          ) {
+            ensureUpdateQueues(workInProgress);
+            var _updateQueue = workInProgress.updateQueue;
+            var capturedValues = _updateQueue.capturedValues;
+            if (capturedValues === null) {
+              _updateQueue.capturedValues = [value];
+            } else {
+              capturedValues.push(value);
+            }
+            workInProgress.effectTag |= ShouldCapture;
+            return;
+          }
+          break;
+        default:
+          break;
+      }
+      workInProgress = workInProgress["return"];
+    } while (workInProgress !== null);
+  }
+
+  function unwindWork(workInProgress) {
+    switch (workInProgress.tag) {
+      case ClassComponent: {
+        popContextProvider(workInProgress);
+        var effectTag = workInProgress.effectTag;
+        if (effectTag & ShouldCapture) {
+          workInProgress.effectTag = (effectTag & ~ShouldCapture) | DidCapture;
+          return workInProgress;
+        }
+        return null;
+      }
+      case HostRoot: {
+        popHostContainer(workInProgress);
+        popTopLevelContextObject(workInProgress);
+        var _effectTag = workInProgress.effectTag;
+        if (_effectTag & ShouldCapture) {
+          workInProgress.effectTag = (_effectTag & ~ShouldCapture) | DidCapture;
+          return workInProgress;
+        }
+        return null;
+      }
+      case HostComponent: {
+        popHostContext(workInProgress);
+        return null;
+      }
+      case HostPortal:
+        popHostContainer(workInProgress);
+        return null;
+      case ContextProvider:
+        popProvider(workInProgress);
+        return null;
+      default:
+        return null;
+    }
+  }
+  return {
+    throwException: throwException,
+    unwindWork: unwindWork
+  };
+};
+
+// Module provided by RN:
+/**
+ * Intercept lifecycle errors and ensure they are shown with the correct stack
+ * trace within the native redbox component.
+ */
+function showErrorDialog(capturedError) {
+  var componentStack = capturedError.componentStack,
+    error = capturedError.error;
+
+  var errorToHandle = void 0;
+
+  // Typically Errors are thrown but eg strings or null can be thrown as well.
+  if (error instanceof Error) {
+    var message = error.message,
+      name = error.name;
+
+    var summary = message ? name + ": " + message : name;
+
+    errorToHandle = error;
+
+    try {
+      errorToHandle.message =
+        summary + "\n\nThis error is located at:" + componentStack;
+    } catch (e) {}
+  } else if (typeof error === "string") {
+    errorToHandle = new Error(
+      error + "\n\nThis error is located at:" + componentStack
+    );
+  } else {
+    errorToHandle = new Error("Unspecified error at:" + componentStack);
+  }
+
+  ExceptionsManager.handleException(errorToHandle, false);
+
+  // Return false here to prevent ReactFiberErrorLogger default behavior of
+  // logging error details to console.error. Calls to console.error are
+  // automatically routed to the native redbox controller, which we've already
+  // done above by calling ExceptionsManager.
+  return false;
+}
+
+function logCapturedError(capturedError) {
+  var logError = showErrorDialog(capturedError);
+
+  // Allow injected showErrorDialog() to prevent default console.error logging.
+  // This enables renderers like ReactNative to better manage redbox behavior.
+  if (logError === false) {
+    return;
+  }
+
+  var error = capturedError.error;
+  var suppressLogging = error && error.suppressReactErrorLogging;
+  if (suppressLogging) {
+    return;
+  }
+
+  {
+    var componentName = capturedError.componentName,
+      componentStack = capturedError.componentStack,
+      errorBoundaryName = capturedError.errorBoundaryName,
+      errorBoundaryFound = capturedError.errorBoundaryFound,
+      willRetry = capturedError.willRetry;
+
+    var componentNameMessage = componentName
+      ? "The above error occurred in the <" + componentName + "> component:"
+      : "The above error occurred in one of your React components:";
+
+    var errorBoundaryMessage = void 0;
+    // errorBoundaryFound check is sufficient; errorBoundaryName check is to satisfy Flow.
+    if (errorBoundaryFound && errorBoundaryName) {
+      if (willRetry) {
+        errorBoundaryMessage =
+          "React will try to recreate this component tree from scratch " +
+          ("using the error boundary you provided, " + errorBoundaryName + ".");
+      } else {
+        errorBoundaryMessage =
+          "This error was initially handled by the error boundary " +
+          errorBoundaryName +
+          ".\n" +
+          "Recreating the tree from scratch failed so React will unmount the tree.";
+      }
+    } else {
+      errorBoundaryMessage =
+        "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
+        "Visit https://fb.me/react-error-boundaries to learn more about error boundaries.";
+    }
+    var combinedMessage =
+      "" +
+      componentNameMessage +
+      componentStack +
+      "\n\n" +
+      ("" + errorBoundaryMessage);
+
+    // In development, we provide our own message with just the component stack.
+    // We don't include the original error message and JS stack because the browser
+    // has already printed it. Even if the application swallows the error, it is still
+    // displayed by the browser thanks to the DEV-only fake event trick in ReactErrorUtils.
+    console.error(combinedMessage);
+  }
+}
+
 var invokeGuardedCallback$3 = ReactErrorUtils.invokeGuardedCallback;
 var hasCaughtError$1 = ReactErrorUtils.hasCaughtError;
 var clearCaughtError$1 = ReactErrorUtils.clearCaughtError;
 
-var ReactFiberCommitWork = function(config, captureError) {
+function logError(boundary, errorInfo) {
+  var source = errorInfo.source;
+  var stack = errorInfo.stack;
+  if (stack === null) {
+    stack = getStackAddendumByWorkInProgressFiber(source);
+  }
+
+  var capturedError = {
+    componentName: source !== null ? getComponentName(source) : null,
+    error: errorInfo.value,
+    errorBoundary: boundary,
+    componentStack: stack !== null ? stack : "",
+    errorBoundaryName: null,
+    errorBoundaryFound: false,
+    willRetry: false
+  };
+
+  if (boundary !== null) {
+    capturedError.errorBoundaryName = getComponentName(boundary);
+    capturedError.errorBoundaryFound = capturedError.willRetry =
+      boundary.tag === ClassComponent;
+  } else {
+    capturedError.errorBoundaryName = null;
+    capturedError.errorBoundaryFound = capturedError.willRetry = false;
+  }
+
+  try {
+    logCapturedError(capturedError);
+  } catch (e) {
+    // Prevent cycle if logCapturedError() throws.
+    // A cycle may still occur if logCapturedError renders a component that throws.
+    var suppressLogging = e && e.suppressReactErrorLogging;
+    if (!suppressLogging) {
+      console.error(e);
+    }
+  }
+}
+
+var ReactFiberCommitWork = function(
+  config,
+  captureError,
+  scheduleWork,
+  computeExpirationForFiber,
+  markLegacyErrorBoundaryAsFailed,
+  recalculateCurrentTime
+) {
   var getPublicInstance = config.getPublicInstance,
     mutation = config.mutation,
     persistence = config.persistence;
@@ -10095,53 +10537,59 @@ var ReactFiberCommitWork = function(config, captureError) {
     }
   }
 
-  function commitLifeCycles(current, finishedWork) {
+  function commitLifeCycles(
+    finishedRoot,
+    current,
+    finishedWork,
+    currentTime,
+    committedExpirationTime
+  ) {
     switch (finishedWork.tag) {
       case ClassComponent: {
-        var instance = finishedWork.stateNode;
+        var _instance = finishedWork.stateNode;
         if (finishedWork.effectTag & Update) {
           if (current === null) {
             startPhaseTimer(finishedWork, "componentDidMount");
-            instance.props = finishedWork.memoizedProps;
-            instance.state = finishedWork.memoizedState;
-            instance.componentDidMount();
+            _instance.props = finishedWork.memoizedProps;
+            _instance.state = finishedWork.memoizedState;
+            _instance.componentDidMount();
             stopPhaseTimer();
           } else {
             var prevProps = current.memoizedProps;
             var prevState = current.memoizedState;
             startPhaseTimer(finishedWork, "componentDidUpdate");
-            instance.props = finishedWork.memoizedProps;
-            instance.state = finishedWork.memoizedState;
-            instance.componentDidUpdate(prevProps, prevState);
+            _instance.props = finishedWork.memoizedProps;
+            _instance.state = finishedWork.memoizedState;
+            _instance.componentDidUpdate(prevProps, prevState);
             stopPhaseTimer();
           }
         }
         var updateQueue = finishedWork.updateQueue;
         if (updateQueue !== null) {
-          commitCallbacks(updateQueue, instance);
+          commitCallbacks(updateQueue, _instance);
         }
         return;
       }
       case HostRoot: {
         var _updateQueue = finishedWork.updateQueue;
         if (_updateQueue !== null) {
-          var _instance = null;
+          var _instance2 = null;
           if (finishedWork.child !== null) {
             switch (finishedWork.child.tag) {
               case HostComponent:
-                _instance = getPublicInstance(finishedWork.child.stateNode);
+                _instance2 = getPublicInstance(finishedWork.child.stateNode);
                 break;
               case ClassComponent:
-                _instance = finishedWork.child.stateNode;
+                _instance2 = finishedWork.child.stateNode;
                 break;
             }
           }
-          commitCallbacks(_updateQueue, _instance);
+          commitCallbacks(_updateQueue, _instance2);
         }
         return;
       }
       case HostComponent: {
-        var _instance2 = finishedWork.stateNode;
+        var _instance3 = finishedWork.stateNode;
 
         // Renderers may schedule work to be done after host components are mounted
         // (eg DOM renderer may schedule auto-focus for inputs and form controls).
@@ -10150,7 +10598,7 @@ var ReactFiberCommitWork = function(config, captureError) {
         if (current === null && finishedWork.effectTag & Update) {
           var type = finishedWork.type;
           var props = finishedWork.memoizedProps;
-          commitMount(_instance2, type, props, finishedWork);
+          commitMount(_instance3, type, props, finishedWork);
         }
 
         return;
@@ -10173,17 +10621,78 @@ var ReactFiberCommitWork = function(config, captureError) {
     }
   }
 
+  function commitErrorLogging(finishedWork, onUncaughtError) {
+    switch (finishedWork.tag) {
+      case ClassComponent:
+        {
+          var ctor = finishedWork.type;
+          var _instance4 = finishedWork.stateNode;
+          var updateQueue = finishedWork.updateQueue;
+          invariant(
+            updateQueue !== null && updateQueue.capturedValues !== null,
+            "An error logging effect should not have been scheduled if no errors " +
+              "were captured. This error is likely caused by a bug in React. " +
+              "Please file an issue."
+          );
+          var capturedErrors = updateQueue.capturedValues;
+          updateQueue.capturedValues = null;
+
+          if (typeof ctor.getDerivedStateFromCatch !== "function") {
+            // To preserve the preexisting retry behavior of error boundaries,
+            // we keep track of which ones already failed during this batch.
+            // This gets reset before we yield back to the browser.
+            // TODO: Warn in strict mode if getDerivedStateFromCatch is
+            // not defined.
+            markLegacyErrorBoundaryAsFailed(_instance4);
+          }
+
+          _instance4.props = finishedWork.memoizedProps;
+          _instance4.state = finishedWork.memoizedState;
+          for (var i = 0; i < capturedErrors.length; i++) {
+            var errorInfo = capturedErrors[i];
+            var _error = errorInfo.value;
+            logError(finishedWork, errorInfo);
+            _instance4.componentDidCatch(_error);
+          }
+        }
+        break;
+      case HostRoot: {
+        var _updateQueue2 = finishedWork.updateQueue;
+        invariant(
+          _updateQueue2 !== null && _updateQueue2.capturedValues !== null,
+          "An error logging effect should not have been scheduled if no errors " +
+            "were captured. This error is likely caused by a bug in React. " +
+            "Please file an issue."
+        );
+        var _capturedErrors = _updateQueue2.capturedValues;
+        _updateQueue2.capturedValues = null;
+        for (var _i = 0; _i < _capturedErrors.length; _i++) {
+          var _errorInfo = _capturedErrors[_i];
+          logError(finishedWork, _errorInfo);
+          onUncaughtError(_errorInfo.value);
+        }
+        break;
+      }
+      default:
+        invariant(
+          false,
+          "This unit of work tag cannot capture errors.  This error is " +
+            "likely caused by a bug in React. Please file an issue."
+        );
+    }
+  }
+
   function commitAttachRef(finishedWork) {
     var ref = finishedWork.ref;
     if (ref !== null) {
-      var instance = finishedWork.stateNode;
+      var _instance5 = finishedWork.stateNode;
       var instanceToUse = void 0;
       switch (finishedWork.tag) {
         case HostComponent:
-          instanceToUse = getPublicInstance(instance);
+          instanceToUse = getPublicInstance(_instance5);
           break;
         default:
-          instanceToUse = instance;
+          instanceToUse = _instance5;
       }
       if (typeof ref === "function") {
         ref(instanceToUse);
@@ -10215,9 +10724,9 @@ var ReactFiberCommitWork = function(config, captureError) {
     switch (current.tag) {
       case ClassComponent: {
         safelyDetachRef(current);
-        var instance = current.stateNode;
-        if (typeof instance.componentWillUnmount === "function") {
-          safelyCallComponentWillUnmount(current, instance);
+        var _instance6 = current.stateNode;
+        if (typeof _instance6.componentWillUnmount === "function") {
+          safelyCallComponentWillUnmount(current, _instance6);
         }
         return;
       }
@@ -10354,6 +10863,7 @@ var ReactFiberCommitWork = function(config, captureError) {
         },
 
         commitLifeCycles: commitLifeCycles,
+        commitErrorLogging: commitErrorLogging,
         commitAttachRef: commitAttachRef,
         commitDetachRef: commitDetachRef
       };
@@ -10611,8 +11121,8 @@ var ReactFiberCommitWork = function(config, captureError) {
         return;
       }
       case HostComponent: {
-        var instance = finishedWork.stateNode;
-        if (instance != null) {
+        var _instance7 = finishedWork.stateNode;
+        if (_instance7 != null) {
           // Commit the work prepared earlier.
           var newProps = finishedWork.memoizedProps;
           // For hydration we reuse the update path but we treat the oldProps
@@ -10625,7 +11135,7 @@ var ReactFiberCommitWork = function(config, captureError) {
           finishedWork.updateQueue = null;
           if (updatePayload !== null) {
             commitUpdate(
-              instance,
+              _instance7,
               updatePayload,
               type,
               oldProps,
@@ -10675,6 +11185,7 @@ var ReactFiberCommitWork = function(config, captureError) {
       commitDeletion: commitDeletion,
       commitWork: commitWork,
       commitLifeCycles: commitLifeCycles,
+      commitErrorLogging: commitErrorLogging,
       commitAttachRef: commitAttachRef,
       commitDetachRef: commitDetachRef
     };
@@ -11140,107 +11651,6 @@ var ReactFiberInstrumentation = {
 
 var ReactFiberInstrumentation_1 = ReactFiberInstrumentation;
 
-// Module provided by RN:
-/**
- * Intercept lifecycle errors and ensure they are shown with the correct stack
- * trace within the native redbox component.
- */
-function showErrorDialog(capturedError) {
-  var componentStack = capturedError.componentStack,
-    error = capturedError.error;
-
-  var errorToHandle = void 0;
-
-  // Typically Errors are thrown but eg strings or null can be thrown as well.
-  if (error instanceof Error) {
-    var message = error.message,
-      name = error.name;
-
-    var summary = message ? name + ": " + message : name;
-
-    errorToHandle = error;
-
-    try {
-      errorToHandle.message =
-        summary + "\n\nThis error is located at:" + componentStack;
-    } catch (e) {}
-  } else if (typeof error === "string") {
-    errorToHandle = new Error(
-      error + "\n\nThis error is located at:" + componentStack
-    );
-  } else {
-    errorToHandle = new Error("Unspecified error at:" + componentStack);
-  }
-
-  ExceptionsManager.handleException(errorToHandle, false);
-
-  // Return false here to prevent ReactFiberErrorLogger default behavior of
-  // logging error details to console.error. Calls to console.error are
-  // automatically routed to the native redbox controller, which we've already
-  // done above by calling ExceptionsManager.
-  return false;
-}
-
-function logCapturedError(capturedError) {
-  var logError = showErrorDialog(capturedError);
-
-  // Allow injected showErrorDialog() to prevent default console.error logging.
-  // This enables renderers like ReactNative to better manage redbox behavior.
-  if (logError === false) {
-    return;
-  }
-
-  var error = capturedError.error;
-  var suppressLogging = error && error.suppressReactErrorLogging;
-  if (suppressLogging) {
-    return;
-  }
-
-  {
-    var componentName = capturedError.componentName,
-      componentStack = capturedError.componentStack,
-      errorBoundaryName = capturedError.errorBoundaryName,
-      errorBoundaryFound = capturedError.errorBoundaryFound,
-      willRetry = capturedError.willRetry;
-
-    var componentNameMessage = componentName
-      ? "The above error occurred in the <" + componentName + "> component:"
-      : "The above error occurred in one of your React components:";
-
-    var errorBoundaryMessage = void 0;
-    // errorBoundaryFound check is sufficient; errorBoundaryName check is to satisfy Flow.
-    if (errorBoundaryFound && errorBoundaryName) {
-      if (willRetry) {
-        errorBoundaryMessage =
-          "React will try to recreate this component tree from scratch " +
-          ("using the error boundary you provided, " + errorBoundaryName + ".");
-      } else {
-        errorBoundaryMessage =
-          "This error was initially handled by the error boundary " +
-          errorBoundaryName +
-          ".\n" +
-          "Recreating the tree from scratch failed so React will unmount the tree.";
-      }
-    } else {
-      errorBoundaryMessage =
-        "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
-        "Visit https://fb.me/react-error-boundaries to learn more about error boundaries.";
-    }
-    var combinedMessage =
-      "" +
-      componentNameMessage +
-      componentStack +
-      "\n\n" +
-      ("" + errorBoundaryMessage);
-
-    // In development, we provide our own message with just the component stack.
-    // We don't include the original error message and JS stack because the browser
-    // has already printed it. Even if the application swallows the error, it is still
-    // displayed by the browser thanks to the DEV-only fake event trick in ReactErrorUtils.
-    console.error(combinedMessage);
-  }
-}
-
 var invokeGuardedCallback$2 = ReactErrorUtils.invokeGuardedCallback;
 var hasCaughtError = ReactErrorUtils.hasCaughtError;
 var clearCaughtError = ReactErrorUtils.clearCaughtError;
@@ -11302,10 +11712,11 @@ var warnAboutInvalidUpdates = void 0;
 
 var ReactFiberScheduler = function(config) {
   var hostContext = ReactFiberHostContext(config);
+  var popHostContext = hostContext.popHostContext,
+    popHostContainer = hostContext.popHostContainer;
+
   var hydrationContext = ReactFiberHydrationContext(config);
-  var popHostContainer = hostContext.popHostContainer,
-    popHostContext = hostContext.popHostContext,
-    resetHostContainer = hostContext.resetHostContainer;
+  var resetHostContainer = hostContext.resetHostContainer;
 
   var _ReactFiberBeginWork = ReactFiberBeginWork(
       config,
@@ -11314,8 +11725,7 @@ var ReactFiberScheduler = function(config) {
       scheduleWork,
       computeExpirationForFiber
     ),
-    beginWork = _ReactFiberBeginWork.beginWork,
-    beginFailedWork = _ReactFiberBeginWork.beginFailedWork;
+    beginWork = _ReactFiberBeginWork.beginWork;
 
   var _ReactFiberCompleteWo = ReactFiberCompleteWork(
       config,
@@ -11324,12 +11734,28 @@ var ReactFiberScheduler = function(config) {
     ),
     completeWork = _ReactFiberCompleteWo.completeWork;
 
-  var _ReactFiberCommitWork = ReactFiberCommitWork(config, captureError),
+  var _ReactFiberUnwindWork = ReactFiberUnwindWork(
+      hostContext,
+      scheduleWork,
+      isAlreadyFailedLegacyErrorBoundary
+    ),
+    throwException = _ReactFiberUnwindWork.throwException,
+    unwindWork = _ReactFiberUnwindWork.unwindWork;
+
+  var _ReactFiberCommitWork = ReactFiberCommitWork(
+      config,
+      onCommitPhaseError,
+      scheduleWork,
+      computeExpirationForFiber,
+      markLegacyErrorBoundaryAsFailed,
+      recalculateCurrentTime
+    ),
     commitResetTextContent = _ReactFiberCommitWork.commitResetTextContent,
     commitPlacement = _ReactFiberCommitWork.commitPlacement,
     commitDeletion = _ReactFiberCommitWork.commitDeletion,
     commitWork = _ReactFiberCommitWork.commitWork,
     commitLifeCycles = _ReactFiberCommitWork.commitLifeCycles,
+    commitErrorLogging = _ReactFiberCommitWork.commitErrorLogging,
     commitAttachRef = _ReactFiberCommitWork.commitAttachRef,
     commitDetachRef = _ReactFiberCommitWork.commitDetachRef;
 
@@ -11341,8 +11767,9 @@ var ReactFiberScheduler = function(config) {
 
   // Represents the current time in ms.
 
-  var startTime = now();
+  var originalStartTimeMs = now();
   var mostRecentCurrentTime = msToExpirationTime(0);
+  var mostRecentCurrentTimeMs = originalStartTimeMs;
 
   // Used to ensure computeUniqueAsyncExpiration is monotonically increases.
   var lastUniqueAsyncExpiration = 0;
@@ -11363,32 +11790,70 @@ var ReactFiberScheduler = function(config) {
   // The next fiber with an effect that we're currently committing.
   var nextEffect = null;
 
-  // Keep track of which fibers have captured an error that need to be handled.
-  // Work is removed from this collection after componentDidCatch is called.
-  var capturedErrors = null;
-  // Keep track of which fibers have failed during the current batch of work.
-  // This is a different set than capturedErrors, because it is not reset until
-  // the end of the batch. This is needed to propagate errors correctly if a
-  // subtree fails more than once.
-  var failedBoundaries = null;
-  // Error boundaries that captured an error during the current commit.
-  var commitPhaseBoundaries = null;
-  var firstUncaughtError = null;
-  var didFatal = false;
-
   var isCommitting = false;
-  var isUnmounting = false;
+
+  var isRootReadyForCommit = false;
+
+  var legacyErrorBoundariesThatAlreadyFailed = null;
 
   // Used for performance tracking.
   var interruptedBy = null;
+
+  var stashedWorkInProgressProperties = void 0;
+  var replayUnitOfWork = void 0;
+  if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
+    stashedWorkInProgressProperties = null;
+    replayUnitOfWork = function(failedUnitOfWork, isAsync) {
+      // Retore the original state of the work-in-progress
+      Object.assign(failedUnitOfWork, stashedWorkInProgressProperties);
+      switch (failedUnitOfWork.tag) {
+        case HostRoot:
+          popHostContainer(failedUnitOfWork);
+          popTopLevelContextObject(failedUnitOfWork);
+          break;
+        case HostComponent:
+          popHostContext(failedUnitOfWork);
+          break;
+        case ClassComponent:
+          popContextProvider(failedUnitOfWork);
+          break;
+        case HostPortal:
+          popHostContainer(failedUnitOfWork);
+          break;
+        case ContextProvider:
+          popProvider(failedUnitOfWork);
+          break;
+      }
+      // Replay the begin phase.
+      invokeGuardedCallback$2(null, workLoop, null, isAsync);
+      if (hasCaughtError()) {
+        clearCaughtError();
+      } else {
+        // This should be unreachable because the render phase is
+        // idempotent
+      }
+    };
+  }
 
   function resetContextStack() {
     // Reset the stack
     reset();
     // Reset the cursors
     resetContext();
-    resetProviderStack();
     resetHostContainer();
+
+    // TODO: Unify new context implementation with other stacks
+    resetProviderStack();
+
+    {
+      ReactStrictModeWarnings.discardPendingWarnings();
+    }
+
+    nextRoot = null;
+    nextRenderExpirationTime = NoWork;
+    nextUnitOfWork = null;
+
+    isRootReadyForCommit = false;
   }
 
   function commitAllHostEffects() {
@@ -11414,8 +11879,7 @@ var ReactFiberScheduler = function(config) {
       // updates, and deletions. To avoid needing to add a case for every
       // possible bitmap value, we remove the secondary effects from the
       // effect tag and switch on that value.
-      var primaryEffectTag =
-        effectTag & ~(Callback | Err | ContentReset | Ref | PerformedWork);
+      var primaryEffectTag = effectTag & (Placement | Update | Deletion);
       switch (primaryEffectTag) {
         case Placement: {
           commitPlacement(nextEffect);
@@ -11445,9 +11909,7 @@ var ReactFiberScheduler = function(config) {
           break;
         }
         case Deletion: {
-          isUnmounting = true;
           commitDeletion(nextEffect);
-          isUnmounting = false;
           break;
         }
       }
@@ -11459,7 +11921,11 @@ var ReactFiberScheduler = function(config) {
     }
   }
 
-  function commitAllLifeCycles() {
+  function commitAllLifeCycles(
+    finishedRoot,
+    currentTime,
+    committedExpirationTime
+  ) {
     {
       ReactStrictModeWarnings.flushPendingUnsafeLifecycleWarnings();
 
@@ -11467,24 +11933,28 @@ var ReactFiberScheduler = function(config) {
         ReactStrictModeWarnings.flushPendingDeprecationWarnings();
       }
     }
-
     while (nextEffect !== null) {
       var effectTag = nextEffect.effectTag;
 
       if (effectTag & (Update | Callback)) {
         recordEffect();
         var current = nextEffect.alternate;
-        commitLifeCycles(current, nextEffect);
+        commitLifeCycles(
+          finishedRoot,
+          current,
+          nextEffect,
+          currentTime,
+          committedExpirationTime
+        );
+      }
+
+      if (effectTag & ErrLog) {
+        commitErrorLogging(nextEffect, onUncaughtError);
       }
 
       if (effectTag & Ref) {
         recordEffect();
         commitAttachRef(nextEffect);
-      }
-
-      if (effectTag & Err) {
-        recordEffect();
-        commitErrorHandling(nextEffect);
       }
 
       var next = nextEffect.nextEffect;
@@ -11499,11 +11969,22 @@ var ReactFiberScheduler = function(config) {
     }
   }
 
+  function isAlreadyFailedLegacyErrorBoundary(instance) {
+    return (
+      legacyErrorBoundariesThatAlreadyFailed !== null &&
+      legacyErrorBoundariesThatAlreadyFailed.has(instance)
+    );
+  }
+
+  function markLegacyErrorBoundaryAsFailed(instance) {
+    if (legacyErrorBoundariesThatAlreadyFailed === null) {
+      legacyErrorBoundariesThatAlreadyFailed = new Set([instance]);
+    } else {
+      legacyErrorBoundariesThatAlreadyFailed.add(instance);
+    }
+  }
+
   function commitRoot(finishedWork) {
-    // We keep track of this so that captureError can collect any boundaries
-    // that capture an error during the commit phase. The reason these aren't
-    // local to this function is because errors that occur during cWU are
-    // captured elsewhere, to prevent the unmount from being interrupted.
     isWorking = true;
     isCommitting = true;
     startCommitTimer();
@@ -11515,7 +11996,15 @@ var ReactFiberScheduler = function(config) {
         "related to the return field. This error is likely caused by a bug " +
         "in React. Please file an issue."
     );
-    root.isReadyForCommit = false;
+    var committedExpirationTime = root.pendingCommitExpirationTime;
+    invariant(
+      committedExpirationTime !== NoWork,
+      "Cannot commit an incomplete root. This error is likely caused by a " +
+        "bug in React. Please file an issue."
+    );
+    root.pendingCommitExpirationTime = NoWork;
+
+    var currentTime = recalculateCurrentTime();
 
     // Reset this to null before calling lifecycles
     ReactCurrentOwner.current = null;
@@ -11546,12 +12035,12 @@ var ReactFiberScheduler = function(config) {
     startCommitHostEffectsTimer();
     while (nextEffect !== null) {
       var didError = false;
-      var _error = void 0;
+      var error = void 0;
       {
         invokeGuardedCallback$2(null, commitAllHostEffects, null);
         if (hasCaughtError()) {
           didError = true;
-          _error = clearCaughtError();
+          error = clearCaughtError();
         }
       }
       if (didError) {
@@ -11560,7 +12049,7 @@ var ReactFiberScheduler = function(config) {
           "Should have next effect. This error is likely caused by a bug " +
             "in React. Please file an issue."
         );
-        captureError(nextEffect, _error);
+        onCommitPhaseError(nextEffect, error);
         // Clean-up
         if (nextEffect !== null) {
           nextEffect = nextEffect.nextEffect;
@@ -11585,12 +12074,19 @@ var ReactFiberScheduler = function(config) {
     startCommitLifeCyclesTimer();
     while (nextEffect !== null) {
       var _didError = false;
-      var _error2 = void 0;
+      var _error = void 0;
       {
-        invokeGuardedCallback$2(null, commitAllLifeCycles, null);
+        invokeGuardedCallback$2(
+          null,
+          commitAllLifeCycles,
+          null,
+          root,
+          currentTime,
+          committedExpirationTime
+        );
         if (hasCaughtError()) {
           _didError = true;
-          _error2 = clearCaughtError();
+          _error = clearCaughtError();
         }
       }
       if (_didError) {
@@ -11599,7 +12095,7 @@ var ReactFiberScheduler = function(config) {
           "Should have next effect. This error is likely caused by a bug " +
             "in React. Please file an issue."
         );
-        captureError(nextEffect, _error2);
+        onCommitPhaseError(nextEffect, _error);
         if (nextEffect !== null) {
           nextEffect = nextEffect.nextEffect;
         }
@@ -11617,26 +12113,12 @@ var ReactFiberScheduler = function(config) {
       ReactFiberInstrumentation_1.debugTool.onCommitWork(finishedWork);
     }
 
-    // If we caught any errors during this commit, schedule their boundaries
-    // to update.
-    if (commitPhaseBoundaries) {
-      commitPhaseBoundaries.forEach(scheduleErrorRecovery);
-      commitPhaseBoundaries = null;
-    }
-
-    if (firstUncaughtError !== null) {
-      var _error3 = firstUncaughtError;
-      firstUncaughtError = null;
-      onUncaughtError(_error3);
-    }
-
     var remainingTime = root.current.expirationTime;
-
     if (remainingTime === NoWork) {
-      capturedErrors = null;
-      failedBoundaries = null;
+      // If there's no remaining work, we can clear the set of already failed
+      // error boundaries.
+      legacyErrorBoundariesThatAlreadyFailed = null;
     }
-
     return remainingTime;
   }
 
@@ -11668,6 +12150,9 @@ var ReactFiberScheduler = function(config) {
   }
 
   function completeUnitOfWork(workInProgress) {
+    // Attempt to complete the current unit of work, then move to the
+    // next sibling. If there are no more siblings, return to the
+    // parent fiber.
     while (true) {
       // The current, flushed, state of this fiber is the alternate.
       // Ideally nothing should rely on this, but relying on it here
@@ -11677,80 +12162,140 @@ var ReactFiberScheduler = function(config) {
       {
         ReactDebugCurrentFiber.setCurrentFiber(workInProgress);
       }
-      var next = completeWork(
-        current,
-        workInProgress,
-        nextRenderExpirationTime
-      );
-      {
-        ReactDebugCurrentFiber.resetCurrentFiber();
-      }
 
       var returnFiber = workInProgress["return"];
       var siblingFiber = workInProgress.sibling;
 
-      resetExpirationTime(workInProgress, nextRenderExpirationTime);
-
-      if (next !== null) {
+      if ((workInProgress.effectTag & Incomplete) === NoEffect) {
+        // This fiber completed.
+        var next = completeWork(
+          current,
+          workInProgress,
+          nextRenderExpirationTime
+        );
         stopWorkTimer(workInProgress);
+        resetExpirationTime(workInProgress, nextRenderExpirationTime);
+        {
+          ReactDebugCurrentFiber.resetCurrentFiber();
+        }
+
+        if (next !== null) {
+          stopWorkTimer(workInProgress);
+          if (true && ReactFiberInstrumentation_1.debugTool) {
+            ReactFiberInstrumentation_1.debugTool.onCompleteWork(
+              workInProgress
+            );
+          }
+          // If completing this work spawned new work, do that next. We'll come
+          // back here again.
+          return next;
+        }
+
+        if (
+          returnFiber !== null &&
+          // Do not append effects to parents if a sibling failed to complete
+          (returnFiber.effectTag & Incomplete) === NoEffect
+        ) {
+          // Append all the effects of the subtree and this fiber onto the effect
+          // list of the parent. The completion order of the children affects the
+          // side-effect order.
+          if (returnFiber.firstEffect === null) {
+            returnFiber.firstEffect = workInProgress.firstEffect;
+          }
+          if (workInProgress.lastEffect !== null) {
+            if (returnFiber.lastEffect !== null) {
+              returnFiber.lastEffect.nextEffect = workInProgress.firstEffect;
+            }
+            returnFiber.lastEffect = workInProgress.lastEffect;
+          }
+
+          // If this fiber had side-effects, we append it AFTER the children's
+          // side-effects. We can perform certain side-effects earlier if
+          // needed, by doing multiple passes over the effect list. We don't want
+          // to schedule our own side-effect on our own list because if end up
+          // reusing children we'll schedule this effect onto itself since we're
+          // at the end.
+          var effectTag = workInProgress.effectTag;
+          // Skip both NoWork and PerformedWork tags when creating the effect list.
+          // PerformedWork effect is read by React DevTools but shouldn't be committed.
+          if (effectTag > PerformedWork) {
+            if (returnFiber.lastEffect !== null) {
+              returnFiber.lastEffect.nextEffect = workInProgress;
+            } else {
+              returnFiber.firstEffect = workInProgress;
+            }
+            returnFiber.lastEffect = workInProgress;
+          }
+        }
+
         if (true && ReactFiberInstrumentation_1.debugTool) {
           ReactFiberInstrumentation_1.debugTool.onCompleteWork(workInProgress);
         }
-        // If completing this work spawned new work, do that next. We'll come
-        // back here again.
-        return next;
-      }
 
-      if (returnFiber !== null) {
-        // Append all the effects of the subtree and this fiber onto the effect
-        // list of the parent. The completion order of the children affects the
-        // side-effect order.
-        if (returnFiber.firstEffect === null) {
-          returnFiber.firstEffect = workInProgress.firstEffect;
+        if (siblingFiber !== null) {
+          // If there is more work to do in this returnFiber, do that next.
+          return siblingFiber;
+        } else if (returnFiber !== null) {
+          // If there's no more work in this returnFiber. Complete the returnFiber.
+          workInProgress = returnFiber;
+          continue;
+        } else {
+          // We've reached the root.
+          isRootReadyForCommit = true;
+          return null;
         }
-        if (workInProgress.lastEffect !== null) {
-          if (returnFiber.lastEffect !== null) {
-            returnFiber.lastEffect.nextEffect = workInProgress.firstEffect;
-          }
-          returnFiber.lastEffect = workInProgress.lastEffect;
-        }
-
-        // If this fiber had side-effects, we append it AFTER the children's
-        // side-effects. We can perform certain side-effects earlier if
-        // needed, by doing multiple passes over the effect list. We don't want
-        // to schedule our own side-effect on our own list because if end up
-        // reusing children we'll schedule this effect onto itself since we're
-        // at the end.
-        var effectTag = workInProgress.effectTag;
-        // Skip both NoWork and PerformedWork tags when creating the effect list.
-        // PerformedWork effect is read by React DevTools but shouldn't be committed.
-        if (effectTag > PerformedWork) {
-          if (returnFiber.lastEffect !== null) {
-            returnFiber.lastEffect.nextEffect = workInProgress;
-          } else {
-            returnFiber.firstEffect = workInProgress;
-          }
-          returnFiber.lastEffect = workInProgress;
-        }
-      }
-
-      stopWorkTimer(workInProgress);
-      if (true && ReactFiberInstrumentation_1.debugTool) {
-        ReactFiberInstrumentation_1.debugTool.onCompleteWork(workInProgress);
-      }
-
-      if (siblingFiber !== null) {
-        // If there is more work to do in this returnFiber, do that next.
-        return siblingFiber;
-      } else if (returnFiber !== null) {
-        // If there's no more work in this returnFiber. Complete the returnFiber.
-        workInProgress = returnFiber;
-        continue;
       } else {
-        // We've reached the root.
-        var root = workInProgress.stateNode;
-        root.isReadyForCommit = true;
-        return null;
+        // This fiber did not complete because something threw. Pop values off
+        // the stack without entering the complete phase. If this is a boundary,
+        // capture values if possible.
+        var _next = unwindWork(workInProgress);
+        // Because this fiber did not complete, don't reset its expiration time.
+        if (workInProgress.effectTag & DidCapture) {
+          // Restarting an error boundary
+          stopFailedWorkTimer(workInProgress);
+        } else {
+          stopWorkTimer(workInProgress);
+        }
+
+        {
+          ReactDebugCurrentFiber.resetCurrentFiber();
+        }
+
+        if (_next !== null) {
+          stopWorkTimer(workInProgress);
+          if (true && ReactFiberInstrumentation_1.debugTool) {
+            ReactFiberInstrumentation_1.debugTool.onCompleteWork(
+              workInProgress
+            );
+          }
+          // If completing this work spawned new work, do that next. We'll come
+          // back here again.
+          // Since we're restarting, remove anything that is not a host effect
+          // from the effect tag.
+          _next.effectTag &= HostEffectMask;
+          return _next;
+        }
+
+        if (returnFiber !== null) {
+          // Mark the parent fiber as incomplete and clear its effect list.
+          returnFiber.firstEffect = returnFiber.lastEffect = null;
+          returnFiber.effectTag |= Incomplete;
+        }
+
+        if (true && ReactFiberInstrumentation_1.debugTool) {
+          ReactFiberInstrumentation_1.debugTool.onCompleteWork(workInProgress);
+        }
+
+        if (siblingFiber !== null) {
+          // If there is more work to do in this returnFiber, do that next.
+          return siblingFiber;
+        } else if (returnFiber !== null) {
+          // If there's no more work in this returnFiber. Complete the returnFiber.
+          workInProgress = returnFiber;
+          continue;
+        } else {
+          return null;
+        }
       }
     }
 
@@ -11773,45 +12318,11 @@ var ReactFiberScheduler = function(config) {
       ReactDebugCurrentFiber.setCurrentFiber(workInProgress);
     }
 
+    if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
+      stashedWorkInProgressProperties = Object.assign({}, workInProgress);
+    }
     var next = beginWork(current, workInProgress, nextRenderExpirationTime);
-    {
-      ReactDebugCurrentFiber.resetCurrentFiber();
-    }
-    if (true && ReactFiberInstrumentation_1.debugTool) {
-      ReactFiberInstrumentation_1.debugTool.onBeginWork(workInProgress);
-    }
 
-    if (next === null) {
-      // If this doesn't spawn new work, complete the current work.
-      next = completeUnitOfWork(workInProgress);
-    }
-
-    ReactCurrentOwner.current = null;
-
-    return next;
-  }
-
-  function performFailedUnitOfWork(workInProgress) {
-    {
-      ReactStrictModeWarnings.discardPendingWarnings();
-    }
-
-    // The current, flushed, state of this fiber is the alternate.
-    // Ideally nothing should rely on this, but relying on it here
-    // means that we don't need an additional field on the work in
-    // progress.
-    var current = workInProgress.alternate;
-
-    // See if beginning this work spawns more work.
-    startWorkTimer(workInProgress);
-    {
-      ReactDebugCurrentFiber.setCurrentFiber(workInProgress);
-    }
-    var next = beginFailedWork(
-      current,
-      workInProgress,
-      nextRenderExpirationTime
-    );
     {
       ReactDebugCurrentFiber.resetCurrentFiber();
     }
@@ -11830,14 +12341,6 @@ var ReactFiberScheduler = function(config) {
   }
 
   function workLoop(isAsync) {
-    if (capturedErrors !== null) {
-      // If there are unhandled errors, switch to the slow work loop.
-      // TODO: How to avoid this check in the fast path? Maybe the renderer
-      // could keep track of which roots have unhandled errors and call a
-      // forked version of renderRoot.
-      slowWorkLoopThatChecksForFailedWork(isAsync);
-      return;
-    }
     if (!isAsync) {
       // Flush all expired work.
       while (nextUnitOfWork !== null) {
@@ -11849,47 +12352,6 @@ var ReactFiberScheduler = function(config) {
         nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       }
     }
-  }
-
-  function slowWorkLoopThatChecksForFailedWork(isAsync) {
-    if (!isAsync) {
-      // Flush all expired work.
-      while (nextUnitOfWork !== null) {
-        if (hasCapturedError(nextUnitOfWork)) {
-          // Use a forked version of performUnitOfWork
-          nextUnitOfWork = performFailedUnitOfWork(nextUnitOfWork);
-        } else {
-          nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
-        }
-      }
-    } else {
-      // Flush asynchronous work until the deadline runs out of time.
-      while (nextUnitOfWork !== null && !shouldYield()) {
-        if (hasCapturedError(nextUnitOfWork)) {
-          // Use a forked version of performUnitOfWork
-          nextUnitOfWork = performFailedUnitOfWork(nextUnitOfWork);
-        } else {
-          nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
-        }
-      }
-    }
-  }
-
-  function renderRootCatchBlock(root, failedWork, boundary, isAsync) {
-    // We're going to restart the error boundary that captured the error.
-    // Conceptually, we're unwinding the stack. We need to unwind the
-    // context stack, too.
-    unwindContexts(failedWork, boundary);
-
-    // Restart the error boundary using a forked version of
-    // performUnitOfWork that deletes the boundary's children. The entire
-    // failed subree will be unmounted. During the commit phase, a special
-    // lifecycle method is called on the error boundary, which triggers
-    // a re-render.
-    nextUnitOfWork = performFailedUnitOfWork(boundary);
-
-    // Continue working.
-    workLoop(isAsync);
   }
 
   function renderRoot(root, expirationTime, isAsync) {
@@ -11900,15 +12362,11 @@ var ReactFiberScheduler = function(config) {
     );
     isWorking = true;
 
-    // We're about to mutate the work-in-progress tree. If the root was pending
-    // commit, it no longer is: we'll need to complete it again.
-    root.isReadyForCommit = false;
-
     // Check if we're starting from a fresh stack, or if we're resuming from
     // previously yielded work.
     if (
-      root !== nextRoot ||
       expirationTime !== nextRenderExpirationTime ||
+      root !== nextRoot ||
       nextUnitOfWork === null
     ) {
       // Reset the stack and start working from the root.
@@ -11918,347 +12376,145 @@ var ReactFiberScheduler = function(config) {
       nextUnitOfWork = createWorkInProgress(
         nextRoot.current,
         null,
-        expirationTime
+        nextRenderExpirationTime
       );
+      root.pendingCommitExpirationTime = NoWork;
     }
+
+    var didFatal = false;
 
     startWorkLoopTimer(nextUnitOfWork);
 
-    var didError = false;
-    var error = null;
-    {
-      invokeGuardedCallback$2(null, workLoop, null, isAsync);
-      if (hasCaughtError()) {
-        didError = true;
-        error = clearCaughtError();
-      }
-    }
-
-    // An error was thrown during the render phase.
-    while (didError) {
-      if (didFatal) {
-        // This was a fatal error. Don't attempt to recover from it.
-        firstUncaughtError = error;
-        break;
-      }
-
-      var failedWork = nextUnitOfWork;
-      if (failedWork === null) {
-        // An error was thrown but there's no current unit of work. This can
-        // happen during the commit phase if there's a bug in the renderer.
-        didFatal = true;
-        continue;
-      }
-
-      // "Capture" the error by finding the nearest boundary. If there is no
-      // error boundary, we use the root.
-      var boundary = captureError(failedWork, error);
-      invariant(
-        boundary !== null,
-        "Should have found an error boundary. This error is likely " +
-          "caused by a bug in React. Please file an issue."
-      );
-
-      if (didFatal) {
-        // The error we just captured was a fatal error. This happens
-        // when the error propagates to the root more than once.
-        continue;
-      }
-
-      didError = false;
-      error = null;
-      {
-        invokeGuardedCallback$2(
-          null,
-          renderRootCatchBlock,
-          null,
-          root,
-          failedWork,
-          boundary,
-          isAsync
-        );
-        if (hasCaughtError()) {
-          didError = true;
-          error = clearCaughtError();
-          continue;
+    do {
+      try {
+        workLoop(isAsync);
+      } catch (thrownValue) {
+        if (nextUnitOfWork === null) {
+          // This is a fatal error.
+          didFatal = true;
+          onUncaughtError(thrownValue);
+          break;
         }
-      }
-      // We're finished working. Exit the error loop.
-      break;
-    }
 
-    var uncaughtError = firstUncaughtError;
+        if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
+          var failedUnitOfWork = nextUnitOfWork;
+          replayUnitOfWork(failedUnitOfWork, isAsync);
+        }
+
+        var sourceFiber = nextUnitOfWork;
+        var returnFiber = sourceFiber["return"];
+        if (returnFiber === null) {
+          // This is a fatal error.
+          didFatal = true;
+          onUncaughtError(thrownValue);
+          break;
+        }
+        throwException(returnFiber, sourceFiber, thrownValue);
+        nextUnitOfWork = completeUnitOfWork(sourceFiber);
+      }
+      break;
+    } while (true);
 
     // We're done performing work. Time to clean up.
     stopWorkLoopTimer(interruptedBy);
     interruptedBy = null;
     isWorking = false;
-    didFatal = false;
-    firstUncaughtError = null;
 
-    if (uncaughtError !== null) {
-      onUncaughtError(uncaughtError);
-    }
-
-    return root.isReadyForCommit ? root.current.alternate : null;
-  }
-
-  // Returns the boundary that captured the error, or null if the error is ignored
-  function captureError(failedWork, error) {
-    // It is no longer valid because we exited the user code.
-    ReactCurrentOwner.current = null;
-    {
-      ReactDebugCurrentFiber.resetCurrentFiber();
-    }
-
-    // Search for the nearest error boundary.
-    var boundary = null;
-
-    // Passed to logCapturedError()
-    var errorBoundaryFound = false;
-    var willRetry = false;
-    var errorBoundaryName = null;
-
-    // Host containers are a special case. If the failed work itself is a host
-    // container, then it acts as its own boundary. In all other cases, we
-    // ignore the work itself and only search through the parents.
-    if (failedWork.tag === HostRoot) {
-      boundary = failedWork;
-
-      if (isFailedBoundary(failedWork)) {
-        // If this root already failed, there must have been an error when
-        // attempting to unmount it. This is a worst-case scenario and
-        // should only be possible if there's a bug in the renderer.
-        didFatal = true;
-      }
-    } else {
-      var node = failedWork["return"];
-      while (node !== null && boundary === null) {
-        if (node.tag === ClassComponent) {
-          var instance = node.stateNode;
-          if (typeof instance.componentDidCatch === "function") {
-            errorBoundaryFound = true;
-            errorBoundaryName = getComponentName(node);
-
-            // Found an error boundary!
-            boundary = node;
-            willRetry = true;
-          }
-        } else if (node.tag === HostRoot) {
-          // Treat the root like a no-op error boundary
-          boundary = node;
-        }
-
-        if (isFailedBoundary(node)) {
-          // This boundary is already in a failed state.
-
-          // If we're currently unmounting, that means this error was
-          // thrown while unmounting a failed subtree. We should ignore
-          // the error.
-          if (isUnmounting) {
-            return null;
-          }
-
-          // If we're in the commit phase, we should check to see if
-          // this boundary already captured an error during this commit.
-          // This case exists because multiple errors can be thrown during
-          // a single commit without interruption.
-          if (
-            commitPhaseBoundaries !== null &&
-            (commitPhaseBoundaries.has(node) ||
-              (node.alternate !== null &&
-                commitPhaseBoundaries.has(node.alternate)))
-          ) {
-            // If so, we should ignore this error.
-            return null;
-          }
-
-          // The error should propagate to the next boundary -— we keep looking.
-          boundary = null;
-          willRetry = false;
-        }
-
-        node = node["return"];
-      }
-    }
-
-    if (boundary !== null) {
-      // Add to the collection of failed boundaries. This lets us know that
-      // subsequent errors in this subtree should propagate to the next boundary.
-      if (failedBoundaries === null) {
-        failedBoundaries = new Set();
-      }
-      failedBoundaries.add(boundary);
-
-      // This method is unsafe outside of the begin and complete phases.
-      // We might be in the commit phase when an error is captured.
-      // The risk is that the return path from this Fiber may not be accurate.
-      // That risk is acceptable given the benefit of providing users more context.
-      var _componentStack = getStackAddendumByWorkInProgressFiber(failedWork);
-      var _componentName = getComponentName(failedWork);
-
-      // Add to the collection of captured errors. This is stored as a global
-      // map of errors and their component stack location keyed by the boundaries
-      // that capture them. We mostly use this Map as a Set; it's a Map only to
-      // avoid adding a field to Fiber to store the error.
-      if (capturedErrors === null) {
-        capturedErrors = new Map();
-      }
-
-      var capturedError = {
-        componentName: _componentName,
-        componentStack: _componentStack,
-        error: error,
-        errorBoundary: errorBoundaryFound ? boundary.stateNode : null,
-        errorBoundaryFound: errorBoundaryFound,
-        errorBoundaryName: errorBoundaryName,
-        willRetry: willRetry
-      };
-
-      capturedErrors.set(boundary, capturedError);
-
-      try {
-        logCapturedError(capturedError);
-      } catch (e) {
-        // Prevent cycle if logCapturedError() throws.
-        // A cycle may still occur if logCapturedError renders a component that throws.
-        var suppressLogging = e && e.suppressReactErrorLogging;
-        if (!suppressLogging) {
-          console.error(e);
-        }
-      }
-
-      // If we're in the commit phase, defer scheduling an update on the
-      // boundary until after the commit is complete
-      if (isCommitting) {
-        if (commitPhaseBoundaries === null) {
-          commitPhaseBoundaries = new Set();
-        }
-        commitPhaseBoundaries.add(boundary);
+    // Yield back to main thread.
+    if (didFatal) {
+      // There was a fatal error.
+      return null;
+    } else if (nextUnitOfWork === null) {
+      // We reached the root.
+      if (isRootReadyForCommit) {
+        // The root successfully completed. It's ready for commit.
+        root.pendingCommitExpirationTime = expirationTime;
+        var finishedWork = root.current.alternate;
+        return finishedWork;
       } else {
-        // Otherwise, schedule an update now.
-        // TODO: Is this actually necessary during the render phase? Is it
-        // possible to unwind and continue rendering at the same priority,
-        // without corrupting internal state?
-        scheduleErrorRecovery(boundary);
-      }
-      return boundary;
-    } else if (firstUncaughtError === null) {
-      // If no boundary is found, we'll need to throw the error
-      firstUncaughtError = error;
-    }
-    return null;
-  }
-
-  function hasCapturedError(fiber) {
-    // TODO: capturedErrors should store the boundary instance, to avoid needing
-    // to check the alternate.
-    return (
-      capturedErrors !== null &&
-      (capturedErrors.has(fiber) ||
-        (fiber.alternate !== null && capturedErrors.has(fiber.alternate)))
-    );
-  }
-
-  function isFailedBoundary(fiber) {
-    // TODO: failedBoundaries should store the boundary instance, to avoid
-    // needing to check the alternate.
-    return (
-      failedBoundaries !== null &&
-      (failedBoundaries.has(fiber) ||
-        (fiber.alternate !== null && failedBoundaries.has(fiber.alternate)))
-    );
-  }
-
-  function commitErrorHandling(effectfulFiber) {
-    var capturedError = void 0;
-    if (capturedErrors !== null) {
-      capturedError = capturedErrors.get(effectfulFiber);
-      capturedErrors["delete"](effectfulFiber);
-      if (capturedError == null) {
-        if (effectfulFiber.alternate !== null) {
-          effectfulFiber = effectfulFiber.alternate;
-          capturedError = capturedErrors.get(effectfulFiber);
-          capturedErrors["delete"](effectfulFiber);
-        }
-      }
-    }
-
-    invariant(
-      capturedError != null,
-      "No error for given unit of work. This error is likely caused by a " +
-        "bug in React. Please file an issue."
-    );
-
-    switch (effectfulFiber.tag) {
-      case ClassComponent:
-        var instance = effectfulFiber.stateNode;
-
-        var info = {
-          componentStack: capturedError.componentStack
-        };
-
-        // Allow the boundary to handle the error, usually by scheduling
-        // an update to itself
-        instance.componentDidCatch(capturedError.error, info);
-        return;
-      case HostRoot:
-        if (firstUncaughtError === null) {
-          firstUncaughtError = capturedError.error;
-        }
-        return;
-      default:
+        // The root did not complete.
         invariant(
           false,
-          "Invalid type of work. This error is likely caused by a bug in " +
-            "React. Please file an issue."
+          "Expired work should have completed. This error is likely caused " +
+            "by a bug in React. Please file an issue."
         );
+      }
+    } else {
+      // There's more work to do, but we ran out of time. Yield back to
+      // the renderer.
+      return null;
     }
   }
 
-  function unwindContexts(from, to) {
-    var node = from;
-    while (node !== null) {
-      switch (node.tag) {
+  function scheduleCapture(sourceFiber, boundaryFiber, value, expirationTime) {
+    // TODO: We only support dispatching errors.
+    var capturedValue = createCapturedValue(value, sourceFiber);
+    var update = {
+      expirationTime: expirationTime,
+      partialState: null,
+      callback: null,
+      isReplace: false,
+      isForced: false,
+      capturedValue: capturedValue,
+      next: null
+    };
+    insertUpdateIntoFiber(boundaryFiber, update);
+    scheduleWork(boundaryFiber, expirationTime);
+  }
+
+  function dispatch(sourceFiber, value, expirationTime) {
+    invariant(
+      !isWorking || isCommitting,
+      "dispatch: Cannot dispatch during the render phase."
+    );
+
+    // TODO: Handle arrays
+
+    var fiber = sourceFiber["return"];
+    while (fiber !== null) {
+      switch (fiber.tag) {
         case ClassComponent:
-          popContextProvider(node);
+          var ctor = fiber.type;
+          var instance = fiber.stateNode;
+          if (
+            typeof ctor.getDerivedStateFromCatch === "function" ||
+            (typeof instance.componentDidCatch === "function" &&
+              !isAlreadyFailedLegacyErrorBoundary(instance))
+          ) {
+            scheduleCapture(sourceFiber, fiber, value, expirationTime);
+            return;
+          }
           break;
-        case HostComponent:
-          popHostContext(node);
-          break;
+        // TODO: Handle async boundaries
         case HostRoot:
-          popHostContainer(node);
-          break;
-        case HostPortal:
-          popHostContainer(node);
-          break;
-        case ContextProvider:
-          popProvider(node);
-          break;
+          scheduleCapture(sourceFiber, fiber, value, expirationTime);
+          return;
       }
-      if (node === to || node.alternate === to) {
-        stopFailedWorkTimer(node);
-        break;
-      } else {
-        stopWorkTimer(node);
-      }
-      node = node["return"];
+      fiber = fiber["return"];
+    }
+
+    if (sourceFiber.tag === HostRoot) {
+      // Error was thrown at the root. There is no parent, so the root
+      // itself should capture it.
+      scheduleCapture(sourceFiber, sourceFiber, value, expirationTime);
     }
   }
 
-  function computeAsyncExpiration() {
+  function onCommitPhaseError(fiber, error) {
+    return dispatch(fiber, error, Sync);
+  }
+
+  function computeAsyncExpiration(currentTime) {
     // Given the current clock time, returns an expiration time. We use rounding
     // to batch like updates together.
     // Should complete within ~1000ms. 1200ms max.
-    var currentTime = recalculateCurrentTime();
-    var expirationMs = 1000;
-    var bucketSizeMs = 200;
+    var expirationMs = 5000;
+    var bucketSizeMs = 250;
     return computeExpirationBucket(currentTime, expirationMs, bucketSizeMs);
   }
 
-  function computeInteractiveExpiration() {
+  function computeInteractiveExpiration(currentTime) {
     // Should complete within ~500ms. 600ms max.
-    var currentTime = recalculateCurrentTime();
     var expirationMs = 500;
     var bucketSizeMs = 100;
     return computeExpirationBucket(currentTime, expirationMs, bucketSizeMs);
@@ -12266,7 +12522,8 @@ var ReactFiberScheduler = function(config) {
 
   // Creates a unique async expiration time.
   function computeUniqueAsyncExpiration() {
-    var result = computeAsyncExpiration();
+    var currentTime = recalculateCurrentTime();
+    var result = computeAsyncExpiration(currentTime);
     if (result <= lastUniqueAsyncExpiration) {
       // Since we assume the current time monotonically increases, we only hit
       // this branch when computeUniqueAsyncExpiration is fired multiple times
@@ -12298,10 +12555,12 @@ var ReactFiberScheduler = function(config) {
       if (fiber.mode & AsyncMode) {
         if (isBatchingInteractiveUpdates) {
           // This is an interactive update
-          expirationTime = computeInteractiveExpiration();
+          var currentTime = recalculateCurrentTime();
+          expirationTime = computeInteractiveExpiration(currentTime);
         } else {
           // This is an async update
-          expirationTime = computeAsyncExpiration();
+          var _currentTime = recalculateCurrentTime();
+          expirationTime = computeAsyncExpiration(_currentTime);
         }
       } else {
         // This is a sync update
@@ -12324,23 +12583,6 @@ var ReactFiberScheduler = function(config) {
 
   function scheduleWork(fiber, expirationTime) {
     return scheduleWorkImpl(fiber, expirationTime, false);
-  }
-
-  function checkRootNeedsClearing(root, fiber, expirationTime) {
-    if (
-      !isWorking &&
-      root === nextRoot &&
-      expirationTime < nextRenderExpirationTime
-    ) {
-      // Restart the root from the top.
-      if (nextUnitOfWork !== null) {
-        // This is an interruption. (Used for performance tracking.)
-        interruptedBy = fiber;
-      }
-      nextRoot = null;
-      nextUnitOfWork = null;
-      nextRenderExpirationTime = NoWork;
-    }
   }
 
   function scheduleWorkImpl(fiber, expirationTime, isErrorRecovery) {
@@ -12374,10 +12616,27 @@ var ReactFiberScheduler = function(config) {
       if (node["return"] === null) {
         if (node.tag === HostRoot) {
           var root = node.stateNode;
-
-          checkRootNeedsClearing(root, fiber, expirationTime);
-          requestWork(root, expirationTime);
-          checkRootNeedsClearing(root, fiber, expirationTime);
+          if (
+            !isWorking &&
+            nextRenderExpirationTime !== NoWork &&
+            expirationTime < nextRenderExpirationTime
+          ) {
+            // This is an interruption. (Used for performance tracking.)
+            interruptedBy = fiber;
+            resetContextStack();
+          }
+          if (nextRoot !== root || !isWorking) {
+            requestWork(root, expirationTime);
+          }
+          if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
+            invariant(
+              false,
+              "Maximum update depth exceeded. This can happen when a " +
+                "component repeatedly calls setState inside " +
+                "componentWillUpdate or componentDidUpdate. React limits " +
+                "the number of nested updates to prevent infinite loops."
+            );
+          }
         } else {
           {
             if (!isErrorRecovery && fiber.tag === ClassComponent) {
@@ -12391,27 +12650,23 @@ var ReactFiberScheduler = function(config) {
     }
   }
 
-  function scheduleErrorRecovery(fiber) {
-    scheduleWorkImpl(fiber, Sync, true);
-  }
-
   function recalculateCurrentTime() {
     // Subtract initial time so it fits inside 32bits
-    var ms = now() - startTime;
-    mostRecentCurrentTime = msToExpirationTime(ms);
+    mostRecentCurrentTimeMs = now() - originalStartTimeMs;
+    mostRecentCurrentTime = msToExpirationTime(mostRecentCurrentTimeMs);
     return mostRecentCurrentTime;
   }
 
   function deferredUpdates(fn) {
     var previousExpirationContext = expirationContext;
-    expirationContext = computeAsyncExpiration();
+    var currentTime = recalculateCurrentTime();
+    expirationContext = computeAsyncExpiration(currentTime);
     try {
       return fn();
     } finally {
       expirationContext = previousExpirationContext;
     }
   }
-
   function syncUpdates(fn, a, b, c, d) {
     var previousExpirationContext = expirationContext;
     expirationContext = Sync;
@@ -12469,7 +12724,7 @@ var ReactFiberScheduler = function(config) {
     }
 
     // Compute a timeout for the given expiration time.
-    var currentMs = now() - startTime;
+    var currentMs = now() - originalStartTimeMs;
     var expirationMs = expirationTimeToMs(expirationTime);
     var timeout = expirationMs - currentMs;
 
@@ -12482,16 +12737,35 @@ var ReactFiberScheduler = function(config) {
   // requestWork is called by the scheduler whenever a root receives an update.
   // It's up to the renderer to call renderRoot at some point in the future.
   function requestWork(root, expirationTime) {
-    if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
-      invariant(
-        false,
-        "Maximum update depth exceeded. This can happen when a " +
-          "component repeatedly calls setState inside componentWillUpdate or " +
-          "componentDidUpdate. React limits the number of nested updates to " +
-          "prevent infinite loops."
-      );
+    addRootToSchedule(root, expirationTime);
+
+    if (isRendering) {
+      // Prevent reentrancy. Remaining work will be scheduled at the end of
+      // the currently rendering batch.
+      return;
     }
 
+    if (isBatchingUpdates) {
+      // Flush work at the end of the batch.
+      if (isUnbatchingUpdates) {
+        // ...unless we're inside unbatchedUpdates, in which case we should
+        // flush it now.
+        nextFlushedRoot = root;
+        nextFlushedExpirationTime = Sync;
+        performWorkOnRoot(root, Sync, false);
+      }
+      return;
+    }
+
+    // TODO: Get rid of Sync and use current time?
+    if (expirationTime === Sync) {
+      performSyncWork();
+    } else {
+      scheduleCallbackWithExpiration(expirationTime);
+    }
+  }
+
+  function addRootToSchedule(root, expirationTime) {
     // Add the root to the schedule.
     // Check if this root is already part of the schedule.
     if (root.nextScheduledRoot === null) {
@@ -12516,37 +12790,11 @@ var ReactFiberScheduler = function(config) {
         root.remainingExpirationTime = expirationTime;
       }
     }
-
-    if (isRendering) {
-      // Prevent reentrancy. Remaining work will be scheduled at the end of
-      // the currently rendering batch.
-      return;
-    }
-
-    if (isBatchingUpdates) {
-      if (isUnbatchingUpdates) {
-        // Flush work at the end of the batch.
-        // ...unless we're inside unbatchedUpdates, in which case we should
-        // flush it now.
-        nextFlushedRoot = root;
-        nextFlushedExpirationTime = Sync;
-        performWorkOnRoot(root, Sync, false);
-      }
-      return;
-    }
-
-    // TODO: Get rid of Sync and use current time?
-    if (expirationTime === Sync) {
-      performSyncWork();
-    } else {
-      scheduleCallbackWithExpiration(expirationTime);
-    }
   }
 
   function findHighestPriorityRoot() {
     var highestPriorityWork = NoWork;
     var highestPriorityRoot = null;
-
     if (lastScheduledRoot !== null) {
       var previousScheduledRoot = lastScheduledRoot;
       var root = firstScheduledRoot;
@@ -12608,7 +12856,8 @@ var ReactFiberScheduler = function(config) {
     var previousFlushedRoot = nextFlushedRoot;
     if (
       previousFlushedRoot !== null &&
-      previousFlushedRoot === highestPriorityRoot
+      previousFlushedRoot === highestPriorityRoot &&
+      highestPriorityWork === Sync
     ) {
       nestedUpdateCount++;
     } else {
@@ -12683,7 +12932,6 @@ var ReactFiberScheduler = function(config) {
     // Clean-up.
     deadline = null;
     deadlineDidExpire = false;
-    nestedUpdateCount = 0;
 
     finishRendering();
   }
@@ -12702,6 +12950,8 @@ var ReactFiberScheduler = function(config) {
   }
 
   function finishRendering() {
+    nestedUpdateCount = 0;
+
     if (completedBatches !== null) {
       var batches = completedBatches;
       completedBatches = null;
@@ -12719,10 +12969,10 @@ var ReactFiberScheduler = function(config) {
     }
 
     if (hasUnhandledError) {
-      var _error4 = unhandledError;
+      var error = unhandledError;
       unhandledError = null;
       hasUnhandledError = false;
-      throw _error4;
+      throw error;
     }
   }
 
@@ -12815,8 +13065,6 @@ var ReactFiberScheduler = function(config) {
     return true;
   }
 
-  // TODO: Not happy about this hook. Conceptually, renderRoot should return a
-  // tuple of (isReadyForCommit, didError, error)
   function onUncaughtError(error) {
     invariant(
       nextFlushedRoot !== null,
@@ -12933,6 +13181,7 @@ var ReactFiberScheduler = function(config) {
   }
 
   return {
+    recalculateCurrentTime: recalculateCurrentTime,
     computeExpirationForFiber: computeExpirationForFiber,
     scheduleWork: scheduleWork,
     requestWork: requestWork,
@@ -12976,6 +13225,7 @@ var ReactFiberReconciler$1 = function(config) {
   var _ReactFiberScheduler = ReactFiberScheduler(config),
     computeUniqueAsyncExpiration =
       _ReactFiberScheduler.computeUniqueAsyncExpiration,
+    recalculateCurrentTime = _ReactFiberScheduler.recalculateCurrentTime,
     computeExpirationForFiber = _ReactFiberScheduler.computeExpirationForFiber,
     scheduleWork = _ReactFiberScheduler.scheduleWork,
     requestWork = _ReactFiberScheduler.requestWork,
@@ -12989,7 +13239,13 @@ var ReactFiberReconciler$1 = function(config) {
     interactiveUpdates = _ReactFiberScheduler.interactiveUpdates,
     flushInteractiveUpdates = _ReactFiberScheduler.flushInteractiveUpdates;
 
-  function scheduleRootUpdate(current, element, expirationTime, callback) {
+  function scheduleRootUpdate(
+    current,
+    element,
+    currentTime,
+    expirationTime,
+    callback
+  ) {
     {
       if (
         ReactDebugCurrentFiber.phase === "render" &&
@@ -13024,6 +13280,7 @@ var ReactFiberReconciler$1 = function(config) {
       callback: callback,
       isReplace: false,
       isForced: false,
+      capturedValue: null,
       next: null
     };
     insertUpdateIntoFiber(current, update);
@@ -13036,6 +13293,7 @@ var ReactFiberReconciler$1 = function(config) {
     element,
     container,
     parentComponent,
+    currentTime,
     expirationTime,
     callback
   ) {
@@ -13061,7 +13319,13 @@ var ReactFiberReconciler$1 = function(config) {
       container.pendingContext = context;
     }
 
-    return scheduleRootUpdate(current, element, expirationTime, callback);
+    return scheduleRootUpdate(
+      current,
+      element,
+      currentTime,
+      expirationTime,
+      callback
+    );
   }
 
   function findHostInstance(fiber) {
@@ -13078,17 +13342,34 @@ var ReactFiberReconciler$1 = function(config) {
     },
     updateContainer: function(element, container, parentComponent, callback) {
       var current = container.current;
+      var currentTime = recalculateCurrentTime();
       var expirationTime = computeExpirationForFiber(current);
       return updateContainerAtExpirationTime(
         element,
         container,
         parentComponent,
+        currentTime,
         expirationTime,
         callback
       );
     },
-
-    updateContainerAtExpirationTime: updateContainerAtExpirationTime,
+    updateContainerAtExpirationTime: function(
+      element,
+      container,
+      parentComponent,
+      expirationTime,
+      callback
+    ) {
+      var currentTime = recalculateCurrentTime();
+      return updateContainerAtExpirationTime(
+        element,
+        container,
+        parentComponent,
+        currentTime,
+        expirationTime,
+        callback
+      );
+    },
 
     flushRoot: flushRoot,
 
@@ -13833,8 +14114,7 @@ var ReactNativeRenderer = {
     NativeMethodsMixin: NativeMethodsMixin,
     // Used by react-native-github/Libraries/ components
     ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin, // requireNativeComponent
-    ReactGlobalSharedState: ReactGlobalSharedState, // Systrace
-    ReactNativeComponentTree: ReactNativeComponentTree, // InspectorUtils, ScrollResponder
+    ReactNativeComponentTree: ReactNativeComponentTree, // ScrollResponder
     ReactNativePropRegistry: ReactNativePropRegistry, // flattenStyle, Stylesheet
     TouchHistoryMath: TouchHistoryMath, // PanResponder
     createReactNativeComponentClass: createReactNativeComponentClass, // RCTText, RCTView, ReactNativeART
