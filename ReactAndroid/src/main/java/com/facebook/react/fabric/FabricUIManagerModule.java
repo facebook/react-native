@@ -5,17 +5,17 @@ package com.facebook.react.fabric;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * Fabric API.
  */
 @SuppressWarnings("unused") // used from JNI
-public class FabricUIManagerModule implements UIModule {
+public class FabricUIManagerModule implements UIManager {
 
   private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;

@@ -98,4 +98,8 @@ public interface CatalystInstance
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
   JavaScriptContextHolder getJavaScriptContextHolder();
+
+  <T extends UIManager> void setFabricUIManager(T fabricUIManager);
+
+  <T extends UIManager> T getFabricUIManager();
 }

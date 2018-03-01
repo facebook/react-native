@@ -85,6 +85,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
+  private UIManager mFabricUIManager;
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
@@ -98,8 +99,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      final BridgeListener bridgeListener) {
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
@@ -125,9 +125,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
-    if (bridgeListener != null) {
-      bridgeListener.onBridgeStarted(this);
-    }
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -456,6 +453,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
+  public UIManager getFabricUIManager() {
+    return mFabricUIManager;
+  }
+
+  public void setFabricUIManager(UIManager fabricUIManager) {
+    mFabricUIManager = fabricUIManager;
+  }
+
   private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
@@ -555,7 +560,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-    private @Nullable BridgeListener mBridgeListener;
 
 
     public Builder setReactQueueConfigurationSpec(
@@ -585,20 +589,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setBridgeListener(
-      BridgeListener listener) {
-      mBridgeListener = listener;
-      return this;
-    }
-
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mNativeModuleCallExceptionHandler),
-          mBridgeListener);
+          Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
     }
   }
 }

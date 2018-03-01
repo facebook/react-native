@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 
 /**
  * View manager for ReactRootView components.

@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager.common;
 
 import android.view.View;
 
