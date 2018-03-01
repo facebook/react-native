@@ -1,0 +1,10 @@
+# Circle CI 2.0 Config File
+# This config file will prevent tests from being run on the gh-pages branch.
+version: 2
+jobs:
+  build:
+    machine: true
+    branches:
+      ignore: gh-pages
+    steps:
+            -run: echo "Skipping tests on gh-pages branch"
