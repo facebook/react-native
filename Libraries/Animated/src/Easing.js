@@ -175,10 +175,7 @@ class Easing {
    *
    * - http://tiny.cc/back_default (s = 1.70158, default)
    */
-  static back(s: number): (t: number) => number {
-    if (s === undefined) {
-      s = 1.70158;
-    }
+  static back(s: number = 1.70158): (t: number) => number {
     return t => t * t * ((s + 1) * t - s);
   }
 
