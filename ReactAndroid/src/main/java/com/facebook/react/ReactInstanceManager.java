@@ -1007,7 +1007,8 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    final int rootTag = catalystInstance.getNativeModule(UIManagerModule.class).addRootView(rootView);
+    UIManager uiManagerModule = rootView.isFabric() ? catalystInstance.getFabricUIManager() : catalystInstance.getNativeModule(UIManagerModule.class);
+    final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.invokeJSEntryPoint();
     Systrace.beginAsyncSection(

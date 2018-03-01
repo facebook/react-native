@@ -88,6 +88,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private @Nullable Runnable mJSEntryPoint;
+  private boolean mIsFabric = false;
 
   public ReactRootView(Context context) {
     super(context);
@@ -521,6 +522,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       t instanceof Exception ? (Exception) t : new RuntimeException(t);
 
     mReactInstanceManager.getCurrentReactContext().handleException(e);
+  }
+
+  public void setIsFabric(boolean isFabric) {
+    mIsFabric = isFabric;
+  }
+
+  public boolean isFabric() {
+    return mIsFabric;
   }
 
   @Nullable

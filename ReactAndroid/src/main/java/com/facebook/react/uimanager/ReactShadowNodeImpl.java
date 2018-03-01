@@ -361,7 +361,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+      @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     if (mNodeUpdated) {
       onCollectExtraUpdates(uiViewOperationQueue);
     }
@@ -391,7 +391,18 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mScreenHeight = newScreenHeight;
 
       if (layoutHasChanged) {
-        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+        //TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
+        if (nativeViewHierarchyOptimizer != null) {
+          nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+        } else {
+          uiViewOperationQueue.enqueueUpdateLayout(
+            getParent().getReactTag(),
+            getReactTag(),
+            getScreenX(),
+            getScreenY(),
+            getScreenWidth(),
+            getScreenHeight());
+        }
       }
 
       return layoutHasChanged;

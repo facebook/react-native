@@ -764,7 +764,7 @@ public class UIViewOperationQueue {
     mOperations.add(0, new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(
+  public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
