@@ -307,6 +307,13 @@ header h2 {
 .mainContainer .wrapper .post.basicPost {
   margin-top: 30px;
 }
+
+.mainContainer .wrapper .post h1 {
+  margin-top: 20px;
+  margin-bottom: 0;
+  font-size: 250%;
+  padding: 10px 0;
+}
 .mainContainer .wrapper .post h2 {
   font-size: 130%;
 }
@@ -788,7 +795,6 @@ pre code {
 .imageAlignSide .blockImage {
   max-width: 500px;
   flex: 0 1 500px;
-  margin-right: 40px;
 }
 @media only screen and (min-device-width: 360px) and (max-device-width: 735px) {
   .imageAlignSide .blockImage {
@@ -813,6 +819,12 @@ pre code {
 .imageAlignTop.alignCenter .blockImage {
   margin-left: auto;
   margin-right: auto;
+}
+.imageAlignRight .blockImage {
+  margin-left: 40px;
+}
+.imageAlignLeft .blockImage {
+  margin-right: 40px;
 }
 .container .gridBlock .blockContent p {
   padding: 0;
@@ -1188,6 +1200,12 @@ ul#languages li {
   }
   .navigationSlider .slidingNav ul li.navItemActive a {
     color: #fff;
+  }
+}
+
+@media only screen and (max-device-width: 735px) {
+  .navigationSlider .slidingNav ul {
+    overflow-x: auto;
   }
 }
 
@@ -1737,7 +1755,9 @@ footer .sitemap .nav-home:focus {
 }
 @media screen and (max-width: 735px) {
   footer .sitemap {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    margin: 0 2em 3em;
   }
 }
 

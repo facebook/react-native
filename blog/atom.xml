@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://facebook.github.io/blog</id>
+    <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
     <updated>2018-01-18T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
-    <link rel="alternate" href="https://facebook.github.io/blog"/>
+    <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
-    <logo>https://facebook.github.ioimg/header_logo.png</logo>
+    <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <entry>
         <title type="html"><![CDATA[Implementing Twitter’s App Loading Animation in React Native]]></title>
-        <id>https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html</id>
-        <link href="https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html">
+        <id>https://facebook.github.io/react-native/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html">
         </link>
         <updated>2018-01-18T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Twitter’s iOS app has a loading animation I quite enjoy.
-
-<img src="/react-native/blog/assets/loading-screen-01.gif" style="float: left; padding-right: 80px; padding-bottom: 20px"/>
-
-Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
+        <summary type="html"><![CDATA[<p>Twitter’s iOS app has a loading animation I quite enjoy.</p>
+<p><img src="/react-native/blog/assets/loading-screen-01.gif" style="float: left; padding-right: 80px; padding-bottom: 20px"/></p>
+<p>Once the app is ready, the Twitter logo delightfully expands, revea</p>
+]]></summary>
         <author>
             <name>Eli White</name>
             <uri>https://github.com/TheSavior</uri>
@@ -25,15 +24,16 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #6]]></title>
-        <id>https://facebook.github.io/blog/2018/01/09/react-native-monthly-6.html</id>
-        <link href="https://facebook.github.io/blog/2018/01/09/react-native-monthly-6.html">
+        <id>https://facebook.github.io/react-native/blog/2018/01/09/react-native-monthly-6.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/01/09/react-native-monthly-6.html">
         </link>
         <updated>2018-01-09T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting is still going strong! Make sure to check a note on the bottom of this post for the next sessions.
-
-### Expo
-
-* Congratulations to [Devin Abbott](https://github.com/dabbott) and [Houssein Djirdeh](https://twitter.com/]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting is still going strong! Make sure to check a note on the bottom of this post for the next sessions.</p>
+<h3><a class="anchor" aria-hidden="true" name="expo"></a><a href="#expo" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Expo</h3>
+<ul>
+<li>Congratulations to <a href="https://github.com/dabbott">Devin Abbott</a> and [Houssein Djirdeh](<a href="https://twitter.com/">https://twitter.com/</a></li>
+</ul>
+]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://twitter.com/TomislavTenodi</uri>
@@ -41,15 +41,16 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #5]]></title>
-        <id>https://facebook.github.io/blog/2017/11/06/react-native-monthly-5.html</id>
-        <link href="https://facebook.github.io/blog/2017/11/06/react-native-monthly-5.html">
+        <id>https://facebook.github.io/react-native/blog/2017/11/06/react-native-monthly-5.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/11/06/react-native-monthly-5.html">
         </link>
         <updated>2017-11-06T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! Let's see what our teams are up to.
-
-### Callstack
-
-* We’ve been working on React Native CI. Most importantly, we have migrated from Travis to Circle, leaving React Native with a single, unified CI pipeline]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! Let's see what our teams are up to.</p>
+<h3><a class="anchor" aria-hidden="true" name="callstack"></a><a href="#callstack" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callstack</h3>
+<ul>
+<li>We’ve been working on React Native CI. Most importantly, we have migrated from Travis to Circle, leaving React Native with a single, unified CI pipeline</li>
+</ul>
+]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -57,15 +58,16 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #4]]></title>
-        <id>https://facebook.github.io/blog/2017/09/21/react-native-monthly-4.html</id>
-        <link href="https://facebook.github.io/blog/2017/09/21/react-native-monthly-4.html">
+        <id>https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/09/21/react-native-monthly-4.html">
         </link>
         <updated>2017-09-21T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! Here are the notes from each team:
-
-### Callstack
-
-* [React Native EU](https://react-native.eu) is over. More than 300 participants from 33 countries have visited Wroclaw. Talks can be found [on Youtube](ht]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! Here are the notes from each team:</p>
+<h3><a class="anchor" aria-hidden="true" name="callstack"></a><a href="#callstack" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callstack</h3>
+<ul>
+<li><a href="https://react-native.eu">React Native EU</a> is over. More than 300 participants from 33 countries have visited Wroclaw. Talks can be found [on Youtube](ht</li>
+</ul>
+]]></summary>
         <author>
             <name>Mike Grabowski</name>
             <uri>https://github.com/grabbou</uri>
@@ -73,11 +75,12 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #3]]></title>
-        <id>https://facebook.github.io/blog/2017/08/30/react-native-monthly-3.html</id>
-        <link href="https://facebook.github.io/blog/2017/08/30/react-native-monthly-3.html">
+        <id>https://facebook.github.io/react-native/blog/2017/08/30/react-native-monthly-3.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/08/30/react-native-monthly-3.html">
         </link>
         <updated>2017-08-30T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at [React Native EU](https://react-native.eu/) conference in Wroclaw, Poland. Make sure to grab a ticket an]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! This month's meeting was a bit shorter as most of our teams were busy shipping. Next month, we are at <a href="https://react-native.eu/">React Native EU</a> conference in Wroclaw, Poland. Make sure to grab a ticket an</p>
+]]></summary>
         <author>
             <name>Mike Grabowski</name>
             <uri>https://github.com/grabbou</uri>
@@ -85,11 +88,12 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Performance in Marketplace]]></title>
-        <id>https://facebook.github.io/blog/2017/08/07/react-native-performance-in-marketplace.html</id>
-        <link href="https://facebook.github.io/blog/2017/08/07/react-native-performance-in-marketplace.html">
+        <id>https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/08/07/react-native-performance-in-marketplace.html">
         </link>
         <updated>2017-08-07T06:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, [Marketplace](https://newsroom.fb.com/news/2016/10/introduci]]></summary>
+        <summary type="html"><![CDATA[<p>React Native is used in multiple places across multiple apps in the Facebook family including a top level tab in the main Facebook apps. Our focus for this post is a highly visible product, [Marketplace](<a href="https://newsroom.fb.com/news/2016/10/introduci">https://newsroom.fb.com/news/2016/10/introduci</a></p>
+]]></summary>
         <author>
             <name>Aaron Chiu</name>
             <uri>https://www.facebook.com/aaronechiu</uri>
@@ -97,11 +101,12 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #2]]></title>
-        <id>https://facebook.github.io/blog/2017/07/28/react-native-monthly-2.html</id>
-        <link href="https://facebook.github.io/blog/2017/07/28/react-native-monthly-2.html">
+        <id>https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html">
         </link>
         <updated>2017-07-28T06:00:00Z</updated>
-        <summary type="html"><![CDATA[The React Native monthly meeting continues! On this session, we were joined by [Infinite Red](https://infinite.red/), great minds behind [Chain React, the React Native Conference](https://infinite.red/ChainReactConf). As most of the people here were ]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! On this session, we were joined by <a href="https://infinite.red/">Infinite Red</a>, great minds behind <a href="https://infinite.red/ChainReactConf">Chain React, the React Native Conference</a>. As most of the people here were</p>
+]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -109,35 +114,25 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #1]]></title>
-        <id>https://facebook.github.io/blog/2017/06/21/react-native-monthly-1.html</id>
-        <link href="https://facebook.github.io/blog/2017/06/21/react-native-monthly-1.html">
+        <id>https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html">
         </link>
         <updated>2017-06-21T06:00:00Z</updated>
-        <summary type="html"><![CDATA[At [Shoutem](https://shoutem.github.io/), we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep u]]></summary>
+        <summary type="html"><![CDATA[<p>At <a href="https://shoutem.github.io/">Shoutem</a>, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep u</p>
+]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
-        <id>https://facebook.github.io/blog/2017/03/13/introducing-create-react-native-app.html</id>
-        <link href="https://facebook.github.io/blog/2017/03/13/introducing-create-react-native-app.html">
-        </link>
-        <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Today we’re announcing [Create React Native App](https://github.com/react-community/create-react-native-app): a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create Rea]]></summary>
-        <author>
-            <name>Adam Perry</name>
-            <uri>https://github.com/dikaiosune</uri>
-        </author>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[idx: The Existential Function]]></title>
-        <id>https://facebook.github.io/blog/2017/03/13/idx-the-existential-function.html</id>
-        <link href="https://facebook.github.io/blog/2017/03/13/idx-the-existential-function.html">
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
         </link>
         <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n]]></summary>
+        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n</p>
+]]></summary>
         <author>
             <name>Timothy Yung</name>
             <uri>https://github.com/yungsters</uri>
@@ -145,23 +140,38 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[Better List Views in React Native]]></title>
-        <id>https://facebook.github.io/blog/2017/03/13/better-list-views.html</id>
-        <link href="https://facebook.github.io/blog/2017/03/13/better-list-views.html">
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html">
         </link>
         <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Many of you have started playing with some of our new List components already after our [teaser announcement in the community group](https://www.facebook.com/groups/react.native.community/permalink/921378591331053), but we are officially announcing t]]></summary>
+        <summary type="html"><![CDATA[<p>Many of you have started playing with some of our new List components already after our <a href="https://www.facebook.com/groups/react.native.community/permalink/921378591331053">teaser announcement in the community group</a>, but we are officially announcing t</p>
+]]></summary>
         <author>
             <name>Spencer Ahrens</name>
             <uri>https://github.com/sahrens</uri>
         </author>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
+        </link>
+        <updated>2017-03-13T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create Rea</p>
+]]></summary>
+        <author>
+            <name>Adam Perry</name>
+            <uri>https://github.com/dikaiosune</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Using Native Driver for Animated]]></title>
-        <id>https://facebook.github.io/blog/2017/02/14/using-native-driver-for-animated.html</id>
-        <link href="https://facebook.github.io/blog/2017/02/14/using-native-driver-for-animated.html">
+        <id>https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html">
         </link>
         <updated>2017-02-14T06:00:00Z</updated>
-        <summary type="html"><![CDATA[For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers t]]></summary>
+        <summary type="html"><![CDATA[<p>For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers t</p>
+]]></summary>
         <author>
             <name>Janic Duplessis</name>
             <uri>https://twitter.com/janicduplessis</uri>
@@ -169,11 +179,12 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
-        <id>https://facebook.github.io/blog/2017/01/07/monthly-release-cadence.html</id>
-        <link href="https://facebook.github.io/blog/2017/01/07/monthly-release-cadence.html">
+        <id>https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html">
         </link>
         <updated>2017-01-07T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release o]]></summary>
+        <summary type="html"><![CDATA[<p>Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release o</p>
+]]></summary>
         <author>
             <name>Eric Vicenti</name>
             <uri>https://twitter.com/EricVicenti</uri>
@@ -181,15 +192,14 @@ Once the app is ready, the Twitter logo delightfully expands, revea]]></summary>
     </entry>
     <entry>
         <title type="html"><![CDATA[Easier Upgrades Thanks to Git]]></title>
-        <id>https://facebook.github.io/blog/2016/12/05/easier-upgrades.html</id>
-        <link href="https://facebook.github.io/blog/2016/12/05/easier-upgrades.html">
+        <id>https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html">
         </link>
         <updated>2016-12-05T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Upgrading to new versions of React Native has been difficult. You might have seen something like this before:
-
-![](/react-native/blog/assets/git-upgrade-conflict.png)
-
-None of those options is ideal. By overwriting the file we lose our local changes.]]></summary>
+        <summary type="html"><![CDATA[<p>Upgrading to new versions of React Native has been difficult. You might have seen something like this before:</p>
+<p><img src="/react-native/blog/assets/git-upgrade-conflict.png" alt=""></p>
+<p>None of those options is ideal. By overwriting the file we lose our local changes.</p>
+]]></summary>
         <author>
             <name>Nicolas Cuillery</name>
             <uri>https://twitter.com/ncuillery</uri>
@@ -197,11 +207,12 @@ None of those options is ideal. By overwriting the file we lose our local change
     </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
-        <id>https://facebook.github.io/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</id>
-        <link href="https://facebook.github.io/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html">
+        <id>https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html">
         </link>
         <updated>2016-11-08T06:00:00Z</updated>
-        <summary type="html"><![CDATA[We have heard from many people that there is so much work happening with React Native, it can be tough to keep track of what's going on. To help communicate what work is in progress, we are now publishing a [roadmap for React Native](https://github.c]]></summary>
+        <summary type="html"><![CDATA[<p>We have heard from many people that there is so much work happening with React Native, it can be tough to keep track of what's going on. To help communicate what work is in progress, we are now publishing a [roadmap for React Native](<a href="https://github.c">https://github.c</a></p>
+]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -209,15 +220,14 @@ None of those options is ideal. By overwriting the file we lose our local change
     </entry>
     <entry>
         <title type="html"><![CDATA[0.36: Headless JS, the Keyboard API, & more]]></title>
-        <id>https://facebook.github.io/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html</id>
-        <link href="https://facebook.github.io/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html">
+        <id>https://facebook.github.io/react-native/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/10/25/0.36-headless-js-the-keyboard-api-and-more.html">
         </link>
         <updated>2016-10-25T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Today we are releasing [React Native 0.36](https://github.com/facebook/react-native/releases/tag/v0.36.0). Read on to learn more about what's new.
-
-## Headless JS
-
-Headless JS is a way to run tasks in JavaScript while your app is in the background. I]]></summary>
+        <summary type="html"><![CDATA[<p>Today we are releasing <a href="https://github.com/facebook/react-native/releases/tag/v0.36.0">React Native 0.36</a>. Read on to learn more about what's new.</p>
+<h2><a class="anchor" aria-hidden="true" name="headless-js"></a><a href="#headless-js" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Headless JS</h2>
+<p>Headless JS is a way to run tasks in JavaScript while your app is in the background. I</p>
+]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -225,11 +235,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Expo Talks: Adam on Unraveling Navigation]]></title>
-        <id>https://facebook.github.io/blog/2016/09/08/exponent-talks-unraveling-navigation.html</id>
-        <link href="https://facebook.github.io/blog/2016/09/08/exponent-talks-unraveling-navigation.html">
+        <id>https://facebook.github.io/react-native/blog/2016/09/08/exponent-talks-unraveling-navigation.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/09/08/exponent-talks-unraveling-navigation.html">
         </link>
         <updated>2016-09-08T06:00:00Z</updated>
-        <summary type="html"><![CDATA[[Adam Miskiewicz](https://twitter.com/skevy) from [Expo](https://expo.io/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponent/ex-navigation) React Native library at Expo's office hours last week.]]></summary>
+        <summary type="html"><![CDATA[<p><a href="https://twitter.com/skevy">Adam Miskiewicz</a> from <a href="https://expo.io/">Expo</a> talks about mobile navigation and the <a href="https://github.com/exponent/ex-navigation"><code>ex-navigation</code></a> React Native library at Expo's office hours last week.</p>
+]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -237,11 +248,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Right-to-Left Layout Support For React Native Apps]]></title>
-        <id>https://facebook.github.io/blog/2016/08/19/right-to-left-support-for-react-native-apps.html</id>
-        <link href="https://facebook.github.io/blog/2016/08/19/right-to-left-support-for-react-native-apps.html">
+        <id>https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps.html">
         </link>
         <updated>2016-08-19T06:00:00Z</updated>
-        <summary type="html"><![CDATA[After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is ne]]></summary>
+        <summary type="html"><![CDATA[<p>After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is ne</p>
+]]></summary>
         <author>
             <name>Mengjue (Mandy) Wang</name>
             <uri>https://github.com/MengjueW</uri>
@@ -249,11 +261,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[San Francisco Meetup Recap]]></title>
-        <id>https://facebook.github.io/blog/2016/08/12/react-native-meetup-san-francisco.html</id>
-        <link href="https://facebook.github.io/blog/2016/08/12/react-native-meetup-san-francisco.html">
+        <id>https://facebook.github.io/react-native/blog/2016/08/12/react-native-meetup-san-francisco.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/08/12/react-native-meetup-san-francisco.html">
         </link>
         <updated>2016-08-12T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Last week I had the opportunity to attend the [React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet]]></summary>
+        <summary type="html"><![CDATA[<p>Last week I had the opportunity to attend the <a href="http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854">React Native Meetup</a> at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet</p>
+]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -261,11 +274,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Toward Better Documentation]]></title>
-        <id>https://facebook.github.io/blog/2016/07/06/toward-better-documentation.html</id>
-        <link href="https://facebook.github.io/blog/2016/07/06/toward-better-documentation.html">
+        <id>https://facebook.github.io/react-native/blog/2016/07/06/toward-better-documentation.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/07/06/toward-better-documentation.html">
         </link>
         <updated>2016-07-06T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better ]]></summary>
+        <summary type="html"><![CDATA[<p>Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better</p>
+]]></summary>
         <author>
             <name>Kevin Lacker</name>
             <uri>https://twitter.com/lacker</uri>
@@ -273,11 +287,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native: A year in review]]></title>
-        <id>https://facebook.github.io/blog/2016/04/13/react-native-a-year-in-review.html</id>
-        <link href="https://facebook.github.io/blog/2016/04/13/react-native-a-year-in-review.html">
+        <id>https://facebook.github.io/react-native/blog/2016/04/13/react-native-a-year-in-review.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/04/13/react-native-a-year-in-review.html">
         </link>
         <updated>2016-04-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[It's been one year since we open-sourced React Native. What started as an idea with a handful of engineers is now a framework being used by product teams across Facebook and beyond. Today at F8 we announced that Microsoft is bringing [React Native to]]></summary>
+        <summary type="html"><![CDATA[<p>It's been one year since we open-sourced React Native. What started as an idea with a handful of engineers is now a framework being used by product teams across Facebook and beyond. Today at F8 we announced that Microsoft is bringing [React Native to</p>
+]]></summary>
         <author>
             <name>Martin Konicek</name>
             <uri>https://github.com/mkonicek</uri>
@@ -285,11 +300,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Dive into React Native Performance]]></title>
-        <id>https://facebook.github.io/blog/2016/03/28/dive-into-react-native-performance.html</id>
-        <link href="https://facebook.github.io/blog/2016/03/28/dive-into-react-native-performance.html">
+        <id>https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/03/28/dive-into-react-native-performance.html">
         </link>
         <updated>2016-03-28T06:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native allows you to build iOS and Android apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across ]]></summary>
+        <summary type="html"><![CDATA[<p>React Native allows you to build iOS and Android apps in JavaScript using React and Relay's declarative programming model. This leads to more concise, easier-to-understand code; fast iteration without a compile cycle; and easy sharing of code across</p>
+]]></summary>
         <author>
             <name>Pieter De Baets</name>
             <uri>https://github.com/javache</uri>
@@ -297,11 +313,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Hot Reloading]]></title>
-        <id>https://facebook.github.io/blog/2016/03/24/introducing-hot-reloading.html</id>
-        <link href="https://facebook.github.io/blog/2016/03/24/introducing-hot-reloading.html">
+        <id>https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html">
         </link>
         <updated>2016-03-24T06:00:00Z</updated>
-        <summary type="html"><![CDATA[React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grow]]></summary>
+        <summary type="html"><![CDATA[<p>React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grow</p>
+]]></summary>
         <author>
             <name>Martín Bigio</name>
             <uri>https://twitter.com/martinbigio</uri>
@@ -309,11 +326,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[Making React Native apps accessible]]></title>
-        <id>https://facebook.github.io/blog/2015/11/23/making-react-native-apps-accessible.html</id>
-        <link href="https://facebook.github.io/blog/2015/11/23/making-react-native-apps-accessible.html">
+        <id>https://facebook.github.io/react-native/blog/2015/11/23/making-react-native-apps-accessible.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2015/11/23/making-react-native-apps-accessible.html">
         </link>
         <updated>2015-11-23T06:00:00Z</updated>
-        <summary type="html"><![CDATA[With the recent launch of React on web and React Native on mobile, we've provided a new front-end framework for developers to build products. One key aspect of building a robust product is ensuring that anyone can use it, including people who have vi]]></summary>
+        <summary type="html"><![CDATA[<p>With the recent launch of React on web and React Native on mobile, we've provided a new front-end framework for developers to build products. One key aspect of building a robust product is ensuring that anyone can use it, including people who have vi</p>
+]]></summary>
         <author>
             <name>Georgiy Kassabli</name>
             <uri>https://www.facebook.com/georgiy.kassabli</uri>
@@ -321,11 +339,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native for Android: How we built the first cross-platform React Native app]]></title>
-        <id>https://facebook.github.io/blog/2015/09/14/react-native-for-android.html</id>
-        <link href="https://facebook.github.io/blog/2015/09/14/react-native-for-android.html">
+        <id>https://facebook.github.io/react-native/blog/2015/09/14/react-native-for-android.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2015/09/14/react-native-for-android.html">
         </link>
         <updated>2015-09-14T06:00:00Z</updated>
-        <summary type="html"><![CDATA[Earlier this year, we introduced [React Native for iOS](https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/). React Native brings what developers are used to from React on the web — declarative self]]></summary>
+        <summary type="html"><![CDATA[<p>Earlier this year, we introduced <a href="https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/">React Native for iOS</a>. React Native brings what developers are used to from React on the web — declarative self</p>
+]]></summary>
         <author>
             <name>Daniel Witte</name>
             <uri>https://www.facebook.com/drwitte</uri>
@@ -333,11 +352,12 @@ Headless JS is a way to run tasks in JavaScript while your app is in the backgro
     </entry>
     <entry>
         <title type="html"><![CDATA[React Native: Bringing modern web techniques to mobile]]></title>
-        <id>https://facebook.github.io/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html</id>
-        <link href="https://facebook.github.io/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html">
+        <id>https://facebook.github.io/react-native/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html">
         </link>
         <updated>2015-03-26T06:00:00Z</updated>
-        <summary type="html"><![CDATA[We introduced [React](https://code.facebook.com/projects/176988925806765/react/) to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web proje]]></summary>
+        <summary type="html"><![CDATA[<p>We introduced <a href="https://code.facebook.com/projects/176988925806765/react/">React</a> to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web proje</p>
+]]></summary>
         <author>
             <name>Tom Occhino</name>
             <uri>https://github.com/tomocchino</uri>
