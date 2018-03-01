@@ -68,6 +68,11 @@ aliases:
       only:
         - /.*-stable/
 
+  - &filter-only-master
+    branches:
+      only:
+        - master
+
   - &filter-ignore-gh-pages
     branches:
       ignore: gh-pages
@@ -635,6 +640,12 @@ workflows:
           requires:
             - checkout_code
 
+      # Collect test coverage (only on master)
+      - test_coverage:
+          filters: *filter-only-master
+          requires:
+            - checkout_code
+            
   # Only runs on PRs
   analyze:
     jobs:
@@ -646,14 +657,6 @@ workflows:
       - analyze_pr:            
           filters: *filter-ignore-master-stable
           requires:            
-            - checkout_code
-
-  # Only run on master
-  coverage:
-    jobs:
-      - checkout_code      
-      - test_coverage:
-          requires:
             - checkout_code
 
   # Only runs on NN-stable branches
