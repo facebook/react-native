@@ -216,7 +216,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @Override
   public void setTransform(ReactViewGroup view, ReadableArray matrix) {
     super.setTransform(view, matrix);
-    view.decomposeMatrix(matrix);
+    view.setBackfaceVisibilityDependantOpacity();
   }
 
   @Override
