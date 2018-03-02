@@ -17,14 +17,15 @@ const savePodFile = require('./savePodFile');
 const MARKER_TEXT = '# Add new pods below this line';
 
 module.exports = function registerNativeModulePods(name, dependencyConfig, iOSProject) {
-  log.info(`Adding podspec for ${dependency.name} to ${targetName}`);
+  log.info(`Adding podspec for ${name} to ${iOSProject}`);
   const podLines = readPodfile(iOSProject.podfile);
   const linesToAddEntry = getLinesToAddEntry(podLines, iOSProject);
   addPodEntry(podLines, linesToAddEntry, dependencyConfig.podspec, name);
   savePodFile(iOSProject.podfile, podLines);
 };
 
-function getLinesToAddEntry(podLines, targetName) {
+function getLinesToAddEntry(podLines, iOSProject) {
+  const targetName = iOSProject.projectName.replace('.xcodeproj', '');
   const linesToAddPodWithMarker = findMarkedLinesInPodfile(podLines, MARKER_TEXT);
   if (linesToAddPodWithMarker.length > 0) {
     return linesToAddPodWithMarker;

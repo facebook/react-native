@@ -26,27 +26,27 @@ describe('pods::registerNativeModule', () => {
     savePodFileMock.mockClear();
   });
 
-  const dependency = { name: 'some-dep', config: { ios: { podspec: 'pod spec' } } };
+  const dependencyConfig = { podspec: 'SomePod' };
 
   it('adds a new podspec correctly', () => {
 
-    const project = {
+    const iOSProject = {
       projectName: 'Testing.xcodeproj',
       podfile: path.join(PODFILES_PATH, 'PodfileSimple')
     };
 
-    registerNativeModule(dependency, project);
-    expect(savePodFileMock.mock.calls[0][1][7]).toEqual("  pod 'pod spec', :path => '../node_modules/some-dep'\n");
+    registerNativeModule('some-dep', dependencyConfig, iOSProject);
+    expect(savePodFileMock.mock.calls[0][1][7]).toEqual("  pod 'SomePod', :path => '../node_modules/some-dep'\n");
   });
 
   it('throws an error when no markers are found', () => {
-    const project = {
+    const iOSProject = {
       projectName: 'Testing.xcodeproj',
       podfile: path.join(PODFILES_PATH, 'PodfileWithNoRecognizableMarker')
     };
 
     expect(() =>
-      registerNativeModule(dependency, project)
+      registerNativeModule('some-dep', dependencyConfig, iOSProject)
     ).toThrow('Couldn\'t find "# Add new pods below this line" or "target \'Testing\' do" in Podfile, unable to continue');
   });
 });
