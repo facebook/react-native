@@ -612,11 +612,7 @@ workflows:
       # Checkout repo and run Yarn
       - checkout_code:
           filters: *filter-ignore-master-stable
-<<<<<<< HEAD
-         
-=======
           
->>>>>>> merge checkout/yarn
       # Run code checks
       - analyze_pr:            
           filters: *filter-ignore-master-stable
