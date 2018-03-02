@@ -39,6 +39,10 @@ const requireNativeComponent = require('requireNativeComponent');
  * run Flow. */
 const warning = require('fbjs/lib/warning');
 
+let AndroidTextInput;
+let RCTMultilineTextInputView;
+let RCTSinglelineTextInputView;
+
 const onlyMultiline = {
   onTextInput: true,
   children: true,
@@ -47,13 +51,13 @@ const onlyMultiline = {
 import type {ViewChildContext} from 'ViewContext';
 
 if (Platform.OS === 'android') {
-  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
 } else if (Platform.OS === 'ios') {
-  var RCTMultilineTextInputView = requireNativeComponent(
+  RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
     null,
   );
-  var RCTSinglelineTextInputView = requireNativeComponent(
+  RCTSinglelineTextInputView = requireNativeComponent(
     'RCTSinglelineTextInputView',
     null,
   );
