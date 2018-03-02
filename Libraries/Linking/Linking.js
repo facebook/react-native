@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Linking
  * @flow
@@ -23,7 +21,7 @@ const LinkingManager = Platform.OS === 'android' ?
 /**
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/linking.html
  */
 class Linking extends NativeEventEmitter {
@@ -35,7 +33,7 @@ class Linking extends NativeEventEmitter {
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/linking.html#addeventlistener
    */
   addEventListener(type: string, handler: Function) {
@@ -44,7 +42,7 @@ class Linking extends NativeEventEmitter {
 
   /**
    * Remove a handler by passing the `url` event type and the handler.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/linking.html#removeeventlistener
    */
   removeEventListener(type: string, handler: Function ) {

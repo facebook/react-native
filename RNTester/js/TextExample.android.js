@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule TextExample
@@ -342,6 +340,36 @@ class TextExample extends React.Component<{}> {
           <Text style={{lineHeight: 35}}>
             Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
           </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Letter Spacing">
+          <View>
+            <Text style={{letterSpacing: 0}}>
+              letterSpacing = 0
+            </Text>
+            <Text style={{letterSpacing: 2, marginTop: 5}}>
+              letterSpacing = 2
+            </Text>
+            <Text style={{letterSpacing: 9, marginTop: 5}}>
+              letterSpacing = 9
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 12, letterSpacing: 2, backgroundColor: 'fuchsia', marginTop: 5}}>
+                With size and background color
+              </Text>
+            </View>
+            <Text style={{letterSpacing: -1, marginTop: 5}}>
+              letterSpacing = -1
+            </Text>
+            <Text style={{letterSpacing: 3, backgroundColor: '#dddddd', marginTop: 5}}>
+              [letterSpacing = 3]
+              <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
+                [Nested letterSpacing = 0]
+              </Text>
+              <Text style={{letterSpacing: 6, backgroundColor: '#eeeeee'}}>
+                [Nested letterSpacing = 6]
+              </Text>
+            </Text>
+          </View>
         </RNTesterBlock>
         <RNTesterBlock title="Empty Text">
           <Text />

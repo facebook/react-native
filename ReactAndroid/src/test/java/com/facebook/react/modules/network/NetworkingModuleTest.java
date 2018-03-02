@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.network;
@@ -170,6 +168,34 @@ public class NetworkingModuleTest {
     verifyErrorEmit(emitter, 0);
   }
 
+  @Test
+  public void testFailInvalidUrl() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "GET",
+      "aaa",
+      /* requestId */ 0,
+      /* headers */ JavaOnlyArray.of(),
+      /* body */ null,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    verifyErrorEmit(emitter, 0);
+  }
+
   private static void verifyErrorEmit(RCTDeviceEventEmitter emitter, int requestId) {
     ArgumentCaptor<WritableArray> captor = ArgumentCaptor.forClass(WritableArray.class);
     verify(emitter).emit(eq("didCompleteNetworkResponse"), captor.capture());
@@ -200,6 +226,10 @@ public class NetworkingModuleTest {
 
   @Test
   public void testSuccessfulPostRequest() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
           @Override
@@ -211,12 +241,13 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
 
+    mockEvents();
+    
     networkingModule.sendRequest(
       "POST",
       "http://somedomain/bar",

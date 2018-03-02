@@ -1,0 +1,46 @@
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "DEBUG_PREPROCESSOR_FLAGS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "APPLE_INSPECTOR_FLAGS")
+
+CXX_LIBRARY_COMPILER_FLAGS = [
+    "-std=c++14",
+    "-Wall",
+]
+
+APPLE_COMPILER_FLAGS = []
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "STATIC_LIBRARY_IOS_FLAGS", "flags")
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(STATIC_LIBRARY_IOS_FLAGS, 'compiler_flags')
+
+rn_xplat_cxx_library(
+    name = "fabric",
+    srcs = glob(["**/*.cpp"]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "**/*.h"),
+        ],
+        prefix = "fabric",
+    ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + APPLE_INSPECTOR_FLAGS,
+    force_static = True,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
+    ],
+)

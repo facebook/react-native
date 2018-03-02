@@ -1,22 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
 #import <React/RCTShadowView.h>
-
-/**
- * Converts float values between Yoga and CoreGraphics representations,
- * especially in terms of edge cases.
- */
-RCT_EXTERN float RCTYogaFloatFromCoreGraphicsFloat(CGFloat value);
-RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
 
 @interface RCTShadowView (Layout)
 
@@ -27,13 +18,6 @@ RCT_EXTERN CGFloat RCTCoreGraphicsFloatFromYogaFloat(float value);
 @property (nonatomic, readonly) UIEdgeInsets compoundInsets;
 @property (nonatomic, readonly) CGSize availableSize;
 @property (nonatomic, readonly) CGRect contentFrame;
-
-#pragma mark - Measuring
-
-/**
- * Measures shadow view without side-effects.
- */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 #pragma mark - Dirty Propagation Control
 

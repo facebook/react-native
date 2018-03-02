@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ActivityIndicator
  * @flow
@@ -23,6 +21,7 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+let RCTActivityIndicator;
 
 const GRAY = '#999999';
 
@@ -48,20 +47,20 @@ const ActivityIndicator = createReactClass({
     ...ViewPropTypes,
     /**
      * Whether to show the indicator (true, the default) or hide it (false).
-     * 
+     *
      * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
      */
     animating: PropTypes.bool,
     /**
      * The foreground color of the spinner (default is gray).
-     * 
+     *
      * See http://facebook.github.io/react-native/docs/activityindicator.html#color
      */
     color: ColorPropType,
     /**
      * Size of the indicator (default is 'small').
      * Passing a number to the size prop is only supported on Android.
-     * 
+     *
      * See http://facebook.github.io/react-native/docs/activityindicator.html#size
      */
     size: PropTypes.oneOfType([
@@ -72,7 +71,7 @@ const ActivityIndicator = createReactClass({
      * Whether the indicator should hide when not animating (true by default).
      *
      * @platform ios
-     * 
+     *
      * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
      */
     hidesWhenStopped: PropTypes.bool,
@@ -122,6 +121,14 @@ const ActivityIndicator = createReactClass({
   }
 });
 
+if (Platform.OS === 'ios') {
+  RCTActivityIndicator = requireNativeComponent(
+    'RCTActivityIndicatorView',
+    ActivityIndicator,
+    { nativeOnly: { activityIndicatorViewStyle: true } }
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -136,13 +143,5 @@ const styles = StyleSheet.create({
     height: 36,
   },
 });
-
-if (Platform.OS === 'ios') {
-  var RCTActivityIndicator = requireNativeComponent(
-    'RCTActivityIndicatorView',
-    ActivityIndicator,
-    { nativeOnly: { activityIndicatorViewStyle: true } }
-  );
-}
 
 module.exports = ActivityIndicator;

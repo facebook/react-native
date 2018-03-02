@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -35,6 +33,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
@@ -82,6 +81,7 @@ public class ReactEditText extends EditText {
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
+  private float mLetterSpacingPt = 0;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -174,14 +174,16 @@ public class ReactEditText extends EditText {
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
-    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
-        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
+    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+    if (inputConnection != null) {
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+    }
 
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return inputConnectionWrapper;
+    return inputConnection;
   }
 
   @Override
@@ -309,7 +311,10 @@ public class ReactEditText extends EditText {
 
   /*package*/ void commitStagedInputType() {
     if (getInputType() != mStagedInputType) {
+      int selectionStart = getSelectionStart();
+      int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
+      setSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -622,6 +627,29 @@ public class ReactEditText extends EditText {
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  public void setLetterSpacingPt(float letterSpacingPt) {
+    mLetterSpacingPt = letterSpacingPt;
+    updateLetterSpacing();
+  }
+
+  @Override
+  public void setTextSize (float size) {
+    super.setTextSize(size);
+    updateLetterSpacing();
+  }
+
+  @Override
+  public void setTextSize (int unit, float size) {
+    super.setTextSize(unit, size);
+    updateLetterSpacing();
+  }
+
+  protected void updateLetterSpacing() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      setLetterSpacing(PixelUtil.toPixelFromSP(mLetterSpacingPt) / getTextSize());
+    }
   }
 
   /**

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBaseTextInputViewManager.h"
@@ -16,6 +14,7 @@
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
 #import "RCTBaseTextInputShadowView.h"
@@ -37,6 +36,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, backedTextInputView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UITextAutocorrectionType)
+RCT_REMAP_VIEW_PROPERTY(contextMenuHidden, backedTextInputView.contextMenuHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(editable, backedTextInputView.editable, BOOL)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, backedTextInputView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboardAppearance, UIKeyboardAppearance)
@@ -54,6 +54,7 @@ RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
+RCT_EXPORT_VIEW_PROPERTY(inputAccessoryViewID, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
@@ -109,12 +110,15 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 {
   CGFloat fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
 
-  for (RCTBaseTextInputShadowView *shadowView in _shadowViews) {
-    shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
-    [shadowView dirtyLayout];
-  }
+  NSHashTable<RCTBaseTextInputShadowView *> *shadowViews = _shadowViews;
+  RCTExecuteOnUIManagerQueue(^{
+    for (RCTBaseTextInputShadowView *shadowView in shadowViews) {
+      shadowView.textAttributes.fontSizeMultiplier = fontSizeMultiplier;
+      [shadowView dirtyLayout];
+    }
 
-  [self.bridge.uiManager setNeedsLayout];
+    [self.bridge.uiManager setNeedsLayout];
+  });
 }
 
 @end

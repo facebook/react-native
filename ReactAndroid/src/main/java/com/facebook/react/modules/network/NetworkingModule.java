@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.modules.network;
 
@@ -266,7 +264,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    Request.Builder requestBuilder = new Request.Builder().url(url);
+    Request.Builder requestBuilder;
+    try {
+      requestBuilder = new Request.Builder().url(url);
+    } catch (Exception e) {
+      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), null);
+      return;
+    }
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
@@ -343,11 +347,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
     }
 
+    RequestBody requestBody;
     if (data == null) {
-      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
+      requestBody = RequestBodyUtil.getEmptyBody(method);
     } else if (handler != null) {
-      RequestBody requestBody = handler.toRequestBody(data, contentType);
-      requestBuilder.method(method, requestBody);
+      requestBody = handler.toRequestBody(data, contentType);
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -360,14 +364,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       String body = data.getString(REQUEST_BODY_KEY_STRING);
       MediaType contentMediaType = MediaType.parse(contentType);
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
-        RequestBody requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
+        requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
           ResponseUtil.onRequestError(eventEmitter, requestId, "Failed to gzip request body", null);
           return;
         }
-        requestBuilder.method(method, requestBody);
       } else {
-        requestBuilder.method(method, RequestBody.create(contentMediaType, body));
+        requestBody = RequestBody.create(contentMediaType, body);
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {
@@ -380,9 +383,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
       MediaType contentMediaType = MediaType.parse(contentType);
-      requestBuilder.method(
-        method,
-        RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String)));
+      requestBody = RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String));
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -403,9 +404,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           null);
         return;
       }
-      requestBuilder.method(
-          method,
-          RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
+      requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream);
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
@@ -416,27 +415,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (multipartBuilder == null) {
         return;
       }
-
-      requestBuilder.method(
-        method,
-        RequestBodyUtil.createProgressRequest(
-          multipartBuilder.build(),
-          new ProgressListener() {
-        long last = System.nanoTime();
-
-        @Override
-        public void onProgress(long bytesWritten, long contentLength, boolean done) {
-          long now = System.nanoTime();
-          if (done || shouldDispatch(now, last)) {
-            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
-            last = now;
-          }
-        }
-      }));
+      requestBody = multipartBuilder.build();
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
+      requestBody = RequestBodyUtil.getEmptyBody(method);
     }
+
+    requestBuilder.method(
+      method,
+      wrapRequestBodyWithProgressEmitter(requestBody, eventEmitter, requestId));
 
     addRequest(requestId);
     client.newCall(requestBuilder.build()).enqueue(
@@ -513,6 +500,29 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             }
           }
         });
+  }
+
+  private RequestBody wrapRequestBodyWithProgressEmitter(
+      final RequestBody requestBody,
+      final RCTDeviceEventEmitter eventEmitter,
+      final int requestId) {
+    if(requestBody == null) {
+      return null;
+    }
+    return RequestBodyUtil.createProgressRequest(
+      requestBody,
+      new ProgressListener() {
+        long last = System.nanoTime();
+
+        @Override
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
+          long now = System.nanoTime();
+          if (done || shouldDispatch(now, last)) {
+            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+            last = now;
+          }
+        }
+      });
   }
 
   private void readWithProgress(

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TextInput
  * @flow
@@ -33,9 +31,6 @@ const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 const {ViewContextTypes} = require('ViewContext');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
@@ -43,6 +38,10 @@ const requireNativeComponent = require('requireNativeComponent');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const warning = require('fbjs/lib/warning');
+
+let AndroidTextInput;
+let RCTMultilineTextInputView;
+let RCTSinglelineTextInputView;
 
 const onlyMultiline = {
   onTextInput: true,
@@ -52,13 +51,13 @@ const onlyMultiline = {
 import type {ViewChildContext} from 'ViewContext';
 
 if (Platform.OS === 'android') {
-  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
 } else if (Platform.OS === 'ios') {
-  var RCTMultilineTextInputView = requireNativeComponent(
+  RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
     null,
   );
-  var RCTSinglelineTextInputView = requireNativeComponent(
+  RCTSinglelineTextInputView = requireNativeComponent(
     'RCTSinglelineTextInputView',
     null,
   );
@@ -499,6 +498,7 @@ const TextInput = createReactClass({
     defaultValue: PropTypes.string,
     /**
      * When the clear button should appear on the right side of the text view.
+     * This property is supported only for single-line TextInput component.
      * @platform ios
      */
     clearButtonMode: PropTypes.oneOf([
@@ -591,8 +591,20 @@ const TextInput = createReactClass({
     ]),
     /**
      * If `true`, caret is hidden. The default value is `false`.
+     * This property is supported only for single-line TextInput component on iOS.
      */
     caretHidden: PropTypes.bool,
+    /*
+     * If `true`, contextMenuHidden is hidden. The default value is `false`.
+     */
+    contextMenuHidden: PropTypes.bool,
+    /**
+     * An optional identifier which links a custom InputAccessoryView to
+     * this text input. The InputAccessoryView is rendered above the
+     * keyboard when this text input is focused.
+     * @platform ios
+     */
+    inputAccessoryViewID: PropTypes.string,
   },
   getDefaultProps(): Object {
     return {
@@ -883,7 +895,7 @@ const TextInput = createReactClass({
 
     return (
       <TouchableWithoutFeedback
-        onLayout={this._onLayout}
+        onLayout={props.onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}

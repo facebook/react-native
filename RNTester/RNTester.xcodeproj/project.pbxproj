@@ -889,13 +889,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		19BA89021F8439A700741C5A /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		272E6B3A1BEA846C001FCF37 /* NativeExampleViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -1156,6 +1149,9 @@
 				TargetAttributes = {
 					004D289D1AAF61C70097A701 = {
 						CreatedOnToolsVersion = 6.1.1;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = V9WTTPBFK9;
 					};
 					143BC5941B21E3E100462512 = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -1854,6 +1850,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";

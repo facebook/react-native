@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AlertIOS
  * @flow
@@ -103,7 +101,7 @@ class AlertIOS {
 
   /**
    * Create and display a prompt to enter some text.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/alertios.html#prompt
    */
   static prompt(
@@ -122,11 +120,10 @@ class AlertIOS {
         'keyboardType) and the old syntax will be removed in a future version.');
 
       var callback = type;
-      var defaultValue = message;
       RCTAlertManager.alertWithArgs({
         title: title || '',
         type: 'plain-text',
-        defaultValue,
+        defaultValue: message,
       }, (id, value) => {
         callback(value);
       });

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.websocket;
@@ -27,6 +25,7 @@ import com.facebook.react.modules.network.ForwardingCookieHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +47,8 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     void onMessage(ByteString byteString, WritableMap params);
   }
 
-  private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
-  private final Map<Integer, ContentHandler> mContentHandlers = new HashMap<>();
+  private final Map<Integer, WebSocket> mWebSocketConnections = new ConcurrentHashMap<>();
+  private final Map<Integer, ContentHandler> mContentHandlers = new ConcurrentHashMap<>();
 
   private ReactContext mReactContext;
   private ForwardingCookieHandler mCookieHandler;
@@ -224,8 +223,19 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   public void send(String message, int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
-      // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      // This is a programmer error -- display development warning
+      WritableMap params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putString("message", "client is null");
+      sendEvent("websocketFailed", params);
+      params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putInt("code", 0);
+      params.putString("reason", "client is null");
+      sendEvent("websocketClosed", params);
+      mWebSocketConnections.remove(id);
+      mContentHandlers.remove(id);
+      return;
     }
     try {
       client.send(message);
@@ -238,8 +248,19 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   public void sendBinary(String base64String, int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
-      // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      // This is a programmer error -- display development warning
+      WritableMap params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putString("message", "client is null");
+      sendEvent("websocketFailed", params);
+      params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putInt("code", 0);
+      params.putString("reason", "client is null");
+      sendEvent("websocketClosed", params);
+      mWebSocketConnections.remove(id);
+      mContentHandlers.remove(id);
+      return;
     }
     try {
       client.send(ByteString.decodeBase64(base64String));
@@ -251,8 +272,19 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   public void sendBinary(ByteString byteString, int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
-      // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      // This is a programmer error -- display development warning
+      WritableMap params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putString("message", "client is null");
+      sendEvent("websocketFailed", params);
+      params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putInt("code", 0);
+      params.putString("reason", "client is null");
+      sendEvent("websocketClosed", params);
+      mWebSocketConnections.remove(id);
+      mContentHandlers.remove(id);
+      return;
     }
     try {
       client.send(byteString);
@@ -265,8 +297,19 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   public void ping(int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
-      // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      // This is a programmer error -- display development warning
+      WritableMap params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putString("message", "client is null");
+      sendEvent("websocketFailed", params);
+      params = Arguments.createMap();
+      params.putInt("id", id);
+      params.putInt("code", 0);
+      params.putString("reason", "client is null");
+      sendEvent("websocketClosed", params);
+      mWebSocketConnections.remove(id);
+      mContentHandlers.remove(id);
+      return;
     }
     try {
       client.send(ByteString.EMPTY);

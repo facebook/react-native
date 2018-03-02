@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NetInfo
  * @flow
@@ -82,13 +80,13 @@ const _isConnectedSubscriptions = new Map();
 
 /**
  * NetInfo exposes info about online/offline status.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/netinfo.html
  */
 const NetInfo = {
   /**
    * Adds an event handler.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/netinfo.html#addeventlistener
    */
   addEventListener(
@@ -130,7 +128,7 @@ const NetInfo = {
 
   /**
    * Removes the listener for network status changes.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/netinfo.html#removeeventlistener
    */
   removeEventListener(
@@ -146,10 +144,10 @@ const NetInfo = {
   },
 
   /**
-   * This function is deprecated. Use `getConnectionInfo` instead. 
+   * This function is deprecated. Use `getConnectionInfo` instead.
    * Returns a promise that resolves with one of the deprecated connectivity
    * types:
-   * 
+   *
    * The following connectivity types are deprecated. They're used by the
    * deprecated APIs `fetch` and the `change` event.
    *
@@ -169,13 +167,13 @@ const NetInfo = {
    * - `MOBILE_HIPRI` - A High Priority Mobile data connection.
    * - `MOBILE_MMS` - An MMS-specific Mobile data connection.
    * - `MOBILE_SUPL` -  A SUPL-specific Mobile data connection.
-   * - `VPN` -  A virtual network using one or more native bearers. Requires 
+   * - `VPN` -  A virtual network using one or more native bearers. Requires
    * API Level 21
    * - `WIFI` - The WIFI data connection.
    * - `WIMAX` -  The WiMAX data connection.
    * - `UNKNOWN` - Unknown data connection.
    *
-   * The rest of the connectivity types are hidden by the Android API, but can 
+   * The rest of the connectivity types are hidden by the Android API, but can
    * be used if necessary.
    */
   fetch(): Promise<any> {
@@ -198,7 +196,7 @@ const NetInfo = {
   /**
    * An object with the same methods as above but the listener receives a
    * boolean which represents the internet connectivity.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/netinfo.html#isconnected
    */
   isConnected: {
