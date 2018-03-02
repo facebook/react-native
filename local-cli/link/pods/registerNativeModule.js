@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 'use strict';
 const log = require('npmlog');
 const readPodfile = require('./readPodfile');
@@ -9,12 +16,11 @@ const savePodFile = require('./savePodFile');
 
 const MARKER_TEXT = '# Add new pods below this line';
 
-module.exports = function registerNativeModule(dependency, iOSProject) {
-  const targetName = iOSProject.projectName.replace('.xcodeproj', '');
+module.exports = function registerNativeModulePods(name, dependencyConfig, iOSProject) {
   log.info(`Adding podspec for ${dependency.name} to ${targetName}`);
   const podLines = readPodfile(iOSProject.podfile);
-  const linesToAddEntry = getLinesToAddEntry(podLines, targetName);
-  addPodEntry(podLines, linesToAddEntry, dependency.config.ios.podspec, dependency.name);
+  const linesToAddEntry = getLinesToAddEntry(podLines, iOSProject);
+  addPodEntry(podLines, linesToAddEntry, dependencyConfig.podspec, name);
   savePodFile(iOSProject.podfile, podLines);
 };
 

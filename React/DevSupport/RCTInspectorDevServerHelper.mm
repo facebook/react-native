@@ -104,13 +104,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
   sendEventToAllConnections(kDebuggerMsgDisable);
 }
 
-+ (void)connectForContext:(JSGlobalContextRef)context
-            withBundleURL:(NSURL *)bundleURL
++ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL
 {
-  if (!isCustomJSCPtr(context)) {
-    return;
-  }
-
   NSURL *inspectorURL = getInspectorDeviceUrl(bundleURL);
 
   // Note, using a static dictionary isn't really the greatest design, but
@@ -127,6 +122,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
     socketConnections[key] = connection;
     [connection connect];
   }
+
+  return connection;
 }
 
 @end

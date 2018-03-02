@@ -1,9 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.views.text;
 
@@ -119,6 +118,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (textShadowNode.mLetterSpacing != Float.NaN) {
+          ops.add(new SetSpanOperation(
+            start,
+            end,
+            new CustomLetterSpacingSpan(textShadowNode.mLetterSpacing)));
+        }
+      }
       if (textShadowNode.mFontSize != UNSET) {
         ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textShadowNode.mFontSize)));
       }
@@ -229,6 +236,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   protected float mLineHeight = Float.NaN;
+  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -239,6 +247,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
   protected float mLineHeightInput = UNSET;
+  protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -280,6 +289,39 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
+
+  public ReactBaseTextShadowNode() {}
+
+  public ReactBaseTextShadowNode(ReactBaseTextShadowNode node) {
+    super(node);
+    mLineHeight = node.mLineHeight;
+    mIsColorSet = node.mIsColorSet;
+    mAllowFontScaling = node.mAllowFontScaling;
+    mColor = node.mColor;
+    mIsBackgroundColorSet = node.mIsBackgroundColorSet;
+    mBackgroundColor = node.mBackgroundColor;
+
+    mNumberOfLines = node.mNumberOfLines;
+    mFontSize = node.mFontSize;
+    mFontSizeInput = node.mFontSizeInput;
+    mLineHeightInput = node.mLineHeightInput;
+    mTextAlign = node.mTextAlign;
+    mTextBreakStrategy = node.mTextBreakStrategy;
+
+    mTextShadowOffsetDx = node.mTextShadowOffsetDx;
+    mTextShadowOffsetDy = node.mTextShadowOffsetDy;
+    mTextShadowRadius = node.mTextShadowRadius;
+    mTextShadowColor = node.mTextShadowColor;
+
+    mIsUnderlineTextDecorationSet = node.mIsUnderlineTextDecorationSet;
+    mIsLineThroughTextDecorationSet = node.mIsLineThroughTextDecorationSet;
+    mIncludeFontPadding = node.mIncludeFontPadding;
+    mFontStyle = node.mFontStyle;
+    mFontWeight = node.mFontWeight;
+    mFontFamily = node.mFontFamily;
+    mContainsImages = node.mContainsImages;
+    mHeightOfTallestInlineImage = node.mHeightOfTallestInlineImage;
+  }
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
@@ -324,12 +366,22 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(float letterSpacing) {
+    mLetterSpacingInput = letterSpacing;
+    mLetterSpacing = mAllowFontScaling
+      ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
+      : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
+      setLetterSpacing(mLetterSpacingInput);
       markUpdated();
     }
   }

@@ -36,6 +36,9 @@ buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/x86/
 /ReactAndroid/src/main/gen
 
+# Watchman
+.watchmanconfig
+
 # Android
 .idea
 .gradle
@@ -47,7 +50,11 @@ local.properties
 node_modules
 *.log
 .nvm
-/danger/node_modules/
+/bots/node_modules/
+
+# TODO: Check in yarn.lock in open source. Right now we need to keep it out
+# from the GitHub repo as importing it might conflict with internal workspaces
+*/**/yarn.lock
 
 # OS X
 .DS_Store

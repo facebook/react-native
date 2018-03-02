@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NativeAnimatedHelper
  * @flow
@@ -169,6 +167,26 @@ const TRANSFORM_WHITELIST = {
   perspective: true,
 };
 
+const SUPPORTED_INTERPOLATION_PARAMS = {
+  inputRange: true,
+  outputRange: true,
+  extrapolate: true,
+  extrapolateRight: true,
+  extrapolateLeft: true,
+};
+
+function addWhitelistedStyleProp(prop: string): void {
+  STYLES_WHITELIST[prop] = true;
+}
+
+function addWhitelistedTransformProp(prop: string): void {
+  TRANSFORM_WHITELIST[prop] = true;
+}
+
+function addWhitelistedInterpolationParam(param: string): void {
+  SUPPORTED_INTERPOLATION_PARAMS[param] = true;
+}
+
 function validateTransform(configs: Array<Object>): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
@@ -192,13 +210,6 @@ function validateStyles(styles: Object): void {
 }
 
 function validateInterpolation(config: Object): void {
-  var SUPPORTED_INTERPOLATION_PARAMS = {
-    inputRange: true,
-    outputRange: true,
-    extrapolate: true,
-    extrapolateRight: true,
-    extrapolateLeft: true,
-  };
   for (var key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
       throw new Error(
@@ -242,6 +253,9 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
 
 module.exports = {
   API,
+  addWhitelistedStyleProp,
+  addWhitelistedTransformProp,
+  addWhitelistedInterpolationParam,
   validateStyles,
   validateTransform,
   validateInterpolation,

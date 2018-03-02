@@ -1,7 +1,7 @@
-FROM containership/android-base:latest
+FROM hramos/android-base:latest
 
 # set default environment variables
-ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
 # add ReactAndroid directory
@@ -45,10 +45,6 @@ WORKDIR /app
 RUN cd $(npm root -g)/npm && npm install fs-extra && sed -i -e s/graceful-fs/fs-extra/ -e s/fs.rename/fs.move/ ./lib/utils/rename.js
 
 # build node dependencies
-RUN npm install
-RUN npm install github@0.2.4
-
-WORKDIR /app/website
 RUN npm install
 
 WORKDIR /app

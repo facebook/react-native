@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
@@ -12,9 +10,12 @@ package com.facebook.react.devsupport;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -53,7 +54,7 @@ public class DevLoadingViewController {
   }
 
   public void showMessage(final String message, final int color, final int backgroundColor) {
-    if (!sEnabled ) {
+    if (!sEnabled) {
       return;
     }
 
@@ -147,6 +148,16 @@ public class DevLoadingViewController {
       return;
     }
 
+    int topOffset = 0;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+      // On Android SDK <= 19 PopupWindow#showAtLocation uses absolute screen position. In order for
+      // loading view to be placed below status bar (if the status bar is present) we need to pass
+      // an appropriate Y offset.
+      Rect rectangle = new Rect();
+      currentActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
+      topOffset = rectangle.top;
+    }
+
     mDevLoadingPopup = new PopupWindow(
             mDevLoadingView,
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -156,8 +167,9 @@ public class DevLoadingViewController {
     mDevLoadingPopup.showAtLocation(
             currentActivity.getWindow().getDecorView(),
             Gravity.NO_GRAVITY,
+
             0,
-            0);
+            topOffset);
   }
 
   private void hideInternal() {

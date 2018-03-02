@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDevSettings.h"
@@ -42,6 +40,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
+#import <jschelpers/JSCWrapper.h>
 #endif
 
 #if RCT_DEV
@@ -196,8 +195,7 @@ RCT_EXPORT_MODULE()
   // after the current main thread operation is done.
   dispatch_async(dispatch_get_main_queue(), ^{
     [bridge dispatchBlock:^{
-      [RCTInspectorDevServerHelper connectForContext:bridge.jsContextRef
-                                       withBundleURL:bridge.bundleURL];
+      [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
     } queue:RCTJSThread];
   });
 #endif
@@ -255,10 +253,10 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
 - (BOOL)isNuclideDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  return true;
+  return _bridge.isInspectable;
 #else
   return false;
-#endif //RCT_ENABLE_INSPECTOR
+#endif // RCT_ENABLE_INSPECTOR
 }
 
 - (BOOL)isRemoteDebuggingAvailable

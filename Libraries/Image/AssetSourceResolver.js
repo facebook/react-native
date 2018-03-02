@@ -1,25 +1,24 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AssetSourceResolver
  * @flow
+ * @format
  */
 'use strict';
 
-export type ResolvedAssetSource = {
-  __packager_asset: boolean,
-  width: ?number,
-  height: ?number,
-  uri: string,
-  scale: number,
-};
+export type ResolvedAssetSource = {|
+  +__packager_asset: boolean,
+  +width: ?number,
+  +height: ?number,
+  +uri: string,
+  +scale: number,
+|};
 
-import type { PackagerAsset } from 'AssetRegistry';
+import type {PackagerAsset} from 'AssetRegistry';
 
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
@@ -43,28 +42,20 @@ function getScaledAssetPath(asset): string {
 function getAssetPathInDrawableFolder(asset): string {
   var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
   var drawbleFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
-  var fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
+  var fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
   return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
-
   serverUrl: ?string;
   // where the jsbundle is being run from
   jsbundleUrl: ?string;
-  // where the embedded bundle in the app is stored
-  embeddedBundleUrl: ?string;
   // the asset to resolve
   asset: PackagerAsset;
 
-  constructor(serverUrl: ?string,
-    jsbundleUrl: ?string,
-    embeddedBundleUrl: ?string,
-    asset: PackagerAsset
-  ) {
+  constructor(serverUrl: ?string, jsbundleUrl: ?string, asset: PackagerAsset) {
     this.serverUrl = serverUrl;
     this.jsbundleUrl = jsbundleUrl;
-    this.embeddedBundleUrl = embeddedBundleUrl;
     this.asset = asset;
   }
 
@@ -76,19 +67,15 @@ class AssetSourceResolver {
     return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
-  canLoadFromEmbeddedBundledLocation(): boolean {
-    return !!this.embeddedBundleUrl;
-  }
-
   defaultAsset(): ResolvedAssetSource {
     if (this.isLoadedFromServer()) {
       return this.assetServerURL();
     }
 
     if (Platform.OS === 'android') {
-      return this.isLoadedFromFileSystem() ?
-        this.drawableFolderInBundle() :
-        this.resourceIdentifierWithoutScale();
+      return this.isLoadedFromFileSystem()
+        ? this.drawableFolderInBundle()
+        : this.resourceIdentifierWithoutScale();
     } else {
       return this.scaledAssetURLNearBundle();
     }
@@ -101,8 +88,12 @@ class AssetSourceResolver {
   assetServerURL(): ResolvedAssetSource {
     invariant(!!this.serverUrl, 'need server to load from');
     return this.fromSource(
-      this.serverUrl + getScaledAssetPath(this.asset) +
-      '?platform=' + Platform.OS + '&hash=' + this.asset.hash
+      this.serverUrl +
+        getScaledAssetPath(this.asset) +
+        '?platform=' +
+        Platform.OS +
+        '&hash=' +
+        this.asset.hash,
     );
   }
 
@@ -124,23 +115,19 @@ class AssetSourceResolver {
   }
 
   /**
-   * Resolves to the asset that was bundled with the app, with a scaled asset filename
-   * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
-   */
-  scaledAssetURLInEmbeddedBundleUrl(): ResolvedAssetSource {
-    const path = this.embeddedBundleUrl || 'file://';
-    return this.fromSource(path + getScaledAssetPath(this.asset));
-  }
-
-  /**
    * The default location of assets bundled with the app, located by
    * resource identifier
    * The Android resource system picks the correct scale.
    * E.g. 'assets_awesomemodule_icon'
    */
   resourceIdentifierWithoutScale(): ResolvedAssetSource {
-    invariant(Platform.OS === 'android', 'resource identifiers work on Android');
-    return this.fromSource(assetPathUtils.getAndroidResourceIdentifier(this.asset));
+    invariant(
+      Platform.OS === 'android',
+      'resource identifiers work on Android',
+    );
+    return this.fromSource(
+      assetPathUtils.getAndroidResourceIdentifier(this.asset),
+    );
   }
 
   /**
@@ -150,9 +137,7 @@ class AssetSourceResolver {
    */
   drawableFolderInBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
-    return this.fromSource(
-      path + getAssetPathInDrawableFolder(this.asset)
-    );
+    return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
   }
 
   fromSource(source: string): ResolvedAssetSource {
@@ -178,7 +163,6 @@ class AssetSourceResolver {
     // in which case we default to 1
     return scales[scales.length - 1] || 1;
   }
-
 }
 
- module.exports = AssetSourceResolver;
+module.exports = AssetSourceResolver;

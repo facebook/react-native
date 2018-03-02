@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+react_native
  * @format
@@ -54,10 +52,10 @@ describe('MessageQueue', function() {
   });
 
   it('should call a local function with the function name', () => {
-    MessageQueueTestModule.testHook2 = jasmine.createSpy();
-    expect(MessageQueueTestModule.testHook2.calls.count()).toEqual(0);
+    MessageQueueTestModule.testHook2 = jest.fn();
+    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(0);
     queue.__callFunction('MessageQueueTestModule', 'testHook2', [2]);
-    expect(MessageQueueTestModule.testHook2.calls.count()).toEqual(1);
+    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(1);
   });
 
   it('should store callbacks', () => {

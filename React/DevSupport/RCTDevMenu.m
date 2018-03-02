@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDevMenu.h"
@@ -217,6 +215,11 @@ RCT_EXPORT_MODULE()
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
         message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
         preferredStyle:UIAlertControllerStyleAlert];
+      __weak typeof(alertController) weakAlertController = alertController;
+      [alertController addAction:
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+      }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
@@ -241,7 +244,20 @@ RCT_EXPORT_MODULE()
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
       return devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
     } handler:^{
-      devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      if (devSettings.isDebuggingRemotely) {
+        UIAlertController *alertController = [UIAlertController
+          alertControllerWithTitle:@"Systrace Unavailable"
+          message:@"You need to stop remote JS debugging to enable Systrace"
+          preferredStyle:UIAlertControllerStyleAlert];
+        __weak typeof(alertController) weakAlertController = alertController;
+        [alertController addAction:
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+      } else {
+        devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      }
     }]];
   }
 
@@ -254,8 +270,6 @@ RCT_EXPORT_MODULE()
   }
 
   if (devSettings.isJSCSamplingProfilerAvailable) {
-    // Note: bridge.jsContext is not implemented in the old bridge, so this code is
-    // duplicated in RCTJSCExecutor
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
       [devSettings toggleJSCSamplingProfiler];
     }]];

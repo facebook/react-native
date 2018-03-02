@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -44,9 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
 
+@property (nonatomic, assign, readonly) BOOL fabric;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties;
 
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
@@ -80,10 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Previously set `maximumSize` layout constraint.
- * Defaults to `{INFINITY, INFINITY}`.
+ * Defaults to `{CGFLOAT_MAX, CGFLOAT_MAX}`.
  */
 @property (atomic, assign, readonly) CGSize maximumSize;
-
 
 /**
  * Simple shortcut to `-[RCTSurface setMinimumSize:size maximumSize:size]`.
@@ -109,8 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Synchronously blocks the current thread up to given `timeout` until
- * the Surface will not have given `stage`.
- * Do nothing, if called from the main or `UIManager` queue.
+ * the Surface reaches `stage`.
+ * Limitations:
+ *  - Do nothing, if called on `UIManager` queue.
+ *  - Calling on the main queue with `RCTSurfaceStageSurfaceDidInitialMounting`
+ *    stage temporary is not supported; in this case the stage will be
+ *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
 

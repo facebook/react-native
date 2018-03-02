@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NavigatorIOS
  * @flow
@@ -337,7 +335,7 @@ var NavigatorIOS = createReactClass({
       /**
        * Use this to specify additional props to pass to the rendered
        * component. `NavigatorIOS` will automatically pass in `route` and
-       * `navigator` props to the comoponent.
+       * `navigator` props to the component.
        */
       passProps: PropTypes.object,
 
@@ -515,7 +513,7 @@ var NavigatorIOS = createReactClass({
 
   navigator: (undefined: ?Object),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
     this.navigator = {

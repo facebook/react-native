@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule VirtualizedSectionList
  * @flow
@@ -233,6 +231,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return {
       ...viewable,
       index: info.index,
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       key: keyExtractor(viewable.item, info.index),
       section: info.section,
     };
@@ -358,7 +359,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     this.state = this._computeState(props);
   }
 
-  componentWillReceiveProps(nextProps: Props<SectionT>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
     this.setState(this._computeState(nextProps));
   }
 
@@ -443,7 +444,7 @@ class ItemWithSeparator extends React.Component<
     },
   };
 
-  componentWillReceiveProps(props: ItemWithSeparatorProps) {
+  UNSAFE_componentWillReceiveProps(props: ItemWithSeparatorProps) {
     this.setState(state => ({
       separatorProps: {
         ...this.state.separatorProps,

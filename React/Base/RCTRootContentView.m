@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTRootContentView.h"
@@ -18,8 +16,23 @@
 #import "UIView+React.h"
 
 @implementation RCTRootContentView
+
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                     reactTag:(NSNumber *)reactTag
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
+                       fabric:(BOOL)fabric
 {
-  UIColor *_backgroundColor;
+  if ((self = [super initWithFrame:frame])) {
+    _fabric = fabric;
+    _bridge = bridge;
+    self.reactTag = reactTag;
+    _sizeFlexibility = sizeFlexibility;
+    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+    [_touchHandler attachToView:self];
+    [_bridge.uiManager registerRootView:self];
+  }
+  return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -27,16 +40,7 @@
                      reactTag:(NSNumber *)reactTag
                sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
-  if ((self = [super initWithFrame:frame])) {
-    _bridge = bridge;
-    self.reactTag = reactTag;
-    _sizeFlexibility = sizeFlexibility;
-    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [_touchHandler attachToView:self];
-    [_bridge.uiManager registerRootView:self];
-    self.layer.backgroundColor = NULL;
-  }
-  return self;
+  return [self initWithFrame:frame bridge:bridge reactTag:reactTag sizeFlexiblity:sizeFlexibility fabric:NO];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
@@ -89,19 +93,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   [_bridge.uiManager setAvailableSize:self.availableSize forRootView:self];
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  _backgroundColor = backgroundColor;
-  if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setBackgroundColor:backgroundColor forView:self];
-  }
-}
-
-- (UIColor *)backgroundColor
-{
-  return _backgroundColor;
-}
-
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // The root content view itself should never receive touches
@@ -117,10 +108,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry"
-                    method:@"unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]
-                completion:NULL];
+
+    if (_fabric) {
+      [_bridge enqueueJSCall:@"ReactFabric"
+                      method:@"unmountComponentAtNodeAndRemoveContainer"
+                        args:@[self.reactTag]
+                  completion:NULL];
+    } else {
+      [_bridge enqueueJSCall:@"AppRegistry"
+                      method:@"unmountApplicationComponentAtRootTag"
+                        args:@[self.reactTag]
+                  completion:NULL];
+    }
   }
 }
 

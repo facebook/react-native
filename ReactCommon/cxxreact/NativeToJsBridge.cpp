@@ -190,6 +190,10 @@ void* NativeToJsBridge::getJavaScriptContext() {
   return m_executor->getJavaScriptContext();
 }
 
+bool NativeToJsBridge::isInspectable() {
+  return m_executor->isInspectable();
+}
+
 #ifdef WITH_JSC_MEMORY_PRESSURE
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule CameraRollView
  * @flow
@@ -74,7 +72,6 @@ var propTypes = {
 
 var CameraRollView = createReactClass({
   displayName: 'CameraRollView',
-  // $FlowFixMe(>=0.41.0)
   propTypes: propTypes,
 
   getDefaultProps: function(): Object {
@@ -126,7 +123,7 @@ var CameraRollView = createReactClass({
     this.fetch();
   },
 
-  componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }

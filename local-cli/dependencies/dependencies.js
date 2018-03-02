@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -27,13 +25,16 @@ function dependencies(argv, config, args, packagerInstance) {
       typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
       undefined;
 
+
   const packageOpts = {
     assetRegistryPath: ASSET_REGISTRY_PATH,
+    cacheStores: [],
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    dynamicDepsInPackages: config.dynamicDepsInPackages,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
-    hasteImpl: config.hasteImpl,
+    hasteImplModulePath: config.hasteImplModulePath,
     postMinifyProcess: config.postMinifyProcess,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
@@ -52,7 +53,7 @@ function dependencies(argv, config, args, packagerInstance) {
     platform: args.platform,
     entryFile: relativePath,
     dev: args.dev,
-    minify: !args.dev,
+    minify: false,
     generateSourceMaps: !args.dev,
   };
 
@@ -87,6 +88,7 @@ function dependencies(argv, config, args, packagerInstance) {
 
 module.exports = {
   name: 'dependencies',
+  description: 'lists dependencies',
   func: dependencies,
   options: [
     {

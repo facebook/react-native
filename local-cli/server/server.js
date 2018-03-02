@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  */
@@ -60,7 +58,7 @@ module.exports = {
   description: 'starts the webserver',
   options: [{
     command: '--port [number]',
-    default: 8081,
+    default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
   }, {
     command: '--host [string]',

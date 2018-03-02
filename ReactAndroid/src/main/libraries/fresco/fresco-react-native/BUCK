@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_prebuilt_aar", "rn_prebuilt_jar")
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "fresco-react-native",
     aar = ":fresco-binary-aar",
     visibility = ["//ReactAndroid/..."],
@@ -24,7 +24,7 @@ remote_file(
     url = "mvn:com.facebook.fresco:drawee:aar:1.3.0",
 )
 
-android_library(
+rn_android_library(
     name = "imagepipeline",
     exported_deps = [
         ":bolts",
@@ -34,7 +34,7 @@ android_library(
     visibility = ["//ReactAndroid/..."],
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "imagepipeline-base",
     aar = ":imagepipeline-base-aar",
     visibility = ["//ReactAndroid/..."],
@@ -46,7 +46,7 @@ remote_file(
     url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.3.0",
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "imagepipeline-core",
     aar = ":imagepipeline-aar",
     visibility = ["//ReactAndroid/..."],
@@ -58,7 +58,7 @@ remote_file(
     url = "mvn:com.facebook.fresco:imagepipeline:aar:1.3.0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "bolts",
     binary_jar = ":download-bolts",
     visibility = ["//ReactAndroid/..."],

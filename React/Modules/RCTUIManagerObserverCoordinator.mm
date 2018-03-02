@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUIManagerObserverCoordinator.h"
@@ -72,6 +70,20 @@
       [observer uiManagerWillPerformMounting:manager];
     }
   }
+}
+
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+{
+  std::lock_guard<std::mutex> lock(_mutex);
+
+  for (id<RCTUIManagerObserver> observer in _observers) {
+    if ([observer respondsToSelector:@selector(uiManager:performMountingWithBlock:)]) {
+      if ([observer uiManager:manager performMountingWithBlock:block]) {
+        return YES;
+      }
+    }
+  }
+  return NO;
 }
 
 - (void)uiManagerDidPerformMounting:(RCTUIManager *)manager

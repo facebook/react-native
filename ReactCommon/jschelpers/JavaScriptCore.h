@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -124,6 +122,7 @@ jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithC
 #define JSC_JSValueToObject(...) __jsc_wrapper(JSValueToObject, __VA_ARGS__)
 #define JSC_JSValueToStringCopy(...) __jsc_wrapper(JSValueToStringCopy, __VA_ARGS__)
 #define JSC_JSValueUnprotect(...) __jsc_wrapper(JSValueUnprotect, __VA_ARGS__)
+#define JSC_JSValueIsNull(...) __jsc_wrapper(JSValueIsNull, __VA_ARGS__)
 
 jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSValueIsArray
            JSValueIsBoolean JSValueIsDate JSValueIsEqual JSValueIsInstanceOfConstructor
@@ -191,9 +190,13 @@ jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
 jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
-#define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
-// jsc_poison(JSInspectorGetInstance)
+#define JSC_JSGlobalContextEnableDebugger(...) __jsc_wrapper(JSGlobalContextEnableDebugger, __VA_ARGS__)
+// no need to poison JSGlobalContextEnableDebugger because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSGlobalContextEnableDebugger)
+
+#define JSC_JSGlobalContextDisableDebugger(...) __jsc_wrapper(JSGlobalContextDisableDebugger, __VA_ARGS__)
+// no need to poison JSGlobalContextDisableDebugger because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSGlobalContextDisableDebugger)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)
