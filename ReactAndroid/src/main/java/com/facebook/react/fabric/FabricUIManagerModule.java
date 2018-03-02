@@ -180,7 +180,7 @@ public class FabricUIManagerModule implements UIManager {
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     try {
       parent.addChildAt(child, parent.getChildCount());
-      setChildren(parent.getReactTag(), child.getReactTag());
+      addChild(parent.getReactTag(), child.getReactTag());
     } catch (Exception e) {
       handleException(parent.getThemedContext(), e);
     }
@@ -203,25 +203,26 @@ public class FabricUIManagerModule implements UIManager {
 
   public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
     try {
-      if (!childList.isEmpty()) {
-        ReactShadowNode rootNode = getRootNode(rootTag);
-        for (int i = 0; i < childList.size(); i++) {
-          ReactShadowNode child = childList.get(i);
-          rootNode.addChildAt(child, i);
-          setChildren(rootTag, child.getReactTag());
-        }
-
-        calculateRootLayout(rootNode);
-        applyUpdatesRecursive(rootNode, 0, 0);
-        mUIViewOperationQueue
-          .dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
+      ReactShadowNode rootNode = getRootNode(rootTag);
+      Assertions.assertNotNull(
+        rootNode,
+        "Root view with tag " + rootTag + " must be added before completeRoot is called");
+      for (int i = 0; i < childList.size(); i++) {
+        ReactShadowNode child = childList.get(i);
+        rootNode.addChildAt(child, i);
+        addChild(rootTag, child.getReactTag());
       }
+
+      calculateRootLayout(rootNode);
+      applyUpdatesRecursive(rootNode, 0, 0);
+      mUIViewOperationQueue
+        .dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
     } catch (Exception e) {
       handleException(rootTag, e);
     }
   }
 
-  private void setChildren(int parent, int child) {
+  private void addChild(int parent, int child) {
     JavaOnlyArray childrenTags = new JavaOnlyArray();
     childrenTags.pushInt(child);
     mUIViewOperationQueue.enqueueSetChildren(
