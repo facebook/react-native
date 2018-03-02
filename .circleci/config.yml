@@ -325,15 +325,6 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Builds iOS test app
-  build_ios_test_app:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-ios-test-app
-
   # Runs unit tests on iOS devices
   test_ios:
     <<: *macos_defaults
@@ -347,15 +338,6 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/reports/junit
-
-  # Builds tvOS test app
-  build_tvos_test_app:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-tvos-test-app
 
   # Runs unit tests on tvOS devices
   test_tvos:
@@ -580,17 +562,7 @@ workflows:
           requires:
             - checkout_code
 
-      # Build iOS & tvOS test apps
-      - build_ios_test_app:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-      - build_tvos_test_app:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-
-  #     # Test iOS & tvOS
+      # Test iOS & tvOS
       - test_ios:
           filters: *filter-ignore-gh-pages
           requires:
