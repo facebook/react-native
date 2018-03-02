@@ -13,7 +13,7 @@ import java.util.Comparator;
  * Data structure that couples view tag to it's index in parent view. Used for managing children
  * operation.
  */
-/* package */ class ViewAtIndex {
+public class ViewAtIndex {
   public static Comparator<ViewAtIndex> COMPARATOR = new Comparator<ViewAtIndex>() {
     @Override
     public int compare(ViewAtIndex lhs, ViewAtIndex rhs) {

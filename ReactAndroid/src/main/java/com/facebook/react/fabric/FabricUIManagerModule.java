@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.ViewAtIndex;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
@@ -179,8 +180,16 @@ public class FabricUIManagerModule implements UIManager {
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     try {
-      parent.addChildAt(child, parent.getChildCount());
-      addChild(parent.getReactTag(), child.getReactTag());
+      int childIndex = parent.getChildCount();
+      parent.addChildAt(child, childIndex);
+      ViewAtIndex[] viewsToAdd =
+        new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), childIndex)};
+      mUIViewOperationQueue.enqueueManageChildren(
+        parent.getReactTag(),
+        null,
+        viewsToAdd,
+        null
+      );
     } catch (Exception e) {
       handleException(parent.getThemedContext(), e);
     }
@@ -209,8 +218,7 @@ public class FabricUIManagerModule implements UIManager {
         "Root view with tag " + rootTag + " must be added before completeRoot is called");
       for (int i = 0; i < childList.size(); i++) {
         ReactShadowNode child = childList.get(i);
-        rootNode.addChildAt(child, i);
-        addChild(rootTag, child.getReactTag());
+        appendChild(rootNode, child);
       }
 
       calculateRootLayout(rootNode);
@@ -220,15 +228,6 @@ public class FabricUIManagerModule implements UIManager {
     } catch (Exception e) {
       handleException(rootTag, e);
     }
-  }
-
-  private void addChild(int parent, int child) {
-    JavaOnlyArray childrenTags = new JavaOnlyArray();
-    childrenTags.pushInt(child);
-    mUIViewOperationQueue.enqueueSetChildren(
-      parent,
-      childrenTags
-    );
   }
 
   private void calculateRootLayout(ReactShadowNode cssRoot) {
