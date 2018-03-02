@@ -9,7 +9,6 @@ package com.facebook.react.uimanager;
 import static java.lang.System.arraycopy;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -235,9 +234,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
         throw new RuntimeException(
             "Cannot add a child that doesn't have a YogaNode to a parent without a measure "
                 + "function! (Trying to add a '"
-                + child.getClass().getSimpleName()
+                + child.toString()
                 + "' to a '"
-                + getClass().getSimpleName()
+                + toString()
                 + "')");
       }
       mYogaNode.addChildAt(childYogaNode, i);
@@ -568,6 +567,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
 
     return isDescendant;
+  }
+
+  @Override
+  public String toString() {
+    return mViewClassName;
   }
 
   /*
@@ -962,13 +966,13 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public String toString() {
+  public String getHierarchyInfo() {
     StringBuilder sb = new StringBuilder();
-    toStringWithIndentation(sb, 0);
+    getHierarchyInfoWithIndentation(sb, 0);
     return sb.toString();
   }
 
-  private void toStringWithIndentation(StringBuilder result, int level) {
+  private void getHierarchyInfoWithIndentation(StringBuilder result, int level) {
     // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
     for (int i = 0; i < level; ++i) {
       result.append("__");
@@ -987,7 +991,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
 
     for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).toStringWithIndentation(result, level + 1);
+      getChildAt(i).getHierarchyInfoWithIndentation(result, level + 1);
     }
   }
 
