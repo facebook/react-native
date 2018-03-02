@@ -334,9 +334,6 @@ jobs:
   # Builds iOS test app
   build_ios_test_app:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -351,7 +348,7 @@ jobs:
           at: ~/react-native
 
       - run: xcrun instruments -w "iPhone 5s (11.1)" || true
-
+      - run: brew install watchman
       - run: *run-objc-ios-tests
 
       - store_test_results:
@@ -376,7 +373,6 @@ jobs:
           at: ~/react-native
 
       - run: xcrun instruments -w "Apple TV 1080p (11.1)" || true
-
       - run: brew install watchman
       - run: *run-objc-tvos-tests
 
@@ -610,7 +606,11 @@ workflows:
           requires:
             - checkout_code
 
-      # Test tvOS
+  #     # Test iOS & tvOS
+      - test_ios:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
       - test_tvos:
           filters: *filter-ignore-gh-pages
           requires:
@@ -663,11 +663,6 @@ workflows:
 
   #     # The following were DISABLED because they have not run since 
   #     # the migration from Travis, and they have broken since then,
-  #     # Test iOS & tvOS
-  #     - test_ios:
-  #         filters: *filter-ignore-gh-pages
-  #         requires:
-  #           - checkout_code
   #     # CocoaPods
   #     - test_podspec:
   #         filters: *filter-ignore-gh-pages
