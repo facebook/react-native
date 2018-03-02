@@ -293,8 +293,6 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/yarn.lock
 
   # Runs JavaScript tests on Node 8
@@ -307,8 +305,6 @@ jobs:
       - run: *run-js-tests
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
   # Runs JavaScript tests on Node 6
@@ -327,8 +323,6 @@ jobs:
       - run: *run-js-tests
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
   # Builds iOS test app
@@ -353,8 +347,6 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
 
   # Builds tvOS test app
   build_tvos_test_app:
@@ -378,24 +370,18 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
 
   # Runs end to end tests
   test_ios_e2e:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
 
+      - run: xcrun instruments -w "iPhone 5s (11.1)" || true
       - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
   # Checks podspec
@@ -514,8 +500,6 @@ jobs:
       # post (always runs)
       - run: *collect-android-test-results
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
 
