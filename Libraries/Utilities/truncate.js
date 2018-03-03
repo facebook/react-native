@@ -25,7 +25,7 @@ const defaultOptions = {
 const truncate = function(
   str: ?string,
   maxChars: number,
-  options: truncateOptions
+  options?: truncateOptions
 ): ?string {
   options = Object.assign({}, defaultOptions, options);
   if (str && str.length &&
