@@ -32,6 +32,8 @@ const Types = keyMirror(TypesEnum);
 
 const PropertiesEnum = {
   opacity: true,
+  scaleX: true,
+  scaleY: true,
   scaleXY: true,
 };
 const Properties = keyMirror(PropertiesEnum);
