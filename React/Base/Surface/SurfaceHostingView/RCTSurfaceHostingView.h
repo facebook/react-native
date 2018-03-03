@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceSizeMeasureMode.h>
 #import <React/RCTSurfaceStage.h>
 
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This class can be used as easy-to-use general purpose integration point
  * of ReactNative-powered experiences in UIKit based apps.
  */
-@interface RCTSurfaceHostingView : UIView
+@interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
 
 /**
  * Designated initializer.
@@ -40,6 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties;
+
+/**
+ * Convenience initializer.
+ * To control toggle Fabric for the Surface.
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric;
 
 /**
  * Surface object which is currently using to power the view.

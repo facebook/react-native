@@ -13,7 +13,7 @@
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
 
-@interface RCTSurfaceHostingView () <RCTSurfaceDelegate>
+@interface RCTSurfaceHostingView ()
 
 @property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
 @property (nonatomic, assign) BOOL isSurfaceViewVisible;
@@ -33,13 +33,21 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+                        fabric:(BOOL)fabric
 {
-  RCTSurface *surface =
-    [[RCTSurface alloc] initWithBridge:bridge
-                            moduleName:moduleName
-                     initialProperties:initialProperties];
-
+  RCTSurface *surface = [[RCTSurface alloc] initWithBridge:bridge
+                                                moduleName:moduleName
+                                         initialProperties:initialProperties
+                                                    fabric:fabric];
   return [self initWithSurface:surface];
+
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+{
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
 }
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
