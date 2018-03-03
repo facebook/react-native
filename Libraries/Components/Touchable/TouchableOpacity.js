@@ -11,22 +11,22 @@
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
-var Animated = require('Animated');
-var Easing = require('Easing');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const Animated = require('Animated');
+const Easing = require('Easing');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactClass = require('create-react-class');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var flattenStyle = require('flattenStyle');
+const createReactClass = require('create-react-class');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const flattenStyle = require('flattenStyle');
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -116,7 +116,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  *
  */
-var TouchableOpacity = createReactClass({
+const TouchableOpacity = createReactClass({
   displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
@@ -234,7 +234,7 @@ var TouchableOpacity = createReactClass({
   },
 
   _getChildStyleOpacityWithDefault: function() {
-   var childStyle = flattenStyle(this.props.style) || {};
+   const childStyle = flattenStyle(this.props.style) || {};
    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
  },
 

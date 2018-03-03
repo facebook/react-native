@@ -10,7 +10,7 @@
 
 const Platform = require('Platform');
 
-var TVViewPropTypes = {};
+let TVViewPropTypes = {};
 if (Platform.isTVOS) {
   TVViewPropTypes = require('TVViewPropTypes');
 }
