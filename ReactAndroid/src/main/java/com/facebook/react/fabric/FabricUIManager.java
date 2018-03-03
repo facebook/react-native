@@ -36,15 +36,15 @@ import javax.annotation.Nullable;
  * Fabric API.
  */
 @SuppressWarnings("unused") // used from JNI
-public class FabricUIManagerModule implements UIManager {
+public class FabricUIManager implements UIManager {
 
-  private static final String TAG = FabricUIManagerModule.class.toString();
+  private static final String TAG = FabricUIManager.class.toString();
   private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIViewOperationQueue mUIViewOperationQueue;
 
-  public FabricUIManagerModule(ReactApplicationContext reactContext,
+  public FabricUIManager(ReactApplicationContext reactContext,
     ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactContext;
     mViewManagerRegistry = viewManagerRegistry;
