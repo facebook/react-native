@@ -48,23 +48,23 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
           return new ScaleAnimation(
               fromValue,
               toValue,
-              fromValue,
-              fromValue,
+              1f,
+              1f,
               Animation.RELATIVE_TO_SELF,
               .5f,
               Animation.RELATIVE_TO_SELF,
-              .5f);
+              0f);
         }
         case SCALE_Y: {
           float fromValue = isReverse() ? 1.0f : 0.0f;
           float toValue = isReverse() ? 0.0f : 1.0f;
           return new ScaleAnimation(
-              fromValue,
-              fromValue,
+              1f,
+              1f,
               fromValue,
               toValue,
               Animation.RELATIVE_TO_SELF,
-              .5f,
+              0f,
               Animation.RELATIVE_TO_SELF,
               .5f);
         }
