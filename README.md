@@ -21,7 +21,7 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 ---
 
-## Getting Started
+## Getting Started:)
 
 Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
 
@@ -75,6 +75,7 @@ React Native is [MIT licensed](./LICENSE).
 
 React Native documentation is [Creative Commons licensed](./LICENSE-docs).
 
+## edit by hung 
 ---
 
 <img src="https://avatars2.githubusercontent.com/u/69631?s=200&v=4" width="50"></img>
