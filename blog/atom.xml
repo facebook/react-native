@@ -2,11 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2018-01-18T06:00:00Z</updated>
+    <updated>2018-03-05T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Using AWS with React Native]]></title>
+        <id>https://facebook.github.io/react-native/blog/2018/03/05/AWS-app-sync.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/03/05/AWS-app-sync.html">
+        </link>
+        <updated>2018-03-05T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>AWS is well known in the technology industry as a provider of cloud services. These include compute, storage, and database technologies, as well as fully managed serverless offerings. The AWS Mobile team has been working closely with customers and me</p>
+]]></summary>
+        <author>
+            <name>Richard Threlkeld</name>
+            <uri>https://twitter.com/undef_obj</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Implementing Twitter’s App Loading Animation in React Native]]></title>
         <id>https://facebook.github.io/react-native/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html</id>
@@ -126,6 +139,19 @@
         </author>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
+        </link>
+        <updated>2017-03-13T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create Rea</p>
+]]></summary>
+        <author>
+            <name>Adam Perry</name>
+            <uri>https://github.com/dikaiosune</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[idx: The Existential Function]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
         <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
@@ -149,19 +175,6 @@
         <author>
             <name>Spencer Ahrens</name>
             <uri>https://github.com/sahrens</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
-        </link>
-        <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create Rea</p>
-]]></summary>
-        <author>
-            <name>Adam Perry</name>
-            <uri>https://github.com/dikaiosune</uri>
         </author>
     </entry>
     <entry>
