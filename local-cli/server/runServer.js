@@ -192,7 +192,6 @@ function getPackagerServer(args, config, reporter) {
     sourceExts: args.sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
     transformCache: args.cacheDir || TransformCaching.useTempDir(),
-    useDeltaBundler: false,
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),
