@@ -154,15 +154,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
-- (NSString *)accessibilityHint
-{
-  NSString *hint = super.accessibilityHint;
-  if (hint) {
-    return hint;
-  }
-  return @"";
-}
-
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!_accessibilityActions.count) {
