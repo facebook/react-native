@@ -364,14 +364,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge enqueueCallback:cbID args:args];
 }
 
-- (JSValue *)callFunctionOnModule:(NSString *)module
-                           method:(NSString *)method
-                        arguments:(NSArray *)arguments
-                            error:(NSError **)error
-{
-  return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
-}
-
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];

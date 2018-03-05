@@ -1183,53 +1183,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }];
 }
 
-- (JSValue *)callFunctionOnModule:(NSString *)module
-                           method:(NSString *)method
-                        arguments:(NSArray *)arguments
-                            error:(NSError **)error
-{
-  if (!_reactInstance) {
-    if (error) {
-      *error = RCTErrorWithMessage(
-        @"callFunctionOnModule was called on uninitialized bridge");
-    }
-    return nil;
-  } else if (self.executorClass) {
-    if (error) {
-      *error = RCTErrorWithMessage(
-        @"callFunctionOnModule can only be used with JSC executor");
-    }
-    return nil;
-  } else if (!self.valid) {
-    if (error) {
-      *error = RCTErrorWithMessage(
-        @"Bridge is no longer valid");
-    }
-    return nil;
-  } else if (self.loading) {
-    if (error) {
-      *error = RCTErrorWithMessage(
-        @"Bridge is still loading");
-    }
-    return nil;
-  }
-
-  RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
-  __block JSValue *ret = nil;
-  NSError *errorObj = tryAndReturnError(^{
-    Value result = self->_reactInstance->callFunctionSync([module UTF8String], [method UTF8String], (id)arguments);
-    JSContext *context = contextForGlobalContextRef(JSC_JSContextGetGlobalContext(result.context()));
-    ret = [JSC_JSValue(result.context()) valueWithJSValueRef:result inContext:context];
-  });
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call");
-
-  if (error) {
-    *error = errorObj;
-  }
-
-  return ret;
-}
-
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   if (_reactInstance) {

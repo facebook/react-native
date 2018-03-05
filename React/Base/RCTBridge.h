@@ -121,22 +121,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
 
 /**
- * This method is used to call functions in the JavaScript application context
- * synchronously.  This is intended for use by applications which do their own
- * thread management and are careful to manage multi-threaded access to the JSVM.
- * See also -[RCTBridgeDelgate shouldBridgeLoadJavaScriptSynchronously], which
- * may be needed to ensure that any requires JS code is loaded before this method
- * is called.  If the underlying executor is not JSC, this will return nil.  Safe
- * to call from any thread.
- *
- * @experimental
- */
-- (JSValue *)callFunctionOnModule:(NSString *)module
-                           method:(NSString *)method
-                        arguments:(NSArray *)arguments
-                            error:(NSError **)error;
-
-/**
  * This method registers the file path of an additional JS segment by its ID.
  *
  * @experimental
