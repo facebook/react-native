@@ -75,6 +75,7 @@ React Native is [MIT licensed](./LICENSE).
 
 React Native documentation is [Creative Commons licensed](./LICENSE-docs).
 
+## edit by hung 
 ---
 
 <img src="https://avatars2.githubusercontent.com/u/69631?s=200&v=4" width="50"></img>
