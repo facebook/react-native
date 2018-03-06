@@ -113,7 +113,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
 <li>Return a <code>WebView</code> component with the prop <code>nativeConfig.component</code> set to your native component (see below)</li>
 </ul>
 <p>To get your native component, you must use <code>requireNativeComponent</code>: the same as for regular custom components. However, you must pass in an extra third argument, <code>WebView.extraNativeComponentConfig</code>. This third argument contains prop types that are only required for native code.</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> React, {Component, PropTypes} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, {Component, PropTypes} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> {WebView, requireNativeComponent, NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-keyword">const</span> {CustomWebViewManager} = NativeModules;
 
@@ -142,7 +142,7 @@ const RCTCustomWebView = requireNativeComponent(
 <p>If you want to add custom props to your native component, you can use <code>nativeConfig.props</code> on the web view. For iOS, you should also set the <code>nativeConfig.viewManager</code> prop with your custom WebView ViewManager as in the example above.</p>
 <p>For events, the event handler must always be set to a function. This means it isn't safe to use the event handler directly from <code>this.props</code>, as the user might not have provided one. The standard approach is to create a event handler in your class, and then invoking the event handler given in <code>this.props</code> if it exists.</p>
 <p>If you are unsure how something should be implemented from the JS side, look at <a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/WebView/WebView.ios.js">WebView.ios.js</a> in the React Native source.</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomWebView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<pre><code class="hljs css javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CustomWebView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">static</span> propTypes = {
     ...WebView.propTypes,
     <span class="hljs-attr">finalUrl</span>: PropTypes.string,
@@ -177,7 +177,7 @@ const RCTCustomWebView = requireNativeComponent(
 </span></code></pre>
 <p>Just like for regular native components, you must provide all your prop types in the component to have them forwarded on to the native component. However, if you have some prop types that are only used internally in component, you can add them to the <code>nativeOnly</code> property of the third argument previously mentioned. For event handlers, you have to use the value <code>true</code> instead of a regular prop type.</p>
 <p>For example, if you wanted to add an internal event handler called <code>onScrollToBottom</code>, you would use,</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">const</span> RCTCustomWebView = requireNativeComponent(
+<pre><code class="hljs css javascript"><span class="hljs-keyword">const</span> RCTCustomWebView = requireNativeComponent(
   <span class="hljs-string">'RCTCustomWebView'</span>,
   CustomWebView,
   {

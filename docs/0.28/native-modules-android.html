@@ -107,7 +107,7 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 }
 </code></pre>
 <p>To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of <code>NativeModules</code> each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.</p>
-<pre><code class="hljs css js"><span class="hljs-comment">/**
+<pre><code class="hljs css javascript"><span class="hljs-comment">/**
  * This exposes the native ToastExample module as a JS module. This has a
  * function 'show' which takes the following parameters:
  *
@@ -119,14 +119,16 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 <span class="hljs-built_in">module</span>.exports = NativeModules.ToastExample;
 </code></pre>
 <p>Now, from your other JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> ToastExample <span class="hljs-keyword">from</span> <span class="hljs-string">'./ToastExample'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> ToastExample <span class="hljs-keyword">from</span> <span class="hljs-string">'./ToastExample'</span>;
 
 ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT);
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" name="beyond-toasts"></a><a href="#beyond-toasts" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Beyond Toasts</h2>
 <h3><a class="anchor" aria-hidden="true" name="callbacks"></a><a href="#callbacks" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Callbacks</h3>
 <p>Native modules also support a special kind of argument - a callback. In most cases it is used to provide the function call result to JavaScript.</p>
-<pre><code class="hljs css java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UIManagerModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
+<pre><code class="hljs css java"><span class="hljs-keyword">import</span> com.facebook.react.bridge.Callback;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UIManagerModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ReactContextBaseJavaModule</span> </span>{
 
 ...
 
@@ -151,7 +153,7 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 ...
 </code></pre>
 <p>This method would be accessed in JavaScript using:</p>
-<pre><code class="hljs css js">UIManager.measureLayout(
+<pre><code class="hljs css javascript">UIManager.measureLayout(
   <span class="hljs-number">100</span>,
   <span class="hljs-number">100</span>,
   (msg) =&gt; {
@@ -197,7 +199,7 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
 ...
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
+<pre><code class="hljs css javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">measureLayout</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">var</span> {relativeX, relativeY, width, height} = <span class="hljs-keyword">await</span> UIManager.measureLayout(
       <span class="hljs-number">100</span>,
@@ -230,7 +232,7 @@ WritableMap params = Arguments.createMap();
 sendEvent(reactContext, <span class="hljs-string">"keyboardWillShow"</span>, params);
 </code></pre>
 <p>JavaScript modules can then register to receive events by <code>addListenerOn</code> using the <code>Subscribable</code> mixin.</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { DeviceEventEmitter } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> { DeviceEventEmitter } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 ...
 
 var ScrollResponderMixin = {
@@ -250,7 +252,7 @@ var ScrollResponderMixin = {
   },
 </code></pre>
 <p>You can also directly use the <code>DeviceEventEmitter</code> module to listen for events.</p>
-<pre><code class="hljs css js">...
+<pre><code class="hljs css javascript">...
 componentWillMount: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
   DeviceEventEmitter.addListener(<span class="hljs-string">'keyboardWillShow'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e: Event</span>) </span>{
     <span class="hljs-comment">// handle event.</span>
