@@ -18,38 +18,38 @@ export opaque type StyleSheetStyle: number = number;
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
 
-export type LayoutStyle<+Dimension = DimensionValue> = {
+export type LayoutStyle = {
   +display?: 'none' | 'flex',
-  +width?: Dimension,
-  +height?: Dimension,
-  +bottom?: Dimension,
-  +end?: Dimension,
-  +left?: Dimension,
-  +right?: Dimension,
-  +start?: Dimension,
-  +top?: Dimension,
-  +minWidth?: Dimension,
-  +maxWidth?: Dimension,
-  +minHeight?: Dimension,
-  +maxHeight?: Dimension,
-  +margin?: Dimension,
-  +marginBottom?: Dimension,
-  +marginEnd?: Dimension,
-  +marginHorizontal?: Dimension,
-  +marginLeft?: Dimension,
-  +marginRight?: Dimension,
-  +marginStart?: Dimension,
-  +marginTop?: Dimension,
-  +marginVertical?: Dimension,
-  +padding?: Dimension,
-  +paddingBottom?: Dimension,
-  +paddingEnd?: Dimension,
-  +paddingHorizontal?: Dimension,
-  +paddingLeft?: Dimension,
-  +paddingRight?: Dimension,
-  +paddingStart?: Dimension,
-  +paddingTop?: Dimension,
-  +paddingVertical?: Dimension,
+  +width?: DimensionValue,
+  +height?: DimensionValue,
+  +bottom?: DimensionValue,
+  +end?: DimensionValue,
+  +left?: DimensionValue,
+  +right?: DimensionValue,
+  +start?: DimensionValue,
+  +top?: DimensionValue,
+  +minWidth?: DimensionValue,
+  +maxWidth?: DimensionValue,
+  +minHeight?: DimensionValue,
+  +maxHeight?: DimensionValue,
+  +margin?: DimensionValue,
+  +marginBottom?: DimensionValue,
+  +marginEnd?: DimensionValue,
+  +marginHorizontal?: DimensionValue,
+  +marginLeft?: DimensionValue,
+  +marginRight?: DimensionValue,
+  +marginStart?: DimensionValue,
+  +marginTop?: DimensionValue,
+  +marginVertical?: DimensionValue,
+  +padding?: DimensionValue,
+  +paddingBottom?: DimensionValue,
+  +paddingEnd?: DimensionValue,
+  +paddingHorizontal?: DimensionValue,
+  +paddingLeft?: DimensionValue,
+  +paddingRight?: DimensionValue,
+  +paddingStart?: DimensionValue,
+  +paddingTop?: DimensionValue,
+  +paddingVertical?: DimensionValue,
   +borderWidth?: number,
   +borderBottomWidth?: number,
   +borderEndWidth?: number,
@@ -114,8 +114,8 @@ export type TransformStyle = {
   >,
 };
 
-export type ShadowStyle<+Color = ColorValue> = {
-  +shadowColor?: Color,
+export type ShadowStyle = {
+  +shadowColor?: ColorValue,
   +shadowOffset?: {
     +width?: number,
     +height?: number,
@@ -124,19 +124,19 @@ export type ShadowStyle<+Color = ColorValue> = {
   +shadowRadius?: number,
 };
 
-export type ViewStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
-  ...$Exact<LayoutStyle<Dimension>>,
-  ...$Exact<ShadowStyle<Color>>,
+export type ViewStyle = {
+  ...$Exact<LayoutStyle>,
+  ...$Exact<ShadowStyle>,
   ...$Exact<TransformStyle>,
   +backfaceVisibility?: 'visible' | 'hidden',
-  +backgroundColor?: Color,
-  +borderColor?: Color,
-  +borderBottomColor?: Color,
-  +borderEndColor?: Color,
-  +borderLeftColor?: Color,
-  +borderRightColor?: Color,
-  +borderStartColor?: Color,
-  +borderTopColor?: Color,
+  +backgroundColor?: ColorValue,
+  +borderColor?: ColorValue,
+  +borderBottomColor?: ColorValue,
+  +borderEndColor?: ColorValue,
+  +borderLeftColor?: ColorValue,
+  +borderRightColor?: ColorValue,
+  +borderStartColor?: ColorValue,
+  +borderTopColor?: ColorValue,
   +borderRadius?: number,
   +borderBottomEndRadius?: number,
   +borderBottomLeftRadius?: number,
@@ -158,9 +158,9 @@ export type ViewStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
   +elevation?: number,
 };
 
-export type TextStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
-  ...$Exact<ViewStyle<Dimension, Color>>,
-  +color?: Color,
+export type TextStyle = {
+  ...$Exact<ViewStyle>,
+  +color?: ColorValue,
   +fontFamily?: string,
   +fontSize?: number,
   +fontStyle?: 'normal' | 'italic',
@@ -185,7 +185,7 @@ export type TextStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
   >,
   +textShadowOffset?: {+width?: number, +height?: number},
   +textShadowRadius?: number,
-  +textShadowColor?: Color,
+  +textShadowColor?: ColorValue,
   +letterSpacing?: number,
   +lineHeight?: number,
   +textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify',
@@ -197,21 +197,21 @@ export type TextStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
     | 'line-through'
     | 'underline line-through',
   +textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
-  +textDecorationColor?: Color,
+  +textDecorationColor?: ColorValue,
   +writingDirection?: 'auto' | 'ltr' | 'rtl',
 };
 
-export type ImageStyle<+Dimension = DimensionValue, +Color = ColorValue> = {
-  ...$Exact<ViewStyle<Dimension, Color>>,
+export type ImageStyle = {
+  ...$Exact<ViewStyle>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  +tintColor?: Color,
+  +tintColor?: ColorValue,
   +overlayColor?: string,
 };
 
-export type Style<+Dimension = DimensionValue, +Color = ColorValue> = {
-  ...$Exact<TextStyle<Dimension, Color>>,
+export type Style = {
+  ...$Exact<TextStyle>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  +tintColor?: Color,
+  +tintColor?: ColorValue,
   +overlayColor?: string,
 };
 
@@ -233,7 +233,7 @@ export type StyleProp<+T> =
 //   $Shape<ImageStyle<DimensionValue, ColorValue>>,
 // >;
 
-export type StyleObj = StyleProp<$Shape<Style<DimensionValue, ColorValue>>>;
+export type StyleObj = StyleProp<$Shape<Style>>;
 export type StyleValue = StyleObj;
 
 export type ViewStyleProp = StyleObj;
@@ -241,7 +241,7 @@ export type TextStyleProp = StyleObj;
 export type ImageStyleProp = StyleObj;
 
 export type Styles = {
-  +[key: string]: $Shape<Style<DimensionValue, ColorValue>>,
+  +[key: string]: $Shape<Style>,
 };
 export type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
 
@@ -260,4 +260,4 @@ type Props = {position: TypeForStyleKey<'position'>};
 This will correctly give you the type 'absolute' | 'relative' instead of the
 weak type of just string;
 */
-export type TypeForStyleKey<+key: $Keys<Style<>>> = $ElementType<Style<>, key>;
+export type TypeForStyleKey<+key: $Keys<Style>> = $ElementType<Style, key>;

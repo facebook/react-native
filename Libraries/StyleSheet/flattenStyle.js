@@ -11,7 +11,7 @@
 
 var ReactNativePropRegistry;
 
-import type { DimensionValue, ColorValue, StyleProp, Style } from 'StyleSheetTypes';
+import type { StyleProp, Style } from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {
@@ -23,7 +23,7 @@ function getStyle(style) {
   return style;
 }
 
-function flattenStyle(style: ?StyleProp<Style<DimensionValue, ColorValue>>): ?Style<DimensionValue, ColorValue> {
+function flattenStyle(style: ?StyleProp<Style>): ?Style {
   if (style == null) {
     return undefined;
   }
