@@ -19,9 +19,15 @@
 @class RCTPerformanceLogger;
 
 /**
- * This notification fires when the bridge starts loading the JS bundle.
+ * This notification fires when the bridge initializes.
  */
 RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
+
+
+/**
+ * This notification fires when the bridge starts executing the JS bundle.
+ */
+RCT_EXTERN NSString *const RCTJavaScriptWillStartExecutingNotification;
 
 /**
  * This notification fires when the bridge has finished loading the JS bundle.

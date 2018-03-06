@@ -1162,6 +1162,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   [self _tryAndHandleError:^{
     NSString *sourceUrlStr = deriveSourceURL(url);
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:RCTJavaScriptWillStartExecutingNotification
+      object:self->_parentBridge userInfo:@{@"bridge": self}];
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
