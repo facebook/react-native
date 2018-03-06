@@ -209,6 +209,7 @@
   }
 
   if (isRerunNeeded) {
+    [self _registerRootView];
     [self _run];
   }
 }
