@@ -139,10 +139,10 @@ module.exports = {
    * PureComponent checks.
    */
   compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
-    if (style1 && style2) {
+    if (style1 != null && style2 != null) {
       return [style1, style2];
     } else {
-      return style1 || style2;
+      return style1 != null ? style1 : style2;
     }
   },
 
