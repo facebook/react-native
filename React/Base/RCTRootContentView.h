@@ -24,17 +24,9 @@
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
-@property (nonatomic, assign) BOOL fabric;
-
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
-                       fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithFrame:(CGRect)frame
-                       bridge:(RCTBridge *)bridge
-                     reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility;
+               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 
 @end

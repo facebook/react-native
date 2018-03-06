@@ -44,16 +44,7 @@ extern NSString *const RCTContentDidAppearNotification;
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
-
-/**
- * - Convenience initializer -
- * Initialize without using FabricUIManager.
- */
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 /**
  * - Convenience initializer -
@@ -66,15 +57,6 @@ extern NSString *const RCTContentDidAppearNotification;
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
-
-/**
- * - Convenience initializer -
- */
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions
-                           fabric:(BOOL)fabric;
 
 
 /**
@@ -164,11 +146,6 @@ extern NSString *const RCTContentDidAppearNotification;
  */
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
-
-/**
- * Indicates whether this view is managed by FabricUIManager or the traditional UIManager.
- */
-@property (nonatomic, assign) BOOL fabric;
 
 @end
 

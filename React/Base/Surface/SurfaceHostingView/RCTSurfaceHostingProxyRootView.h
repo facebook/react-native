@@ -35,27 +35,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
-@property (nonatomic, assign) BOOL fabric;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions
-                           fabric:(BOOL)fabric;
 
 - (void)cancelTouches;
 

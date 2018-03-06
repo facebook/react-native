@@ -61,12 +61,10 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric
 {
   RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
 
   if (self = [super init]) {
-    _fabric = fabric;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     _moduleName = moduleName;
@@ -103,13 +101,6 @@
   }
 
   return self;
-}
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-{
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
 }
 
 - (void)dealloc
@@ -310,21 +301,14 @@
 
   RCTLogInfo(@"Running surface %@ (%@)", _moduleName, applicationParameters);
 
-  [batchedBridge enqueueJSCall:@"AppRegistry"
-                        method:@"runApplication"
-                          args:@[_moduleName, applicationParameters]
-                    completion:NULL];
+  [self mountReactComponentWithBridge:batchedBridge moduleName:_moduleName params:applicationParameters];
 
   [self _setStage:RCTSurfaceStageSurfaceDidRun];
 }
 
 - (void)_stop
 {
-  RCTBridge *batchedBridge = self._batchedBridge;
-  [batchedBridge enqueueJSCall:@"AppRegistry"
-                        method:@"unmountApplicationComponentAtRootTag"
-                          args:@[self->_rootViewTag]
-                    completion:NULL];
+  [self unmountReactComponentWithBridge:self._batchedBridge rootViewTag:self->_rootViewTag];
 }
 
 - (void)_registerRootView
@@ -569,6 +553,18 @@
       [self->_bridge.uiManager.observerCoordinator removeObserver:self];
     });
   }
+}
+
+#pragma mark - Mounting/Unmounting of React components
+
+- (void)mountReactComponentWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params
+{
+  [bridge enqueueJSCall:@"AppRegistry" method:@"runApplication" args:@[moduleName, params] completion:NULL];
+}
+
+- (void)unmountReactComponentWithBridge:(RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag
+{
+  [bridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[rootViewTag] completion:NULL];
 }
 
 @end
