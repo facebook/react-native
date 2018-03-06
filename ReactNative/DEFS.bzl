@@ -21,6 +21,7 @@ ANDROID_JSC_INTERNAL_DEPS = [
     '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
+ANDROID = "Android"
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
@@ -33,7 +34,7 @@ with allow_unsafe_import():
 
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, **kwargs):
+def rn_xplat_cxx_library(name, platforms = None, **kwargs):
     cxx_library(name=name, **kwargs)
 
 
@@ -150,7 +151,7 @@ def rn_robolectric_test(name, srcs, vm_args=None, *args, **kwargs):
     # RN tests use  Powermock, which means they get their own ClassLoaders.
     # Because the yoga native library (or any native library) can only be loaded into one
     # ClassLoader at a time, we need to run each in its own process, hence fork_mode = 'per_test'.
-    robolectric_test(
+    native.robolectric_test(
         name=name,
         use_cxx_libraries=True,
         cxx_library_whitelist=[

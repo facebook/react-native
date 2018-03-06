@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBaseTextInputView.h"
@@ -17,6 +15,8 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import "RCTInputAccessoryView.h"
+#import "RCTInputAccessoryViewContent.h"
 #import "RCTTextAttributes.h"
 #import "RCTTextSelection.h"
 
@@ -402,12 +402,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-  [self invalidateInputAccessoryView];
+  if ([changedProps containsObject:@"inputAccessoryViewID"] && self.inputAccessoryViewID) {
+    [self setCustomInputAccessoryViewWithNativeID:self.inputAccessoryViewID];
+  } else if (!self.inputAccessoryViewID) {
+    [self setDefaultInputAccessoryView];
+  }
 }
 
-- (void)invalidateInputAccessoryView
+- (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
 {
-#if !TARGET_OS_TV
+  #if !TARGET_OS_TV
+  __weak RCTBaseTextInputView *weakSelf = self;
+  [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
+    RCTBaseTextInputView *strongSelf = weakSelf;
+    if (rootView) {
+      UIView *accessoryView = [strongSelf->_bridge.uiManager viewForNativeID:nativeID
+                                                                 withRootTag:rootView.reactTag];
+      if (accessoryView && [accessoryView isKindOfClass:[RCTInputAccessoryView class]]) {
+        strongSelf.backedTextInputView.inputAccessoryView = ((RCTInputAccessoryView *)accessoryView).content.inputAccessoryView;
+        [strongSelf reloadInputViewsIfNecessary];
+      }
+    }
+  }];
+  #endif /* !TARGET_OS_TV */
+}
+
+- (void)setDefaultInputAccessoryView
+{
+  #if !TARGET_OS_TV
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
@@ -445,12 +467,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   else {
     textInputView.inputAccessoryView = nil;
   }
+  [self reloadInputViewsIfNecessary];
+  #endif /* !TARGET_OS_TV */
+}
 
+- (void)reloadInputViewsIfNecessary
+{
   // We have to call `reloadInputViews` for focused text inputs to update an accessory view.
-  if (textInputView.isFirstResponder) {
-    [textInputView reloadInputViews];
+  if (self.backedTextInputView.isFirstResponder) {
+    [self.backedTextInputView reloadInputViews];
   }
-#endif
 }
 
 - (void)handleInputAccessoryDoneButton

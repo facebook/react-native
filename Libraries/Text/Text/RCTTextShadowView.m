@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextShadowView.h"
@@ -31,6 +29,7 @@
     _cachedTextStorages = [NSMapTable strongToStrongObjectsMapTable];
     _needsUpdateView = YES;
     YGNodeSetMeasureFunc(self.yogaNode, RCTTextShadowViewMeasure);
+    YGNodeSetBaselineFunc(self.yogaNode, RCTTextShadowViewBaseline);
   }
 
   return self;
@@ -307,6 +306,27 @@
   ];
 }
 
+- (CGFloat)lastBaselineForSize:(CGSize)size
+{
+  NSAttributedString *attributedText =
+    [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
+
+  __block CGFloat maximumDescender = 0.0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (maximumDescender > font.descender) {
+        maximumDescender = font.descender;
+      }
+    }
+  ];
+
+  return size.height + maximumDescender;
+}
+
 static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   CGSize maximumSize = (CGSize){
@@ -335,10 +355,27 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
     MIN(RCTCeilPixelValue(size.height), maximumSize.height)
   };
 
+  // Adding epsilon value illuminates problems with converting values from
+  // `double` to `float`, and then rounding them to pixel grid in Yoga.
+  CGFloat epsilon = 0.001;
   return (YGSize){
-    RCTYogaFloatFromCoreGraphicsFloat(size.width),
-    RCTYogaFloatFromCoreGraphicsFloat(size.height)
+    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
   };
+}
+
+static float RCTTextShadowViewBaseline(YGNodeRef node, const float width, const float height)
+{
+  RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
+
+  CGSize size = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(width),
+    RCTCoreGraphicsFloatFromYogaFloat(height)
+  };
+
+  CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
+
+  return RCTYogaFloatFromCoreGraphicsFloat(lastBaseline);
 }
 
 @end

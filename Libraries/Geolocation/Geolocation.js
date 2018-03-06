@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Geolocation
  * @flow
@@ -65,7 +63,7 @@ var Geolocation = {
 
   /*
    * Request suitable Location permission based on the key configured on pList.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/geolocation.html#requestauthorization
    */
   requestAuthorization: function() {
@@ -73,8 +71,8 @@ var Geolocation = {
   },
 
   /*
-   * Invokes the success callback once with the latest location info. 
-   * 
+   * Invokes the success callback once with the latest location info.
+   *
    * See https://facebook.github.io/react-native/docs/geolocation.html#getcurrentposition
    */
   getCurrentPosition: async function(
@@ -111,7 +109,7 @@ var Geolocation = {
 
   /*
    * Invokes the success callback whenever the location changes.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/geolocation.html#watchposition
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {

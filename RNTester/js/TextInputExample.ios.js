@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule TextInputExample
  */
 'use strict';
 
+const Button = require('Button');
+const InputAccessoryView = require('InputAccessoryView');
 var React = require('react');
 var ReactNative = require('react-native');
 var {
@@ -88,6 +88,35 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
         </Text>
+      </View>
+    );
+  }
+}
+
+class TextInputAccessoryViewExample extends React.Component<{}, *> {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Placeholder Text'};
+  }
+
+  render() {
+    const inputAccessoryViewID = 'inputAccessoryView1';
+    return (
+      <View>
+        <TextInput
+          style={styles.default}
+          inputAccessoryViewID={inputAccessoryViewID}
+          onChangeText={text => this.setState({text})}
+          value={this.state.text}
+        />
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={{backgroundColor: 'white'}}>
+            <Button
+              onPress={() => this.setState({text: 'Placeholder Text'})}
+              title="Reset Text"
+            />
+          </View>
+        </InputAccessoryView>
       </View>
     );
   }
@@ -485,6 +514,12 @@ exports.examples = [
     title: 'Live Re-Write (no spaces allowed)',
     render: function() {
       return <RewriteExampleInvalidCharacters />;
+    }
+  },
+  {
+    title: 'Keyboard Accessory View',
+    render: function() {
+      return <TextInputAccessoryViewExample />;
     }
   },
   {

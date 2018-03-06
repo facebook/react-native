@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule VirtualizedList
  * @flow
@@ -54,7 +52,9 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {
-  renderItem: renderItemType,
+  // TODO: Conflicts with the optional `renderItem` in
+  // `VirtualizedSectionList`'s props.
+  renderItem: $FlowFixMe<renderItemType>,
   /**
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -442,6 +442,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getScrollMetrics: PropTypes.func,
       horizontal: PropTypes.bool,
       getOutermostParentListRef: PropTypes.func,
+      getNestedChildState: PropTypes.func,
       registerAsNestedChild: PropTypes.func,
       unregisterAsNestedChild: PropTypes.func,
     }),
@@ -452,6 +453,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getScrollMetrics: PropTypes.func,
       horizontal: PropTypes.bool,
       getOutermostParentListRef: PropTypes.func,
+      getNestedChildState: PropTypes.func,
       registerAsNestedChild: PropTypes.func,
       unregisterAsNestedChild: PropTypes.func,
     }),
@@ -463,6 +465,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         getScrollMetrics: this._getScrollMetrics,
         horizontal: this.props.horizontal,
         getOutermostParentListRef: this._getOutermostParentListRef,
+        getNestedChildState: this._getNestedChildState,
         registerAsNestedChild: this._registerAsNestedChild,
         unregisterAsNestedChild: this._unregisterAsNestedChild,
       },
@@ -492,6 +495,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
+  _getNestedChildState = (key: string): ?ChildListState => {
+    const existingChildData = this._nestedChildLists.get(key);
+    return existingChildData && existingChildData.state;
+  };
+
   _registerAsNestedChild = (childList: {
     cellKey: string,
     key: string,
@@ -518,8 +526,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this._hasInteracted) {
       childList.ref.recordInteraction();
     }
-
-    return existingChildData && existingChildData.state;
   };
 
   _unregisterAsNestedChild = (childList: {
@@ -577,11 +583,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     };
 
     if (this._isNestedWithSameOrientation()) {
-      const storedState = this.context.virtualizedList.registerAsNestedChild({
-        cellKey: this._getCellKey(),
-        key: this.props.listKey || this._getCellKey(),
-        ref: this,
-      });
+      const storedState = this.context.virtualizedList.getNestedChildState(
+        this.props.listKey || this._getCellKey(),
+      );
       if (storedState) {
         initialState = storedState;
         this.state = storedState;
@@ -590,6 +594,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this.state = initialState;
+  }
+
+  componentDidMount() {
+    if (this._isNestedWithSameOrientation()) {
+      this.context.virtualizedList.registerAsNestedChild({
+        cellKey: this._getCellKey(),
+        key: this.props.listKey || this._getCellKey(),
+        ref: this,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -611,29 +625,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper.deactivateAndFlush();
   }
 
-  UNSAFE_componentWillReceiveProps(newProps: Props) {
+  static getDerivedStateFromProps(newProps: Props, prevState: State) {
     const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
-    this.setState({
+    return {
       first: Math.max(
         0,
-        Math.min(
-          this.state.first,
-          getItemCount(data) - 1 - maxToRenderPerBatch,
-        ),
+        Math.min(prevState.first, getItemCount(data) - 1 - maxToRenderPerBatch),
       ),
-      last: Math.max(0, Math.min(this.state.last, getItemCount(data) - 1)),
-    });
-    if (data !== this.props.data || extraData !== this.props.extraData) {
-      this._hasDataChangedSinceEndReached = true;
-
-      // clear the viewableIndices cache to also trigger
-      // the onViewableItemsChanged callback with the new data
-      this._viewabilityTuples.forEach(tuple => {
-        tuple.viewabilityHelper.resetViewableIndices();
-      });
-    }
+      last: Math.max(0, Math.min(prevState.last, getItemCount(data) - 1)),
+    };
   }
 
   _pushCells(
@@ -916,7 +918,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
+    const {data, extraData} = this.props;
+    if (data !== prevProps.data || extraData !== prevProps.extraData) {
+      this._hasDataChangedSinceEndReached = true;
+
+      // clear the viewableIndices cache to also trigger
+      // the onViewableItemsChanged callback with the new data
+      this._viewabilityTuples.forEach(tuple => {
+        tuple.viewabilityHelper.resetViewableIndices();
+      });
+    }
     this._scheduleCellsToRenderUpdate();
   }
 

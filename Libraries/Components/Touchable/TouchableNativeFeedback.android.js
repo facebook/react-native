@@ -1,46 +1,44 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TouchableNativeFeedback
  */
 'use strict';
 
-var Platform = require('Platform');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var UIManager = require('UIManager');
+const Platform = require('Platform');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const UIManager = require('UIManager');
 
-var createReactClass = require('create-react-class');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var processColor = require('processColor');
+const createReactClass = require('create-react-class');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const processColor = require('processColor');
 
-var rippleBackgroundPropType = PropTypes.shape({
+const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
-var themeAttributeBackgroundPropType = PropTypes.shape({
+const themeAttributeBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['ThemeAttrAndroid']),
   attribute: PropTypes.string.isRequired,
 });
 
-var backgroundPropType = PropTypes.oneOfType([
+const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches (Android only).
@@ -71,7 +69,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-var TouchableNativeFeedback = createReactClass({
+const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -242,7 +240,7 @@ var TouchableNativeFeedback = createReactClass({
       this.props.useForeground && TouchableNativeFeedback.canUseNativeForeground()
         ? 'nativeForegroundAndroid'
         : 'nativeBackgroundAndroid';
-    var childProps = {
+    const childProps = {
       ...child.props,
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,

@@ -7,6 +7,7 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSIModulesProvider;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -48,6 +49,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
+  private @Nullable JSIModulesProvider mJSIModulesProvider;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -59,6 +61,12 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setUIImplementationProvider(
     @Nullable UIImplementationProvider uiImplementationProvider) {
     mUIImplementationProvider = uiImplementationProvider;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setJSIModulesProvider(
+    @Nullable JSIModulesProvider jsiModulesProvider) {
+    mJSIModulesProvider = jsiModulesProvider;
     return this;
   }
 
@@ -280,6 +288,7 @@ public class ReactInstanceManagerBuilder {
         mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
         mMinNumShakes,
-        mMinTimeLeftInFrameForNonBatchedOperationMs);
+        mMinTimeLeftInFrameForNonBatchedOperationMs,
+      mJSIModulesProvider);
   }
 }

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.modules.network;
 
@@ -266,7 +264,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    Request.Builder requestBuilder = new Request.Builder().url(url);
+    Request.Builder requestBuilder;
+    try {
+      requestBuilder = new Request.Builder().url(url);
+    } catch (Exception e) {
+      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), null);
+      return;
+    }
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);

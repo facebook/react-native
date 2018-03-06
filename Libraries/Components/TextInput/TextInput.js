@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TextInput
  * @flow
@@ -33,9 +31,6 @@ const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 const {ViewContextTypes} = require('ViewContext');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
@@ -43,6 +38,10 @@ const requireNativeComponent = require('requireNativeComponent');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const warning = require('fbjs/lib/warning');
+
+let AndroidTextInput;
+let RCTMultilineTextInputView;
+let RCTSinglelineTextInputView;
 
 const onlyMultiline = {
   onTextInput: true,
@@ -52,13 +51,13 @@ const onlyMultiline = {
 import type {ViewChildContext} from 'ViewContext';
 
 if (Platform.OS === 'android') {
-  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
 } else if (Platform.OS === 'ios') {
-  var RCTMultilineTextInputView = requireNativeComponent(
+  RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
     null,
   );
-  var RCTSinglelineTextInputView = requireNativeComponent(
+  RCTSinglelineTextInputView = requireNativeComponent(
     'RCTSinglelineTextInputView',
     null,
   );
@@ -595,6 +594,17 @@ const TextInput = createReactClass({
      * This property is supported only for single-line TextInput component on iOS.
      */
     caretHidden: PropTypes.bool,
+    /*
+     * If `true`, contextMenuHidden is hidden. The default value is `false`.
+     */
+    contextMenuHidden: PropTypes.bool,
+    /**
+     * An optional identifier which links a custom InputAccessoryView to
+     * this text input. The InputAccessoryView is rendered above the
+     * keyboard when this text input is focused.
+     * @platform ios
+     */
+    inputAccessoryViewID: PropTypes.string,
   },
   getDefaultProps(): Object {
     return {
@@ -696,9 +706,9 @@ const TextInput = createReactClass({
   },
 
   _renderIOSLegacy: function() {
-    var textContainer;
+    let textContainer;
 
-    var props = Object.assign({}, this.props);
+    const props = Object.assign({}, this.props);
     props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
@@ -710,7 +720,7 @@ const TextInput = createReactClass({
 
     if (!props.multiline) {
       if (__DEV__) {
-        for (var propKey in onlyMultiline) {
+        for (const propKey in onlyMultiline) {
           if (props[propKey]) {
             const error = new Error(
               'TextInput prop `' +
@@ -734,8 +744,8 @@ const TextInput = createReactClass({
         />
       );
     } else {
-      var children = props.children;
-      var childCount = 0;
+      let children = props.children;
+      let childCount = 0;
       React.Children.forEach(children, () => ++childCount);
       invariant(
         !(props.value && childCount),
@@ -787,7 +797,7 @@ const TextInput = createReactClass({
   },
 
   _renderIOS: function() {
-    var props = Object.assign({}, this.props);
+    const props = Object.assign({}, this.props);
     props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
@@ -847,8 +857,8 @@ const TextInput = createReactClass({
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
-    var children = this.props.children;
-    var childCount = 0;
+    let children = this.props.children;
+    let childCount = 0;
     React.Children.forEach(children, () => ++childCount);
     invariant(
       !(this.props.value && childCount),
@@ -885,7 +895,7 @@ const TextInput = createReactClass({
 
     return (
       <TouchableWithoutFeedback
-        onLayout={this._onLayout}
+        onLayout={props.onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
@@ -922,7 +932,7 @@ const TextInput = createReactClass({
       });
     }
 
-    var text = event.nativeEvent.text;
+    const text = event.nativeEvent.text;
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
 
@@ -1006,7 +1016,7 @@ const TextInput = createReactClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   multilineInput: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
     // to single-line RCTSinglelineTextInputView defaults, using the system defaults

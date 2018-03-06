@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule StyleSheet
  * @flow
@@ -141,10 +139,10 @@ module.exports = {
    * PureComponent checks.
    */
   compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
-    if (style1 && style2) {
+    if (style1 != null && style2 != null) {
       return [style1, style2];
     } else {
-      return style1 || style2;
+      return style1 != null ? style1 : style2;
     }
   },
 

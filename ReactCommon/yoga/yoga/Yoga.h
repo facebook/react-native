@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -20,13 +18,14 @@
 #include <stdbool.h>
 #endif
 
-// Not defined in MSVC++
-#ifndef NAN
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#endif
-
-#define YGUndefined NAN
+/** Large positive number signifies that the property(float) is undefined.
+ *Earlier we used to have YGundefined as NAN, but the downside of this is that
+ *we can't use -ffast-math compiler flag as it assumes all floating-point
+ *calculation involve and result into finite numbers. For more information
+ *regarding -ffast-math compiler flag in clang, have a look at
+ *https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
+ **/
+#define YGUndefined 10E20F
 
 #include "YGEnums.h"
 #include "YGMacros.h"

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -44,10 +42,10 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -92,6 +90,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private @Nullable Runnable mJSEntryPoint;
+  private boolean mIsFabric = false;
 
   public ReactRootView(Context context) {
     super(context);
@@ -566,6 +565,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       t instanceof Exception ? (Exception) t : new RuntimeException(t);
 
     mReactInstanceManager.getCurrentReactContext().handleException(e);
+  }
+
+  public void setIsFabric(boolean isFabric) {
+    mIsFabric = isFabric;
+  }
+
+  public boolean isFabric() {
+    return mIsFabric;
   }
 
   @Nullable

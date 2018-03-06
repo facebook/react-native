@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Picker
  * @flow
@@ -12,27 +10,27 @@
 
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var PickerIOS = require('PickerIOS');
-var PickerAndroid = require('PickerAndroid');
-var Platform = require('Platform');
-var React = require('React');
+const ColorPropType = require('ColorPropType');
+const PickerIOS = require('PickerIOS');
+const PickerAndroid = require('PickerAndroid');
+const Platform = require('Platform');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
-var UnimplementedView = require('UnimplementedView');
+const StyleSheetPropType = require('StyleSheetPropType');
+const TextStylePropTypes = require('TextStylePropTypes');
+const UnimplementedView = require('UnimplementedView');
 const ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
+const itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 
-var pickerStyleType = StyleSheetPropType({
+const pickerStyleType = StyleSheetPropType({
   ...ViewStylePropTypes,
   color: ColorPropType,
 });
 
-var MODE_DIALOG = 'dialog';
-var MODE_DROPDOWN = 'dropdown';
+const MODE_DIALOG = 'dialog';
+const MODE_DROPDOWN = 'dropdown';
 
 /**
  * Individual selectable item in a Picker.

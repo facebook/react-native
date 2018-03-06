@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  */
@@ -12,24 +10,16 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
+/* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 const {Terminal} = require('metro-core');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
+/* $FlowFixMe(site=react_native_oss) */
 const TerminalReporter = require('metro/src/lib/TerminalReporter');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
+/* $FlowFixMe(site=react_native_oss) */
 const TransformCaching = require('metro/src/lib/TransformCaching');
 
 const {defaults} = require('metro');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
+/* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
@@ -42,9 +32,6 @@ import type {ConfigT} from 'metro';
 const defaultAssetExts = defaults.assetExts;
 const defaultSourceExts = defaults.sourceExts;
 const defaultPlatforms = defaults.platforms;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const defaultProvidesModuleNodeModules = defaults.providesModuleNodeModules;
 
 async function buildBundle(
@@ -95,7 +82,10 @@ async function buildBundle(
     assetExts: defaultAssetExts.concat(assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
+    cacheStores: config.cacheStores,
+    cacheVersion: config.cacheVersion,
     dynamicDepsInPackages: config.dynamicDepsInPackages,
+    enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
@@ -111,7 +101,7 @@ async function buildBundle(
     providesModuleNodeModules: providesModuleNodeModules,
     resetCache: args.resetCache,
     reporter: new TerminalReporter(terminal),
-    sourceExts: defaultSourceExts.concat(sourceExts),
+    sourceExts: sourceExts.concat(defaultSourceExts),
     transformCache: TransformCaching.useTempDir(),
     transformModulePath: transformModulePath,
     watch: false,
