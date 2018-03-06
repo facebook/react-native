@@ -79,7 +79,7 @@ import javax.inject.Provider;
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
-                return new AndroidInfoModule();
+                return new AndroidInfoModule(reactContext);
               }
             }),
         ModuleSpec.nativeModuleSpec(

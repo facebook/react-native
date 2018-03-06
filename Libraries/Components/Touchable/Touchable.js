@@ -315,7 +315,7 @@ const LONG_PRESS_ALLOWED_MOVEMENT = 10;
  */
 const TouchableMixin = {
   componentDidMount: function() {
-    if (!Platform.isTVOS) {
+    if (!Platform.isTV) {
       return;
     }
 
@@ -329,7 +329,7 @@ const TouchableMixin = {
         } else if (evt.eventType === 'blur') {
           cmp.touchableHandleActivePressOut && cmp.touchableHandleActivePressOut(evt);
         } else if (evt.eventType === 'select') {
-          cmp.touchableHandlePress && cmp.touchableHandlePress(evt);
+          cmp.touchableHandlePress && !cmp.props.disabled && cmp.touchableHandlePress(evt);
         }
       }
     });

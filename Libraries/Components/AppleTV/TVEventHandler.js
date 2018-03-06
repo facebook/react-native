@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const React = require('React');
+const Platform = require('Platform');
 const TVNavigationEventEmitter = require('NativeModules').TVNavigationEventEmitter;
 const NativeEventEmitter = require('NativeEventEmitter');
 
@@ -19,13 +19,13 @@ function TVEventHandler() {
 }
 
 TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {
-  if (!TVNavigationEventEmitter) {
+  if (Platform.OS === 'ios' && !TVNavigationEventEmitter) {
     return;
   }
 
   this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
   this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
-    'onTVNavEvent',
+    'onHWKeyEvent',
     (data) => {
       if (callback) {
         callback(component, data);

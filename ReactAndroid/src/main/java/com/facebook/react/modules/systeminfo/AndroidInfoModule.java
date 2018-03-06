@@ -7,9 +7,12 @@
 
 package com.facebook.react.modules.systeminfo;
 
+import android.app.UiModeManager;
+import android.content.res.Configuration;
 import android.os.Build;
 
-import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.HashMap;
@@ -17,13 +20,40 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import static android.content.Context.UI_MODE_SERVICE;
+
 /**
  * Module that exposes Android Constants to JS.
  */
 @ReactModule(name = "PlatformConstants")
-public class AndroidInfoModule extends BaseJavaModule {
+public class AndroidInfoModule extends ReactContextBaseJavaModule {
 
   private static final String IS_TESTING = "IS_TESTING";
+
+  public AndroidInfoModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+
+  /**
+   * See: https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
+   */
+  private String uiMode() {
+    UiModeManager uiModeManager = (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
+    switch (uiModeManager.getCurrentModeType()) {
+      case Configuration.UI_MODE_TYPE_TELEVISION:
+        return "tv";
+      case Configuration.UI_MODE_TYPE_CAR:
+        return "car";
+      case Configuration.UI_MODE_TYPE_DESK:
+        return "desk";
+      case Configuration.UI_MODE_TYPE_WATCH:
+        return "watch";
+      case Configuration.UI_MODE_TYPE_NORMAL:
+        return "normal";
+      default:
+        return "unknown";
+    }
+  }
 
   @Override
   public String getName() {
@@ -41,6 +71,7 @@ public class AndroidInfoModule extends BaseJavaModule {
     constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
+    constants.put("uiMode", uiMode());
     return constants;
   }
 }
