@@ -72,7 +72,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ### Your first pull request
 
-So you have decided to contribute code back to upstream by opening a pull request. You've invested a good chunk of time, and we appreciate it. We will do our best to work with you and get the PR looked at.
+So you have decided to contribute code back to upstream by opening a pull request. You've invested a good chunk of time, and we appreciate it. We will do our best to work with you and get the `PR` looked at.
 
 Working on your first Pull Request? You can learn how from this free video series:
 
@@ -90,7 +90,7 @@ If you're only fixing a bug, it's fine to submit a pull request right away but w
 
 ### Sending a pull request
 
-Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
+Small pull requests are much easier to review and more likely to get merged. Make sure the `PR` does only one thing, otherwise please split it.
 
 Please make sure the following is done when submitting a pull request:
 
@@ -102,7 +102,7 @@ Please make sure the following is done when submitting a pull request:
 
 All pull requests should be opened against the `master` branch. After opening your pull request, ensure [**all tests pass**](https://facebook.github.io/react-native/docs/contributing.html#contrinuous-integration-tests) on Circle CI. If a test fails and you believe it is unrelated to your change, leave a comment on the pull request explaining why.
 
-> **Note:** It is not necessary to keep clicking `Merge master to your branch` on the PR page. You would want to merge master if there are conflicts or tests are failing. The Facebook-GitHub-Bot ultimately squashes all commits to a single one before merging your PR.
+> **Note:** It is not necessary to keep clicking `Merge master to your branch` on the `PR` page. You would want to merge master if there are conflicts or tests are failing. The Facebook-GitHub-Bot ultimately squashes all commits to a single one before merging your `PR`.
 
 #### Test plan
 
@@ -115,7 +115,7 @@ See [What is a Test Plan?](https://medium.com/@martinkonicek/what-is-a-test-plan
 
 #### Continuous integration tests
 
-Make sure all **tests pass** on [Circle CI][circle]. PRs that break tests are unlikely to be merged. Learn more about [testing your changes here](https://facebook.github.io/react-native/docs/testing.html).
+Make sure all **tests pass** on [Circle CI][circle]. `PR`s that break tests are unlikely to be merged. Learn more about [testing your changes here](https://facebook.github.io/react-native/docs/testing.html).
 
 [circle]: https://circleci.com/gh/facebook/react-native
 
