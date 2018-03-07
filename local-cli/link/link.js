@@ -49,7 +49,8 @@ const linkDependency = (platforms, project, dependency) => {
         return null;
       }
 
-      const isInstalled = linkConfig.isInstalled(project[platform], dependency.config[platform]);
+      const isInstalledParameter = platform == "android" ? dependency.name : dependency.config[platform];
+      const isInstalled = linkConfig.isInstalled(project[platform], isInstalledParameter);
 
       if (isInstalled) {
         log.info(chalk.grey(`Platform '${platform}' module ${dependency.name} is already linked`));
