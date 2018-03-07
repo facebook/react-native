@@ -242,7 +242,7 @@ export type StyleObj = StyleProp<$Shape<Style>>;
 export type StyleValue = StyleObj;
 
 export type ViewStyleProp = StyleProp<$ReadOnly<$Shape<ViewStyle>>>;
-export type TextStyleProp = StyleObj;
+export type TextStyleProp = StyleProp<$ReadOnly<$Shape<TextStyle>>>;
 export type ImageStyleProp = StyleProp<$ReadOnly<$Shape<ImageStyle>>>;
 
 export type Styles = {
