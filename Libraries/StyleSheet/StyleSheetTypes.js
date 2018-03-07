@@ -241,9 +241,9 @@ export type StyleProp<+T> =
 export type StyleObj = StyleProp<$Shape<Style>>;
 export type StyleValue = StyleObj;
 
-export type ViewStyleProp = StyleObj;
+export type ViewStyleProp = StyleProp<$ReadOnly<$Shape<ViewStyle>>>;
 export type TextStyleProp = StyleObj;
-export type ImageStyleProp = StyleObj;
+export type ImageStyleProp = StyleProp<$ReadOnly<$Shape<ImageStyle>>>;
 
 export type Styles = {
   +[key: string]: $Shape<Style>,
