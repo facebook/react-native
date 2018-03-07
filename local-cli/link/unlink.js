@@ -34,7 +34,7 @@ const unlinkDependency = (platforms, project, dependency, packageName, otherDepe
         return;
       }
 
-      const isInstalled = linkConfig.isInstalled(project[platform], dependency[platform]);
+      const isInstalled = linkConfig.isInstalled(project[platform], packageName, dependency[platform]);
 
       if (!isInstalled) {
         log.info(`Platform '${platform}' module ${packageName} is not installed`);
