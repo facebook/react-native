@@ -439,6 +439,42 @@ class MultiSelectList extends React.PureComponent {
 <tr><td>ViewabilityConfig</td><td>No</td></tr>
 </tbody>
 </table>
+<p><code>viewabilityConfig</code> takes a type <code>ViewabilityConfig</code> an object with following properties</p>
+<table>
+<thead>
+<tr><th>Property</th><th>Required</th><th>Type</th></tr>
+</thead>
+<tbody>
+<tr><td>minimumViewTime</td><td>No</td><td>number</td></tr>
+<tr><td>viewAreaCoveragePercentThreshold</td><td>No</td><td>number</td></tr>
+<tr><td>itemVisiblePercentThreshold</td><td>No</td><td>number</td></tr>
+<tr><td>waitForInteraction</td><td>No</td><td>boolean</td></tr>
+</tbody>
+</table>
+<p>At least one of the <code>viewAreaCoveragePercentThreshold</code> or <code>itemVisiblePercentThreshold</code> is required. This needs to be done in the <code>constructor</code> to avoid following error (<a href="https://github.com/facebook/react-native/issues/17408">ref</a>):</p>
+<pre><code class="hljs">  Error: Changing viewabilityConfig <span class="hljs-keyword">on</span> <span class="hljs-keyword">the</span> fly <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> supported`
+</code></pre>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">constructor</span> (props) {
+  <span class="hljs-keyword">super</span>(props)
+
+  <span class="hljs-keyword">this</span>.viewabilityConfig = {
+      <span class="hljs-attr">waitForInteraction</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">viewAreaCoveragePercentThreshold</span>: <span class="hljs-number">95</span>
+  }
+}
+</code></pre>
+<pre><code class="hljs css javascript">&lt;FlatList
+    viewabilityConfig={<span class="hljs-keyword">this</span>.viewabilityConfig}
+  ...
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" name="minimumviewtime"></a><a href="#minimumviewtime" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>minimumViewTime</h4>
+<p>Minimum amount of time (in milliseconds) that an item must be physically viewable before the viewability callback will be fired. A high number means that scrolling through content without stopping will not mark the content as viewable.</p>
+<h4><a class="anchor" aria-hidden="true" name="viewareacoveragepercentthreshold"></a><a href="#viewareacoveragepercentthreshold" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>viewAreaCoveragePercentThreshold</h4>
+<p>Percent of viewport that must be covered for a partially occluded item to count as &quot;viewable&quot;, 0-100. Fully visible items are always considered viewable. A value of 0 means that a single pixel in the viewport makes the item viewable, and a value of 100 means that an item must be either entirely visible or cover the entire viewport to count as viewable.</p>
+<h4><a class="anchor" aria-hidden="true" name="itemvisiblepercentthreshold"></a><a href="#itemvisiblepercentthreshold" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>itemVisiblePercentThreshold</h4>
+<p>Similar to <code>viewAreaPercentThreshold</code>, but considers the percent of the item that is visible, rather than the fraction of the viewable area it covers.</p>
+<h4><a class="anchor" aria-hidden="true" name="waitforinteraction"></a><a href="#waitforinteraction" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>waitForInteraction</h4>
+<p>Nothing is considered viewable until the user scrolls or <code>recordInteraction</code> is called after render.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" name="viewabilityconfigcallbackpairs"></a><a href="#viewabilityconfigcallbackpairs" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>viewabilityConfigCallbackPairs</code></h3>
 <p>List of <code>ViewabilityConfig</code>/<code>onViewableItemsChanged</code> pairs. A specific <code>onViewableItemsChanged</code> will be called when its corresponding <code>ViewabilityConfig</code>'s conditions are met. See <code>ViewabilityHelper.js</code> for flow type and further documentation.</p>
