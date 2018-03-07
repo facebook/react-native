@@ -210,17 +210,9 @@ aliases:
     command: | 
       mkdir -p ~/react-native/reports/junit/
 
-  - &build-objc-ios-test-app
-    name: Build iOS Test App
-    command: ./scripts/objc-test-ios.sh
-  
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
-
-  - &build-objc-tvos-test-app
-    name: Build tvOS Test App
-    command: ./scripts/objc-test-tvos.sh
 
   - &run-objc-tvos-tests
     name: tvOS Test Suite
@@ -562,16 +554,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Test iOS & tvOS
-      - test_ios:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-      - test_tvos:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-
       # End-to-end tests
       - test_ios_e2e:
           filters: *filter-ignore-gh-pages
@@ -603,20 +585,28 @@ workflows:
           requires:
             - approve_publish_npm_package
 
-  # These tests are flaky or are yet to be fixed. They are placed on their own 
-  # workflow to avoid marking benign PRs as broken.
-  # To run them, uncomment the entire block and open a PR (do not merge). 
-  # Once a test is fixed, move the test definition to the 'tests' workflow.
-  # disabled_tests:
-  #   jobs:
-  #     # Checkout repo and run Yarn (pre-req, should succeed)
-  #     - checkout_code:
-  #         filters: *filter-ignore-gh-pages
-
-  #     # The following were DISABLED because they have not run since 
-  #     # the migration from Travis, and they have broken since then,
-  #     # CocoaPods
-  #     - test_podspec:
-  #         filters: *filter-ignore-gh-pages
-  #         requires:
-  #           - checkout_code
+# These tests are flaky or are yet to be fixed. They are placed on their own 
+# workflow to avoid marking benign PRs as broken.
+# To run them, uncomment the entire block and open a PR (do not merge). 
+# Once a test is fixed, move the test definition to the 'tests' workflow.
+# disabled_tests:
+#   jobs:
+#     # Checkout repo and run Yarn (pre-req, should succeed)
+#     - checkout_code:
+#         filters: *filter-ignore-gh-pages
+# # Test iOS & tvOS
+# - test_ios:
+#     filters: *filter-ignore-gh-pages
+#     requires:
+#       - checkout_code
+# - test_tvos:
+#     filters: *filter-ignore-gh-pages
+#     requires:
+#       - checkout_code
+#     # The following were DISABLED because they have not run since 
+#     # the migration from Travis, and they have broken since then,
+#     # CocoaPods
+#     - test_podspec:
+#         filters: *filter-ignore-gh-pages
+#         requires:
+#           - checkout_code
