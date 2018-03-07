@@ -230,7 +230,7 @@ type GenericStyleProp<+T> =
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
-export type StyleObj = GenericStyleProp<$Shape<Style>>;
+export type ____StyleObj_Internal = GenericStyleProp<$Shape<Style>>;
 
 export type ViewStyleProp = GenericStyleProp<$ReadOnly<$Shape<ViewStyle>>>;
 export type TextStyleProp = GenericStyleProp<$ReadOnly<$Shape<TextStyle>>>;

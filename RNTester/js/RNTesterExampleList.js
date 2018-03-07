@@ -22,7 +22,7 @@ const View = require('View');
 
 import type {RNTesterExample} from './RNTesterList.ios';
 import type {PassProps} from './RNTesterStatePersister';
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 type Props = {
   onNavigate: Function,
@@ -31,8 +31,8 @@ type Props = {
     APIExamples: Array<RNTesterExample>,
   },
   persister: PassProps<*>,
-  searchTextInputStyle: StyleObj,
-  style?: ?StyleObj,
+  searchTextInputStyle: DangerouslyImpreciseStyleProp,
+  style?: ?DangerouslyImpreciseStyleProp,
 };
 
 class RowComponent extends React.PureComponent<{

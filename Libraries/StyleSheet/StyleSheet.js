@@ -19,11 +19,11 @@ const flatten = require('flattenStyle');
 import type {
   StyleSheetStyle as _StyleSheetStyle,
   Styles as _Styles,
-  StyleObj,
+  ____StyleObj_Internal,
   LayoutStyle
 } from 'StyleSheetTypes';
 
-export type DangerouslyImpreciseStyleProp = StyleObj;
+export type DangerouslyImpreciseStyleProp = ____StyleObj_Internal;
 export type Styles = _Styles;
 export type StyleSheetStyle = _StyleSheetStyle;
 type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;

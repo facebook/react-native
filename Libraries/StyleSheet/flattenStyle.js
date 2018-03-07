@@ -11,7 +11,8 @@
 
 var ReactNativePropRegistry;
 
-import type { StyleObj, Style } from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type { Style } from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {
@@ -23,7 +24,7 @@ function getStyle(style) {
   return style;
 }
 
-function flattenStyle(style: ?StyleObj): ?Style {
+function flattenStyle(style: ?DangerouslyImpreciseStyleProp): ?Style {
   if (style == null) {
     return undefined;
   }
