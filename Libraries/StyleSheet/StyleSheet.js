@@ -23,7 +23,7 @@ import type {
   LayoutStyle
 } from 'StyleSheetTypes';
 
-export type StyleProp = StyleObj;
+export type DangerouslyImpreciseStyleProp = StyleObj;
 export type Styles = _Styles;
 export type StyleSheetStyle = _StyleSheetStyle;
 type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
@@ -136,7 +136,7 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
+  compose(style1: ?DangerouslyImpreciseStyleProp, style2: ?DangerouslyImpreciseStyleProp): ?DangerouslyImpreciseStyleProp {
     if (style1 != null && style2 != null) {
       return [style1, style2];
     } else {
