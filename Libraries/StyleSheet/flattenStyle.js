@@ -11,7 +11,7 @@
 
 var ReactNativePropRegistry;
 
-import type { StyleProp, Style } from 'StyleSheetTypes';
+import type { StyleObj, Style } from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {
@@ -23,7 +23,7 @@ function getStyle(style) {
   return style;
 }
 
-function flattenStyle(style: ?StyleProp<Style>): ?Style {
+function flattenStyle(style: ?StyleObj): ?Style {
   if (style == null) {
     return undefined;
   }

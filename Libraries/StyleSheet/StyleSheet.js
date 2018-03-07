@@ -20,14 +20,13 @@ import type {
   StyleSheetStyle as _StyleSheetStyle,
   Styles as _Styles,
   StyleSheet as _StyleSheet,
-  StyleValue as _StyleValue,
   StyleObj,
+  LayoutStyle
 } from 'StyleSheetTypes';
 
 export type StyleProp = StyleObj;
 export type Styles = _Styles;
 export type StyleSheet<S> = _StyleSheet<S>;
-export type StyleValue = _StyleValue;
 export type StyleSheetStyle = _StyleSheetStyle;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
@@ -35,14 +34,14 @@ if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFillObject = {
-  position: ('absolute': 'absolute'),
+const absoluteFillObject: LayoutStyle = {
+  position: 'absolute',
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill: typeof absoluteFillObject =
+const absoluteFill: StyleSheetStyle =
   ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**

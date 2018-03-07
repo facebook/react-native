@@ -220,7 +220,7 @@ export type Style = {
   +overlayColor?: string,
 };
 
-export type StyleProp<+T> =
+type GenericStyleProp<+T> =
   | null
   | void
   | T
@@ -228,26 +228,18 @@ export type StyleProp<+T> =
   | number
   | false
   | ''
-  | $ReadOnlyArray<StyleProp<T>>;
+  | $ReadOnlyArray<GenericStyleProp<T>>;
 
-// export type ViewStyleProp = StyleProp<$Shape<ViewStyle<DimensionValue>>>;
-// export type TextStyleProp = StyleProp<
-//   $Shape<TextStyle<DimensionValue, ColorValue>>,
-// >;
-// export type ImageStyleProp = StyleProp<
-//   $Shape<ImageStyle<DimensionValue, ColorValue>>,
-// >;
+export type StyleObj = GenericStyleProp<$Shape<Style>>;
 
-export type StyleObj = StyleProp<$Shape<Style>>;
-export type StyleValue = StyleObj;
-
-export type ViewStyleProp = StyleProp<$ReadOnly<$Shape<ViewStyle>>>;
-export type TextStyleProp = StyleProp<$ReadOnly<$Shape<TextStyle>>>;
-export type ImageStyleProp = StyleProp<$ReadOnly<$Shape<ImageStyle>>>;
+export type ViewStyleProp = GenericStyleProp<$ReadOnly<$Shape<ViewStyle>>>;
+export type TextStyleProp = GenericStyleProp<$ReadOnly<$Shape<TextStyle>>>;
+export type ImageStyleProp = GenericStyleProp<$ReadOnly<$Shape<ImageStyle>>>;
 
 export type Styles = {
   +[key: string]: $Shape<Style>,
 };
+
 export type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
 
 /*
