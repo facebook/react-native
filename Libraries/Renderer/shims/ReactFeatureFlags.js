@@ -12,7 +12,7 @@
 const ReactFeatureFlags = {
   debugRenderPhaseSideEffects: false,
   debugRenderPhaseSideEffectsForStrictMode: false,
-  warnAboutDeprecatedLifecycles: true,
+  warnAboutDeprecatedLifecycles: false,
 };
 
 module.exports = ReactFeatureFlags;
