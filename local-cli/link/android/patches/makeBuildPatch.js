@@ -12,7 +12,7 @@ module.exports = function makeBuildPatch(name) {
 
   return {
     installPattern,
-    pattern: /[^ \t]dependencies {\n/,
+    pattern: /[^ \t]dependencies {(\r\n|\n)/,
     patch: `    compile project(':${name}')\n`
   };
 };
