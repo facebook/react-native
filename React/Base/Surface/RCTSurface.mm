@@ -186,6 +186,10 @@
 {
   RCTAssertMainQueue();
 
+  // Reset states because the bridge is reloading. This is similar to initialization phase.
+  _stage = RCTSurfaceStageSurfaceDidInitialize;
+  _view = nil;
+  _touchHandler = nil;
   [self _setStage:RCTSurfaceStageBridgeDidLoad];
 }
 
