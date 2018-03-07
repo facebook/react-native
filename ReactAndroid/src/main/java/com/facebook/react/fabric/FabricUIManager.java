@@ -70,8 +70,10 @@ public class FabricUIManager implements UIManager {
 
       ReactStylesDiffMap styles = updateProps(node, props);
 
-      mUIViewOperationQueue
-        .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+      if (!node.isVirtual()) {
+        mUIViewOperationQueue
+          .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+      }
       return node;
     } catch (Throwable t) {
       handleException(getRootNode(rootTag), t);
@@ -184,12 +186,14 @@ public class FabricUIManager implements UIManager {
       parent.addChildAt(child, childIndex);
       ViewAtIndex[] viewsToAdd =
         new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), childIndex)};
-      mUIViewOperationQueue.enqueueManageChildren(
-        parent.getReactTag(),
-        null,
-        viewsToAdd,
-        null
-      );
+      if (!child.isVirtual()) {
+        mUIViewOperationQueue.enqueueManageChildren(
+          parent.getReactTag(),
+          null,
+          viewsToAdd,
+          null
+        );
+      }
     } catch (Throwable t) {
       handleException(parent, t);
     }
@@ -221,6 +225,7 @@ public class FabricUIManager implements UIManager {
         appendChild(rootNode, child);
       }
 
+      notifyOnBeforeLayoutRecursive(rootNode);
       calculateRootLayout(rootNode);
       applyUpdatesRecursive(rootNode, 0, 0);
       mUIViewOperationQueue
@@ -228,6 +233,16 @@ public class FabricUIManager implements UIManager {
     } catch (Exception e) {
       handleException(getRootNode(rootTag), e);
     }
+  }
+
+  private void notifyOnBeforeLayoutRecursive(ReactShadowNode node) {
+    if (!node.hasUpdates()) {
+      return;
+    }
+    for (int i = 0; i < node.getChildCount(); i++) {
+      notifyOnBeforeLayoutRecursive(node.getChildAt(i));
+    }
+    node.onBeforeLayout();
   }
 
   private void calculateRootLayout(ReactShadowNode cssRoot) {
