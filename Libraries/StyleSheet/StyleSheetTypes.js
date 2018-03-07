@@ -240,8 +240,6 @@ export type Styles = {
   +[key: string]: $Shape<Style>,
 };
 
-export type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
-
 /*
 Utility type get non-nullable types for specific style keys.
 Useful when a component requires values for certain Style Keys.

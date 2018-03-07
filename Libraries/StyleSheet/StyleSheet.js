@@ -19,15 +19,14 @@ const flatten = require('flattenStyle');
 import type {
   StyleSheetStyle as _StyleSheetStyle,
   Styles as _Styles,
-  StyleSheet as _StyleSheet,
   StyleObj,
   LayoutStyle
 } from 'StyleSheetTypes';
 
 export type StyleProp = StyleObj;
 export type Styles = _Styles;
-export type StyleSheet<S> = _StyleSheet<S>;
 export type StyleSheetStyle = _StyleSheetStyle;
+type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {

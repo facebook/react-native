@@ -20,15 +20,9 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
-import type {
-  RNTesterExample,
-} from './RNTesterList.ios';
-import type {
-  PassProps,
-} from './RNTesterStatePersister';
-import type {
-  StyleObj,
-} from 'StyleSheetTypes';
+import type {RNTesterExample} from './RNTesterList.ios';
+import type {PassProps} from './RNTesterStatePersister';
+import type {StyleObj} from 'StyleSheetTypes';
 
 type Props = {
   onNavigate: Function,
