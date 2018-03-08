@@ -18,7 +18,7 @@ const flatten = require('flattenStyle');
 
 import type {
   ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
-  Styles as _Styles,
+  ____Styles_Internal,
   ____StyleObj_Internal,
   ____ViewStyleProp_Internal,
   ____TextStyleProp_Internal,
@@ -30,8 +30,6 @@ export type DangerouslyImpreciseStyleProp = ____StyleObj_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
-
-export type Styles = _Styles;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
@@ -221,7 +219,7 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: Styles>(obj: S): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
+  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
     const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);

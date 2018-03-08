@@ -241,7 +241,7 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
   $ReadOnly<$Shape<ImageStyle>>,
 >;
 
-export type Styles = {
+export type ____Styles_Internal = {
   +[key: string]: $Shape<Style>,
 };
 
