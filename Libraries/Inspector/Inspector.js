@@ -32,15 +32,26 @@ export type ReactRenderer = {
 };
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const renderer: ReactRenderer = findRenderer();
+const renderers = findRenderers();
+
 // required for devtools to be able to edit react native styles
 hook.resolveRNStyle = require('flattenStyle');
 
-function findRenderer(): ReactRenderer {
-  const renderers = hook._renderers;
-  const keys = Object.keys(renderers);
-  invariant(keys.length === 1, 'Expected to find exactly one React Native renderer on DevTools hook.');
-  return renderers[keys[0]];
+function findRenderers(): $ReadOnlyArray<ReactRenderer> {
+  const allRenderers = Object.keys(hook._renderers).map(key => hook._renderers[key]);
+  invariant(allRenderers.length >= 1, 'Expected to find at least one React Native renderer on DevTools hook.');
+  return allRenderers;
+}
+
+function getInspectorDataForViewTag(touchedViewTag: number) {
+  for (let i = 0; i < renderers.length; i++) {
+    const renderer = renderers[i];
+    const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
+    if (inspectorData.hierarchy.length > 0) {
+      return inspectorData;
+    }
+  }
+  throw new Error('Expected to find at least one React renderer.');
 }
 
 class Inspector extends React.Component<{
@@ -170,7 +181,7 @@ class Inspector extends React.Component<{
       props,
       selection,
       source,
-    } = renderer.getInspectorDataForViewTag(touchedViewTag);
+    } = getInspectorDataForViewTag(touchedViewTag);
 
     if (this.state.devtoolsAgent) {
       // Skip host leafs

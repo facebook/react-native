@@ -8,37 +8,37 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var UIManager = require('UIManager');
+const Platform = require('Platform');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const UIManager = require('UIManager');
 
-var createReactClass = require('create-react-class');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var processColor = require('processColor');
+const createReactClass = require('create-react-class');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const processColor = require('processColor');
 
-var rippleBackgroundPropType = PropTypes.shape({
+const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
-var themeAttributeBackgroundPropType = PropTypes.shape({
+const themeAttributeBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['ThemeAttrAndroid']),
   attribute: PropTypes.string.isRequired,
 });
 
-var backgroundPropType = PropTypes.oneOfType([
+const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches (Android only).
@@ -69,7 +69,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-var TouchableNativeFeedback = createReactClass({
+const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -81,6 +81,11 @@ var TouchableNativeFeedback = createReactClass({
      * methods to generate that dictionary.
      */
     background: backgroundPropType,
+
+    /**
+     * TV preferred focus (see documentation for the View component).
+     */
+    hasTVPreferredFocus: PropTypes.bool,
 
     /**
      * Set to true to add the ripple effect to the foreground of the view, instead of the
@@ -156,7 +161,9 @@ var TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: Event) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
+    if (this.pressInLocation) {
+      this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
+    }
   },
 
   touchableHandleActivePressOut: function(e: Event) {
@@ -233,7 +240,7 @@ var TouchableNativeFeedback = createReactClass({
       this.props.useForeground && TouchableNativeFeedback.canUseNativeForeground()
         ? 'nativeForegroundAndroid'
         : 'nativeBackgroundAndroid';
-    var childProps = {
+    const childProps = {
       ...child.props,
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
@@ -244,6 +251,8 @@ var TouchableNativeFeedback = createReactClass({
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
+      isTVSelectable: true,
+      hasTVPreferredFocus: this.props.hasTVPreferredFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

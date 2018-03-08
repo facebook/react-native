@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -10,6 +15,7 @@ namespace facebook {
 namespace react {
 
 class ShadowNode;
+class IFabricPlatformUIOperationManager;
 
 typedef std::shared_ptr<const ShadowNode> ShadowNodeRef;
 typedef folly::fbvector<const ShadowNodeRef> ShadowNodeSet;
@@ -17,7 +23,7 @@ typedef std::shared_ptr<const ShadowNodeSet> ShadowNodeSetRef;
 
 class FabricUIManager {
 public:
-  FabricUIManager();
+  FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager);
 
   ShadowNodeRef createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle);
   ShadowNodeRef cloneNode(const ShadowNodeRef &node);
@@ -28,7 +34,10 @@ public:
   ShadowNodeSetRef createChildSet(int rootTag);
   void appendChildToSet(const ShadowNodeSetRef &childSet, const ShadowNodeRef &childNode);
   void completeRoot(int rootTag, const ShadowNodeSetRef &childSet);
+
+private:
+  std::shared_ptr<IFabricPlatformUIOperationManager> platformUIOperationManager_;
 };
 
-}}
-
+} // namespace react
+} // namespace facebook

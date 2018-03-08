@@ -9,21 +9,21 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const StyleSheet = require('StyleSheet');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
   values: Array<string>,
   enabled: boolean,
 };
 
-var SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
+const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
 
 type Event = Object;
 
@@ -47,7 +47,7 @@ type Event = Object;
  * />
  * ````
  */
-var SegmentedControlIOS = createReactClass({
+const SegmentedControlIOS = createReactClass({
   displayName: 'SegmentedControlIOS',
   mixins: [NativeMethodsMixin],
 
@@ -117,13 +117,13 @@ var SegmentedControlIOS = createReactClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   segmentedControl: {
     height: 28,
   },
 });
 
-var RCTSegmentedControl = requireNativeComponent(
+const RCTSegmentedControl = requireNativeComponent(
   'RCTSegmentedControl',
   SegmentedControlIOS
 );

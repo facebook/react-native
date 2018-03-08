@@ -33,21 +33,10 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric
 {
-  RCTSurface *surface = [[RCTSurface alloc] initWithBridge:bridge
-                                                moduleName:moduleName
-                                         initialProperties:initialProperties
-                                                    fabric:fabric];
+  RCTSurface *surface = [self createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
   return [self initWithSurface:surface];
 
-}
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-{
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
 }
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
@@ -65,6 +54,13 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   return self;
+}
+
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties
+{
+  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 - (void)setFrame:(CGRect)frame

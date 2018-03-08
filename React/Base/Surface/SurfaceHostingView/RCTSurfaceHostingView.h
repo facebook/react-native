@@ -43,13 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
              initialProperties:(NSDictionary *)initialProperties;
 
 /**
- * Convenience initializer.
- * To control toggle Fabric for the Surface.
+ * Create an instance of RCTSurface to be hosted.
  */
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric;
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Surface object which is currently using to power the view.

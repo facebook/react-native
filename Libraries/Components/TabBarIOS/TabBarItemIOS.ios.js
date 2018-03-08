@@ -9,17 +9,17 @@
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var Image = require('Image');
-var React = require('React');
+const ColorPropType = require('ColorPropType');
+const Image = require('Image');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StaticContainer = require('StaticContainer.react');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const StaticContainer = require('StaticContainer.react');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
 const ViewPropTypes = require('ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
 class TabBarItemIOS extends React.Component {
   static propTypes = {
@@ -113,7 +113,7 @@ class TabBarItemIOS extends React.Component {
   }
 
   render() {
-    var {style, children, ...props} = this.props;
+    const {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
@@ -136,7 +136,7 @@ class TabBarItemIOS extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tab: {
     position: 'absolute',
     top: 0,
@@ -146,6 +146,6 @@ var styles = StyleSheet.create({
   }
 });
 
-var RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
+const RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
 
 module.exports = TabBarItemIOS;

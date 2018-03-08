@@ -26,6 +26,7 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -79,13 +80,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;
+  private final JSIModuleRegistry mJSIModuleRegistry = new JSIModuleRegistry();
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
-  private UIManager mFabricUIManager;
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
@@ -453,12 +454,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
-  public UIManager getFabricUIManager() {
-    return mFabricUIManager;
+  @Override
+  public void addJSIModules(List<JSIModuleHolder> jsiModules) {
+    mJSIModuleRegistry.registerModules(jsiModules);
   }
 
-  public void setFabricUIManager(UIManager fabricUIManager) {
-    mFabricUIManager = fabricUIManager;
+  @Override
+  public <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface) {
+    return mJSIModuleRegistry.getModule(jsiModuleInterface);
   }
 
   private native long getJavaScriptContext();

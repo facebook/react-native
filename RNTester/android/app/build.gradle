@@ -64,7 +64,7 @@ project.ext.react = [
     inputExcludes: ["android/**", "./**"]
 ]
 
-apply from: "react.gradle"
+apply from: "../../../react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:

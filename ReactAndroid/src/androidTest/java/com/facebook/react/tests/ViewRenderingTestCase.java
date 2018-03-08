@@ -61,7 +61,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
 
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
-        .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AndroidInfoModule(getContext()))
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
