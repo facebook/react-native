@@ -213,7 +213,7 @@ export type ImageStyle = $ReadOnly<{|
   overlayColor?: string,
 |}>;
 
-export type Style = {
+export type DangerouslyImpreciseStyle = {
   ...$Exact<TextStyle>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   +tintColor?: ColorValue,
@@ -230,7 +230,9 @@ type GenericStyleProp<+T> =
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
-export type ____StyleObj_Internal = GenericStyleProp<$Shape<Style>>;
+export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
+  $Shape<DangerouslyImpreciseStyle>,
+>;
 export type ____ViewStyleProp_Internal = GenericStyleProp<
   $ReadOnly<$Shape<ViewStyle>>,
 >;
@@ -242,7 +244,7 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
 >;
 
 export type ____Styles_Internal = {
-  +[key: string]: $Shape<Style>,
+  +[key: string]: $Shape<DangerouslyImpreciseStyle>,
 };
 
 /*
@@ -260,4 +262,6 @@ type Props = {position: TypeForStyleKey<'position'>};
 This will correctly give you the type 'absolute' | 'relative' instead of the
 weak type of just string;
 */
-export type TypeForStyleKey<+key: $Keys<Style>> = $ElementType<Style, key>;
+export type TypeForStyleKey<
+  +key: $Keys<DangerouslyImpreciseStyle>,
+> = $ElementType<DangerouslyImpreciseStyle, key>;
