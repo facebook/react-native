@@ -6,6 +6,7 @@
  *
  * @providesModule StyleSheet
  * @flow
+ * @format
  */
 'use strict';
 
@@ -23,7 +24,7 @@ import type {
   ____ViewStyleProp_Internal,
   ____TextStyleProp_Internal,
   ____ImageStyleProp_Internal,
-  LayoutStyle
+  LayoutStyle,
 } from 'StyleSheetTypes';
 
 export type DangerouslyImpreciseStyleProp = ____StyleObj_Internal;
@@ -43,8 +44,9 @@ const absoluteFillObject: LayoutStyle = {
   top: 0,
   bottom: 0,
 };
-const absoluteFill: StyleSheetInternalStyleIdentifier =
-  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: StyleSheetInternalStyleIdentifier = ReactNativePropRegistry.register(
+  absoluteFillObject,
+); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -139,7 +141,10 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose(style1: ?DangerouslyImpreciseStyleProp, style2: ?DangerouslyImpreciseStyleProp): ?DangerouslyImpreciseStyleProp {
+  compose(
+    style1: ?DangerouslyImpreciseStyleProp,
+    style2: ?DangerouslyImpreciseStyleProp,
+  ): ?DangerouslyImpreciseStyleProp {
     if (style1 != null && style2 != null) {
       return [style1, style2];
     } else {
@@ -197,7 +202,10 @@ module.exports = {
    * internally to process color and transform values. You should not use this
    * unless you really know what you are doing and have exhausted other options.
    */
-  setStyleAttributePreprocessor(property: string, process: (nextProp: mixed) => mixed) {
+  setStyleAttributePreprocessor(
+    property: string,
+    process: (nextProp: mixed) => mixed,
+  ) {
     let value;
 
     if (typeof ReactNativeStyleAttributes[property] === 'string') {
@@ -213,13 +221,15 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = { ...value, process };
+    ReactNativeStyleAttributes[property] = {...value, process};
   },
 
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
+  create<+S: ____Styles_Internal>(
+    obj: S,
+  ): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
     const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
