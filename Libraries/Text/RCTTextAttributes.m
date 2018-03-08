@@ -21,6 +21,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (self = [super init]) {
     _fontSize = NAN;
     _letterSpacing = NAN;
+    _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
