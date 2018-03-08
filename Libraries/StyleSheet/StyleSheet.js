@@ -17,7 +17,7 @@ const StyleSheetValidation = require('StyleSheetValidation');
 const flatten = require('flattenStyle');
 
 import type {
-  StyleSheetStyle as _StyleSheetStyle,
+  ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   Styles as _Styles,
   ____StyleObj_Internal,
   ____ViewStyleProp_Internal,
@@ -32,8 +32,6 @@ export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
 
 export type Styles = _Styles;
-export type StyleSheetStyle = _StyleSheetStyle;
-type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
@@ -47,7 +45,7 @@ const absoluteFillObject: LayoutStyle = {
   top: 0,
   bottom: 0,
 };
-const absoluteFill: StyleSheetStyle =
+const absoluteFill: StyleSheetInternalStyleIdentifier =
   ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
 
 /**
@@ -223,7 +221,7 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<S: Styles>(obj: S): StyleSheet<S> {
+  create<+S: Styles>(obj: S): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
     const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
