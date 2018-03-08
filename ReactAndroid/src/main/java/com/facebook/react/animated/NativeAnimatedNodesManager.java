@@ -97,6 +97,10 @@ import javax.annotation.Nullable;
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("sin".equals(type)) {
+      node = new SinAnimatedNode(config, this);
+    } else if ("cos".equals(type)) {
+      node = new CosAnimatedNode(config, this);
     } else if ("modulus".equals(type)) {
       node = new ModulusAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {
