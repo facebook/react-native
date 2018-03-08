@@ -20,14 +20,14 @@ const flatten = require('flattenStyle');
 import type {
   ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   ____Styles_Internal,
-  ____StyleObj_Internal,
+  ____DangerouslyImpreciseStyleProp_Internal,
   ____ViewStyleProp_Internal,
   ____TextStyleProp_Internal,
   ____ImageStyleProp_Internal,
   LayoutStyle,
 } from 'StyleSheetTypes';
 
-export type DangerouslyImpreciseStyleProp = ____StyleObj_Internal;
+export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
