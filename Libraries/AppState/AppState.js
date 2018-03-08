@@ -64,14 +64,7 @@ class AppState extends NativeEventEmitter {
         // It's possible that the state will have changed here & listeners need to be notified
         if (!eventUpdated && this.currentState !== appStateData.app_state) {
           this.currentState = appStateData.app_state;
-          if (this._eventHandlers['change']) {
-            this._eventHandlers['change'].forEach((subscription, key, map) => {
-              subscription.listener.apply(
-                subscription.context,
-                [appStateData]
-              );
-            });
-          }
+          this.emit('appStateDidChange', appStateData);
         }
       },
       logError
