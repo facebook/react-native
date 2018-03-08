@@ -70,15 +70,11 @@ const multiply = function(
   return new AnimatedMultiplication(a, b);
 };
 
-const sin = function(
-  a: AnimatedNode | number,
-): AnimatedSin {
+const sin = function(a: AnimatedNode | number): AnimatedSin {
   return new AnimatedSin(a);
 };
 
-const cos = function(
-  a: AnimatedNode | number,
-): AnimatedCos {
+const cos = function(a: AnimatedNode | number): AnimatedCos {
   return new AnimatedCos(a);
 };
 
