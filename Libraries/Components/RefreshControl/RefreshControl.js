@@ -20,7 +20,11 @@ const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 if (Platform.OS === 'android') {
-  var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constants;
+  const AndroidSwipeRefreshLayout =
+    require('UIManager').AndroidSwipeRefreshLayout;
+  var RefreshLayoutConsts = AndroidSwipeRefreshLayout
+    ? AndroidSwipeRefreshLayout.Constants
+    : {SIZE: {}};
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
