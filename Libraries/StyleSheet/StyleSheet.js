@@ -20,10 +20,17 @@ import type {
   StyleSheetStyle as _StyleSheetStyle,
   Styles as _Styles,
   ____StyleObj_Internal,
+  ____ViewStyleProp_Internal,
+  ____TextStyleProp_Internal,
+  ____ImageStyleProp_Internal,
   LayoutStyle
 } from 'StyleSheetTypes';
 
 export type DangerouslyImpreciseStyleProp = ____StyleObj_Internal;
+export type ViewStyleProp = ____ViewStyleProp_Internal;
+export type TextStyleProp = ____TextStyleProp_Internal;
+export type ImageStyleProp = ____ImageStyleProp_Internal;
+
 export type Styles = _Styles;
 export type StyleSheetStyle = _StyleSheetStyle;
 type StyleSheet<+S: Styles> = $ObjMap<S, (Object) => StyleSheetStyle>;

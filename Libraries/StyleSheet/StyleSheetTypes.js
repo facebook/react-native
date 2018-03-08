@@ -231,10 +231,15 @@ type GenericStyleProp<+T> =
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
 export type ____StyleObj_Internal = GenericStyleProp<$Shape<Style>>;
-
-export type ViewStyleProp = GenericStyleProp<$ReadOnly<$Shape<ViewStyle>>>;
-export type TextStyleProp = GenericStyleProp<$ReadOnly<$Shape<TextStyle>>>;
-export type ImageStyleProp = GenericStyleProp<$ReadOnly<$Shape<ImageStyle>>>;
+export type ____ViewStyleProp_Internal = GenericStyleProp<
+  $ReadOnly<$Shape<ViewStyle>>,
+>;
+export type ____TextStyleProp_Internal = GenericStyleProp<
+  $ReadOnly<$Shape<TextStyle>>,
+>;
+export type ____ImageStyleProp_Internal = GenericStyleProp<
+  $ReadOnly<$Shape<ImageStyle>>,
+>;
 
 export type Styles = {
   +[key: string]: $Shape<Style>,
