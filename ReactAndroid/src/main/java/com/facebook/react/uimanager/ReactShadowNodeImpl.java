@@ -104,7 +104,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
       mNodeUpdated = original.mNodeUpdated;
       mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
-      mParent = original.mParent;
+      mParent = null;
       mIsLayoutOnly = original.mIsLayoutOnly;
       mTotalNativeChildren = original.mTotalNativeChildren;
       mNativeParent = original.mNativeParent;

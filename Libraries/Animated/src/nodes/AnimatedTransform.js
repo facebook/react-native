@@ -15,9 +15,9 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: Array<Object>;
+  _transforms: $ReadOnlyArray<Object>;
 
-  constructor(transforms: Array<Object>) {
+  constructor(transforms: $ReadOnlyArray<Object>) {
     super();
     this._transforms = transforms;
   }
@@ -34,7 +34,7 @@ class AnimatedTransform extends AnimatedWithChildren {
     });
   }
 
-  __getValue(): Array<Object> {
+  __getValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
       const result = {};
       for (const key in transform) {
@@ -49,7 +49,7 @@ class AnimatedTransform extends AnimatedWithChildren {
     });
   }
 
-  __getAnimatedValue(): Array<Object> {
+  __getAnimatedValue(): $ReadOnlyArray<Object> {
     return this._transforms.map(transform => {
       const result = {};
       for (const key in transform) {

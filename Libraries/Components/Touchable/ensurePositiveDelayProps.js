@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var ensurePositiveDelayProps = function(props: any) {
+const ensurePositiveDelayProps = function(props: any) {
   invariant(
     !(props.delayPressIn < 0 || props.delayPressOut < 0 ||
       props.delayLongPress < 0),

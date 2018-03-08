@@ -79,14 +79,6 @@ public:
     const double callbackId,
     const folly::dynamic& arguments) override;
 
-  template <typename T>
-  Value callFunctionSync(
-      const std::string& module, const std::string& method, T&& args) {
-    return callFunctionSyncWithValue(
-      module, method, JSCValueEncoder<typename std::decay<T>::type>::toJSCValue(
-        m_context, std::forward<T>(args)));
-  }
-
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
@@ -123,9 +115,6 @@ private:
 
   void initOnJSVMThread() throw(JSException);
   static bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
-  // This method is experimental, and may be modified or removed.
-  Value callFunctionSyncWithValue(
-    const std::string& module, const std::string& method, Value value);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
   void callNativeModules(Value&&);

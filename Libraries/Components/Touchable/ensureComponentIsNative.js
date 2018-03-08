@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var ensureComponentIsNative = function(component: any) {
+const ensureComponentIsNative = function(component: any) {
   invariant(
     component && typeof component.setNativeProps === 'function',
     'Touchable child must either be native or forward setNativeProps to a ' +

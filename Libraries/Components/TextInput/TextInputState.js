@@ -13,10 +13,10 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var UIManager = require('UIManager');
+const Platform = require('Platform');
+const UIManager = require('UIManager');
 
-var TextInputState = {
+const TextInputState = {
    /**
    * Internal state
    */

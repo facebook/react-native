@@ -211,27 +211,27 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
 
   - &build-objc-ios-test-app
-    name: Build Objective-C iOS Test App
+    name: Build iOS Test App
     command: ./scripts/objc-test-ios.sh
   
   - &run-objc-ios-tests
-    name: Objective-C iOS Test Suite
+    name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
 
   - &build-objc-tvos-test-app
-    name: Build Objective-C tvOS Test App
+    name: Build tvOS Test App
     command: ./scripts/objc-test-tvos.sh
 
   - &run-objc-tvos-tests
-    name: Objective-C tvOS Test Suite
+    name: tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh test
 
   - &run-objc-ios-e2e-tests
-    name: Objective-C iOS End-to-End Test Suite
+    name: iOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: Objective-C tvOS End-to-End Test Suite
+    name: tvOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
 defaults: &defaults
@@ -293,8 +293,6 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
       - store_artifacts:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/yarn.lock
 
   # Runs JavaScript tests on Node 8
@@ -307,8 +305,6 @@ jobs:
       - run: *run-js-tests
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
   # Runs JavaScript tests on Node 6
@@ -328,82 +324,46 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
-
-  # Builds iOS test app
-  build_objc_ios_test_app:
-    <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-ios-test-app
 
   # Runs unit tests on iOS devices
-  test_objc_ios:
+  test_ios:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
 
+      - run: xcrun instruments -w "iPhone 5s (11.1)" || true
+      - run: brew install watchman
       - run: *run-objc-ios-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
-
-  # Builds tvOS test app
-  build_objc_tvos_test_app:
-    <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *build-objc-tvos-test-app
 
   # Runs unit tests on tvOS devices
-  test_objc_tvos:
+  test_tvos:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "Apple TV 1080p (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
 
+      - run: xcrun instruments -w "Apple TV 1080p (11.1)" || true
+      - run: brew install watchman
       - run: *run-objc-tvos-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
 
   # Runs end to end tests
-  test_objc_ios_e2e:
+  test_ios_e2e:
     <<: *macos_defaults
-    dependencies:
-      pre:
-        - xcrun instruments -w "iPhone 5s (11.1)" || true
     steps:
       - attach_workspace:
           at: ~/react-native
 
+      - run: xcrun instruments -w "iPhone 5s (11.1)" || true
       - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
-          path: ~/react-native/reports/junit
-      - store_artifacts:
           path: ~/react-native/reports/junit
 
   # Checks podspec
@@ -523,8 +483,6 @@ jobs:
       - run: *collect-android-test-results
       - store_test_results:
           path: ~/react-native/reports/junit
-      - store_artifacts:
-          path: ~/react-native/reports/junit
 
 
   # Analyze pull request and raise any lint/flow issues.
@@ -604,18 +562,18 @@ workflows:
           requires:
             - checkout_code
 
-      # Build iOS & tvOS test apps
-      - build_objc_ios_test_app:
+      # Test iOS & tvOS
+      - test_ios:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-      - build_objc_tvos_test_app:
+      - test_tvos:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
 
       # End-to-end tests
-      - test_objc_ios_e2e:
+      - test_ios_e2e:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -657,15 +615,6 @@ workflows:
 
   #     # The following were DISABLED because they have not run since 
   #     # the migration from Travis, and they have broken since then,
-  #     # Test iOS & tvOS
-  #     - test_objc_ios:
-  #         filters: *filter-ignore-gh-pages
-  #         requires:
-  #           - checkout_code
-  #     - test_objc_tvos:
-  #         filters: *filter-ignore-gh-pages
-  #         requires:
-  #           - checkout_code
   #     # CocoaPods
   #     - test_podspec:
   #         filters: *filter-ignore-gh-pages

@@ -9,20 +9,20 @@
  */
 'use strict';
 
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const Image = require('Image');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const StyleSheet = require('StyleSheet');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
-var ProgressViewIOS = createReactClass({
+const ProgressViewIOS = createReactClass({
   displayName: 'ProgressViewIOS',
   mixins: [NativeMethodsMixin],
 
@@ -69,13 +69,13 @@ var ProgressViewIOS = createReactClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   progressView: {
     height: 2,
   },
 });
 
-var RCTProgressView = requireNativeComponent(
+const RCTProgressView = requireNativeComponent(
   'RCTProgressView',
   ProgressViewIOS
 );
