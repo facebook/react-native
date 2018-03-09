@@ -13,18 +13,6 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-type RelayProfiler = {
-  attachProfileHandler(
-    name: string,
-    handler: (name: string, state?: any) => () => void,
-  ): void,
-
-  attachAggregateHandler(
-    name: string,
-    handler: (name: string, callback: () => void) => void,
-  ): void,
-};
-
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 const TRACE_TAG_JS_VM_CALLS = 1 << 27; // eslint-disable-line no-bitwise
 
@@ -193,28 +181,6 @@ const Systrace = {
       global.nativeTraceCounter &&
         global.nativeTraceCounter(TRACE_TAG_REACT_APPS, profileName, value);
     }
-  },
-
-  /**
-   * Relay profiles use await calls, so likely occur out of current stack frame
-   * therefore async variant of profiling is used
-   **/
-  attachToRelayProfiler(relayProfiler: RelayProfiler) {
-    relayProfiler.attachProfileHandler('*', (name, state?) => {
-      if (state != null && state.queryName !== undefined) {
-        name += '_' + state.queryName;
-      }
-      const cookie = Systrace.beginAsyncEvent(name);
-      return () => {
-        Systrace.endAsyncEvent(name, cookie);
-      };
-    });
-
-    relayProfiler.attachAggregateHandler('*', (name, callback) => {
-      Systrace.beginEvent(name);
-      callback();
-      Systrace.endEvent();
-    });
   },
 
   /* This is not called by default due to perf overhead but it's useful
