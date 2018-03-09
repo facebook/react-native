@@ -748,6 +748,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-header'}
           key="$header">
           <View onLayout={this._onLayoutHeader} style={inversionStyle}>
+            {/*
+              Flow doesn't know this is a React.Element and not a React.Component
+              $FlowFixMe https://fburl.com/b9xmtm09
+            */}
             {element}
           </View>
         </VirtualizedCellWrapper>,
@@ -857,6 +861,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key="$empty"
           onLayout={this._onLayoutEmpty}
           style={inversionStyle}>
+          {/*
+            Flow doesn't know this is a React.Element and not a React.Component
+            $FlowFixMe https://fburl.com/b9xmtm09
+          */}
           {element}
         </View>,
       );
@@ -873,6 +881,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-footer'}
           key="$footer">
           <View onLayout={this._onLayoutFooter} style={inversionStyle}>
+            {/*
+              Flow doesn't know this is a React.Element and not a React.Component
+              $FlowFixMe https://fburl.com/b9xmtm09
+            */}
             {element}
           </View>
         </VirtualizedCellWrapper>,
