@@ -98,6 +98,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private final YogaNode mYogaNode;
 
+  private @Nullable ReactStylesDiffMap mNewProps;
+
   public ReactShadowNodeImpl() {
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
@@ -119,7 +121,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
       mNodeUpdated = original.mNodeUpdated;
       mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
-      mParent = null;
       mIsLayoutOnly = original.mIsLayoutOnly;
       mTotalNativeChildren = original.mTotalNativeChildren;
       mNativeParent = original.mNativeParent;
@@ -133,6 +134,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
       mYogaNode = original.mYogaNode.clone();
       mYogaNode.setData(this);
+      mParent = null;
+      mNewProps = null;
     } catch (CloneNotSupportedException e) {
       // it should never happen
       throw new IllegalArgumentException();
@@ -151,6 +154,27 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     copy.mChildren = null;
     return copy;
   }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopy();
+    if (newProps != null) {
+      copy.updateProperties(newProps);
+      copy.mNewProps = newProps;
+    }
+    return copy;
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopyWithNewChildren();
+    if (newProps != null) {
+      copy.updateProperties(newProps);
+      copy.mNewProps = newProps;
+    }
+    return copy;
+  }
+
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -358,6 +382,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void onAfterUpdateTransaction() {
     // no-op
+  }
+
+  @Override
+  @Nullable
+  public ReactStylesDiffMap getNewProps() {
+    return mNewProps;
   }
 
   /**
