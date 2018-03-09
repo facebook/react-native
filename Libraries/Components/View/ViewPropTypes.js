@@ -71,7 +71,7 @@ export type ViewProps = {
   onMoveShouldSetResponder?: Function,
   onMoveShouldSetResponderCapture?: Function,
   hitSlop?: EdgeInsetsProp,
-  pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
+  pointerEvents?: null | 'box-none'| 'none'| 'box-only'| 'auto',
   style?: stylePropType,
   removeClippedSubviews?: bool,
   renderToHardwareTextureAndroid?: bool,
