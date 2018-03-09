@@ -72,7 +72,11 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   T mutableCopy();
 
+  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
+
   T mutableCopyWithNewChildren();
+
+  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -99,6 +103,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
+
+  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating

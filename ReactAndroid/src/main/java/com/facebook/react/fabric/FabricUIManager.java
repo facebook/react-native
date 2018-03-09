@@ -140,8 +140,7 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode node,
       @Nullable ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopy();
-      updateProps(clone, newProps);
+      ReactShadowNode clone = node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -161,8 +160,7 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode node,
       ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewChildren();
-      updateProps(clone, newProps);
+      ReactShadowNode clone = node.mutableCopyWithNewChildrenAndProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
