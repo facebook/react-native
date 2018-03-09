@@ -18,6 +18,8 @@ const AnimatedDivision = require('./nodes/AnimatedDivision');
 const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
+const AnimatedSin = require('./nodes/AnimatedSin');
+const AnimatedCos = require('./nodes/AnimatedCos');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
@@ -66,6 +68,14 @@ const multiply = function(
   b: AnimatedNode | number,
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
+};
+
+const sin = function(a: AnimatedNode | number): AnimatedSin {
+  return new AnimatedSin(a);
+};
+
+const cos = function(a: AnimatedNode | number): AnimatedCos {
+  return new AnimatedCos(a);
 };
 
 const modulo = function(a: AnimatedNode, modulus: number): AnimatedModulo {
@@ -567,6 +577,20 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/animated.html#add
    */
   add,
+
+  /**
+   * Creates a new Animated value that is the sine of the passed in value.
+   *
+   * See http://facebook.github.io/react-native/docs/animated.html#sin
+   */
+  sin,
+
+  /**
+   * Creates a new Animated value that is the cosine of the passed in value.
+   *
+   * See http://facebook.github.io/react-native/docs/animated.html#cos
+   */
+  cos,
 
   /**
    * Creates a new Animated value composed by dividing the first Animated value

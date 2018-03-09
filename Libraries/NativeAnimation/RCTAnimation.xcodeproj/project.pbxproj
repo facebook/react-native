@@ -123,6 +123,10 @@
 		94C129521D40692B0025F25C /* RCTSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 94C1294F1D4069170025F25C /* RCTSpringAnimation.m */; };
 		94DA09181DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DA09171DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.m */; };
 		94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */; };
+		9DA5062D205250D700C37A2D /* RCTCosAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DA50629205250D600C37A2D /* RCTCosAnimatedNode.m */; };
+		9DA5062E205250D700C37A2D /* RCTSinAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DA5062A205250D700C37A2D /* RCTSinAnimatedNode.m */; };
+		9DA5062F205250D700C37A2D /* RCTCosAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DA5062B205250D700C37A2D /* RCTCosAnimatedNode.h */; };
+		9DA50630205250D700C37A2D /* RCTSinAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DA5062C205250D700C37A2D /* RCTSinAnimatedNode.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -226,6 +230,10 @@
 		94DA09171DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNativeAnimatedNodesManager.m; sourceTree = "<group>"; };
 		94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTModuloAnimatedNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuloAnimatedNode.m; sourceTree = "<group>"; };
+		9DA50629205250D600C37A2D /* RCTCosAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCosAnimatedNode.m; sourceTree = "<group>"; };
+		9DA5062A205250D700C37A2D /* RCTSinAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSinAnimatedNode.m; sourceTree = "<group>"; };
+		9DA5062B205250D700C37A2D /* RCTCosAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCosAnimatedNode.h; sourceTree = "<group>"; };
+		9DA5062C205250D700C37A2D /* RCTSinAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSinAnimatedNode.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -240,6 +248,10 @@
 		13E501D51D07A6C9005F35D8 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				9DA5062B205250D700C37A2D /* RCTCosAnimatedNode.h */,
+				9DA50629205250D600C37A2D /* RCTCosAnimatedNode.m */,
+				9DA5062C205250D700C37A2D /* RCTSinAnimatedNode.h */,
+				9DA5062A205250D700C37A2D /* RCTSinAnimatedNode.m */,
 				5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */,
 				5C9894941D999639008027DB /* RCTDivisionAnimatedNode.m */,
 				193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */,
@@ -349,6 +361,8 @@
 				1980B71D1E80D1C4004DC789 /* RCTDiffClampAnimatedNode.h in Headers */,
 				1980B71F1E80D1C4004DC789 /* RCTAdditionAnimatedNode.h in Headers */,
 				1980B7211E80D1C4004DC789 /* RCTAnimatedNode.h in Headers */,
+				9DA50630205250D700C37A2D /* RCTSinAnimatedNode.h in Headers */,
+				9DA5062F205250D700C37A2D /* RCTCosAnimatedNode.h in Headers */,
 				44DB7D942024F74200588FCD /* RCTTrackingAnimatedNode.h in Headers */,
 				1980B7231E80D1C4004DC789 /* RCTInterpolationAnimatedNode.h in Headers */,
 				1980B7251E80D1C4004DC789 /* RCTModuloAnimatedNode.h in Headers */,
@@ -476,8 +490,10 @@
 				13E501CF1D07A644005F35D8 /* RCTNativeAnimatedModule.m in Sources */,
 				13E501EC1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.m in Sources */,
 				13E501ED1D07A6C9005F35D8 /* RCTPropsAnimatedNode.m in Sources */,
+				9DA5062E205250D700C37A2D /* RCTSinAnimatedNode.m in Sources */,
 				13E501E91D07A6C9005F35D8 /* RCTAnimatedNode.m in Sources */,
 				44DB7D972024F75100588FCD /* RCTTrackingAnimatedNode.m in Sources */,
+				9DA5062D205250D700C37A2D /* RCTCosAnimatedNode.m in Sources */,
 				13E501EB1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.m in Sources */,
 				13E501E81D07A6C9005F35D8 /* RCTAdditionAnimatedNode.m in Sources */,
 				5C9894951D999639008027DB /* RCTDivisionAnimatedNode.m in Sources */,

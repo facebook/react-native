@@ -20,6 +20,8 @@
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
+#import "RCTSinAnimatedNode.h"
+#import "RCTCosAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
 #import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
@@ -65,6 +67,8 @@
             @"diffclamp": [RCTDiffClampAnimatedNode class],
             @"division" : [RCTDivisionAnimatedNode class],
             @"multiplication" : [RCTMultiplicationAnimatedNode class],
+            @"sin" : [RCTSinAnimatedNode class],
+            @"cos" : [RCTCosAnimatedNode class],
             @"modulus" : [RCTModuloAnimatedNode class],
             @"transform" : [RCTTransformAnimatedNode class],
             @"tracking" : [RCTTrackingAnimatedNode class]};
