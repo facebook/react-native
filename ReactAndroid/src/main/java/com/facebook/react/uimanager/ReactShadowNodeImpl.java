@@ -994,9 +994,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       result.append("__");
     }
 
-    result.append(getClass().getSimpleName()).append(" ");
+    result.append(getClass().getSimpleName()).append(" ").append(getReactTag()).append(" ");
     if (mYogaNode != null) {
-      result.append(getLayoutWidth()).append(",").append(getLayoutHeight());
+      result.append(getScreenX()).append(";").append(getScreenY()).append(";")
+        .append(getLayoutWidth()).append(";").append(getLayoutHeight());
     } else {
       result.append("(virtual node)");
     }
