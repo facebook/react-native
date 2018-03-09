@@ -5,6 +5,8 @@ aliases:
       - v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
       - v1-yarn-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-yarn-{{ arch }}-master-
   - &save-yarn-cache
     paths:
       - node_modules
@@ -16,6 +18,8 @@ aliases:
       - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
       # Fallback in case checksum fails
       - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-analysis-dependencies-{{ arch }}-master-
   - &save-cache-analysis
     paths:
       - bots/node_modules
@@ -27,6 +31,8 @@ aliases:
       - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
       - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-
+      # Fallback in case this is a first-time run on a fork
+      - v1-android-sdkmanager-packages-{{ arch }}-master-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
