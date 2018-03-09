@@ -16,8 +16,8 @@
   NSArray<NSNumber *> *inputNodes = self.config[@"input"];
   if (inputNodes.count == 1) {
     RCTValueAnimatedNode *parent = (RCTValueAnimatedNode *)[self.parentNodes objectForKey:inputNodes[0]];
-    if ([parent1isKindOfClass:[RCTValueAnimatedNode class]]) {
-      self.value = cos(parent1.value);
+    if ([parent isKindOfClass:[RCTValueAnimatedNode class]]) {
+      self.value = cos(parent.value);
     }
   }
 }
