@@ -51,7 +51,6 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric
 {
   RCTAssertMainQueue();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTSurfaceHostingProxyRootView");
@@ -62,7 +61,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
     [bridge.performanceLogger markStartForTag:RCTPLTTI];
   }
 
-  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:fabric]) {
+  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties]) {
     self.backgroundColor = [UIColor whiteColor];
   }
 
@@ -71,32 +70,16 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return self;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-{
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:NO];
-}
-
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
-                           fabric:(BOOL)fabric
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
                                             moduleProvider:nil
                                              launchOptions:launchOptions];
 
-  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabric:fabric];
-}
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions
-{
-  return [self initWithBundleURL:bundleURL moduleName:moduleName initialProperties:initialProperties launchOptions:launchOptions fabric:NO];
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -112,11 +95,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (RCTBridge *)bridge
 {
   return super.surface.bridge;
-}
-
-- (BOOL)fabric
-{
-  return super.surface.fabric;
 }
 
 - (UIView *)contentView

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -84,6 +85,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -211,6 +213,47 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       // This will be removed in the future.
       handleException(e);
     }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent ev) {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to handle key event as the catalyst instance has not been attached");
+      return super.dispatchKeyEvent(ev);
+    }
+    mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
+    return super.dispatchKeyEvent(ev);
+  }
+
+  @Override
+  protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to handle focus changed event as the catalyst instance has not been attached");
+      super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+      return;
+    }
+    mAndroidHWInputDeviceHelper.clearFocus();
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+  }
+
+  @Override
+  public void requestChildFocus(View child, View focused) {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to handle child focus changed event as the catalyst instance has not been attached");
+      super.requestChildFocus(child, focused);
+      return;
+    }
+    mAndroidHWInputDeviceHelper.onFocusChanged(focused);
+    super.requestChildFocus(child, focused);
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -536,6 +579,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
   }
+  
+  /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
+    if (mReactInstanceManager != null) {
+      mReactInstanceManager.getCurrentReactContext()
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
+    }
+  }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
@@ -664,14 +715,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           .getCurrentReactContext()
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
-    }
-
-    private void sendEvent(String eventName, @Nullable WritableMap params) {
-      if (mReactInstanceManager != null) {
-        mReactInstanceManager.getCurrentReactContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(eventName, params);
-      }
     }
   }
 }

@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
@@ -252,7 +252,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: StyleObj,
+  style?: DangerouslyImpreciseStyleProp,
 |}> {
   render() {
     const {source} = this.props;

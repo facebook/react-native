@@ -13,7 +13,38 @@ jest.setMock('NativeModules', {
   BlobModule: require('../__mocks__/BlobModule'),
 });
 
+const Blob = require('Blob');
 const File = require('File');
+
+describe('babel 7 smoke test', function() {
+  it('should be able to extend a class with native name', function() {
+    let called = false;
+    class Array {
+      constructor() {
+        called = true;
+        return {foo: 'PASS'};
+      }
+    }
+    class A extends Array {
+      constructor() {
+        super();
+      }
+    }
+
+    // there is/was a regression in Babel where this would break and super()
+    // would not actually invoke the constructor of the parent class if the
+    // parent class had a name matching a built-in class (like Blob)
+    expect(new A().foo).toBe('PASS');
+    expect(called).toBe(true);
+  });
+});
+
+describe('Blob', function() {
+  it('regression caused by circular dep && babel 7', function() {
+    const blob = new Blob([], {type: 'image/jpeg'});
+    expect(blob).toBeInstanceOf(Blob);
+  });
+});
 
 describe('File', function() {
   it('should create empty file', () => {

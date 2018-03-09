@@ -9,17 +9,21 @@
 
 #include <fabric/FabricUIManager.h>
 
+#import "RCTFabricPlatformUIOperationManager.h"
+
 // This file contains experimental placeholders, nothing is finalized.
 @implementation RCTFabricUIManagerWrapper
 {
   std::shared_ptr<FabricUIManager> _manager;
+  std::shared_ptr<IFabricPlatformUIOperationManager> _platformUIOperationManager;
 }
 
-- (instancetype)initWithManager:(std::shared_ptr<FabricUIManager>)manager
+- (instancetype)init
 {
   self = [super init];
   if (self) {
-    _manager = manager;
+    _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
+    _manager = std::make_shared<FabricUIManager>(_platformUIOperationManager);
   }
   return self;
 }

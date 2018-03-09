@@ -6,12 +6,14 @@
  *
  * @providesModule flattenStyle
  * @flow
+ * @format
  */
 'use strict';
 
 var ReactNativePropRegistry;
 
-import type { DimensionValue, ColorValue, StyleProp, Style } from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {DangerouslyImpreciseStyle} from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {
@@ -23,7 +25,9 @@ function getStyle(style) {
   return style;
 }
 
-function flattenStyle(style: ?StyleProp<Style<DimensionValue, ColorValue>>): ?Style<DimensionValue, ColorValue> {
+function flattenStyle(
+  style: ?DangerouslyImpreciseStyleProp,
+): ?DangerouslyImpreciseStyle {
   if (style == null) {
     return undefined;
   }

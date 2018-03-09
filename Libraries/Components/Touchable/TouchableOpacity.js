@@ -128,9 +128,7 @@ const TouchableOpacity = createReactClass({
      */
     activeOpacity: PropTypes.number,
     /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
+     * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
@@ -158,6 +156,12 @@ const TouchableOpacity = createReactClass({
 
   UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
+  },
+
+  componentDidUpdate: function(prevProps, prevState) {
+    if (this.props.disabled !== prevProps.disabled) {
+      this._opacityInactive(250);
+    }
   },
 
   /**
