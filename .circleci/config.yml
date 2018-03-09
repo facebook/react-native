@@ -2,43 +2,51 @@ aliases:
   # Cache Management
   - &restore-yarn-cache
     keys:
-      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+      - v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
       # Fallback in case checksum fails
-      - v1-yarn-{{ arch }}-
+      - v1-yarn-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-yarn-{{ arch }}-master-
   - &save-yarn-cache
     paths:
       - node_modules
       - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+    key: v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
       # Fallback in case checksum fails
-      - v1-analysis-dependencies-{{ arch }}-
+      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-analysis-dependencies-{{ arch }}-master-
   - &save-cache-analysis
     paths:
       - bots/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
       # Fallback in case checksum fails
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
+      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-
+      # Fallback in case this is a first-time run on a fork
+      - v1-android-sdkmanager-packages-{{ arch }}-master-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-{{ arch }}-r10e-32-64
+      - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      # Fallback in case checksum fails
+      - v2-android-ndk-{{ arch }}-r10e-32-64-
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v2-android-ndk-{{ arch }}-r10e-32-64
+    key: v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-buck
     keys:
@@ -152,9 +160,11 @@ aliases:
     command: yarn flow check
     when: always
 
-  - &run-license-checks
-    name: Check license
-    command: ./scripts/circleci/check_license.sh
+  - &run-sanity-checks
+    name: Sanity checks
+    command: |
+      ./scripts/circleci/check_license.sh
+      ./scripts/circleci/check_cache.sh
     when: always
     
   - &build-android-app
@@ -209,18 +219,10 @@ aliases:
     name: Initial Setup
     command: | 
       mkdir -p ~/react-native/reports/junit/
-
-  - &build-objc-ios-test-app
-    name: Build iOS Test App
-    command: ./scripts/objc-test-ios.sh
   
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
-
-  - &build-objc-tvos-test-app
-    name: Build tvOS Test App
-    command: ./scripts/objc-test-tvos.sh
 
   - &run-objc-tvos-tests
     name: tvOS Test Suite
@@ -274,6 +276,9 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
+      # Basic checks against the checkout, cache...
+      - run: *run-sanity-checks
+
       - persist_to_workspace:
           root: .
           paths: .
@@ -288,7 +293,6 @@ jobs:
 
       - run: *run-lint-checks
       - run: *run-flow-checks
-      - run: *run-license-checks
 
       - store_test_results:
           path: ~/react-native/reports/junit
