@@ -21,6 +21,7 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeClonedFunction;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
@@ -58,6 +59,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private static final YogaConfig sYogaConfig;
   static {
     sYogaConfig = ReactYogaConfigProvider.get();
+    sYogaConfig.setOnNodeCloned(new YogaNodeClonedFunction() {
+      @Override
+      public void onNodeCloned(YogaNode oldYogaNode,
+          YogaNode newYogaNode,
+          YogaNode parent,
+          int childIndex) {
+        ReactShadowNode parentReactShadowNode = (ReactShadowNode) parent.getData();
+        Assertions.assertNotNull(parentReactShadowNode);
+
+        ReactShadowNode newReactShadowNode = (ReactShadowNode) newYogaNode.getData();
+        Assertions.assertNotNull(newReactShadowNode);
+      }
+    });
   }
 
   private int mReactTag;
@@ -88,6 +102,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? new YogaNode(sYogaConfig) : node;
+      mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
       mYogaNode = null;
@@ -117,6 +132,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
       arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
       mYogaNode = original.mYogaNode.clone();
+      mYogaNode.setData(this);
     } catch (CloneNotSupportedException e) {
       // it should never happen
       throw new IllegalArgumentException();
