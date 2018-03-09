@@ -44,7 +44,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_TRANSLATE_Y = "translateY";
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
-  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = 5;
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float)Math.sqrt(5);
 
   /**
    * Used to locate views in end-to-end (UI) tests.
@@ -235,7 +235,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
       // The following converts the matrix's perspective to a camera distance
       // such that the camera perspective looks the same on Android and iOS
-      float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      // While comparing the output between android and ios, it seemed like
+      // the native android implementation removed the screen density from the
+      // calculation, so taking square and also the normalization value at
+      // sqrt(5) produced an exact replica with ios
+      float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
 
     }
