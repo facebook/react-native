@@ -8,7 +8,9 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -21,6 +23,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+
 import javax.annotation.Nullable;
 
 /**
@@ -118,6 +121,14 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
+  }
+
+  /**
+   * Enables/Disables nested scrolling
+   */
+  @ReactProp(name = "nestedScrollEnabled")
+  public void setNestedScrollEnabled(ReactScrollView view, boolean value) {
+    ViewCompat.setNestedScrollingEnabled(view, value);
   }
 
   @Override
