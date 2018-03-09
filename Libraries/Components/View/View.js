@@ -104,4 +104,4 @@ if (__DEV__) {
 }
 
 // No one should depend on the DEV-mode createClass View wrapper.
-module.exports = ((ViewToExport: any): typeof RCTView);
+module.exports = ((ViewToExport: any): typeof View);
