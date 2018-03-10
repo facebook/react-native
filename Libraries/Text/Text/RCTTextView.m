@@ -196,15 +196,6 @@
   return _textStorage.string;
 }
 
-- (NSString *)accessibilityHint
-{
-  NSString *superAccessibilityHint = [super accessibilityHint];
-  if (superAccessibilityHint) {
-    return superAccessibilityHint;
-  }
-  return @"";
-}
-
 #pragma mark - Context Menu
 
 - (void)enableContextMenu
