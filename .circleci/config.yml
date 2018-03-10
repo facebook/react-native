@@ -89,8 +89,8 @@ aliases:
 
   # Dependency Management
   - &install-ndk
-    |
-      source scripts/circle-ci-android-setup.sh && getAndroidNDK
+    name: Install Android NDK
+    command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
 
   - &yarn
     |
@@ -136,14 +136,22 @@ aliases:
       source $BASH_ENV
 
   - &install-android-packages
-    | 
-      source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    name: Install Android SDK Packages
+    command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
 
   - &install-android-build-dependencies
     name: Install Android Build Dependencies
     command: |
       sudo apt-get update -y
       sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+
+  - &validate-android-sdk
+    name: Validate Android SDK Install
+    command: ./scripts/validate-android-sdk.sh
+
+  - &validate-android-test-env
+    name: Validate Android Test Environment
+    command: ./scripts/validate-android-test-env.sh
 
   # Test Definitions
   - &run-js-tests
@@ -444,6 +452,8 @@ jobs:
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
 
+      - run: *validate-android-sdk
+
       # Starting emulator in advance as it takes some time to boot.      
       - run: *create-avd
       - run: *launch-avd
@@ -460,6 +470,8 @@ jobs:
       - restore-cache: *restore-cache-buck
       - run: *install-buck
       - save-cache: *save-cache-buck
+
+      - run: *validate-android-test-env
 
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
@@ -478,7 +490,7 @@ jobs:
 
       # Wait for AVD to finish booting before running tests
       - run: *wait-for-avd
-            
+
       # Test Suite
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
