@@ -14,12 +14,7 @@ if [ -z "$(which buck)" ]; then
   exit 1
 fi
 
-BUCK_ACTUAL_COMMIT=$(buck --version)
-BUCK_SUGGESTED_V="v2018.02.16.01"
-BUCK_SUGGESTED_COMMIT="d743d2d0229852ce7c029ec257532d8916f6b2b7"
-BUCK_SUGGESTED_COMMIT_FB="b9b76a3a5a086eb440a26d1db9b0731875975099"
-
-if [ -z "$BUCK_ACTUAL_COMMIT" ]; then
+if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
 
   if [ -d "/opt/facebook" ]; then
@@ -45,10 +40,11 @@ if [ -z "$BUCK_ACTUAL_COMMIT" ]; then
   fi
   exit 1
 else
-  if [ "$BUCK_ACTUAL_COMMIT" == "$BUCK_SUGGESTED_COMMIT" ]; then
-    echo "${BUCK_ACTUAL_COMMIT}"
-  elif [ ! -d "/opt/facebook" ]; then
-    echo "Warn: The test suite expects buck version ${BUCK_SUGGESTED_COMMIT} (${BUCK_SUGGESTED_V}) to be installed, but found ${BUCK_ACTUAL_COMMIT} instead"
+  BUCK_EXPECTED_VERSION="buck version d743d2d0229852ce7c029ec257532d8916f6b2b7"
+  if [ "$(buck --version)" != "$BUCK_EXPECTED_VERSION" ]; then
+    if [ ! -d "/opt/facebook" ]; then
+      echo "Warning: The test suite expects ${BUCK_EXPECTED_VERSION} to be installed"
+    fi
   fi
 fi
 
