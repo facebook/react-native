@@ -169,7 +169,7 @@
     "eslint-plugin-react-native": "^3.2.1",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.14",
-    "fbjs-scripts": "^0.8.1",
+    "fbjs-scripts": "^0.8.16",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
