@@ -10,15 +10,13 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const ViewPropTypes = require('ViewPropTypes');
 const {ViewContextTypes} = require('ViewContext');
-
-const createReactClass = require('create-react-class');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -28,40 +26,26 @@ import type {ViewChildContext} from 'ViewContext';
 export type Props = ViewProps;
 
 /**
- * The most fundamental component for building a UI.
+ * The most fundamental component for building a UI, View is a container that
+ * supports layout with flexbox, style, some touch handling, and accessibility
+ * controls.
  *
- * See http://facebook.github.io/react-native/docs/view.html
+ * @see http://facebook.github.io/react-native/docs/view.html
  */
-const View = createReactClass({
-  displayName: 'View',
-  // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,
-  // one of the props is of type AccessibilityComponentType. That is defined as a const[] above,
-  // but it is not rendered by the docs, since `statics` below is not rendered. So its Possible
-  // values had to be hardcoded.
-  mixins: [NativeMethodsMixin],
+class View extends ReactNative.NativeComponent<Props> {
+  static propTypes = ViewPropTypes;
+  static childContextTypes = ViewContextTypes;
 
-  // `propTypes` should not be accessed directly on View since this wrapper only
-  // exists for DEV mode. However it's important for them to be declared.
-  // If the object passed to `createClass` specifies `propTypes`, Flow will
-  // create a static type from it.
-  propTypes: ViewPropTypes,
-
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  viewConfig: {
+  viewConfig = {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView,
-  },
-
-  childContextTypes: ViewContextTypes,
+  };
 
   getChildContext(): ViewChildContext {
     return {
       isInAParentText: false,
     };
-  },
+  }
 
   render() {
     invariant(
@@ -74,8 +58,8 @@ const View = createReactClass({
     // adding functionality this component that you'd want to be available in both
     // dev and prod modes.
     return <RCTView {...this.props} />;
-  },
-});
+  }
+}
 
 const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
