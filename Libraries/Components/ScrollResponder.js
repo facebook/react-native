@@ -125,6 +125,14 @@ function isTagInstanceOfTextInput(tag) {
   );
 }
 
+/**
+ * If a user has specified a duration, we will use it. Otherwise,
+ * set it to -1 as the bridge cannot handle undefined / null values.
+ */
+function getDuration(duration?: number): number {
+  return duration === undefined ? -1 : Math.max(duration, 0);
+}
+
 const ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
   scrollResponderMixinGetInitialState: function(): State {
@@ -427,7 +435,7 @@ const ScrollResponderMixin = {
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
-      [x || 0, y || 0, animated !== false, duration],
+      [x || 0, y || 0, animated !== false, getDuration(duration)],
     );
   },
 
@@ -450,7 +458,7 @@ const ScrollResponderMixin = {
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollToEnd,
-      [animated, options.duration],
+      [animated, getDuration(options.duration)],
     );
   },
 
