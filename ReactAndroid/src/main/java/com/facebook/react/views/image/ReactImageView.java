@@ -22,6 +22,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.Toast;
+import com.facebook.common.references.CloseableReference;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -33,6 +34,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.GenericDraweeView;
+import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor;
@@ -49,6 +51,7 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -141,6 +144,40 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
+  // Fresco lacks support for repeating images, see https://github.com/facebook/fresco/issues/1575
+  // We implement it here as a postprocessing step.
+  private static final Matrix sTileMatrix = new Matrix();
+
+  private class TilePostprocessor extends BasePostprocessor {
+    @Override
+    public CloseableReference<Bitmap> process(Bitmap source, PlatformBitmapFactory bitmapFactory) {
+      final Rect destRect = new Rect(0, 0, getWidth(), getHeight());
+
+      mScaleType.getTransform(
+        sTileMatrix,
+        destRect,
+        source.getWidth(),
+        source.getHeight(),
+        0.0f,
+        0.0f);
+
+      Paint paint = new Paint();
+      paint.setAntiAlias(true);
+      Shader shader = new BitmapShader(source, mTileMode, mTileMode);
+      shader.setLocalMatrix(sTileMatrix);
+      paint.setShader(shader);
+
+      CloseableReference<Bitmap> output = bitmapFactory.createBitmap(getWidth(), getHeight());
+      try {
+        Canvas canvas = new Canvas(output.get());
+        canvas.drawRect(destRect, paint);
+        return output.clone();
+      } finally {
+        CloseableReference.closeSafely(output);
+      }
+    }
+  }
+
   private final List<ImageSource> mSources;
 
   private @Nullable ImageSource mImageSource;
@@ -152,9 +189,11 @@ public class ReactImageView extends GenericDraweeView {
   private float mBorderRadius = YogaConstants.UNDEFINED;
   private @Nullable float[] mBorderCornerRadii;
   private ScalingUtils.ScaleType mScaleType;
+  private Shader.TileMode mTileMode = ImageResizeMode.defaultTileMode();
   private boolean mIsDirty;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final RoundedCornerPostprocessor mRoundedCornerPostprocessor;
+  private final TilePostprocessor mTilePostprocessor;
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
@@ -180,6 +219,7 @@ public class ReactImageView extends GenericDraweeView {
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
     mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
+    mTilePostprocessor = new TilePostprocessor();
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
     mSources = new LinkedList<>();
@@ -275,6 +315,11 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setTileMode(Shader.TileMode tileMode) {
+    mTileMode = tileMode;
+    mIsDirty = true;
+  }
+
   public void setResizeMethod(ImageResizeMethod resizeMethod) {
     mResizeMethod = resizeMethod;
     mIsDirty = true;
@@ -362,6 +407,11 @@ public class ReactImageView extends GenericDraweeView {
       return;
     }
 
+    if (isTiled() && (getWidth() <= 0 || getHeight() <= 0)) {
+      // If need to tile and the size is not yet set, wait until the layout pass provides one
+      return;
+    }
+
     GenericDraweeHierarchy hierarchy = getHierarchy();
     hierarchy.setActualImageScaleType(mScaleType);
 
@@ -396,13 +446,17 @@ public class ReactImageView extends GenericDraweeView {
             ? mFadeDurationMs
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
-    // TODO: t13601664 Support multiple PostProcessors
-    Postprocessor postprocessor = null;
+    List<Postprocessor> postprocessors = new LinkedList<>();
     if (usePostprocessorScaling) {
-      postprocessor = mRoundedCornerPostprocessor;
-    } else if (mIterativeBoxBlurPostProcessor != null) {
-      postprocessor = mIterativeBoxBlurPostProcessor;
+      postprocessors.add(mRoundedCornerPostprocessor);
     }
+    if (mIterativeBoxBlurPostProcessor != null) {
+      postprocessors.add(mIterativeBoxBlurPostProcessor);
+    }
+    if (isTiled()) {
+      postprocessors.add(mTilePostprocessor);
+    }
+    Postprocessor postprocessor = MultiPostprocessor.from(postprocessors);
 
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
@@ -468,7 +522,7 @@ public class ReactImageView extends GenericDraweeView {
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (w > 0 && h > 0) {
-      mIsDirty = mIsDirty || hasMultipleSources();
+      mIsDirty = mIsDirty || hasMultipleSources() || isTiled();
       maybeUpdateView();
     }
   }
@@ -483,6 +537,10 @@ public class ReactImageView extends GenericDraweeView {
 
   private boolean hasMultipleSources() {
     return mSources.size() > 1;
+  }
+
+  private boolean isTiled() {
+    return mTileMode != Shader.TileMode.CLAMP;
   }
 
   private void setSourceImage() {
