@@ -40,15 +40,14 @@ public class MultiPostprocessor implements Postprocessor {
 
   @Override
   public String getName () {
-    StringBuilder name = new StringBuilder("MultiPostProcessor (");
-    boolean first = true;
+    StringBuilder name = new StringBuilder();
     for (Postprocessor p: mPostprocessors) {
-      if (!first) {
+      if (name.length() > 0) {
         name.append(",");
       }
       name.append(p.getName());
-      first = false;
     }
+    name.insert(0, "MultiPostProcessor (");
     name.append(")");
     return name.toString();
   }
