@@ -14,7 +14,7 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 
-#if !TARGET_OS_TV 
+#if !TARGET_OS_TV
 #import <React/RCTPushNotificationManager.h>
 #endif
 
