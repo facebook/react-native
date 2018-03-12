@@ -531,13 +531,16 @@ const ScrollView = createReactClass({
    *
    * Example:
    *
-   * `scrollTo({x: 0, y: 0, animated: true, duration: 0})`
+   * `scrollTo({x: 0, y: 0, animated: true})`
+   *
+   * Example with duration (Android only):
+   *
+   * `scrollTo({x: 0, y: 0, duration: 500})`
    *
    * Note: The weird function signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    *
-   * Also note "duration" is currently only supported for Android.
    */
   scrollTo: function(
     y?: number | { x?: number, y?: number, animated?: boolean, duration?: number },
@@ -552,7 +555,7 @@ const ScrollView = createReactClass({
       ({x, y, animated, duration} = y || {});
     }
     this.getScrollResponder().scrollResponderScrollTo(
-      {x: x || 0, y: y || 0, animated: animated !== false, duration: duration || 0}
+      {x: x || 0, y: y || 0, animated: animated !== false, duration: duration}
     );
   },
 
@@ -571,10 +574,9 @@ const ScrollView = createReactClass({
   ) {
     // Default to true
     const animated = (options && options.animated) !== false;
-    const duration = options ? options.duration || 0 : 0;
     this.getScrollResponder().scrollResponderScrollToEnd({
       animated: animated,
-      duration: duration
+      duration: options.duration
     });
   },
 

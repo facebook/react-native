@@ -84,11 +84,12 @@ public class ReactScrollViewCommandHelper {
         int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
         int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
 
-        // TODO(dannycochran) If the duration argument is specified and non-zero, use it,
-        // otherwise use the legacy "animated" boolean. Eventually this can be removed
-        // in favor of just looking at "duration".
+        // Defer to the "duration" argument to determine if we should animate the
+        // scrollTo, otherwise use the legacy "animated" boolean.
+        // TODO(dannycochran) Eventually this can be removed in favor of just
+        // looking at "duration" once support also exists on iOS.
         int duration = 0;
-        if (args.size() == 4 && args.getDouble(3) > 0) {
+        if (args.size() == 4) {
           duration = (int) Math.round(args.getDouble(3));
         } else {
           duration = args.getBoolean(2) ? LEGACY_ANIMATION_DURATION : 0;
@@ -97,11 +98,12 @@ public class ReactScrollViewCommandHelper {
         return;
       }
       case COMMAND_SCROLL_TO_END: {
-        // TODO(dannycochran) If the duration argument is specified and non-zero, use it,
-        // otherwise use the legacy "animated" boolean. Eventually this can be removed
-        // in favor of just looking at "duration".
+        // Defer to the "duration" argument to determine if we should animate the
+        // scrollTo, otherwise use the legacy "animated" boolean.
+        // TODO(dannycochran) Eventually this can be removed in favor of just
+        // looking at "duration" once support also exists on iOS.
         int duration = 0;
-        if (args.size() == 2 && args.getDouble(1) > 0) {
+        if (args.size() == 2) {
           duration = (int) Math.round(args.getDouble(1));
         } else {
           duration = args.getBoolean(2) ? LEGACY_ANIMATION_DURATION : 0;

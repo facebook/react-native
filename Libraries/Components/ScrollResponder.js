@@ -427,7 +427,7 @@ const ScrollResponderMixin = {
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
-      [x || 0, y || 0, animated !== false, duration || 0],
+      [x || 0, y || 0, animated !== false, duration],
     );
   },
 
@@ -447,11 +447,10 @@ const ScrollResponderMixin = {
   ) {
     // Default to true
     const animated = (options && options.animated) !== false;
-    const duration = options ? options.duration || 0 : 0;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollToEnd,
-      [animated, duration],
+      [animated, options.duration],
     );
   },
 
