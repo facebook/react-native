@@ -39,7 +39,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
 
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,

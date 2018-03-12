@@ -25,7 +25,7 @@ type DevServerInfo = {
  */
 function getDevServer(): DevServerInfo {
   if (_cachedDevServerURL === undefined) {
-    const match = SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
+    const match = SourceCode && SourceCode.scriptURL && SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
     _cachedDevServerURL = match ? match[0] : null;
   }
 

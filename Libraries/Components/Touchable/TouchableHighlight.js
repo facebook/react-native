@@ -13,6 +13,7 @@
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
+const Platform = require('Platform');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -172,10 +173,17 @@ const TouchableHighlight = createReactClass({
      * shiftDistanceY: Defaults to 2.0.
      * tiltAngle: Defaults to 0.05.
      * magnification: Defaults to 1.0.
+     * pressMagnification: Defaults to 1.0.
+     * pressDuration: Defaults to 0.3.
+     * pressDelay: Defaults to 0.0.
      *
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
+    /**
+     * Handy for snapshot tests.
+     */
+    testOnly_pressed: PropTypes.bool,
   },
 
   mixins: [NativeMethodsMixin, Touchable.Mixin],
@@ -184,11 +192,23 @@ const TouchableHighlight = createReactClass({
 
   getInitialState: function() {
     this._isMounted = false;
-    return {
-      ...this.touchableGetInitialState(),
-      extraChildStyle: null,
-      extraUnderlayStyle: null,
-    };
+    if (this.props.testOnly_pressed) {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: {
+          opacity: this.props.activeOpacity,
+        },
+        extraUnderlayStyle: {
+          backgroundColor: this.props.underlayColor,
+        },
+      };
+    } else {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: null,
+        extraUnderlayStyle: null,
+      };
+    }
   },
 
   componentDidMount: function() {
@@ -230,11 +250,13 @@ const TouchableHighlight = createReactClass({
 
   touchableHandlePress: function(e: PressEvent) {
     clearTimeout(this._hideTimeout);
-    this._showUnderlay();
-    this._hideTimeout = setTimeout(
-      this._hideUnderlay,
-      this.props.delayPressOut,
-    );
+    if (!Platform.isTVOS) {
+      this._showUnderlay();
+      this._hideTimeout = setTimeout(
+        this._hideUnderlay,
+        this.props.delayPressOut,
+      );
+    }
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -280,6 +302,9 @@ const TouchableHighlight = createReactClass({
   _hideUnderlay: function() {
     clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
+    if (this.props.testOnly_pressed) {
+      return;
+    }
     if (this._hasPressHandler()) {
       this.setState({
         extraChildStyle: null,

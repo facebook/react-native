@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
-var ReactNativeViewAttributes = {};
+const ReactNativeViewAttributes = {};
 
 ReactNativeViewAttributes.UIView = {
   pointerEvents: true,

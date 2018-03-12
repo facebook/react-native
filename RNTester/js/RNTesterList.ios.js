@@ -47,6 +47,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'InputAccessoryViewExample',
+    module: require('./InputAccessoryViewExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'KeyboardAvoidingViewExample',
     module: require('./KeyboardAvoidingViewExample'),
     supportsTVOS: false,
@@ -189,7 +194,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'TouchableExample',
     module: require('./TouchableExample'),
-    supportsTVOS: false,
+    supportsTVOS: true,
   },
   {
     key: 'TransparentHitTestExample',

@@ -48,7 +48,24 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     private boolean mMeasured;
 
     private ReactSliderShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSliderShadowNode(ReactSliderShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+      initMeasureFunction();
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactSliderShadowNode mutableCopy() {
+      return new ReactSliderShadowNode(this);
     }
 
     @Override

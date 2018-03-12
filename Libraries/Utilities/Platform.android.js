@@ -22,6 +22,10 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
+  get isTV(): boolean {
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.uiMode === 'tv';
+  },
   select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
 };
 

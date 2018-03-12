@@ -40,7 +40,24 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     private boolean mMeasured;
 
     private ReactSwitchShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+      initMeasureFunction();
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactSwitchShadowNode mutableCopy() {
+      return new ReactSwitchShadowNode(this);
     }
 
     @Override

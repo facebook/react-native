@@ -5,7 +5,7 @@ import com.facebook.react.uimanager.ReactShadowNode;
 
 /**
  * Simple container class to keep track of {@link ReactShadowNode}s that represents the Root
- * Shadow Nodes of a {@link FabricUIManagerModule}
+ * Shadow Nodes of a {@link FabricUIManager}
  */
 public class RootShadowNodeRegistry {
 

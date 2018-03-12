@@ -88,6 +88,7 @@ public class ViewProps {
   public static final String FONT_STYLE = "fontStyle";
   public static final String FONT_FAMILY = "fontFamily";
   public static final String LINE_HEIGHT = "lineHeight";
+  public static final String LETTER_SPACING = "letterSpacing";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
   public static final String ELLIPSIZE_MODE = "ellipsizeMode";

@@ -27,6 +27,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/appregistry:appregistry"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/fabric:fabric"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),

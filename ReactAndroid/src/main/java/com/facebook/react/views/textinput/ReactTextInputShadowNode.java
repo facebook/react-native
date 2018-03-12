@@ -14,6 +14,7 @@ import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -45,6 +46,23 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
         0 : Layout.BREAK_STRATEGY_SIMPLE;
 
     setMeasureFunction(this);
+  }
+
+  private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
+    super(node);
+    mMostRecentEventCount = node.mMostRecentEventCount;
+    mText = node.mText;
+    mLocalData = node.mLocalData;
+    setMeasureFunction(this);
+    ThemedReactContext themedContext = getThemedContext();
+    if (themedContext != null) {
+      setThemedContext(themedContext);
+    }
+  }
+
+  @Override
+  public ReactTextInputShadowNode mutableCopy() {
+    return new ReactTextInputShadowNode(this);
   }
 
   @Override

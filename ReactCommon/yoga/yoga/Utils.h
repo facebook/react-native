@@ -54,6 +54,38 @@ struct YGCollectFlexItemsRowValues {
 
 bool YGValueEqual(const YGValue a, const YGValue b);
 
+// This custom float equality function returns true if either absolute
+// difference between two floats is less than 0.0001f or both are undefined.
+bool YGFloatsEqual(const float a, const float b);
+
+// We need custom max function, since we want that, if one argument is
+// YGUndefined then the max funtion should return the other argument as the max
+// value. We wouldn't have needed a custom max function if YGUndefined was NAN
+// as fmax has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
+float YGFloatMax(const float a, const float b);
+
+// We need custom min function, since we want that, if one argument is
+// YGUndefined then the min funtion should return the other argument as the min
+// value. We wouldn't have needed a custom min function if YGUndefined was NAN
+// as fmin has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
+float YGFloatMin(const float a, const float b);
+
+// This custom float comparision function compares the array of float with
+// YGFloatsEqual, as the default float comparision operator will not work(Look
+// at the comments of YGFloatsEqual function).
+template <std::size_t size>
+bool YGFloatArrayEqual(
+    const std::array<float, size>& val1,
+    const std::array<float, size>& val2) {
+  bool areEqual = true;
+  for (std::size_t i = 0; i < size && areEqual; ++i) {
+    areEqual = YGFloatsEqual(val1[i], val2[i]);
+  }
+  return areEqual;
+}
+
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
     const YGDirection direction);
@@ -71,7 +103,7 @@ inline float YGResolveValue(const YGValue value, const float parentSize) {
     case YGUnitPoint:
       return value.value;
     case YGUnitPercent:
-      return value.value * parentSize / 100.0f;
+      return value.value * parentSize * 0.01;
   }
   return YGUndefined;
 }

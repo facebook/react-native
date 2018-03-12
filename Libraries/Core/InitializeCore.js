@@ -161,7 +161,7 @@ BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => requi
 BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
 BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JSDevSupportModule'));
 
-global.fetchSegment = function(
+global.__fetchSegment = function(
   segmentId: number,
   callback: (?Error) => void,
 ) {

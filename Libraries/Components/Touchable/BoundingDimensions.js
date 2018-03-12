@@ -9,9 +9,9 @@
 
 'use strict';
 
-var PooledClass = require('PooledClass');
+const PooledClass = require('PooledClass');
 
-var twoArgumentPooler = PooledClass.twoArgumentPooler;
+const twoArgumentPooler = PooledClass.twoArgumentPooler;
 
 /**
  * PooledClass representing the bounding rectangle of a region.

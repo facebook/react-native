@@ -306,6 +306,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  // Sets the letter spacing as an absolute point size.
+  // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
+  // correct display of spacing in placeholder (hint) text.
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0)
+  public void setLetterSpacing(ReactEditText view, float letterSpacing) {
+    view.setLetterSpacingPt(letterSpacing);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -368,6 +376,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
     view.setCursorVisible(!caretHidden);
+  }
+
+  @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
+  public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
+    final boolean _contextMenuHidden = contextMenuHidden;
+    view.setOnLongClickListener(new View.OnLongClickListener() {
+      public boolean onLongClick(View v) {
+        return _contextMenuHidden;
+      };
+    });
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)

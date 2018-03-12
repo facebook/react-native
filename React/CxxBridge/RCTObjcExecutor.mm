@@ -17,6 +17,7 @@
 #import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
+#import <cxxreact/RAMBundleRegistry.h>
 #import <folly/json.h>
 
 namespace facebook {

@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
-var ToastAndroid = {
+const ToastAndroid = {
 
   show: function (
     message: string,

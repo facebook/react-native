@@ -16,7 +16,11 @@ public class YogaConfig {
   public static int SPACING_TYPE = 1;
 
   static {
-    SoLoader.loadLibrary("yoga");
+    if (YogaConstants.shouldUseFastMath) {
+      SoLoader.loadLibrary("yogafastmath");
+    } else {
+      SoLoader.loadLibrary("yoga");
+    }
   }
 
   long mNativePointer;

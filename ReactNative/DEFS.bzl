@@ -21,6 +21,7 @@ ANDROID_JSC_INTERNAL_DEPS = [
     '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
+ANDROID = "Android"
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
@@ -33,7 +34,7 @@ with allow_unsafe_import():
 
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, **kwargs):
+def rn_xplat_cxx_library(name, platforms = None, **kwargs):
     cxx_library(name=name, **kwargs)
 
 

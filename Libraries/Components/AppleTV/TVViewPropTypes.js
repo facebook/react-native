@@ -8,24 +8,20 @@
  * @flow
  */
 'use strict';
-var PropTypes = require('prop-types');
+const PropTypes = require('prop-types');
 
 /**
  * Additional View properties for Apple TV
  */
-var TVViewPropTypes = {
+const TVViewPropTypes = {
     /**
-     * *(Apple TV only)* When set to true, this view will be focusable
-     * and navigable using the Apple TV remote.
-     *
-     * @platform ios
+     * When set to true, this view will be focusable
+     * and navigable using the TV remote.
      */
     isTVSelectable: PropTypes.bool,
 
     /**
-     * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
-     *
-     * @platform ios
+     * May be set to true to force the TV focus engine to move focus to this view.
      */
     hasTVPreferredFocus: PropTypes.bool,
 
@@ -37,6 +33,9 @@ var TVViewPropTypes = {
      * shiftDistanceY: Defaults to 2.0.
      * tiltAngle: Defaults to 0.05.
      * magnification: Defaults to 1.0.
+     * pressMagnification: Defaults to 1.0.
+     * pressDuration: Defaults to 0.3.
+     * pressDelay: Defaults to 0.0.
      *
      * @platform ios
      */

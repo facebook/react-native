@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const React = require('React');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
@@ -26,27 +27,18 @@ import type {
 } from 'ViewAccessibility';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
+import type {Layout, LayoutEvent} from 'CoreEventTypes';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-export type ViewLayout = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-}
-
-export type ViewLayoutEvent = {
-  nativeEvent: {
-    layout: ViewLayout,
-  }
-}
+export type ViewLayout = Layout;
+export type ViewLayoutEvent = LayoutEvent;
 
 // There's no easy way to create a different type if (Platform.isTVOS):
 // so we must include TVViewProps
 export type ViewProps = {
   accessible?: bool,
-  accessibilityLabel?: React$PropType$Primitive<any>,
+  accessibilityLabel?: null | React$PropType$Primitive<any> | string | Array<any> | any,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
@@ -54,24 +46,25 @@ export type ViewProps = {
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   accessibilityViewIsModal?: bool,
   accessibilityElementsHidden?: bool,
+  children?: ?React.Node,
   onAccessibilityAction?: Function,
   onAccessibilityTap?: Function,
   onMagicTap?: Function,
-  testID?: string,
+  testID?: ?string,
   nativeID?: string,
-  onLayout?: (event: ViewLayoutEvent) => void,
-  onResponderGrant?: Function,
-  onResponderMove?: Function,
-  onResponderReject?: Function,
-  onResponderRelease?: Function,
-  onResponderTerminate?: Function,
-  onResponderTerminationRequest?: Function,
-  onStartShouldSetResponder?: Function,
-  onStartShouldSetResponderCapture?: Function,
-  onMoveShouldSetResponder?: Function,
-  onMoveShouldSetResponderCapture?: Function,
-  hitSlop?: EdgeInsetsProp,
-  pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
+  onLayout?: ?(event: LayoutEvent) => void,
+  onResponderGrant?: ?Function,
+  onResponderMove?: ?Function,
+  onResponderReject?: ?Function,
+  onResponderRelease?: ?Function,
+  onResponderTerminate?: ?Function,
+  onResponderTerminationRequest?: ?Function,
+  onStartShouldSetResponder?: ?Function,
+  onStartShouldSetResponderCapture?: ?Function,
+  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponderCapture?: ?Function,
+  hitSlop?: ?EdgeInsetsProp,
+  pointerEvents?: null | 'box-none'| 'none'| 'box-only'| 'auto',
   style?: stylePropType,
   removeClippedSubviews?: bool,
   renderToHardwareTextureAndroid?: bool,

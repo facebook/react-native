@@ -105,6 +105,17 @@
 #define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
 
 /**
+  * This attribute is used for static analysis.
+  */
+#if !defined RCT_DYNAMIC
+#if __has_attribute(objc_dynamic)
+#define RCT_DYNAMIC __attribute__((objc_dynamic))
+#else
+#define RCT_DYNAMIC
+#endif
+#endif
+
+/**
  * Throw an assertion for unimplemented methods.
  */
 #define RCT_NOT_IMPLEMENTED(method) \

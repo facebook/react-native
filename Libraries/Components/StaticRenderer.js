@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var React = require('React');
+const React = require('React');
 
-var PropTypes = require('prop-types');
+const PropTypes = require('prop-types');
 
 class StaticRenderer extends React.Component<{
   shouldUpdate: boolean,

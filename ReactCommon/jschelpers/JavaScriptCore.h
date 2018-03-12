@@ -122,6 +122,7 @@ jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithC
 #define JSC_JSValueToObject(...) __jsc_wrapper(JSValueToObject, __VA_ARGS__)
 #define JSC_JSValueToStringCopy(...) __jsc_wrapper(JSValueToStringCopy, __VA_ARGS__)
 #define JSC_JSValueUnprotect(...) __jsc_wrapper(JSValueUnprotect, __VA_ARGS__)
+#define JSC_JSValueIsNull(...) __jsc_wrapper(JSValueIsNull, __VA_ARGS__)
 
 jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSValueIsArray
            JSValueIsBoolean JSValueIsDate JSValueIsEqual JSValueIsInstanceOfConstructor

@@ -5,6 +5,7 @@ cxx_library(
     srcs = [
         "glog_init.cpp",
     ],
+    header_namespace = "",
     exported_headers = ["fb/glog_init.h"],
     compiler_flags = [
         "-fexceptions",

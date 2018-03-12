@@ -62,19 +62,20 @@ struct YGCachedMeasurement {
     bool isEqual = widthMeasureMode == measurement.widthMeasureMode &&
         heightMeasureMode == measurement.heightMeasureMode;
 
-    if (!std::isnan(availableWidth) ||
-        !std::isnan(measurement.availableWidth)) {
+    if (!YGFloatIsUndefined(availableWidth) ||
+        !YGFloatIsUndefined(measurement.availableWidth)) {
       isEqual = isEqual && availableWidth == measurement.availableWidth;
     }
-    if (!std::isnan(availableHeight) ||
-        !std::isnan(measurement.availableHeight)) {
+    if (!YGFloatIsUndefined(availableHeight) ||
+        !YGFloatIsUndefined(measurement.availableHeight)) {
       isEqual = isEqual && availableHeight == measurement.availableHeight;
     }
-    if (!std::isnan(computedWidth) || !std::isnan(measurement.computedWidth)) {
+    if (!YGFloatIsUndefined(computedWidth) ||
+        !YGFloatIsUndefined(measurement.computedWidth)) {
       isEqual = isEqual && computedWidth == measurement.computedWidth;
     }
-    if (!std::isnan(computedHeight) ||
-        !std::isnan(measurement.computedHeight)) {
+    if (!YGFloatIsUndefined(computedHeight) ||
+        !YGFloatIsUndefined(measurement.computedHeight)) {
       isEqual = isEqual && computedHeight == measurement.computedHeight;
     }
 

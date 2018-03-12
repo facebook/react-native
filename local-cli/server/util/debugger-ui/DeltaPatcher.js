@@ -30,6 +30,7 @@
         pre: new Map(),
         post: new Map(),
         modules: new Map(),
+        id: undefined,
       };
       this._initialized = false;
       this._lastNumModifiedFiles = 0;
@@ -66,6 +67,7 @@
           pre: new Map(),
           post: new Map(),
           modules: new Map(),
+          id: undefined,
         };
       }
 
@@ -80,7 +82,13 @@
       this._patchMap(this._lastBundle.post, deltaBundle.post);
       this._patchMap(this._lastBundle.modules, deltaBundle.delta);
 
+      this._lastBundle.id = deltaBundle.id;
+
       return this;
+    }
+
+    getLastBundleId() {
+      return this._lastBundle.id;
     }
 
     /**

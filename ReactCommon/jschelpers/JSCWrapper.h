@@ -52,9 +52,9 @@ JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
 #endif
 
 #if defined(__APPLE__)
-#import <objc/objc.h>
-#import <JavaScriptCore/JSStringRefCF.h>
-#import <string>
+#include <objc/objc.h>
+#include <JavaScriptCore/JSStringRefCF.h>
+#include <string>
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -139,6 +139,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToObject);
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
+  JSC_WRAPPER_METHOD(JSValueIsNull);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);

@@ -22,6 +22,18 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   private @Nullable String mText = null;
 
+  public ReactRawTextShadowNode() { }
+
+  private ReactRawTextShadowNode(ReactRawTextShadowNode node) {
+    super(node);
+    this.mText = node.mText;
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopy() {
+    return new ReactRawTextShadowNode(this);
+  }
+
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
@@ -35,5 +47,10 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
   @Override
   public boolean isVirtual() {
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return getViewClass() + " [text: " + mText + "]";
   }
 }
