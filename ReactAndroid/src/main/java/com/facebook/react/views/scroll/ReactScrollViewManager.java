@@ -124,9 +124,6 @@ public class ReactScrollViewManager
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
-  /**
-   * Enables/Disables nested scrolling
-   */
   @ReactProp(name = "nestedScrollEnabled")
   public void setNestedScrollEnabled(ReactScrollView view, boolean value) {
     ViewCompat.setNestedScrollingEnabled(view, value);
