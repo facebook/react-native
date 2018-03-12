@@ -69,16 +69,12 @@ public class MultiPostprocessor implements Postprocessor {
     try {
       for (Postprocessor p : mPostprocessors) {
         nextBitmap = p.process(prevBitmap != null ? prevBitmap.get() : sourceBitmap, bitmapFactory);
-        if (prevBitmap != null) {
-          prevBitmap.close();
-        }
+        CloseableReference.closeSafely(prevBitmap);
         prevBitmap = nextBitmap.clone();
       }
       return nextBitmap.clone();
     } finally {
-      if (nextBitmap != null) {
-        nextBitmap.close();
-      }
+      CloseableReference.closeSafely(nextBitmap);
     }
   }
 }

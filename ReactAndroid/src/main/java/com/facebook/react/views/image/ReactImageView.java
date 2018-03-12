@@ -173,7 +173,7 @@ public class ReactImageView extends GenericDraweeView {
         canvas.drawRect(destRect, paint);
         return output.clone();
       } finally {
-        output.close();
+        CloseableReference.closeSafely(output);
       }
     }
   }
