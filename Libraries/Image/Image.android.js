@@ -119,7 +119,7 @@ var Image = createReactClass({
      *
      * See https://facebook.github.io/react-native/docs/image.html#resizemode
      */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat', 'center']),
   },
 
   statics: {
