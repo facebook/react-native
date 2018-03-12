@@ -52,16 +52,10 @@ public class ImageResizeMode {
    * See {@code ImageResizeMode.js}.
    */
   public static Shader.TileMode toTileMode(@Nullable String resizeModeValue) {
-    if ("contain".equals(resizeModeValue)) {
-      return Shader.TileMode.CLAMP;
-    }
-    if ("cover".equals(resizeModeValue)) {
-      return Shader.TileMode.CLAMP;
-    }
-    if ("stretch".equals(resizeModeValue)) {
-      return Shader.TileMode.CLAMP;
-    }
-    if ("center".equals(resizeModeValue)) {
+    if ("contain".equals(resizeModeValue)
+        || "cover".equals(resizeModeValue)
+        || "stretch".equals(resizeModeValue)
+        || "center".equals(resizeModeValue)) {
       return Shader.TileMode.CLAMP;
     }
     if ("repeat".equals(resizeModeValue)) {
