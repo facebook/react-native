@@ -103,7 +103,7 @@ public class ReactScrollViewCommandHelper {
         // TODO(dannycochran) Eventually this can be removed in favor of just
         // looking at "duration" once support also exists on iOS.
         int duration = 0;
-        if (!args.isNull(3)) {
+        if (!args.isNull(1)) {
           duration = (int) Math.round(args.getDouble(1));
         } else {
           duration = args.getBoolean(2) ? LEGACY_ANIMATION_DURATION : 0;
