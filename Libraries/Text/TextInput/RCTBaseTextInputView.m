@@ -100,7 +100,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setText:(NSString *)text
 {
-  [self setAttributedText:[[NSAttributedString alloc] initWithString: text]];
+  if (self.attributedText.length > 0) {
+    //copy the attributes
+    NSRange range = NSMakeRange(self.attributedText.length-1, self.attributedText.length);
+    NSDictionary *attributes = [self.attributedText attributesAtIndex:0 effectiveRange:&range];
+    NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
+    NSMutableAttributedString *primaryStringMutable = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    
+    //change the string
+    [primaryStringMutable setAttributedString:newString];
+    [self setAttributedText:[[NSAttributedString alloc] initWithAttributedString:primaryStringMutable]];
+  } else {
+    [self setAttributedText:[[NSAttributedString alloc] initWithString: text]];
+  }
 }
 
 - (NSAttributedString *)attributedText
