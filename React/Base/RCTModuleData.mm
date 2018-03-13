@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTModuleData.h"
@@ -328,46 +326,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
   return constants;
-}
-
-// TODO 10487027: this method can go once RCTBatchedBridge is gone
-- (NSArray *)config
-{
-  NSDictionary<NSString *, id> *constants = [self exportedConstants];
-  if (constants.count == 0 && self.methods.count == 0) {
-    return (id)kCFNull; // Nothing to export
-  }
-
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
-  NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
-  NSMutableArray<NSNumber *> *promiseMethods = nil;
-  NSMutableArray<NSNumber *> *syncMethods = nil;
-
-  for (id<RCTBridgeMethod> method in self.methods) {
-    if (method.functionType == RCTFunctionTypePromise) {
-      if (!promiseMethods) {
-        promiseMethods = [NSMutableArray new];
-      }
-      [promiseMethods addObject:@(methods.count)];
-    }
-    else if (method.functionType == RCTFunctionTypeSync) {
-      if (!syncMethods) {
-        syncMethods = [NSMutableArray new];
-      }
-      [syncMethods addObject:@(methods.count)];
-    }
-    [methods addObject:@(method.JSMethodName)];
-  }
-
-  NSArray *config = @[
-    self.name,
-    RCTNullIfNil(constants),
-    RCTNullIfNil(methods),
-    RCTNullIfNil(promiseMethods),
-    RCTNullIfNil(syncMethods)
-  ];
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]));
-  return config;
 }
 
 - (dispatch_queue_t)methodQueue

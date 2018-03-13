@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule UIManager
  * @flow
@@ -79,7 +77,7 @@ if (Platform.OS === 'ios') {
       });
     }
   });
-} else if (Platform.OS === 'android' && UIManager.ViewManagerNames) {
+} else if (UIManager.ViewManagerNames) {
   UIManager.ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(UIManager, viewManagerName, {
       get: () => UIManager.getConstantsForViewManager(viewManagerName),

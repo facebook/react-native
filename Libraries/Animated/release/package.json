@@ -7,7 +7,7 @@
     "animated",
     "animation"
   ],
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "main": "Animated.js",
   "dependencies": {
     "fbjs": "^0.2.1"

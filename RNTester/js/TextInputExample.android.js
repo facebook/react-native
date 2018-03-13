@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule TextInputExample
@@ -334,7 +332,7 @@ class AutogrowingTextInputExample extends React.Component<{}> {
     };
   }
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState({
       multiline: props.multiline,
     });
@@ -564,6 +562,31 @@ exports.examples = [
           <TextInput
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'letterSpacing',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 0}]}
+            placeholder="letterSpacing = 0"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 2}]}
+            placeholder="letterSpacing = 2"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 9}]}
+            placeholder="letterSpacing = 9"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: -1}]}
+            placeholder="letterSpacing = -1"
           />
         </View>
       );

@@ -1,15 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
 #import <React/RCTViewManager.h>
+
+typedef dispatch_block_t RCTUIManagerMountingBlock;
 
 /**
  * Allows hooking into UIManager internals. This can be used to execute code at
@@ -44,6 +44,13 @@
  * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
+
+/**
+ * Called right before flushing UI blocks and allows to intercept the mounting process.
+ * Return `YES` to cancel default execution of the `block` (and perform the
+ * execution later).
+ */
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block;
 
 /**
  * Called just after flushing UI blocks.

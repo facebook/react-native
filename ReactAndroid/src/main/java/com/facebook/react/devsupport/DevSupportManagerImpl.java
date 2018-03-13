@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
@@ -47,6 +45,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.InspectorPackagerConnection;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -114,6 +113,8 @@ public class DevSupportManagerImpl implements
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
+  private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
+
   private enum ErrorType {
     JS,
     NATIVE
@@ -155,6 +156,8 @@ public class DevSupportManagerImpl implements
   private @Nullable ErrorType mLastErrorType;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
+
+  private InspectorPackagerConnection.BundleStatus mBundleStatus;
 
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
@@ -217,7 +220,17 @@ public class DevSupportManagerImpl implements
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings, mApplicationContext.getPackageName());
+    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
+    mDevServerHelper = new DevServerHelper(
+      mDevSettings,
+      mApplicationContext.getPackageName(),
+      new InspectorPackagerConnection.BundleStatusProvider() {
+        @Override
+        public InspectorPackagerConnection.BundleStatus getBundleStatus() {
+          return mBundleStatus;
+        }
+      }
+    );
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -233,7 +246,7 @@ public class DevSupportManagerImpl implements
       @Override
       public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (DevServerHelper.getReloadAppAction(context).equals(action)) {
+        if (getReloadAppAction(context).equals(action)) {
           if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
             mDevSettings.setRemoteJSDebugEnabled(true);
             mDevServerHelper.launchJSDevtools();
@@ -812,7 +825,9 @@ public class DevSupportManagerImpl implements
 
     UiThreadUtil.assertOnUiThread();
 
-    ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
+    ReactMarker.logMarker(
+        ReactMarkerConstants.RELOAD,
+        mDevSettings.getPackagerConnectionSettings().getDebugServerHost());
 
     // dismiss redbox if exists
     hideRedboxDialog();
@@ -1026,12 +1041,16 @@ public class DevSupportManagerImpl implements
 
     final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
 
-    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+    mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
           public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            synchronized (DevSupportManagerImpl.this) {
+              mBundleStatus.isLastDownloadSucess = true;
+              mBundleStatus.updateTimestamp = System.currentTimeMillis();
+            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -1057,6 +1076,9 @@ public class DevSupportManagerImpl implements
           public void onFailure(final Exception cause) {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
+            synchronized (DevSupportManagerImpl.this) {
+              mBundleStatus.isLastDownloadSucess = false;
+            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
@@ -1114,7 +1136,7 @@ public class DevSupportManagerImpl implements
       // register reload app broadcast receiver
       if (!mIsReceiverRegistered) {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(DevServerHelper.getReloadAppAction(mApplicationContext));
+        filter.addAction(getReloadAppAction(mApplicationContext));
         mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
         mIsReceiverRegistered = true;
       }
@@ -1167,4 +1189,8 @@ public class DevSupportManagerImpl implements
     }
   }
 
+  /** Intent action for reloading the JS */
+  private static String getReloadAppAction(Context context) {
+    return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
+  }
 }

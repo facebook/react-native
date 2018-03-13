@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule InspectorPanel
  * @flow
@@ -82,8 +80,8 @@ class InspectorPanel extends React.Component<$FlowFixMeProps> {
             onClick={this.props.setNetworking}
           />
           <Button title={'Touchables'}
-            pressed={this.props.touchTargetting}
-            onClick={this.props.setTouchTargetting}
+            pressed={this.props.touchTargeting}
+            onClick={this.props.setTouchTargeting}
           />
         </View>
       </View>
@@ -98,8 +96,8 @@ InspectorPanel.propTypes = {
   inspected: PropTypes.object,
   perfing: PropTypes.bool,
   setPerfing: PropTypes.func,
-  touchTargetting: PropTypes.bool,
-  setTouchTargetting: PropTypes.func,
+  touchTargeting: PropTypes.bool,
+  setTouchTargeting: PropTypes.func,
   networking: PropTypes.bool,
   setNetworking: PropTypes.func,
 };

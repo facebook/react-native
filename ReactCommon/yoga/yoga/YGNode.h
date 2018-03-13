@@ -1,15 +1,14 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
 #include <stdio.h>
-
+#include "YGLayout.h"
+#include "YGStyle.h"
 #include "Yoga-internal.h"
 
 struct YGNode {
@@ -72,6 +71,7 @@ struct YGNode {
   uint32_t getLineIndex() const;
   YGNodeRef getParent() const;
   YGVector getChildren() const;
+  uint32_t getChildrenCount() const;
   YGNodeRef getChild(uint32_t index) const;
   YGNodeRef getNextChild() const;
   YGConfigRef getConfig() const;
@@ -93,6 +93,10 @@ struct YGNode {
   float getLeadingPaddingAndBorder(
       const YGFlexDirection axis,
       const float widthSize);
+  float getTrailingPaddingAndBorder(
+      const YGFlexDirection axis,
+      const float widthSize);
+  float getMarginForAxis(const YGFlexDirection axis, const float widthSize);
   // Setters
 
   void setContext(void* context);
@@ -129,6 +133,10 @@ struct YGNode {
       const float mainSize,
       const float crossSize,
       const float parentWidth);
+  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
+  void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
+  void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
+  void markDirtyAndPropogateDownwards();
 
   // Other methods
   YGValue marginLeadingValue(const YGFlexDirection axis) const;
@@ -150,4 +158,6 @@ struct YGNode {
   float resolveFlexGrow();
   float resolveFlexShrink();
   bool isNodeFlexible();
+  bool didUseLegacyFlag();
+  bool isLayoutTreeEqualToNode(const YGNode& node) const;
 };

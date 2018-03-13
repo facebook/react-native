@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TouchableOpacity
  * @noflow
@@ -13,22 +11,22 @@
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
-var Animated = require('Animated');
-var Easing = require('Easing');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const Animated = require('Animated');
+const Easing = require('Easing');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactClass = require('create-react-class');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var flattenStyle = require('flattenStyle');
+const createReactClass = require('create-react-class');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const flattenStyle = require('flattenStyle');
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -118,7 +116,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  *
  */
-var TouchableOpacity = createReactClass({
+const TouchableOpacity = createReactClass({
   displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
@@ -130,9 +128,7 @@ var TouchableOpacity = createReactClass({
      */
     activeOpacity: PropTypes.number,
     /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
+     * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
@@ -158,8 +154,14 @@ var TouchableOpacity = createReactClass({
     ensurePositiveDelayProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
+  },
+
+  componentDidUpdate: function(prevProps, prevState) {
+    if (this.props.disabled !== prevProps.disabled) {
+      this._opacityInactive(250);
+    }
   },
 
   /**
@@ -236,7 +238,7 @@ var TouchableOpacity = createReactClass({
   },
 
   _getChildStyleOpacityWithDefault: function() {
-   var childStyle = flattenStyle(this.props.style) || {};
+   const childStyle = flattenStyle(this.props.style) || {};
    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
  },
 
