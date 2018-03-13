@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUITextView.h"
@@ -60,19 +58,19 @@ static UIColor *defaultPlaceholderColor()
 - (NSString *)accessibilityLabel
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
-  
+
   NSString *superAccessibilityLabel = [super accessibilityLabel];
   if (superAccessibilityLabel.length > 0) {
     [accessibilityLabel appendString:superAccessibilityLabel];
   }
-  
-  if (self.placeholder.length > 0 && self.text.length == 0) {
+
+  if (self.placeholder.length > 0 && self.attributedText.string.length == 0) {
     if (accessibilityLabel.length > 0) {
       [accessibilityLabel appendString:@" "];
     }
     [accessibilityLabel appendString:self.placeholder];
   }
-  
+
   return accessibilityLabel;
 }
 
@@ -193,7 +191,7 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)intrinsicContentSize
 {
   // Returning size DOES contain `textContainerInset` (aka `padding`).
-  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, INFINITY)];
+  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, CGFLOAT_MAX)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
@@ -230,11 +228,22 @@ static UIColor *defaultPlaceholderColor()
   return [_detachedTextView sizeThatFits:size];
 }
 
+#pragma mark - Context Menu
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if (_contextMenuHidden) {
+    return NO;
+  }
+
+  return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark - Placeholder
 
 - (void)invalidatePlaceholderVisibility
 {
-  BOOL isVisible = _placeholder.length != 0 && self.text.length == 0;
+  BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
 }
 

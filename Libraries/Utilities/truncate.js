@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule truncate
  * @flow
@@ -27,12 +25,16 @@ const defaultOptions = {
 const truncate = function(
   str: ?string,
   maxChars: number,
-  options: truncateOptions
+  options?: truncateOptions
 ): ?string {
   options = Object.assign({}, defaultOptions, options);
   if (str && str.length &&
       str.length - options.minDelta + options.elipsis.length >= maxChars) {
-    str = str.slice(0, maxChars - options.elipsis.length + 1);
+    // If the slice is happening in the middle of a wide char, add one more char
+    var extraChar = str.charCodeAt(maxChars - options.elipsis.length) > 255
+      ? 1
+      : 0;
+    str = str.slice(0, maxChars - options.elipsis.length + 1 + extraChar);
     if (options.breakOnWords) {
       var ii = Math.max(str.lastIndexOf(' '), str.lastIndexOf('\n'));
       str = str.slice(0, ii);

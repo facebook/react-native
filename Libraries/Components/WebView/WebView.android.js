@@ -1,39 +1,37 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule WebView
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var ActivityIndicator = require('ActivityIndicator');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('UIManager');
-var View = require('View');
-var ViewPropTypes = require('ViewPropTypes');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const ActivityIndicator = require('ActivityIndicator');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
-var deprecatedPropType = require('deprecatedPropType');
-var keyMirror = require('fbjs/lib/keyMirror');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+const deprecatedPropType = require('deprecatedPropType');
+const keyMirror = require('fbjs/lib/keyMirror');
+const requireNativeComponent = require('requireNativeComponent');
+const resolveAssetSource = require('resolveAssetSource');
 
-var RCT_WEBVIEW_REF = 'webview';
+const RCT_WEBVIEW_REF = 'webview';
 
-var WebViewState = keyMirror({
+const WebViewState = keyMirror({
   IDLE: null,
   LOADING: null,
   ERROR: null,
 });
 
-var defaultRenderLoading = () => (
+const defaultRenderLoading = () => (
   <View style={styles.loadingView}>
     <ActivityIndicator
       style={styles.loadingProgressBar}
@@ -247,19 +245,19 @@ class WebView extends React.Component {
     startInLoadingState: true,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
   }
 
   render() {
-    var otherView = null;
+    let otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
-      var errorEvent = this.state.lastErrorEvent;
+      const errorEvent = this.state.lastErrorEvent;
       otherView = this.props.renderError && this.props.renderError(
         errorEvent.domain,
         errorEvent.code,
@@ -268,14 +266,14 @@ class WebView extends React.Component {
       console.error('RCTWebView invalid state encountered: ' + this.state.loading);
     }
 
-    var webViewStyles = [styles.container, this.props.style];
+    const webViewStyles = [styles.container, this.props.style];
     if (this.state.viewState === WebViewState.LOADING ||
       this.state.viewState === WebViewState.ERROR) {
       // if we're in either LOADING or ERROR states, don't show the webView
       webViewStyles.push(styles.hidden);
     }
 
-    var source = this.props.source || {};
+    const source = this.props.source || {};
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
@@ -292,7 +290,7 @@ class WebView extends React.Component {
 
     let NativeWebView = nativeConfig.component || RCTWebView;
 
-    var webView =
+    const webView =
       <NativeWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
@@ -401,14 +399,14 @@ class WebView extends React.Component {
   };
 
   onLoadingStart = (event) => {
-    var onLoadStart = this.props.onLoadStart;
+    const onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   };
 
   onLoadingError = (event) => {
     event.persist(); // persist this event because we need to store it
-    var {onError, onLoadEnd} = this.props;
+    const {onError, onLoadEnd} = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
@@ -420,7 +418,7 @@ class WebView extends React.Component {
   };
 
   onLoadingFinish = (event) => {
-    var {onLoad, onLoadEnd} = this.props;
+    const {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
@@ -430,14 +428,14 @@ class WebView extends React.Component {
   };
 
   onMessage = (event: Event) => {
-    var {onMessage} = this.props;
+    const {onMessage} = this.props;
     onMessage && onMessage(event);
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
+const RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -1,40 +1,38 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NavigatorIOS
  * @flow
  */
 'use strict';
 
-var EventEmitter = require('EventEmitter');
-var Image = require('Image');
-var RCTNavigatorManager = require('NativeModules').NavigatorManager;
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var StaticContainer = require('StaticContainer.react');
-var StyleSheet = require('StyleSheet');
-var TVEventHandler = require('TVEventHandler');
-var View = require('View');
-var ViewPropTypes = require('ViewPropTypes');
+const EventEmitter = require('EventEmitter');
+const Image = require('Image');
+const RCTNavigatorManager = require('NativeModules').NavigatorManager;
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const StaticContainer = require('StaticContainer.react');
+const StyleSheet = require('StyleSheet');
+const TVEventHandler = require('TVEventHandler');
+const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var invariant = require('fbjs/lib/invariant');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const invariant = require('fbjs/lib/invariant');
+const requireNativeComponent = require('requireNativeComponent');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const keyMirror = require('fbjs/lib/keyMirror');
 
-var TRANSITIONER_REF = 'transitionerRef';
+const TRANSITIONER_REF = 'transitionerRef';
 
-var __uid = 0;
+let __uid = 0;
 function getuid() {
   return __uid++;
 }
@@ -307,7 +305,7 @@ type Event = Object;
  * is pushed.
  *
  */
-var NavigatorIOS = createReactClass({
+const NavigatorIOS = createReactClass({
   displayName: 'NavigatorIOS',
 
   propTypes: {
@@ -337,7 +335,7 @@ var NavigatorIOS = createReactClass({
       /**
        * Use this to specify additional props to pass to the rendered
        * component. `NavigatorIOS` will automatically pass in `route` and
-       * `navigator` props to the comoponent.
+       * `navigator` props to the component.
        */
       passProps: PropTypes.object,
 
@@ -515,7 +513,7 @@ var NavigatorIOS = createReactClass({
 
   navigator: (undefined: ?Object),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
     this.navigator = {
@@ -586,7 +584,7 @@ var NavigatorIOS = createReactClass({
 
   _getFocusEmitter: function(): EventEmitter {
     // Flow not yet tracking assignments to instance fields.
-    var focusEmitter = this._focusEmitter;
+    let focusEmitter = this._focusEmitter;
     if (!focusEmitter) {
       focusEmitter = new EventEmitter();
       this._focusEmitter = focusEmitter;
@@ -616,13 +614,13 @@ var NavigatorIOS = createReactClass({
   },
 
   _handleNavigatorStackChanged: function(e: Event) {
-    var newObservedTopOfStack = e.nativeEvent.stackLength - 1;
+    const newObservedTopOfStack = e.nativeEvent.stackLength - 1;
 
     invariant(
       newObservedTopOfStack <= this.state.requestedTopOfStack,
       'No navigator item should be pushed without JS knowing about it %s %s', newObservedTopOfStack, this.state.requestedTopOfStack
     );
-    var wasWaitingForConfirmation =
+    const wasWaitingForConfirmation =
       this.state.requestedTopOfStack !== this.state.observedTopOfStack;
     if (wasWaitingForConfirmation) {
       invariant(
@@ -640,7 +638,7 @@ var NavigatorIOS = createReactClass({
     // Progress isn't always 0 or 1 at the end, the system rounds
     // If the Navigator is offscreen these values won't be updated
     // TOOD: Revisit this decision when no longer relying on native navigator.
-    var nextState = {
+    const nextState = {
       observedTopOfStack: newObservedTopOfStack,
       makingNavigatorRequest: false,
       updatingAllIndicesAtOrBeyond: null,
@@ -655,7 +653,7 @@ var NavigatorIOS = createReactClass({
     // Updating the indices that we're deleting and that's all. (Truth: Nothing
     // even uses the indices in this case, but let's make this describe the
     // truth anyways).
-    var updatingAllIndicesAtOrBeyond =
+    const updatingAllIndicesAtOrBeyond =
       this.state.routeStack.length > this.state.observedTopOfStack + 1 ?
       this.state.observedTopOfStack + 1 :
       null;
@@ -679,8 +677,8 @@ var NavigatorIOS = createReactClass({
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
       this._tryLockNavigator(() => {
 
-        var nextStack = this.state.routeStack.concat([route]);
-        var nextIDStack = this.state.idStack.concat([getuid()]);
+        const nextStack = this.state.routeStack.concat([route]);
+        const nextIDStack = this.state.idStack.concat([getuid()]);
         this.setState({
           // We have to make sure that we've also supplied enough views to
           // satisfy our request to adjust the `requestedTopOfStack`.
@@ -706,7 +704,7 @@ var NavigatorIOS = createReactClass({
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
       if (this.state.requestedTopOfStack > 0) {
         this._tryLockNavigator(() => {
-          var newRequestedTopOfStack = this.state.requestedTopOfStack - n;
+          const newRequestedTopOfStack = this.state.requestedTopOfStack - n;
           invariant(newRequestedTopOfStack >= 0, 'Cannot pop below 0');
           this.setState({
             requestedTopOfStack: newRequestedTopOfStack,
@@ -744,8 +742,8 @@ var NavigatorIOS = createReactClass({
 
     // I don't believe we need to lock for a replace since there's no
     // navigation actually happening
-    var nextIDStack = this.state.idStack.slice();
-    var nextRouteStack = this.state.routeStack.slice();
+    const nextIDStack = this.state.idStack.slice();
+    const nextRouteStack = this.state.routeStack.slice();
     nextIDStack[index] = getuid();
     nextRouteStack[index] = route;
 
@@ -787,12 +785,12 @@ var NavigatorIOS = createReactClass({
    * @param route The new route to navigate to.
    */
   popToRoute: function(route: Route) {
-    var indexOfRoute = this.state.routeStack.indexOf(route);
+    const indexOfRoute = this.state.routeStack.indexOf(route);
     invariant(
       indexOfRoute !== -1,
       'Calling pop to route for a route that doesn\'t exist!'
     );
-    var numToPop = this.state.routeStack.length - indexOfRoute - 1;
+    const numToPop = this.state.routeStack.length - indexOfRoute - 1;
     this.popN(numToPop);
   },
 
@@ -843,12 +841,12 @@ var NavigatorIOS = createReactClass({
   },
 
   _routeToStackItem: function(routeArg: Route, i: number) {
-    var {component, wrapperStyle, passProps, ...route} = routeArg;
-    var {itemWrapperStyle, ...props} = this.props;
-    var shouldUpdateChild =
+    const {component, wrapperStyle, passProps, ...route} = routeArg;
+    const {itemWrapperStyle, ...props} = this.props;
+    const shouldUpdateChild =
       this.state.updatingAllIndicesAtOrBeyond != null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
-    var Component = component;
+    const Component = component;
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
@@ -870,12 +868,12 @@ var NavigatorIOS = createReactClass({
   },
 
   _renderNavigationStackItems: function() {
-    var shouldRecurseToNavigator =
+    const shouldRecurseToNavigator =
       this.state.makingNavigatorRequest ||
       this.state.updatingAllIndicesAtOrBeyond !== null;
     // If not recursing update to navigator at all, may as well avoid
     // computation of navigator children.
-    var items = shouldRecurseToNavigator ?
+    const items = shouldRecurseToNavigator ?
       this.state.routeStack.map(this._routeToStackItem) : null;
     return (
       <StaticContainer shouldUpdate={shouldRecurseToNavigator}>
@@ -921,7 +919,7 @@ var NavigatorIOS = createReactClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   stackItem: {
     backgroundColor: 'white',
     overflow: 'hidden',
@@ -936,7 +934,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTNavigator = requireNativeComponent('RCTNavigator');
-var RCTNavigatorItem = requireNativeComponent('RCTNavItem');
+const RCTNavigator = requireNativeComponent('RCTNavigator');
+const RCTNavigatorItem = requireNativeComponent('RCTNavItem');
 
 module.exports = NavigatorIOS;

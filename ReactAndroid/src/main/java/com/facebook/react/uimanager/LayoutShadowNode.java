@@ -37,6 +37,13 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     float value;
     YogaUnit unit;
 
+    private MutableYogaValue() { }
+
+    private MutableYogaValue(MutableYogaValue mutableYogaValue) {
+      this.value = mutableYogaValue.value;
+      this.unit = mutableYogaValue.unit;
+    }
+
     void setFromDynamic(Dynamic dynamic) {
       if (dynamic.isNull()) {
         unit = YogaUnit.UNDEFINED;
@@ -59,7 +66,21 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
   }
 
-  private final MutableYogaValue mTempYogaValue = new MutableYogaValue();
+  private final MutableYogaValue mTempYogaValue;
+
+  public LayoutShadowNode() {
+    mTempYogaValue = new MutableYogaValue();
+  }
+
+  protected LayoutShadowNode(LayoutShadowNode node) {
+    super(node);
+    mTempYogaValue = new MutableYogaValue(node.mTempYogaValue);
+  }
+
+  @Override
+  public LayoutShadowNode mutableCopy() {
+    return new LayoutShadowNode(this);
+  }
 
   @ReactProp(name = ViewProps.WIDTH)
   public void setWidth(Dynamic width) {
@@ -484,6 +505,10 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
       }
       case "space-around": {
         setJustifyContent(YogaJustify.SPACE_AROUND);
+        break;
+      }
+      case "space-evenly": {
+        setJustifyContent(YogaJustify.SPACE_EVENLY);
         break;
       }
       default: {

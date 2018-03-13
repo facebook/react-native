@@ -39,10 +39,6 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
-#if defined(WITH_JSC_MEMORY_PRESSURE)
-#include <jsc_memory.h>
-#endif
-
 #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
 #endif
@@ -119,16 +115,18 @@ namespace facebook {
 
     std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
                                                                      std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
-      return folly::make_unique<JSCExecutor>(delegate, jsQueue, m_jscConfig);
+      return folly::make_unique<JSCExecutor>(delegate, jsQueue, m_jscConfig, m_nativeExtensionsProvider);
     }
 
     JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                              std::shared_ptr<MessageQueueThread> messageQueueThread,
-                             const folly::dynamic& jscConfig) throw(JSException) :
+                             const folly::dynamic& jscConfig,
+                             std::function<folly::dynamic(const std::string &)> nativeExtensionsProvider) throw(JSException) :
     m_delegate(delegate),
     m_messageQueueThread(messageQueueThread),
     m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
-    m_jscConfig(jscConfig) {
+    m_jscConfig(jscConfig),
+    m_nativeExtensionsProvider(nativeExtensionsProvider) {
       initOnJSVMThread();
 
       {
@@ -136,6 +134,8 @@ namespace facebook {
         installGlobalProxy(m_context, "nativeModuleProxy",
                            exceptionWrapMethod<&JSCExecutor::getNativeModule>());
       }
+      installGlobalProxy(m_context, "nativeExtensions",
+                         exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
     }
 
     JSCExecutor::~JSCExecutor() {
@@ -459,6 +459,10 @@ namespace facebook {
     void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
       if (m_bundleRegistry) {
         m_bundleRegistry->registerBundle(bundleId, bundlePath);
+      } else {
+        auto sourceUrl = String(m_context, bundlePath.c_str());
+        auto source = adoptString(JSBigFileString::fromPath(bundlePath));
+        evaluateScript(m_context, source, sourceUrl);
       }
     }
 
@@ -577,30 +581,6 @@ namespace facebook {
       callNativeModules(std::move(result));
     }
 
-    Value JSCExecutor::callFunctionSyncWithValue(
-                                                 const std::string& module, const std::string& method, Value args) {
-      SystraceSection s("JSCExecutor::callFunction");
-      Object result = [&] {
-        JSContextLock lock(m_context);
-        if (!m_callFunctionReturnResultAndFlushedQueueJS) {
-          bindBridge();
-        }
-        return m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
-          Value(m_context, String::createExpectingAscii(m_context, module)),
-          Value(m_context, String::createExpectingAscii(m_context, method)),
-          std::move(args),
-        }).asObject();
-      }();
-
-      Value length = result.getProperty("length");
-
-      if (!length.isNumber() || length.asInteger() != 2) {
-        std::runtime_error("Return value of a callFunction must be an array of size 2");
-      }
-      callNativeModules(result.getPropertyAtIndex(1));
-      return result.getPropertyAtIndex(0);
-    }
-
     void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
       try {
         SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
@@ -632,8 +612,8 @@ namespace facebook {
       return String::adopt(m_context, jsString);
 #else
       return script->isAscii()
-      ? String::createExpectingAscii(m_context, script->c_str(), script->size())
-      : String(m_context, script->c_str());
+          ? String::createExpectingAscii(m_context, script->c_str(), script->size())
+          : String(m_context, script->c_str());
 #endif
     }
 
@@ -677,11 +657,22 @@ namespace facebook {
       return m_nativeModules.getModule(m_context, propertyName);
     }
 
-    JSValueRef JSCExecutor::nativeRequire(
-                                          size_t argumentCount,
-                                          const JSValueRef arguments[]) {
-      uint32_t bundleId, moduleId;
-      std::tie(bundleId, moduleId) = parseNativeRequireParameters(m_context, arguments, argumentCount);
+    JSValueRef JSCExecutor::getNativeExtension(JSObjectRef object, JSStringRef propertyName) {
+      if (m_nativeExtensionsProvider) {
+        folly::dynamic value = m_nativeExtensionsProvider(String::ref(m_context, propertyName).str());
+        return Value::fromDynamic(m_context, std::move(value));
+      }
+      return JSC_JSValueMakeUndefined(m_context);
+    }
+
+    JSValueRef JSCExecutor::nativeRequire(size_t count, const JSValueRef arguments[]) {
+      if (count > 2 || count == 0) {
+        throw std::invalid_argument("Got wrong number of args");
+      }
+
+      uint32_t moduleId = folly::to<uint32_t>(Value(m_context, arguments[0]).getNumberOrThrow());
+      uint32_t bundleId = count == 2 ? folly::to<uint32_t>(Value(m_context, arguments[1]).getNumberOrThrow()) : 0;
+
       ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
       loadModule(bundleId, moduleId);
       ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);

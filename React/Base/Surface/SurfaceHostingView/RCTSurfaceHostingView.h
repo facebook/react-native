@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceSizeMeasureMode.h>
 #import <React/RCTSurfaceStage.h>
 
@@ -25,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  * This class can be used as easy-to-use general purpose integration point
  * of ReactNative-powered experiences in UIKit based apps.
  */
-@interface RCTSurfaceHostingView : UIView
+@interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
 
 /**
  * Designated initializer.
@@ -42,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties;
+
+/**
+ * Create an instance of RCTSurface to be hosted.
+ */
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Surface object which is currently using to power the view.

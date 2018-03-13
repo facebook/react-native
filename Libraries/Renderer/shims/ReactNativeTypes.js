@@ -86,12 +86,27 @@ type SecretInternalsType = {
   // And how much information to fill in for the above types.
 };
 
+declare class ReactNativeComponent<Props, State = void>
+  extends React$Component<Props, State> {
+
+  blur(): void,
+  focus(): void,
+  measure(callback: MeasureOnSuccessCallback): void,
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
+  measureLayout(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail: () => void,
+  ): void,
+  setNativeProps(nativeProps: Object): void,
+}
+
 /**
  * Flat ReactNative renderer bundles are too big for Flow to parse efficiently.
  * Provide minimal Flow typing for the high-level RN API and call it a day.
  */
 export type ReactNativeType = {
-  NativeComponent: any,
+  NativeComponent: typeof ReactNativeComponent,
   findNodeHandle(componentOrHandle: any): ?number,
   render(
     element: React$Element<any>,

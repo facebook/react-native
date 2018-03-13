@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule console
  * @polyfill
@@ -12,7 +10,7 @@
  * @format
  */
 
-/* eslint-disable */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
 
 /**
  * This pipes all of our console logging functions to native logging so that
@@ -477,7 +475,7 @@ if (global.nativeLoggingHook) {
     });
 
     // Join all elements in the row into a single string with | separators
-    // (appends extra spaces to each cell to make separators  | alligned)
+    // (appends extra spaces to each cell to make separators  | aligned)
     function joinRow(row, space) {
       var cells = row.map(function(cell, i) {
         var extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');

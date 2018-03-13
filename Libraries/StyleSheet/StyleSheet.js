@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule StyleSheet
  * @flow
+ * @format
  */
 'use strict';
 
@@ -19,33 +18,35 @@ const StyleSheetValidation = require('StyleSheetValidation');
 const flatten = require('flattenStyle');
 
 import type {
-  StyleSheetStyle as _StyleSheetStyle,
-  Styles as _Styles,
-  StyleSheet as _StyleSheet,
-  StyleValue as _StyleValue,
-  StyleObj,
+  ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
+  ____Styles_Internal,
+  ____DangerouslyImpreciseStyleProp_Internal,
+  ____ViewStyleProp_Internal,
+  ____TextStyleProp_Internal,
+  ____ImageStyleProp_Internal,
+  LayoutStyle,
 } from 'StyleSheetTypes';
 
-export type StyleProp = StyleObj;
-export type Styles = _Styles;
-export type StyleSheet<S> = _StyleSheet<S>;
-export type StyleValue = _StyleValue;
-export type StyleSheetStyle = _StyleSheetStyle;
+export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+export type ViewStyleProp = ____ViewStyleProp_Internal;
+export type TextStyleProp = ____TextStyleProp_Internal;
+export type ImageStyleProp = ____ImageStyleProp_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFillObject = {
-  position: ('absolute': 'absolute'),
+const absoluteFillObject: LayoutStyle = {
+  position: 'absolute',
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill: typeof absoluteFillObject =
-  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: StyleSheetInternalStyleIdentifier = ReactNativePropRegistry.register(
+  absoluteFillObject,
+); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -140,11 +141,14 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose(style1: ?StyleProp, style2: ?StyleProp): ?StyleProp {
-    if (style1 && style2) {
+  compose(
+    style1: ?DangerouslyImpreciseStyleProp,
+    style2: ?DangerouslyImpreciseStyleProp,
+  ): ?DangerouslyImpreciseStyleProp {
+    if (style1 != null && style2 != null) {
       return [style1, style2];
     } else {
-      return style1 || style2;
+      return style1 != null ? style1 : style2;
     }
   },
 
@@ -198,7 +202,10 @@ module.exports = {
    * internally to process color and transform values. You should not use this
    * unless you really know what you are doing and have exhausted other options.
    */
-  setStyleAttributePreprocessor(property: string, process: (nextProp: mixed) => mixed) {
+  setStyleAttributePreprocessor(
+    property: string,
+    process: (nextProp: mixed) => mixed,
+  ) {
     let value;
 
     if (typeof ReactNativeStyleAttributes[property] === 'string') {
@@ -214,13 +221,15 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = { ...value, process };
+    ReactNativeStyleAttributes[property] = {...value, process};
   },
 
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<S: Styles>(obj: S): StyleSheet<S> {
+  create<+S: ____Styles_Internal>(
+    obj: S,
+  ): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
     const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);

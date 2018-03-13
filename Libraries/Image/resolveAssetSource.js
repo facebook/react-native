@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule resolveAssetSource
  * @flow
@@ -15,16 +13,15 @@
 
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
-const NativeModules = require('NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
 let _customSourceTransformer, _serverURL, _scriptURL;
+let _sourceCodeScriptURL: ?string;
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
-    var scriptURL = NativeModules.SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
+    const match = _sourceCodeScriptURL && _sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
       // jsBundle was loaded from network
       _serverURL = match[0];
@@ -54,8 +51,7 @@ function _coerceLocalScriptURL(scriptURL: ?string): ?string {
 
 function getScriptURL(): ?string {
   if (_scriptURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.scriptURL;
-    _scriptURL = _coerceLocalScriptURL(scriptURL);
+    _scriptURL = _coerceLocalScriptURL(_sourceCodeScriptURL);
   }
   return _scriptURL;
 }
@@ -90,6 +86,13 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   }
   return resolver.defaultAsset();
 }
+
+let sourceCode = global.nativeExtensions && global.nativeExtensions.SourceCode;
+if (!sourceCode) {
+  const NativeModules = require('NativeModules');
+  sourceCode = NativeModules && NativeModules.SourceCode;
+}
+_sourceCodeScriptURL = sourceCode && sourceCode.scriptURL;
 
 module.exports = resolveAssetSource;
 module.exports.pickScale = AssetSourceResolver.pickScale;

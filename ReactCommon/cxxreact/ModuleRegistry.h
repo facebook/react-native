@@ -56,7 +56,7 @@ class RN_EXPORT ModuleRegistry {
   std::unordered_map<std::string, size_t> modulesByName_;
 
   // This is populated with modules that are requested via getConfig but are unknown.
-  // An error will be thrown if they are subsquently added to the registry.
+  // An error will be thrown if they are subsequently added to the registry.
   std::unordered_set<std::string> unknownModules_;
 
   // Function will be called if a module was requested but was not found.

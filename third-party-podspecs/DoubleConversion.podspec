@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
   spec.name = 'DoubleConversion'
   spec.version = '1.1.5'
-  spec.license = { :type => 'BSD' }
+  spec.license = { :type => 'MIT' }
   spec.homepage = 'https://github.com/google/double-conversion'
   spec.summary = 'Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles'
   spec.authors = 'Google'

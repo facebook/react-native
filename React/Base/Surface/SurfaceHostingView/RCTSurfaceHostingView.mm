@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSurfaceHostingView.h"
@@ -15,7 +13,7 @@
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
 
-@interface RCTSurfaceHostingView () <RCTSurfaceDelegate>
+@interface RCTSurfaceHostingView ()
 
 @property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
 @property (nonatomic, assign) BOOL isSurfaceViewVisible;
@@ -36,12 +34,9 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
 {
-  RCTSurface *surface =
-    [[RCTSurface alloc] initWithBridge:bridge
-                            moduleName:moduleName
-                     initialProperties:initialProperties];
-
+  RCTSurface *surface = [self createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
   return [self initWithSurface:surface];
+
 }
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
@@ -59,6 +54,31 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   return self;
+}
+
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties
+{
+  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+
+  CGSize minimumSize;
+  CGSize maximumSize;
+
+  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
+    self.bounds.size,
+    _sizeMeasureMode,
+    minimumSize,
+    maximumSize
+  );
+
+  [_surface setMinimumSize:minimumSize
+               maximumSize:maximumSize];
 }
 
 - (CGSize)intrinsicContentSize
@@ -84,24 +104,15 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     return CGSizeZero;
   }
 
-  CGSize minimumSize = CGSizeZero;
-  CGSize maximumSize = CGSizeMake(INFINITY, INFINITY);
+  CGSize minimumSize;
+  CGSize maximumSize;
 
-  if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthExact) {
-    minimumSize.width = size.width;
-    maximumSize.width = size.width;
-  }
-  else if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthAtMost) {
-    maximumSize.width = size.width;
-  }
-
-  if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightExact) {
-    minimumSize.height = size.height;
-    maximumSize.height = size.height;
-  }
-  else if (_sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightAtMost) {
-    maximumSize.height = size.height;
-  }
+  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
+    size,
+    _sizeMeasureMode,
+    minimumSize,
+    maximumSize
+  );
 
   return [_surface sizeThatFitsMinimumSize:minimumSize
                                maximumSize:maximumSize];
@@ -143,6 +154,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     return;
   }
 
+  _isActivityIndicatorViewVisible = visible;
+
   if (visible) {
     if (_activityIndicatorViewFactory) {
       _activityIndicatorView = _activityIndicatorViewFactory();
@@ -164,6 +177,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     return;
   }
 
+  _isSurfaceViewVisible = visible;
+
   if (visible) {
     _surfaceView = _surface.view;
     _surfaceView.frame = self.bounds;
@@ -181,7 +196,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 {
   _activityIndicatorViewFactory = activityIndicatorViewFactory;
   if (_isActivityIndicatorViewVisible) {
-    _isActivityIndicatorViewVisible = NO;
+    self.isActivityIndicatorViewVisible = NO;
     self.isActivityIndicatorViewVisible = YES;
   }
 }
@@ -190,6 +205,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_invalidateLayout
 {
+  [self invalidateIntrinsicContentSize];
   [self.superview setNeedsLayout];
 }
 

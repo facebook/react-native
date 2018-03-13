@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule PickerAndroid
  * @flow
@@ -12,21 +10,21 @@
 
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var React = require('React');
-var ReactPropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
+const ColorPropType = require('ColorPropType');
+const React = require('React');
+const ReactPropTypes = require('prop-types');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
 const ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var processColor = require('processColor');
-var requireNativeComponent = require('requireNativeComponent');
+const processColor = require('processColor');
+const requireNativeComponent = require('requireNativeComponent');
 
-var REF_PICKER = 'picker';
-var MODE_DROPDOWN = 'dropdown';
+const REF_PICKER = 'picker';
+const MODE_DROPDOWN = 'dropdown';
 
-var pickerStyleType = StyleSheetPropType({
+const pickerStyleType = StyleSheetPropType({
   ...ViewStylePropTypes,
   color: ColorPropType,
 });
@@ -58,7 +56,7 @@ class PickerAndroid extends React.Component<{
 
   constructor(props, context) {
     super(props, context);
-    var state = this._stateFromProps(props);
+    const state = this._stateFromProps(props);
 
     this.state = {
       ...state,
@@ -66,13 +64,13 @@ class PickerAndroid extends React.Component<{
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   }
 
   // Translate prop and children into stuff that the native picker understands.
   _stateFromProps = (props) => {
-    var selectedIndex = 0;
+    let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
@@ -90,9 +88,9 @@ class PickerAndroid extends React.Component<{
   };
 
   render() {
-    var Picker = this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+    const Picker = this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
 
-    var nativeProps = {
+    const nativeProps = {
       enabled: this.props.enabled,
       items: this.state.items,
       mode: this.props.mode,
@@ -109,10 +107,10 @@ class PickerAndroid extends React.Component<{
 
   _onChange = (event: Event) => {
     if (this.props.onValueChange) {
-      var position = event.nativeEvent.position;
+      const position = event.nativeEvent.position;
       if (position >= 0) {
-        var children = React.Children.toArray(this.props.children);
-        var value = children[position].props.value;
+        const children = React.Children.toArray(this.props.children);
+        const value = children[position].props.value;
         this.props.onValueChange(value, position);
       } else {
         this.props.onValueChange(null, position);
@@ -140,7 +138,7 @@ class PickerAndroid extends React.Component<{
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   pickerAndroid: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
@@ -151,14 +149,14 @@ var styles = StyleSheet.create({
   },
 });
 
-var cfg = {
+const cfg = {
   nativeOnly: {
     items: true,
     selected: true,
   }
 };
 
-var DropdownPicker = requireNativeComponent('AndroidDropdownPicker', PickerAndroid, cfg);
-var DialogPicker = requireNativeComponent('AndroidDialogPicker', PickerAndroid, cfg);
+const DropdownPicker = requireNativeComponent('AndroidDropdownPicker', PickerAndroid, cfg);
+const DialogPicker = requireNativeComponent('AndroidDialogPicker', PickerAndroid, cfg);
 
 module.exports = PickerAndroid;

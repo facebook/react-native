@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -29,6 +27,36 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   public static JavaOnlyMap of(Object... keysAndValues) {
     return new JavaOnlyMap(keysAndValues);
+  }
+
+  public static JavaOnlyMap deepClone(ReadableMap map) {
+    JavaOnlyMap res = new JavaOnlyMap();
+    ReadableMapKeySetIterator iter = map.keySetIterator();
+    while (iter.hasNextKey()) {
+      String propKey = iter.nextKey();
+      ReadableType type = map.getType(propKey);
+      switch (type) {
+        case Null:
+          res.putNull(propKey);
+          break;
+        case Boolean:
+          res.putBoolean(propKey, map.getBoolean(propKey));
+          break;
+        case Number:
+          res.putDouble(propKey, map.getDouble(propKey));
+          break;
+        case String:
+          res.putString(propKey, map.getString(propKey));
+          break;
+        case Map:
+          res.putMap(propKey, deepClone(map.getMap(propKey)));
+          break;
+        case Array:
+          res.putArray(propKey, JavaOnlyArray.deepClone(map.getArray(propKey)));
+          break;
+      }
+    }
+    return res;
   }
 
   /**
@@ -65,12 +93,12 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public double getDouble(String name) {
-    return (Double) mBackingMap.get(name);
+    return ((Number) mBackingMap.get(name)).doubleValue();
   }
 
   @Override
   public int getInt(String name) {
-    return (Integer) mBackingMap.get(name);
+    return ((Number) mBackingMap.get(name)).intValue();
   }
 
   @Override
@@ -79,8 +107,8 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public JavaOnlyMap getMap(String name) {
-    return (JavaOnlyMap) mBackingMap.get(name);
+  public ReadableMap getMap(String name) {
+    return (ReadableMap) mBackingMap.get(name);
   }
 
   @Override

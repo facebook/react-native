@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTEventDispatcher.h"
@@ -207,7 +205,7 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-// js thread only (which suprisingly can be the main thread, depends on used JS executor)
+// js thread only (which surprisingly can be the main thread, depends on used JS executor)
 - (void)flushEventsQueue
 {
   [_eventQueueLock lock];

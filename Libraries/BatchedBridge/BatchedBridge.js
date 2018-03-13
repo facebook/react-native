@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule BatchedBridge
  * @flow
@@ -18,7 +16,7 @@ const MessageQueue = require('MessageQueue');
 // This makes stacktraces to be placed at MessageQueue rather than at where they were launched
 // The parameter __fbUninstallRNGlobalErrorHandler is passed to MessageQueue to prevent the handler from being installed
 //
-// __fbUninstallRNGlobalErrorHandler is conditionally set by the Inspector while the VM is paused for intialization
+// __fbUninstallRNGlobalErrorHandler is conditionally set by the Inspector while the VM is paused for initialization
 // If the Inspector isn't present it defaults to undefined and the global error handler is installed
 // The Inspector can still call MessageQueue#uninstallGlobalErrorHandler to uninstalled on attach
 
