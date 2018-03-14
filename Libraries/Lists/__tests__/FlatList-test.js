@@ -59,22 +59,4 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  // Regression test for https://github.com/facebook/react-native/issues/18351
-  it('renders with context API without causing a stack overflow', () => {
-    const {Consumer} = React.createContext({});
-    const component = ReactTestRenderer.create(
-      <Consumer>
-        {() => {
-          return (
-            <FlatList
-              data={Array.from({length: 100}).map((_, i) => `Item ${1}`)}
-              renderItem={({item}) => <Text>{item}</Text>}
-              keyExtractor={(item, index) => 'key' + index}
-            />
-          );
-        }}
-      </Consumer>,
-    );
-    expect(component).toMatchSnapshot();
-  });
 });

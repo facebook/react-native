@@ -88,64 +88,73 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
       filterRegex.test(item.text) || filterRegex.test(item.title)
     );
     const filteredData = this.state.data.filter(filter);
+    // Wrap view in context as a regression test for
+    // https://github.com/facebook/react-native/issues/18351
+    const {Consumer} = React.createContext({});
     return (
       <RNTesterPage
         noSpacer={true}
         noScroll={true}>
         <View style={styles.container}>
-          <View style={styles.searchRow}>
-            <View style={styles.options}>
-              <PlainInput
-                onChangeText={this._onChangeFilterText}
-                placeholder="Search..."
-                value={this.state.filterText}
-              />
-              <PlainInput
-                onChangeText={this._onChangeScrollToIndex}
-                placeholder="scrollToIndex..."
-              />
+          <Consumer>
+            <View style={styles.searchRow}>
+              <View style={styles.options}>
+                <PlainInput
+                  onChangeText={this._onChangeFilterText}
+                  placeholder="Search..."
+                  value={this.state.filterText}
+                />
+                <PlainInput
+                  onChangeText={this._onChangeScrollToIndex}
+                  placeholder="scrollToIndex..."
+                />
+              </View>
+              <View style={styles.options}>
+                {renderSmallSwitchOption(this, 'virtualized')}
+                {renderSmallSwitchOption(this, 'horizontal')}
+                {renderSmallSwitchOption(this, 'fixedHeight')}
+                {renderSmallSwitchOption(this, 'logViewable')}
+                {renderSmallSwitchOption(this, 'inverted')}
+                {renderSmallSwitchOption(this, 'debug')}
+                <Spindicator value={this._scrollPos} />
+              </View>
             </View>
-            <View style={styles.options}>
-              {renderSmallSwitchOption(this, 'virtualized')}
-              {renderSmallSwitchOption(this, 'horizontal')}
-              {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'logViewable')}
-              {renderSmallSwitchOption(this, 'inverted')}
-              {renderSmallSwitchOption(this, 'debug')}
-              <Spindicator value={this._scrollPos} />
-            </View>
-          </View>
-          <SeparatorComponent />
-          <AnimatedFlatList
-            ItemSeparatorComponent={ItemSeparatorComponent}
-            ListHeaderComponent={<HeaderComponent />}
-            ListFooterComponent={FooterComponent}
-            data={filteredData}
-            debug={this.state.debug}
-            disableVirtualization={!this.state.virtualized}
-            getItemLayout={this.state.fixedHeight ?
-              this._getItemLayout :
-              undefined
-            }
-            horizontal={this.state.horizontal}
-            inverted={this.state.inverted}
-            key={(this.state.horizontal ? 'h' : 'v') +
-              (this.state.fixedHeight ? 'f' : 'd')
-            }
-            keyboardShouldPersistTaps="always"
-            keyboardDismissMode="on-drag"
-            legacyImplementation={false}
-            numColumns={1}
-            onEndReached={this._onEndReached}
-            onRefresh={this._onRefresh}
-            onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
-            onViewableItemsChanged={this._onViewableItemsChanged}
-            ref={this._captureRef}
-            refreshing={false}
-            renderItem={this._renderItemComponent}
-            contentContainerStyle={styles.list}
-            viewabilityConfig={VIEWABILITY_CONFIG}
-          />
+            <SeparatorComponent />
+            {() => {
+              return (
+                <AnimatedFlatList
+                  ItemSeparatorComponent={ItemSeparatorComponent}
+                  ListHeaderComponent={<HeaderComponent />}
+                  ListFooterComponent={FooterComponent}
+                  data={filteredData}
+                  debug={this.state.debug}
+                  disableVirtualization={!this.state.virtualized}
+                  getItemLayout={this.state.fixedHeight ?
+                    this._getItemLayout :
+                    undefined
+                  }
+                  horizontal={this.state.horizontal}
+                  inverted={this.state.inverted}
+                  key={(this.state.horizontal ? 'h' : 'v') +
+                    (this.state.fixedHeight ? 'f' : 'd')
+                  }
+                  keyboardShouldPersistTaps="always"
+                  keyboardDismissMode="on-drag"
+                  legacyImplementation={false}
+                  numColumns={1}
+                  onEndReached={this._onEndReached}
+                  onRefresh={this._onRefresh}
+                  onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
+                  onViewableItemsChanged={this._onViewableItemsChanged}
+                  ref={this._captureRef}
+                  refreshing={false}
+                  renderItem={this._renderItemComponent}
+                  contentContainerStyle={styles.list}
+                  viewabilityConfig={VIEWABILITY_CONFIG}
+                />
+              );
+            }}
+          </Consumer>
         </View>
       </RNTesterPage>
     );
