@@ -27,10 +27,44 @@ import type {
   LayoutStyle,
 } from 'StyleSheetTypes';
 
-export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to a <View>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that View doesn't support such as `fontSize`.`
+ *
+ * type Props = {style: ViewStyleProp}
+ * const MyComponent = (props: Props) => <View style={props.style} />
+ */
 export type ViewStyleProp = ____ViewStyleProp_Internal;
+
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to a <Text>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that Text doesn't support such as `resizeMode`.`
+ *
+ * type Props = {style: TextStyleProp}
+ * const MyComponent = (props: Props) => <Text style={props.style} />
+ */
 export type TextStyleProp = ____TextStyleProp_Internal;
+
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to an <Image>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that Image doesn't support such as `fontSize`.`
+ *
+ * type Props = {style: ImageStyleProp}
+ * const MyComponent = (props: Props) => <Image style={props.style} />
+ */
 export type ImageStyleProp = ____ImageStyleProp_Internal;
+
+/**
+ * WARNING: You probably shouldn't be using this type. This type
+ * is similar to the ones above except it allows styles that are accepted
+ * by all of View, Text, or Image. It is therefore very unsafe to pass this
+ * through to an underlying component. Using this is almost always a mistake
+ * and using one of the other more restrictive types is likely the right choice.
+ */
+export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
