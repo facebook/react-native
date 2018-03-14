@@ -89,6 +89,11 @@ bool YGFloatArrayEqual(
 // This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
 float YGFloatSanitize(const float& val);
 
+// This function unwraps optional and returns YGUndefined if not defined or
+// op.value otherwise
+// TODO: Get rid off this function
+float YGUnwrapFloatOptional(const YGFloatOptional& op);
+
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
     const YGDirection direction);
@@ -98,17 +103,17 @@ inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-inline float YGResolveValue(const YGValue value, const float parentSize) {
+inline YGFloatOptional YGResolveValue(const YGValue value, const float parentSize) {
   switch (value.unit) {
     case YGUnitUndefined:
     case YGUnitAuto:
-      return YGUndefined;
+      return {true, 0};
     case YGUnitPoint:
-      return value.value;
+      return {false, value.value};
     case YGUnitPercent:
-      return value.value * parentSize * 0.01;
+      return {false, static_cast<float>(value.value * parentSize * 0.01)};
   }
-  return YGUndefined;
+  return {true, 0};
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
@@ -133,5 +138,5 @@ inline YGFlexDirection YGResolveFlexDirection(
 static inline float YGResolveValueMargin(
     const YGValue value,
     const float parentSize) {
-  return value.unit == YGUnitAuto ? 0 : YGResolveValue(value, parentSize);
+  return value.unit == YGUnitAuto ? 0 : YGUnwrapFloatOptional(YGResolveValue(value, parentSize));
 }

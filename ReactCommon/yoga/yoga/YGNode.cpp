@@ -92,7 +92,7 @@ float YGNode::getLeadingPosition(
     const YGValue* leadingPosition =
         YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined);
     if (leadingPosition->unit != YGUnitUndefined) {
-      return YGResolveValue(*leadingPosition, axisSize);
+      return YGUnwrapFloatOptional(YGResolveValue(*leadingPosition, axisSize));
     }
   }
 
@@ -101,7 +101,7 @@ float YGNode::getLeadingPosition(
 
   return leadingPosition->unit == YGUnitUndefined
       ? 0.0f
-      : YGResolveValue(*leadingPosition, axisSize);
+      : YGUnwrapFloatOptional(YGResolveValue(*leadingPosition, axisSize));
 }
 
 float YGNode::getTrailingPosition(
@@ -111,7 +111,7 @@ float YGNode::getTrailingPosition(
     const YGValue* trailingPosition =
         YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined);
     if (trailingPosition->unit != YGUnitUndefined) {
-      return YGResolveValue(*trailingPosition, axisSize);
+      return YGUnwrapFloatOptional(YGResolveValue(*trailingPosition, axisSize));
     }
   }
 
@@ -120,7 +120,7 @@ float YGNode::getTrailingPosition(
 
   return trailingPosition->unit == YGUnitUndefined
       ? 0.0f
-      : YGResolveValue(*trailingPosition, axisSize);
+      : YGUnwrapFloatOptional(YGResolveValue(*trailingPosition, axisSize));
 }
 
 bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) {
@@ -653,15 +653,14 @@ float YGNode::getLeadingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(
-          YGResolveValue(style_.padding[YGEdgeStart], widthSize)) &&
-      YGResolveValue(style_.padding[YGEdgeStart], widthSize) > 0.0f) {
-    return YGResolveValue(style_.padding[YGEdgeStart], widthSize);
+          !YGResolveValue(style_.padding[YGEdgeStart], widthSize).isUndefined &&
+      YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeStart], widthSize)) > 0.0f) {
+    return YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeStart], widthSize));
   }
 
-  float resolvedValue = YGResolveValue(
+  float resolvedValue = YGUnwrapFloatOptional(YGResolveValue(
       *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
-      widthSize);
+      widthSize));
   return YGFloatMax(resolvedValue, 0.0f);
 }
 
@@ -670,15 +669,14 @@ float YGNode::getTrailingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(
-          YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) &&
-      YGResolveValue(style_.padding[YGEdgeEnd], widthSize) >= 0.0f) {
-    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined &&
+      YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) >= 0.0f) {
+    return YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeEnd], widthSize));
   }
 
-  float resolvedValue = YGResolveValue(
+  float resolvedValue = YGUnwrapFloatOptional(YGResolveValue(
       *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
-      widthSize);
+      widthSize));
 
   return YGFloatMax(resolvedValue, 0.0f);
 }
