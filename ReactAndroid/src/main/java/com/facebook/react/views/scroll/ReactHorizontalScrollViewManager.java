@@ -124,7 +124,7 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = "nestedScrollEnabled")
-  public void setNestedScrollEnabled(ReactScrollView view, boolean value) {
+  public void setNestedScrollEnabled(ReactHorizontalScrollView view, boolean value) {
     ViewCompat.setNestedScrollingEnabled(view, value);
   }
 
