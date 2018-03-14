@@ -592,8 +592,8 @@ float YGNode::resolveFlexGrow() {
   if (parent_ == nullptr) {
     return 0.0;
   }
-  if (!YGFloatIsUndefined(style_.flexGrow)) {
-    return style_.flexGrow;
+  if (!style_.flexGrow.isUndefined) {
+    return style_.flexGrow.value;
   }
   if (!style_.flex.isUndefined && style_.flex.value > 0.0f) {
     return style_.flex.value;

@@ -21,7 +21,7 @@ struct YGStyle {
   YGOverflow overflow;
   YGDisplay display;
   YGFloatOptional flex;
-  float flexGrow;
+  YGFloatOptional flexGrow;
   float flexShrink;
   YGValue flexBasis;
   std::array<YGValue, YGEdgeCount> margin;

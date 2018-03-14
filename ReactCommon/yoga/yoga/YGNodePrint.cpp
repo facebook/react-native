@@ -161,7 +161,7 @@ void YGNodeToString(
       appendFormatedString(
           str, "align-self: %s; ", YGAlignToString(node->getStyle().alignSelf));
     }
-    appendFloatIfNotUndefined(str, "flex-grow", node->getStyle().flexGrow);
+    appendFloatOptionalIfDefined(str, "flex-grow", node->getStyle().flexGrow);
     appendFloatIfNotUndefined(str, "flex-shrink", node->getStyle().flexShrink);
     appendNumberIfNotAuto(str, "flex-basis", node->getStyle().flexBasis);
     appendFloatOptionalIfDefined(str, "flex", node->getStyle().flex);

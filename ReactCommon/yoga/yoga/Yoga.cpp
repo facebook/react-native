@@ -511,9 +511,9 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
 }
 
 float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
-  return YGFloatIsUndefined(node->getStyle().flexGrow)
+  return node->getStyle().flexGrow.isUndefined
       ? kDefaultFlexGrow
-      : node->getStyle().flexGrow;
+      : node->getStyle().flexGrow.value;
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
@@ -772,7 +772,21 @@ float YGNodeStyleGetFlex(const YGNodeRef node) {
                                            : node->getStyle().flex.value;
 }
 
-YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
+  if (!YGFloatOptionalFloatEquals(node->getStyle().flexGrow, flexGrow)) {
+    YGStyle style = node->getStyle();
+    if (YGFloatIsUndefined(flexGrow)) {
+      style.flexGrow = {true, 0};
+    } else {
+      style.flexGrow = {false, flexGrow};
+    }
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
+// YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
 

@@ -43,7 +43,7 @@ YGStyle::YGStyle()
       overflow(YGOverflowVisible),
       display(YGDisplayFlex),
       flex(YGFloatOptionalUndefined),
-      flexGrow(YGUndefined),
+      flexGrow(YGFloatOptionalUndefined),
       flexShrink(YGUndefined),
       flexBasis(kYGValueAuto),
       margin(kYGDefaultEdgeValuesUnit),
@@ -79,9 +79,11 @@ bool YGStyle::operator==(const YGStyle& style) {
         areNonFloatValuesEqual && flex.value == style.flex.value;
   }
 
-  if (!(YGFloatIsUndefined(flexGrow) && YGFloatIsUndefined(style.flexGrow))) {
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      flexGrow.isUndefined == style.flexGrow.isUndefined;
+  if (areNonFloatValuesEqual && !flexGrow.isUndefined) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexGrow == style.flexGrow;
+        areNonFloatValuesEqual && flexGrow.value == style.flexGrow.value;
   }
 
   if (!(YGFloatIsUndefined(flexShrink) &&
