@@ -7,6 +7,9 @@
 
 #include "YGStyle.h"
 
+#define YGFloatOptionalUndefined \
+  { true, 0 }
+
 const YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
 const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
@@ -39,7 +42,7 @@ YGStyle::YGStyle()
       flexWrap(YGWrapNoWrap),
       overflow(YGOverflowVisible),
       display(YGDisplayFlex),
-      flex(YGUndefined),
+      flex(YGFloatOptionalUndefined),
       flexGrow(YGUndefined),
       flexShrink(YGUndefined),
       flexBasis(kYGValueAuto),
@@ -69,8 +72,11 @@ bool YGStyle::operator==(const YGStyle& style) {
       YGValueArrayEqual(minDimensions, style.minDimensions) &&
       YGValueArrayEqual(maxDimensions, style.maxDimensions);
 
-  if (!(YGFloatIsUndefined(flex) && YGFloatIsUndefined(style.flex))) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
+  areNonFloatValuesEqual =
+      areNonFloatValuesEqual && flex.isUndefined == style.flex.isUndefined;
+  if (areNonFloatValuesEqual && !flex.isUndefined && !style.flex.isUndefined) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && flex.value == style.flex.value;
   }
 
   if (!(YGFloatIsUndefined(flexGrow) && YGFloatIsUndefined(style.flexGrow))) {

@@ -20,7 +20,7 @@ struct YGStyle {
   YGWrap flexWrap;
   YGOverflow overflow;
   YGDisplay display;
-  float flex;
+  YGFloatOptional flex;
   float flexGrow;
   float flexShrink;
   YGValue flexBasis;

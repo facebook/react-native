@@ -500,7 +500,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
+  if (!style_.flex.isUndefined && style_.flex.value > 0.0f) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -595,8 +595,8 @@ float YGNode::resolveFlexGrow() {
   if (!YGFloatIsUndefined(style_.flexGrow)) {
     return style_.flexGrow;
   }
-  if (!YGFloatIsUndefined(style_.flex) && style_.flex > 0.0f) {
-    return style_.flex;
+  if (!style_.flex.isUndefined && style_.flex.value > 0.0f) {
+    return style_.flex.value;
   }
   return kDefaultFlexGrow;
 }
@@ -608,9 +608,9 @@ float YGNode::resolveFlexShrink() {
   if (!YGFloatIsUndefined(style_.flexShrink)) {
     return style_.flexShrink;
   }
-  if (!config_->useWebDefaults && !YGFloatIsUndefined(style_.flex) &&
-      style_.flex < 0.0f) {
-    return -style_.flex;
+  if (!config_->useWebDefaults && !style_.flex.isUndefined &&
+      style_.flex.value < 0.0f) {
+    return -style_.flex.value;
   }
   return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }

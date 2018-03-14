@@ -752,7 +752,26 @@ YG_NODE_STYLE_PROPERTY_IMPL(YGWrap, FlexWrap, flexWrap, flexWrap);
 YG_NODE_STYLE_PROPERTY_IMPL(YGOverflow, Overflow, overflow, overflow);
 YG_NODE_STYLE_PROPERTY_IMPL(YGDisplay, Display, display, display);
 
-YG_NODE_STYLE_PROPERTY_IMPL(float, Flex, flex, flex);
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
+  if (!YGFloatOptionalFloatEquals(node->getStyle().flex, flex)) {
+    YGStyle style = node->getStyle();
+    if (YGFloatIsUndefined(flex)) {
+      style.flex = {true, 0};
+    } else {
+      style.flex = {false, flex};
+    }
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+float YGNodeStyleGetFlex(const YGNodeRef node) {
+  return node->getStyle().flex.isUndefined ? YGUndefined
+                                           : node->getStyle().flex.value;
+}
+
 YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
@@ -762,7 +781,7 @@ YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding);
 
-// TODO: Change the API to accept YGFloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetBorder(
     const YGNodeRef node,
     const YGEdge edge,
@@ -783,8 +802,8 @@ void YGNodeStyleSetBorder(
 
 float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
   if (node->getStyle().border[edge].unit == YGUnitUndefined) {
-    // TODO: Rather than returning YGUndefined, change the api to return
-    // YGFloatOptional.
+    // TODO(T26792433): Rather than returning YGUndefined, change the api to
+    // return YGFloatOptional.
     return YGUndefined;
   }
 

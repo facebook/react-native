@@ -94,6 +94,12 @@ float YGFloatSanitize(const float& val);
 // TODO: Get rid off this function
 float YGUnwrapFloatOptional(const YGFloatOptional& op);
 
+// This function returns true if val and optional both are undefined or if val
+// and optional.val is true, otherwise its false.
+bool YGFloatOptionalFloatEquals(
+    const YGFloatOptional& optional,
+    const float& val);
+
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
     const YGDirection direction);
