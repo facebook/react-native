@@ -3622,6 +3622,11 @@ var ReactNativeComponent = (function(_React$Component) {
   /**
    * Removes focus. This is the opposite of `focus()`.
    */
+
+  /**
+   * Due to bugs in Flow's handling of React.createClass, some fields already
+   * declared in the base class need to be redeclared below.
+   */
   ReactNativeComponent.prototype.blur = function blur() {
     TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
   };
@@ -8327,11 +8332,11 @@ var rendererSigil = void 0;
 function pushProvider(providerFiber) {
   var context = providerFiber.type.context;
   index$1 += 1;
-  changedBitsStack[index$1] = context.changedBits;
-  currentValueStack[index$1] = context.currentValue;
+  changedBitsStack[index$1] = context._changedBits;
+  currentValueStack[index$1] = context._currentValue;
   stack[index$1] = providerFiber;
-  context.currentValue = providerFiber.pendingProps.value;
-  context.changedBits = providerFiber.stateNode;
+  context._currentValue = providerFiber.pendingProps.value;
+  context._changedBits = providerFiber.stateNode;
 
   {
     warning(
@@ -8358,16 +8363,16 @@ function popProvider(providerFiber) {
   stack[index$1] = null;
   index$1 -= 1;
   var context = providerFiber.type.context;
-  context.currentValue = currentValue;
-  context.changedBits = changedBits;
+  context._currentValue = currentValue;
+  context._changedBits = changedBits;
 }
 
 function resetProviderStack() {
   for (var i = index$1; i > -1; i--) {
     var providerFiber = stack[i];
     var context = providerFiber.type.context;
-    context.currentValue = context.defaultValue;
-    context.changedBits = 0;
+    context._currentValue = context._defaultValue;
+    context._changedBits = 0;
     changedBitsStack[i] = null;
     currentValueStack[i] = null;
     stack[i] = null;
@@ -9149,48 +9154,70 @@ var ReactFiberBeginWork = function(
       pushProvider(workInProgress);
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
-    workInProgress.memoizedProps = newProps;
 
     var newValue = newProps.value;
+    workInProgress.memoizedProps = newProps;
 
     var changedBits = void 0;
     if (oldProps === null) {
       // Initial render
       changedBits = MAX_SIGNED_31_BIT_INT;
     } else {
-      var oldValue = oldProps.value;
-      // Use Object.is to compare the new context value to the old value.
-      // Inlined Object.is polyfill.
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-      if (
-        (oldValue === newValue &&
-          (oldValue !== 0 || 1 / oldValue === 1 / newValue)) ||
-        (oldValue !== oldValue && newValue !== newValue) // eslint-disable-line no-self-compare
-      ) {
-        // No change.
+      if (oldProps.value === newProps.value) {
+        // No change. Bailout early if children are the same.
+        if (oldProps.children === newProps.children) {
+          workInProgress.stateNode = 0;
+          pushProvider(workInProgress);
+          return bailoutOnAlreadyFinishedWork(current, workInProgress);
+        }
         changedBits = 0;
       } else {
-        changedBits =
-          typeof context.calculateChangedBits === "function"
-            ? context.calculateChangedBits(oldValue, newValue)
-            : MAX_SIGNED_31_BIT_INT;
-        {
-          warning(
-            (changedBits & MAX_SIGNED_31_BIT_INT) === changedBits,
-            "calculateChangedBits: Expected the return value to be a " +
-              "31-bit integer. Instead received: %s",
-            changedBits
-          );
-        }
-        changedBits |= 0;
+        var oldValue = oldProps.value;
+        // Use Object.is to compare the new context value to the old value.
+        // Inlined Object.is polyfill.
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+        if (
+          (oldValue === newValue &&
+            (oldValue !== 0 || 1 / oldValue === 1 / newValue)) ||
+          (oldValue !== oldValue && newValue !== newValue) // eslint-disable-line no-self-compare
+        ) {
+          // No change. Bailout early if children are the same.
+          if (oldProps.children === newProps.children) {
+            workInProgress.stateNode = 0;
+            pushProvider(workInProgress);
+            return bailoutOnAlreadyFinishedWork(current, workInProgress);
+          }
+          changedBits = 0;
+        } else {
+          changedBits =
+            typeof context._calculateChangedBits === "function"
+              ? context._calculateChangedBits(oldValue, newValue)
+              : MAX_SIGNED_31_BIT_INT;
+          {
+            warning(
+              (changedBits & MAX_SIGNED_31_BIT_INT) === changedBits,
+              "calculateChangedBits: Expected the return value to be a " +
+                "31-bit integer. Instead received: %s",
+              changedBits
+            );
+          }
+          changedBits |= 0;
 
-        if (changedBits !== 0) {
-          propagateContextChange(
-            workInProgress,
-            context,
-            changedBits,
-            renderExpirationTime
-          );
+          if (changedBits === 0) {
+            // No change. Bailout early if children are the same.
+            if (oldProps.children === newProps.children) {
+              workInProgress.stateNode = 0;
+              pushProvider(workInProgress);
+              return bailoutOnAlreadyFinishedWork(current, workInProgress);
+            }
+          } else {
+            propagateContextChange(
+              workInProgress,
+              context,
+              changedBits,
+              renderExpirationTime
+            );
+          }
         }
       }
     }
@@ -9198,9 +9225,6 @@ var ReactFiberBeginWork = function(
     workInProgress.stateNode = changedBits;
     pushProvider(workInProgress);
 
-    if (oldProps !== null && oldProps.children === newProps.children) {
-      return bailoutOnAlreadyFinishedWork(current, workInProgress);
-    }
     var newChildren = newProps.children;
     reconcileChildren(current, workInProgress, newChildren);
     return workInProgress.child;
@@ -9213,11 +9237,28 @@ var ReactFiberBeginWork = function(
   ) {
     var context = workInProgress.type;
     var newProps = workInProgress.pendingProps;
+    var oldProps = workInProgress.memoizedProps;
 
-    var newValue = context.currentValue;
-    var changedBits = context.changedBits;
+    var newValue = context._currentValue;
+    var changedBits = context._changedBits;
 
-    if (changedBits !== 0) {
+    if (hasContextChanged()) {
+      // Normally we can bail out on props equality but if context has changed
+      // we don't do the bailout and we have to reuse existing props instead.
+    } else if (changedBits === 0 && oldProps === newProps) {
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
+    }
+    workInProgress.memoizedProps = newProps;
+
+    var observedBits = newProps.unstable_observedBits;
+    if (observedBits === undefined || observedBits === null) {
+      // Subscribe to all changes by default
+      observedBits = MAX_SIGNED_31_BIT_INT;
+    }
+    // Store the observedBits on the fiber's stateNode for quick access.
+    workInProgress.stateNode = observedBits;
+
+    if ((changedBits & observedBits) !== 0) {
       // Context change propagation stops at matching consumers, for time-
       // slicing. Continue the propagation here.
       propagateContextChange(
@@ -9226,24 +9267,20 @@ var ReactFiberBeginWork = function(
         changedBits,
         renderExpirationTime
       );
+    } else if (oldProps !== null && oldProps.children === newProps.children) {
+      // No change. Bailout early if children are the same.
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
-
-    // Store the observedBits on the fiber's stateNode for quick access.
-    var observedBits = newProps.observedBits;
-    if (observedBits === undefined || observedBits === null) {
-      // Subscribe to all changes by default
-      observedBits = MAX_SIGNED_31_BIT_INT;
-    }
-    workInProgress.stateNode = observedBits;
 
     var render = newProps.children;
 
-    if (typeof render !== "function") {
-      invariant(
-        false,
-        "A context consumer was rendered with multiple children, or a child that isn't a function. " +
-          "A context consumer expects a single child that is a function. " +
-          "If you did pass a function, make sure there is no trailing or leading whitespace around it."
+    {
+      warning(
+        typeof render === "function",
+        "A context consumer was rendered with multiple children, or a child " +
+          "that isn't a function. A context consumer expects a single child " +
+          "that is a function. If you did pass a function, make sure there " +
+          "is no trailing or leading whitespace around it."
       );
     }
 
