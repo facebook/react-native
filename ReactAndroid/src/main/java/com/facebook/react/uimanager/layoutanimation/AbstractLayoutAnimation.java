@@ -2,7 +2,6 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import android.os.Build;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -99,14 +98,11 @@ import javax.annotation.Nullable;
   }
 
   private static Interpolator getInterpolator(InterpolatorType type, ReadableMap params) {
-     Interpolator interpolator = null;
+     Interpolator interpolator;
      if (type.equals(InterpolatorType.SPRING)) {
        interpolator = new SimpleSpringInterpolator(SimpleSpringInterpolator.getSpringDamping(params));
      } else {
-       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-         // Conversion from BaseInterpolator to Interpolator is only possible on this Android versions
-         interpolator = INTERPOLATOR.get(type);
-       }
+       interpolator = INTERPOLATOR.get(type);
      }
     if (interpolator == null) {
       throw new IllegalArgumentException("Missing interpolator for type : " + type);
