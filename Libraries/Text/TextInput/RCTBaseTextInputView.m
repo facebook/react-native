@@ -419,7 +419,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       UIView *accessoryView = [strongSelf->_bridge.uiManager viewForNativeID:nativeID
                                                                  withRootTag:rootView.reactTag];
       if (accessoryView && [accessoryView isKindOfClass:[RCTInputAccessoryView class]]) {
-        strongSelf.backedTextInputView.inputAccessoryView = ((RCTInputAccessoryView *)accessoryView).content.inputAccessoryView;
+        strongSelf.backedTextInputView.inputAccessoryView = ((RCTInputAccessoryView *)accessoryView).inputAccessoryView;
         [strongSelf reloadInputViewsIfNecessary];
       }
     }

@@ -20,9 +20,9 @@ struct YGStyle {
   YGWrap flexWrap;
   YGOverflow overflow;
   YGDisplay display;
-  float flex;
-  float flexGrow;
-  float flexShrink;
+  YGFloatOptional flex;
+  YGFloatOptional flexGrow;
+  YGFloatOptional flexShrink;
   YGValue flexBasis;
   std::array<YGValue, YGEdgeCount> margin;
   std::array<YGValue, YGEdgeCount> position;
