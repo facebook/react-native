@@ -605,8 +605,8 @@ float YGNode::resolveFlexShrink() {
   if (parent_ == nullptr) {
     return 0.0;
   }
-  if (!YGFloatIsUndefined(style_.flexShrink)) {
-    return style_.flexShrink;
+  if (!style_.flexShrink.isUndefined) {
+    return style_.flexShrink.value;
   }
   if (!config_->useWebDefaults && !style_.flex.isUndefined &&
       style_.flex.value < 0.0f) {

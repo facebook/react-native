@@ -517,10 +517,10 @@ float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
-  return YGFloatIsUndefined(node->getStyle().flexShrink)
+  return node->getStyle().flexShrink.isUndefined
       ? (node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
                                            : kDefaultFlexShrink)
-      : node->getStyle().flexShrink;
+      : node->getStyle().flexShrink.value;
 }
 
 #define YG_NODE_STYLE_PROPERTY_SETTER_IMPL(                               \
@@ -786,10 +786,21 @@ void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
   }
 }
 
-// YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
-YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
-YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
+  if (!YGFloatOptionalFloatEquals(node->getStyle().flexShrink, flexShrink)) {
+    YGStyle style = node->getStyle();
+    if (YGFloatIsUndefined(flexShrink)) {
+      style.flexGrow = {true, 0};
+    } else {
+      style.flexShrink = {false, flexShrink};
+    }
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
 
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Margin, margin);

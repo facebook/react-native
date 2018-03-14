@@ -48,13 +48,6 @@ static void appendFloatOptionalIfDefined(
   }
 }
 
-static void
-appendFloatIfNotUndefined(string* base, const string key, const float num) {
-  if (!YGFloatIsUndefined(num)) {
-    appendFormatedString(base, "%s: %g; ", key.c_str(), num);
-  }
-}
-
 static void appendNumberIfNotUndefined(
     string* base,
     const string key,
@@ -162,7 +155,8 @@ void YGNodeToString(
           str, "align-self: %s; ", YGAlignToString(node->getStyle().alignSelf));
     }
     appendFloatOptionalIfDefined(str, "flex-grow", node->getStyle().flexGrow);
-    appendFloatIfNotUndefined(str, "flex-shrink", node->getStyle().flexShrink);
+    appendFloatOptionalIfDefined(
+        str, "flex-shrink", node->getStyle().flexShrink);
     appendNumberIfNotAuto(str, "flex-basis", node->getStyle().flexBasis);
     appendFloatOptionalIfDefined(str, "flex", node->getStyle().flex);
 

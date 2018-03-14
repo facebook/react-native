@@ -44,7 +44,7 @@ YGStyle::YGStyle()
       display(YGDisplayFlex),
       flex(YGFloatOptionalUndefined),
       flexGrow(YGFloatOptionalUndefined),
-      flexShrink(YGUndefined),
+      flexShrink(YGFloatOptionalUndefined),
       flexBasis(kYGValueAuto),
       margin(kYGDefaultEdgeValuesUnit),
       position(kYGDefaultEdgeValuesUnit),
@@ -86,10 +86,11 @@ bool YGStyle::operator==(const YGStyle& style) {
         areNonFloatValuesEqual && flexGrow.value == style.flexGrow.value;
   }
 
-  if (!(YGFloatIsUndefined(flexShrink) &&
-        YGFloatIsUndefined(style.flexShrink))) {
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      flexShrink.isUndefined == style.flexShrink.isUndefined;
+  if (areNonFloatValuesEqual && !style.flexShrink.isUndefined) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexShrink == style.flexShrink;
+        areNonFloatValuesEqual && flexShrink.value == style.flexShrink.value;
   }
 
   if (!(YGFloatIsUndefined(aspectRatio) &&
