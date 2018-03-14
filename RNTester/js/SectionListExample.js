@@ -139,7 +139,6 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
         <SeparatorComponent />
         <AnimatedSectionList
           ref={this._captureRef}
-          contentContainerStyle={{ borderWidth:1, borderColor: 'red' }}
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
           SectionSeparatorComponent={(info) =>
