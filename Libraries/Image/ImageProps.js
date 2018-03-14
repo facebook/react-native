@@ -6,6 +6,7 @@
  *
  * @providesModule ImageProps
  * @flow
+ * @format
  */
 
 'use strict';
@@ -15,6 +16,36 @@ const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
+
+import type {ImageSource} from 'ImageSource';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {LayoutEvent} from 'CoreEventTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
+
+export type ImageProps = {
+  accessible?: boolean,
+  accessibilityLabel?: ?(string | Array<any> | any),
+  blurRadius?: number,
+  capInsets?: ?EdgeInsetsProp,
+
+  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
+  onLayout?: ?(event: LayoutEvent) => void,
+  onLoad?: ?() => void,
+  onLoadEnd?: ?() => void,
+  onLoadStart?: ?() => void,
+  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+  source?: ?ImageSource,
+  style?: typeof ImageStylePropTypes,
+  testID?: ?string,
+
+  // ios
+  defaultSource?: ?ImageSource,
+  onPartialLoad?: ?() => void,
+  onProgress?: ?(
+    event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
+  ) => void,
+};
 
 module.exports = {
   /**
