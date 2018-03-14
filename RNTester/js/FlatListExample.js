@@ -99,63 +99,65 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
         noScroll={true}>
         <View style={styles.container}>
           <Consumer>
-            <View style={styles.searchRow}>
-              <View style={styles.options}>
-                <PlainInput
-                  onChangeText={this._onChangeFilterText}
-                  placeholder="Search..."
-                  value={this.state.filterText}
-                />
-                <PlainInput
-                  onChangeText={this._onChangeScrollToIndex}
-                  placeholder="scrollToIndex..."
-                />
-              </View>
-              <View style={styles.options}>
-                {renderSmallSwitchOption(this, 'virtualized')}
-                {renderSmallSwitchOption(this, 'horizontal')}
-                {renderSmallSwitchOption(this, 'fixedHeight')}
-                {renderSmallSwitchOption(this, 'log')}
-                {renderSmallSwitchOption(this, 'inverted')}
-                {renderSmallSwitchOption(this, 'empty')}
-                {renderSmallSwitchOption(this, 'debug')}
-                <Spindicator value={this._scrollPos} />
-              </View>
-            </View>
-            <SeparatorComponent />
             {() => {
               return (
-                <AnimatedFlatList
-                  ItemSeparatorComponent={ItemSeparatorComponent}
-                  ListHeaderComponent={<HeaderComponent />}
-                  ListFooterComponent={FooterComponent}
-                  ListEmptyComponent={ListEmptyComponent}
-                  data={this.state.empty ? [] : filteredData}
-                  debug={this.state.debug}
-                  disableVirtualization={!this.state.virtualized}
-                  getItemLayout={this.state.fixedHeight ?
-                    this._getItemLayout :
-                    undefined
-                  }
-                  horizontal={this.state.horizontal}
-                  inverted={this.state.inverted}
-                  key={(this.state.horizontal ? 'h' : 'v') +
-                    (this.state.fixedHeight ? 'f' : 'd')
-                  }
-                  keyboardShouldPersistTaps="always"
-                  keyboardDismissMode="on-drag"
-                  legacyImplementation={false}
-                  numColumns={1}
-                  onEndReached={this._onEndReached}
-                  onRefresh={this._onRefresh}
-                  onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
-                  onViewableItemsChanged={this._onViewableItemsChanged}
-                  ref={this._captureRef}
-                  refreshing={false}
-                  renderItem={this._renderItemComponent}
-                  contentContainerStyle={styles.list}
-                  viewabilityConfig={VIEWABILITY_CONFIG}
-                />
+                <View>
+                  <View style={styles.searchRow}>
+                    <View style={styles.options}>
+                      <PlainInput
+                        onChangeText={this._onChangeFilterText}
+                        placeholder="Search..."
+                        value={this.state.filterText}
+                      />
+                      <PlainInput
+                        onChangeText={this._onChangeScrollToIndex}
+                        placeholder="scrollToIndex..."
+                      />
+                    </View>
+                    <View style={styles.options}>
+                      {renderSmallSwitchOption(this, 'virtualized')}
+                      {renderSmallSwitchOption(this, 'horizontal')}
+                      {renderSmallSwitchOption(this, 'fixedHeight')}
+                      {renderSmallSwitchOption(this, 'log')}
+                      {renderSmallSwitchOption(this, 'inverted')}
+                      {renderSmallSwitchOption(this, 'empty')}
+                      {renderSmallSwitchOption(this, 'debug')}
+                      <Spindicator value={this._scrollPos} />
+                    </View>
+                  </View>
+                  <SeparatorComponent />
+                  <AnimatedFlatList
+                    ItemSeparatorComponent={ItemSeparatorComponent}
+                    ListHeaderComponent={<HeaderComponent />}
+                    ListFooterComponent={FooterComponent}
+                    ListEmptyComponent={ListEmptyComponent}
+                    data={this.state.empty ? [] : filteredData}
+                    debug={this.state.debug}
+                    disableVirtualization={!this.state.virtualized}
+                    getItemLayout={this.state.fixedHeight ?
+                      this._getItemLayout :
+                      undefined
+                    }
+                    horizontal={this.state.horizontal}
+                    inverted={this.state.inverted}
+                    key={(this.state.horizontal ? 'h' : 'v') +
+                      (this.state.fixedHeight ? 'f' : 'd')
+                    }
+                    keyboardShouldPersistTaps="always"
+                    keyboardDismissMode="on-drag"
+                    legacyImplementation={false}
+                    numColumns={1}
+                    onEndReached={this._onEndReached}
+                    onRefresh={this._onRefresh}
+                    onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
+                    onViewableItemsChanged={this._onViewableItemsChanged}
+                    ref={this._captureRef}
+                    refreshing={false}
+                    renderItem={this._renderItemComponent}
+                    contentContainerStyle={styles.list}
+                    viewabilityConfig={VIEWABILITY_CONFIG}
+                  />
+                </View>
               );
             }}
           </Consumer>
