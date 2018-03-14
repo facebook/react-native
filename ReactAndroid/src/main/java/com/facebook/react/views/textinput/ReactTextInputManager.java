@@ -68,10 +68,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
-  private static final int INPUT_TYPE_KEYBOARD_NUMBERED =
-      InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
-          InputType.TYPE_NUMBER_FLAG_SIGNED;
   private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER; 
+  private static final int INPUT_TYPE_KEYBOARD_NUMBERED = INPUT_TYPE_KEYBOARD_NUMBER_PAD |
+          InputType.TYPE_NUMBER_FLAG_DECIMAL |
+          InputType.TYPE_NUMBER_FLAG_SIGNED;
   private static final int PASSWORD_VISIBILITY_FLAG = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
         ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
   private static final int KEYBOARD_TYPE_FLAGS = INPUT_TYPE_KEYBOARD_NUMBERED |
