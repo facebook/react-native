@@ -42,6 +42,11 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
+struct YGFloatOptional {
+  bool isUndefined;
+  float value;
+};
+
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 

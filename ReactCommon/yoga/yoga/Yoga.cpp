@@ -760,7 +760,35 @@ YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding);
-YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
+
+// TODO: Change the API to accept YGFloatOptional.
+void YGNodeStyleSetBorder(
+    const YGNodeRef node,
+    const YGEdge edge,
+    const float border) {
+  YGValue value = {
+      .value = YGFloatSanitize(border),
+      .unit = YGFloatIsUndefined(border) ? YGUnitUndefined : YGUnitPoint,
+  };
+  if ((node->getStyle().border[edge].value != value.value &&
+       value.unit != YGUnitUndefined) ||
+      node->getStyle().border[edge].unit != value.unit) {
+    YGStyle style = node->getStyle();
+    style.border[edge] = value;
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
+float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
+  if (node->getStyle().border[edge].unit == YGUnitUndefined) {
+    // TODO: Rather than returning YGUndefined, change the api to return
+    // YGFloatOptional.
+    return YGUndefined;
+  }
+
+  return node->getStyle().border[edge].value;
+}
 
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Width, width, dimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Height, height, dimensions[YGDimensionHeight]);

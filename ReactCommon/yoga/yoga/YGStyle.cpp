@@ -7,7 +7,7 @@
 
 #include "YGStyle.h"
 
-const YGValue kYGValueUndefined = {YGUndefined, YGUnitUndefined};
+const YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
 const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
 

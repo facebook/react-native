@@ -86,6 +86,9 @@ bool YGFloatArrayEqual(
   return areEqual;
 }
 
+// This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
+float YGFloatSanitize(const float& val);
+
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
     const YGDirection direction);
