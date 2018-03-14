@@ -236,6 +236,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
+bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if
@@ -253,10 +254,12 @@ WIN_EXPORT void YGAssertWithNode(const YGNodeRef node, const bool condition, con
 WIN_EXPORT void YGAssertWithConfig(const YGConfigRef config,
                                    const bool condition,
                                    const char *message);
-
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
+void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    const YGConfigRef config,
+    const bool shouldDiffLayout);
 
 // Yoga previously had an error where containers would take the maximum space possible instead of
 // the minimum

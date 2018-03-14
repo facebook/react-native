@@ -67,6 +67,9 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
 
       static auto edgeSetFlagField = obj->getClass()->getField<jint>("mEdgeSetFlag");
       static auto hasNewLayoutField = obj->getClass()->getField<jboolean>("mHasNewLayout");
+      static auto doesLegacyStretchBehaviour =
+          obj->getClass()->getField<jboolean>(
+              "mDoesLegacyStretchFlagAffectsLayout");
 
       /* Those flags needs be in sync with YogaNode.java */
       const int MARGIN = 1;
@@ -79,12 +82,19 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
       obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
       obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
       obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
+      obj->setFieldValue<jboolean>(
+          doesLegacyStretchBehaviour,
+          YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root));
 
       if ((hasEdgeSetFlag & MARGIN) == MARGIN) {
-        obj->setFieldValue(marginLeftField, YGNodeLayoutGetMargin(root, YGEdgeLeft));
-        obj->setFieldValue(marginTopField, YGNodeLayoutGetMargin(root, YGEdgeTop));
-        obj->setFieldValue(marginRightField, YGNodeLayoutGetMargin(root, YGEdgeRight));
-        obj->setFieldValue(marginBottomField, YGNodeLayoutGetMargin(root, YGEdgeBottom));
+        obj->setFieldValue(
+            marginLeftField, YGNodeLayoutGetMargin(root, YGEdgeLeft));
+        obj->setFieldValue(
+            marginTopField, YGNodeLayoutGetMargin(root, YGEdgeTop));
+        obj->setFieldValue(
+            marginRightField, YGNodeLayoutGetMargin(root, YGEdgeRight));
+        obj->setFieldValue(
+            marginBottomField, YGNodeLayoutGetMargin(root, YGEdgeBottom));
       }
 
       if ((hasEdgeSetFlag & PADDING) == PADDING) {
@@ -467,6 +477,14 @@ void jni_YGConfigSetExperimentalFeatureEnabled(alias_ref<jobject>,
                                         enabled);
 }
 
+void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    alias_ref<jobject>,
+    jlong nativePointer,
+    jboolean enabled) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(config, enabled);
+}
+
 void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>,
                                    jlong nativePointer,
                                    jboolean useWebDefaults) {
@@ -624,16 +642,19 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGNodePrint),
             YGMakeNativeMethod(jni_YGNodeClone),
         });
-    registerNatives("com/facebook/yoga/YogaConfig",
-                    {
-                        YGMakeNativeMethod(jni_YGConfigNew),
-                        YGMakeNativeMethod(jni_YGConfigFree),
-                        YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
-                        YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
-                        YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
-                        YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
-                        YGMakeNativeMethod(jni_YGConfigSetLogger),
-                        YGMakeNativeMethod(jni_YGConfigSetHasNodeClonedFunc),
-                    });
+    registerNatives(
+        "com/facebook/yoga/YogaConfig",
+        {
+            YGMakeNativeMethod(jni_YGConfigNew),
+            YGMakeNativeMethod(jni_YGConfigFree),
+            YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
+            YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+            YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
+            YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
+            YGMakeNativeMethod(jni_YGConfigSetLogger),
+            YGMakeNativeMethod(jni_YGConfigSetHasNodeClonedFunc),
+            YGMakeNativeMethod(
+                jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
+        });
   });
 }
