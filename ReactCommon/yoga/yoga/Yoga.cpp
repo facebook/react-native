@@ -800,7 +800,54 @@ void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
   }
 }
 
-YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
+YGValue YGNodeStyleGetFlexBasis(const YGNodeRef node) {
+  YGValue flexBasis = node->getStyle().flexBasis;
+  if (flexBasis.unit == YGUnitUndefined || flexBasis.unit == YGUnitAuto) {
+    // TODO(T26792433): Get rid off the use of YGUndefined at client side
+    flexBasis.value = YGUndefined;
+  }
+  return flexBasis;
+}
+
+void YGNodeStyleSetFlexBasis(const YGNodeRef node, const float flexBasis) {
+  YGValue value = {
+      .value = YGFloatSanitize(flexBasis),
+      .unit = YGFloatIsUndefined(flexBasis) ? YGUnitUndefined : YGUnitPoint,
+  };
+  if ((node->getStyle().flexBasis.value != value.value &&
+       value.unit != YGUnitUndefined) ||
+      node->getStyle().flexBasis.unit != value.unit) {
+    YGStyle style = node->getStyle();
+    style.flexBasis = value;
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
+void YGNodeStyleSetFlexBasisPercent(
+    const YGNodeRef node,
+    const float flexBasisPercent) {
+  if (node->getStyle().flexBasis.value != flexBasisPercent ||
+      node->getStyle().flexBasis.unit != YGUnitPercent) {
+    YGStyle style = node->getStyle();
+    style.flexBasis.value = YGFloatSanitize(flexBasisPercent);
+    style.flexBasis.unit =
+        YGFloatIsUndefined(flexBasisPercent) ? YGUnitAuto : YGUnitPercent;
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
+void YGNodeStyleSetFlexBasisAuto(const YGNodeRef node) {
+  if (node->getStyle().flexBasis.unit != YGUnitAuto) {
+    YGStyle style = node->getStyle();
+    style.flexBasis.value = 0;
+    style.flexBasis.unit = YGUnitAuto;
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Margin, margin);

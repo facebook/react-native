@@ -45,7 +45,7 @@ YGStyle::YGStyle()
       flex(YGFloatOptionalUndefined),
       flexGrow(YGFloatOptionalUndefined),
       flexShrink(YGFloatOptionalUndefined),
-      flexBasis(kYGValueAuto),
+      flexBasis({0, YGUnitAuto}),
       margin(kYGDefaultEdgeValuesUnit),
       position(kYGDefaultEdgeValuesUnit),
       padding(kYGDefaultEdgeValuesUnit),
