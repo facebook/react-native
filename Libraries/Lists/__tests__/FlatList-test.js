@@ -14,7 +14,6 @@ const React = require('React');
 const ReactTestRenderer = require('react-test-renderer');
 
 const FlatList = require('FlatList');
-const Text = require('Text');
 
 describe('FlatList', () => {
   it('renders simple list', () => {
