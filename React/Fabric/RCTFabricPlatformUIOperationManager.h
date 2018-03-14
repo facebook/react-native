@@ -24,7 +24,7 @@ namespace react {
 class RCTFabricPlatformUIOperationManagerConnector : public IFabricPlatformUIOperationManager {
 public:
   RCTFabricPlatformUIOperationManagerConnector();
-  ~RCTFabricPlatformUIOperationManagerConnector();
+  virtual ~RCTFabricPlatformUIOperationManagerConnector();
 
   void performUIOperation();
 

@@ -9,6 +9,4 @@
 
 @interface RCTInputAccessoryViewContent : UIView
 
-@property (nonatomic, readwrite, retain) UIView *contentView;
-
 @end

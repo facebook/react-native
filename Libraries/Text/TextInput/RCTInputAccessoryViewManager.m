@@ -23,6 +23,6 @@ RCT_EXPORT_MODULE()
   return [[RCTInputAccessoryView alloc] initWithBridge:self.bridge];
 }
 
-RCT_REMAP_VIEW_PROPERTY(backgroundColor, content.inputAccessoryView.backgroundColor, UIColor)
+RCT_REMAP_VIEW_PROPERTY(backgroundColor, inputAccessoryView.backgroundColor, UIColor)
 
 @end

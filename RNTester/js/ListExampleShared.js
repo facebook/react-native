@@ -117,6 +117,16 @@ class HeaderComponent extends React.PureComponent<{}> {
   }
 }
 
+class ListEmptyComponent extends React.PureComponent<{}> {
+  render() {
+    return (
+      <View style={styles.listEmpty}>
+        <Text>The list is empty :o</Text>
+      </View>
+    );
+  }
+}
+
 class SeparatorComponent extends React.PureComponent<{}> {
   render() {
     return <View style={styles.separator} />;
@@ -240,6 +250,11 @@ const styles = StyleSheet.create({
   headerFooterContainer: {
     backgroundColor: 'rgb(239, 239, 244)',
   },
+  listEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+  },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
   },
@@ -317,6 +332,7 @@ const styles = StyleSheet.create({
 module.exports = {
   FooterComponent,
   HeaderComponent,
+  ListEmptyComponent,
   ItemComponent,
   ItemSeparatorComponent,
   PlainInput,

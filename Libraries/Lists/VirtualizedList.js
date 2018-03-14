@@ -850,23 +850,25 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     } else if (ListEmptyComponent) {
-      const element = React.isValidElement(ListEmptyComponent) ? (
+      const element: React.Element<any> = (React.isValidElement(
+        ListEmptyComponent,
+      ) ? (
         ListEmptyComponent
       ) : (
         // $FlowFixMe
         <ListEmptyComponent />
-      );
+      ): any);
       cells.push(
-        <View
-          key="$empty"
-          onLayout={this._onLayoutEmpty}
-          style={inversionStyle}>
-          {/*
-            Flow doesn't know this is a React.Element and not a React.Component
-            $FlowFixMe https://fburl.com/b9xmtm09
-          */}
-          {element}
-        </View>,
+        React.cloneElement(element, {
+          key: '$empty',
+          onLayout: event => {
+            this._onLayoutEmpty(event);
+            if (element.props.onLayout) {
+              element.props.onLayout(event);
+            }
+          },
+          style: [element.props.style, inversionStyle],
+        }),
       );
     }
     if (ListFooterComponent) {
