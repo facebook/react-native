@@ -72,7 +72,10 @@ appendNumberIfNotAuto(string* base, const string& key, const YGValue number) {
 
 static void
 appendNumberIfNotZero(string* base, const string& str, const YGValue number) {
-  if (!YGFloatsEqual(number.value, 0)) {
+
+  if (number.unit == YGUnitAuto) {
+    base->append(str + ": auto; ");
+  } else if (!YGFloatsEqual(number.value, 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }

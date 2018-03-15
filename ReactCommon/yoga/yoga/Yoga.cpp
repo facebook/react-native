@@ -637,7 +637,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
   void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge) { \
     if (node->getStyle().instanceName[edge].unit != YGUnitAuto) {            \
       YGStyle style = node->getStyle();                                      \
-      style.instanceName[edge].value = YGUndefined;                          \
+      style.instanceName[edge].value = 0;                                    \
       style.instanceName[edge].unit = YGUnitAuto;                            \
       node->setStyle(style);                                                 \
       node->markDirtyAndPropogate();                                         \
@@ -649,7 +649,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
   void YGNodeStyleSet##name(                                                   \
       const YGNodeRef node, const YGEdge edge, const float paramName) {        \
     YGValue value = {                                                          \
-        .value = paramName,                                                    \
+        .value = YGFloatSanitize(paramName),                                   \
         .unit = YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint, \
     };                                                                         \
     if ((node->getStyle().instanceName[edge].value != value.value &&           \
@@ -665,7 +665,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
   void YGNodeStyleSet##name##Percent(                                          \
       const YGNodeRef node, const YGEdge edge, const float paramName) {        \
     YGValue value = {                                                          \
-        .value = paramName,                                                    \
+        .value = YGFloatSanitize(paramName),                                   \
         .unit =                                                                \
             YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent,   \
     };                                                                         \
@@ -681,28 +681,11 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
                                                                                \
   WIN_STRUCT(type)                                                             \
   YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {              \
-    return WIN_STRUCT_REF(node->getStyle().instanceName[edge]);                \
-  }
-
-#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)  \
-  void YGNodeStyleSet##name(                                                   \
-      const YGNodeRef node, const YGEdge edge, const float paramName) {        \
-    YGValue value = {                                                          \
-        .value = paramName,                                                    \
-        .unit = YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint, \
-    };                                                                         \
-    if ((node->getStyle().instanceName[edge].value != value.value &&           \
-         value.unit != YGUnitUndefined) ||                                     \
-        node->getStyle().instanceName[edge].unit != value.unit) {              \
-      YGStyle style = node->getStyle();                                        \
-      style.instanceName[edge] = value;                                        \
-      node->setStyle(style);                                                   \
-      node->markDirtyAndPropogate();                                           \
+    YGValue value = node->getStyle().instanceName[edge];                       \
+    if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {           \
+      value.value = YGUndefined;                                               \
     }                                                                          \
-  }                                                                            \
-                                                                               \
-  float YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {        \
-    return node->getStyle().instanceName[edge].value;                          \
+    return WIN_STRUCT_REF(value);                                              \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -873,7 +856,8 @@ void YGNodeStyleSetBorder(
 }
 
 float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
-  if (node->getStyle().border[edge].unit == YGUnitUndefined) {
+  if (node->getStyle().border[edge].unit == YGUnitUndefined ||
+      node->getStyle().border[edge].unit == YGUnitAuto) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
     // return YGFloatOptional.
     return YGUndefined;
