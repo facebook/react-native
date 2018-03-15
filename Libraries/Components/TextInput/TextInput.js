@@ -244,6 +244,7 @@ const TextInput = createReactClass({
      *
      * - `default`
      * - `numeric`
+     * - `number-pad`
      * - `email-address`
      * - `phone-pad`
      *
@@ -254,7 +255,6 @@ const TextInput = createReactClass({
      * - `ascii-capable`
      * - `numbers-and-punctuation`
      * - `url`
-     * - `number-pad`
      * - `name-phone-pad`
      * - `decimal-pad`
      * - `twitter`
@@ -272,11 +272,11 @@ const TextInput = createReactClass({
       'email-address',
       'numeric',
       'phone-pad',
+      'number-pad',
       // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
-      'number-pad',
       'name-phone-pad',
       'decimal-pad',
       'twitter',

@@ -905,6 +905,10 @@ YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
+bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node) {
+  return node->getLayout().doesLegacyStretchFlagAffectsLayout;
+}
+
 uint32_t gCurrentGenerationCount = 0;
 
 bool YGLayoutNodeInternal(const YGNodeRef node,
@@ -3840,6 +3844,12 @@ void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
     config->logger = &YGDefaultLog;
 #endif
   }
+}
+
+void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    const YGConfigRef config,
+    const bool shouldDiffLayout) {
+  config->shouldDiffLayoutWithoutLegacyStretchBehaviour = shouldDiffLayout;
 }
 
 static void YGVLog(const YGConfigRef config,
