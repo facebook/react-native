@@ -134,8 +134,10 @@ namespace facebook {
         installGlobalProxy(m_context, "nativeModuleProxy",
                            exceptionWrapMethod<&JSCExecutor::getNativeModule>());
       }
-      installGlobalProxy(m_context, "nativeExtensions",
-                         exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
+      if (nativeExtensionsProvider) {
+        installGlobalProxy(m_context, "nativeExtensions",
+                           exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
+      }
     }
 
     JSCExecutor::~JSCExecutor() {
