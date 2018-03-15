@@ -965,6 +965,7 @@ var Fragment = 10;
 var Mode = 11;
 var ContextConsumer = 12;
 var ContextProvider = 13;
+var ForwardRef = 14;
 
 function getParent(inst) {
   do {
@@ -2802,6 +2803,9 @@ var REACT_CONTEXT_TYPE = hasSymbol ? Symbol["for"]("react.context") : 0xeace;
 var REACT_ASYNC_MODE_TYPE = hasSymbol
   ? Symbol["for"]("react.async_mode")
   : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol
+  ? Symbol["for"]("react.forward_ref")
+  : 0xead0;
 
 var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
 var FAUX_ITERATOR_SYMBOL = "@@iterator";
@@ -2983,7 +2987,7 @@ var TouchHistoryMath = {
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.3.0-alpha.1";
+var ReactVersion = "16.3.0-alpha.2";
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -5500,6 +5504,9 @@ function createFiberFromElement(element, mode, expirationTime) {
               // This is a consumer
               fiberTag = ContextConsumer;
               break;
+            case REACT_FORWARD_REF_TYPE:
+              fiberTag = ForwardRef;
+              break;
             default:
               if (typeof type.tag === "number") {
                 // Currently assumed to be a continuation and therefore is a
@@ -7092,20 +7099,20 @@ var ReactFiberClassComponent = function(
       // In order to support react-lifecycles-compat polyfilled components,
       // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
       if (
-        (typeof instance.UNSAFE_componentWillUpdate === "function" ||
-          typeof instance.componentWillUpdate === "function") &&
+        (typeof instance.UNSAFE_componentWillMount === "function" ||
+          typeof instance.componentWillMount === "function") &&
         typeof ctor.getDerivedStateFromProps !== "function"
       ) {
-        startPhaseTimer(workInProgress, "componentWillUpdate");
-        if (typeof instance.componentWillUpdate === "function") {
-          instance.componentWillUpdate(newProps, newState, newContext);
+        startPhaseTimer(workInProgress, "componentWillMount");
+        if (typeof instance.componentWillMount === "function") {
+          instance.componentWillMount();
         }
-        if (typeof instance.UNSAFE_componentWillUpdate === "function") {
-          instance.UNSAFE_componentWillUpdate(newProps, newState, newContext);
+        if (typeof instance.UNSAFE_componentWillMount === "function") {
+          instance.UNSAFE_componentWillMount();
         }
         stopPhaseTimer();
       }
-      if (typeof instance.componentDidUpdate === "function") {
+      if (typeof instance.componentDidMount === "function") {
         workInProgress.effectTag |= Update;
       }
     } else {
@@ -8725,6 +8732,14 @@ var ReactFiberBeginWork = function(
     }
   }
 
+  function updateForwardRef(current, workInProgress) {
+    var render = workInProgress.type.render;
+    var nextChildren = render(workInProgress.pendingProps, workInProgress.ref);
+    reconcileChildren(current, workInProgress, nextChildren);
+    memoizeProps(workInProgress, nextChildren);
+    return workInProgress.child;
+  }
+
   function updateFragment(current, workInProgress) {
     var nextChildren = workInProgress.pendingProps;
     if (hasContextChanged()) {
@@ -9678,6 +9693,8 @@ var ReactFiberBeginWork = function(
           workInProgress,
           renderExpirationTime
         );
+      case ForwardRef:
+        return updateForwardRef(current, workInProgress);
       case Fragment:
         return updateFragment(current, workInProgress);
       case Mode:
@@ -10230,6 +10247,8 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
       case ReturnComponent:
         // Does nothing.
         return null;
+      case ForwardRef:
+        return null;
       case Fragment:
         return null;
       case Mode:
@@ -10569,7 +10588,7 @@ var ReactFiberCommitWork = function(
           }
         }
       } else {
-        ref.value = null;
+        ref.current = null;
       }
     }
   }
@@ -10734,7 +10753,19 @@ var ReactFiberCommitWork = function(
       if (typeof ref === "function") {
         ref(instanceToUse);
       } else {
-        ref.value = instanceToUse;
+        {
+          if (!ref.hasOwnProperty("current")) {
+            warning(
+              false,
+              "Unexpected ref object provided for %s. " +
+                "Use either a ref-setter function or Reacte.createRef().%s",
+              getComponentName(finishedWork),
+              getStackAddendumByWorkInProgressFiber(finishedWork)
+            );
+          }
+        }
+
+        ref.current = instanceToUse;
       }
     }
   }
@@ -10745,7 +10776,7 @@ var ReactFiberCommitWork = function(
       if (typeof currentRef === "function") {
         currentRef(null);
       } else {
-        currentRef.value = null;
+        currentRef.current = null;
       }
     }
   }

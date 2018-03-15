@@ -1174,6 +1174,9 @@ var hasSymbol = "function" === typeof Symbol && Symbol["for"],
   REACT_PROVIDER_TYPE = hasSymbol ? Symbol["for"]("react.provider") : 60109,
   REACT_CONTEXT_TYPE = hasSymbol ? Symbol["for"]("react.context") : 60110,
   REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol["for"]("react.async_mode") : 60111,
+  REACT_FORWARD_REF_TYPE = hasSymbol
+    ? Symbol["for"]("react.forward_ref")
+    : 60112,
   MAYBE_ITERATOR_SYMBOL = "function" === typeof Symbol && Symbol.iterator;
 function getIteratorFn(maybeIterable) {
   if (null === maybeIterable || "undefined" === typeof maybeIterable)
@@ -2037,6 +2040,9 @@ function createFiberFromElement(element, mode, expirationTime) {
             case REACT_CONTEXT_TYPE:
               fiberTag = 12;
               break;
+            case REACT_FORWARD_REF_TYPE:
+              fiberTag = 14;
+              break;
             default:
               if ("number" === typeof type.tag)
                 return (
@@ -2551,22 +2557,14 @@ function ReactFiberClassComponent(
         renderExpirationTime,
         newUnmaskedContext
       ))
-        ? (("function" !== typeof instance.UNSAFE_componentWillUpdate &&
-            "function" !== typeof instance.componentWillUpdate) ||
+        ? (("function" !== typeof instance.UNSAFE_componentWillMount &&
+            "function" !== typeof instance.componentWillMount) ||
             "function" === typeof ctor.getDerivedStateFromProps ||
-            ("function" === typeof instance.componentWillUpdate &&
-              instance.componentWillUpdate(
-                newProps,
-                renderExpirationTime,
-                newUnmaskedContext
-              ),
-            "function" === typeof instance.UNSAFE_componentWillUpdate &&
-              instance.UNSAFE_componentWillUpdate(
-                newProps,
-                renderExpirationTime,
-                newUnmaskedContext
-              )),
-          "function" === typeof instance.componentDidUpdate &&
+            ("function" === typeof instance.componentWillMount &&
+              instance.componentWillMount(),
+            "function" === typeof instance.UNSAFE_componentWillMount &&
+              instance.UNSAFE_componentWillMount()),
+          "function" === typeof instance.componentDidMount &&
             (workInProgress.effectTag |= 4))
         : ("function" === typeof instance.componentDidMount &&
             (workInProgress.effectTag |= 4),
@@ -3932,6 +3930,17 @@ function ReactFiberBeginWork(
                 )),
             current
           );
+        case 14:
+          return (
+            (renderExpirationTime = workInProgress.type.render),
+            (renderExpirationTime = renderExpirationTime(
+              workInProgress.pendingProps,
+              workInProgress.ref
+            )),
+            reconcileChildren(current, workInProgress, renderExpirationTime),
+            (workInProgress.memoizedProps = renderExpirationTime),
+            workInProgress.child
+          );
         case 10:
           return (
             (renderExpirationTime = workInProgress.pendingProps),
@@ -4263,6 +4272,8 @@ function ReactFiberCompleteWork(config, hostContext, hydrationContext) {
           return (workInProgress.tag = 7), null;
         case 9:
           return null;
+        case 14:
+          return null;
         case 10:
           return null;
         case 11:
@@ -4415,7 +4426,7 @@ function ReactFiberCommitWork(
         } catch (refError) {
           captureError(current, refError);
         }
-      else ref.value = null;
+      else ref.current = null;
   }
   function commitUnmount(current) {
     "function" === typeof onCommitUnmount && onCommitUnmount(current);
@@ -4795,7 +4806,7 @@ function ReactFiberCommitWork(
         }
         "function" === typeof ref
           ? ref(finishedWork)
-          : (ref.value = finishedWork);
+          : (ref.current = finishedWork);
       }
     },
     commitDetachRef: function(current) {
@@ -4803,7 +4814,7 @@ function ReactFiberCommitWork(
       null !== current &&
         ("function" === typeof current
           ? current(null)
-          : (current.value = null));
+          : (current.current = null));
     }
   };
 }
@@ -6352,7 +6363,7 @@ NativeRenderer.injectIntoDevTools({
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 0,
-  version: "16.3.0-alpha.1",
+  version: "16.3.0-alpha.2",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = Object.freeze({ default: ReactNativeRenderer }),
