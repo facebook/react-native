@@ -165,7 +165,7 @@ class Modal extends React.Component<Object> {
     }
 
     const containerStyles = {
-      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      backgroundColor: this.props.transparent ? 'transparent' : (this.props.overlayColor ? this.props.overlayColor : 'white')
     };
 
     let animationType = this.props.animationType;
