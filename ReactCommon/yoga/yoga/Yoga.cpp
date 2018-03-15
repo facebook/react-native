@@ -778,7 +778,7 @@ void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
   if (!YGFloatOptionalFloatEquals(node->getStyle().flexShrink, flexShrink)) {
     YGStyle style = node->getStyle();
     if (YGFloatIsUndefined(flexShrink)) {
-      style.flexGrow = {true, 0};
+      style.flexShrink = {true, 0};
     } else {
       style.flexShrink = {false, flexShrink};
     }
