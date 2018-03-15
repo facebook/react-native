@@ -538,7 +538,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
     type, name, paramName, instanceName)                                       \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {      \
     YGValue value = {                                                          \
-        .value = paramName,                                                    \
+        .value = YGFloatSanitize(paramName),                                   \
         .unit = YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint, \
     };                                                                         \
     if ((node->getStyle().instanceName.value != value.value &&                 \
@@ -554,7 +554,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
   void YGNodeStyleSet##name##Percent(                                          \
       const YGNodeRef node, const type paramName) {                            \
     YGValue value = {                                                          \
-        .value = paramName,                                                    \
+        .value = YGFloatSanitize(paramName),                                   \
         .unit =                                                                \
             YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent,   \
     };                                                                         \
@@ -621,7 +621,11 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
       float, name, paramName, instanceName)                                   \
                                                                               \
   type YGNodeStyleGet##name(const YGNodeRef node) {                           \
-    return node->getStyle().instanceName;                                     \
+    YGValue value = node->getStyle().instanceName;                            \
+    if (value.unit == YGUndefined || value.unit == YGUnitAuto) {              \
+      value.value = YGUndefined;                                              \
+    }                                                                         \
+    return value;                                                             \
   }
 
 #define YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(      \
