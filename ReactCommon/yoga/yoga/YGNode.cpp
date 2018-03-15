@@ -500,7 +500,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!style_.flex.isUndefined && style_.flex.value > 0.0f) {
+  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -592,11 +592,11 @@ float YGNode::resolveFlexGrow() {
   if (parent_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexGrow.isUndefined) {
-    return style_.flexGrow.value;
+  if (!style_.flexGrow.isUndefined()) {
+    return style_.flexGrow.getValue();
   }
-  if (!style_.flex.isUndefined && style_.flex.value > 0.0f) {
-    return style_.flex.value;
+  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
+    return style_.flex.getValue();
   }
   return kDefaultFlexGrow;
 }
@@ -605,12 +605,12 @@ float YGNode::resolveFlexShrink() {
   if (parent_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexShrink.isUndefined) {
-    return style_.flexShrink.value;
+  if (!style_.flexShrink.isUndefined()) {
+    return style_.flexShrink.getValue();
   }
-  if (!config_->useWebDefaults && !style_.flex.isUndefined &&
-      style_.flex.value < 0.0f) {
-    return -style_.flex.value;
+  if (!config_->useWebDefaults && !style_.flex.isUndefined() &&
+      style_.flex.getValue() < 0.0f) {
+    return -style_.flex.getValue();
   }
   return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
@@ -653,8 +653,9 @@ float YGNode::getLeadingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-          !YGResolveValue(style_.padding[YGEdgeStart], widthSize).isUndefined &&
-      YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeStart], widthSize)) > 0.0f) {
+      !YGResolveValue(style_.padding[YGEdgeStart], widthSize).isUndefined() &&
+      YGUnwrapFloatOptional(
+          YGResolveValue(style_.padding[YGEdgeStart], widthSize)) > 0.0f) {
     return YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeStart], widthSize));
   }
 
@@ -669,8 +670,9 @@ float YGNode::getTrailingPadding(
     const float widthSize) {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined &&
-      YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) >= 0.0f) {
+      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined() &&
+      YGUnwrapFloatOptional(
+          YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) >= 0.0f) {
     return YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeEnd], widthSize));
   }
 

@@ -7,9 +7,6 @@
 
 #include "YGStyle.h"
 
-#define YGFloatOptionalUndefined \
-  { true, 0 }
-
 const YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
 const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
@@ -42,9 +39,9 @@ YGStyle::YGStyle()
       flexWrap(YGWrapNoWrap),
       overflow(YGOverflowVisible),
       display(YGDisplayFlex),
-      flex(YGFloatOptionalUndefined),
-      flexGrow(YGFloatOptionalUndefined),
-      flexShrink(YGFloatOptionalUndefined),
+      flex(YGFloatOptional()),
+      flexGrow(YGFloatOptional()),
+      flexShrink(YGFloatOptional()),
       flexBasis({0, YGUnitAuto}),
       margin(kYGDefaultEdgeValuesUnit),
       position(kYGDefaultEdgeValuesUnit),
@@ -73,24 +70,25 @@ bool YGStyle::operator==(const YGStyle& style) {
       YGValueArrayEqual(maxDimensions, style.maxDimensions);
 
   areNonFloatValuesEqual =
-      areNonFloatValuesEqual && flex.isUndefined == style.flex.isUndefined;
-  if (areNonFloatValuesEqual && !flex.isUndefined && !style.flex.isUndefined) {
+      areNonFloatValuesEqual && flex.isUndefined() == style.flex.isUndefined();
+  if (areNonFloatValuesEqual && !flex.isUndefined() &&
+      !style.flex.isUndefined()) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flex.value == style.flex.value;
+        areNonFloatValuesEqual && flex.getValue() == style.flex.getValue();
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexGrow.isUndefined == style.flexGrow.isUndefined;
-  if (areNonFloatValuesEqual && !flexGrow.isUndefined) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexGrow.value == style.flexGrow.value;
+      flexGrow.isUndefined() == style.flexGrow.isUndefined();
+  if (areNonFloatValuesEqual && !flexGrow.isUndefined()) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual &&
+        flexGrow.getValue() == style.flexGrow.getValue();
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexShrink.isUndefined == style.flexShrink.isUndefined;
-  if (areNonFloatValuesEqual && !style.flexShrink.isUndefined) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexShrink.value == style.flexShrink.value;
+      flexShrink.isUndefined() == style.flexShrink.isUndefined();
+  if (areNonFloatValuesEqual && !style.flexShrink.isUndefined()) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual &&
+        flexShrink.getValue() == style.flexShrink.getValue();
   }
 
   if (!(YGFloatIsUndefined(aspectRatio) &&

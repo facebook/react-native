@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
 

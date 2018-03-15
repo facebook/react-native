@@ -113,13 +113,14 @@ inline YGFloatOptional YGResolveValue(const YGValue value, const float parentSiz
   switch (value.unit) {
     case YGUnitUndefined:
     case YGUnitAuto:
-      return {true, 0};
+      return YGFloatOptional();
     case YGUnitPoint:
-      return {false, value.value};
+      return YGFloatOptional(value.value);
     case YGUnitPercent:
-      return {false, static_cast<float>(value.value * parentSize * 0.01)};
+      return YGFloatOptional(
+          static_cast<float>(value.value * parentSize * 0.01));
   }
-  return {true, 0};
+  return YGFloatOptional();
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {

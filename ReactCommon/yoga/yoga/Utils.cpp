@@ -55,7 +55,7 @@ float YGFloatSanitize(const float& val) {
 }
 
 float YGUnwrapFloatOptional(const YGFloatOptional& op) {
-  return op.isUndefined ? YGUndefined : op.value;
+  return op.isUndefined() ? YGUndefined : op.getValue();
 }
 
 bool YGFloatOptionalFloatEquals(
