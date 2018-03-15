@@ -13,7 +13,6 @@
 
 const Alert = require('Alert');
 const Button = require('Button');
-const Dimensions = require('Dimensions');
 const InputAccessoryView = require('InputAccessoryView');
 const React = require('React');
 const ScrollView = require('ScrollView');
@@ -36,9 +35,8 @@ class TextInputBar extends React.PureComponent<*, *> {
   state = {text: ''};
 
   render() {
-    const {width} = Dimensions.get('window');
     return (
-      <View style={[styles.textInputContainer, {width}]}>
+      <View style={styles.textInputContainer}>
         <TextInput
           style={styles.textInput}
           onChangeText={text => {
