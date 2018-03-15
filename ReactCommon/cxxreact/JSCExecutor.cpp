@@ -121,7 +121,7 @@ namespace facebook {
     JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                              std::shared_ptr<MessageQueueThread> messageQueueThread,
                              const folly::dynamic& jscConfig,
-                             std::function<folly::dynamic(const std::string &)> nativeExtensionsProvider) throw(JSException) :
+                             NativeExtensionsProvider nativeExtensionsProvider) throw(JSException) :
     m_delegate(delegate),
     m_messageQueueThread(messageQueueThread),
     m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
