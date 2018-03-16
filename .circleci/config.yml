@@ -539,7 +539,7 @@ jobs:
           command: |
             # GITHUB_TOKEN=eslint-bot public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+              GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."            
             fi
