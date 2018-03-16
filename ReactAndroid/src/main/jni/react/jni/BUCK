@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "FBJNI_TARGET", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "ANDROID", "IS_OSS_BUILD")
 
 EXPORTED_HEADERS = [
     "AndroidJSCFactory.h",
@@ -20,7 +20,7 @@ EXPORTED_HEADERS = [
     "WritableNativeMap.h",
 ]
 
-cxx_library(
+rn_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(
@@ -29,7 +29,6 @@ cxx_library(
     ),
     header_namespace = "react/jni",
     exported_headers = EXPORTED_HEADERS,
-    allow_jni_merging = True,
     compiler_flags = [
         "-Wall",
         "-Werror",
@@ -39,6 +38,10 @@ cxx_library(
         "-Wno-pessimizing-move",
         "-Wno-inconsistent-missing-override",
     ],
+    fbandroid_allow_jni_merging = True,
+    fbandroid_deps = ANDROID_JSC_DEPS,
+    fbobjc_deps = APPLE_JSC_DEPS,
+    platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
@@ -50,12 +53,12 @@ cxx_library(
         "PUBLIC",
     ],
     deps = ([
-        "//native/third-party/android-ndk:android",
+        "xplat//third-party/linker_lib:android",
         "xplat//folly:molly",
-        "//xplat/fbgloginit:fbgloginit",
+        "fbandroid//xplat/fbgloginit:fbgloginit",
         "xplat//fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         FBJNI_TARGET,
-    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
+    ]) if not IS_OSS_BUILD else [],
 )

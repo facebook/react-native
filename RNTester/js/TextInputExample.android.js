@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule TextInputExample
@@ -27,6 +25,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
   updateText = (text) => {
@@ -35,6 +34,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   };
@@ -46,6 +46,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={(event) => this.updateText(
@@ -60,12 +61,16 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onKeyPress={(event) => this.updateText(
+            'onKeyPress key: ' + event.nativeEvent.key
+          )}
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
@@ -320,10 +325,14 @@ class AutogrowingTextInputExample extends React.Component<{}> {
       width: 100,
       multiline: true,
       text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
     };
   }
 
-  componentDidReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState({
       multiline: props.multiline,
     });
@@ -351,10 +360,12 @@ class AutogrowingTextInputExample extends React.Component<{}> {
           multiline={this.state.multiline}
           style={[style, {width: this.state.width + '%'}]}
           onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
           {...props}
         />
         <Text>Plain text value representation:</Text>
         <Text>{this.state.text}</Text>
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
       </View>
     );
   }
@@ -551,6 +562,31 @@ exports.examples = [
           <TextInput
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'letterSpacing',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 0}]}
+            placeholder="letterSpacing = 0"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 2}]}
+            placeholder="letterSpacing = 2"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 9}]}
+            placeholder="letterSpacing = 9"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: -1}]}
+            placeholder="letterSpacing = -1"
           />
         </View>
       );

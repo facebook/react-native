@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule PickerIOS
  *
@@ -12,21 +10,21 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
-var View = require('View');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
+const TextStylePropTypes = require('TextStylePropTypes');
+const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
-var processColor = require('processColor');
+const processColor = require('processColor');
 
-var createReactClass = require('create-react-class');
-var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const itemStylePropType = StyleSheetPropType(TextStylePropTypes);
+const requireNativeComponent = require('requireNativeComponent');
 
-var PickerIOS = createReactClass({
+const PickerIOS = createReactClass({
   displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
 
@@ -41,14 +39,14 @@ var PickerIOS = createReactClass({
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   },
 
   // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
-    var selectedIndex = 0;
-    var items = [];
+    let selectedIndex = 0;
+    const items = [];
     React.Children.toArray(props.children).forEach(function (child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
@@ -113,7 +111,7 @@ PickerIOS.Item = class extends React.Component {
   }
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   pickerIOS: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
@@ -122,7 +120,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTPickerIOS = requireNativeComponent('RCTPicker', {
+const RCTPickerIOS = requireNativeComponent('RCTPicker', {
   propTypes: {
     style: itemStylePropType,
   },

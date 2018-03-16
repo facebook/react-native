@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule SwipeableRow
  * @flow
@@ -24,9 +22,6 @@ const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
 const createReactClass = require('create-react-class');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const IS_RTL = I18nManager.isRTL;
@@ -125,7 +120,7 @@ const SwipeableRow = createReactClass({
     };
   },
 
-  componentWillMount(): void {
+  UNSAFE_componentWillMount(): void {
     this._panResponder = PanResponder.create({
       onMoveShouldSetPanResponderCapture: this._handleMoveShouldSetPanResponderCapture,
       onPanResponderGrant: this._handlePanResponderGrant,
@@ -149,7 +144,7 @@ const SwipeableRow = createReactClass({
     }
   },
 
-  componentWillReceiveProps(nextProps: Object): void {
+  UNSAFE_componentWillReceiveProps(nextProps: Object): void {
     /**
      * We do not need an "animateOpen(noCallback)" because this animation is
      * handled internally by this component.
@@ -157,15 +152,6 @@ const SwipeableRow = createReactClass({
     if (this.props.isOpen && !nextProps.isOpen) {
       this._animateToClosedPosition();
     }
-  },
-
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
-    if (this.props.shouldBounceOnMount && !nextProps.shouldBounceOnMount) {
-      // No need to rerender if SwipeableListView is disabling the bounce flag
-      return false;
-    }
-
-    return true;
   },
 
   render(): React.Element<any> {

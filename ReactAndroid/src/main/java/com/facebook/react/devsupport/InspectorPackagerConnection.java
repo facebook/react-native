@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import android.os.AsyncTask;
@@ -33,11 +32,17 @@ public class InspectorPackagerConnection {
   private final Connection mConnection;
   private final Map<String, Inspector.LocalConnection> mInspectorConnections;
   private final String mPackageName;
+  private BundleStatusProvider mBundleStatusProvider;
 
-  public InspectorPackagerConnection(String url, String packageName) {
+  public InspectorPackagerConnection(
+    String url,
+    String packageName,
+    BundleStatusProvider bundleStatusProvider
+  ) {
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
     mPackageName = packageName;
+    mBundleStatusProvider = bundleStatusProvider;
   }
 
   public void connect() {
@@ -143,11 +148,15 @@ public class InspectorPackagerConnection {
   private JSONArray getPages() throws JSONException {
     List<Inspector.Page> pages = Inspector.getPages();
     JSONArray array = new JSONArray();
+    BundleStatus bundleStatus = mBundleStatusProvider.getBundleStatus();
     for (Inspector.Page page : pages) {
       JSONObject jsonPage = new JSONObject();
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
       jsonPage.put("app", mPackageName);
+      jsonPage.put("vm", page.getVM());
+      jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSucess);
+      jsonPage.put("bundleUpdateTimestamp", bundleStatus.updateTimestamp);
       array.put(jsonPage);
     }
     return array;
@@ -305,5 +314,26 @@ public class InspectorPackagerConnection {
         mWebSocket = null;
       }
     }
+  }
+
+  static public class BundleStatus {
+    public Boolean isLastDownloadSucess;
+    public long updateTimestamp = -1;
+
+    public BundleStatus(
+      Boolean isLastDownloadSucess,
+      long updateTimestamp
+    ) {
+      this.isLastDownloadSucess = isLastDownloadSucess;
+      this.updateTimestamp = updateTimestamp;
+    }
+
+    public BundleStatus() {
+      this(false, -1);
+    }
+  }
+
+  public interface BundleStatusProvider {
+    public BundleStatus getBundleStatus();
   }
 }

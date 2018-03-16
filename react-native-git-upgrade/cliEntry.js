@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -33,9 +31,10 @@ log.heading = 'git-upgrade';
 /**
  * Promisify the callback-based shelljs function exec
  * @param logOutput If true, log the stdout of the command.
+ * @param logger Custom logger to modify the output, invoked with the data and the stream.
  * @returns {Promise}
  */
-function exec(command, logOutput) {
+function exec(command, logOutput, logger = null) {
   return new Promise((resolve, reject) => {
     let stderr, stdout = '';
     const child = shell.exec(command, {async: true, silent: true});
@@ -43,21 +42,35 @@ function exec(command, logOutput) {
     child.stdout.on('data', data => {
       stdout += data;
       if (logOutput) {
-        process.stdout.write(data);
+        if (logger) {
+          logger(data, process.stdout);
+        } else {
+          process.stdout.write(data);
+        }
       }
     });
 
     child.stderr.on('data', data => {
       stderr += data;
-      process.stderr.write(data);
+      if (logger) {
+        logger(data, process.stderr);
+      } else {
+        process.stderr.write(data);
+      }
     });
 
-    child.on('exit', code => {
-      (code === 0)
-        ? resolve(stdout)
-        : reject(new Error(`Command '${command}' exited with code ${code}:
+    child.on('exit', (code, signal) => {
+      if (code === 0) {
+        resolve(stdout);
+      } else if (code) {
+        reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
 stdout: ${stdout}`));
+      } else {
+        reject(new Error(`Command '${command}' terminated with signal '${signal}':
+stderr: ${stderr}
+stdout: ${stdout}`));
+      }
     });
   });
 }
@@ -139,6 +152,28 @@ function configureGitEnv(tmpDir) {
    */
   process.env.GIT_DIR = path.resolve(tmpDir, '.gitrn');
   process.env.GIT_WORK_TREE = '.';
+}
+
+function copyCurrentGitIgnoreFile(tmpDir) {
+  /*
+   * The user may have added new files or directories in the .gitignore file.
+   * We need to keep those files ignored during the process, otherwise they
+   * will be deleted.
+   * See https://github.com/facebook/react-native/issues/12237
+   */
+  try {
+    const gitignorePath = path.resolve(process.cwd(), '.gitignore');
+    const repoExcludePath = path.resolve(tmpDir, process.env.GIT_DIR, 'info/exclude');
+    const content = fs.readFileSync(gitignorePath, 'utf8');
+    fs.appendFileSync(repoExcludePath, content);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      log.info('No .gitignore file found, this step is a no-op');
+      return;
+    }
+
+    throw err;
+  }
 }
 
 function generateTemplates(generatorDir, appName, verbose) {
@@ -271,14 +306,17 @@ async function run(requestedVersion, cliArgs) {
     log.info('Configure Git environment');
     configureGitEnv(tmpDir);
 
-    log.info('Init Git repository');
+    log.info('Init temporary Git repository');
     await exec('git init', verbose);
+
+    log.info('Save current .gitignore file');
+    copyCurrentGitIgnoreFile(tmpDir);
 
     log.info('Add all files to commit');
     await exec('git add .', verbose);
 
     log.info('Commit current project sources');
-    await exec('git commit -m "Project snapshot"', verbose);
+    await exec('git commit -m "Project snapshot" --no-verify', verbose);
 
     log.info('Create a tag before updating sources');
     await exec('git tag project-snapshot', verbose);
@@ -291,7 +329,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit old version template');
-    await exec('git commit -m "Old version" --allow-empty', verbose);
+    await exec('git commit -m "Old version" --allow-empty --no-verify', verbose);
 
     log.info('Install the new version');
     let installCommand;
@@ -314,7 +352,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git add .', verbose);
 
     log.info('Commit new version template');
-    await exec('git commit -m "New version" --allow-empty', verbose);
+    await exec('git commit -m "New version" --allow-empty --no-verify', verbose);
 
     log.info('Generate the patch between the 2 versions');
     const diffOutput = await exec('git diff --binary --no-color HEAD~1 HEAD', verbose);
@@ -328,7 +366,13 @@ async function run(requestedVersion, cliArgs) {
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${patchPath}`, true);
+      await exec(`git apply --3way ${patchPath}`, true, (data, stream) => {
+        if (data.indexOf('conflicts') >= 0 || data.startsWith('U ')) {
+          stream.write(`\x1b[31m${data}\x1b[0m`);
+        } else {
+          stream.write(data);
+        }
+      });
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +
@@ -345,7 +389,7 @@ async function run(requestedVersion, cliArgs) {
     log.error(err.stack);
     if (projectBackupCreated) {
       log.error('Restore initial sources');
-      await exec('git checkout project-snapshot', true);
+      await exec('git checkout project-snapshot --no-verify', true);
     }
   }
 }

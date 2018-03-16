@@ -27,14 +27,15 @@ class RAMBundleRegistry;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
-  JSCExecutorFactory(const folly::dynamic& jscConfig) :
-    m_jscConfig(jscConfig) {}
+  JSCExecutorFactory(const folly::dynamic& jscConfig, NativeExtensionsProvider provider) :
+    m_jscConfig(jscConfig), m_nativeExtensionsProvider(provider) {}
   std::unique_ptr<JSExecutor> createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) override;
 private:
   std::string m_cacheDir;
   folly::dynamic m_jscConfig;
+  NativeExtensionsProvider m_nativeExtensionsProvider;
 };
 
 template<typename T>
@@ -58,7 +59,8 @@ public:
    */
   explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                        std::shared_ptr<MessageQueueThread> messageQueueThread,
-                       const folly::dynamic& jscConfig) throw(JSException);
+                       const folly::dynamic& jscConfig,
+                       NativeExtensionsProvider nativeExtensionsProvider) throw(JSException);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
@@ -77,14 +79,6 @@ public:
     const double callbackId,
     const folly::dynamic& arguments) override;
 
-  template <typename T>
-  Value callFunctionSync(
-      const std::string& module, const std::string& method, T&& args) {
-    return callFunctionSyncWithValue(
-      module, method, JSCValueEncoder<typename std::decay<T>::type>::toJSCValue(
-        m_context, std::forward<T>(args)));
-  }
-
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
@@ -92,6 +86,8 @@ public:
   virtual std::string getDescription() override;
 
   virtual void* getJavaScriptContext() override;
+
+  virtual bool isInspectable() override;
 
 #ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
@@ -110,6 +106,7 @@ private:
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
   std::once_flag m_bindFlag;
+  NativeExtensionsProvider m_nativeExtensionsProvider;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
@@ -117,10 +114,7 @@ private:
   folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
 
   void initOnJSVMThread() throw(JSException);
-  bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
-  // This method is experimental, and may be modified or removed.
-  Value callFunctionSyncWithValue(
-    const std::string& module, const std::string& method, Value value);
+  static bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
   void callNativeModules(Value&&);
@@ -132,7 +126,9 @@ private:
 
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
+
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
+  JSValueRef getNativeExtension(JSObjectRef object, JSStringRef propertyName);
 
   JSValueRef nativeRequire(
       size_t argumentCount,

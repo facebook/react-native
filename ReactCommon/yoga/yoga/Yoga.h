@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -20,13 +18,14 @@
 #include <stdbool.h>
 #endif
 
-// Not defined in MSVC++
-#ifndef NAN
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#endif
-
-#define YGUndefined NAN
+/** Large positive number signifies that the property(float) is undefined.
+ *Earlier we used to have YGundefined as NAN, but the downside of this is that
+ *we can't use -ffast-math compiler flag as it assumes all floating-point
+ *calculation involve and result into finite numbers. For more information
+ *regarding -ffast-math compiler flag in clang, have a look at
+ *https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
+ **/
+#define YGUndefined 10E20F
 
 #include "YGEnums.h"
 #include "YGMacros.h"
@@ -43,17 +42,20 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
-static const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
-static const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
+extern const YGValue YGValueUndefined;
+extern const YGValue YGValueAuto;
 
 typedef struct YGConfig *YGConfigRef;
-typedef struct YGNode *YGNodeRef;
+
+typedef struct YGNode* YGNodeRef;
+
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
                                 YGMeasureMode widthMode,
                                 float height,
                                 YGMeasureMode heightMode);
 typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
+typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(const YGConfigRef config,
                         const YGNodeRef node,
@@ -64,11 +66,6 @@ typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
                                  YGNodeRef newNode,
                                  YGNodeRef parent,
                                  int childIndex);
-
-typedef void *(*YGMalloc)(size_t size);
-typedef void *(*YGCalloc)(size_t count, size_t size);
-typedef void *(*YGRealloc)(void *ptr, size_t size);
-typedef void (*YGFree)(void *ptr);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
@@ -100,7 +97,10 @@ WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
 // depends on information not known to YG they must perform this dirty
 // marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
-WIN_EXPORT bool YGNodeIsDirty(const YGNodeRef node);
+
+// This function marks the current node and all its descendants as dirty. This function is added to test yoga benchmarks.
+// This function is not expected to be used in production as calling `YGCalculateLayout` will cause the recalculation of each and every node.
+WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 
@@ -163,12 +163,22 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
 #define YG_NODE_LAYOUT_EDGE_PROPERTY(type, name) \
   WIN_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge);
 
-YG_NODE_PROPERTY(void *, Context, context);
-YG_NODE_PROPERTY(YGMeasureFunc, MeasureFunc, measureFunc);
-YG_NODE_PROPERTY(YGBaselineFunc, BaselineFunc, baselineFunc)
-YG_NODE_PROPERTY(YGPrintFunc, PrintFunc, printFunc);
-YG_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
-YG_NODE_PROPERTY(YGNodeType, NodeType, nodeType);
+void* YGNodeGetContext(YGNodeRef node);
+void YGNodeSetContext(YGNodeRef node, void* context);
+YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
+void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
+YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
+void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
+YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
+void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
+YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
+void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
+bool YGNodeGetHasNewLayout(YGNodeRef node);
+void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
+YGNodeType YGNodeGetNodeType(YGNodeRef node);
+void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
+bool YGNodeIsDirty(YGNodeRef node);
+bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node);
 
 YG_NODE_STYLE_PROPERTY(YGDirection, Direction, direction);
 YG_NODE_STYLE_PROPERTY(YGFlexDirection, FlexDirection, flexDirection);
@@ -180,7 +190,6 @@ YG_NODE_STYLE_PROPERTY(YGPositionType, PositionType, positionType);
 YG_NODE_STYLE_PROPERTY(YGWrap, FlexWrap, flexWrap);
 YG_NODE_STYLE_PROPERTY(YGOverflow, Overflow, overflow);
 YG_NODE_STYLE_PROPERTY(YGDisplay, Display, display);
-
 YG_NODE_STYLE_PROPERTY(float, Flex, flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
@@ -222,6 +231,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
+bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if
@@ -239,10 +249,12 @@ WIN_EXPORT void YGAssertWithNode(const YGNodeRef node, const bool condition, con
 WIN_EXPORT void YGAssertWithConfig(const YGConfigRef config,
                                    const bool condition,
                                    const char *message);
-
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
+void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    const YGConfigRef config,
+    const bool shouldDiffLayout);
 
 // Yoga previously had an error where containers would take the maximum space possible instead of
 // the minimum
@@ -279,7 +291,10 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 WIN_EXPORT void YGConfigSetContext(const YGConfigRef config, void *context);
 WIN_EXPORT void *YGConfigGetContext(const YGConfigRef config);
 
-WIN_EXPORT void
-YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
+WIN_EXPORT float YGRoundValueToPixelGrid(
+    const float value,
+    const float pointScaleFactor,
+    const bool forceCeil,
+    const bool forceFloor);
 
 YG_EXTERN_C_END

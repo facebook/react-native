@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AppRegistry
  * @flow
@@ -22,6 +20,10 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
+// Renderer provider must be supplied by each app. If none, traditional
+// renderApplication() will be used.
+let fabricRendererProvider: ?() => typeof renderApplication = null;
+
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => React$ComponentType<any>;
@@ -33,6 +35,7 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
+  fabric?: boolean,
 };
 export type Runnable = {
   component?: ComponentProvider,
@@ -58,30 +61,9 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
 let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
- * <div class="banner-crna-ejected">
- *   <h3>Project with Native Code Required</h3>
- *   <p>
- *     This API only works in projects made with <code>react-native init</code>
- *     or in those made with Create React Native App which have since ejected. For
- *     more information about ejecting, please see
- *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
- *     the Create React Native App repository.
- *   </p>
- * </div>
+ * `AppRegistry` is the JavaScript entry point to running all React Native apps.
  *
- * `AppRegistry` is the JS entry point to running all React Native apps.  App
- * root components should register themselves with
- * `AppRegistry.registerComponent`, then the native system can load the bundle
- * for the app and then actually run the app when it's ready by invoking
- * `AppRegistry.runApplication`.
- *
- * To "stop" an application when a view should be destroyed, call
- * `AppRegistry.unmountApplicationComponentAtRootTag` with the tag that was
- * passed into `runApplication`. These should always be used as a pair.
- *
- * `AppRegistry` should be `require`d early in the `require` sequence to make
- * sure the JS execution environment is setup before other modules are
- * `require`d.
+ * See http://facebook.github.io/react-native/docs/appregistry.html
  */
 const AppRegistry = {
   setWrapperComponentProvider(provider: WrapperComponentProvider) {
@@ -103,25 +85,41 @@ const AppRegistry = {
           appConfig.appKey,
           appConfig.component,
           appConfig.section,
+          appConfig.fabric,
         );
       }
     });
   },
 
+  /**
+   * Registers an app's root component.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#registercomponent
+   */
   registerComponent(
     appKey: string,
     componentProvider: ComponentProvider,
     section?: boolean,
+    fabric?: boolean,
   ): string {
     runnables[appKey] = {
       componentProvider,
-      run: appParameters =>
-        renderApplication(
+      run: appParameters => {
+        let renderFunc = renderApplication;
+        if (fabric) {
+          invariant(
+            fabricRendererProvider != null,
+            'A Fabric renderer provider must be set to render Fabric components',
+          );
+          renderFunc = fabricRendererProvider();
+        }
+        renderFunc(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
-        ),
+        );
+      },
     };
     if (section) {
       sections[appKey] = runnables[appKey];
@@ -169,6 +167,11 @@ const AppRegistry = {
     componentProviderInstrumentationHook = hook;
   },
 
+  /**
+   * Loads the JavaScript bundle and runs the app.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
+   */
   runApplication(appKey: string, appParameters: any): void {
     const msg =
       'Running application "' +
@@ -207,16 +210,19 @@ const AppRegistry = {
     runnables[appKey].run(appParameters);
   },
 
+  /**
+   * Stops an application when a view should be destroyed.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#unmountapplicationcomponentatroottag
+   */
   unmountApplicationComponentAtRootTag(rootTag: number): void {
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
   /**
    * Register a headless task. A headless task is a bit of code that runs without a UI.
-   * @param taskKey the key associated with this task
-   * @param task    a promise returning function that takes some data passed from the native side as
-   *                the only argument; when the promise is resolved or rejected the native side is
-   *                notified of this event and it may decide to destroy the JS context.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, task: TaskProvider): void {
     if (tasks.has(taskKey)) {
@@ -230,9 +236,7 @@ const AppRegistry = {
   /**
    * Only called from native code. Starts a headless task.
    *
-   * @param taskId the native id for this task instance to keep track of its execution
-   * @param taskKey the key for the task to start
-   * @param data the data to pass to the task
+   * See http://facebook.github.io/react-native/docs/appregistry.html#startheadlesstask
    */
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = tasks.get(taskKey);
@@ -247,6 +251,10 @@ const AppRegistry = {
         console.error(reason);
         NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
+  },
+
+  setFabricRendererProvider(provider: () => typeof renderApplication): void {
+    fabricRendererProvider = provider;
   },
 };
 

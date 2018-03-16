@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule FlatListExample
@@ -29,6 +27,7 @@ const {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
+  ListEmptyComponent,
   ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
@@ -60,6 +59,7 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     fixedHeight: true,
     logViewable: false,
     virtualized: true,
+    empty: false,
   };
 
   _onChangeFilterText = (filterText) => {
@@ -111,8 +111,9 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
               {renderSmallSwitchOption(this, 'virtualized')}
               {renderSmallSwitchOption(this, 'horizontal')}
               {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'logViewable')}
+              {renderSmallSwitchOption(this, 'log')}
               {renderSmallSwitchOption(this, 'inverted')}
+              {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               <Spindicator value={this._scrollPos} />
             </View>
@@ -122,7 +123,8 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}
-            data={filteredData}
+            ListEmptyComponent={ListEmptyComponent}
+            data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
             getItemLayout={this.state.fixedHeight ?
@@ -212,6 +214,7 @@ const styles = StyleSheet.create({
   },
   list: {
     backgroundColor: 'white',
+    flexGrow: 1,
   },
   options: {
     flexDirection: 'row',

@@ -1,39 +1,40 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTRootShadowView.h"
 
 #import "RCTI18nUtil.h"
+#import "RCTShadowView+Layout.h"
 
 @implementation RCTRootShadowView
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
     _availableSize = CGSizeMake(INFINITY, INFINITY);
   }
+
   return self;
 }
 
-- (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
+- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews
 {
-  // Treating `INFINITY` as `YGUndefined` (which equals `NAN`).
-  float availableWidth = _availableSize.width == INFINITY ? YGUndefined : _availableSize.width;
-  float availableHeight = _availableSize.height == INFINITY ? YGUndefined : _availableSize.height;
+  NSHashTable<NSString *> *other = [NSHashTable new];
 
-  YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
+  RCTLayoutContext layoutContext = {};
+  layoutContext.absolutePosition = CGPointZero;
+  layoutContext.affectedShadowViews = affectedShadowViews;
+  layoutContext.other = other;
 
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:self.yogaNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
-  return viewsWithNewFrame;
+  [self layoutWithMinimumSize:CGSizeZero
+                  maximumSize:_availableSize
+              layoutDirection:RCTUIKitLayoutDirectionFromYogaLayoutDirection(_baseDirection)
+                layoutContext:layoutContext];
 }
 
 @end

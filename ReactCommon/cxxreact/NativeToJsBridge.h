@@ -56,35 +56,6 @@ public:
   void invokeCallback(double callbackId, folly::dynamic&& args);
 
   /**
-   * Executes a JS method on the given executor synchronously, returning its
-   * return value.  JSException will be thrown if JS throws an exception;
-   * another standard exception may be thrown for C++ bridge failures, or if
-   * the executor is not capable of synchronous calls.
-   *
-   * This method is experimental, and may be modified or removed.
-   *
-   * loadApplicationScriptSync() must be called and finished executing
-   * before callFunctionSync().
-   */
-  template <typename T>
-  Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
-    if (*m_destroyed) {
-      throw std::logic_error(
-        folly::to<std::string>("Synchronous call to ", module, ".", method,
-                               " after bridge is destroyed"));
-    }
-
-    JSCExecutor *jscExecutor = dynamic_cast<JSCExecutor*>(m_executor.get());
-    if (!jscExecutor) {
-      throw std::invalid_argument(
-        folly::to<std::string>("Executor type ", typeid(m_executor.get()).name(),
-                               " does not support synchronous calls"));
-    }
-
-    return jscExecutor->callFunctionSync(module, method, std::forward<T>(args));
-  }
-
-  /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is
    * used to fetch JavaScript modules as individual scripts.
    * Otherwise, the script is assumed to include all the modules.
@@ -101,6 +72,7 @@ public:
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
+  bool isInspectable();
 
   #ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);

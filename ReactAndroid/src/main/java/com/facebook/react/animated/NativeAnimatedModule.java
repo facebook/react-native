@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animated;
@@ -69,7 +67,7 @@ import com.facebook.react.uimanager.UIManagerModuleListener;
  * that coordinates all the action: {@link NativeAnimatedNodesManager}. Since all the methods from
  * {@link NativeAnimatedNodesManager} need to be called from the UI thread, we we create a queue of
  * animated graph operations that is then enqueued to be executed in the UI Thread at the end of the
- * batch of JS->native calls (similarily to how it's handled in {@link UIManagerModule}). This
+ * batch of JS->native calls (similarly to how it's handled in {@link UIManagerModule}). This
  * isolates us from the problems that may be caused by concurrent updates of animated graph while UI
  * thread is "executing" the animation loop.
  */

@@ -1,16 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Keyboard
  * @flow
  */
 'use strict';
 
+const LayoutAnimation = require('LayoutAnimation');
 const invariant = require('fbjs/lib/invariant');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
@@ -25,16 +24,18 @@ type KeyboardEventName =
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
 
-type KeyboardEventData = {
-  endCoordinates: {
-    width: number,
-    height: number,
-    screenX: number,
-    screenY: number,
-  },
-};
+export type KeyboardEvent = {|
+  +duration?: number,
+  +easing?: string,
+  +endCoordinates: {|
+    +width: number,
+    +height: number,
+    +screenX: number,
+    +screenY: number,
+  |},
+|};
 
-type KeyboardEventListener = (e: KeyboardEventData) => void;
+type KeyboardEventListener = (e: KeyboardEvent) => void;
 
 // The following object exists for documentation purposes
 // Actual work happens in
@@ -134,11 +135,31 @@ let Keyboard = {
    */
   dismiss() {
     invariant(false, 'Dummy method used for documentation');
-  }
+  },
+
+  /**
+   * Useful for syncing TextInput (or other keyboard accessory view) size of
+   * position changes with keyboard movements.
+   */
+  scheduleLayoutAnimation(event: KeyboardEvent) {
+    invariant(false, 'Dummy method used for documentation');
+  },
 };
 
 // Throw away the dummy object and reassign it to original module
 Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
+Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+  const {duration, easing} = event;
+  if (duration) {
+    LayoutAnimation.configureNext({
+      duration: duration,
+      update: {
+        duration: duration,
+        type: (easing && LayoutAnimation.Types[easing]) || 'keyboard',
+      },
+    });
+  }
+};
 
 module.exports = Keyboard;

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.systrace;
@@ -22,7 +20,7 @@ public class Systrace {
   public static final long TRACE_TAG_REACT_APPS = 0L;
   public static final long TRACE_TAG_REACT_FRESCO = 0L;
   public static final long TRACE_TAG_REACT_VIEW = 0L;
-  public static final long TRACE_TAG_REACT_JSC_CALLS = 0L;
+  public static final long TRACE_TAG_REACT_JS_VM_CALLS = 0L;
 
   public enum EventScope {
     THREAD('t'),

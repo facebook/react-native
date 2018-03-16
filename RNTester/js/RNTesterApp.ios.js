@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RNTesterApp
  * @flow
@@ -30,6 +28,7 @@ const {
   StyleSheet,
   Text,
   View,
+  SafeAreaView
 } = ReactNative;
 
 import type { RNTesterExample } from './RNTesterList.ios';
@@ -43,18 +42,20 @@ type Props = {
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
 const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
-  <View style={styles.header}>
-    <View style={styles.headerCenter}>
-      <Text style={styles.title}>{title}</Text>
+  <SafeAreaView style={styles.headerContainer}>
+    <View style={styles.header}>
+      <View style={styles.headerCenter}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+      {onBack && <View style={styles.headerLeft}>
+        <Button title="Back" onPress={onBack} />
+      </View>}
     </View>
-    {onBack && <View style={styles.headerLeft}>
-      <Button title="Back" onPress={onBack} />
-    </View>}
-  </View>
+  </SafeAreaView>
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 
@@ -138,20 +139,21 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 60,
+  headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#96969A',
     backgroundColor: '#F5F5F6',
-    flexDirection: 'row',
-    paddingTop: 20,
+  },
+  header: {
+    height: 40,
+    flexDirection: 'row'
   },
   headerLeft: {
   },
   headerCenter: {
     flex: 1,
     position: 'absolute',
-    top: 27,
+    top: 7,
     left: 0,
     right: 0,
   },

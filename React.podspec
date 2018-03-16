@@ -1,3 +1,4 @@
+# coding: utf-8
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
@@ -38,21 +39,19 @@ Pod::Spec.new do |s|
   s.requires_arc            = true
   s.platforms               = { :ios => "8.0", :tvos => "9.2" }
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
-  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
+  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs"
   s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|
     ss.dependency             "yoga", "#{package["version"]}.React"
-    ss.source_files         = "React/**/*.{c,h,m,mm,S}"
+    ss.source_files         = "React/**/*.{c,h,m,mm,S,cpp}"
     ss.exclude_files        = "**/__tests__/*",
                               "IntegrationTests/*",
                               "React/DevSupport/*",
                               "React/Inspector/*",
                               "ReactCommon/yoga/*",
                               "React/Cxx*/*",
-                              "React/Base/RCTBatchedBridge.mm",
-                              "React/Executors/*"
-    ss.ios.exclude_files    = "React/**/RCTTVView.*"
+    ss.ios.exclude_files    = "React/**/RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
                               "React/Views/RCTDatePicker*",
                               "React/Views/RCTPicker*",
@@ -64,12 +63,6 @@ Pod::Spec.new do |s|
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-  end
-
-  s.subspec "BatchedBridge" do |ss|
-    ss.dependency             "React/Core"
-    ss.dependency             "React/cxxreact_legacy"
-    ss.source_files         = "React/Base/RCTBatchedBridge.mm", "React/Executors/*"
   end
 
   s.subspec "CxxBridge" do |ss|
@@ -90,21 +83,7 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTVView.{h, m}"
-  end
-
-  s.subspec "jschelpers_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
-    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-    ss.framework            = "JavaScriptCore"
-  end
-
-  s.subspec "cxxreact_legacy" do |ss|
-    ss.dependency             "React/jschelpers_legacy"
-    ss.source_files         = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}"
-    ss.private_header_files = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+    ss.source_files         = "React/**/RCTTV*.{h, m}"
   end
 
   s.subspec "jschelpers" do |ss|
@@ -117,6 +96,12 @@ Pod::Spec.new do |s|
     ss.framework            = "JavaScriptCore"
   end
 
+  s.subspec "jsinspector" do |ss|
+    ss.source_files         = "ReactCommon/jsinspector/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/jsinspector/*.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+  end
+
   s.subspec "PrivateDatabase" do |ss|
     ss.source_files         = "ReactCommon/privatedata/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/privatedata/*.h"
@@ -125,13 +110,14 @@ Pod::Spec.new do |s|
 
   s.subspec "cxxreact" do |ss|
     ss.dependency             "React/jschelpers"
-    ss.dependency             "boost"
+    ss.dependency             "React/jsinspector"
+    ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxreact/*.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   end
 
   s.subspec "ART" do |ss|
@@ -152,7 +138,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTBlob" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/Blob/*.{h,m}"
+    ss.source_files         = "Libraries/Blob/*.{h,m,mm}"
     ss.preserve_paths       = "Libraries/Blob/*.js"
   end
 
@@ -190,7 +176,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTText" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "Libraries/Text/*.{h,m}"
+    ss.source_files         = "Libraries/Text/**/*.{h,m}"
   end
 
   s.subspec "RCTVibration" do |ss|

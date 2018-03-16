@@ -20,6 +20,12 @@
         android:defaultValue="false"
         />
     <CheckBoxPreference
+      android:key="js_bundle_deltas"
+      android:title="Use JS Deltas"
+      android:summary="Request delta bundles from metro to get faster reloads (Experimental)"
+      android:defaultValue="true"
+      />
+    <CheckBoxPreference
         android:key="animations_debug"
         android:title="Animations FPS Summaries"
         android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."

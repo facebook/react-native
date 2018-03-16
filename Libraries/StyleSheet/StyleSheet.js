@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule StyleSheet
  * @flow
+ * @format
  */
 'use strict';
 
@@ -19,33 +18,69 @@ const StyleSheetValidation = require('StyleSheetValidation');
 const flatten = require('flattenStyle');
 
 import type {
-  StyleSheetStyle as _StyleSheetStyle,
-  Styles as _Styles,
-  StyleSheet as _StyleSheet,
-  StyleValue as _StyleValue,
-  StyleObj,
+  ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
+  ____Styles_Internal,
+  ____DangerouslyImpreciseStyleProp_Internal,
+  ____ViewStyleProp_Internal,
+  ____TextStyleProp_Internal,
+  ____ImageStyleProp_Internal,
+  LayoutStyle,
 } from 'StyleSheetTypes';
 
-export type StyleProp = StyleObj;
-export type Styles = _Styles;
-export type StyleSheet<S> = _StyleSheet<S>;
-export type StyleValue = _StyleValue;
-export type StyleSheetStyle = _StyleSheetStyle;
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to a <View>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that View doesn't support such as `fontSize`.`
+ *
+ * type Props = {style: ViewStyleProp}
+ * const MyComponent = (props: Props) => <View style={props.style} />
+ */
+export type ViewStyleProp = ____ViewStyleProp_Internal;
+
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to a <Text>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that Text doesn't support such as `resizeMode`.`
+ *
+ * type Props = {style: TextStyleProp}
+ * const MyComponent = (props: Props) => <Text style={props.style} />
+ */
+export type TextStyleProp = ____TextStyleProp_Internal;
+
+/**
+ * This type should be used as the type for a prop that is passed through
+ * to an <Image>'s `style` prop. This ensures call sites of the component
+ * can't pass styles that Image doesn't support such as `fontSize`.`
+ *
+ * type Props = {style: ImageStyleProp}
+ * const MyComponent = (props: Props) => <Image style={props.style} />
+ */
+export type ImageStyleProp = ____ImageStyleProp_Internal;
+
+/**
+ * WARNING: You probably shouldn't be using this type. This type
+ * is similar to the ones above except it allows styles that are accepted
+ * by all of View, Text, or Image. It is therefore very unsafe to pass this
+ * through to an underlying component. Using this is almost always a mistake
+ * and using one of the other more restrictive types is likely the right choice.
+ */
+export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFillObject = {
-  position: ('absolute': 'absolute'),
+const absoluteFillObject: LayoutStyle = {
+  position: 'absolute',
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill: typeof absoluteFillObject =
-  ReactNativePropRegistry.register(absoluteFillObject); // This also freezes it
+const absoluteFill: StyleSheetInternalStyleIdentifier = ReactNativePropRegistry.register(
+  absoluteFillObject,
+); // This also freezes it
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -135,6 +170,23 @@ module.exports = {
   absoluteFillObject,
 
   /**
+   * Combines two styles such that `style2` will override any styles in `style1`.
+   * If either style is falsy, the other one is returned without allocating an
+   * array, saving allocations and maintaining reference equality for
+   * PureComponent checks.
+   */
+  compose(
+    style1: ?DangerouslyImpreciseStyleProp,
+    style2: ?DangerouslyImpreciseStyleProp,
+  ): ?DangerouslyImpreciseStyleProp {
+    if (style1 != null && style2 != null) {
+      return [style1, style2];
+    } else {
+      return style1 != null ? style1 : style2;
+    }
+  },
+
+  /**
    * Flattens an array of style objects, into one aggregated style object.
    * Alternatively, this method can be used to lookup IDs, returned by
    * StyleSheet.register.
@@ -184,7 +236,10 @@ module.exports = {
    * internally to process color and transform values. You should not use this
    * unless you really know what you are doing and have exhausted other options.
    */
-  setStyleAttributePreprocessor(property: string, process: (nextProp: mixed) => mixed) {
+  setStyleAttributePreprocessor(
+    property: string,
+    process: (nextProp: mixed) => mixed,
+  ) {
     let value;
 
     if (typeof ReactNativeStyleAttributes[property] === 'string') {
@@ -200,13 +255,15 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = { ...value, process };
+    ReactNativeStyleAttributes[property] = {...value, process};
   },
 
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<S: Styles>(obj: S): StyleSheet<S> {
+  create<+S: ____Styles_Internal>(
+    obj: S,
+  ): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
     const result = {};
     for (const key in obj) {
       StyleSheetValidation.validateStyle(key, obj);

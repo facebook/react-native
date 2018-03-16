@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -67,6 +65,10 @@ public class ViewProps {
   public static final String START = "start";
   public static final String END = "end";
 
+  public static final String AUTO = "auto";
+  public static final String NONE = "none";
+  public static final String BOX_NONE = "box-none";
+
   public static final String MIN_WIDTH = "minWidth";
   public static final String MAX_WIDTH = "maxWidth";
   public static final String MIN_HEIGHT = "minHeight";
@@ -86,6 +88,7 @@ public class ViewProps {
   public static final String FONT_STYLE = "fontStyle";
   public static final String FONT_FAMILY = "fontFamily";
   public static final String LINE_HEIGHT = "lineHeight";
+  public static final String LETTER_SPACING = "letterSpacing";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
   public static final String ELLIPSIZE_MODE = "ellipsizeMode";
@@ -124,6 +127,7 @@ public class ViewProps {
   public static final String BORDER_BOTTOM_END_RADIUS = "borderBottomEndRadius";
   public static final String BORDER_START_COLOR = "borderStartColor";
   public static final String BORDER_END_COLOR = "borderEndColor";
+  public static final String ON_LAYOUT = "onLayout";
 
   public static final int[] BORDER_SPACING_TYPES = {
     Spacing.ALL,
@@ -205,7 +209,6 @@ public class ViewProps {
               PADDING_START,
               PADDING_END));
 
-
   public static boolean sIsOptimizationsEnabled;
 
   public static boolean isLayoutOnly(ReadableMap map, String prop) {
@@ -213,25 +216,26 @@ public class ViewProps {
       return true;
     } else if (POINTER_EVENTS.equals(prop)) {
       String value = map.getString(prop);
-      return "auto".equals(value) || "box-none".equals(value);
+      return AUTO.equals(value) || BOX_NONE.equals(value);
     }
+
 
     if (sIsOptimizationsEnabled) {
       switch (prop) {
         case OPACITY:
-          return map.getDouble(OPACITY) == 1d; // Ignore if explicitly set to default opacity.
-        case BACKGROUND_COLOR:
-          return map.getInt(BACKGROUND_COLOR) == Color.TRANSPARENT;
+          // null opacity behaves like opacity = 1
+          // Ignore if explicitly set to default opacity.
+          return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
         case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
           if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
             return false;
           }
-          if (map.hasKey(BORDER_WIDTH) && map.getDouble(BORDER_WIDTH) != 0d) {
+          if (map.hasKey(BORDER_WIDTH)
+            && !map.isNull(BORDER_WIDTH)
+            && map.getDouble(BORDER_WIDTH) != 0d) {
             return false;
           }
           return true;
-        case BORDER_COLOR:
-          return map.getInt(BORDER_COLOR) == Color.TRANSPARENT;
         case BORDER_LEFT_COLOR:
           return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
         case BORDER_RIGHT_COLOR:
@@ -241,24 +245,23 @@ public class ViewProps {
         case BORDER_BOTTOM_COLOR:
           return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
         case BORDER_WIDTH:
-          return map.getDouble(BORDER_WIDTH) == 0d;
+          return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
         case BORDER_LEFT_WIDTH:
-          return map.getDouble(BORDER_LEFT_WIDTH) == 0d;
+          return map.isNull(BORDER_LEFT_WIDTH) || map.getDouble(BORDER_LEFT_WIDTH) == 0d;
         case BORDER_TOP_WIDTH:
-          return map.getDouble(BORDER_TOP_WIDTH) == 0d;
+          return map.isNull(BORDER_TOP_WIDTH) || map.getDouble(BORDER_TOP_WIDTH) == 0d;
         case BORDER_RIGHT_WIDTH:
-          return map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
+          return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
         case BORDER_BOTTOM_WIDTH:
-          return map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
-        case "onLayout":
+          return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
+        case ON_LAYOUT:
           return true;
-        case "overflow": // We do nothing with this right now.
+        case OVERFLOW: // We do nothing with this right now.
           return true;
         default:
           return false;
       }
     }
-
     return false;
   }
 }

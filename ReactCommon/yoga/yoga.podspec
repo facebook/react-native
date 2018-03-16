@@ -12,7 +12,7 @@ end
 Pod::Spec.new do |spec|
   spec.name = 'yoga'
   spec.version = "#{version}.React"
-  spec.license =  { :type => 'BSD' }
+  spec.license =  { :type => 'MIT' }
   spec.homepage = 'https://facebook.github.io/yoga/'
   spec.documentation_url = 'https://facebook.github.io/yoga/docs/api/c/'
 
@@ -29,7 +29,7 @@ Pod::Spec.new do |spec|
       '-fexceptions',
       '-Wall',
       '-Werror',
-      '-std=c11',
+      '-std=c++1y',
       '-fPIC'
   ]
 
@@ -38,7 +38,7 @@ Pod::Spec.new do |spec|
 
   # Set this environment variable when not using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
-  source_files = 'yoga/**/*.{c,h}'
+  source_files = 'yoga/**/*.{cpp,h}'
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 end

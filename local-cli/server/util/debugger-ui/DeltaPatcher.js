@@ -1,23 +1,21 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  */
 
 /**
-  * This file is a copy of the reference `DeltaPatcher`, located in
-  * metro-bundler. The reason to not reuse that file is that in this context
-  * we cannot have flow annotations or CJS syntax (since this file is directly)
-  * injected into a static HTML page.
-  *
-  * TODO: Find a simple and lightweight way to compile `DeltaPatcher` to avoid
-  * having this duplicated file.
-  */
+ * This file is a copy of the reference `DeltaPatcher`, located in
+ * metro. The reason to not reuse that file is that in this context
+ * we cannot have flow annotations or CJS syntax (since this file is directly)
+ * injected into a static HTML page.
+ *
+ * TODO: Find a simple and lightweight way to compile `DeltaPatcher` to avoid
+ * having this duplicated file.
+ */
 (function(global) {
   'use strict';
 
@@ -32,6 +30,7 @@
         pre: new Map(),
         post: new Map(),
         modules: new Map(),
+        id: undefined,
       };
       this._initialized = false;
       this._lastNumModifiedFiles = 0;
@@ -68,6 +67,7 @@
           pre: new Map(),
           post: new Map(),
           modules: new Map(),
+          id: undefined,
         };
       }
 
@@ -82,7 +82,13 @@
       this._patchMap(this._lastBundle.post, deltaBundle.post);
       this._patchMap(this._lastBundle.modules, deltaBundle.delta);
 
+      this._lastBundle.id = deltaBundle.id;
+
       return this;
+    }
+
+    getLastBundleId() {
+      return this._lastBundle.id;
     }
 
     /**

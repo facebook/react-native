@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule TextInputExample
  */
 'use strict';
 
+const Button = require('Button');
+const InputAccessoryView = require('InputAccessoryView');
 var React = require('react');
 var ReactNative = require('react-native');
 var {
@@ -18,6 +18,8 @@ var {
   TextInput,
   View,
   StyleSheet,
+  Slider,
+  Switch,
 } = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -86,6 +88,35 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
         </Text>
+      </View>
+    );
+  }
+}
+
+class TextInputAccessoryViewExample extends React.Component<{}, *> {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Placeholder Text'};
+  }
+
+  render() {
+    const inputAccessoryViewID = 'inputAccessoryView1';
+    return (
+      <View>
+        <TextInput
+          style={styles.default}
+          inputAccessoryViewID={inputAccessoryViewID}
+          onChangeText={text => this.setState({text})}
+          value={this.state.text}
+        />
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={{backgroundColor: 'white'}}>
+            <Button
+              onPress={() => this.setState({text: 'Placeholder Text'})}
+              title="Reset Text"
+            />
+          </View>
+        </InputAccessoryView>
       </View>
     );
   }
@@ -284,7 +315,7 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 
   selectRandom() {
-    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort((a, b) => a - b);
     this.select(...positions);
   }
 
@@ -330,6 +361,61 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
             Select Random
           </Text>
         </View>
+      </View>
+    );
+  }
+}
+
+class AutogrowingTextInputExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      width: 100,
+      multiline: true,
+      text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
+    };
+  }
+
+  UNSAFE_componentWillReceiveProps(props) {
+    this.setState({
+      multiline: props.multiline,
+    });
+  }
+
+  render() {
+    var {style, multiline, ...props} = this.props;
+    return (
+      <View>
+        <Text>Width:</Text>
+        <Slider
+          value={100}
+          minimumValue={0}
+          maximumValue={100}
+          step={10}
+          onValueChange={(value) => this.setState({width: value})}
+        />
+        <Text>Multiline:</Text>
+        <Switch
+          value={this.state.multiline}
+          onValueChange={(value) => this.setState({multiline: value})}
+        />
+        <Text>TextInput:</Text>
+        <TextInput
+          value="prop"
+          multiline={this.state.multiline}
+          style={[style, {width: this.state.width + '%'}]}
+          onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
+          {...props}
+        />
+        <Text>Plain text value representation:</Text>
+        <Text>{this.state.text}</Text>
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
       </View>
     );
   }
@@ -431,6 +517,12 @@ exports.examples = [
     }
   },
   {
+    title: 'Keyboard Accessory View',
+    render: function() {
+      return <TextInputAccessoryViewExample />;
+    }
+  },
+  {
     title: 'Auto-capitalize',
     render: function() {
       return (
@@ -473,6 +565,29 @@ exports.examples = [
           </WithLabel>
           <WithLabel label="false">
             <TextInput autoCorrect={false} style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Nested content and `value` property',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="singleline">
+            <TextInput style={styles.default} value="(value property)">
+              (first raw text node)
+              <Text color="red">(internal raw text node)</Text>
+              (last raw text node)
+            </TextInput>
+          </WithLabel>
+          <WithLabel label="multiline">
+            <TextInput style={styles.default} multiline={true} value="(value property)">
+              (first raw text node)
+              <Text color="red">(internal raw text node)</Text>
+              (last raw text node)
+            </TextInput>
           </WithLabel>
         </View>
       );
@@ -850,6 +965,34 @@ exports.examples = [
             returnKeyType="go"
             style={[styles.multiline, styles.multilineExpandable]}
           />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Auto-expanding',
+    render: function() {
+      return (
+        <View>
+          <AutogrowingTextInputExample
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+            multiline={true}
+            style={{maxHeight: 400, minHeight: 20, paddingTop: 0, backgroundColor: '#eeeeee', color: 'blue'}}
+          >
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge
+            </Text>
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
         </View>
       );
     }

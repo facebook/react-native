@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBridge.h"
@@ -17,7 +15,6 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
-#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -26,6 +23,7 @@
 #import "RCTUtils.h"
 
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
@@ -252,6 +250,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+- (id)jsBoundExtraModuleForClass:(Class)moduleClass
+{
+  return [self.batchedBridge jsBoundExtraModuleForClass:moduleClass];
+}
+
 - (void)reload
 {
   #if RCT_ENABLE_INSPECTOR
@@ -277,30 +280,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (Class)bridgeClass
 {
-  // In order to facilitate switching between bridges with only build
-  // file changes, this uses reflection to check which bridges are
-  // available.  This is a short-term hack until RCTBatchedBridge is
-  // removed.
-
-  Class batchedBridgeClass = objc_lookUpClass("RCTBatchedBridge");
-  Class cxxBridgeClass = objc_lookUpClass("RCTCxxBridge");
-
-  Class implClass = nil;
-
-  if ([self.delegate respondsToSelector:@selector(shouldBridgeUseCxxBridge:)]) {
-    if ([self.delegate shouldBridgeUseCxxBridge:self]) {
-      implClass = cxxBridgeClass;
-    } else {
-      implClass = batchedBridgeClass;
-    }
-  } else if (cxxBridgeClass != nil) {
-    implClass = cxxBridgeClass;
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
-  }
-
-  RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
-  return implClass;
+  return [RCTCxxBridge class];
 }
 
 - (void)setUp
@@ -328,11 +308,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
-
-  if ([self.delegate respondsToSelector:@selector(embeddedBundleURLForBridge:)]) {
-    _embeddedBundleURL = [self.delegate embeddedBundleURLForBridge:self];
-    _embeddedBundleURL = [RCTConvert NSURL:_embeddedBundleURL.absoluteString];
-  }
 
   self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
@@ -390,26 +365,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge enqueueCallback:cbID args:args];
 }
 
-- (JSValue *)callFunctionOnModule:(NSString *)module
-                           method:(NSString *)method
-                        arguments:(NSArray *)arguments
-                            error:(NSError **)error
-{
-  return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
-}
-
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
-}
-
-@end
-
-@implementation RCTBridge (JavaScriptCore)
-
-- (JSContext *)jsContext
-{
-  return [self.batchedBridge jsContext];
 }
 
 - (JSGlobalContextRef)jsContextRef

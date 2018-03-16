@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "FBJNI_TARGET", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "ANDROID", "IS_OSS_BUILD", "react_native_xplat_target")
 
-cxx_library(
+rn_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(
@@ -14,6 +14,9 @@ cxx_library(
         "-std=c++1y",
         "-frtti",
     ],
+    fbandroid_deps = ANDROID_JSC_DEPS,
+    fbobjc_deps = APPLE_JSC_DEPS,
+    platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"PackagerConnectionJNI\"",
         "-DWITH_FBSYSTRACE=1",
@@ -27,5 +30,6 @@ cxx_library(
         FBJNI_TARGET,
         "xplat//folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
-    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
+        react_native_xplat_target("jsinspector:jsinspector"),
+    ]) if not IS_OSS_BUILD else [],
 )

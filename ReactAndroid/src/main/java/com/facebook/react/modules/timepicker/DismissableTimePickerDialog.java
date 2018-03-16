@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.timepicker;
 
+import android.app.TimePickerDialog;
 import javax.annotation.Nullable;
 
 import android.app.TimePickerDialog;
@@ -31,7 +30,7 @@ public class DismissableTimePickerDialog extends TimePickerDialog {
 
   public DismissableTimePickerDialog(
       Context context,
-      @Nullable OnTimeSetListener callback,
+      @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
       boolean is24HourView) {
@@ -41,7 +40,7 @@ public class DismissableTimePickerDialog extends TimePickerDialog {
   public DismissableTimePickerDialog(
       Context context,
       int theme,
-      @Nullable OnTimeSetListener callback,
+      @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
       boolean is24HourView) {
