@@ -802,6 +802,10 @@ public class UIImplementation {
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
+  public void dismissPopupMenu() {
+    mOperationsQueue.enqueueDismissPopupMenu();
+  }
+
   public void sendAccessibilityEvent(int tag, int eventType) {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
   }
