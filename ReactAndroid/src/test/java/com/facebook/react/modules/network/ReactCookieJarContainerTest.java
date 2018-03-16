@@ -64,7 +64,7 @@ public class ReactCookieJarContainerTest {
     List<Cookie> cookies = new ArrayList<>();
     cookies.add(new Cookie.Builder()
       .name("valid")
-      .value("invalid")
+      .value("valid value")
       .domain("domain")
       .build()
     );
@@ -80,7 +80,7 @@ public class ReactCookieJarContainerTest {
     List<Cookie> cookies = new ArrayList<>();
     cookies.add(new Cookie.Builder()
       .name("valid")
-      .value("înválíd")
+      .value("înválíd välūė")
       .domain("domain")
       .build()
     );
