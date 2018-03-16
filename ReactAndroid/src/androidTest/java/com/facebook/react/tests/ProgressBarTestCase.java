@@ -80,7 +80,7 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
 
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mUIManager)
-        .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AndroidInfoModule(getContext()))
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())

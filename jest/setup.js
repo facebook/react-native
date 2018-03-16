@@ -80,16 +80,10 @@ jest
     const ReactNative = require.requireActual('ReactNative');
     const NativeMethodsMixin =
       ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativeMethodsMixin;
-    [
-      'measure',
-      'measureInWindow',
-      'measureLayout',
-      'setNativeProps',
-      'focus',
-      'blur',
-    ].forEach((key) => {
+
+    const mockFunction = (key) => {
       let warned = false;
-      NativeMethodsMixin[key] = function() {
+      return function() {
         if (warned) {
           return;
         }
@@ -101,6 +95,18 @@ jest
             'native environment.',
         );
       };
+    };
+
+    [
+      'measure',
+      'measureInWindow',
+      'measureLayout',
+      'setNativeProps',
+      'focus',
+      'blur',
+    ].forEach((key) => {
+      NativeMethodsMixin[key] = mockFunction(key);
+      ReactNative.NativeComponent.prototype[key] = mockFunction(key);
     });
     return ReactNative;
   })

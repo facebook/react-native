@@ -13,6 +13,7 @@
     "flowtype",
     "prettier",
     "react",
+    "react-native",
     "jest"
   ],
 
@@ -251,6 +252,11 @@
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
     "react/wrap-multilines": 0,
+
+  // React-Native Plugin
+  // The following rules are made available via `eslint-plugin-react-native`
+
+    "react-native/no-inline-styles": 1,
 
   // Jest Plugin
   // The following rules are made available via `eslint-plugin-jest`.

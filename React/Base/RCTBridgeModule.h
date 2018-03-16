@@ -83,6 +83,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
+ * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
 @property (nonatomic, weak, readonly) RCTBridge *bridge;
 
@@ -197,7 +198,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (returnType)method;
+  - (returnType)method RCT_DYNAMIC;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically

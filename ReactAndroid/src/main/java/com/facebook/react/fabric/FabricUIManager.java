@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.fabric;
 
@@ -15,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -46,6 +52,7 @@ public class FabricUIManager implements UIManager {
 
   public FabricUIManager(ReactApplicationContext reactContext,
     ViewManagerRegistry viewManagerRegistry) {
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mReactApplicationContext = reactContext;
     mViewManagerRegistry = viewManagerRegistry;
     mUIViewOperationQueue = new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagerRegistry), 0);
@@ -64,16 +71,19 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
       ReactShadowNode rootNode = getRootNode(rootTag);
       node.setRootNode(rootNode);
+      node.setViewClassName(viewName);
       node.setReactTag(reactTag);
       node.setThemedContext(rootNode.getThemedContext());
 
       ReactStylesDiffMap styles = updateProps(node, props);
 
-      mUIViewOperationQueue
-        .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+      if (!node.isVirtual()) {
+        mUIViewOperationQueue
+          .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+      }
       return node;
-    } catch (Exception e) {
-      handleException(rootTag, e);
+    } catch (Throwable t) {
+      handleException(getRootNode(rootTag), t);
       return null;
     }
   }
@@ -102,8 +112,8 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode clone = node.mutableCopy();
       assertReactShadowNodeCopy(node, clone);
       return clone;
-    } catch (Exception e) {
-      handleException(node.getThemedContext(), e);
+    } catch (Throwable t) {
+      handleException(node, t);
       return null;
     }
   }
@@ -119,8 +129,8 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode clone = node.mutableCopyWithNewChildren();
       assertReactShadowNodeCopy(node, clone);
       return clone;
-    } catch (Exception e) {
-      handleException(node.getThemedContext(), e);
+    } catch (Throwable t) {
+      handleException(node, t);
       return null;
     }
   }
@@ -135,12 +145,11 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode node,
       @Nullable ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopy();
-      updateProps(clone, newProps);
+      ReactShadowNode clone = node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
-    } catch (Exception e) {
-      handleException(node.getThemedContext(), e);
+    } catch (Throwable t) {
+      handleException(node, t);
       return null;
     }
   }
@@ -156,13 +165,11 @@ public class FabricUIManager implements UIManager {
       ReactShadowNode node,
       ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewChildren();
-      updateProps(clone, newProps);
+      ReactShadowNode clone = node.mutableCopyWithNewChildrenAndProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
-    } catch (Exception e) {
-      handleException(node.getThemedContext(), e);
-      getRootNode(1).getThemedContext().handleException(e);
+    } catch (Throwable t) {
+      handleException(node, t);
       return null;
     }
   }
@@ -184,14 +191,16 @@ public class FabricUIManager implements UIManager {
       parent.addChildAt(child, childIndex);
       ViewAtIndex[] viewsToAdd =
         new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), childIndex)};
-      mUIViewOperationQueue.enqueueManageChildren(
-        parent.getReactTag(),
-        null,
-        viewsToAdd,
-        null
-      );
-    } catch (Exception e) {
-      handleException(parent.getThemedContext(), e);
+      if (!child.isVirtual()) {
+        mUIViewOperationQueue.enqueueManageChildren(
+          parent.getReactTag(),
+          null,
+          viewsToAdd,
+          null
+        );
+      }
+    } catch (Throwable t) {
+      handleException(parent, t);
     }
   }
 
@@ -221,13 +230,24 @@ public class FabricUIManager implements UIManager {
         appendChild(rootNode, child);
       }
 
+      notifyOnBeforeLayoutRecursive(rootNode);
       calculateRootLayout(rootNode);
       applyUpdatesRecursive(rootNode, 0, 0);
       mUIViewOperationQueue
         .dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
     } catch (Exception e) {
-      handleException(rootTag, e);
+      handleException(getRootNode(rootTag), e);
     }
+  }
+
+  private void notifyOnBeforeLayoutRecursive(ReactShadowNode node) {
+    if (!node.hasUpdates()) {
+      return;
+    }
+    for (int i = 0; i < node.getChildCount(); i++) {
+      notifyOnBeforeLayoutRecursive(node.getChildAt(i));
+    }
+    node.onBeforeLayout();
   }
 
   private void calculateRootLayout(ReactShadowNode cssRoot) {
@@ -331,16 +351,16 @@ public class FabricUIManager implements UIManager {
     }
   }
 
-  private void handleException(ThemedReactContext context, Exception e) {
+  private void handleException(ReactShadowNode node, Throwable t) {
     try {
-      context.handleException(e);
+      ThemedReactContext context = node.getThemedContext();
+      // TODO move exception management to JNI side, and refactor to avoid wrapping Throwable into
+      // a RuntimeException
+      context.handleException(new RuntimeException(t));
     } catch (Exception ex) {
-      Log.e(TAG, "Exception while executing a Fabric method", e);
-      throw new RuntimeException(ex.getMessage(), e);
+      Log.e(TAG, "Exception while executing a Fabric method", t);
+      throw new RuntimeException(ex.getMessage(), t);
     }
   }
 
-  private void handleException(int rootTag, Exception e) {
-    handleException(getRootNode(rootTag).getThemedContext(), e);
-  }
 }

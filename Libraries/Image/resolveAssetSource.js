@@ -92,7 +92,7 @@ if (!sourceCode) {
   const NativeModules = require('NativeModules');
   sourceCode = NativeModules && NativeModules.SourceCode;
 }
-_sourceCodeScriptURL = sourceCode.scriptURL;
+_sourceCodeScriptURL = sourceCode && sourceCode.scriptURL;
 
 module.exports = resolveAssetSource;
 module.exports.pickScale = AssetSourceResolver.pickScale;

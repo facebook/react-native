@@ -121,7 +121,7 @@ namespace facebook {
     JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                              std::shared_ptr<MessageQueueThread> messageQueueThread,
                              const folly::dynamic& jscConfig,
-                             std::function<folly::dynamic(const std::string &)> nativeExtensionsProvider) throw(JSException) :
+                             NativeExtensionsProvider nativeExtensionsProvider) throw(JSException) :
     m_delegate(delegate),
     m_messageQueueThread(messageQueueThread),
     m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
@@ -134,8 +134,10 @@ namespace facebook {
         installGlobalProxy(m_context, "nativeModuleProxy",
                            exceptionWrapMethod<&JSCExecutor::getNativeModule>());
       }
-      installGlobalProxy(m_context, "nativeExtensions",
-                         exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
+      if (nativeExtensionsProvider) {
+        installGlobalProxy(m_context, "nativeExtensions",
+                           exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
+      }
     }
 
     JSCExecutor::~JSCExecutor() {
@@ -579,30 +581,6 @@ namespace facebook {
         }
       }();
       callNativeModules(std::move(result));
-    }
-
-    Value JSCExecutor::callFunctionSyncWithValue(
-                                                 const std::string& module, const std::string& method, Value args) {
-      SystraceSection s("JSCExecutor::callFunction");
-      Object result = [&] {
-        JSContextLock lock(m_context);
-        if (!m_callFunctionReturnResultAndFlushedQueueJS) {
-          bindBridge();
-        }
-        return m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
-          Value(m_context, String::createExpectingAscii(m_context, module)),
-          Value(m_context, String::createExpectingAscii(m_context, method)),
-          std::move(args),
-        }).asObject();
-      }();
-
-      Value length = result.getProperty("length");
-
-      if (!length.isNumber() || length.asInteger() != 2) {
-        std::runtime_error("Return value of a callFunction must be an array of size 2");
-      }
-      callNativeModules(result.getPropertyAtIndex(1));
-      return result.getPropertyAtIndex(0);
     }
 
     void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {

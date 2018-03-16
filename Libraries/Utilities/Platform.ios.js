@@ -22,7 +22,13 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'pad' : false;
   },
+  /**
+   * Deprecated, use `isTV` instead.
+   */
   get isTVOS() {
+    return Platform.isTV;
+  },
+  get isTV() {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'tv' : false;
   },
