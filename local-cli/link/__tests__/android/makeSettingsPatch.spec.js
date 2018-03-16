@@ -11,14 +11,20 @@
 
 const path = require('path');
 const makeSettingsPatch = require('../../android/patches/makeSettingsPatch');
+const normalizeProjectName = require('../../android/patches/normalizeProjectName');
 
 const name = 'test';
+const scopedName = '@scoped/test';
+const normalizedScopedName = normalizeProjectName('@scoped/test');
 const projectConfig = {
   sourceDir: '/home/project/android/app',
   settingsGradlePath: '/home/project/android/settings.gradle',
 };
 const dependencyConfig = {
   sourceDir: `/home/project/node_modules/${name}/android`,
+};
+const scopedDependencyConfig = {
+  sourceDir: `/home/project/node_modules/${scopedName}/android`,
 };
 
 describe('makeSettingsPatch', () => {
@@ -40,6 +46,30 @@ describe('makeSettingsPatch', () => {
       .toBe(
         `include ':${name}'\n` +
         `project(':${name}').projectDir = ` +
+        `new File(rootProject.projectDir, '${projectDir}')\n`
+      );
+  });
+});
+
+describe('makeSettingsPatchWithScopedPackage', () => {
+  it('should build a patch function', () => {
+    expect(Object.prototype.toString(
+      makeSettingsPatch(scopedName, scopedDependencyConfig, projectConfig)
+    )).toBe('[object Object]');
+  });
+
+  it('should make a correct patch', () => {
+    const projectDir = path.relative(
+      path.dirname(projectConfig.settingsGradlePath),
+      scopedDependencyConfig.sourceDir
+    );
+
+    const {patch} = makeSettingsPatch(scopedName, scopedDependencyConfig, projectConfig);
+
+    expect(patch)
+      .toBe(
+        `include ':${normalizedScopedName}'\n` +
+        `project(':${normalizedScopedName}').projectDir = ` +
         `new File(rootProject.projectDir, '${projectDir}')\n`
       );
   });
