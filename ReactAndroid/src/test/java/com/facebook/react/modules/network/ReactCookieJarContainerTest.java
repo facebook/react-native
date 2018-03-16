@@ -14,12 +14,10 @@ import okhttp3.HttpUrl;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -38,9 +36,6 @@ import static org.mockito.Mockito.when;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 
 public class ReactCookieJarContainerTest {
-
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
 
   @Test
   public void testMissingJar() throws Exception {
