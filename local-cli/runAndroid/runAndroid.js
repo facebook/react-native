@@ -9,9 +9,11 @@
 const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
+const glob = require('glob');
 const fs = require('fs');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const findReactNativeScripts = require('../util/findReactNativeScripts');
+const head = require('lodash/head')
 const isString = require('lodash/isString');
 const path = require('path');
 const Promise = require('promise');
@@ -113,7 +115,7 @@ function buildAndRun(args) {
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageNameWithSuffix, packageName, adbPath);
+      runOnSpecificDevice(args, cmd, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
@@ -126,7 +128,7 @@ function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, 
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
-      buildApk(gradlew);
+      buildApk(gradlew, getGradleArgs('assemble', args));
       installAndLaunchOnDevice(args, args.deviceId, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
@@ -138,24 +140,30 @@ function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, 
   }
 }
 
-function buildApk(gradlew) {
+function buildApk(gradlew, args) {
   try {
-    console.log(chalk.bold('Building the app...'));
+    console.log(chalk.bold(
+      `Executing gradle task (cd android && ${gradlew} ${args.join(' ')})...`
+    ));
 
     // using '-x lint' in order to ignore linting errors while building the apk
-    child_process.execFileSync(gradlew, ['build', '-x', 'lint'], {
+    child_process.execFileSync(gradlew, [...args, '-x', 'lint'], {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
-    console.log(chalk.red('Could not build the app, read the error above for details.\n'));
+    console.log(chalk.red(
+      'Could not execute gradle task, read the error above for details.\n')
+    );
+    throw e;
   }
 }
 
+
 function tryInstallAppOnDevice(args, device) {
   try {
-    const pathToApk = `${args.appFolder}/build/outputs/apk/${args.appFolder}-debug.apk`;
+    const pathToApk = getAPKName(args);
     const adbPath = getAdbPath();
-    const adbArgs = ['-s', device, 'install', pathToApk];
+    const adbArgs = ['-s', device, 'install', '-r', pathToApk];
     console.log(chalk.bold(
       `Installing the app on the device (cd android && adb -s ${device} install ${pathToApk}`
     ));
@@ -190,35 +198,49 @@ function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, p
   tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
 
-function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath){
-  try {
-    const gradleArgs = [];
-    if (args.variant) {
-      gradleArgs.push('install' +
-        args.variant[0].toUpperCase() + args.variant.slice(1)
-      );
-    } else if (args.flavor) {
-      console.warn(chalk.yellow(
-        '--flavor has been deprecated. Use --variant instead'
-      ));
-      gradleArgs.push('install' +
-        args.flavor[0].toUpperCase() + args.flavor.slice(1)
-      );
-    } else {
-      gradleArgs.push('installDebug');
-    }
+function getAPKName(args) {
+  let name = []
+  name.push(args.appFolder)
+  const rest = args.variant || args.flavor
+  if (rest) {
+    const components = rest.split(/(?=[A-Z])/).map(item => item.toLowerCase())
+    name = name.concat(components)
+  } else {
+    name.push('debug')
+  }
+  const candidates = glob.sync(
+    `./${args.appFolder}/build/outputs/apk/**/${name.join('-')}*.apk`
+  );
+  return head(candidates)
+}
 
-    if (args.installDebug) {
-      gradleArgs.push(args.installDebug);
-    }
-
-    console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
+function getGradleArgs(task, args) {
+  const gradleArgs = [];
+  if (args.variant) {
+    gradleArgs.push(task +
+      args.variant[0].toUpperCase() + args.variant.slice(1)
+    );
+  } else if (args.flavor) {
+    console.warn(chalk.yellow(
+      '--flavor has been deprecated. Use --variant instead'
     ));
+    gradleArgs.push(task +
+      args.flavor[0].toUpperCase() + args.flavor.slice(1)
+    );
+  } else {
+    gradleArgs.push(`${task}Debug`);
+  }
 
-    child_process.execFileSync(cmd, gradleArgs, {
-      stdio: [process.stdin, process.stdout, process.stderr],
-    });
+  if (args.installDebug) {
+    gradleArgs.push(args.installDebug);
+  }
+  return gradleArgs
+}
+
+function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath) {
+  try {
+    const gradleArgs = getGradleArgs('install', args)
+    buildApk(cmd, gradleArgs)
   } catch (e) {
     console.log(chalk.red(
       'Could not install the app on the device, read the error above for details.\n' +
@@ -231,33 +253,33 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     // `console.log(e.stderr)`
     return Promise.reject();
   }
-    const devices = adb.getDevices();
-    if (devices && devices.length > 0) {
-      devices.forEach((device) => {
-        tryRunAdbReverse(args.port, device);
-        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
-      });
-    } else {
-      try {
-        // If we cannot execute based on adb devices output, fall back to
-        // shell am start
-        const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
-        ];
-        console.log(chalk.bold(
-          `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
-        ));
-        child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
-      } catch (e) {
-        console.log(chalk.red(
-          'adb invocation failed. Do you have adb in your PATH?'
-        ));
-        // stderr is automatically piped from the gradle process, so the user
-        // should see the error already, there is no need to do
-        // `console.log(e.stderr)`
-        return Promise.reject();
-      }
+  const devices = adb.getDevices();
+  if (devices && devices.length > 0) {
+    devices.forEach((device) => {
+      tryRunAdbReverse(args.port, device);
+      tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
+    });
+  } else {
+    try {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, { stdio: 'inherit' });
+    } catch (e) {
+      console.log(chalk.red(
+        'adb invocation failed. Do you have adb in your PATH?'
+      ));
+      // stderr is automatically piped from the gradle process, so the user
+      // should see the error already, there is no need to do
+      // `console.log(e.stderr)`
+      return Promise.reject();
     }
+  }
 }
 
 function startServerInNewWindow(port) {
