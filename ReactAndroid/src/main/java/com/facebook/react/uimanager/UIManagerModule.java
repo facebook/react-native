@@ -600,6 +600,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.showPopupMenu(reactTag, items, error, success);
   }
 
+  @ReactMethod
+  public void dismissPopupMenu() {
+    mUIImplementation.dismissPopupMenu();
+  }
+
   /**
    * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
    * explicitly in order to avoid regression in existing application written for iOS using this API.

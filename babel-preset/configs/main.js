@@ -4,47 +4,41 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 'use strict';
 
-const resolvePlugins = require('../lib/resolvePlugins');
-const resolvePlugin = resolvePlugins.resolvePlugin;
-
-const defaultPlugins = resolvePlugins([
-  'syntax-class-properties',
-  'syntax-trailing-function-commas',
-  'transform-class-properties',
-  'transform-es2015-block-scoping',
-  'transform-es2015-computed-properties',
-  'transform-es2015-destructuring',
-  'transform-es2015-function-name',
-  'transform-es2015-literals',
-  'transform-es2015-parameters',
-  'transform-es2015-shorthand-properties',
-  'transform-flow-strip-types',
-  'transform-react-jsx',
-  'transform-regenerator',
+const defaultPlugins = [
+  [require('babel-plugin-syntax-class-properties')],
+  [require('babel-plugin-syntax-trailing-function-commas')],
+  [require('babel-plugin-transform-class-properties')],
+  [require('babel-plugin-transform-es2015-block-scoping')],
+  [require('babel-plugin-transform-es2015-computed-properties')],
+  [require('babel-plugin-transform-es2015-destructuring')],
+  [require('babel-plugin-transform-es2015-function-name')],
+  [require('babel-plugin-transform-es2015-literals')],
+  [require('babel-plugin-transform-es2015-parameters')],
+  [require('babel-plugin-transform-es2015-shorthand-properties')],
+  [require('babel-plugin-transform-flow-strip-types')],
+  [require('babel-plugin-transform-react-jsx')],
+  [require('babel-plugin-transform-regenerator')],
   [
-    'transform-es2015-modules-commonjs',
+    require('babel-plugin-transform-es2015-modules-commonjs'),
     {strict: false, allowTopLevelThis: true},
   ],
-]);
+];
 
-const checkES2015Constants = resolvePlugin('check-es2015-constants');
-const es2015ArrowFunctions = resolvePlugin('transform-es2015-arrow-functions');
-const es2015Classes = resolvePlugin('transform-es2015-classes');
-const es2015ForOf = resolvePlugin(['transform-es2015-for-of', {loose: true}]);
-const es2015Spread = resolvePlugin('transform-es2015-spread');
-const es2015TemplateLiterals = resolvePlugin(
-  'transform-es2015-template-literals'
-);
-const asyncFunctions = resolvePlugin('syntax-async-functions');
-const exponentiationOperator = resolvePlugin(
-  'transform-exponentiation-operator'
-);
-const objectAssign = resolvePlugin('transform-object-assign');
-const objectRestSpread = resolvePlugin('transform-object-rest-spread');
-const reactDisplayName = resolvePlugin('transform-react-display-name');
-const reactJsxSource = resolvePlugin('transform-react-jsx-source');
+const checkES2015Constants = [require('babel-plugin-check-es2015-constants')];
+const es2015ArrowFunctions = [require('babel-plugin-transform-es2015-arrow-functions')];
+const es2015Classes = [require('babel-plugin-transform-es2015-classes')];
+const es2015ForOf = [require('babel-plugin-transform-es2015-for-of'), {loose: true}];
+const es2015Spread = [require('babel-plugin-transform-es2015-spread')];
+const es2015TemplateLiterals = [require('babel-plugin-transform-es2015-template-literals')];
+const asyncFunctions = [require('babel-plugin-syntax-async-functions')];
+const exponentiationOperator = [require('babel-plugin-transform-exponentiation-operator')];
+const objectAssign = [require('babel-plugin-transform-object-assign')];
+const objectRestSpread = [require('babel-plugin-transform-object-rest-spread')];
+const reactDisplayName = [require('babel-plugin-transform-react-display-name')];
+const reactJsxSource = [require('babel-plugin-transform-react-jsx-source')];
 const symbolMember = [require('../transforms/transform-symbol-member')];
 
 const getPreset = (src, options) => {

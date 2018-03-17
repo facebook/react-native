@@ -978,6 +978,10 @@
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
 		53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
+		53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
+		53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
+		53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
+		53DEF6ED205AE5A7006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */; };
 		53EC85E31FDEC75F0051B2B5 /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */; };
 		53EC85E41FDEC7630051B2B5 /* YGNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 53EC85DE1FDEC75A0051B2B5 /* YGNode.h */; };
@@ -2169,6 +2173,8 @@
 		53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGEnums.cpp; sourceTree = "<group>"; };
 		53CBF1871FB4FE80002CBB31 /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Yoga.cpp; sourceTree = "<group>"; };
 		53D123831FBF1D49001B8A10 /* libyoga.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyoga.a; path = "../../../../../../../../../Library/Developer/Xcode/DerivedData/yoga-hdfifpwsinitsibujacpiefkjfdy/Build/Products/Debug/libyoga.a"; sourceTree = "<group>"; };
+		53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGFloatOptional.cpp; sourceTree = "<group>"; };
+		53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGFloatOptional.h; sourceTree = "<group>"; };
 		53EC85DE1FDEC75A0051B2B5 /* YGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGNode.h; sourceTree = "<group>"; };
 		53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGNode.cpp; sourceTree = "<group>"; };
 		58114A121AAE854800E7D092 /* RCTPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPicker.h; sourceTree = "<group>"; };
@@ -2349,6 +2355,8 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */,
+				53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */,
 				5343895E203905B6008E0CB3 /* YGLayout.cpp */,
 				5343895F203905B6008E0CB3 /* YGLayout.h */,
 				5352C5722038FF8D00A3B97E /* YGStyle.cpp */,
@@ -3299,6 +3307,7 @@
 				5376C5E71FC6DDC20083513D /* YGNodePrint.h in Headers */,
 				3DFE0D191DF8574D00459392 /* Yoga.h in Headers */,
 				53438965203905C0008E0CB3 /* YGLayout.h in Headers */,
+				53DEF6ED205AE5A7006A3890 /* YGFloatOptional.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3379,6 +3388,7 @@
 				5376C5E61FC6DDC10083513D /* YGNodePrint.h in Headers */,
 				133957891DF76D3500EC27BE /* YGMacros.h in Headers */,
 				53438964203905BF008E0CB3 /* YGLayout.h in Headers */,
+				53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4318,6 +4328,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5752038FF9500A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4332,6 +4343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5762038FF9700A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E31FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
