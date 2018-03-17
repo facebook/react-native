@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   private static final String REACT_CLASS = "ToolbarAndroid";
+  private static final int COMMAND_DISMISS_POPUP_MENUS = 1;
 
   @Override
   public String getName() {
@@ -155,6 +156,27 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Integer> getCommandsMap() {
+    return MapBuilder.of("dismissPopupMenus", COMMAND_DISMISS_POPUP_MENUS);
+  }
+
+  @Override
+  public void receiveCommand(ReactToolbar view, int commandType, @Nullable ReadableArray args) {
+    switch (commandType) {
+      case COMMAND_DISMISS_POPUP_MENUS: {
+        view.dismissPopupMenus();
+        return;
+      }
+      default:
+        throw new IllegalArgumentException(String.format(
+          "Unsupported command %d received by %s.",
+          commandType,
+          getClass().getSimpleName()));
+    }
   }
 
   private int[] getDefaultContentInsets(Context context) {

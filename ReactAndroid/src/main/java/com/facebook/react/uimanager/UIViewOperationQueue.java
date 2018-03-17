@@ -285,6 +285,13 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class DismissPopupMenuOperation implements UIOperation {
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dismissPopupMenu();
+    }
+  }
+
   /**
    * A spec for animation operations (add/remove)
    */
@@ -654,6 +661,10 @@ public class UIViewOperationQueue {
       Callback error,
       Callback success) {
     mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
+  }
+
+  public void enqueueDismissPopupMenu() {
+    mOperations.add(new DismissPopupMenuOperation());
   }
 
   public void enqueueCreateView(

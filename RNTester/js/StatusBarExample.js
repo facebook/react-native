@@ -17,6 +17,7 @@ const {
   Text,
   TouchableHighlight,
   View,
+  Modal,
 } = ReactNative;
 
 exports.framework = 'React';
@@ -100,6 +101,7 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
             </Text>
           </View>
         </TouchableHighlight>
+        <ModalExample />
       </View>
     );
   }
@@ -380,6 +382,48 @@ class StatusBarStaticAndroidExample extends React.Component<{}> {
   }
 }
 
+
+class ModalExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    modalVisible: false,
+  };
+
+  _onChangeModalVisible = () => {
+    this.setState({modalVisible: !this.state.modalVisible});
+  };
+
+  render() {
+    return (
+      <View>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this._onChangeModalVisible}>
+          <View style={styles.button}>
+            <Text>modal visible: {this.state.hidden ? 'true' : 'false'}</Text>
+          </View>
+        </TouchableHighlight>
+        <Modal
+          visible={this.state.modalVisible}
+          transparent={true}
+          onRequestClose={this._onChangeModalVisible}>
+          <View style={[styles.container]}>
+            <View style={[styles.innerContainer]}>
+              <Text>This modal was presented!</Text>
+              <TouchableHighlight
+                onPress={this._onChangeModalVisible}
+                style={styles.modalButton}>
+                <View style={styles.button}>
+                  <Text>Close</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+}
+
 const examples = [{
   title: 'StatusBar hidden',
   render() {
@@ -436,6 +480,16 @@ const examples = [{
 exports.examples = examples;
 
 var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f5fcff'
+  },
+  innerContainer: {
+    borderRadius: 10,
+    alignItems: 'center',
+  },
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,
@@ -449,5 +503,8 @@ var styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
     fontWeight: 'bold',
-  }
+  },
+  modalButton: {
+    marginTop: 10,
+  },
 });
