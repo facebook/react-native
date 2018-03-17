@@ -81,6 +81,18 @@ const TouchableWithoutFeedback = ((createReactClass({
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
     /**
+     * When `accessible` is true (which is the default) this may be called when
+     * the OS-specific concept of "focus" occurs. Some platforms may not have
+     * the concept of focus.
+     */
+    onFocus: PropTypes.func,
+    /**
+     * When `accessible` is true (which is the default) this may be called when
+     * the OS-specific concept of "blur" occurs, meaning the element lost focus.
+     * Some platforms may not have the concept of blur.
+     */
+    onBlur: PropTypes.func,
+    /**
      * If true, disable all interactions for this component.
      */
     disabled: PropTypes.bool,
