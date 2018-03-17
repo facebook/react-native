@@ -157,10 +157,11 @@ aliases:
   - &run-js-tests
     name: JavaScript Test Suite
     command: yarn test-ci
-    
+
+  # eslint sometimes runs into trouble generating the reports
   - &run-lint-checks
     name: Lint code
-    command: yarn lint --format junit -o ~/react-native/reports/junit/js-lint-results.xml
+    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/js-lint-results.xml
     when: always
 
   - &run-flow-checks
@@ -251,6 +252,8 @@ js_defaults: &js_defaults
   <<: *defaults
   docker:
     - image: circleci/node:8
+  environment:
+    - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 android_defaults: &android_defaults
   <<: *defaults
@@ -258,6 +261,7 @@ android_defaults: &android_defaults
     - image: circleci/android:api-26-alpha
   resource_class: "large"
   environment:
+    - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
@@ -539,7 +543,7 @@ jobs:
           command: |
             # GITHUB_TOKEN=eslint-bot public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cat <(echo eslint; yarn --silent lint --format=json; echo flow; yarn --silent flow check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+              GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."            
             fi
