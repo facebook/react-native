@@ -495,9 +495,10 @@ const ScrollResponderMixin = {
    * @param {bool} preventNegativeScrolling Whether to allow pulling the content
    *        down to make it meet the keyboard's top. Default is false.
    */
-  scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number, preventNegativeScrollOffset?: bool) {
+  scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number, preventNegativeScrollOffset?: bool, animated?: bool) {
     this.additionalScrollOffset = additionalOffset || 0;
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
+    this.isScrollToKeyboardAnimated = animated !== false;
     UIManager.measureLayout(
       nodeHandle,
       ReactNative.findNodeHandle(this.getInnerViewNode()),
@@ -530,7 +531,7 @@ const ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
+    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: this.isScrollToKeyboardAnimated});
 
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;
