@@ -196,7 +196,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
           key: key + ':header',
           index: null,
           header: true,
-          trailingSection: this.props.sections[ii + 1],
+          trailingSection: (ii + 1) < this.props.sections.length && this.props.sections[ii + 1],
         };
       } else if (itemIndex === section.data.length) {
         return {
@@ -204,7 +204,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
           key: key + ':footer',
           index: null,
           header: false,
-          trailingSection: this.props.sections[ii + 1],
+          trailingSection: (ii + 1) < this.props.sections.length && this.props.sections[ii + 1],
         };
       } else {
         const keyExtractor = section.keyExtractor || defaultKeyExtractor;
@@ -214,8 +214,8 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
           index: itemIndex,
           leadingItem: section.data[itemIndex - 1],
           leadingSection: this.props.sections[ii - 1],
-          trailingItem: section.data[itemIndex + 1],
-          trailingSection: this.props.sections[ii + 1],
+          trailingItem: (itemIndex + 1) < section.data.length && section.data[itemIndex + 1],
+          trailingSection: (ii + 1) < this.props.sections.length && this.props.sections[ii + 1],
         };
       }
     }
