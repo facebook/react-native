@@ -16,6 +16,8 @@ namespace react {
  */
 class ExceptionManager {
 public:
+  virtual ~ExceptionManager() = default;
+
   virtual void handleSoftException(const std::exception &e) const = 0;
   virtual void handleFatalException(const std::exception &e) const = 0;
 };

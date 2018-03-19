@@ -26,6 +26,8 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
 class ComponentDescriptor {
 public:
 
+  virtual ~ComponentDescriptor() = default;
+
   /*
    * Returns `componentHandle` associated with particular kind of components.
    * All `ShadowNode`s of this type must return same `componentHandle`.
