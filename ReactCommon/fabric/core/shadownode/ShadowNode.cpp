@@ -22,11 +22,13 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 
 ShadowNode::ShadowNode(
   Tag tag,
+  Tag rootTag,
   InstanceHandle instanceHandle,
   SharedProps props,
   SharedShadowNodeSharedList children
 ):
   tag_(tag),
+  rootTag_(rootTag),
   instanceHandle_(instanceHandle),
   props_(props),
   children_(children) {}

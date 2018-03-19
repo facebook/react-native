@@ -23,6 +23,7 @@ rn_xplat_cxx_library(
     exported_headers = subdir_glob(
         [
             ("primitives", "*.h"),
+            ("componentdescriptor", "*.h"),
             ("shadownode", "*.h"),
         ],
         prefix = "fabric/core",

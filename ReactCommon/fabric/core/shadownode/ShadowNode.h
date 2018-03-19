@@ -35,6 +35,7 @@ public:
 
   ShadowNode(
     Tag tag,
+    Tag rootTag,
     InstanceHandle instanceHandle,
     SharedProps props = SharedProps(),
     SharedShadowNodeSharedList children = SharedShadowNodeSharedList()
@@ -71,6 +72,7 @@ public:
 
 protected:
   Tag tag_;
+  Tag rootTag_;
   InstanceHandle instanceHandle_;
   SharedProps props_;
   SharedShadowNodeSharedList children_;
