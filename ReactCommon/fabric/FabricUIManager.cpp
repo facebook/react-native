@@ -8,7 +8,6 @@
 #include "FabricUIManager.h"
 
 #include "IFabricPlatformUIOperationManager.h"
-#include "ShadowNode.h"
 
 namespace facebook {
 namespace react {
@@ -16,38 +15,38 @@ namespace react {
 FabricUIManager::FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager) :
   platformUIOperationManager_(platformUIOperationManager) {};
 
-ShadowNodeRef FabricUIManager::createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle) {
+SharedShadowNode FabricUIManager::createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle) {
   platformUIOperationManager_->performUIOperation();
-  return std::make_shared<ShadowNode>(reactTag, viewName, rootTag, props, instanceHandle);
-}
-
-ShadowNodeRef FabricUIManager::cloneNode(const ShadowNodeRef &node) {
   return nullptr;
 }
 
-ShadowNodeRef FabricUIManager::cloneNodeWithNewChildren(const ShadowNodeRef &node) {
+SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &node) {
   return nullptr;
 }
 
-ShadowNodeRef FabricUIManager::cloneNodeWithNewProps(const ShadowNodeRef &node, folly::dynamic props) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNode &node) {
   return nullptr;
 }
 
-ShadowNodeRef FabricUIManager::cloneNodeWithNewChildrenAndProps(const ShadowNodeRef &node, folly::dynamic newProps) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props) {
   return nullptr;
 }
 
-void FabricUIManager::appendChild(const ShadowNodeRef &parentNode, const ShadowNodeRef &childNode) {
-}
-
-ShadowNodeSetRef FabricUIManager::createChildSet(int rootTag) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps) {
   return nullptr;
 }
 
-void FabricUIManager::appendChildToSet(const ShadowNodeSetRef &childSet, const ShadowNodeRef &childNode) {
+void FabricUIManager::appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode) {
 }
 
-void FabricUIManager::completeRoot(int rootTag, const ShadowNodeSetRef &childSet) {
+SharedShadowNodeUnsharedList FabricUIManager::createChildSet(int rootTag) {
+  return nullptr;
+}
+
+void FabricUIManager::appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode) {
+}
+
+void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedList &childSet) {
 }
 
 } // namespace react

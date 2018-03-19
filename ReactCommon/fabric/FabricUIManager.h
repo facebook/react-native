@@ -11,29 +11,26 @@
 #include <folly/FBVector.h>
 #include <memory>
 
+#include <fabric/core/ShadowNode.h>
+
 namespace facebook {
 namespace react {
 
-class ShadowNode;
 class IFabricPlatformUIOperationManager;
-
-typedef std::shared_ptr<const ShadowNode> ShadowNodeRef;
-typedef folly::fbvector<const ShadowNodeRef> ShadowNodeSet;
-typedef std::shared_ptr<const ShadowNodeSet> ShadowNodeSetRef;
 
 class FabricUIManager {
 public:
   FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager);
 
-  ShadowNodeRef createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle);
-  ShadowNodeRef cloneNode(const ShadowNodeRef &node);
-  ShadowNodeRef cloneNodeWithNewChildren(const ShadowNodeRef &node);
-  ShadowNodeRef cloneNodeWithNewProps(const ShadowNodeRef &node, folly::dynamic props);
-  ShadowNodeRef cloneNodeWithNewChildrenAndProps(const ShadowNodeRef &node, folly::dynamic newProps);
-  void appendChild(const ShadowNodeRef &parentNode, const ShadowNodeRef &childNode);
-  ShadowNodeSetRef createChildSet(int rootTag);
-  void appendChildToSet(const ShadowNodeSetRef &childSet, const ShadowNodeRef &childNode);
-  void completeRoot(int rootTag, const ShadowNodeSetRef &childSet);
+  SharedShadowNode createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle);
+  SharedShadowNode cloneNode(const SharedShadowNode &node);
+  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node);
+  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props);
+  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps);
+  void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
+  SharedShadowNodeUnsharedList createChildSet(int rootTag);
+  void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
+  void completeRoot(int rootTag, const SharedShadowNodeUnsharedList &childSet);
 
 private:
   std::shared_ptr<IFabricPlatformUIOperationManager> platformUIOperationManager_;
