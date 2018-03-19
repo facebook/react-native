@@ -34,6 +34,16 @@ struct Point {
   friend Point operator + (Point lhs, const Point& rhs) {
     return lhs += rhs;
   }
+
+  bool operator ==(const Point& rhs) const {
+    return
+      std::tie(this->x, this->y) ==
+      std::tie(rhs.x, rhs.y);
+  }
+
+  bool operator !=(const Point& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 /*
@@ -42,6 +52,16 @@ struct Point {
 struct Size {
   Float width {0};
   Float height {0};
+
+  bool operator ==(const Size& rhs) const {
+    return
+      std::tie(this->width, this->height) ==
+      std::tie(rhs.width, rhs.height);
+  }
+
+  bool operator !=(const Size& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 /*
@@ -50,16 +70,36 @@ struct Size {
 struct Rect {
   Point origin {0, 0};
   Size size {0, 0};
+
+  bool operator ==(const Rect& rhs) const {
+    return
+      std::tie(this->origin, this->size) ==
+      std::tie(rhs.origin, rhs.size);
+  }
+
+  bool operator !=(const Rect& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 /*
  * EdgeInsets
  */
 struct EdgeInsets {
-  Float top {0};
   Float left {0};
-  Float bottom {0};
+  Float top {0};
   Float right {0};
+  Float bottom {0};
+
+  bool operator ==(const EdgeInsets& rhs) const {
+    return
+      std::tie(this->left, this->top, this->right, this->bottom) ==
+      std::tie(rhs.left, rhs.top, rhs.right, rhs.bottom);
+  }
+
+  bool operator !=(const EdgeInsets& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 } // namespace react
