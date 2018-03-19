@@ -55,13 +55,14 @@ public:
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
   Tag getTag() const;
+  SharedShadowNode getSourceNode() const;
+  void sealRecursive() const;
 
 #pragma mark - Mutating Methods
 
-  void sealRecursive() const;
-
   void appendChild(const SharedShadowNode &child);
   void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
+  void clearSourceNode();
 
 #pragma mark - DebugStringConvertible
 
@@ -76,6 +77,7 @@ protected:
   InstanceHandle instanceHandle_;
   SharedProps props_;
   SharedShadowNodeSharedList children_;
+  SharedShadowNode sourceNode_;
 };
 
 } // namespace react

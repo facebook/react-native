@@ -41,7 +41,8 @@ ShadowNode::ShadowNode(
   tag_(shadowNode->tag_),
   instanceHandle_(shadowNode->instanceHandle_),
   props_(props ? props : shadowNode->props_),
-  children_(children ? children : shadowNode->children_) {}
+  children_(children ? children : shadowNode->children_),
+  sourceNode_(shadowNode) {}
 
 #pragma mark - Getters
 
@@ -57,7 +58,9 @@ Tag ShadowNode::getTag() const {
   return tag_;
 }
 
-#pragma mark - Mutating Methods
+SharedShadowNode ShadowNode::getSourceNode() const {
+  return sourceNode_;
+}
 
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
@@ -72,6 +75,8 @@ void ShadowNode::sealRecursive() const {
     child->sealRecursive();
   }
 }
+
+#pragma mark - Mutating Methods
 
 void ShadowNode::appendChild(const SharedShadowNode &child) {
   ensureUnsealed();
@@ -93,6 +98,11 @@ void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShad
   auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
   std::replace(nonConstChildrenCopy.begin(), nonConstChildrenCopy.end(), oldChild, newChild);
   children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+}
+
+void ShadowNode::clearSourceNode() {
+  ensureUnsealed();
+  sourceNode_ = nullptr;
 }
 
 #pragma mark - DebugStringConvertible
@@ -125,6 +135,13 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
 
   if (instanceHandle_) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("handle", std::to_string((size_t)instanceHandle_)));
+  }
+
+  if (sourceNode_) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+      "source",
+      sourceNode_->getDebugDescription({.maximumDepth = 1, .format = false})
+    ));
   }
 
   SharedDebugStringConvertibleList propsList = props_->getDebugProps();
