@@ -19,6 +19,10 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
 }
 
 bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+  if (layoutMetrics_ == layoutMetrics) {
+    return false;
+  }
+
   layoutMetrics_ = layoutMetrics;
   return true;
 }

@@ -22,6 +22,16 @@ struct LayoutMetrics {
   EdgeInsets borderWidth {0};
   DisplayType displayType {Flex};
   LayoutDirection layoutDirection {Undefined};
+
+  bool operator ==(const LayoutMetrics& rhs) const {
+    return
+      std::tie(this->frame, this->contentInsets, this->borderWidth, this->displayType, this->layoutDirection) ==
+      std::tie(rhs.frame, rhs.contentInsets, rhs.borderWidth, rhs.displayType, rhs.layoutDirection);
+  }
+
+  bool operator !=(const LayoutMetrics& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 } // namespace react
