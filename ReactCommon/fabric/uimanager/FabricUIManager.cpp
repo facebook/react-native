@@ -7,6 +7,8 @@
 
 #include "FabricUIManager.h"
 
+#include <glog/logging.h>
+
 #include <fabric/core/LayoutContext.h>
 #include <fabric/view/ViewComponentDescriptor.h>
 #include <fabric/view/ViewProps.h>
@@ -97,12 +99,14 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
   LayoutContext layoutContext = LayoutContext();
   layoutContext.affectedShadowNodes = std::make_shared<std::unordered_set<SharedLayoutableShadowNode>>();
 
+  LOG(INFO) << "Shadow tree *before* layout: \n" << viewShadowNode->getDebugDescription() ;
+
   auto nonConstViewShadowNode = std::const_pointer_cast<ViewShadowNode>(viewShadowNode);
   nonConstViewShadowNode->layout(layoutContext);
 
   rootShadowNode->sealRecursive();
 
-  printf("## layouted rootShadowNode: %s \n", nonConstViewShadowNode->getDebugDescription(0).c_str());
+  LOG(INFO) << "Shadow tree *after* layout: \n" << nonConstViewShadowNode->getDebugDescription();
 }
 
 } // namespace react

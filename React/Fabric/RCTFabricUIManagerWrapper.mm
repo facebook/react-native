@@ -7,7 +7,11 @@
 
 #import "RCTFabricUIManagerWrapper.h"
 
-#include <fabric/FabricUIManager.h>
+#include <fabric/uimanager/FabricUIManager.h>
+
+#include <folly/dynamic.h>
+#include <folly/json.h>
+
 
 #import "RCTFabricPlatformUIOperationManager.h"
 
